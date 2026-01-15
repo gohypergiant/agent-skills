@@ -293,11 +293,105 @@ type AvatarProps = { avatar: string; }
 
 ### 3.1 Input Validation
 
+Always validate and sanitize external data at system boundaries.
+
+**❌ Incorrect: assumes valid**
+```ts
+function validateAddress(userInput: any) {
+  return userInput;
+}
+```
+
+**✅ Correct: asserts validity**
+```ts
+const AddressSchema = z.object({
+  street: z.string(),
+  city: z.string(),
+  zipCode: z.string().length(5),
+});
+
+type Address = z.infer<typeof AddressSchema>;
+
+function validateAddress(userInput: Address) {
+  return AddressSchema.safeParse(userInput);
+}
+```
+
 ### 3.2 Assertions
+
+Assertions detect programmer errors. The only appropriate response to corrupted code is to crash.
+
+```ts
+function assert(condition: boolean, message?: string): asserts condition {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+```
+
+Split compound assertions for clarity.
+
+**❌ Incorrect: compound assertion**
+```ts
+assert(a && b);
+```
+
+**✅ Correct: split assertion**
+```ts
+assert(a);
+assert(b);
+```
+
+Include variable values in assertion messages.
+
+**❌ Incorrect: variable value not included**
+```ts
+assert(index < items.length, 'Index error');
+```
+
+**✅ Correct: variable value included**
+```ts
+assert(
+  index < items.length,
+  `Index out of bounds: index=${index}, items.length=${items.length}`
+);
+```
 
 ### 3.3 Error Handling
 
+Handle all errors explicitly.
+
 ### 3.4 Error Messages
+
+For users make error messages clear, empathetic, and actionable.
+
+**❌ Incorrect: ambiguous and not human friendly**
+```ts
+alert('Error 500: Internal Server Error');
+```
+
+**✅ Correct: descriptive and human friendly**
+```ts
+alert(
+  'We\'re having trouble connecting to our server.\n' +
+  'Please check your internet connection and try again.'
+);
+```
+
+For developers make error messages specific, include values, and explain assumptions.
+
+**❌ Incorrect: ambiguous and lacking value**
+```ts
+assert(typeof count === 'number', 'Type error');
+```
+
+**✅ Correct: specific and includes value**
+```ts
+assert(
+  typeof count === 'number',
+  `Expected 'count' to be a number, but got type '${typeof count}'`
+);
+```
 
 ---
 
