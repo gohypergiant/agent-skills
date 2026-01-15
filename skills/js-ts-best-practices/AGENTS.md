@@ -7,7 +7,7 @@
 
 ## Abstract
 
-Comprehensive performance optimization guide for JavaScript or TypeScript applications, designed for AI agents and LLMs. Rules are prioritized by impact from critical to incremental. Each rule includes detailed explanations, and real-world examples comparing incorrect vs. correct implementations to guide automated refactoring and code generation.
+Comprehensive performance optimization guide for JavaScript or TypeScript applications, designed for AI agents and LLMs. Each rule includes detailed explanations, and real-world examples comparing incorrect vs. correct implementations to guide automated refactoring and code generation.
 
 ---
 
