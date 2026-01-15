@@ -1,0 +1,3 @@
+# JavaScript and TypeScript Best Practices
+
+A structured repository for creating and maintaining JS/TS Best Practices optimized for agents and LLMs. This is based on ["HyperStyle"](https://docs.accelint.dev/doc/hyperstyle-javascript-urdYtXRUfn) which a coding philosophy that prioritizes **safety**, **performance**, and **developer experience**, in that order. Inspired by [TigerBeetle's](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md) practices, it aims to build robust, efficient, and maintainable software through disciplined engineering.
