@@ -249,6 +249,27 @@ function anotherFn() {
 
 Avoid `any` type and always provide a correct return type.
 
+**❌ Incorrect: `any` type for input and return type**
+```ts
+function parse(input: any): any { 
+  return /*...*/;
+}
+```
+
+**✅ Correct: `unknown` for truly unknown types**
+```ts
+function parseUser(input: unknown): User {
+  return /*...*/;
+}
+```
+
+**✅ Correct: generics for flexible types**
+```ts
+function first<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+```
+
 ### 2.2 Enums
 
 Avoid `enum` and utilize `as const` structs instead. This prevents extra JavaScript code and forces TypeScript to infer the narrowest possible literal types for the object's properties.
@@ -267,6 +288,8 @@ const Direction = {
   up: 'UP',
   down: 'DOWN',
 } as const;
+
+type DirectionLookup = (typeof Direction)[keyof typeof Direction];
 ```
 
 ### 2.3 Type vs. Interface
