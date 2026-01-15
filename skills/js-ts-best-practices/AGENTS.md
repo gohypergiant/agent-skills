@@ -36,6 +36,12 @@ Comprehensive performance optimization guide for JavaScript or TypeScript applic
     - 4.4 [Batching](#44-batching)
     - 4.5 [Predictable Execution](#45-predictable-execution)
     - 4.6 [Bounded Iteration](#46-bounded-iteration)
+5. [Documentation](#5-documentation)
+    - 5.1 [JSDoc](#51-jsdoc)
+    - 5.2 [Comment Markers](#52-comment-markers)
+    - 5.3 [Comments to Remove](#53-comments-to-remove)
+    - 5.4 [Comments to Preserve](#54-comments-to-preserve)
+    - 5.5 [Comments Placement](#55-comments-placement)
 
 ---
 
@@ -528,3 +534,74 @@ for (const item of items) {
   // process item
 }
 ```
+
+---
+
+## 5. Documentation
+
+### 5.1 JSDoc
+
+All externally exposed APIs (exports) must have well-formed JSDoc comments.
+
+```ts
+/**
+ * Clamps a number within the specified bounds.
+ *
+ * @param min - The lower bound to clamp to.
+ * @param max - The upper bound to clamp to.
+ * @param value - The number value to clamp to the given range.
+ * @returns The clamped value.
+ *
+ * @throws {RangeError} Throws if min > max.
+ *
+ * @remarks
+ * This is a pure function with no side effects.
+ *
+ * @example
+ * ```typescript
+ * const value = clamp(5, 15, 10); // 10
+ * const value = clamp(5, 15, 2);  // 5
+ * const value = clamp(5, 15, 20); // 15
+ * ```
+ */
+export function clamp(min: number, max: number, value: number): number {
+  if (min > max) {
+    throw new RangeError(`min (${min}) > max (${max})`);
+  }
+  
+  return Math.max(min, Math.min(max, value));
+}
+```
+
+- At minimum: `@param`, `@template` (if applicable), `@returns`, `@throws` (if applicable), `@example`.
+- Optional: `@see`/`@link`, `@remarks`, `@deprecated`.
+
+### 5.2 Comment Markers
+
+Use "better comment" markers for non-docblock comments:
+
+- `TODO:` - Future changes or unimplemented features
+- `FIXME:` - Known bugs or critical defects
+- `HACK:` - Workarounds or sub-optimal solutions
+- `NOTE:` - Important informational points
+- `REVIEW:` - Areas requiring code review or scrutiny
+- `PERF:` - Performance bottlenecks or optimizations
+- `DEBUG:` - Temporary debugging code (remove later)
+- `REMARK:` - General observations
+
+### 5.3 Comments to Remove
+
+- Commented-out code
+- Edit history comments ("added", "removed", "changed")
+- Comments restating what code clearly does
+
+### 5.4 Comments to Preserve
+
+- Comments with markers (TODO, FIXME, etc.)
+- Linter directives (`// eslint-disable`, `// @ts-ignore`)
+- Business logic explanations
+- Docblock comments
+
+### 5.5 Comments Placement
+
+Move end-of-line comments to their own line above the code they describe.
