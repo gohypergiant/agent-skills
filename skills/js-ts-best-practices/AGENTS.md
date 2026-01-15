@@ -30,6 +30,12 @@ Comprehensive performance optimization guide for JavaScript or TypeScript applic
     - 3.3 [Error Handling](#33-error-handling)
     - 3.4 [Error Messages](#34-error-messages)
 4. [Performance](#4-performance)
+    - 4.1 [Reduce Branching](#41-reduce-branching)
+    - 4.2 [Reduce Looping](#42-reduce-looping)
+    - 4.3 [Memoization](#43-memoization)
+    - 4.4 [Batching](#44-batching)
+    - 4.5 [Predictable Execution](#45-predictable-execution)
+    - 4.6 [Bounded Iteration](#46-bounded-iteration)
 
 ---
 
@@ -233,6 +239,7 @@ function anotherFn() {
 - Employ defensive/negative-space programming
 - Return identity/zero elements instead of null/undefined
 - Consider cache locality
+- Aim for zero technical debt
 
 ---
 
@@ -296,7 +303,98 @@ type AvatarProps = { avatar: string; }
 
 ## 4. Performance
 
-### 4.x Bounded Iteration
+Design for performance **from the start**. Optimize slowest resources first:
+
+```
+network >> disk >> memory >> cpu
+```
+
+Benchmark your assumptions before moving on.
+
+### 4.1 Reduce Branching
+
+Use table lookups instead of conditionals for static values.
+
+**❌ Incorrect: conditional checks**
+```ts
+if (thing === 'ONE') {
+  /*...*/
+}
+
+if (thing === 'TWO') {
+  /*...*/
+}
+
+if (thing === 'THREE') {
+  /*...*/
+}
+```
+
+**✅ Correct: lookup table**
+```ts
+const lookup = {
+  ONE: {/*...*/},
+  TWO: {/*...*/},
+  THREE: {/*...*/},
+}
+
+const action = lookup[thing];
+```
+
+### 4.2 Reduce Looping
+
+Use `reduce` instead of chained array methods:
+
+**❌ Incorrect: two iterations**
+```ts
+const result = arr.filter(predicate).map(mapper);
+```
+
+**✅ Correct: single iteration**
+```ts
+const result = arr.reduce((acc, curr) =>
+  predicate(curr) ? [...acc, mapper(curr)] : acc,
+  []
+);
+```
+
+Use `Set.has()` over `Array.includes()` for membership checks:
+
+**❌ Incorrect: O(n)**
+```ts
+const keys = Object.keys(someObj);
+if (keys.includes(id)) { /**/ }
+```
+
+**✅ Correct: O(1)**
+```ts
+const keys = new Set(Object.keys(someObj));
+if (keys.has(id)) { /**/ }
+```
+
+### 4.3 Memoization
+
+Use only when appropriate. Avoid memoizing trivial computations.
+
+**❌ Incorrect: trivial computation**
+```ts
+const ternMemo = memoize((pred) => pred ? 'Right!' : 'Wrong');
+```
+
+**✅ Correct: direct computation**
+```ts
+const result = test ? 'Right!' : 'Wrong';
+```
+
+### 4.4 Batching
+
+Batch operations to amortize costly processes, especially for I/O-bound operations.
+
+### 4.5 Predictable Execution
+
+Write code with clear execution paths. Predictable code utilizes CPU caching and branch prediction more effectively.
+
+### 4.6 Bounded Iteration
 
 Set limits on all loops, queues, and data structures.
 
