@@ -16,20 +16,20 @@ Comprehensive performance optimization guide for JavaScript or TypeScript applic
 
 ## Table of Contents
 
-[1. General](#1-general)
-  [1.1 Naming Conventions](#11-naming-conventions)
-  [1.2 Functions](#12-functions)
-  [1.3 Control Flow](#13-control-flow)
-  [1.4 State Management](#14-state-management)
-  [1.5 Return Values](#15-return-values)
-  [1.6 Misc](#16-misc)
-[2. TypeScript](#2-typescript)
-[3. Safety](#3-safety)
-  [3.1 Input Validation](#31-input-validation)
-  [3.2 Assertions](#32-assertions)
-  [3.3 Error Handling](#33-error-handling)
-  [3.4 Error Messages](#34-error-messages)
-[4. Performance](#4-performance)
+1. [General](#1-general)
+  - 1.1 [Naming Conventions](#11-naming-conventions)
+  - 1.2 [Functions](#12-functions)
+  - 1.3 [Control Flow](#13-control-flow)
+  - 1.4 [State Management](#14-state-management)
+  - 1.5 [Return Values](#15-return-values)
+  - 1.6 [Misc](#16-misc)
+2. [TypeScript](#2-typescript)
+3. [Safety](#3-safety)
+  - 3.1 [Input Validation](#31-input-validation)
+  - 3.2 [Assertions](#32-assertions)
+  - 3.3 [Error Handling](#33-error-handling)
+  - 3.4 [Error Messages](#34-error-messages)
+4. [Performance](#4-performance)
 
 ---
 
