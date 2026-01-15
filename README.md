@@ -82,13 +82,11 @@ General rule of thumb is to follow guidance from [Agents.md](https://agents.md/)
 Brief explanation of the rule and why it matters.
 
 **❌ Incorrect: (description of why)**
-
 ```ts
 // Bad code example
 ```
 
 **✅ Correct: (description of why)**
-
 ```ts
 // Good code example
 ```
