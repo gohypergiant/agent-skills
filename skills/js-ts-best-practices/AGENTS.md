@@ -244,7 +244,23 @@ Avoid `any` type and always provide a correct return type.
 
 ### 2.2 Enums
 
-Avoid `enum` and instead utilize `as const` maps.
+Avoid `enum` and utilize `as const` structs instead. This prevents extra JavaScript code and forces TypeScript to infer the narrowest possible literal types for the object's properties.
+
+**❌ Incorrect: enum utilized**
+```ts
+enum Direction {
+  up = "UP",
+  down = "DOWN",
+}
+```
+
+**✅ Correct: struct with `as const`**
+```ts
+const Direction = {
+  up: 'UP',
+  down: 'DOWN',
+} as const;
+```
 
 ### 2.3 Type vs. Interface
 
