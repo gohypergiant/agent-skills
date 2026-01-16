@@ -1,5 +1,5 @@
 ---
-name: js-ts-best-practices
+name: vitest-best-practices
 description: Vitest and general testing best practices from Accelint. This skill should be used when writing, reviewing, or refactoring vitest tests to ensure optimal patterns. Triggers on tasks involving testing, TDD, BDD, DDD, test refactoring, or test performance improvements.
 metadata:
   author: gohypergiant
