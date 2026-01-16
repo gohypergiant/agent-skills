@@ -33,6 +33,9 @@ Comprehensive performance optimization guide for React applications, designed fo
     - 3.1 [Store Event Handlers in Refs](#31-store-event-handlers-in-refs)
     - 3.2 [useLatest for Stable Callback Refs](#32-uselatest-for-stable-callback-refs)
     - 3.3 [Cache Repeated Function Calls](#33-cache-repeated-function-calls)
+4. [Misc](#4-misc)
+    - 4.1 [Named Imports](#41-named-imports)
+    - 4.2 [No forwardRef](#42-no-forwardref)
 
 ---
 
@@ -705,3 +708,42 @@ function onAuthChange() {
 Use a Map (not a hook) so it works everywhere: utilities, event handlers, not just React components.
 
 Reference: https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast
+
+---
+
+## 4. Misc
+
+### 4.1 Named Imports
+
+Always used named imports from the `react` library.
+
+**❌ Incorrect: default import**
+```ts
+import React from 'react';
+```
+
+**❌ Incorrect: wildcard import**
+```ts
+import * as React from 'react';
+```
+
+**✅ Correct: named imports**
+```ts
+import { useEffect, useState } from 'react';
+```
+
+### 4.2 No forwardRef
+
+`forwardRef` [was deprecated](https://react.dev/reference/react/forwardRef) in React 19.
+
+**❌ Incorrect: `forwardRef` used**
+```ts
+const Input = forwardRef((props, ref) => <input ref={ref} {...props} />);
+```
+
+**✅ Correct: ref as a prop**
+```ts
+function Input({ ref, ...props }) {
+  return <input ref={ref} {...props} />;
+}
+```
