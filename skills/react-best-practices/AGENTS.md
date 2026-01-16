@@ -9,6 +9,12 @@
 
 Comprehensive performance optimization guide for React applications, designed for AI agents and LLMs. Each rule includes detailed explanations, and real-world examples comparing incorrect vs. correct implementations to guide automated refactoring and code generation.
 
+Catch up on React 19 features:
+
+- [React 19](https://react.dev/blog/2024/12/05/react-19)
+- [React 19.2](https://react.dev/blog/2025/10/01/react-19-2)
+- [React 19 Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
+
 ---
 
 ## Table of Contents
