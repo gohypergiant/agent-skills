@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   const sessionPromise = auth()
   const configPromise = fetchConfig()
   const session = await sessionPromise
-  const [config, data] = await Promise.all([
+  const [config, data] = await Promise.allSettled([
     configPromise,
     fetchData(session.user.id)
   ])
@@ -48,9 +48,9 @@ export async function GET(request: Request) {
 }
 ```
 
-### 1.4 Promise.all() for Independent Operations
+### 1.4 Parallelize Independent Operations
 
-When async operations have no interdependencies, execute them concurrently using Promise.all().
+When async operations have no interdependencies, execute them concurrently using Promise.allSettled().
 
 **❌ Incorrect: sequential execution, 3 round trips**
 ```ts
@@ -61,7 +61,7 @@ const comments = await fetchComments()
 
 **✅ Correct: parallel execution, 1 round trip**
 ```ts
-const [user, posts, comments] = await Promise.all([
+const [user, posts, comments] = await Promise.allSettled([
   fetchUser(),
   fetchPosts(),
   fetchComments()
