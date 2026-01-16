@@ -36,6 +36,9 @@ Comprehensive performance optimization guide for JavaScript or TypeScript applic
     - 4.4 [Batching](#44-batching)
     - 4.5 [Predictable Execution](#45-predictable-execution)
     - 4.6 [Bounded Iteration](#46-bounded-iteration)
+    - 4.7 [Defer Await](#47-defer-await)
+    - 4.8 [Cache Property Access in Loops](#48-cache-property-access-in-loops)
+    - 4.9 [Cache Storage API Calls](#49-cache-storage-api-calls)
 5. [Documentation](#5-documentation)
     - 5.1 [JSDoc](#51-jsdoc)
     - 5.2 [Comment Markers](#52-comment-markers)
@@ -534,6 +537,126 @@ for (const item of items) {
   // process item
 }
 ```
+
+### 4.7 Defer Await
+
+Move `await` operations into the branches where they're actually used to avoid blocking code paths that don't need them.
+
+**❌ Incorrect: blocks both branches**
+```ts
+async function handleRequest(userId: string, skipProcessing: boolean) {
+  const userData = await fetchUserData(userId);
+  
+  if (skipProcessing) {
+    // Returns immediately but still waited for userData
+    return { skipped: true };
+  }
+  
+  // Only this branch uses userData
+  return processUserData(userData);
+}
+```
+
+**✅ Correct: only blocks when needed**
+```ts
+async function handleRequest(userId: string, skipProcessing: boolean) {
+  if (skipProcessing) {
+    // Returns immediately without waiting
+    return { skipped: true };
+  }
+  
+  // Fetch only when needed
+  const userData = await fetchUserData(userId);
+  return processUserData(userData);
+}
+```
+
+This optimization is especially valuable when the skipped branch is frequently taken, or when the deferred operation is expensive.
+
+### 4.8 Cache Property Access in Loops
+
+Cache object property lookups in hot paths.
+
+**❌ Incorrect: 3 lookups × N iterations**
+```ts
+for (let i = 0; i < arr.length; i++) {
+  process(obj.config.settings.value);
+}
+```
+
+**✅ Correct: 1 lookup total**
+```ts
+const value = obj.config.settings.value;
+const len = arr.length;
+
+for (let i = 0; i < len; i++) {
+  process(value);
+}
+```
+
+### 4.9 Cache Storage API Calls
+
+`localStorage`, `sessionStorage`, and `document.cookie` are synchronous and expensive. Cache reads in memory.
+
+**❌ Incorrect: reads storage on every call**
+```ts
+function getTheme() {
+  return localStorage.getItem('theme') ?? 'light';
+}
+// Called 10 times = 10 storage reads
+```
+
+**✅ Correct: `Map` cache**
+```ts
+const storageCache = new Map<string, string | null>()
+
+function getLocalStorage(key: string) {
+  if (!storageCache.has(key)) {
+    storageCache.set(key, localStorage.getItem(key));
+  }
+
+  return storageCache.get(key);
+}
+
+function setLocalStorage(key: string, value: string) {
+  localStorage.setItem(key, value);
+  storageCache.set(key, value);  // keep cache in sync
+}
+```
+
+Cookie caching:
+
+```ts
+let cookieCache: Record<string, string> | null = null
+
+function getCookie(name: string) {
+  if (!cookieCache) {
+    cookieCache = Object.fromEntries(
+      document.cookie.split('; ').map(c => c.split('='));
+    )
+  }
+
+  return cookieCache[name];
+}
+```
+
+**Important**: invalidate on external changes
+
+```ts
+window.addEventListener('storage', (e) => {
+  if (e.key) {
+    storageCache.delete(e.key);
+  }
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    storageCache.clear()
+  }
+});
+```
+
+If storage can change externally (another tab, server-set cookies), invalidate cache:
 
 ---
 
