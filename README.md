@@ -8,7 +8,7 @@ A collection of skills for AI coding agents. Skills are packaged instructions an
 ## Installation
 
 ```bash
-npx add-skill gohypergiant/agent-skills
+npx skills gohypergiant/agent-skills
 ```
 
 ## Usage

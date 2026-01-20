@@ -86,28 +86,28 @@ Extract expensive work into memoized components to enable early returns before c
 ```tsx
 function Profile({ user, loading }: Props) {
   const avatar = useMemo(() => {
-    const id = computeAvatarId(user)
-    return <Avatar id={id} />
-  }, [user])
+    const id = computeAvatarId(user);
+    return <Avatar id={id} />;
+  }, [user]);
 
   if (loading) {
-    return <Skeleton />
+    return <Skeleton />;
   }
 
-  return <div>{avatar}</div>
+  return <div>{avatar}</div>;
 }
 ```
 
 **✅ Correct: skips computation when loading**
 ```tsx
 const UserAvatar = memo(function UserAvatar({ user }: { user: User }) {
-  const id = useMemo(() => computeAvatarId(user), [user])
-  return <Avatar id={id} />
+  const id = useMemo(() => computeAvatarId(user), [user]);
+  return <Avatar id={id} />;
 })
 
 function Profile({ user, loading }: Props) {
   if (loading) {
-    return <Skeleton />
+    return <Skeleton />;
   }
 
   return (
@@ -127,14 +127,14 @@ Specify primitive dependencies instead of objects to minimize effect re-runs.
 **❌ Incorrect: re-runs on any user field change**
 ```tsx
 useEffect(() => {
-  console.log(user.id)
+  console.log(user.id);
 }, [user])
 ```
 
 **✅ Correct: re-runs only when id changes**
 ```tsx
 useEffect(() => {
-  console.log(user.id)
+  console.log(user.id);
 }, [user.id])
 ```
 
@@ -144,7 +144,7 @@ For derived state, compute outside effect:
 ```tsx
 useEffect(() => {
   if (width < 768) {
-    enableMobileMode()
+    enableMobileMode();
   }
 }, [width])
 ```
@@ -154,7 +154,7 @@ useEffect(() => {
 const isMobile = width < 768
 useEffect(() => {
   if (isMobile) {
-    enableMobileMode()
+    enableMobileMode();
   }
 }, [isMobile])
 ```
@@ -166,8 +166,8 @@ Subscribe to derived boolean state instead of continuous values to reduce re-ren
 **❌ Incorrect: re-renders on every pixel change**
 ```tsx
 function Sidebar() {
-  const width = useWindowWidth()  // updates continuously
-  const isMobile = width < 768
+  const width = useWindowWidth();  // updates continuously
+  const isMobile = width < 768;
 
   return <nav className={isMobile ? 'mobile' : 'desktop'}>
 }
@@ -565,6 +565,38 @@ regex.test('foo')  // true, lastIndex = 3
 regex.test('foo')  // false, lastIndex = 0
 ```
 
+2.8 Avoid `useMemo` For Simple Expressions
+
+When an expression is simple (few logical or arithmetical operators) and has a primitive result type (boolean, number, string), do not wrap it in `useMemo`. Calling `useMemo` and comparing hook dependencies may consume more resources than the expression itself.
+
+**❌ Incorrect: wasted `useMemo` overhead**
+```tsx
+function Header({ user, notifications }: Props) {
+  const isLoading = useMemo(() => {
+    return user.isLoading || notifications.isLoading
+  }, [user.isLoading, notifications.isLoading]);
+
+  if (isLoading) {
+    return <Skeleton />
+  }
+  
+  return /* ... */;
+}
+```
+
+**✅ Correct: no `useMemo` overhead for simple expression**
+```tsx
+function Header({ user, notifications }: Props) {
+  const isLoading = user.isLoading || notifications.isLoading
+
+  if (isLoading) {
+    return <Skeleton />;
+  }
+
+  return /* ... */;
+}
+```
+
 ---
 
 ## 3. Advanced Patterns
@@ -575,7 +607,7 @@ Store callbacks in refs when used in effects that shouldn't re-subscribe on call
 
 **❌ Incorrect: re-subscribes on every render**
 ```tsx
-function useWindowEvent(event: string, handler: () => void) {
+function useWindowEvent(event: string, handler: (e) => void) {
   useEffect(() => {
     window.addEventListener(event, handler)
     return () => window.removeEventListener(event, handler)
@@ -587,7 +619,7 @@ function useWindowEvent(event: string, handler: () => void) {
 ```tsx
 import { useEffectEvent } from 'react'
 
-function useWindowEvent(event: string, handler: () => void) {
+function useWindowEvent(event: string, handler: (e) => void) {
   const onEvent = useEffectEvent(handler)
 
   useEffect(() => {
@@ -608,7 +640,7 @@ Implementation:
 function useLatest<T>(value: T) {
   const ref = useRef(value)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     ref.current = value
   }, [value])
 
