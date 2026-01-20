@@ -1,0 +1,2 @@
+# Ignore self installed skills (for now)
+.claude/skills
