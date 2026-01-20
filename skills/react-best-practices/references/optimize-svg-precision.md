@@ -17,3 +17,11 @@ This optimization can be automated with [SVGO](https://svgo.dev/)
 ```bash
 npx svgo --precision=1 --multipass icon.svg
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still optimize SVG precision. This is a build-time asset optimization, not a React code optimization.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

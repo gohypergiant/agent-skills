@@ -15,3 +15,11 @@ function Dropdown({ isOpen }: Props) {
 ```
 
 Avoids expensive re-renders and state loss.
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use the `<Activity>` component explicitly. The compiler cannot transform conditional rendering into Activity component usage.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

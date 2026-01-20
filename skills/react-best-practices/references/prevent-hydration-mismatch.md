@@ -67,3 +67,11 @@ function ThemeWrapper({ children }: { children: ReactNode }) {
 The inline script executes synchronously before showing the element, ensuring the DOM already has the correct value. No flickering, no hydration mismatch.
 
 This pattern is especially useful for theme toggles, user preferences, authentication states, and any client-only data that should render immediately without flashing default values.
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still handle SSR hydration mismatches explicitly. The compiler cannot infer client-side only state handling.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

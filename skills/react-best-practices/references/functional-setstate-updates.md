@@ -42,4 +42,10 @@ function TodoList() {
 }
 ```
 
-Note: If your project has [React Compiler](https://react.dev/learn/react-compiler) enabled, the compiler can automatically optimize some cases, but functional updates are still recommended for correctness and to prevent stale closure bugs.
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use functional setState updates. The compiler cannot infer when to use functional updates, and this pattern is essential for correctness and preventing stale closure bugs.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

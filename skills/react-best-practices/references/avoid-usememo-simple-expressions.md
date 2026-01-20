@@ -29,3 +29,11 @@ function Header({ user, notifications }: Props) {
   return /* ... */;
 }
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, avoid unnecessary `useMemo` for simple expressions. While the compiler optimizes memoization, removing unnecessary memoization improves code simplicity and readability.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

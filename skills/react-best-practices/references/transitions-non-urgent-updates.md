@@ -31,3 +31,11 @@ function ScrollTracker() {
   }, [])
 }
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use `startTransition()` for non-urgent updates. The compiler cannot infer which updates should be transitions.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

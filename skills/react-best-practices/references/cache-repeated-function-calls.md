@@ -71,3 +71,11 @@ function onAuthChange() {
 Use a Map (not a hook) so it works everywhere: utilities, event handlers, not just React components.
 
 Reference: https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still implement module-level caching for repeated function calls. The compiler cannot create cross-render, global caches automatically.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

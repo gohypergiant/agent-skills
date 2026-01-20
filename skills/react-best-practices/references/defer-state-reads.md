@@ -28,3 +28,11 @@ function ShareButton({ chatId }: { chatId: string }) {
   return <button onClick={handleShare}>Share</button>
 }
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still defer state reads when appropriate. The compiler cannot infer that you don't need to subscribe to state changes.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

@@ -36,3 +36,11 @@ useEffect(() => {
   }
 }, [isMobile])
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still narrow effect dependencies. The compiler cannot restructure your code to use primitive dependencies instead of objects.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

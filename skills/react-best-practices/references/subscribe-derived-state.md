@@ -20,3 +20,11 @@ function Sidebar() {
   return <nav className={isMobile ? 'mobile' : 'desktop'}>
 }
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still subscribe to derived state instead of continuous values. The compiler cannot infer that you should subscribe to a boolean instead of the raw value.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

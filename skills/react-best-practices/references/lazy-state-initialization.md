@@ -47,3 +47,11 @@ function UserProfile() {
 Use lazy initialization when computing initial values from localStorage/sessionStorage, building data structures (indexes, maps), reading from the DOM, or performing heavy transformations.
 
 For simple primitives (`useState(0)`), direct references (`useState(props.value)`), or cheap literals (`useState({})`), the function form is unnecessary.
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use lazy state initialization. The compiler cannot transform direct value initialization into the function form automatically.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

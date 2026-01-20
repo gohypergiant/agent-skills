@@ -33,3 +33,11 @@ const regex = /foo/g
 regex.test('foo')  // true, lastIndex = 3
 regex.test('foo')  // false, lastIndex = 0
 ```
+
+---
+
+## React Compiler Note
+
+✅ **Handled automatically** - If your project has [React Compiler](https://react.dev/learn/react-compiler) enabled, the compiler automatically hoists RegExp creation and memoizes values. Manual hoisting/memoization is unnecessary.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

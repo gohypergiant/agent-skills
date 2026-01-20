@@ -57,6 +57,40 @@ Do not activate for:
 - Backend API development
 - Testing setup (use a testing-specific skill if available)
 
+## Example Trigger Phrases
+
+This skill should activate when users say things like:
+
+**Performance Issues:**
+- "This component is re-rendering too much"
+- "My React app is slow when scrolling"
+- "Optimize this React component for performance"
+- "The input feels laggy when typing"
+- "This page takes forever to load initially"
+
+**Debugging Issues:**
+- "Why is my useEffect running infinitely?"
+- "I'm getting hydration errors in Next.js"
+- "This callback always has stale/old values"
+- "My effect keeps re-subscribing to events"
+
+**Code Review:**
+- "Review this React code for performance issues"
+- "Is this React component following best practices?"
+- "Can you optimize this React hook?"
+- "Check if this component has any performance problems"
+
+**React 19 Migration:**
+- "Update this code to React 19"
+- "Replace forwardRef with the new pattern"
+- "Fix these React 19 deprecation warnings"
+- "Migrate to React 19 best practices"
+
+**Refactoring:**
+- "Refactor this component to be more performant"
+- "Clean up these useEffect dependencies"
+- "Improve the performance of this list rendering"
+
 ## How to Use
 
 This skill uses a **progressive disclosure** structure to minimize context usage:
@@ -94,6 +128,14 @@ When you identify a relevant optimization, load the corresponding reference file
 **Misc:**
 - [named-imports.md](references/named-imports.md)
 - [no-forwardref.md](references/no-forwardref.md)
+
+**Quick References:**
+- [quick-checklists.md](references/quick-checklists.md)
+- [compound-patterns.md](references/compound-patterns.md)
+- [react-compiler-guide.md](references/react-compiler-guide.md)
+
+**Automation Scripts:**
+- [scripts/](scripts/) - Helper scripts to detect anti-patterns
 
 ### 3. Apply the Pattern
 Each reference file contains:
@@ -133,9 +175,13 @@ Each reference file contains:
 ## Important Notes
 
 ### React Compiler Awareness
-Many manual optimization patterns (memo, useMemo, useCallback, hoisting static JSX) are **automatically handled by React Compiler**. Reference files note when compiler makes manual optimization unnecessary.
+Many manual optimization patterns (memo, useMemo, useCallback, hoisting static JSX) are **automatically handled by React Compiler**.
 
-Always check if the project has React Compiler enabled before applying manual optimizations.
+**Before optimizing, check if the project uses React Compiler:**
+- If enabled: Skip manual memoization, but still apply state/effect/CSS optimizations
+- If not enabled: Apply all relevant optimizations from this guide
+
+See [react-compiler-guide.md](references/react-compiler-guide.md) for a complete breakdown of what the compiler handles vs what still needs manual optimization.
 
 ### React 19+ Features
 This skill covers React 19 features including:

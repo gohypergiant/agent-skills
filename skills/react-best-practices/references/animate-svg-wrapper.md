@@ -36,3 +36,11 @@ function LoadingSpinner() {
 ```
 
 This applies to all CSS transforms and transitions (transform, opacity, translate, scale, rotate). The wrapper div allows browsers to use GPU acceleration for smoother animations.
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still wrap SVG elements for animation. This is a DOM structure optimization, not a React code optimization.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

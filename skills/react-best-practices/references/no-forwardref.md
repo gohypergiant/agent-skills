@@ -13,3 +13,11 @@ function Input({ ref, ...props }) {
   return <input ref={ref} {...props} />;
 }
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must migrate from `forwardRef` to ref props. This is a React 19 API migration requirement, not a compiler optimization.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

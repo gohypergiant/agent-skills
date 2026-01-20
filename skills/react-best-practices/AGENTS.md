@@ -7,23 +7,51 @@
 
 ## Abstract
 
-Comprehensive performance optimization guide for React applications, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
-
-Catch up on React 19 features:
-
-- [React 19](https://react.dev/blog/2024/12/05/react-19)
-- [React 19.2](https://react.dev/blog/2025/10/01/react-19-2)
-- [React 19 Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
+Comprehensive performance optimization guide for React applications, designed for AI agents and LLMs. Each rule includes one-line summaries with links to detailed examples in `references/`. Load reference files only when implementing a specific pattern.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant optimizations
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+**For agents/LLMs:**
+1. Scan rule summaries below to identify relevant optimizations
+2. Load reference files only when implementing a specific pattern
+3. Each reference is self-contained with ❌/✅ examples
 
-This structure minimizes context usage while providing complete implementation guidance when needed.
+**Quick shortcuts:**
+- Re-render issues? → Section 1 (Re-render Optimizations)
+- Slow rendering? → Section 2 (Rendering Performance)
+- Advanced patterns? → Section 3 (Advanced Patterns)
+- React 19 migration? → Section 4 (Misc)
+- Not sure what's wrong? → Use Quick Diagnostic Guide below
+
+**React 19+ Resources:**
+- [React 19](https://react.dev/blog/2024/12/05/react-19) | [React 19.2](https://react.dev/blog/2025/10/01/react-19-2) | [Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
+
+---
+
+## Quick Diagnostic Guide
+
+Use this guide to quickly identify which optimization applies based on symptoms:
+
+**Symptom → Solution:**
+- Component re-renders on every parent render → 1.2 Extract to Memoized Components
+- Component re-renders when URL/localStorage changes but doesn't display them → 1.1 Defer State Reads
+- Effect runs too frequently → 1.3 Narrow Effect Dependencies, 3.1 Store Event Handlers in Refs
+- Callback has stale/old values → 1.5 Functional setState Updates, 3.2 useLatest
+- Slow initial render → 1.6 Lazy State Initialization, 2.3 Hoist Static JSX, 2.7 Hoist RegExp
+- Scrolling/interaction feels janky → 2.2 CSS content-visibility, 2.1 Animate SVG Wrapper, 1.7 Transitions
+- Typing/input feels sluggish → 1.7 Transitions for Non-Urgent Updates
+- Window resize causes excessive re-renders → 1.4 Subscribe to Derived State
+- Hydration mismatch errors (SSR/SSG) → 2.5 Prevent Hydration Mismatch
+- Component state lost when hiding/showing → 2.6 Activity Component
+- Infinite re-render loop → 1.5 Functional setState, 1.3 Narrow Effect Dependencies
+- Large bundle size → 2.4 Optimize SVG Precision, 2.3 Hoist Static JSX
+
+**React 19 Migration Issues:**
+- "forwardRef is deprecated" → 4.2 No forwardRef
+- "Default import from React is deprecated" → 4.1 Named Imports
+- Need stable event handlers in effects → 3.1 Store Event Handlers (useEffectEvent)
 
 ---
 
@@ -120,3 +148,15 @@ Always use named imports from 'react', not default or wildcard imports.
 ### 4.2 No forwardRef
 Use `ref` as a prop instead of `forwardRef` (deprecated in React 19).
 [View detailed examples](references/no-forwardref.md)
+
+### 4.3 React Compiler Guide
+Understand what React Compiler optimizes automatically vs manual optimizations still needed.
+[View detailed guide](references/react-compiler-guide.md)
+
+### 4.4 Quick Reference Checklists
+Checklists for common scenarios: new components, performance reviews, SSR, React 19 migration, etc.
+[View checklists](references/quick-checklists.md)
+
+### 4.5 Compound Pattern Examples
+Real-world examples showing multiple optimization patterns working together.
+[View compound patterns](references/compound-patterns.md)

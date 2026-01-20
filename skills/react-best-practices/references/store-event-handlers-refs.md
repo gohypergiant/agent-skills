@@ -27,3 +27,11 @@ function useWindowEvent(event: string, handler: (e) => void) {
 ```
 
 If you are on React >= 19.2 use `useEffectEvent` as it provides a cleaner API for the same pattern: it creates a stable function reference that always calls the latest version of the handler.
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use `useEffectEvent` (React 19.2+) or the ref pattern to prevent effect re-subscriptions. The compiler cannot infer when to stabilize event handlers in effects.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.
