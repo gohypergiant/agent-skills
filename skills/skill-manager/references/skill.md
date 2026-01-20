@@ -6,14 +6,21 @@ General rule of thumb is to follow guidance from [Agent Skills](https://agentski
 
 Example of sections to include:
 
-- ## When to Activate This Skill
-- ## When NOT to Use This Skill
-- ## How to Use
-- ## Examples
-- ## Important Notes
-- ## Additional Context
+```markdown
+## When to Activate This Skill
 
-Refer to `../../react-best-practices/SKILL.md` as a reference on content and structure.
+## When NOT to Use This Skill
+
+## How to Use
+
+## Examples
+
+## Important Notes
+
+## Additional Context
+```
+
+Refer to [this file](../../react-best-practices/SKILL.md) as a reference on content and structure.
 
 ### Rich Description Field
 

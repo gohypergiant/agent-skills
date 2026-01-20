@@ -5,20 +5,25 @@
 General rule of thumb is to follow guidance from [Agents.md](https://agents.md/). At minimum try and provide concise and descriptive examples of what incorrect and correct. Consolidate examples as reasonably as possible to reduce token usage.
 
 Example of sections to include:
+```markdown
+## Abstract
 
-- ## Abstract
-- ## How to Use This Guide
-- ## 1. {Rule Group}
-- ### 1.1 {Rule Name}
+## How to Use This Guide
+
+## 1. {Rule Group}
+
+### 1.1 {Rule Name}
+
+```
 
 Also include this note hint towards the persona:
 
-```
+```markdown
 > **Note:**
 > This document is mainly for agents and LLMs to follow <condition for skill> at Accelint. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
 ```
 
-Refer to `../../react-best-practices/AGENTS.md` as a reference on content and structure.
+Refer to [this file](../../react-best-practices/AGENTS.md) as a reference on content and structure.
 
 ### Token Efficiency (Critical)
 
