@@ -8,14 +8,14 @@ Contains additional documentation with detailed technical references that agents
 Brief explanation of the rule and why it matters.
 
 **❌ Incorrect: (description of why)**
-```
-// Bad code example
-```
+    ```
+    // Bad code example
+    ```
 
 **✅ Correct: (description of why)**
-```
-// Good code example
-```
+    ```
+    // Good code example
+    ```
 
 Optional explanatory text after examples.
 
