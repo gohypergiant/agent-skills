@@ -17,6 +17,16 @@ Catch up on React 19 features:
 
 ---
 
+## How to Use This Guide
+
+1. **Start here**: Scan the rule summaries to identify relevant optimizations
+2. **Load references as needed**: Click through to detailed examples only when implementing
+3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+
+This structure minimizes context usage while providing complete implementation guidance when needed.
+
+---
+
 ## 1. Re-render Optimizations
 
 ### 1.1 Defer State Reads
@@ -110,13 +120,3 @@ Always use named imports from 'react', not default or wildcard imports.
 ### 4.2 No forwardRef
 Use `ref` as a prop instead of `forwardRef` (deprecated in React 19).
 [View detailed examples](references/no-forwardref.md)
-
----
-
-## How to Use This Guide
-
-1. **Start here**: Scan the rule summaries to identify relevant optimizations
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
-
-This structure minimizes context usage while providing complete implementation guidance when needed.

@@ -7,724 +7,144 @@
 
 ## Abstract
 
-Comprehensive performance optimization guide for JavaScript or TypeScript applications, designed for AI agents and LLMs. Each rule includes detailed explanations, and real-world examples comparing incorrect vs. correct implementations to guide automated refactoring and code generation.
+Comprehensive performance optimization guide for JavaScript or TypeScript applications, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
 ---
 
-## Table of Contents
+## How to Use This Guide
 
-1. [General](#1-general)
-    - 1.1 [Naming Conventions](#11-naming-conventions)
-    - 1.2 [Functions](#12-functions)
-    - 1.3 [Control Flow](#13-control-flow)
-    - 1.4 [State Management](#14-state-management)
-    - 1.5 [Return Values](#15-return-values)
-    - 1.6 [Misc](#16-misc)
-2. [TypeScript](#2-typescript)
-    - 2.1 [Any](#21-any)
-    - 2.2 [Enums](#22-enums)
-    - 2.3 [Type vs. Interface](#23-type-vs-interface)
-3. [Safety](#3-safety)
-    - 3.1 [Input Validation](#31-input-validation)
-    - 3.2 [Assertions](#32-assertions)
-    - 3.3 [Error Handling](#33-error-handling)
-    - 3.4 [Error Messages](#34-error-messages)
-4. [Performance](#4-performance)
-    - 4.1 [Reduce Branching](#41-reduce-branching)
-    - 4.2 [Reduce Looping](#42-reduce-looping)
-    - 4.3 [Memoization](#43-memoization)
-    - 4.4 [Batching](#44-batching)
-    - 4.5 [Predictable Execution](#45-predictable-execution)
-    - 4.6 [Bounded Iteration](#46-bounded-iteration)
-    - 4.7 [Defer Await](#47-defer-await)
-    - 4.8 [Cache Property Access in Loops](#48-cache-property-access-in-loops)
-    - 4.9 [Cache Storage API Calls](#49-cache-storage-api-calls)
-5. [Documentation](#5-documentation)
-    - 5.1 [JSDoc](#51-jsdoc)
-    - 5.2 [Comment Markers](#52-comment-markers)
-    - 5.3 [Comments to Remove](#53-comments-to-remove)
-    - 5.4 [Comments to Preserve](#54-comments-to-preserve)
-    - 5.5 [Comments Placement](#55-comments-placement)
+1. **Start here**: Scan the rule summaries to identify relevant optimizations
+2. **Load references as needed**: Click through to detailed examples only when implementing
+3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+
+This structure minimizes context usage while providing complete implementation guidance when needed.
 
 ---
 
 ## 1. General
 
 ### 1.1 Naming Conventions
-
-Use descriptive, meaningful names. Stick to complete words unless abbreviation is widely recognized (ID, URL, RCS).
-
-**❌ Incorrect: non descriptive and meaning cannot be inferred**
-```ts
-const usrNm = /**/;
-const a = /**/;
-let data;
-```
-
-**✅ Correct: descriptive and meaningful**
-```ts
-const numberOfProducts = /**/;
-const customerList = /**/;
-const radarCrossSection = lookupCrossSection(entity.platformType);
-```
-
-For units and qualifiers append in descending order of significance.
-
-**❌ Incorrect: max qualifier is not appended**
-```ts
-const maxLatencyMs = /**/;
-```
-
-**✅ Correct: qualifiers appended and in correct order**
-```ts
-const latencyMsMax = /**/;
-const latencyMsMin = /**/;
-```
-
-For Booleans prefix with `is` or `has`.
-
-**❌ Incorrect: no is or has prefix**
-```ts
-const visible = true;
-const children = false;
-```
-
-**✅ Correct: contains is or has prefix**
-```ts
-const isVisible = true;
-const hasChildren = false;
-```
+Use descriptive names; append qualifiers in descending order; prefix booleans with `is`/`has`.
+[View detailed examples](references/naming-conventions.md)
 
 ### 1.2 Functions
-
-- Keep functions under 50 lines
-- Limit parameters; prefer simple return types
-- Avoid default parameters; make all values explicit at call site
-- Use `function` keyword for pure functions
-- Use arrow functions only for simple cases (< 3 instructions)
-
-**❌ Incorrect: implicit defaults**
-```ts
-const position = getPosition();
-```
-
-**✅ Correct: explicit values**
-```ts
-const position = getPosition(330);
-```
+Keep functions under 50 lines; avoid defaults; use `function` keyword for pure functions.
+[View detailed examples](references/functions.md)
 
 ### 1.3 Control Flow
-
-Use simple, flat control flow. Prefer early returns over nested conditionals.
-
-**❌ Incorrect: nested structure**
-```ts
-if (condition1) {
-  if (condition2) {
-    if (condition3) {
-      result = /* something4 */;
-    } else {
-      result = /* something3 */;
-    }
-  } else {
-    result = /* something2 */;
-  }
-} else {
-  result = /* something1 */;
-}
-```
-
-**✅ Correct: early returns**
-```ts
-if (!condition1) {
-  return /* something1 */;
-}
-
-if (!condition2) {
-  return /* something2 */;
-}
-
-if (!condition3) { 
-  return /* something3 */;
-}
-
-return /* something4 */;
-```
-
-Use block style for early control flow returns instead of inline.
-
-**❌ Incorrect: inline**
-```ts
-if (!condition1) return /* something1 */;
-if (!condition2) return /* something2 */;
-if (!condition3) return /* something3 */;
-```
-
-**✅ Correct: block style**
-```ts
-if (!condition1) {
-  return /* something1 */;
-}
-
-if (!condition2) {
-  return /* something2 */;
-}
-
-if (!condition3) { 
-  return /* something3 */;
-}
-
-return /* something4 */;
-```
+Prefer early returns over nested conditionals; use block style for control flow.
+[View detailed examples](references/control-flow.md)
 
 ### 1.4 State Management
-
-- Use `const` instead of `let` whenever possible
-- Use `let` only for valid performance reasons
-- Declare variables at smallest possible scope
-- Never mutate passed references; create copies instead
-- Centralize state manipulation in parent functions; keep leaf functions pure
-
-**❌ Incorrect: reassignment**
-```ts
-let color = src.substring(start + 1, end - 1);
-color = color.replace(/\s/g, '');
-```
-
-**✅ Correct: single assignment**
-```ts
-const color = src.substring(start + 1, end - 1).replace(/\s/g, '');
-```
-
-**❌ Incorrect: conditional with let**
-```ts
-let result;
-if (validation.success) {
-  result = primary.data.options.map(addIndex);
-} else {
-  result = fallback.data.options.map(addIndex);
-}
-```
-
-**✅ Correct: ternary with const**
-```ts
-const config = validation.success ? primary : fallback;
-const result = config.data.options.map(addIndex);
-```
+Use `const` over `let`; never mutate passed references; keep leaf functions pure.
+[View detailed examples](references/state-management.md)
 
 ### 1.5 Return Values
-
-Always return a zero value (identity element) instead of `null` or `undefined`. This eliminates downstream branching.
-
-**❌ Incorrect: requires downstream check**
-```ts
-function makeList(someVar) {
-  if (!someVar) return;
-  return toList(someVar);
-}
-
-function anotherFn() {
-  const baseList = makeList(/*...*/);
-  if (!Array.isArray(baseList)) return;
-  return baseList.map((x) => {/*...*/});
-}
-```
-
-**✅ Correct: no checks needed**
-```ts
-function makeList(someVar) {
-  if (!someVar) return [];
-  return toList(someVar);
-}
-
-function anotherFn() {
-  return getSomeList(/*...*/).map((x) => {/*...*/});
-}
-```
+Always return zero values ([], {}, 0) instead of `null` or `undefined`.
+[View detailed examples](references/return-values.md)
 
 ### 1.6 Misc
-
-- Use Linux line endings (`\n`)
-- Employ defensive/negative-space programming
-- Return identity/zero elements instead of null/undefined
-- Consider cache locality
-- Aim for zero technical debt
+Use Linux line endings; employ defensive programming; aim for zero technical debt.
+[View detailed examples](references/misc.md)
 
 ---
 
 ## 2. TypeScript
 
 ### 2.1 Any
-
-Avoid `any` type and always provide a correct return type.
-
-**❌ Incorrect: `any` type for input and return type**
-```ts
-function parse(input: any): any { 
-  return /*...*/;
-}
-```
-
-**✅ Correct: `unknown` for truly unknown types**
-```ts
-function parseUser(input: unknown): User {
-  return /*...*/;
-}
-```
-
-**✅ Correct: generics for flexible types**
-```ts
-function first<T>(arr: T[]): T | undefined {
-  return arr[0];
-}
-```
+Avoid `any`; use `unknown` for truly unknown types or generics for flexible types.
+[View detailed examples](references/any.md)
 
 ### 2.2 Enums
-
-Avoid `enum` and utilize `as const` structs instead. This prevents extra JavaScript code and forces TypeScript to infer the narrowest possible literal types for the object's properties.
-
-**❌ Incorrect: enum utilized**
-```ts
-enum Direction {
-  up = "UP",
-  down = "DOWN",
-}
-```
-
-**✅ Correct: struct with `as const`**
-```ts
-const Direction = {
-  up: 'UP',
-  down: 'DOWN',
-} as const;
-
-type DirectionLookup = (typeof Direction)[keyof typeof Direction];
-```
+Avoid `enum`; use `as const` structs to prevent extra JavaScript code.
+[View detailed examples](references/enums.md)
 
 ### 2.3 Type vs. Interface
-
-Prefer `type` over `interface for type aliases, unions, intersections, branded types, and functional patterns. Use `interface` only when you absolutely need:
-
-- Declaration merging (intentional extensibility)
-- Class implementation contracts (`implements`)
-- Legacy API compatibility
-
-**❌ Incorrect: interface not preferred for use case**
-```ts
-interface AvatarProps { avatar: string; }
-```
-
-**✅ Correct: type preferred for use case**
-```ts
-type AvatarProps = { avatar: string; }
-```
+Prefer `type` over `interface`; use `interface` only for declaration merging or class contracts.
+[View detailed examples](references/type-vs-interface.md)
 
 ---
 
 ## 3. Safety
 
 ### 3.1 Input Validation
-
-Always validate and sanitize external data at system boundaries.
-
-**❌ Incorrect: assumes valid**
-```ts
-function validateAddress(userInput: any) {
-  return userInput;
-}
-```
-
-**✅ Correct: asserts validity**
-```ts
-const AddressSchema = z.object({
-  street: z.string(),
-  city: z.string(),
-  zipCode: z.string().length(5),
-});
-
-type Address = z.infer<typeof AddressSchema>;
-
-function validateAddress(userInput: Address) {
-  return AddressSchema.safeParse(userInput);
-}
-```
+Always validate and sanitize external data at system boundaries with schemas.
+[View detailed examples](references/input-validation.md)
 
 ### 3.2 Assertions
-
-Assertions detect programmer errors. The only appropriate response to corrupted code is to crash.
-
-```ts
-function assert(condition: boolean, message?: string): asserts condition {
-  if (!condition) {
-    throw new Error(message);
-  }
-}
-```
-
-Split compound assertions for clarity.
-
-**❌ Incorrect: compound assertion**
-```ts
-assert(a && b);
-```
-
-**✅ Correct: split assertion**
-```ts
-assert(a);
-assert(b);
-```
-
-Include variable values in assertion messages.
-
-**❌ Incorrect: variable value not included**
-```ts
-assert(index < items.length, 'Index error');
-```
-
-**✅ Correct: variable value included**
-```ts
-assert(
-  index < items.length,
-  `Index out of bounds: index=${index}, items.length=${items.length}`
-);
-```
+Use assertions to detect programmer errors; split compound assertions; include values.
+[View detailed examples](references/assertions.md)
 
 ### 3.3 Error Handling
-
 Handle all errors explicitly.
+[View detailed examples](references/error-handling.md)
 
 ### 3.4 Error Messages
-
-For users make error messages clear, empathetic, and actionable.
-
-**❌ Incorrect: ambiguous and not human friendly**
-```ts
-alert('Error 500: Internal Server Error');
-```
-
-**✅ Correct: descriptive and human friendly**
-```ts
-alert(
-  'We\'re having trouble connecting to our server.\n' +
-  'Please check your internet connection and try again.'
-);
-```
-
-For developers make error messages specific, include values, and explain assumptions.
-
-**❌ Incorrect: ambiguous and lacking value**
-```ts
-assert(typeof count === 'number', 'Type error');
-```
-
-**✅ Correct: specific and includes value**
-```ts
-assert(
-  typeof count === 'number',
-  `Expected 'count' to be a number, but got type '${typeof count}'`
-);
-```
+Make user errors empathetic and actionable; make developer errors specific with values.
+[View detailed examples](references/error-messages.md)
 
 ---
 
 ## 4. Performance
 
-Design for performance **from the start**. Optimize slowest resources first:
-
-```
-network >> disk >> memory >> cpu
-```
-
-Benchmark your assumptions before moving on.
+Design for performance from the start. Optimize slowest resources first: `network >> disk >> memory >> cpu`
 
 ### 4.1 Reduce Branching
-
 Use table lookups instead of conditionals for static values.
-
-**❌ Incorrect: conditional checks**
-```ts
-if (thing === 'ONE') {
-  /*...*/
-}
-
-if (thing === 'TWO') {
-  /*...*/
-}
-
-if (thing === 'THREE') {
-  /*...*/
-}
-```
-
-**✅ Correct: lookup table**
-```ts
-const lookup = {
-  ONE: {/*...*/},
-  TWO: {/*...*/},
-  THREE: {/*...*/},
-}
-
-const action = lookup[thing];
-```
+[View detailed examples](references/reduce-branching.md)
 
 ### 4.2 Reduce Looping
-
-Use `reduce` instead of chained array methods:
-
-**❌ Incorrect: two iterations**
-```ts
-const result = arr.filter(predicate).map(mapper);
-```
-
-**✅ Correct: single iteration**
-```ts
-const result = arr.reduce((acc, curr) =>
-  predicate(curr) ? [...acc, mapper(curr)] : acc,
-  []
-);
-```
-
-Use `Set.has()` over `Array.includes()` for membership checks:
-
-**❌ Incorrect: O(n)**
-```ts
-const keys = Object.keys(someObj);
-if (keys.includes(id)) { /**/ }
-```
-
-**✅ Correct: O(1)**
-```ts
-const keys = new Set(Object.keys(someObj));
-if (keys.has(id)) { /**/ }
-```
+Use `reduce` instead of chained array methods; use `Set.has()` over `Array.includes()`.
+[View detailed examples](references/reduce-looping.md)
 
 ### 4.3 Memoization
-
-Use only when appropriate. Avoid memoizing trivial computations.
-
-**❌ Incorrect: trivial computation**
-```ts
-const ternMemo = memoize((pred) => pred ? 'Right!' : 'Wrong');
-```
-
-**✅ Correct: direct computation**
-```ts
-const result = test ? 'Right!' : 'Wrong';
-```
+Use only when appropriate; avoid memoizing trivial computations.
+[View detailed examples](references/memoization.md)
 
 ### 4.4 Batching
-
 Batch operations to amortize costly processes, especially for I/O-bound operations.
+[View detailed examples](references/batching.md)
 
 ### 4.5 Predictable Execution
-
-Write code with clear execution paths. Predictable code utilizes CPU caching and branch prediction more effectively.
+Write code with clear execution paths for better CPU caching and branch prediction.
+[View detailed examples](references/predictable-execution.md)
 
 ### 4.6 Bounded Iteration
-
 Set limits on all loops, queues, and data structures.
-
-**❌ Incorrect: unbounded**
-```ts
-while (true) {
-  if (someCondition) break;
-}
-```
-
-**✅ Correct: bounded**
-```ts
-for (const item of items) {
-  // process item
-}
-```
+[View detailed examples](references/bounded-iteration.md)
 
 ### 4.7 Defer Await
-
-Move `await` operations into the branches where they're actually used to avoid blocking code paths that don't need them.
-
-**❌ Incorrect: blocks both branches**
-```ts
-async function handleRequest(userId: string, skipProcessing: boolean) {
-  const userData = await fetchUserData(userId);
-  
-  if (skipProcessing) {
-    // Returns immediately but still waited for userData
-    return { skipped: true };
-  }
-  
-  // Only this branch uses userData
-  return processUserData(userData);
-}
-```
-
-**✅ Correct: only blocks when needed**
-```ts
-async function handleRequest(userId: string, skipProcessing: boolean) {
-  if (skipProcessing) {
-    // Returns immediately without waiting
-    return { skipped: true };
-  }
-  
-  // Fetch only when needed
-  const userData = await fetchUserData(userId);
-  return processUserData(userData);
-}
-```
-
-This optimization is especially valuable when the skipped branch is frequently taken, or when the deferred operation is expensive.
+Move `await` into branches where they're actually used to avoid blocking.
+[View detailed examples](references/defer-await.md)
 
 ### 4.8 Cache Property Access in Loops
-
-Cache object property lookups in hot paths.
-
-**❌ Incorrect: 3 lookups × N iterations**
-```ts
-for (let i = 0; i < arr.length; i++) {
-  process(obj.config.settings.value);
-}
-```
-
-**✅ Correct: 1 lookup total**
-```ts
-const value = obj.config.settings.value;
-const len = arr.length;
-
-for (let i = 0; i < len; i++) {
-  process(value);
-}
-```
+Cache object property lookups in hot paths to reduce repeated lookups.
+[View detailed examples](references/cache-property-access.md)
 
 ### 4.9 Cache Storage API Calls
-
-`localStorage`, `sessionStorage`, and `document.cookie` are synchronous and expensive. Cache reads in memory.
-
-**❌ Incorrect: reads storage on every call**
-```ts
-function getTheme() {
-  return localStorage.getItem('theme') ?? 'light';
-}
-// Called 10 times = 10 storage reads
-```
-
-**✅ Correct: `Map` cache**
-```ts
-const storageCache = new Map<string, string | null>()
-
-function getLocalStorage(key: string) {
-  if (!storageCache.has(key)) {
-    storageCache.set(key, localStorage.getItem(key));
-  }
-
-  return storageCache.get(key);
-}
-
-function setLocalStorage(key: string, value: string) {
-  localStorage.setItem(key, value);
-  storageCache.set(key, value);  // keep cache in sync
-}
-```
-
-Cookie caching:
-
-```ts
-let cookieCache: Record<string, string> | null = null
-
-function getCookie(name: string) {
-  if (!cookieCache) {
-    cookieCache = Object.fromEntries(
-      document.cookie.split('; ').map(c => c.split('='));
-    )
-  }
-
-  return cookieCache[name];
-}
-```
-
-**Important**: invalidate on external changes
-
-```ts
-window.addEventListener('storage', (e) => {
-  if (e.key) {
-    storageCache.delete(e.key);
-  }
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    storageCache.clear()
-  }
-});
-```
-
-If storage can change externally (another tab, server-set cookies), invalidate cache:
+Cache `localStorage`, `sessionStorage`, and `document.cookie` reads in memory.
+[View detailed examples](references/cache-storage-api.md)
 
 ---
 
 ## 5. Documentation
 
 ### 5.1 JSDoc
-
-All externally exposed APIs (exports) must have well-formed JSDoc comments.
-
-```ts
-/**
- * Clamps a number within the specified bounds.
- *
- * @param min - The lower bound to clamp to.
- * @param max - The upper bound to clamp to.
- * @param value - The number value to clamp to the given range.
- * @returns The clamped value.
- *
- * @throws {RangeError} Throws if min > max.
- *
- * @remarks
- * This is a pure function with no side effects.
- *
- * @example
- * ```typescript
- * const value = clamp(5, 15, 10); // 10
- * const value = clamp(5, 15, 2);  // 5
- * const value = clamp(5, 15, 20); // 15
- * ```
- */
-export function clamp(min: number, max: number, value: number): number {
-  if (min > max) {
-    throw new RangeError(`min (${min}) > max (${max})`);
-  }
-  
-  return Math.max(min, Math.min(max, value));
-}
-```
-
-- At minimum: `@param`, `@template` (if applicable), `@returns`, `@throws` (if applicable), `@example`.
-- Optional: `@see`/`@link`, `@remarks`, `@deprecated`.
+All exports must have well-formed JSDoc with `@param`, `@returns`, `@throws`, `@example`.
+[View detailed examples](references/jsdoc.md)
 
 ### 5.2 Comment Markers
-
-Use "better comment" markers for non-docblock comments:
-
-- `TODO:` - Future changes or unimplemented features
-- `FIXME:` - Known bugs or critical defects
-- `HACK:` - Workarounds or sub-optimal solutions
-- `NOTE:` - Important informational points
-- `REVIEW:` - Areas requiring code review or scrutiny
-- `PERF:` - Performance bottlenecks or optimizations
-- `DEBUG:` - Temporary debugging code (remove later)
-- `REMARK:` - General observations
+Use markers (TODO, FIXME, HACK, NOTE, REVIEW, PERF, DEBUG, REMARK) for non-docblock comments.
+[View detailed examples](references/comment-markers.md)
 
 ### 5.3 Comments to Remove
-
-- Commented-out code
-- Edit history comments ("added", "removed", "changed")
-- Comments restating what code clearly does
+Remove commented-out code, edit history, and comments restating obvious code.
+[View detailed examples](references/comments-to-remove.md)
 
 ### 5.4 Comments to Preserve
-
-- Comments with markers (TODO, FIXME, etc.)
-- Linter directives (`// eslint-disable`, `// @ts-ignore`)
-- Business logic explanations
-- Docblock comments
+Preserve markers, linter directives, business logic explanations, and docblocks.
+[View detailed examples](references/comments-to-preserve.md)
 
 ### 5.5 Comments Placement
-
-Move end-of-line comments to their own line above the code they describe.
+Move end-of-line comments to their own line above the code.
+[View detailed examples](references/comments-placement.md)
