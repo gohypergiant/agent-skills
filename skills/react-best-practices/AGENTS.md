@@ -35,6 +35,7 @@ Catch up on React 19 features:
     - 2.5 [Prevent Hydration Mismatch Without Flickering](#25-prevent-hydration-mismatch-without-flickering)
     - 2.6 [Use Activity Component for Show/Hide](#26-use-activity-component-for-showhide)
     - 2.7 [Hoist RegExp Creation](#27-hoist-regexp-creation)
+    - 2.8 [Avoid useMemo For Simple Expressions](#28-avoid-usememo-for-simple-expressions)
 3. [Advanced Patterns](#3-advanced-patterns)
     - 3.1 [Store Event Handlers in Refs](#31-store-event-handlers-in-refs)
     - 3.2 [useLatest for Stable Callback Refs](#32-uselatest-for-stable-callback-refs)
@@ -565,7 +566,7 @@ regex.test('foo')  // true, lastIndex = 3
 regex.test('foo')  // false, lastIndex = 0
 ```
 
-2.8 Avoid `useMemo` For Simple Expressions
+### 2.8 Avoid `useMemo` For Simple Expressions
 
 When an expression is simple (few logical or arithmetical operators) and has a primitive result type (boolean, number, string), do not wrap it in `useMemo`. Calling `useMemo` and comparing hook dependencies may consume more resources than the expression itself.
 
