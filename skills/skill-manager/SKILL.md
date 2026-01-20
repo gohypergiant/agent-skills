@@ -12,10 +12,7 @@ This skill provides guidance for creating and managing effective agent skills.
 
 ## About Skills
 
-Skills are modular, self-contained packages that extend Claude's capabilities by providing
-specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific
-domains or tasks. They can transform an agent into a specialized problem solver
-equipped with procedural knowledge that no model can fully possess.
+Skills are modular, self-contained packages that extend Claude's capabilities by providing specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific domains or tasks. They can transform an agent into a specialized problem solver equipped with procedural knowledge that no model can fully possess.
 
 ### What Skills Provide
 
