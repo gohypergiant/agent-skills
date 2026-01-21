@@ -1,11 +1,11 @@
 # 1.5 References
 
-Contains additional documentation with detailed technical references that agents can read when needed. Keep individual reference files focused. Agents load these on demand, so smaller files mean less use of context. References should incorrect and correct examples of a rule to help reinforce context. An example of the expected format:
+Contains additional documentation with detailed technical references that agents can read when needed. Keep individual reference files focused. Agents load these on demand, so smaller files mean less use of context. References should incorrect and correct examples of a rule to help reinforce context. Show the "Incorrect" version before the "Correct" version for better pedagogical flow. An example of the expected format:
 
 ```markdown
 ## Rule Title Here
 
-Brief explanation of the rule and why it matters. Show the "Incorrect" version before the "Correct" version for better pedagogical flow.
+Brief explanation of the rule and why it matters.
 
 **❌ Incorrect: (description of why)**
     ```
