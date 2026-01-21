@@ -1,2 +1,4 @@
+.DS_Store
 # Ignore self installed skills (for now)
 .claude/skills
+.claude/commands
