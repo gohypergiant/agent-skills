@@ -32,6 +32,10 @@ Create a joystick component utilizing `react-aria-components` and `@accelint/des
 Help me optimize this Next.js page for partial pre-rendering
 ```
 
+## Testing
+
+If a skill needs to be tested internal to this repo you can copy paste the directory from `skills/` into `./claude/skills/`. Optionally, you can install the skill globally to test it across multiple repos.
+
 ## Ecosystem
 
 The following skills have been vetted and approved for usage alongside the other Accelint skills:
