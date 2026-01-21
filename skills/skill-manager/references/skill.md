@@ -2,7 +2,7 @@
 
 ## Overview
 
-General rule of thumb is to follow guidance from [Agent Skills](https://agentskills.io/). Since the overview and references table of contents is contained in the `AGENTS.md` file the content for this `AGENTS.md` file should be optimized towards adding any additional context, hints, or suggestions that help an agent more accurately determine if this skill is relevant.
+General rule of thumb is to follow guidance from [Agent Skills](https://agentskills.io/). Since the overview and references table of contents is contained in the `AGENTS.md` file the content for this `AGENTS.md` file should be optimized towards adding any additional context, hints, or suggestions that help an agent more accurately determine if this skill is relevant. The persona and target audience for this document is an AI Agent or LLM.
 
 Example of sections to include:
 
