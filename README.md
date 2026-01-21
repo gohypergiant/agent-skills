@@ -7,8 +7,14 @@ Skills are modular, self-contained packages that extend Claude's capabilities by
 
 ## Installation
 
+If your project uses `npm`:
 ```bash
 npx skills add gohypergiant/agent-skills
+```
+
+If your project uses `pnpm`:
+```
+pnpm dlx skills add gohypergiant/agent-skills
 ```
 
 ## Usage
