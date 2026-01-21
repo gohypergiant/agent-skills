@@ -1,7 +1,7 @@
 # Vitest Best Practices
 
 > **Note:**
-> This document is mainly for agents and LLMs to follow when maintaining, generating, or refactoring vitest tests at Accelint. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
+> This document is mainly for agents and LLMs to follow when maintaining, generating, or refactoring vitest tests. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
 
 ---
 
@@ -66,3 +66,19 @@ Use strict assertions (`toEqual`, `toStrictEqual`) over loose ones.
 ### 1.6 Test Doubles
 Prefer fakes > stubs > spies/mocks; avoid over-mocking.
 [View detailed examples](references/test-doubles.md)
+
+### 1.7 Async Testing
+Test promises, async/await, and timers correctly.
+[View detailed examples](references/async-testing.md)
+
+### 1.8 Performance
+Keep tests fast through efficient setup and avoiding expensive operations.
+[View detailed examples](references/performance.md)
+
+### 1.9 Vitest Features
+Use coverage, watch mode, benchmarking, and other vitest-specific features.
+[View detailed examples](references/vitest-features.md)
+
+### 1.10 Snapshot Testing
+Use snapshots for appropriate cases; avoid common pitfalls.
+[View detailed examples](references/snapshot-testing.md)

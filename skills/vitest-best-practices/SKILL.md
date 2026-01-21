@@ -55,7 +55,8 @@ This skill provides comprehensive guidance on:
 6. **Test Doubles**: Fakes, stubs, mocks, spies - when to use each
 7. **Async Testing**: Promises, async/await, timers, and concurrent tests
 8. **Performance**: Fast tests, avoiding expensive operations, cleanup patterns
-9. **Vitest-Specific Features**: Snapshots, coverage, watch mode, hooks
+9. **Vitest-Specific Features**: Coverage, watch mode, benchmarking, type testing, setup files
+10. **Snapshot Testing**: When and how to use snapshots effectively
 
 ## How to Use
 
@@ -67,13 +68,19 @@ Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line su
 ### 2. Load Specific Rules as Needed
 When you identify a relevant optimization, load the corresponding reference file for detailed implementation guidance:
 
-**General:**
+**Core Patterns:**
 - [organization.md](references/organization.md)
 - [aaa-pattern.md](references/aaa-pattern.md)
 - [parameterized-tests.md](references/parameterized-tests.md)
 - [error-handling.md](references/error-handling.md)
 - [assertions.md](references/assertions.md)
 - [test-doubles.md](references/test-doubles.md)
+
+**Advanced Topics:**
+- [async-testing.md](references/async-testing.md)
+- [performance.md](references/performance.md)
+- [vitest-features.md](references/vitest-features.md)
+- [snapshot-testing.md](references/snapshot-testing.md)
 
 ### 3. Apply the Pattern
 Each reference file contains:
