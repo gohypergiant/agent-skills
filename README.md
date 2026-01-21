@@ -8,7 +8,7 @@ Skills are modular, self-contained packages that extend Claude's capabilities by
 ## Installation
 
 ```bash
-npx skills gohypergiant/agent-skills
+npx skills add gohypergiant/agent-skills
 ```
 
 ## Usage
@@ -30,4 +30,18 @@ Create a joystick component utilizing `react-aria-components` and `@accelint/des
 
 ```
 Help me optimize this Next.js page for partial pre-rendering
+```
+
+## Ecosystem
+
+The following skills have been vetted and approved for usage alongside the other Accelint skills:
+
+- [Motion Skill](https://skills.sh/onmax/nuxt-skills/motion)
+- [Context7](https://skills.sh/intellectronica/agent-skills/context7)
+- [Tanstack Query](https://skills.sh/jezweb/claude-skills/tanstack-query)
+
+You can install these the same way as the Accelint skills:
+
+```
+npx skills add onmax/nuxt-skills --skill "motion"
 ```
