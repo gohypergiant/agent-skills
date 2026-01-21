@@ -2,6 +2,33 @@
 
 Access latest values in callbacks without adding them to dependency arrays. Prevents effect re-runs while avoiding stale closures.
 
+## React 19.2+: Use useEffectEvent Instead
+
+If your application uses React >= 19.2, prefer `useEffectEvent` over `useLatest`. It provides a cleaner API for the same pattern.
+
+**✅ Recommended for React 19.2+:**
+```tsx
+import { useEffectEvent } from 'react'
+
+function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
+  const [query, setQuery] = useState('')
+  const onSearchStable = useEffectEvent(onSearch)
+
+  useEffect(() => {
+    const timeout = setTimeout(() => onSearchStable(query), 300)
+    return () => clearTimeout(timeout)
+  }, [query])
+}
+```
+
+`useEffectEvent` creates a stable function reference that always calls the latest version of the handler. This is the official React solution for stable event handlers in effects.
+
+See [store-event-handlers-refs.md](store-event-handlers-refs.md) for more details on `useEffectEvent`.
+
+## React < 19.2: Use useLatest
+
+For applications not yet on React 19.2, use the `useLatest` hook pattern:
+
 Implementation:
 ```tsx
 function useLatest<T>(value: T) {

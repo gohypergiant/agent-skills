@@ -11,7 +11,7 @@ Real-world scenarios often require multiple optimization patterns working togeth
 **Patterns Applied:**
 - [1.5 Functional setState Updates](functional-setstate-updates.md) - Stable callbacks
 - [1.7 Transitions](transitions-non-urgent-updates.md) - Non-urgent search results
-- [3.2 useLatest](uselatest-stable-callbacks.md) - Stable debounce callback
+- [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md) - Stable debounce callback (useEffectEvent for React 19.2+)
 - [1.1 Defer State Reads](defer-state-reads.md) - Read URL params on demand
 
 **❌ Before: Multiple Performance Issues**
@@ -50,6 +50,8 @@ function SearchComponent({ items }: { items: Item[] }) {
 **✅ After: Optimized with Multiple Patterns**
 
 ```tsx
+import { useEffectEvent } from 'react' // React 19.2+
+
 function SearchComponent({ items }: { items: Item[] }) {
   const [query, setQuery] = useState(() => {
     // ✅ 1.1: Read URL params on demand, no subscription
@@ -72,12 +74,13 @@ function SearchComponent({ items }: { items: Item[] }) {
     })
   }, [items]) // Only depends on items, not query or results
 
-  // ✅ 3.2: useLatest for stable effect with fresh callback
-  const handleSearchRef = useLatest(handleSearch)
+  // ✅ 3.2: useEffectEvent for stable effect with fresh callback (React 19.2+)
+  // For React < 19.2, use useLatest hook instead
+  const handleSearchStable = useEffectEvent(handleSearch)
 
   useEffect(() => {
     // ✅ Effect stable, only re-runs when query changes
-    const timeout = setTimeout(() => handleSearchRef.current(query), 300)
+    const timeout = setTimeout(() => handleSearchStable(query), 300)
     return () => clearTimeout(timeout)
   }, [query]) // Only query dependency
 
@@ -332,7 +335,7 @@ function Dashboard() {
 **Patterns Applied:**
 - [1.5 Functional setState Updates](functional-setstate-updates.md) - Stable form handlers
 - [1.3 Narrow Effect Dependencies](narrow-effect-dependencies.md) - Validation effects
-- [3.2 useLatest](uselatest-stable-callbacks.md) - Async validation
+- [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md) - Async validation (useEffectEvent for React 19.2+)
 - [1.7 Transitions](transitions-non-urgent-updates.md) - Non-blocking validation results
 
 **❌ Before: Unstable Dependencies**
@@ -375,6 +378,8 @@ function RegistrationForm() {
 **✅ After: Optimized with Stable Dependencies**
 
 ```tsx
+import { useEffectEvent } from 'react' // React 19.2+
+
 function RegistrationForm() {
   const [formData, setFormData] = useState({
     email: '',
@@ -388,8 +393,9 @@ function RegistrationForm() {
     setFormData(curr => ({ ...curr, [field]: value }))
   }, [])
 
-  // ✅ 3.2: useLatest for async validation
-  const updateFieldRef = useLatest(updateField)
+  // ✅ 3.2: useEffectEvent for async validation (React 19.2+)
+  // For React < 19.2, use useLatest hook instead
+  const updateFieldStable = useEffectEvent(updateField)
 
   // ✅ 1.3: Narrow dependency - only email, not whole formData
   useEffect(() => {
@@ -526,8 +532,9 @@ function Dashboard() {
 1. **Patterns often work together** - Real-world optimizations typically combine 3-5 patterns
 2. **Start with correctness** - Functional setState (1.5) and narrow dependencies (1.3) prevent bugs
 3. **Then optimize rendering** - Memoization (1.2), transitions (1.7), and derived state (1.4)
-4. **Finally, advanced patterns** - useLatest (3.2), caching (3.3), and Activity (2.6)
+4. **Finally, advanced patterns** - useEffectEvent/useLatest (3.2), caching (3.3), and Activity (2.6)
 5. **SSR requires special care** - Hydration mismatch prevention (2.5) is critical
 6. **React Compiler helps** - But state/effect patterns still need manual application
+7. **React 19.2+ advantages** - Use useEffectEvent instead of useLatest for cleaner stable event handlers
 
 Refer to the [Quick Checklists](quick-checklists.md) for systematic pattern application and [React Compiler Guide](react-compiler-guide.md) for compiler-specific guidance.

@@ -50,7 +50,7 @@ Use when debugging useEffect issues:
 
 - [ ] Effect running infinitely? → [1.3 Narrow Dependencies](narrow-effect-dependencies.md) or [1.5 Functional setState](functional-setstate-updates.md)
 - [ ] Effect running too frequently? → [1.3 Narrow Dependencies](narrow-effect-dependencies.md) or [3.1 Store Event Handlers](store-event-handlers-refs.md)
-- [ ] Callback has stale values? → [1.5 Functional setState](functional-setstate-updates.md) or [3.2 useLatest](uselatest-stable-callbacks.md)
+- [ ] Callback has stale values? → [1.5 Functional setState](functional-setstate-updates.md) or [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md)
 - [ ] Effect re-subscribing on callback changes? → [3.1 Store Event Handlers](store-event-handlers-refs.md)
 
 ---
@@ -98,7 +98,7 @@ Use when a component is re-rendering too frequently:
 
 Use when implementing advanced optimization patterns:
 
-- [ ] Need stable callbacks without adding dependencies? → [3.2 useLatest](uselatest-stable-callbacks.md)
+- [ ] Need stable callbacks without adding dependencies? → [3.2 useLatest](uselatest-stable-callbacks.md) or [useEffectEvent](store-event-handlers-refs.md) (React 19.2+)
 - [ ] React 19.2+ event handlers in effects? → [3.1 Store Event Handlers](store-event-handlers-refs.md)
 - [ ] Expensive computations called multiple times? → [3.3 Cache Repeated Calls](cache-repeated-function-calls.md)
 - [ ] Components toggling visibility losing state? → [2.6 Activity Component](activity-component-show-hide.md)

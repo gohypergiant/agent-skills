@@ -38,7 +38,7 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 - Component re-renders on every parent render → 1.2 Extract to Memoized Components
 - Component re-renders when URL/localStorage changes but doesn't display them → 1.1 Defer State Reads
 - Effect runs too frequently → 1.3 Narrow Effect Dependencies, 3.1 Store Event Handlers in Refs
-- Callback has stale/old values → 1.5 Functional setState Updates, 3.2 useLatest
+- Callback has stale/old values → 1.5 Functional setState Updates, 3.2 useLatest (or useEffectEvent for React 19.2+)
 - Slow initial render → 1.6 Lazy State Initialization, 2.3 Hoist Static JSX, 2.7 Hoist RegExp
 - Scrolling/interaction feels janky → 2.2 CSS content-visibility, 2.1 Animate SVG Wrapper, 1.7 Transitions
 - Typing/input feels sluggish → 1.7 Transitions for Non-Urgent Updates
@@ -130,7 +130,7 @@ Use `useEffectEvent` (React 19.2+) to prevent effect re-subscriptions.
 [View detailed examples](references/store-event-handlers-refs.md)
 
 ### 3.2 useLatest for Stable Callback Refs
-Access latest values in callbacks without adding to dependency arrays.
+Access latest values in callbacks without adding to dependency arrays. Prefer `useEffectEvent` for React 19.2+.
 [View detailed examples](references/uselatest-stable-callbacks.md)
 
 ### 3.3 Cache Repeated Function Calls
