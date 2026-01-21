@@ -5,7 +5,7 @@ Contains additional documentation with detailed technical references that agents
 ```markdown
 ## Rule Title Here
 
-Brief explanation of the rule and why it matters.
+Brief explanation of the rule and why it matters. Show the "Incorrect" version before the "Correct" version for better pedagogical flow.
 
 **❌ Incorrect: (description of why)**
     ```
