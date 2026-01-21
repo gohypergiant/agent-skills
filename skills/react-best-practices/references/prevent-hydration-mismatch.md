@@ -16,6 +16,32 @@ function ThemeWrapper({ children }: { children: ReactNode }) {
 }
 ```
 
+**✅ Correct: no flicker, no hydration mismatch**
+```tsx
+function ThemeWrapper({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <div id="theme-wrapper">
+        {children}
+      </div>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                var theme = localStorage.getItem('theme') || 'light';
+                var el = document.getElementById('theme-wrapper');
+                if (el) el.className = theme;
+              } catch (e) {}
+            })();
+          `,
+        }}
+      />
+    </>
+  )
+}
+```
+
 **❌ Incorrect: visual flickering**
 ```ts
 function ThemeWrapper({ children }: { children: ReactNode }) {

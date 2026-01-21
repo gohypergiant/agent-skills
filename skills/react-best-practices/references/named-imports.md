@@ -7,6 +7,11 @@ Always used named imports from the `react` library.
 import React from 'react';
 ```
 
+**✅ Correct: named imports**
+```ts
+import { useEffect, useState } from 'react';
+```
+
 **❌ Incorrect: wildcard import**
 ```ts
 import * as React from 'react';

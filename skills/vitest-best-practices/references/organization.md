@@ -4,20 +4,6 @@
 
 Place test files next to their implementation for easy discovery and maintenance.
 
-**✅ Correct: co-located test files**
-```
-src/
-  components/
-    button.tsx
-    button.test.tsx
-  utils/
-    formatters.ts
-    formatters.test.ts
-  services/
-    api.ts
-    api.test.ts
-```
-
 **❌ Incorrect: separate test directory**
 ```
 src/
@@ -31,19 +17,26 @@ tests/
   utils/
     formatters.test.ts
 ```
+
+**✅ Correct: co-located test files**
+```
+src/
+  components/
+    button.tsx
+    button.test.tsx
+  utils/
+    formatters.ts
+    formatters.test.ts
+  services/
+    api.ts
+    api.test.ts
+```
 *Why?* Separate test directories make it harder to find tests, keep them in sync with implementation, and increase cognitive overhead.
 
 ## Naming Conventions
 
 Use consistent naming patterns for test files:
 - `*.test.ts` or `*.spec.ts` for tests
-
-**✅ Correct: descriptive test file names**
-```
-user-service.test.ts
-payment-processor.test.ts
-auth.integration.test.ts
-```
 
 **❌ Incorrect: vague or inconsistent names**
 ```
@@ -53,9 +46,23 @@ payment.spec.js     // mixing .js and .ts
 authTest.ts         // camelCase instead of kebab-case
 ```
 
+**✅ Correct: descriptive test file names**
+```
+user-service.test.ts
+payment-processor.test.ts
+auth.integration.test.ts
+```
+
 ## One Test File Per Module
 
 Each module, component, or class should have exactly one corresponding test file.
+
+**❌ Incorrect: multiple test files for one module**
+```
+user-service.test.ts
+user-service.get-user.test.ts
+user-service.update-user.test.ts
+```
 
 **✅ Correct: one-to-one mapping**
 ```ts
@@ -70,13 +77,6 @@ describe('UserService', () => {
   describe('getUser', () => { /* ... */ });
   describe('updateUser', () => { /* ... */ });
 });
-```
-
-**❌ Incorrect: multiple test files for one module**
-```
-user-service.test.ts
-user-service.get-user.test.ts
-user-service.update-user.test.ts
 ```
 *Why?* Multiple test files fragment related tests, making it harder to understand the full behavior of a module.
 
@@ -125,27 +125,6 @@ it('should update user email', () => {
 
 Use flat, focused describe blocks to group related tests.
 
-**✅ Correct: flat structure, grouped by method**
-```ts
-describe('ShoppingCart', () => {
-  describe('addItem', () => {
-    it('should add item to empty cart', () => { /* ... */ });
-    it('should increment quantity when adding existing item', () => { /* ... */ });
-    it('should throw when adding invalid item', () => { /* ... */ });
-  });
-
-  describe('removeItem', () => {
-    it('should remove item from cart', () => { /* ... */ });
-    it('should throw when removing non-existent item', () => { /* ... */ });
-  });
-
-  describe('calculateTotal', () => {
-    it('should return 0 for empty cart', () => { /* ... */ });
-    it('should sum all item prices', () => { /* ... */ });
-  });
-});
-```
-
 **❌ Incorrect: deep nesting**
 ```ts
 describe('ShoppingCart', () => {
@@ -166,11 +145,49 @@ describe('ShoppingCart', () => {
   });
 });
 ```
+
+**✅ Correct: flat structure, grouped by method**
+```ts
+describe('ShoppingCart', () => {
+  describe('addItem', () => {
+    it('should add item to empty cart', () => { /* ... */ });
+    it('should increment quantity when adding existing item', () => { /* ... */ });
+    it('should throw when adding invalid item', () => { /* ... */ });
+  });
+
+  describe('removeItem', () => {
+    it('should remove item from cart', () => { /* ... */ });
+    it('should throw when removing non-existent item', () => { /* ... */ });
+  });
+
+  describe('calculateTotal', () => {
+    it('should return 0 for empty cart', () => { /* ... */ });
+    it('should sum all item prices', () => { /* ... */ });
+  });
+});
+```
 *Why?* Deep nesting makes tests harder to read and adds unnecessary indentation. Put context in the test name instead.
 
 ## Setup and Teardown
 
 Use `beforeEach` and `afterEach` for common setup, but keep tests independent.
+
+**❌ Incorrect: shared mutable state between tests**
+```ts
+describe('DatabaseService', () => {
+  const db = createTestDatabase(); // Shared across all tests!
+
+  it('should insert record', async () => {
+    await db.insert({ name: 'Test' });
+    // ...
+  });
+
+  it('should update record', async () => {
+    // Depends on previous test's data!
+    await db.update(1, { name: 'Updated' });
+  });
+});
+```
 
 **✅ Correct: clean setup per test**
 ```ts
@@ -189,23 +206,6 @@ describe('DatabaseService', () => {
     await db.insert({ name: 'Test' });
     const records = await db.query('SELECT * FROM users');
     expect(records).toHaveLength(1);
-  });
-});
-```
-
-**❌ Incorrect: shared mutable state between tests**
-```ts
-describe('DatabaseService', () => {
-  const db = createTestDatabase(); // Shared across all tests!
-
-  it('should insert record', async () => {
-    await db.insert({ name: 'Test' });
-    // ...
-  });
-
-  it('should update record', async () => {
-    // Depends on previous test's data!
-    await db.update(1, { name: 'Updated' });
   });
 });
 ```
