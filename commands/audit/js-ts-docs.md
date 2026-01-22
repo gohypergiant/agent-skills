@@ -172,8 +172,14 @@ Files by issue count:
   - Prompt user with options:
     - `[f]ix` - Apply this fix
     - `[s]kip` - Skip this issue
+    - `[c]ustom` - Provide your own fix
     - `[a]ll` - Fix this and all remaining issues
     - `[q]uit` - Abort and exit
+  - If user chooses custom:
+    - Prompt user to describe their preferred fix
+    - Apply the custom fix using Edit tool
+    - Confirm fix was applied successfully
+    - Track fix in fixes-applied list
   - If user chooses fix/all:
     - Apply fix using Edit tool
     - For missing JSDoc: add template with placeholder text
@@ -275,7 +281,7 @@ Per-file compliance (top 10 by issue count):
 
 Issue 1/173: src/helpers.ts:23
 Missing JSDoc for exported function 'formatValue'
-[f]ix | [s]kip | [a]ll | [q]uit?
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit?
 ```
 
 **Auto-fix mode (--fix-mode=all):**
@@ -345,7 +351,7 @@ Suggested:
    */
   export function processData(input: Data): Result {
 
-[f]ix | [s]kip | [a]ll | [q]uit?
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit?
 ```
 
 ### Example 2: Audit Specific Directory with TypeScript Only
@@ -376,7 +382,7 @@ Files with issues: 8 (66.7%)
 
 Issue 1/23: src/lib/parser.ts:23
 Missing JSDoc for exported function 'parse'
-[f]ix | [s]kip | [a]ll | [q]uit?
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit?
 ```
 
 ### Example 3: Audit Single File
@@ -414,7 +420,7 @@ Issue breakdown:
 
 Issue 1/2: src/utils/formatters.ts:12
 Missing JSDoc for exported function 'formatDate'
-[f]ix | [s]kip | [a]ll | [q]uit? a
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? a
 
 Fixing all remaining issues...
 Fixed 2/2 issues
@@ -497,19 +503,19 @@ Issue breakdown:
 
 Issue 1/3: src/utils.ts:12
 Missing JSDoc for exported function 'formatDate'
-[f]ix | [s]kip | [a]ll | [q]uit? f
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? f
 
 Applied fix: Added JSDoc block
 
 Issue 2/3: src/utils.ts:34
 End-of-line comment should be moved above code
-[f]ix | [s]kip | [a]ll | [q]uit? s
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? s
 
 Skipped issue
 
 Issue 3/3: src/utils.ts:56
 Use proper TODO marker format
-[f]ix | [s]kip | [a]ll | [q]uit? q
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? q
 
 === Fixes Applied ===
 

@@ -106,8 +106,14 @@ Example: `--report=audit-report.md`
   - Prompt user with options:
     - `[f]ix` - Apply this fix
     - `[s]kip` - Skip this issue
+    - `[c]ustom` - Provide your own fix
     - `[a]ll` - Fix this and all remaining issues
     - `[q]uit` - Abort and exit
+  - If user chooses custom:
+    - Prompt user to describe their preferred fix
+    - Apply the custom fix using Edit tool
+    - Confirm fix was applied successfully
+    - Track fix in fixes-applied list
   - If user chooses fix/all:
     - Apply fix using Edit tool
     - Confirm fix was applied successfully
