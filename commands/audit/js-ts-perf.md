@@ -62,7 +62,7 @@ Example: `--report=audit-report.md`
 - Display discovered file count to user
 
 ### 3. Load performance patterns from js-ts-best-practices skill
-- Read reference documents from `.claude/skills/js-ts-best-practices/references/`
+- Read reference documents from `references/`
 - Build comprehensive checklist of patterns to detect:
   - **Loops:** Reduce iteration, bounded iteration, cache property access
   - **Branching:** Reduce branching, early returns, lookup tables
