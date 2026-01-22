@@ -105,8 +105,8 @@ Use only when appropriate; avoid memoizing trivial computations.
 Batch operations to amortize costly processes, especially for I/O-bound operations.
 [View detailed examples](references/batching.md)
 
-### 4.5 Predictable Execution
-Write code with clear execution paths for better CPU caching and branch prediction.
+### 4.5 Predictable Execution and Cache Locality
+Write code with clear execution paths; use sequential memory access; group related data.
 [View detailed examples](references/predictable-execution.md)
 
 ### 4.6 Bounded Iteration
@@ -117,20 +117,28 @@ Set limits on all loops, queues, and data structures.
 Move `await` into branches where they're actually used to avoid blocking.
 [View detailed examples](references/defer-await.md)
 
-### 4.8 Cache Property Access in Loops
-Cache object property lookups in hot paths to reduce repeated lookups.
+### 4.8 Cache Property Access and Variable Aliases
+Cache property lookups; eliminate single-use aliases; avoid unnecessary destructuring.
 [View detailed examples](references/cache-property-access.md)
 
 ### 4.9 Cache Storage API Calls
 Cache `localStorage`, `sessionStorage`, and `document.cookie` reads in memory.
 [View detailed examples](references/cache-storage-api.md)
 
+### 4.10 Object Operations
+Mutate when safe; use shallow clones when needed; preallocate object shapes.
+[View detailed examples](references/object-operations.md)
+
+### 4.11 Additional Performance Concerns
+Batch string operations; compile regex once; avoid async overhead; minimize closure scope.
+[View detailed examples](references/performance-misc.md)
+
 ---
 
 ## 5. Documentation
 
 ### 5.1 JSDoc
-All exports must have well-formed JSDoc with `@param`, `@returns`, `@throws`, `@example`.
+All code needs JSDoc; exports require full documentation; internal code may use reduced tags.
 [View detailed examples](references/jsdoc.md)
 
 ### 5.2 Comment Markers
