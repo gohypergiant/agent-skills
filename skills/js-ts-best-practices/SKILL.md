@@ -110,15 +110,17 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [error-messages.md](references/error-messages.md) - User-friendly vs developer-specific messages
 
 **Performance:**
-- [reduce-branching.md](references/reduce-branching.md) - Use lookup tables instead of conditionals
-- [reduce-looping.md](references/reduce-looping.md) - reduce vs chained methods, Set.has() vs Array.includes()
-- [memoization.md](references/memoization.md) - When to memoize (avoid trivial computations)
+- [reduce-branching.md](references/reduce-branching.md) - Convert conditionals to lookups, hoist invariants, early returns
+- [reduce-looping.md](references/reduce-looping.md) - Single-pass operations, O(1) lookups, typed arrays
+- [memoization.md](references/memoization.md) - Hoist invariants, precompute constants, cache expensive operations
 - [batching.md](references/batching.md) - Batch I/O operations
-- [predictable-execution.md](references/predictable-execution.md) - Clear execution paths for CPU caching
+- [predictable-execution.md](references/predictable-execution.md) - Sequential access, cache locality, grouped data
 - [bounded-iteration.md](references/bounded-iteration.md) - Set limits on loops and queues
 - [defer-await.md](references/defer-await.md) - Move await into branches that need it
-- [cache-property-access.md](references/cache-property-access.md) - Cache object lookups in loops
+- [cache-property-access.md](references/cache-property-access.md) - Cache lookups, eliminate aliases, avoid unnecessary destructuring
 - [cache-storage-api.md](references/cache-storage-api.md) - Cache localStorage/sessionStorage/cookie reads
+- [object-operations.md](references/object-operations.md) - Safe mutation, shallow clones, preallocate shapes
+- [performance-misc.md](references/performance-misc.md) - Strings, regex, async overhead, closures, try/catch
 
 **Documentation:**
 - [jsdoc.md](references/jsdoc.md) - Well-formed JSDoc for exports
@@ -267,7 +269,9 @@ Always **benchmark your assumptions** before moving on. Premature optimization o
 - **Include values in messages**: Always show actual vs expected values
 
 ### Documentation Standards
-- **All exports need JSDoc**: Minimum `@param`, `@returns`, `@example`
+- **All code needs JSDoc**: Functions, types, interfaces, constants, and classes require JSDoc
+- **Required tags (all code)**: Description, `@param`, `@template`, `@returns`
+- **Required tags (exports only)**: `@throws`, `@example` (in addition to above)
 - **Use comment markers**: TODO, FIXME, HACK, NOTE, REVIEW, PERF
 - **Remove dead code**: No commented-out code or edit history
 - **Preserve business logic**: Keep comments explaining "why", not "what"
