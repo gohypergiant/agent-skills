@@ -9,6 +9,8 @@ description: Guide for creating Claude Code commands with skill integration. Use
 
 This skill guides the creation of Claude Code commands through a structured workflow that ensures proper skill integration, argument definition, and command specification. Commands can leverage existing skills or operate standalone.
 
+**Target Audience:** This skill is designed for agents creating Claude Code command specifications. It provides procedural knowledge for gathering requirements, discovering relevant skills, and generating well-structured command definitions that other agents will execute.
+
 ## Command Creation Workflow
 
 Follow these steps sequentially to create a well-defined Claude Code command:
@@ -38,9 +40,8 @@ If the user mentions skills, note them. If not, proceed to Step 3.
 Check available skills to identify potentially relevant ones the user may have missed:
 
 ```bash
-view /mnt/skills/public    # Check public skills
-view /mnt/skills/private   # Check private skills (if available)
-view /mnt/skills/examples  # Check example skills
+view .claude/skills    # Current project skills (if available)
+view ~/.claude/skills  # Global skills (if available)
 ```
 
 Look for skills related to:
@@ -138,7 +139,10 @@ Per-file compliance:
 
 Provide 2-3 usage examples with expected output.
 
-For detailed command patterns and advanced examples, see `references/command-patterns.md`.
+For detailed command patterns and advanced examples, see:
+- `references/command-patterns.md` - Pattern guide and syntax reference
+- `references/optimize-images-example.md` - Complete realistic command example
+- `../../commands/audit/js-ts-docs.md` - Real production command for reference
 
 ## Workflow Decision Tree
 

@@ -2,6 +2,10 @@
 
 This reference provides detailed patterns and examples for Claude Code command specifications.
 
+**Note:** The patterns shown below are simplified for clarity. For complete, production-ready examples with full implementation details, error handling, and comprehensive workflows, see:
+- `optimize-images-example.md` - Complete realistic example
+- `../../../commands/audit/js-ts-docs.md` - Real production command
+
 ## Command File Format
 
 Commands are defined as **single Markdown files with YAML front matter**.
