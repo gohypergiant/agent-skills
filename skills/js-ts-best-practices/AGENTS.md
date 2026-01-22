@@ -133,6 +133,14 @@ Mutate when safe; use shallow clones when needed; preallocate object shapes.
 Batch string operations; compile regex once; avoid async overhead; minimize closure scope.
 [View detailed examples](references/performance-misc.md)
 
+### 4.12 Avoid Needless Allocations
+Inline simple computations; avoid intermediate variables in hot paths; reduce GC pressure.
+[View detailed examples](references/avoid-allocations.md)
+
+### 4.13 Currying and Partial Application
+Curry functions to precompute constant parameters; reduce repeated work in loops and hot paths.
+[View detailed examples](references/currying.md)
+
 ---
 
 ## 5. Documentation
