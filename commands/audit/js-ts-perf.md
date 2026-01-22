@@ -62,7 +62,7 @@ Example: `--report=audit-report.md`
 - Display discovered file count to user
 
 ### 3. Load performance patterns from js-ts-best-practices skill
-- Read reference documents from `.claude/skills/js-ts-best-practices/references/`
+- Read reference documents from `references/`
 - Build comprehensive checklist of patterns to detect:
   - **Loops:** Reduce iteration, bounded iteration, cache property access
   - **Branching:** Reduce branching, early returns, lookup tables
@@ -106,8 +106,14 @@ Example: `--report=audit-report.md`
   - Prompt user with options:
     - `[f]ix` - Apply this fix
     - `[s]kip` - Skip this issue
+    - `[c]ustom` - Provide your own fix
     - `[a]ll` - Fix this and all remaining issues
     - `[q]uit` - Abort and exit
+  - If user chooses custom:
+    - Prompt user to describe their preferred fix
+    - Apply the custom fix using Edit tool
+    - Confirm fix was applied successfully
+    - Track fix in fixes-applied list
   - If user chooses fix/all:
     - Apply fix using Edit tool
     - Confirm fix was applied successfully

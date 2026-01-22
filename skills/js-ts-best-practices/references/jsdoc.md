@@ -4,9 +4,53 @@
 
 All functions, type aliases, interfaces, constants, and classes (both exported and internal) must have well-formed JSDoc comments.
 
+## Directive Comments Are Exempt
+
+**Tool directive comments must be left unchanged.** These include:
+- Linter directives: `// eslint-disable-next-line`, `// biome-ignore lint/suspicious/noExplicitAny: reason`
+- Formatter directives: `// prettier-ignore`
+- Tool-specific comments: `// biome-ignore-all assist/source/organizeImports: reason`
+- Type checker directives: `// @ts-expect-error`, `// @ts-ignore`
+
+These comments have specific syntaxes required by their respective tools and **must not be modified or reformatted** to follow JSDoc conventions. They serve a different purpose than documentation comments.
+
 **Exported code** requires comprehensive documentation with all applicable tags.
 
 **Internal code** may use reduced documentation: description, `@template`, `@param`, and `@returns` only (can omit `@example` and `@throws`).
+
+## @example Code Fence Requirement
+
+All `@example` tags **must** use code fences with the appropriate language identifier:
+- Use `javascript` for `.js` or `.jsx` files
+- Use `typescript` for `.ts` or `.tsx` files
+
+**❌ Incorrect: No code fence**
+```ts
+/**
+ * @example
+ * const result = add(1, 2); // 3
+ */
+```
+
+**❌ Incorrect: Code fence without language**
+```ts
+/**
+ * @example
+ * ```
+ * const result = add(1, 2); // 3
+ * ```
+ */
+```
+
+**✅ Correct: Code fence with language identifier**
+```ts
+/**
+ * @example
+ * ```typescript
+ * const result = add(1, 2); // 3
+ * ```
+ */
+```
 
 ## Functions
 

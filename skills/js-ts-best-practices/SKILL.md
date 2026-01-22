@@ -1,9 +1,9 @@
 ---
 name: js-ts-best-practices
-description: JavaScript and TypeScript best practices covering naming conventions, control flow, state management, TypeScript patterns (avoid any/enum, prefer type over interface), safety (input validation, assertions, error handling), performance optimization (reduce branching/looping, memoization, defer await, cache property access, storage API caching), and documentation (JSDoc, comment markers). Use when writing JS/TS functions, refactoring code for performance, reviewing code quality, fixing type errors, optimizing loops or conditionals, adding validation, or improving error messages.
+description: JavaScript and TypeScript best practices covering naming conventions, control flow, state management, TypeScript patterns (avoid any/enum, prefer type over interface), safety (input validation, assertions, error handling), performance optimization (reduce branching/looping, memoization, defer await, cache property access, storage API caching, avoid needless allocations, currying for hot paths), and documentation (JSDoc, comment markers). Use when writing JS/TS functions, refactoring code for performance, reviewing code quality, fixing type errors, optimizing loops or conditionals, adding validation, or improving error messages.
 metadata:
   author: gohypergiant
-  version: "1.0"
+  version: "1.1"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -120,6 +120,8 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [cache-property-access.md](references/cache-property-access.md) - Cache lookups, eliminate aliases, avoid unnecessary destructuring
 - [cache-storage-api.md](references/cache-storage-api.md) - Cache localStorage/sessionStorage/cookie reads
 - [object-operations.md](references/object-operations.md) - Safe mutation, shallow clones, preallocate shapes
+- [avoid-allocations.md](references/avoid-allocations.md) - Inline simple computations, avoid needless variables, reduce GC pressure
+- [currying.md](references/currying.md) - Curry to precompute constant parameters, optimize hot paths
 - [performance-misc.md](references/performance-misc.md) - Strings, regex, async overhead, closures, try/catch
 
 **Documentation:**
@@ -232,6 +234,78 @@ function getCached(key) {
 for (const item of items) {
   const theme = getCached('theme');
   // ... 1 storage read
+}
+```
+
+### Example 5: Avoiding Needless Allocations
+**Task:** "This random number function has GC pressure when called in a loop"
+
+**Approach:**
+1. Read AGENTS.md overview
+2. Identify issue: intermediate variable creating unnecessary allocations
+3. Load [avoid-allocations.md](references/avoid-allocations.md)
+4. Inline simple computation to eliminate allocation
+
+**Before:**
+```ts
+function randomInt(min: number, max: number): number {
+  const minCeil = Math.ceil(min);
+  const maxFloor = Math.floor(max);
+  const range = maxFloor - minCeil + 1;
+  return Math.floor(Math.random() * range + minCeil);
+}
+```
+
+**After:**
+```ts
+function randomInt(min: number, max: number): number {
+  const minCeil = Math.ceil(min);
+  const maxFloor = Math.floor(max);
+  return Math.floor(Math.random() * (maxFloor - minCeil + 1) + minCeil);
+}
+```
+
+### Example 6: Currying for Performance
+**Task:** "This round() function recomputes 10 ** precision on every call in a loop"
+
+**Approach:**
+1. Read AGENTS.md overview
+2. Identify issue: expensive exponentiation repeated with constant parameter
+3. Load [currying.md](references/currying.md)
+4. Convert to curried form to precompute multiplier
+
+**Before:**
+```ts
+export function round(precision: number, value: number): number {
+  const multiplier = 10 ** precision;
+  return Math.round(value * multiplier) / multiplier;
+}
+
+for (const price of prices) {
+  rounded.push(round(2, price)); // Recomputes 10 ** 2 every time
+}
+```
+
+**After:**
+```ts
+export function round(precision: number): (value: number) => number;
+export function round(precision: number, value: number): number;
+export function round(
+  precision: number,
+  value?: number,
+): number | ((value: number) => number) {
+  const multiplier = 10 ** precision;
+
+  if (value === undefined) {
+    return (v: number) => Math.round(v * multiplier) / multiplier;
+  }
+
+  return Math.round(value * multiplier) / multiplier;
+}
+
+const roundTo2 = round(2); // Compute once
+for (const price of prices) {
+  rounded.push(roundTo2(price)); // Reuse precomputed multiplier
 }
 ```
 

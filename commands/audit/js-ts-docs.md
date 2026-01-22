@@ -1,6 +1,6 @@
 ---
 description: Audit JavaScript/TypeScript comments (JSDoc, inline, markers) against js-ts-best-practices standards and optionally apply fixes
-argument-hint: [path]
+argument-hint: "[path] [--fix-mode=interactive|all|none] [--extensions=<exts>]"
 skills: js-ts-best-practices
 ---
 
@@ -16,22 +16,32 @@ Comprehensive comment auditing for JavaScript and TypeScript codebases. Scans fi
   - Glob pattern: `src/**/*.ts`
   - Current directory: `.` or omit argument
 
+- `--fix-mode` (string, optional, default: `interactive`): Controls how comment issues are handled
+  - `interactive`: For each issue, prompt user to fix, skip, fix all remaining, or abort
+  - `all`: Automatically apply all fixes without prompting
+  - `none`: Report issues only, don't modify any files
+
 - `--extensions` (string, optional, default: `js,ts,jsx,tsx`): Comma-separated list of file extensions to audit
   - Example: `--extensions js,ts` to skip JSX/TSX files
   - Example: `--extensions ts` for TypeScript only
 
 ## Workflow
 
-### Phase 1: File Discovery
+### Phase 1: Argument Parsing and File Discovery
 
-1. Parse `path` argument to determine input type:
+1. Validate arguments:
+   - Ensure `--fix-mode` is one of: `interactive`, `all`, `none` (default: `interactive`)
+   - Validate `--extensions` format if provided
+   - Exit with clear error message if validation fails
+
+2. Parse `path` argument to determine input type:
    - Single file: validate existence and extension
    - Directory: recursively find all files matching `--extensions`
    - Glob pattern: expand pattern and filter by extensions
 
-2. Filter files by extension list from `--extensions` flag
+3. Filter files by extension list from `--extensions` flag
 
-3. Report discovered files count before processing
+4. Report discovered files count before processing
 
 ### Phase 2: Comment Analysis
 
@@ -154,51 +164,64 @@ Files by issue count:
 ...
 ```
 
-### Phase 5: Interactive Fix Application
+### Phase 5: Handle fixes based on fix-mode
 
-After displaying report and statistics:
+**If `fix-mode=interactive`:**
+- For each issue:
+  - Display issue details (file, line, problem, suggested fix)
+  - Prompt user with options:
+    - `[f]ix` - Apply this fix
+    - `[s]kip` - Skip this issue
+    - `[c]ustom` - Provide your own fix
+    - `[a]ll` - Fix this and all remaining issues
+    - `[q]uit` - Abort and exit
+  - If user chooses custom:
+    - Prompt user to describe their preferred fix
+    - Apply the custom fix using Edit tool
+    - Confirm fix was applied successfully
+    - Track fix in fixes-applied list
+  - If user chooses fix/all:
+    - Apply fix using Edit tool
+    - For missing JSDoc: add template with placeholder text
+    - For incomplete JSDoc: add missing tags (@param, @returns, @example)
+    - For comments to remove: delete commented-out code and edit history
+    - For placement issues: move end-of-line comments above code
+    - For marker issues: fix formatting (TODO/FIXME/HACK/NOTE/PERF)
+    - Confirm fix was applied successfully
+    - Track fix in fixes-applied list
+  - If user chooses skip:
+    - Track issue in skipped-issues list
+  - If user chooses quit:
+    - Display summary of fixes applied so far
+    - Exit workflow
+  - Special handling for manual review items:
+    - Warn before removing linter directives
+    - Flag business logic comments for preservation
+    - Skip ambiguous cases requiring human judgment
 
-1. Prompt user: `Apply fixes? (y/n)`
+**If `fix-mode=all`:**
+- Display message: "Auto-fixing all N issues..."
+- For each issue:
+  - Apply fix using Edit tool (same fix types as interactive mode)
+  - Show progress: "Fixed M/N issues..."
+  - Track all fixes in fixes-applied list
+- Display completion message with total fixes applied
+- Flag manual review items separately
 
-2. If user responds `y` or `yes`:
-   - Apply all auto-fixable issues:
-     - Add missing JSDoc templates with placeholder text
-     - Complete incomplete JSDoc with missing tags
-     - Remove commented-out code and edit history
-     - Move end-of-line comments above code
-     - Fix marker formatting (TODO/FIXME/HACK/NOTE/PERF)
-   - Preserve manual review items:
-     - Flag business logic comments for preservation
-     - Warn about linter directives before removal
-     - Skip ambiguous cases requiring human judgment
-
-3. Generate fix summary:
-   ```
-   === Fixes Applied ===
-
-   Modified 23 files:
-   - Added 67 JSDoc blocks
-   - Completed 34 JSDoc blocks with missing tags
-   - Removed 42 obsolete comments
-   - Moved 18 comments to proper placement
-   - Fixed 12 marker formats
-
-   Manual review required:
-   - src/legacy.ts: 3 business logic comments flagged for review
-   - src/vendor.ts: 2 linter directives need verification
-   ```
-
-4. If user responds `n` or `no`:
-   - Exit without modifying files
-   - Display message: "Audit complete. No changes applied."
+**If `fix-mode=none`:**
+- Display message: "Report-only mode: no files will be modified"
+- Skip fixing step entirely
+- All issues remain in issues-found list for reference
 
 ### Error Handling
 
+- Invalid `--fix-mode` value: Display error and exit with valid options
 - Invalid file paths: Report error and skip file
 - Unparseable files: Log syntax errors and continue with remaining files
 - Permission errors: Report and skip file
 - Empty directories: Warn user and exit gracefully
 - No files matching extension filter: Inform user and suggest checking `--extensions` flag
+- User quits during interactive mode: Display summary of fixes applied before exit
 
 ## Statistics Reporting
 
@@ -221,12 +244,15 @@ The command outputs detailed statistics in multiple dimensions:
 - Warnings (code quality issues)
 - Info (style improvements)
 
-### Fix Application Statistics (if fixes applied)
+### Fix Application Statistics (if fix-mode ≠ none)
 - Files modified count
 - Issues fixed by category
+- Issues skipped (if interactive mode)
 - Manual review items flagged
 
 ### Example Output Structure
+
+**Interactive mode (default):**
 ```
 Total files scanned: 45 (38 .ts, 5 .tsx, 2 .js)
 Files with issues: 23 (51.1%)
@@ -252,6 +278,34 @@ Per-file compliance (top 10 by issue count):
 4. src/api.ts: 3 issues (3 errors)
 5. src/formatters.ts: 2 issues (1 error, 1 warning)
 ...
+
+Issue 1/173: src/helpers.ts:23
+Missing JSDoc for exported function 'formatValue'
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit?
+```
+
+**Auto-fix mode (--fix-mode=all):**
+```
+[Same report as above]
+
+Auto-fixing all 173 issues...
+Fixed 173/173 issues
+
+=== Fixes Applied ===
+Modified 23 files:
+- Added 67 JSDoc blocks
+- Completed 34 JSDoc blocks
+- Removed 42 obsolete comments
+- Moved 18 comments to proper placement
+- Fixed 12 marker formats
+```
+
+**Report-only mode (--fix-mode=none):**
+```
+[Same report as above]
+
+Report-only mode: no files will be modified
+Audit complete.
 ```
 
 ## Examples
@@ -281,7 +335,23 @@ Total files scanned: 45
 Files with issues: 23 (51.1%)
 ...
 
-Apply fixes? (y/n)
+Issue 1/173: src/core.ts:45
+Missing JSDoc for exported function 'processData'
+
+Current:
+  export function processData(input: Data): Result {
+
+Suggested:
+  /**
+   * [Description of processData]
+   * @param input - [Description]
+   * @returns [Description]
+   * @example
+   * [Usage example]
+   */
+  export function processData(input: Data): Result {
+
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit?
 ```
 
 ### Example 2: Audit Specific Directory with TypeScript Only
@@ -310,7 +380,9 @@ Total files scanned: 12
 Files with issues: 8 (66.7%)
 ...
 
-Apply fixes? (y/n)
+Issue 1/23: src/lib/parser.ts:23
+Missing JSDoc for exported function 'parse'
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit?
 ```
 
 ### Example 3: Audit Single File
@@ -346,7 +418,12 @@ Issue breakdown:
 - Missing JSDoc: 1 export
 - Placement issues: 1 end-of-line comment
 
-Apply fixes? (y/n) y
+Issue 1/2: src/utils/formatters.ts:12
+Missing JSDoc for exported function 'formatDate'
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? a
+
+Fixing all remaining issues...
+Fixed 2/2 issues
 
 === Fixes Applied ===
 
@@ -357,10 +434,103 @@ Modified 1 file:
 Audit complete.
 ```
 
-### Example 4: Audit with Glob Pattern
+### Example 4: Auto-fix all issues
 
 ```bash
-$ claude audit-comments "src/**/*.test.ts" --extensions ts
+$ claude audit-comments src/lib --fix-mode=all
+```
+
+**Output:**
+```
+Discovering files...
+Found 12 files matching extensions: js,ts,jsx,tsx
+
+Analyzing comments...
+[========================================] 12/12 files
+
+=== Comment Audit Report ===
+
+src/lib/parser.ts:
+  Line 23: Missing JSDoc for exported function 'parse'
+  Line 67: Commented-out code should be removed
+...
+
+=== Statistics ===
+Total files scanned: 12
+Files with issues: 8 (66.7%)
+Issue breakdown:
+- Missing JSDoc: 15 exports
+- Comments to remove: 8 instances
+- Marker issues: 3 improper formats
+
+Auto-fixing all 26 issues...
+Fixed 26/26 issues
+
+=== Fixes Applied ===
+
+Modified 8 files:
+- Added 15 JSDoc blocks
+- Removed 8 obsolete comments
+- Fixed 3 marker formats
+
+Audit complete.
+```
+
+### Example 5: Interactive mode with skip and quit
+
+```bash
+$ claude audit-comments src/utils.ts
+```
+
+**Output:**
+```
+Analyzing file: src/utils.ts
+
+=== Comment Audit Report ===
+
+src/utils.ts:
+  Line 12: Missing JSDoc for exported function 'formatDate'
+  Line 34: End-of-line comment should be moved above code
+  Line 56: Use proper TODO marker format
+
+=== Statistics ===
+Total files scanned: 1
+Files with issues: 1 (100.0%)
+Issue breakdown:
+- Missing JSDoc: 1 export
+- Placement issues: 1 end-of-line comment
+- Marker issues: 1 improper format
+
+Issue 1/3: src/utils.ts:12
+Missing JSDoc for exported function 'formatDate'
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? f
+
+Applied fix: Added JSDoc block
+
+Issue 2/3: src/utils.ts:34
+End-of-line comment should be moved above code
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? s
+
+Skipped issue
+
+Issue 3/3: src/utils.ts:56
+Use proper TODO marker format
+[f]ix | [s]kip | [c]ustom | [a]ll | [q]uit? q
+
+=== Fixes Applied ===
+
+Modified 1 file:
+- Added 1 JSDoc block
+
+Skipped 2 issues
+
+Audit aborted by user.
+```
+
+### Example 6: Report-only mode
+
+```bash
+$ claude audit-comments "src/**/*.test.ts" --fix-mode=none
 ```
 
 **Output:**
@@ -379,9 +549,13 @@ src/core.test.ts:
     Expected: // TODO: add more test cases
 ...
 
-Apply fixes? (y/n) n
+=== Statistics ===
+Total files scanned: 8
+Files with issues: 3 (37.5%)
+...
 
-Audit complete. No changes applied.
+Report-only mode: no files will be modified
+Audit complete.
 ```
 
 ## Implementation Notes
