@@ -150,7 +150,7 @@ Curry functions to precompute constant parameters; reduce repeated work in loops
 ## 5. Documentation
 
 ### 5.1 JSDoc
-All code needs JSDoc; exports require full documentation; internal code may use reduced tags.
+All code needs JSDoc; exports require full documentation; internal code may use reduced tags; document object parameters with nested properties using dot notation.
 [View detailed examples](references/jsdoc.md)
 
 ### 5.2 Comment Markers

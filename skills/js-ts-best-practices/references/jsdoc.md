@@ -174,6 +174,122 @@ function log(message: string): void {
 }
 ```
 
+### Object Parameters with Destructuring
+
+When a function accepts an object parameter that is destructured, document the object properties using nested `@param` tags with dot notation. This provides developers with clear understanding of the expected object structure.
+
+**❌ Incorrect: Single @param without property details**
+```tsx
+/**
+ * Container component for grouping multiple accordions together.
+ *
+ * @param props - Accordion components props.
+ * @returns The rendered accordion group component.
+ */
+export function AccordionGroup({
+  ref,
+  children,
+  className,
+  variant = 'cozy',
+  isDisabled,
+  ...rest
+}: AccordionGroupProps) {
+  // ...
+}
+```
+
+**❌ Incorrect: Documenting each destructured parameter separately**
+```tsx
+/**
+ * Container component for grouping multiple accordions together.
+ *
+ * @param ref - Ref object for the accordion group element.
+ * @param children - Accordion components to include in the group.
+ * @param className - Additional CSS class names.
+ * @param variant - Visual density variant (compact or cozy).
+ * @param isDisabled - Whether all accordions in the group are disabled.
+ * @param rest - Additional DisclosureGroup props.
+ * @returns The rendered accordion group component.
+ */
+export function AccordionGroup({
+  ref,
+  children,
+  className,
+  variant = 'cozy',
+  isDisabled,
+  ...rest
+}: AccordionGroupProps) {
+  // ...
+}
+```
+
+**✅ Correct: Documenting object parameter with nested properties**
+```tsx
+/**
+ * Container component for grouping multiple accordions together with shared configuration.
+ *
+ * Provides coordinated behavior for multiple accordions, controlling
+ * whether multiple sections can be expanded simultaneously.
+ *
+ * @param props - The accordion group props.
+ * @param props.ref - Reference to the root div element.
+ * @param props.children - Accordion components to render within the group.
+ * @param props.className - Additional CSS class names.
+ * @param props.variant - Visual variant of the accordions ('compact' or 'cozy').
+ * @param props.isDisabled - Whether all accordions in the group are disabled.
+ * @returns The accordion group component.
+ *
+ * @example
+ * ```tsx
+ * <AccordionGroup variant="compact">
+ *   <Accordion title="Section 1">Content 1</Accordion>
+ *   <Accordion title="Section 2">Content 2</Accordion>
+ * </AccordionGroup>
+ * ```
+ */
+export function AccordionGroup({
+  ref,
+  children,
+  className,
+  variant = 'cozy',
+  isDisabled,
+  ...rest
+}: AccordionGroupProps) {
+  // ...
+}
+```
+
+**✅ Correct: Nested object properties**
+```ts
+/**
+ * Initializes a database connection with configuration options.
+ *
+ * @param config - Database configuration options.
+ * @param config.host - Database server hostname.
+ * @param config.port - Database server port.
+ * @param config.credentials - Authentication credentials.
+ * @param config.credentials.username - Database username.
+ * @param config.credentials.password - Database password.
+ * @param config.pool - Connection pool settings.
+ * @param config.pool.min - Minimum number of connections.
+ * @param config.pool.max - Maximum number of connections.
+ * @returns Database connection instance.
+ *
+ * @example
+ * ```typescript
+ * const db = initDatabase({
+ *   host: 'localhost',
+ *   port: 5432,
+ *   credentials: { username: 'admin', password: 'secret' },
+ *   pool: { min: 2, max: 10 }
+ * });
+ * ```
+ */
+function initDatabase(config: DatabaseConfig): Database {
+  // ...
+}
+```
+
 ## Types and Interfaces
 
 ### Required (all types/interfaces)
