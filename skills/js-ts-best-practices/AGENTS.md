@@ -28,7 +28,7 @@ Use descriptive names; append qualifiers in descending order; prefix booleans wi
 [View detailed examples](references/naming-conventions.md)
 
 ### 1.2 Functions
-Keep functions under 50 lines; avoid defaults; use `function` keyword for pure functions.
+Keep functions under 50 lines; explicitly type return values; avoid defaults; use `function` keyword for pure functions.
 [View detailed examples](references/functions.md)
 
 ### 1.3 Control Flow
