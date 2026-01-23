@@ -47,6 +47,10 @@ Always return zero values ([], {}, 0) instead of `null` or `undefined`.
 Use Linux line endings; employ defensive programming; aim for zero technical debt.
 [View detailed examples](references/misc.md)
 
+### 1.7 Code Duplication (DRY Principle)
+Extract common patterns into utility functions; consolidate duplicated logic; apply DRY when abstraction reduces complexity.
+[View detailed examples](references/code-duplication.md)
+
 ---
 
 ## 2. TypeScript

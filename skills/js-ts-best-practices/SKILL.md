@@ -34,7 +34,7 @@ Use this skill when the task involves:
 - Refactoring nested conditionals to early returns
 - Simplifying complex control flow
 - Improving variable naming (descriptive names, proper prefixes for booleans)
-- Reducing code duplication
+- Reducing code duplication (extracting common patterns)
 - Applying consistent code style
 - Removing commented-out code or outdated comments
 
@@ -97,6 +97,7 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [state-management.md](references/state-management.md) - const vs let, immutability, pure functions
 - [return-values.md](references/return-values.md) - Return zero values instead of null/undefined
 - [misc.md](references/misc.md) - Line endings, defensive programming, technical debt
+- [code-duplication.md](references/code-duplication.md) - Extract common patterns, DRY principle, when to consolidate
 
 **TypeScript:**
 - [any.md](references/any.md) - Avoid any, use unknown or generics
