@@ -21,8 +21,10 @@ These comments have specific syntaxes required by their respective tools and **m
 ## @example Code Fence Requirement
 
 All `@example` tags **must** use code fences with the appropriate language identifier:
-- Use `javascript` for `.js` or `.jsx` files
-- Use `typescript` for `.ts` or `.tsx` files
+- Use `javascript` for `.js` files
+- Use `typescript` for `.ts` files
+- Use `jsx` for `.jsx` files
+- Use `tsx` for `.tsx` files
 
 **❌ Incorrect: No code fence**
 ```ts
@@ -178,9 +180,6 @@ function log(message: string): void {
 - Description (clear summary)
 - `@template` for each generic type parameter
 
-### Required (exported types/interfaces only)
-- `@example` with usage example (if complex structure)
-
 ### Optional
 - Property descriptions (inline)
 - `@remarks` - Additional context
@@ -201,12 +200,6 @@ type Result<T, E> =
  *
  * @template T - The type of the success value.
  * @template E - The type of the error.
- *
- * @example
- * ```typescript
- * const success: Result<number, string> = { ok: true, value: 42 };
- * const failure: Result<number, string> = { ok: false, error: 'Not found' };
- * ```
  */
 type Result<T, E> =
   | { ok: true; value: T }
@@ -229,15 +222,6 @@ interface ApiConfig {
 ```ts
 /**
  * Configuration for the API client.
- *
- * @example
- * ```typescript
- * const config: ApiConfig = {
- *   baseUrl: 'https://api.example.com',
- *   timeout: 5000,
- *   retries: 3,
- * };
- * ```
  */
 interface ApiConfig {
   /** The base URL for API requests. */
