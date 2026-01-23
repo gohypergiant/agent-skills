@@ -133,16 +133,16 @@ Created in 5m 42s
 
 ```bash
 # Interactive mode - guided through all steps
-create-skill pdf-editor
+create:skill pdf-editor
 
 # Create a domain-specific skill
-create-skill big-query
+create:skill big-query
 
 # Create a workflow skill
-create-skill test-driven-development
+create:skill test-driven-development
 
 # Create a file processing skill
-create-skill image-optimizer
+create:skill image-optimizer
 ```
 
 ## Validation Checkpoints

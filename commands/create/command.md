@@ -133,16 +133,16 @@ Created in 5m 18s
 
 ```bash
 # Interactive mode (default) - guided through all steps
-create-command audit-codebase
+create:command audit-codebase
 
 # With pre-selected skill
-create-command rotate-pdf --skill pdf
+create:command rotate-pdf --skill pdf
 
 # Non-interactive mode (expects all details upfront)
-create-command generate-uuid --interactive false
+create:command generate-uuid --interactive false
 
 # Multiple skill integration
-create-command create-report --skill xlsx,docx
+create:command create-report --skill xlsx,docx
 ```
 
 ## Validation Checkpoints
