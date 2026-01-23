@@ -21,8 +21,10 @@ These comments have specific syntaxes required by their respective tools and **m
 ## @example Code Fence Requirement
 
 All `@example` tags **must** use code fences with the appropriate language identifier:
-- Use `javascript` for `.js` or `.jsx` files
-- Use `typescript` for `.ts` or `.tsx` files
+- Use `javascript` for `.js` files
+- Use `typescript` for `.ts` files
+- Use `jsx` for `.jsx` files
+- Use `tsx` for `.tsx` files
 
 **❌ Incorrect: No code fence**
 ```ts
@@ -172,14 +174,127 @@ function log(message: string): void {
 }
 ```
 
+### Object Parameters with Destructuring
+
+When a function accepts an object parameter that is destructured, document the object properties using nested `@param` tags with dot notation. This provides developers with clear understanding of the expected object structure.
+
+**❌ Incorrect: Single @param without property details**
+```tsx
+/**
+ * Container component for grouping multiple accordions together.
+ *
+ * @param props - Accordion components props.
+ * @returns The rendered accordion group component.
+ */
+export function AccordionGroup({
+  ref,
+  children,
+  className,
+  variant = 'cozy',
+  isDisabled,
+  ...rest
+}: AccordionGroupProps) {
+  // ...
+}
+```
+
+**❌ Incorrect: Documenting each destructured parameter separately**
+```tsx
+/**
+ * Container component for grouping multiple accordions together.
+ *
+ * @param ref - Ref object for the accordion group element.
+ * @param children - Accordion components to include in the group.
+ * @param className - Additional CSS class names.
+ * @param variant - Visual density variant (compact or cozy).
+ * @param isDisabled - Whether all accordions in the group are disabled.
+ * @param rest - Additional DisclosureGroup props.
+ * @returns The rendered accordion group component.
+ */
+export function AccordionGroup({
+  ref,
+  children,
+  className,
+  variant = 'cozy',
+  isDisabled,
+  ...rest
+}: AccordionGroupProps) {
+  // ...
+}
+```
+
+**✅ Correct: Documenting object parameter with nested properties**
+```tsx
+/**
+ * Container component for grouping multiple accordions together with shared configuration.
+ *
+ * Provides coordinated behavior for multiple accordions, controlling
+ * whether multiple sections can be expanded simultaneously.
+ *
+ * @param props - The accordion group props.
+ * @param props.ref - Reference to the root div element.
+ * @param props.children - Accordion components to render within the group.
+ * @param props.className - Additional CSS class names.
+ * @param props.variant - Visual variant of the accordions ('compact' or 'cozy').
+ * @param props.isDisabled - Whether all accordions in the group are disabled.
+ * @returns The accordion group component.
+ *
+ * @example
+ * ```tsx
+ * <AccordionGroup variant="compact">
+ *   <Accordion title="Section 1">Content 1</Accordion>
+ *   <Accordion title="Section 2">Content 2</Accordion>
+ * </AccordionGroup>
+ * ```
+ */
+export function AccordionGroup({
+  ref,
+  children,
+  className,
+  variant = 'cozy',
+  isDisabled,
+  ...rest
+}: AccordionGroupProps) {
+  // ...
+}
+```
+
+**✅ Correct: Nested object properties**
+```ts
+/**
+ * Initializes a database connection with configuration options.
+ *
+ * @param config - Database configuration options.
+ * @param config.host - Database server hostname.
+ * @param config.port - Database server port.
+ * @param config.credentials - Authentication credentials.
+ * @param config.credentials.username - Database username.
+ * @param config.credentials.password - Database password.
+ * @param config.pool - Connection pool settings.
+ * @param config.pool.min - Minimum number of connections.
+ * @param config.pool.max - Maximum number of connections.
+ * @returns Database connection instance.
+ *
+ * @example
+ * ```typescript
+ * const db = initDatabase({
+ *   host: 'localhost',
+ *   port: 5432,
+ *   credentials: { username: 'admin', password: 'secret' },
+ *   pool: { min: 2, max: 10 }
+ * });
+ * ```
+ */
+function initDatabase(config: DatabaseConfig): Database {
+  // ...
+}
+```
+
 ## Types and Interfaces
 
 ### Required (all types/interfaces)
 - Description (clear summary)
 - `@template` for each generic type parameter
-
-### Required (exported types/interfaces only)
-- `@example` with usage example (if complex structure)
 
 ### Optional
 - Property descriptions (inline)
@@ -201,12 +316,6 @@ type Result<T, E> =
  *
  * @template T - The type of the success value.
  * @template E - The type of the error.
- *
- * @example
- * ```typescript
- * const success: Result<number, string> = { ok: true, value: 42 };
- * const failure: Result<number, string> = { ok: false, error: 'Not found' };
- * ```
  */
 type Result<T, E> =
   | { ok: true; value: T }
@@ -229,15 +338,6 @@ interface ApiConfig {
 ```ts
 /**
  * Configuration for the API client.
- *
- * @example
- * ```typescript
- * const config: ApiConfig = {
- *   baseUrl: 'https://api.example.com',
- *   timeout: 5000,
- *   retries: 3,
- * };
- * ```
  */
 interface ApiConfig {
   /** The base URL for API requests. */

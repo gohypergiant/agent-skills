@@ -28,7 +28,7 @@ Use descriptive names; append qualifiers in descending order; prefix booleans wi
 [View detailed examples](references/naming-conventions.md)
 
 ### 1.2 Functions
-Keep functions under 50 lines; avoid defaults; use `function` keyword for pure functions.
+Keep functions under 50 lines; explicitly type return values; avoid defaults; use `function` keyword for pure functions.
 [View detailed examples](references/functions.md)
 
 ### 1.3 Control Flow
@@ -46,6 +46,10 @@ Always return zero values ([], {}, 0) instead of `null` or `undefined`.
 ### 1.6 Misc
 Use Linux line endings; employ defensive programming; aim for zero technical debt.
 [View detailed examples](references/misc.md)
+
+### 1.7 Code Duplication (DRY Principle)
+Extract common patterns into utility functions; consolidate duplicated logic; apply DRY when abstraction reduces complexity.
+[View detailed examples](references/code-duplication.md)
 
 ---
 
@@ -146,7 +150,7 @@ Curry functions to precompute constant parameters; reduce repeated work in loops
 ## 5. Documentation
 
 ### 5.1 JSDoc
-All code needs JSDoc; exports require full documentation; internal code may use reduced tags.
+All code needs JSDoc; exports require full documentation; internal code may use reduced tags; document object parameters with nested properties using dot notation.
 [View detailed examples](references/jsdoc.md)
 
 ### 5.2 Comment Markers
