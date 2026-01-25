@@ -82,93 +82,10 @@ For each argument, specify:
 
 Create the command specification as a **single Markdown file with YAML front matter**.
 
-**Required format:**
-
-```markdown
----
-description: Brief description of what the command does
-argument-hint: [arg1 | arg2] or [file-path] or [directory-path]
-skills: skill-name-1, skill-name-2
----
-
-# Command Name
-
-Brief overview of the command's purpose.
-
-## Arguments
-
-List and describe each argument:
-- `arg-name` (type, required/optional, default): Description and validation rules
-
-## Workflow
-
-Step-by-step execution sequence:
-1. Input validation and processing
-2. Main operations
-3. Skill integration (if applicable)
-4. Output generation
-5. Statistics reporting
-
-## Statistics Reporting
-
-Commands should output comprehensive statistics including:
-- Total entities/items processed
-- Success/failure counts
-- Compliance metrics (if applicable)
-- Per-file or per-category breakdowns
-- Performance metrics (time, memory if relevant)
-
-**Example reporting structure:**
-```
-Total entities scanned: 145 (120 exported + 25 internal)
-Entities with complete documentation: 98 (67.6%)
-Entities with incomplete documentation: 32 (22.1%)
-Entities with missing documentation: 15 (10.3%)
-
-Breakdown by visibility:
-- Exported: 85/120 complete (70.8%)
-- Internal: 13/25 complete (52.0%)
-
-Per-file compliance:
-- src/core.ts: 95.2% (20/21)
-- src/utils.ts: 88.9% (16/18)
-- src/types.ts: 100.0% (8/8)
-```
-
-## Examples
-
-Provide 2-3 usage examples with expected output.
-
-For detailed command patterns and advanced examples, see:
-- `references/command-patterns.md` - Pattern guide and syntax reference
-- `references/optimize-images-example.md` - Complete realistic command example
+For detailed format specification, patterns, and examples, see:
+- `references/command-patterns.md` - Complete format guide, argument types, validation patterns, and multiple command pattern examples
+- `references/optimize-images-example.md` - Production-ready example with full workflow, error handling, and statistics
 - `../../commands/audit/js-ts-docs.md` - Real production command for reference
-
-## Workflow Decision Tree
-
-```
-Start
-  ↓
-Ask: What should command do?
-  ↓
-Ask: Related to existing skills?
-  ↓
-Check /mnt/skills/* for relevant skills
-  ↓
-Present found skills to user
-  ↓
-User confirms skill selection
-  ↓
-Verify command specification with user
-  ↓
-Ask: What arguments needed?
-  ↓
-Define argument specifications
-  ↓
-Generate command specification
-  ↓
-Present to user for review
-```
 
 ## Best Practices
 
