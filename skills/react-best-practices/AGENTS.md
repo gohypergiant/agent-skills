@@ -85,6 +85,22 @@ Use `useState(() => expensive())` to avoid re-running initializers.
 Wrap frequent, non-urgent updates in `startTransition()` to keep UI responsive.
 [View detailed examples](references/transitions-non-urgent-updates.md)
 
+### 1.8 Calculate Derived State During Rendering
+[View detailed examples](references/calculate-derived-state.md)
+
+### 1.9 Avoid useMemo For Simple Expressions
+Skip useMemo for simple primitives (booleans, numbers, strings).
+[View detailed examples](references/avoid-usememo-simple-expressions.md)
+
+### 1.10 Extract Default Non-primitive Parameter Value
+[View detailed examples](references/extract-default-parameter-value.md)
+
+### 1.11 Put Interaction Logic in Event Handlers
+[View detailed examples](references/interaction-logic-in-event-handlers.md)
+
+### 1.12 Use useRef for Transient Values
+[View detailed examples](references/useref-for-transient-values.md)
+
 ---
 
 ## 2. Rendering Performance
@@ -116,10 +132,6 @@ Use `<Activity mode="visible|hidden">` to preserve state when toggling visibilit
 ### 2.7 Hoist RegExp Creation
 Create RegExp at module scope or memoize with useMemo to avoid re-creation.
 [View detailed examples](references/hoist-regexp-creation.md)
-
-### 2.8 Avoid useMemo For Simple Expressions
-Skip useMemo for simple primitives (booleans, numbers, strings).
-[View detailed examples](references/avoid-usememo-simple-expressions.md)
 
 ---
 
