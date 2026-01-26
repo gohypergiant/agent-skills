@@ -424,32 +424,128 @@ it('should infer correct generic type', () => {
 });
 ```
 
+## Discovering Existing Setup Files
+
+Before writing tests, check for existing test configuration. Start with the config file, then check setup files.
+
+**✅ Correct: Check vitest.config.ts first**
+```ts
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    // ← Check for these first
+    clearMocks: true,      // Mock cleanup configured globally?
+    resetMocks: true,      // Mock reset configured?
+    restoreMocks: true,    // Mock restore configured?
+
+    // Then check for setup files
+    setupFiles: ['./test/setup.ts'],
+    globalSetup: ['./test/global-setup.ts'],
+  },
+});
+```
+
+**If mock cleanup is NOT configured:**
+Recommend adding `clearMocks: true`, `resetMocks: true`, `restoreMocks: true` to eliminate the entire class of mock cleanup errors.
+
+**✅ Correct: Common setup file locations to check**
+```bash
+# Common patterns for test setup files:
+test/setup.ts
+test/setup.js
+testing/setup.ts
+testing/setup.js
+vitest.setup.ts
+vitest.setup.js
+src/test/setup.ts
+__tests__/setup.ts
+```
+
+**✅ Correct: Analyze setup file contents**
+When you find a setup file, check for:
+- Custom matchers or assertions
+- Global mock configurations (fetch, timers, etc.)
+- Test utilities and helpers
+- Environment variables
+
+**Example setup.ts analysis:**
+```ts
+// test/setup.ts
+import '@testing-library/jest-dom'; // ← Custom matchers loaded
+
+// ← Global fetch mock
+global.fetch = vi.fn();
+```
+
+**⚠️ Anti-pattern to identify and refactor:**
+```ts
+// test/setup.ts
+import { beforeEach, afterEach, vi } from 'vitest';
+
+beforeEach(() => {
+  vi.clearAllMocks(); // ❌ Move to vitest.config.ts: clearMocks: true
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks(); // ❌ Move to vitest.config.ts: restoreMocks: true
+  vi.useRealTimers();
+});
+```
+
+**Refactoring recommendation:**
+If you find manual mock cleanup in setup files, recommend moving it to vitest.config.ts configuration instead. This eliminates maintenance burden and opportunities for error.
+
+**Key findings to note:**
+- Custom matchers available (e.g., `toBeInTheDocument`)
+- Global mocks (fetch is mocked)
+- Whether mock cleanup is handled by config or manual hooks (prefer config)
+- Fake timers configuration
+
 ## Setup Files
 
 Configure global test setup and teardown.
 
-**vitest.config.ts:**
+**✅ Correct: Use built-in mock cleanup configuration**
 ```ts
-export default {
+// vitest.config.ts
+export default defineConfig({
   test: {
+    // Mock cleanup - configure once for all tests
+    clearMocks: true,      // Clear call history
+    resetMocks: true,      // Reset implementation
+    restoreMocks: true,    // Restore original implementation
+
+    // Setup files for non-mock initialization
     setupFiles: ['./test/setup.ts'],
     globalSetup: ['./test/global-setup.ts'],
   },
-};
+});
 ```
 
 **test/setup.ts (runs before each test file):**
 ```ts
+// Only use setup files for custom initialization
+// Mock cleanup is handled by vitest.config.ts
+
+// Example: Load custom matchers
+import '@testing-library/jest-dom';
+
+// Example: Configure global test utilities
+global.TEST_TIMEOUT = 5000;
+```
+
+**❌ Anti-Pattern: Manual mock cleanup in setup file**
+```ts
+// DON'T DO THIS - Use vitest.config.ts instead
 import { beforeEach, afterEach } from 'vitest';
 
 beforeEach(() => {
-  // Runs before each test
-  vi.clearAllMocks();
+  vi.clearAllMocks(); // ❌ Use clearMocks: true in config
 });
 
 afterEach(() => {
-  // Runs after each test
-  vi.restoreAllMocks();
+  vi.restoreAllMocks(); // ❌ Use restoreMocks: true in config
 });
 ```
 
@@ -465,6 +561,9 @@ export async function teardown() {
   console.log('Cleaning up test environment...');
 }
 ```
+
+**Principle: Safety through configuration**
+Use built-in config options to eliminate entire classes of errors. Manual cleanup in setup files creates maintenance burden and opportunities for mistakes.
 
 ## Environment
 

@@ -319,9 +319,27 @@ describe('OrderService', () => {
 
 ## Cleanup Between Tests
 
-Always clean up to prevent memory leaks and test pollution.
+Always clean up to prevent memory leaks and test pollution. Use **global configuration** to eliminate cleanup errors by making them impossible.
 
-**✅ Correct: proper cleanup**
+**✅ Correct: global mock cleanup configuration**
+```ts
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    clearMocks: true,      // Clear call history before each test
+    resetMocks: true,      // Reset implementation before each test
+    restoreMocks: true,    // Restore original implementation before each test
+  },
+});
+```
+
+**Why global configuration is the correct approach:**
+- **Safety**: Impossible to forget - runs automatically for all tests
+- **Correctness**: Guarantees test isolation by default
+- **Performance**: Single configuration, no per-file overhead
+- **Simplicity**: Less code to maintain, fewer opportunities for human error
+
+**✅ Correct: minimal per-test cleanup**
 ```ts
 describe('EventEmitter', () => {
   let emitter: EventEmitter;
@@ -331,8 +349,7 @@ describe('EventEmitter', () => {
   });
 
   afterEach(() => {
-    emitter.removeAllListeners(); // Clean up listeners
-    vi.clearAllMocks(); // Clear mock call history
+    emitter.removeAllListeners(); // Only clean up non-mock resources
   });
 
   it('should emit event', () => {
@@ -342,7 +359,55 @@ describe('EventEmitter', () => {
     expect(listener).toHaveBeenCalled();
   });
 });
+// Mock cleanup handled by global config
 ```
+
+**❌ Anti-Pattern: Manual mock cleanup in every file**
+```ts
+// DON'T DO THIS - Violates DRY and creates maintenance burden
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.restoreAllMocks();
+});
+```
+
+If global config exists, this is redundant. If it doesn't exist, one forgotten file breaks test isolation. **Configure once globally instead.**
+
+**✅ Correct: cleanup checklist**
+```ts
+// vitest.config.ts - Configure once for all tests
+export default defineConfig({
+  test: {
+    clearMocks: true,
+    resetMocks: true,
+    restoreMocks: true,
+  },
+});
+
+// Per-test cleanup only for non-mock resources
+afterEach(() => {
+  // Only cleanup resources not handled by global config:
+  globalCache.clear();          // Custom state
+  emitter.removeAllListeners(); // Event listeners
+  await connection?.close();    // Open connections
+});
+```
+
+**When to use per-test mock cleanup:**
+Only when you need **explicit state persistence** across tests for a documented reason:
+
+```ts
+describe('StatefulMockScenario', () => {
+  // Only override global cleanup when you need mock state to persist
+  // Document WHY you need this
+  it('test that requires mock state from previous test', () => {
+    // Documented use case here
+  });
+});
+```
+
+**Principle: Eliminate entire classes of errors**
+Mock cleanup is a safety concern. Forgetting to clear mocks creates non-deterministic test failures. Use global configuration to make this error impossible.
 
 ## Use Test-Specific Data
 

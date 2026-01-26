@@ -54,8 +54,8 @@ This skill provides comprehensive guidance on:
 5. **Assertions**: Choosing strict assertions (`toEqual`, `toStrictEqual`, `toThrow`)
 6. **Test Doubles**: Fakes, stubs, mocks, spies - when to use each
 7. **Async Testing**: Promises, async/await, timers, and concurrent tests
-8. **Performance**: Fast tests, avoiding expensive operations, cleanup patterns
-9. **Vitest-Specific Features**: Coverage, watch mode, benchmarking, type testing, setup files
+8. **Performance**: Fast tests, avoiding expensive operations, global cleanup configuration
+9. **Vitest-Specific Features**: Coverage, watch mode, benchmarking, type testing, setup files, discovering existing test configuration
 10. **Snapshot Testing**: When and how to use snapshots effectively
 
 ## How to Use
@@ -63,9 +63,15 @@ This skill provides comprehensive guidance on:
 This skill uses a **progressive disclosure** structure to minimize context usage:
 
 ### 1. Start with the Overview (AGENTS.md)
-Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries.
+Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries and the workflow for discovering existing test configuration.
 
-### 2. Load Specific Rules as Needed
+### 2. Check for Existing Test Configuration
+Before writing tests:
+- First check `vitest.config.ts` for global mock cleanup settings (`clearMocks`, `resetMocks`, `restoreMocks`)
+- Then search for setup files (`test/setup.ts`, `vitest.setup.ts`, etc.) and analyze their configuration
+- See the workflow in [AGENTS.md](AGENTS.md#workflow-before-writing-tests)
+
+### 3. Load Specific Rules as Needed
 When you identify a relevant optimization, load the corresponding reference file for detailed implementation guidance:
 
 **Core Patterns:**
@@ -126,3 +132,5 @@ describe('ProductService', () => {
 - **Strict assertions**: Prefer `toEqual` over `toBe`, `toStrictEqual` when needed
 - **Minimal mocking**: Use real implementations when practical
 - **Fast execution**: Keep tests quick through efficient setup/teardown
+- **Configuration over repetition**: Use `clearMocks: true` in config instead of manual cleanup
+- **Discover before writing**: Check vitest.config.ts and setup files before writing new tests
