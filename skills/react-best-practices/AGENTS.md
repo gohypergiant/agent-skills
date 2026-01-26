@@ -56,6 +56,7 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 ---
 
 ## 1. Re-render Optimizations
+Reducing unnecessary re-renders minimizes wasted computation and improves UI responsiveness.
 
 ### 1.1 Defer State Reads
 Read searchParams/localStorage directly in callbacks instead of subscribing.
@@ -104,6 +105,7 @@ Skip useMemo for simple primitives (booleans, numbers, strings).
 ---
 
 ## 2. Rendering Performance
+Optimizing the rendering process reduces the work the browser needs to do.
 
 ### 2.1 Animate SVG Wrapper Instead of SVG Element
 Wrap SVG in a div and animate the wrapper for GPU acceleration.
@@ -133,6 +135,9 @@ Use `<Activity mode="visible|hidden">` to preserve state when toggling visibilit
 Create RegExp at module scope or memoize with useMemo to avoid re-creation.
 [View detailed examples](references/hoist-regexp-creation.md)
 
+### 2.8 Use useTransition Over Manual Loading States
+[View detailed examples](references/use-usetransition-over-manual-loading.md)
+
 ---
 
 ## 3. Advanced Patterns
@@ -148,6 +153,9 @@ Access latest values in callbacks without adding to dependency arrays. Prefer `u
 ### 3.3 Cache Repeated Function Calls
 Use module-level Map cache for expensive computations called repeatedly.
 [View detailed examples](references/cache-repeated-function-calls.md)
+
+### 3.4 Initialize App Once, Not Per Mount
+[View detailed examples](references/initialize-app-once.md)
 
 ---
 
