@@ -28,6 +28,6 @@ const UserAvatar = memo(function UserAvatar({ onClick = NOOP }: { onClick?: () =
 
 ## React Compiler Note
 
-❌ **Manual optimization required**
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still extract default non-primitive parameters to constants. The compiler cannot automatically stabilize default parameter values to preserve memo() optimization.
 
 See [react-compiler-guide.md](react-compiler-guide.md) for more details.

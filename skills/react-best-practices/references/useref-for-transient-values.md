@@ -62,3 +62,11 @@ function Tracker() {
   )
 }
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use useRef for transient values. The compiler cannot infer that frequently-changing values should avoid triggering re-renders.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

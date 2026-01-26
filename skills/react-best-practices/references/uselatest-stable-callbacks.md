@@ -66,3 +66,11 @@ function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
   }, [query])
 }
 ```
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use useLatest (or useEffectEvent for React 19.2+) for stable callbacks. The compiler cannot automatically create stable callback references while preserving access to latest values.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

@@ -28,4 +28,12 @@ function Form() {
 }
 ```
 
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still calculate derived state during render instead of using effects. The compiler cannot infer that state should be derived rather than synchronized.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.
+
 Reference: https://react.dev/learn/you-might-not-need-an-effect

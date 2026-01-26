@@ -34,3 +34,11 @@ function Comp() {
 ```
 
 Reference: https://react.dev/learn/you-might-not-need-an-effect#initializing-the-application
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use module-level guards for app initialization. The compiler cannot infer that initialization should run once per app load rather than per component mount.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.

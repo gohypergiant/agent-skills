@@ -33,4 +33,12 @@ function Form() {
 }
 ```
 
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still put interaction logic in event handlers. The compiler cannot infer that side effects should be triggered by user actions rather than state changes.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.
+
 Reference: https://react.dev/learn/removing-effect-dependencies#should-this-code-move-to-an-event-handler

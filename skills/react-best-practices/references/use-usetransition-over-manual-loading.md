@@ -62,3 +62,11 @@ Benefits:
 = Interrupt handling: New transitions automatically cancel pending ones
 
 Reference: https://react.dev/reference/react/useTransition
+
+---
+
+## React Compiler Note
+
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use useTransition over manual loading states. The compiler cannot automatically refactor manual loading state patterns into transitions.
+
+See [react-compiler-guide.md](react-compiler-guide.md) for more details.
