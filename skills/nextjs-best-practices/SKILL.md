@@ -96,20 +96,45 @@ This skill should activate when users say things like:
 
 ## How to Use
 
-This skill uses a **single-file structure** for Next.js patterns:
+This skill uses a **progressive disclosure** structure to minimize context usage:
 
-### 1. Read the AGENTS.md File
-[AGENTS.md](AGENTS.md) contains all Next.js best practices organized into sections:
-- **General** - Waterfall prevention, parallelization, Suspense boundaries
-- **Server-Side Performance** - Server Actions, RSC serialization, data fetching, caching
-- **Misc** - Barrel imports, Server vs Client Component decisions
+### 1. Start with the Overview (AGENTS.md)
+Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries.
 
-### 2. Apply the Pattern
-Each rule in AGENTS.md includes:
+### 2. Load Specific Rules as Needed
+When you identify a relevant optimization, load the corresponding reference file for detailed implementation guidance:
+
+**General Patterns:**
+- [prevent-waterfall-chains.md](references/prevent-waterfall-chains.md) (1.1)
+- [parallelize-independent-operations.md](references/parallelize-independent-operations.md) (1.2)
+- [strategic-suspense-boundaries.md](references/strategic-suspense-boundaries.md) (1.3)
+
+**Server-Side Performance:**
+- [server-actions-security.md](references/server-actions-security.md) (2.1)
+- [avoid-duplicate-serialization.md](references/avoid-duplicate-serialization.md) (2.2)
+- [minimize-serialization.md](references/minimize-serialization.md) (2.3)
+- [parallel-data-fetching.md](references/parallel-data-fetching.md) (2.4)
+- [react-cache-deduplication.md](references/react-cache-deduplication.md) (2.5)
+- [use-after-non-blocking.md](references/use-after-non-blocking.md) (2.6)
+
+**Misc:**
+- [avoid-barrel-imports.md](references/avoid-barrel-imports.md) (3.1)
+- [server-vs-client-component.md](references/server-vs-client-component.md) (3.2)
+
+**Quick References:**
+- [quick-checklist.md](references/quick-checklist.md)
+- [compound-patterns.md](references/compound-patterns.md)
+
+**Automation Scripts:**
+- [scripts/](scripts/) - Helper scripts to detect anti-patterns
+
+### 3. Apply the Pattern
+Each reference file contains:
 - ❌ Incorrect examples showing the anti-pattern
 - ✅ Correct examples showing the optimal implementation
-- Clear explanations of why the pattern matters
-- References to official Next.js documentation
+- Explanations of why the pattern matters
+- Performance impact metrics
+- Related patterns and references
 
 ## Important Notes
 
@@ -143,30 +168,28 @@ This skill primarily focuses on the **App Router** (Next.js 13+) patterns:
 **Task:** "Add authentication to this Server Action"
 
 **Approach:**
-1. Read AGENTS.md section 2.1 (Authenticate Server Actions)
-2. Import authentication function
-3. Add auth check at start of action
-4. Add authorization check if needed
-5. Add input validation with Zod
+1. Read AGENTS.md overview
+2. Identify issue: Server Action needs authentication
+3. Load [server-actions-security.md](references/server-actions-security.md)
+4. Apply authentication pattern with validation
 
 ### Example 2: Eliminating Waterfalls
 **Task:** "This page loads slowly with multiple fetches"
 
 **Approach:**
-1. Read AGENTS.md section 1.1 (Prevent Waterfall Chains)
-2. Identify independent operations
-3. Start all operations immediately (create promises)
-4. Await only when results are needed
-5. Use Promise.allSettled() for parallel operations
+1. Read AGENTS.md overview
+2. Identify issue: Sequential data fetching
+3. Load [prevent-waterfall-chains.md](references/prevent-waterfall-chains.md) and [parallelize-independent-operations.md](references/parallelize-independent-operations.md)
+4. Start operations immediately and use Promise.allSettled()
 
 ### Example 3: Reducing Serialization
 **Task:** "The HTML response is huge with user data"
 
 **Approach:**
-1. Read AGENTS.md section 2.3 (Minimize Serialization)
-2. Identify which fields the client actually uses
-3. Pass only necessary fields as individual props
-4. Move transformations to client side if needed
+1. Read AGENTS.md overview
+2. Identify issue: Over-serialization at RSC boundary
+3. Load [minimize-serialization.md](references/minimize-serialization.md)
+4. Pass only necessary fields, transform on client
 
 ## Additional Resources
 

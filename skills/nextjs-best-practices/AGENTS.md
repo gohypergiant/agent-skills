@@ -27,6 +27,7 @@ Comprehensive performance optimization guide for Next.js applications, designed 
 - Waterfall issues? → 1.1-1.2 (Parallelization)
 - Large HTML payload? → 2.2-2.3 (Serialization optimization)
 - Slow page loads? → 1.3 (Suspense), 2.4 (Parallel data fetching)
+- Real-world examples? → [Compound Patterns](references/compound-patterns.md)
 - Not sure what's wrong? → Use Quick Diagnostic Guide below
 
 **Next.js Resources:**
