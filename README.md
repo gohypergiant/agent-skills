@@ -31,8 +31,6 @@ npx skills add gohypergiant/agent-skills
 pnpm dlx skills add gohypergiant/agent-skills
 ```
 
-After installation, skills are stored in `.claude/skills/` and are automatically available.
-
 ## Quick Start
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
