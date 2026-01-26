@@ -56,6 +56,7 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 ---
 
 ## 1. Re-render Optimizations
+Reducing unnecessary re-renders minimizes wasted computation and improves UI responsiveness.
 
 ### 1.1 Defer State Reads
 Read searchParams/localStorage directly in callbacks instead of subscribing.
@@ -85,9 +86,30 @@ Use `useState(() => expensive())` to avoid re-running initializers.
 Wrap frequent, non-urgent updates in `startTransition()` to keep UI responsive.
 [View detailed examples](references/transitions-non-urgent-updates.md)
 
+### 1.8 Calculate Derived State During Rendering
+Compute values from props/state during render instead of storing in state or syncing via effects.
+[View detailed examples](references/calculate-derived-state.md)
+
+### 1.9 Avoid useMemo For Simple Expressions
+Skip useMemo for simple primitives (booleans, numbers, strings).
+[View detailed examples](references/avoid-usememo-simple-expressions.md)
+
+### 1.10 Extract Default Non-primitive Parameter Value
+Move default object/array/function parameters to constants to preserve memo() optimization.
+[View detailed examples](references/extract-default-parameter-value.md)
+
+### 1.11 Put Interaction Logic in Event Handlers
+Run user-triggered side effects (submit, click) in handlers, not state + effect combos.
+[View detailed examples](references/interaction-logic-in-event-handlers.md)
+
+### 1.12 Use useRef for Transient Values
+Store frequently-changing non-UI values (mouse position, intervals) in refs to avoid re-renders.
+[View detailed examples](references/useref-for-transient-values.md)
+
 ---
 
 ## 2. Rendering Performance
+Optimizing the rendering process reduces the work the browser needs to do.
 
 ### 2.1 Animate SVG Wrapper Instead of SVG Element
 Wrap SVG in a div and animate the wrapper for GPU acceleration.
@@ -117,9 +139,9 @@ Use `<Activity mode="visible|hidden">` to preserve state when toggling visibilit
 Create RegExp at module scope or memoize with useMemo to avoid re-creation.
 [View detailed examples](references/hoist-regexp-creation.md)
 
-### 2.8 Avoid useMemo For Simple Expressions
-Skip useMemo for simple primitives (booleans, numbers, strings).
-[View detailed examples](references/avoid-usememo-simple-expressions.md)
+### 2.8 Use useTransition Over Manual Loading States
+Use built-in `useTransition` with `isPending` instead of manual loading state management.
+[View detailed examples](references/use-usetransition-over-manual-loading.md)
 
 ---
 
@@ -136,6 +158,10 @@ Access latest values in callbacks without adding to dependency arrays. Prefer `u
 ### 3.3 Cache Repeated Function Calls
 Use module-level Map cache for expensive computations called repeatedly.
 [View detailed examples](references/cache-repeated-function-calls.md)
+
+### 3.4 Initialize App Once, Not Per Mount
+Use module-level guards for app-wide initialization instead of component useEffect.
+[View detailed examples](references/initialize-app-once.md)
 
 ---
 

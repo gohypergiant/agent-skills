@@ -11,6 +11,7 @@ Real-world scenarios often require multiple optimization patterns working togeth
 **Patterns Applied:**
 - [1.5 Functional setState Updates](functional-setstate-updates.md) - Stable callbacks
 - [1.7 Transitions](transitions-non-urgent-updates.md) - Non-urgent search results
+- [2.8 useTransition Over Manual Loading](use-usetransition-over-manual-loading.md) - Built-in pending state
 - [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md) - Stable debounce callback (useEffectEvent for React 19.2+)
 - [1.1 Defer State Reads](defer-state-reads.md) - Read URL params on demand
 
@@ -50,7 +51,7 @@ function SearchComponent({ items }: { items: Item[] }) {
 **✅ After: Optimized with Multiple Patterns**
 
 ```tsx
-import { useEffectEvent } from 'react' // React 19.2+
+import { useEffectEvent, useTransition } from 'react' // React 19.2+
 
 function SearchComponent({ items }: { items: Item[] }) {
   const [query, setQuery] = useState(() => {
@@ -59,6 +60,7 @@ function SearchComponent({ items }: { items: Item[] }) {
     return params.get('q') || ''
   })
   const [results, setResults] = useState(items)
+  const [isPending, startTransition] = useTransition() // ✅ 2.8: Built-in pending state
 
   // ✅ 1.5: Stable callback using functional setState
   const handleSearch = useCallback((newQuery: string) => {
@@ -90,6 +92,7 @@ function SearchComponent({ items }: { items: Item[] }) {
         value={query}
         onChange={e => handleSearch(e.target.value)}
       />
+      {isPending && <span className="loading">Searching...</span>}
       <ResultsList results={results} />
     </div>
   )
@@ -334,6 +337,7 @@ function Dashboard() {
 
 **Patterns Applied:**
 - [1.5 Functional setState Updates](functional-setstate-updates.md) - Stable form handlers
+- [1.11 Interaction Logic in Handlers](interaction-logic-in-event-handlers.md) - Submit logic in handler
 - [1.3 Narrow Effect Dependencies](narrow-effect-dependencies.md) - Validation effects
 - [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md) - Async validation (useEffectEvent for React 19.2+)
 - [1.7 Transitions](transitions-non-urgent-updates.md) - Non-blocking validation results
@@ -416,9 +420,10 @@ function RegistrationForm() {
     }
   }, [formData.email]) // ✅ Primitive dependency
 
-  // ✅ 1.5: Stable submit handler
+  // ✅ 1.11: Interaction logic in event handler, not effect
+  // ✅ 1.5: Stable submit handler with functional setState
   const handleSubmit = useCallback(async () => {
-    // ✅ Read latest formData inside callback
+    // Read latest formData inside callback
     setFormData(curr => {
       submitForm(curr).then(result => {
         if (result.errors) {
@@ -527,14 +532,164 @@ function Dashboard() {
 
 ---
 
+## Example 6: Optimized Analytics Tracker with Mouse Position
+
+**Scenario:** A component that tracks mouse position for analytics without causing re-renders, with proper app initialization
+
+**Patterns Applied:**
+- [1.12 useRef for Transient Values](useref-for-transient-values.md) - Mouse position tracking
+- [1.8 Calculate Derived State](calculate-derived-state.md) - Derive status from props
+- [1.10 Extract Default Parameter](extract-default-parameter-value.md) - Stable default callbacks
+- [3.4 Initialize App Once](initialize-app-once.md) - Analytics SDK initialization
+
+**❌ Before: Re-renders on Mouse Move**
+
+```tsx
+function AnalyticsTracker({ onTrack, enabled = true }: Props) {
+  const [mouseX, setMouseX] = useState(0) // ❌ Renders on every pixel
+  const [mouseY, setMouseY] = useState(0)
+  const [isTracking, setIsTracking] = useState(false) // ❌ Derived state
+
+  // ❌ Runs on every mount, even in dev strict mode
+  useEffect(() => {
+    initAnalyticsSDK() // ❌ Initializes multiple times
+  }, [])
+
+  // ❌ Derives isTracking from enabled in effect
+  useEffect(() => {
+    setIsTracking(enabled && mouseX > 0)
+  }, [enabled, mouseX])
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      setMouseX(e.clientX) // ❌ Triggers re-render
+      setMouseY(e.clientY)
+    }
+
+    window.addEventListener('mousemove', handleMove)
+    return () => window.removeEventListener('mousemove', handleMove)
+  }, [])
+
+  return (
+    <div>
+      {isTracking && (
+        <TrackingIndicator
+          x={mouseX}
+          y={mouseY}
+          onClick={() => {}} // ❌ New function on every render
+        />
+      )}
+    </div>
+  )
+}
+```
+
+**✅ After: Optimized with Transient Values**
+
+```tsx
+// ✅ 3.4: Initialize SDK once per app load, not per component mount
+let didInit = false
+
+function initOnce() {
+  if (didInit) return
+  didInit = true
+  initAnalyticsSDK()
+}
+
+// ✅ 1.10: Extract default callback to constant for stable memo()
+const NOOP = () => {}
+
+const TrackingIndicator = memo(function TrackingIndicator({
+  x,
+  y,
+  onClick = NOOP // ✅ Stable default value
+}: {
+  x: number
+  y: number
+  onClick?: () => void
+}) {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        left: x,
+        top: y,
+        pointerEvents: 'none'
+      }}
+    >
+      Tracking
+    </div>
+  )
+})
+
+function AnalyticsTracker({ onTrack, enabled = true }: Props) {
+  // ✅ 1.12: useRef for frequently-changing transient values
+  const mouseXRef = useRef(0)
+  const mouseYRef = useRef(0)
+  const indicatorRef = useRef<HTMLDivElement>(null)
+
+  // ✅ 1.8: Calculate derived state during render
+  const isTracking = enabled && mouseXRef.current > 0
+
+  useEffect(() => {
+    initOnce() // ✅ 3.4: Guarded initialization
+
+    const handleMove = (e: MouseEvent) => {
+      // ✅ 1.12: Update refs without triggering re-renders
+      mouseXRef.current = e.clientX
+      mouseYRef.current = e.clientY
+
+      // Directly update DOM for performance
+      const indicator = indicatorRef.current
+      if (indicator && enabled) {
+        indicator.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`
+      }
+
+      // Send analytics without re-rendering
+      if (enabled && onTrack) {
+        onTrack({ x: e.clientX, y: e.clientY })
+      }
+    }
+
+    window.addEventListener('mousemove', handleMove)
+    return () => window.removeEventListener('mousemove', handleMove)
+  }, [enabled, onTrack])
+
+  return (
+    <div>
+      {isTracking && (
+        <div
+          ref={indicatorRef}
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            pointerEvents: 'none',
+            transform: 'translate(0px, 0px)'
+          }}
+        >
+          Tracking
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+---
+
 ## Key Takeaways
 
 1. **Patterns often work together** - Real-world optimizations typically combine 3-5 patterns
-2. **Start with correctness** - Functional setState (1.5) and narrow dependencies (1.3) prevent bugs
-3. **Then optimize rendering** - Memoization (1.2), transitions (1.7), and derived state (1.4)
-4. **Finally, advanced patterns** - useEffectEvent/useLatest (3.2), caching (3.3), and Activity (2.6)
-5. **SSR requires special care** - Hydration mismatch prevention (2.5) is critical
-6. **React Compiler helps** - But state/effect patterns still need manual application
-7. **React 19.2+ advantages** - Use useEffectEvent instead of useLatest for cleaner stable event handlers
+2. **Start with correctness** - Functional setState (1.5), narrow dependencies (1.3), and interaction logic in handlers (1.11) prevent bugs
+3. **Derive, don't sync** - Calculate derived state during render (1.8), don't use effects to synchronize it
+4. **Choose the right state storage** - Use useState for UI, useRef for transient values (1.12)
+5. **Then optimize rendering** - Memoization (1.2), transitions (1.7/2.8), and derived state (1.4)
+6. **Stable references matter** - Extract default parameters (1.10) to preserve memo() optimization
+7. **Initialize wisely** - App-level initialization once (3.4), component initialization lazily (1.6)
+8. **Finally, advanced patterns** - useEffectEvent/useLatest (3.2), caching (3.3), and Activity (2.6)
+9. **SSR requires special care** - Hydration mismatch prevention (2.5) is critical
+10. **React Compiler helps** - But state/effect patterns still need manual application
+11. **React 19.2+ advantages** - Use useEffectEvent instead of useLatest for cleaner stable event handlers
 
 Refer to the [Quick Checklists](quick-checklists.md) for systematic pattern application and [React Compiler Guide](react-compiler-guide.md) for compiler-specific guidance.
