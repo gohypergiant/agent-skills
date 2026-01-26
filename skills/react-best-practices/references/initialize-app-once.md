@@ -1,4 +1,4 @@
-# 2.8 Use useTransition Over Manual Loading States
+# 3.4 Initialize App Once, Not Per Mount
 
 Do not put app-wide initialization that must run once per app load inside `useEffect()` of a component. Components can remount and effects will re-run. Use a module-level guard or top-level init in the entry module instead.
 

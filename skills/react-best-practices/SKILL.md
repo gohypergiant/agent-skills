@@ -109,6 +109,11 @@ When you identify a relevant optimization, load the corresponding reference file
 - [functional-setstate-updates.md](references/functional-setstate-updates.md)
 - [lazy-state-initialization.md](references/lazy-state-initialization.md)
 - [transitions-non-urgent-updates.md](references/transitions-non-urgent-updates.md)
+- [calculate-derived-state.md](references/calculate-derived-state.md)
+- [avoid-usememo-simple-expressions.md](references/avoid-usememo-simple-expressions.md)
+- [extract-default-parameter-value.md](references/extract-default-parameter-value.md)
+- [interaction-logic-in-event-handlers.md](references/interaction-logic-in-event-handlers.md)
+- [useref-for-transient-values.md](references/useref-for-transient-values.md)
 
 **Rendering Performance:**
 - [animate-svg-wrapper.md](references/animate-svg-wrapper.md)
@@ -118,12 +123,13 @@ When you identify a relevant optimization, load the corresponding reference file
 - [prevent-hydration-mismatch.md](references/prevent-hydration-mismatch.md)
 - [activity-component-show-hide.md](references/activity-component-show-hide.md)
 - [hoist-regexp-creation.md](references/hoist-regexp-creation.md)
-- [avoid-usememo-simple-expressions.md](references/avoid-usememo-simple-expressions.md)
+- [use-usetransition-over-manual-loading.md](references/use-usetransition-over-manual-loading.md)
 
 **Advanced Patterns:**
 - [store-event-handlers-refs.md](references/store-event-handlers-refs.md)
 - [uselatest-stable-callbacks.md](references/uselatest-stable-callbacks.md)
 - [cache-repeated-function-calls.md](references/cache-repeated-function-calls.md)
+- [initialize-app-once.md](references/initialize-app-once.md)
 
 **Misc:**
 - [named-imports.md](references/named-imports.md)
