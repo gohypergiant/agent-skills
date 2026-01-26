@@ -13,6 +13,7 @@ A collection of skills and commands that transform AI agents into specialized pr
 - [Ecosystem](#ecosystem)
 - [Testing](#testing)
 - [Documentation](#documentation)
+- [Prompt Patterns](#prompt-patterns)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -35,7 +36,6 @@ After installation, skills are stored in `.claude/skills/` and are automatically
 ## Quick Start
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
-
 ```
 # Agents will use js-ts-best-practices when you ask:
 "Add input validation to this function"
@@ -46,9 +46,9 @@ Once installed, skills activate automatically when relevant tasks are detected. 
 # Agents will use vitest-best-practices when you ask:
 "Write tests for this utility function"
 ```
+For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
 Commands can be invoked directly:
-
 ```bash
 # Audit JSDoc comments in your codebase
 claude /audit:js-ts-docs ./src
@@ -201,7 +201,6 @@ These third-party skills have been vetted for use alongside the Accelint skills:
 - [Tanstack Query](https://skills.sh/jezweb/claude-skills/tanstack-query) - Data fetching patterns
 
 Install ecosystem skills the same way:
-
 ```bash
 npx skills add onmax/nuxt-skills --skill "motion"
 ```
@@ -222,6 +221,128 @@ For detailed guides on how skills and commands work:
 - [Skills Guide](./documentation/Skills.md) - Comprehensive guide to skill architecture, progressive disclosure, and development workflow
 - [Commands Guide](./documentation/Commands.md) - Full specification for creating Claude Code commands
 
+## Prompt Patterns
+
+Reusable prompt patterns for common development tasks. These patterns work well with the skills and commands in this repository.
+
+### Explain Like I'm 5 (ELI5)
+```
+Persona:
+You are an expert in the field of [CONCEPT] and a professional science communicator.
+
+Objective:
+Explain [CONCEPT] as if I'm 5 years old.
+
+Requirements:
+- Use simple everyday analogies
+- Be specific, not grandiose. Say what it actually does
+- Avoid technical jargon
+- Avoid puffery: pivotal, crucial, vital, testament, enduring legacy
+- Avoid empty "-ing" phrases: ensuring reliability, showcasing features, highlighting capabilities
+- Avoid promotional adjectives: groundbreaking, seamless, robust, cutting-edge
+- Avoid overused AI vocabulary: delve, leverage, multifaceted, foster, realm, tapestry
+- Avoid formatting overuse: excessive bullets, emoji decorations, bold on every other word
+```
+
+**Invokes:** No specific skills (general-purpose explanation pattern)
+
+### Review Code
+```
+Persona:
+Act as a lead software engineer and technical writer with 15+ years of experience.
+
+Objective:
+1. Check for bugs, edge cases, and error handling
+2. Suggest performance improvements
+3. Evaluate code structure and organization and recommend better patterns
+4. Assess naming conventions and readability
+5. Identify potential security issues
+6. Provide thorough testing including edge cases
+7. Explain your reasoning clearly with specific examples
+
+Requirements:
+Always prioritize readability and maintainability over cleverness.
+
+Format and classify your review as:
+🔴 Critical
+🟠 High
+🟡 Medium
+🟢 Low
+```
+
+**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+
+### Debug Code
+```
+Persona:
+Act as a lead software engineer and technical writer with 15+ years of experience.
+
+Objective:
+1. **Problem Identification**: What exactly is failing?
+2. **Root Cause**: Why is it failing?
+3. **Fix**: Provide corrected code
+4. **Prevention**: How to prevent similar bugs
+
+Requirements:
+Show your debugging thought process step by step.
+
+Format and classify your review as:
+🔴 Critical
+🟠 High
+🟡 Medium
+🟢 Low
+```
+
+**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+
+### Performance Analysis
+```
+Persona:
+Act as a lead software engineer and technical writer with 15+ years of experience.
+
+Objective:
+Analyze this code for performance issues.
+
+Requirements:
+1. **Time Complexity**: Big O analysis
+2. **Space Complexity**: Memory usage patterns
+3. **I/O Bottlenecks**: Database, network, disk
+4. **Algorithmic Issues**: Inefficient patterns
+5. **Quick Wins**: Easy optimizations
+
+Format and classify your review as:
+🔴 Critical
+🟠 High
+🟡 Medium
+🟢 Low
+```
+
+**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+
+### Security Analysis
+```
+Persona:
+Act as a lead security analyst and technical writer with 15+ years of experience.
+
+Objective:
+Perform a security review of this code.
+
+Requirements:
+1. **Input Validation**: Check all inputs
+2. **Authentication/Authorization**: Access control
+3. **Data Protection**: Sensitive data handling
+4. **Injection Vulnerabilities**: SQL, XSS, etc.
+5. **Dependencies**: Known vulnerabilities
+
+Format and classify your review as:
+🔴 Critical
+🟠 High
+🟡 Medium
+🟢 Low
+```
+
+**Invokes:** js-ts-best-practices, react-best-practices
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions.
@@ -232,8 +353,6 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions.
 2. Create your feature branch
 3. Follow existing skill/command patterns
 4. Submit a pull request
-
-For command creation, see [CMDS-README.md](./CMDS-README.md) for the full specification.
 
 ## License
 
