@@ -46,6 +46,7 @@ Once installed, skills activate automatically when relevant tasks are detected. 
 # Agents will use vitest-best-practices when you ask:
 "Write tests for this utility function"
 ```
+For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
 Commands can be invoked directly:
 ```bash
