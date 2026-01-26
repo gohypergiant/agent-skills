@@ -1,4 +1,4 @@
-# 2.8 Avoid `useMemo` For Simple Expressions
+# 1.9 Avoid `useMemo` For Simple Expressions
 
 When an expression is simple (few logical or arithmetical operators) and has a primitive result type (boolean, number, string), do not wrap it in `useMemo`. Calling `useMemo` and comparing hook dependencies may consume more resources than the expression itself.
 

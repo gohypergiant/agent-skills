@@ -1,9 +1,9 @@
 ---
 name: js-ts-best-practices
-description: JavaScript and TypeScript best practices covering naming conventions, control flow, state management, TypeScript patterns (avoid any/enum, prefer type over interface), safety (input validation, assertions, error handling), performance optimization (reduce branching/looping, memoization, defer await, cache property access, storage API caching), and documentation (JSDoc, comment markers). Use when writing JS/TS functions, refactoring code for performance, reviewing code quality, fixing type errors, optimizing loops or conditionals, adding validation, or improving error messages.
+description: JavaScript and TypeScript best practices covering naming conventions, control flow, state management, TypeScript patterns (avoid any/enum, prefer type over interface), safety (input validation, assertions, error handling), performance optimization (reduce branching/looping, memoization, defer await, cache property access, storage API caching, avoid needless allocations, currying for hot paths), and documentation (JSDoc, comment markers). Use when writing JS/TS functions, refactoring code for performance, reviewing code quality, fixing type errors, optimizing loops or conditionals, adding validation, or improving error messages.
 metadata:
   author: gohypergiant
-  version: "1.0"
+  version: "1.1"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -34,7 +34,7 @@ Use this skill when the task involves:
 - Refactoring nested conditionals to early returns
 - Simplifying complex control flow
 - Improving variable naming (descriptive names, proper prefixes for booleans)
-- Reducing code duplication
+- Reducing code duplication (extracting common patterns)
 - Applying consistent code style
 - Removing commented-out code or outdated comments
 
@@ -97,6 +97,7 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [state-management.md](references/state-management.md) - const vs let, immutability, pure functions
 - [return-values.md](references/return-values.md) - Return zero values instead of null/undefined
 - [misc.md](references/misc.md) - Line endings, defensive programming, technical debt
+- [code-duplication.md](references/code-duplication.md) - Extract common patterns, DRY principle, when to consolidate
 
 **TypeScript:**
 - [any.md](references/any.md) - Avoid any, use unknown or generics
@@ -110,15 +111,19 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [error-messages.md](references/error-messages.md) - User-friendly vs developer-specific messages
 
 **Performance:**
-- [reduce-branching.md](references/reduce-branching.md) - Use lookup tables instead of conditionals
-- [reduce-looping.md](references/reduce-looping.md) - reduce vs chained methods, Set.has() vs Array.includes()
-- [memoization.md](references/memoization.md) - When to memoize (avoid trivial computations)
+- [reduce-branching.md](references/reduce-branching.md) - Convert conditionals to lookups, hoist invariants, early returns
+- [reduce-looping.md](references/reduce-looping.md) - Single-pass operations, O(1) lookups, typed arrays
+- [memoization.md](references/memoization.md) - Hoist invariants, precompute constants, cache expensive operations
 - [batching.md](references/batching.md) - Batch I/O operations
-- [predictable-execution.md](references/predictable-execution.md) - Clear execution paths for CPU caching
+- [predictable-execution.md](references/predictable-execution.md) - Sequential access, cache locality, grouped data
 - [bounded-iteration.md](references/bounded-iteration.md) - Set limits on loops and queues
 - [defer-await.md](references/defer-await.md) - Move await into branches that need it
-- [cache-property-access.md](references/cache-property-access.md) - Cache object lookups in loops
+- [cache-property-access.md](references/cache-property-access.md) - Cache lookups, eliminate aliases, avoid unnecessary destructuring
 - [cache-storage-api.md](references/cache-storage-api.md) - Cache localStorage/sessionStorage/cookie reads
+- [object-operations.md](references/object-operations.md) - Safe mutation, shallow clones, preallocate shapes
+- [avoid-allocations.md](references/avoid-allocations.md) - Inline simple computations, avoid needless variables, reduce GC pressure
+- [currying.md](references/currying.md) - Curry to precompute constant parameters, optimize hot paths
+- [performance-misc.md](references/performance-misc.md) - Strings, regex, async overhead, closures, try/catch
 
 **Documentation:**
 - [jsdoc.md](references/jsdoc.md) - Well-formed JSDoc for exports
@@ -233,6 +238,78 @@ for (const item of items) {
 }
 ```
 
+### Example 5: Avoiding Needless Allocations
+**Task:** "This random number function has GC pressure when called in a loop"
+
+**Approach:**
+1. Read AGENTS.md overview
+2. Identify issue: intermediate variable creating unnecessary allocations
+3. Load [avoid-allocations.md](references/avoid-allocations.md)
+4. Inline simple computation to eliminate allocation
+
+**Before:**
+```ts
+function randomInt(min: number, max: number): number {
+  const minCeil = Math.ceil(min);
+  const maxFloor = Math.floor(max);
+  const range = maxFloor - minCeil + 1;
+  return Math.floor(Math.random() * range + minCeil);
+}
+```
+
+**After:**
+```ts
+function randomInt(min: number, max: number): number {
+  const minCeil = Math.ceil(min);
+  const maxFloor = Math.floor(max);
+  return Math.floor(Math.random() * (maxFloor - minCeil + 1) + minCeil);
+}
+```
+
+### Example 6: Currying for Performance
+**Task:** "This round() function recomputes 10 ** precision on every call in a loop"
+
+**Approach:**
+1. Read AGENTS.md overview
+2. Identify issue: expensive exponentiation repeated with constant parameter
+3. Load [currying.md](references/currying.md)
+4. Convert to curried form to precompute multiplier
+
+**Before:**
+```ts
+export function round(precision: number, value: number): number {
+  const multiplier = 10 ** precision;
+  return Math.round(value * multiplier) / multiplier;
+}
+
+for (const price of prices) {
+  rounded.push(round(2, price)); // Recomputes 10 ** 2 every time
+}
+```
+
+**After:**
+```ts
+export function round(precision: number): (value: number) => number;
+export function round(precision: number, value: number): number;
+export function round(
+  precision: number,
+  value?: number,
+): number | ((value: number) => number) {
+  const multiplier = 10 ** precision;
+
+  if (value === undefined) {
+    return (v: number) => Math.round(v * multiplier) / multiplier;
+  }
+
+  return Math.round(value * multiplier) / multiplier;
+}
+
+const roundTo2 = round(2); // Compute once
+for (const price of prices) {
+  rounded.push(roundTo2(price)); // Reuse precomputed multiplier
+}
+```
+
 ## Important Notes
 
 ### Performance Philosophy
@@ -267,7 +344,9 @@ Always **benchmark your assumptions** before moving on. Premature optimization o
 - **Include values in messages**: Always show actual vs expected values
 
 ### Documentation Standards
-- **All exports need JSDoc**: Minimum `@param`, `@returns`, `@example`
+- **All code needs JSDoc**: Functions, types, interfaces, constants, and classes require JSDoc
+- **Required tags (all code)**: Description, `@param`, `@template`, `@returns`
+- **Required tags (exports only)**: `@throws`, `@example` (in addition to above)
 - **Use comment markers**: TODO, FIXME, HACK, NOTE, REVIEW, PERF
 - **Remove dead code**: No commented-out code or edit history
 - **Preserve business logic**: Keep comments explaining "why", not "what"
