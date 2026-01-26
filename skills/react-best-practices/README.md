@@ -167,3 +167,15 @@ This skill follows these principles:
 4. **Avoid premature optimization** - Don't optimize trivial operations
 5. **Prefer simplicity** - Simple, readable code over clever optimizations
 6. **Document non-obvious patterns** - Explain why optimizations exist
+
+---
+
+## References
+
+- https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
+- https://github.com/buildworksai/AgentHub/blob/main/.agent/skills/react-best-practices/skill.md
+- https://github.com/programming-in-th/programming.in.th/blob/main/.claude/docs/react-patterns.md
+- https://github.com/softaworks/agent-toolkit/tree/main/skills/react-dev
+- https://github.com/softaworks/agent-toolkit/blob/main/skills/react-useeffect/README.md
+- https://github.com/Jeffallan/claude-skills/blob/main/skills/react-expert/SKILL.md
+- https://github.com/prowler-cloud/prowler/blob/master/skills/react-19/SKILL.md
