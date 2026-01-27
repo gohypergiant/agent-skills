@@ -10,9 +10,9 @@ A skill is a directory containing at minimum a SKILL.md file. You can optionally
 - **SKILL.md**: Always uppercase, always this exact filename
 - **AGENTS.md**: Always uppercase, always this exact filename
 - **README.md**: Always uppercase, always this exact filename
-- **Scripts directory**: Always this exact folder name
+- **Scripts directory**: `scripts` Always this exact folder name
 - **Scripts**: `kebab-case.sh` (e.g., `run.sh`, `fetch-logs.sh`)
-- **References directory**: Always this exact folder name
+- **References directory**: `references` Always this exact folder name
 - **References**: `kebab-case.md` (e.g., `aaa-pattern.md`, `derive-state.md`)
 
 ### Local File References

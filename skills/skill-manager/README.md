@@ -2,6 +2,18 @@
 
 Comprehensive guide for creating effective agent skills that extend Claude's capabilities with specialized knowledge, workflows, and tool integrations.
 
+## Installation
+
+**npm**
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill skill-manager
+```
+
+**pnpm**
+```bash
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill skill-manager
+```
+
 ## Overview
 
 This skill provides structured guidance for skill creation and management, covering:
@@ -14,6 +26,15 @@ This skill provides structured guidance for skill creation and management, cover
 Think of this as a "meta-skill" - a skill for building skills. It provides the methodology, conventions, and structural guidelines needed to develop high-quality agent skills.
 
 **Note:** This skill is optimized for AI agents creating other skills, but humans may find it useful for understanding skill architecture and contributing to skill development.
+
+---
+
+## Requirements
+
+- Claude Code CLI or compatible agent environment
+- File system write permissions for skill creation
+- Git repository (recommended for version tracking)
+- Understanding of agent skill architecture
 
 ---
 
@@ -71,32 +92,6 @@ Develop skill content with agent-focused information:
 
 ---
 
-## Directory Structure
-
-Skills follow a standardized layout:
-
-```
-skill-name/
-├── SKILL.md           # Main skill file (for agents)
-├── AGENTS.md          # Detailed implementation guide (for agents)
-├── README.md          # Human-friendly overview (this file)
-├── references/        # Detailed examples and guidelines
-│   ├── file-system.md
-│   ├── progressive-disclosure.md
-│   └── *.md
-├── scripts/           # Executable helper scripts
-│   └── *.sh
-└── assets/            # Templates, examples, or other resources
-```
-
-**Naming Conventions:**
-- Skill directories: `kebab-case` (e.g., `js-ts-best-practices`)
-- Required files: `SKILL.md`, `AGENTS.md`, `README.md` (uppercase)
-- Scripts: `kebab-case.sh` (e.g., `run.sh`, `fetch-logs.sh`)
-- References: `kebab-case.md` (e.g., `aaa-pattern.md`, `derive-state.md`)
-
----
-
 ## Key Features
 
 ### Progressive Disclosure
@@ -149,21 +144,52 @@ Skills act as "onboarding guides" that transform agents into specialized problem
 
 ---
 
-## Usage in Claude Code
+## Usage
 
-This skill is designed to be used with environments such as Claude Code and automatically activates when:
-- Creating a new skill
-- Refactoring or updating an existing skill
-- Questions about skill architecture or conventions
-- Packaging domain expertise for reuse
+This skill is designed to be used with environments such as Claude Code. It automatically activates when creating, refactoring, or auditing agent skills.
 
-To invoke manually:
+### Auditing an Existing Skill
 
+**prompt**
+```bash
+Persona:
+You are an expert skill architect.
+
+Objective:
+1. Use the skill-manager skill to audit ./skills/example-skill
+2. Identify any best practice optimizations that can be made
+3. Optimize towards deterministic output and correctness when auditing
+4. Explain your reasoning clearly with specific examples
+
+Output:
+A complete, production-ready skill following all best practices.
 ```
+
+### Creating a New Skill
+
+**prompt**
+```bash
+Persona:
+You are an expert skill architect.
+
+Objective:
+1. Use the skill-manager skill
+2. Create a new skill for [domain/tool/workflow]
+3. Follow the 4-step workflow
+4. Ensure adherence to all conventions
+
+Output:
+A complete, production-ready skill following all best practices.
+```
+
+### Manual Invocation
+
+**command**
+```bash
 /skill-manager
 ```
 
-See [SKILL.md](SKILL.md) for complete activation criteria.
+See [SKILL.md](SKILL.md) for complete activation criteria and detailed workflow.
 
 ---
 
