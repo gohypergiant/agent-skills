@@ -83,3 +83,42 @@ Expected result: [description]
 ```
 
 Expected result: [description]
+
+---
+
+## Contributing
+
+Contributions are welcome! When contributing to this skill:
+
+1. Follow the skill structure guidelines in the skill-manager skill
+2. Ensure all examples use ❌/✅ format for clarity
+3. Keep SKILL.md under 500 lines (move details to references/)
+4. Test changes with actual use cases
+5. Update README.md and examples when adding features
+
+---
+
+## Skill Architecture Philosophy
+
+<!-- Optional: Remove this section if your skill doesn't need philosophical grounding.
+     Keep it if your skill embodies specific principles worth explaining. -->
+
+This skill follows these principles:
+
+1. **[Principle 1]** - [Explanation]
+2. **[Principle 2]** - [Explanation]
+3. **[Principle 3]** - [Explanation]
+
+---
+
+## Learn More
+
+- [Agent Skills Specification](https://agentskills.io/specification)
+- [AGENTS.md](AGENTS.md) - Detailed implementation rules
+- [references/](references/) - Comprehensive examples and patterns
+
+---
+
+## License
+
+[Your license here]

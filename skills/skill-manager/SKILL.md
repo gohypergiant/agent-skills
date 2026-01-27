@@ -30,6 +30,50 @@ Skip this skill when:
 - Request is for general coding help unrelated to skill packaging
 - User wants to modify skill behavior but not the skill file itself
 
+## When to Activate This Skill
+
+Use this skill when the task involves:
+
+### Creating New Skills
+- User requests to "create a skill", "make a new skill", "build a skill"
+- Packaging domain expertise or workflows for reuse
+- Converting repetitive tasks into reusable resources
+- Bundling scripts, references, or templates into a skill
+
+### Refactoring Existing Skills
+- Updating skill structure or organization
+- Improving skill compliance with specifications
+- Adding progressive disclosure patterns
+- Enhancing token efficiency
+- Aligning with current best practices
+
+### Auditing Skills
+- Reviewing skills for best practice compliance
+- Identifying optimization opportunities
+- Ensuring deterministic output patterns
+
+## Example Trigger Phrases
+
+This skill should activate when users say things like:
+
+**Creating New Skills:**
+- "Create a skill for handling PDF documents"
+- "Make a new skill that helps with BigQuery schemas"
+- "Build a skill to package our React best practices"
+- "Package this as a skill"
+- "Skill for X" (where X is a domain/tool/workflow)
+
+**Refactoring Existing Skills:**
+- "Update the vitest skill to follow the latest patterns"
+- "Refactor this skill to be more token-efficient"
+- "Improve the progressive disclosure in our testing skill"
+- "Align this skill with the specification"
+
+**Auditing Skills:**
+- "Audit the skill-manager skill"
+- "Review this skill for best practices"
+- "Check if this skill follows the guidelines"
+
 ## Skill Creation Workflow
 
 To create or refactor a skill, follow the "Skill Creation Workflow" in order, skipping steps only if there is a clear reason why they are not applicable.
@@ -42,6 +86,8 @@ To create or refactor a skill, follow the "Skill Creation Workflow" in order, sk
 - [ ] Step 3: Initializing - Check existing skills, create directory structure
 - [ ] Step 4: Editing - Write agent-focused content with procedural knowledge
 ```
+
+> **Note**: For detailed implementation conventions (file naming, directory structure, token efficiency patterns, and reference organization), see [AGENTS.md](AGENTS.md) and load specific references as needed. This keeps the main workflow focused while detailed rules are available on-demand, following the progressive disclosure pattern this skill teaches.
 
 ### Step 1: Understanding the Skill with Concrete Examples
 
@@ -112,4 +158,4 @@ Follow the instructions and conventions outlined in the [AGENTS.md](AGENTS.md) o
 
 ### Step 4: Edit the Skill
 
-When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively. If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherance.
+When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively. If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherence.

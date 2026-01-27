@@ -16,16 +16,23 @@ Context about the domain, tool, or workflow this skill addresses.
 
 ## When NOT to Use This Skill
 
+<!-- Focus on scope boundaries, not just negations. Think about:
+     - Task is about USING the tool/workflow, not CONFIGURING/CREATING it
+     - Request is for general help, not domain-specific workflow
+     - User wants to modify behavior/output, not the underlying architecture
+     - Related but distinct domains (e.g., testing vs test infrastructure)
+-->
+
 Skip this skill when:
-- [Exclusion criteria 1]
-- [Exclusion criteria 2]
-- [Exclusion criteria 3]
+- [Exclusion criteria 1 - e.g., using vs configuring]
+- [Exclusion criteria 2 - e.g., general help vs domain-specific]
+- [Exclusion criteria 3 - e.g., behavior changes vs architecture changes]
 
 ## When to Activate This Skill
 
 Use this skill when the task involves:
 
-### Activiation Category
+### Activation Category
 - [Description of category sub item]
 - [Description of category sub item]
 
@@ -37,6 +44,19 @@ This skill should activate when users say things like:
 - ["A phrase or description a user would provide"]
 
 ## How to Use
+
+<!-- Replace this entire section based on your skill's complexity.
+
+     For SIMPLE skills (single script, straightforward workflow):
+     - List direct steps users follow
+     - Reference specific scripts or files to use
+     - Keep it concise and action-oriented
+
+     For COMPLEX skills (many rules, multiple reference files):
+     - Use the progressive disclosure pattern below
+     - Reference AGENTS.md for rule summaries
+     - Load detailed references on-demand
+-->
 
 This skill uses a **progressive disclosure** structure to minimize context usage:
 
