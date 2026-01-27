@@ -361,7 +361,7 @@ Format and classify your review as:
 ### Skill Management
 ```
 Persona:
-You are a expert skill architect.
+You are a expert agent skill architect.
 
 Objective:
 1. Use the skill-manager skill to audit ./skills/example-skill
