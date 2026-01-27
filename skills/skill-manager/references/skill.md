@@ -88,10 +88,10 @@ Use words an agent would search for:
 **When writing documentation that references other skills:**
 
 Use skill name only, with explicit requirement markers:
-- ✅ Correct: `**REQUIRED SUB-SKILL:** Use accelint:js-ts-best-practices`
-- ✅ Correct: `**REQUIRED BACKGROUND:** You MUST understand accelint:vitest-best-practices`
-- ❌ Incorrect: `See skills/testing/test-driven-development` (unclear if required)
-- ❌ Incorrect: `@skills/testing/test-driven-development/SKILL.md` (force-loads, burns context)
+- ✅ Correct: `**REQUIRED SUB-SKILL:** Use js-ts-best-practices`
+- ✅ Correct: `**REQUIRED BACKGROUND:** You MUST understand vitest-best-practices`
+- ❌ Incorrect: `See skills/vitest-best-practices` (unclear if required)
+- ❌ Incorrect: `@skills/react-best-practices/SKILL.md` (force-loads, burns context)
 
 **Why no @ links:** `@` syntax force-loads files immediately, consuming context before you need them.
 
