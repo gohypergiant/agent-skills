@@ -1,26 +1,8 @@
 # 1.5 References
 
-Contains additional documentation with detailed technical references that agents can read when needed. Keep individual reference files focused. Agents load these on demand, so smaller files mean less use of context. References should incorrect and correct examples of a rule to help reinforce context. Show the "Incorrect" version before the "Correct" version for better pedagogical flow. The persona and target audience for this document is an AI Agent or LLM. An example of the expected format:
+Contains additional documentation with detailed technical references that agents can read when needed. Keep individual reference files focused. Agents load these on demand, so smaller files mean less use of context. References should incorrect and correct examples of a rule to help reinforce context. Show the "Incorrect" version before the "Correct" version for better pedagogical flow. The persona and target audience for this document is an AI Agent or LLM. 
 
-```markdown
-## Rule Title Here
-
-Brief explanation of the rule and why it matters.
-
-**❌ Incorrect: (description of why)**
-    ```
-    // Bad code example
-    ```
-
-**✅ Correct: (description of why)**
-    ```
-    // Good code example
-    ```
-
-Optional explanatory text after examples.
-
-Reference: [Link](https://example.com)
-```
+Follow the structure in the [reference template](../assets/skill-template/references/example.md) as closely as possible. If a different structure exists already you must prioritize alignment and consistency. Ask the user if it is okay to aggressively refactor the format of the document.
 
 **When to include**: For documentation that an agent should reference while working
 
