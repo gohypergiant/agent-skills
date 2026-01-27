@@ -1,79 +1,46 @@
 ---
 name: skill-manager
-description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
+description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating/auditing existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "2.1"
+  version: "3.0"
 ---
 
 # Skill Manager
 
 This skill provides guidance for creating and managing effective agent skills.
 
-## About Skills
+## NEVER Do When Creating Skills
 
-Skills are modular, self-contained packages that extend Claude's capabilities by providing specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific domains or tasks. They can transform an agent into a specialized problem solver equipped with procedural knowledge that no model can fully possess.
+- **NEVER write tutorials explaining basics** - Assume Claude knows standard concepts, libraries, and patterns. Focus on expert-only knowledge.
+- **NEVER put triggering information in body** - "When to use" guidance belongs ONLY in the description field. The body is loaded after activation decision.
+- **NEVER dump everything in SKILL.md** - Use progressive disclosure: core workflow in SKILL.md (<500 lines ideal), detailed content in references/, loaded on-demand.
+- **NEVER use generic warnings** - "Be careful" and "avoid errors" are useless. Provide specific anti-patterns with concrete reasons.
+- **NEVER use same freedom level for all tasks** - Creative domains (design, architecture) need high freedom with principles. Fragile operations (file formats, APIs) need low freedom with exact scripts.
+- **NEVER explain standard operations** - Assume Claude knows how to read files, write code, use common libraries. Focus on non-obvious decisions and edge cases.
+- **NEVER include obvious procedures** - "Step 1: Open file, Step 2: Edit, Step 3: Save" wastes tokens. Include only domain-specific workflows Claude wouldn't know.
 
-### What Skills Provide
+## Before Creating a Skill, Ask
 
-1. Specialized workflows - Multi-step procedures for specific domains
-2. Tool integrations - Instructions for working with specific file formats or APIs
-3. Domain expertise - Company-specific knowledge, schemas, business logic
-4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
-5. Best practices - Documentation and examples regarding best practices for particular subjects
+Apply these tests to ensure the skill provides genuine value:
 
-## When NOT to Use This Skill
+### Knowledge Delta Test
+- **Does this capture what takes experts years to learn?** If explaining basics or standard library usage, it's redundant.
+- **Am I explaining TO Claude or arming Claude?** Skills should arm agents with expert knowledge, not teach them concepts.
+- **Is every paragraph earning its context space?** Token economy matters - shared with system prompts, conversation history, and other skills.
 
-Skip this skill when:
-- User is just asking questions about existing skills (not creating/modifying)
-- Task involves running/executing skills (not authoring them)
-- Request is for general coding help unrelated to skill packaging
-- User wants to modify skill behavior but not the skill file itself
+### Activation Economics
+- **Does the description answer WHAT, WHEN, and include KEYWORDS?** Vague descriptions mean the skill never gets activated.
+- **Would an agent reading just the description know exactly when to use this?** If unclear, the skill is invisible.
 
-## When to Activate This Skill
+### Freedom Calibration
+- **What happens if the agent makes a mistake?** High consequence = low freedom (exact scripts). Low consequence = high freedom (principles).
+- **Is there one correct way or multiple valid approaches?** One way = prescriptive. Multiple ways = guidance with examples.
 
-Use this skill when the task involves:
-
-### Creating New Skills
-- User requests to "create a skill", "make a new skill", "build a skill"
-- Packaging domain expertise or workflows for reuse
-- Converting repetitive tasks into reusable resources
-- Bundling scripts, references, or templates into a skill
-
-### Refactoring Existing Skills
-- Updating skill structure or organization
-- Improving skill compliance with specifications
-- Adding progressive disclosure patterns
-- Enhancing token efficiency
-- Aligning with current best practices
-
-### Auditing Skills
-- Reviewing skills for best practice compliance
-- Identifying optimization opportunities
-- Ensuring deterministic output patterns
-
-## Example Trigger Phrases
-
-This skill should activate when users say things like:
-
-**Creating New Skills:**
-- "Create a skill for handling PDF documents"
-- "Make a new skill that helps with BigQuery schemas"
-- "Build a skill to package our React best practices"
-- "Package this as a skill"
-- "Skill for X" (where X is a domain/tool/workflow)
-
-**Refactoring Existing Skills:**
-- "Update the vitest skill to follow the latest patterns"
-- "Refactor this skill to be more token-efficient"
-- "Improve the progressive disclosure in our testing skill"
-- "Align this skill with the specification"
-
-**Auditing Skills:**
-- "Audit the skill-manager skill"
-- "Review this skill for best practices"
-- "Check if this skill follows the guidelines"
+### Token Efficiency
+- **Can this be compressed without losing expert knowledge?** References loaded on-demand save context.
+- **Are there repetitive procedures that could become scripts?** Reusable code belongs in scripts/, not repeated in instructions.
 
 ## Flowchart Usage
 
@@ -186,7 +153,20 @@ Follow the instructions and conventions outlined in the [AGENTS.md](AGENTS.md) o
 
 ### Step 4: Edit the Skill
 
-When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively. 
+When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively.
+
+**Calibrate freedom to task fragility:**
+
+| Task Type | Freedom Level | Guidance Format | Example |
+|-----------|---------------|-----------------|---------|
+| **Creative/Design** | High freedom | Principles, thinking patterns, anti-patterns | "Commit to a bold aesthetic" |
+| **Code Review** | Medium freedom | Guidelines with examples, decision frameworks | "Priority: security > logic > performance" |
+| **File Operations** | Low freedom | Exact scripts, specific steps, no variation | "Use exact command: `pandoc --flag`" |
+
+**The test:** "If the agent makes a mistake, what's the consequence?"
+- High consequence (file corruption, data loss) → Low freedom with precise scripts
+- Medium consequence (suboptimal code, style issues) → Medium freedom with examples
+- Low consequence (aesthetic choices, multiple valid approaches) → High freedom with principles
 
 If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherence.
 
