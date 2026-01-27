@@ -1,7 +1,7 @@
 # JavaScript and TypeScript Best Practices
 
 > **Note:**
-> This document is mainly for agents and LLMs to follow when maintaining, generating, or refactoring JavaScript or TypeScript code at Accelint. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
+> This document is mainly for agents and LLMs to follow when maintaining, generating, or refactoring JavaScript or TypeScript code. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
 
 ---
 

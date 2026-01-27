@@ -1,6 +1,12 @@
 # 1.1 Naming Conventions
 
-Use descriptive, meaningful names. Stick to complete words unless abbreviation is widely recognized (ID, URL, RCS).
+## Overview
+
+Use descriptive, meaningful names with complete words. Append qualifiers in descending order of significance. Prefix booleans with `is` or `has`.
+
+## Examples
+
+### Descriptive Names
 
 **❌ Incorrect: non descriptive and meaning cannot be inferred**
 ```ts

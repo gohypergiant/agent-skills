@@ -1,6 +1,10 @@
 # 2.1 Any
 
-Avoid `any` type and always provide a correct return type.
+## Overview
+
+Avoid `any` type and always provide correct return types. Use `unknown` for truly unknown types or generics for flexible type-safe functions.
+
+## Examples
 
 **❌ Incorrect: `any` type for input and return type**
 ```ts
