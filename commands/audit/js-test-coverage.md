@@ -144,7 +144,7 @@ For each test file, parse and identify covered scenarios:
    - Track assertion coverage (multiple assertions per test)
 
 5. **Analyze test quality and format compliance**:
-   - **AAA pattern compliance**: Check for Arrange, Act, Assert structure with comments
+   - **AAA pattern compliance**: Check for Arrange, Act, Assert structure with blank lines for separation
    - **Test descriptions**: Verify sentence-style descriptions ("should do X when Y")
    - **Test organization**: Check for proper describe/it nesting (max 2-3 levels)
    - **Assertion quality**: Detect loose assertions (toBe vs toEqual, missing toStrictEqual)
@@ -155,7 +155,7 @@ For each test file, parse and identify covered scenarios:
    - **Test naming**: Detect vague test names ("test 1", "works correctly")
 
 6. **Detect format violations**:
-   - Missing AAA comments in test body
+   - Missing blank lines between AAA sections (Arrange, Act, Assert)
    - Non-sentence-style test descriptions
    - Deep nesting (>3 levels of describe)
    - Loose assertions (toBe for objects/arrays)
@@ -169,9 +169,9 @@ For each test file, parse and identify covered scenarios:
 
 7. **Categorize format violations by severity**:
    - **Critical**: Missing async/await, improper error assertions, missing cleanup
-   - **High**: Loose assertions, missing AAA pattern, vague descriptions
+   - **High**: Loose assertions, missing AAA structure (blank lines), vague descriptions
    - **Medium**: Deep nesting, over-mocking, missing parameterization
-   - **Low**: Missing AAA comments, minor naming improvements
+   - **Low**: Minor naming improvements
 
 ### Phase 4: Coverage Gap Detection
 
@@ -247,7 +247,6 @@ src/core.test.ts (Format Compliance: 62.5%)
   ⚠ Test 'validateUser - valid user object' - Format violations (High)
     Line 23-28
     Issues:
-      - Missing AAA pattern comments
       - Loose assertion: using toBe for object comparison (should use toEqual)
       - Vague description: missing "should" statement
 
@@ -256,7 +255,6 @@ src/core.test.ts (Format Compliance: 62.5%)
     Issues:
       - Vague test name: "test" is not descriptive
       - Missing async/await: promise not properly handled
-      - Missing AAA pattern comments
 
   ⚠ Nested describe blocks exceed 3 levels (Medium)
     Line 12
@@ -282,7 +280,6 @@ src/utils/formatters.test.ts (Format Compliance: 85.3%)
   ⚠ Test 'formatCurrency - formats correctly' - Format violations (Low)
     Line 34-41
     Issues:
-      - Missing AAA pattern comments
       - Consider more specific description
 ```
 
@@ -325,12 +322,12 @@ Overall format compliance: 73.5%
 
 Format violation breakdown by severity:
 - Critical: 12 violations (missing async/await, improper error assertions)
-- High: 45 violations (loose assertions, missing AAA pattern, vague descriptions)
+- High: 45 violations (loose assertions, missing AAA structure, vague descriptions)
 - Medium: 67 violations (deep nesting, over-mocking)
-- Low: 89 violations (missing AAA comments, minor naming)
+- Low: 32 violations (minor naming)
 
 Format violation breakdown by category:
-- Missing AAA pattern comments: 89
+- Missing AAA structure (blank lines): 32
 - Vague test descriptions: 45
 - Loose assertions (toBe vs toEqual): 34
 - Missing toStrictEqual for objects: 23
@@ -343,7 +340,7 @@ Format violation breakdown by category:
 - Should use parameterized tests: 16
 
 Test quality metrics:
-- Tests using AAA pattern with comments: 296/385 (76.9%)
+- Tests using AAA pattern with blank lines: 353/385 (91.7%)
 - Tests with sentence-style descriptions: 312/385 (81.0%)
 - Tests with strict assertions: 267/385 (69.4%)
 - Tests with proper async handling: 77/89 (86.5%)
@@ -406,7 +403,7 @@ Then, process format violations:
     - `[q]uit` - Abort and exit
   - If user chooses fix/all:
     - Apply format fixes based on violation type:
-      - Add AAA pattern comments if missing
+      - Add blank lines between AAA sections if missing (only for complex tests)
       - Rewrite test description to sentence-style if vague
       - Replace loose assertions (toBe → toEqual, add toStrictEqual)
       - Add proper async/await syntax
@@ -429,7 +426,7 @@ First, auto-fix coverage gaps:
   - Generate test skeleton in appropriate test file
   - Create test file if it doesn't exist
   - Use framework-agnostic syntax or match detected framework
-  - Follow vitest-best-practices template (AAA comments, sentence-style descriptions, strict assertions)
+  - Follow vitest-best-practices template (AAA structure with blank lines, sentence-style descriptions, strict assertions)
   - Show progress: "Generated M/N tests..."
   - Track all generated tests
 - Display completion message with total tests generated
@@ -505,26 +502,33 @@ describe('functionName', () => {
 
 When applying format fixes, the following transformations are made:
 
-**1. Add AAA Pattern Comments**
+**1. Add AAA Pattern Structure (Blank Lines)**
 ```typescript
 // Before
-test('should validate user', () => {
-  const user = { name: 'John' };
-  const result = validateUser(user);
-  expect(result).toBe(true);
+test('should validate user with multiple setup steps', () => {
+  const database = setupDatabase();
+  const userService = new UserService(database);
+  const user = { name: 'John', email: 'john@example.com' };
+  const result = userService.validateUser(user);
+  expect(result.valid).toBe(true);
+  expect(result.errors).toHaveLength(0);
 });
 
 // After
-test('should validate user', () => {
-  // Arrange
-  const user = { name: 'John' };
+test('should validate user with multiple setup steps', () => {
+  const database = setupDatabase();
+  const userService = new UserService(database);
+  const user = { name: 'John', email: 'john@example.com' };
 
-  // Act
-  const result = validateUser(user);
+  const result = userService.validateUser(user);
 
-  // Assert
-  expect(result).toBe(true);
+  expect(result.valid).toBe(true);
+  expect(result.errors).toHaveLength(0);
 });
+
+// Note: For very simple tests, blank lines provide sufficient clarity.
+// AAA comments (// Arrange, // Act, // Assert) are optional and should
+// only be added when the test logic is complex or unclear.
 ```
 
 **2. Improve Test Descriptions**
@@ -900,7 +904,6 @@ src/core.test.ts (Format Compliance: 62.5%)
   ⚠ Test 'validateUser - valid user object' - Format violations (High)
     Line 23-28
     Issues:
-      - Missing AAA pattern comments
       - Loose assertion: using toBe for object comparison
       - Vague description: missing "should" statement
 
@@ -908,7 +911,6 @@ src/core.test.ts (Format Compliance: 62.5%)
     Line 34-40
     Issues:
       - Vague test name: "test" is not descriptive
-      - Missing AAA pattern comments
 ...
 
 === Coverage Statistics ===
@@ -1003,13 +1005,11 @@ src/utils/formatters.ts (Coverage: 78.5%, Format Compliance: 82.1%)
 
 src/utils/validators.test.ts (Format Compliance: 68.3%)
   ⚠ Multiple tests with format violations
-    - 5 tests missing AAA comments
     - 3 tests with vague descriptions
     - 2 tests with loose assertions
 
 src/utils/formatters.test.ts (Format Compliance: 82.1%)
   ⚠ Multiple tests with format violations
-    - 4 tests missing AAA comments
     - 1 test with improper async handling
 ...
 
@@ -1078,7 +1078,7 @@ Modified 8 test files:
 - src/utils/sorters.test.ts (fixed 1 violation)
 
 Fixes by category:
-- Added AAA pattern comments: 18
+- Added blank lines for AAA structure: 11
 - Improved test descriptions: 8
 - Fixed loose assertions: 5
 - Added async/await: 2
@@ -1137,14 +1137,12 @@ src/api/client.test.ts (Format Compliance: 76.5%)
     Line 12-17
     Issues:
       - Vague description: missing "should" statement
-      - Missing AAA pattern comments
       - Loose assertion: using toBe for object comparison
 
   ⚠ Test 'update test' - Format violations (High)
     Line 23-29
     Issues:
       - Vague test name: "test" is not descriptive
-      - Missing AAA pattern comments
 
 === Coverage Statistics ===
 Total source files scanned: 1
@@ -1206,7 +1204,6 @@ Processing format violations...
 Violation 1/8: src/api/client.test.ts:12 - 'fetches user' (High)
 Issues:
   - Vague description: missing "should" statement
-  - Missing AAA pattern comments
   - Loose assertion: using toBe for object comparison
 
 Current code:
@@ -1235,7 +1232,6 @@ Applied fix to src/api/client.test.ts:12
 Violation 2/8: src/api/client.test.ts:23 - 'update test' (High)
 Issues:
   - Vague test name: "test" is not descriptive
-  - Missing AAA pattern comments
 
 Apply fix for this violation?
 [f]ix | [s]kip | [a]ll | [q]uit? a
@@ -1249,7 +1245,7 @@ Modified 1 file:
 - src/api/client.test.ts (fixed 8 violations)
 
 Fixes by category:
-- Added AAA pattern comments: 6
+- Added blank lines for AAA structure: 3
 - Improved test descriptions: 4
 - Fixed loose assertions: 2
 - Added async/await: 1
@@ -1290,8 +1286,7 @@ src/core/processor.ts (Coverage: 45.2%, Format Compliance: 73.6%)
   ✗ Function 'transformResult' - Missing branch coverage (Medium)
 
 src/core/processor.test.ts (Format Compliance: 73.6%)
-  ⚠ Multiple format violations (18 total)
-    - 12 tests missing AAA comments
+  ⚠ Multiple format violations (6 total)
     - 4 tests with vague descriptions
     - 2 tests with loose assertions
 
@@ -1300,16 +1295,14 @@ src/core/validator.ts (Coverage: 67.8%, Format Compliance: 81.2%)
   ✗ Function 'validateSchema' - Missing error handling tests (High)
 
 src/core/validator.test.ts (Format Compliance: 81.2%)
-  ⚠ Multiple format violations (8 total)
-    - 6 tests missing AAA comments
+  ⚠ Multiple format violations (2 total)
     - 2 tests with improper async handling
 
 src/core/transformer.ts (Coverage: 82.3%, Format Compliance: 92.5%)
   ✓ Full coverage
 
 src/core/transformer.test.ts (Format Compliance: 92.5%)
-  ⚠ Minor format violations (3 total)
-    - 3 tests missing AAA comments
+  ✓ Compliant with best practices
 
 === Coverage Statistics ===
 
@@ -1339,10 +1332,10 @@ Format violation breakdown by severity:
 - Critical: 2 violations
 - High: 12 violations
 - Medium: 18 violations
-- Low: 13 violations
+- Low: 3 violations
 
 Format violation breakdown by category:
-- Missing AAA pattern comments: 21
+- Missing AAA structure (blank lines): 3
 - Vague test descriptions: 8
 - Loose assertions: 6
 - Improper async handling: 2
@@ -1350,10 +1343,10 @@ Format violation breakdown by category:
 - Missing error message assertions: 5
 
 Per-file statistics:
-1. src/core/processor.ts: 45.2% coverage, 73.6% format (8 coverage gaps, 18 format violations)
-2. src/core/validator.ts: 67.8% coverage, 81.2% format (5 coverage gaps, 8 format violations)
-3. src/core/transformer.ts: 82.3% coverage, 92.5% format (0 coverage gaps, 3 format violations)
-4. src/core/formatter.ts: 78.9% coverage, 85.7% format (2 coverage gaps, 6 format violations)
+1. src/core/processor.ts: 45.2% coverage, 73.6% format (8 coverage gaps, 6 format violations)
+2. src/core/validator.ts: 67.8% coverage, 81.2% format (5 coverage gaps, 2 format violations)
+3. src/core/transformer.ts: 82.3% coverage, 100% format (0 coverage gaps, 0 format violations)
+4. src/core/formatter.ts: 78.9% coverage, 85.7% format (2 coverage gaps, 3 format violations)
 ...
 
 Report-only mode: no tests will be generated or modified
@@ -1711,17 +1704,17 @@ function detectFormatViolations(testFile: string): FormatViolation[] {
 
   // Check each test case
   for (const testCase of extractTestCases(ast)) {
-    // 1. Check for AAA pattern comments
-    if (!hasAAAComments(testCase.body)) {
+    // 1. Check for AAA pattern structure (blank lines) - only for complex tests
+    if (isComplexTest(testCase) && !hasAAAStructure(testCase.body)) {
       violations.push({
-        severity: testCase.hasMultipleAssertions ? 'high' : 'low',
-        category: 'missing-aaa-comments',
+        severity: 'high',
+        category: 'missing-aaa-structure',
         file: testFile,
         line: testCase.line,
         testName: testCase.name,
-        description: 'Missing AAA pattern comments (Arrange, Act, Assert)',
+        description: 'Missing blank lines between AAA sections (Arrange, Act, Assert) - test is complex and would benefit from clear separation',
         currentCode: testCase.code,
-        suggestedFix: addAAAComments(testCase.code)
+        suggestedFix: addAAABlankLines(testCase.code)
       });
     }
 
@@ -1835,14 +1828,39 @@ function isVagueDescription(name: string): boolean {
          !name.toLowerCase().includes('should');
 }
 
-function hasAAAComments(code: string): boolean {
-  const arrangePattern = /\/\/\s*Arrange/i;
-  const actPattern = /\/\/\s*Act/i;
-  const assertPattern = /\/\/\s*Assert/i;
+function isComplexTest(testCase: TestCase): boolean {
+  // A test is considered complex if it has:
+  // - Multiple setup statements (>3 lines of arrange)
+  // - Multiple assertions (>2 assertions)
+  // - Async operations
+  // - Complex logic (loops, conditionals)
+  return testCase.arrangeStatements > 3 ||
+         testCase.assertionCount > 2 ||
+         testCase.hasAsyncCode ||
+         testCase.hasComplexLogic;
+}
 
-  return arrangePattern.test(code) &&
-         actPattern.test(code) &&
-         assertPattern.test(code);
+function hasAAAStructure(code: string): boolean {
+  // Check for blank lines separating sections
+  // This is a simplified check - in practice, would need AST analysis
+  const lines = code.split('\n').map(l => l.trim());
+
+  // Look for patterns of: statements -> blank line -> statements -> blank line -> assertions
+  let hasBlankLineBeforeAct = false;
+  let hasBlankLineBeforeAssert = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i] === '' && i > 0 && i < lines.length - 1) {
+      // Check if next non-blank line might be Act or Assert
+      if (lines[i + 1].includes('const') || lines[i + 1].includes('let')) {
+        hasBlankLineBeforeAct = true;
+      } else if (lines[i + 1].includes('expect(')) {
+        hasBlankLineBeforeAssert = true;
+      }
+    }
+  }
+
+  return hasBlankLineBeforeAct && hasBlankLineBeforeAssert;
 }
 ```
 
