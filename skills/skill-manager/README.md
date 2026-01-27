@@ -222,3 +222,17 @@ This skill follows these principles:
 4. **Reusable resources** - Package scripts, schemas, and templates to eliminate repetitive work
 5. **Consistent structure** - Follow conventions for predictable, maintainable skills
 6. **Minimal nesting** - Keep file references one level deep from SKILL.md
+
+---
+
+## Learn More
+
+- [Agent Skill Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices.md)
+- [What Are Agent Skills?](https://agentskills.io/what-are-skills.md)
+- [Agent Skill Spec](https://agentskills.io/specification.md)
+
+---
+
+## License
+
+Apache 2.0
