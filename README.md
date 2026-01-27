@@ -120,13 +120,19 @@ Testing patterns for Vitest:
 
 ### nextjs-best-practices
 
-Next.js performance patterns:
+Next.js performance optimization and best practices:
 
-- Preventing waterfall chains in API routes
-- Parallelizing independent async operations
-- Suspense boundaries for streaming
+- Security patterns (authenticate Server Actions, validate inputs, authorization checks)
+- Waterfall elimination (start operations immediately, parallelize with Promise.allSettled())
+- RSC serialization optimization (minimize payload, avoid duplicate serialization)
+- Parallel data fetching with component composition
+- Per-request deduplication with React.cache()
+- Strategic Suspense boundaries for streaming
+- Non-blocking operations with after()
+- Import optimization (avoid barrel files)
+- Server vs Client Component decision-making
 
-**Activates when:** Working with Next.js pages, API routes, or server components.
+**Activates when:** Writing Server Components/Actions, implementing data fetching in RSC, optimizing API routes, debugging waterfall issues, reviewing Next.js code for performance, fixing authentication in Server Actions, reducing HTML payload size, or deciding between Server/Client Components.
 
 ### skill-manager
 
