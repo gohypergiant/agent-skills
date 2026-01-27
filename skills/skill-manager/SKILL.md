@@ -158,4 +158,8 @@ Follow the instructions and conventions outlined in the [AGENTS.md](AGENTS.md) o
 
 ### Step 4: Edit the Skill
 
-When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively. If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherence.
+When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively. 
+
+If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherence.
+
+When updating an existing skill, ensure that the frontmatter `metadata.version` value is bumped. If the scope of the change is substantial do a major change 1.0 to 2.0, otherwise minor 1.0 to 1.1.

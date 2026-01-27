@@ -1,8 +1,9 @@
 ---
 name: skill-name
 description: Use when [specific triggering condition]. [Additional context about when this skill applies].
+license: Apache-2.0
 metadata:
-  author: your-name
+  author: gohypergiant
   version: "1.0"
 ---
 
