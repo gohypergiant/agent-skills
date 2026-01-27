@@ -1,10 +1,10 @@
 ---
 name: skill-manager
-description: Guide for creating effective skills. Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
+description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "2.0"
+  version: "2.1"
 ---
 
 # Skill Manager
@@ -75,6 +75,19 @@ This skill should activate when users say things like:
 - "Review this skill for best practices"
 - "Check if this skill follows the guidelines"
 
+## How to Use
+
+This skill uses **progressive disclosure** to minimize context usage:
+
+### 1. Start with the Workflow (SKILL.md)
+Follow the 4-step workflow below for skill creation or refactoring.
+
+### 2. Reference Implementation Details (AGENTS.md)
+Load [AGENTS.md](AGENTS.md) for file system conventions, naming patterns, and structural rules.
+
+### 3. Load Specific Examples as Needed
+When implementing specific rules, load corresponding reference files for ❌/✅ examples.
+
 ## Skill Creation Workflow
 
 To create or refactor a skill, follow the "Skill Creation Workflow" in order, skipping steps only if there is a clear reason why they are not applicable.
@@ -88,24 +101,20 @@ To create or refactor a skill, follow the "Skill Creation Workflow" in order, sk
 - [ ] Step 4: Editing - Write agent-focused content with procedural knowledge
 ```
 
-> **Note**: For detailed implementation conventions (file naming, directory structure, token efficiency patterns, and reference organization), see [AGENTS.md](AGENTS.md) and load specific references as needed. This keeps the main workflow focused while detailed rules are available on-demand, following the progressive disclosure pattern this skill teaches.
-
 ### Step 1: Understanding the Skill with Concrete Examples
 
 Skip this step only when the skill's usage patterns are already clearly understood. It remains valuable even when working with an existing skill.
 
 To create an effective skill, clearly understand concrete examples of how the skill will be used. This understanding can come from either direct user examples or generated examples that are validated with user feedback.
 
-For example, when building an image-editor skill, relevant questions include:
+Example: Building an image-editor skill, ask:
+- "What functionality? Editing, rotating, other?"
+- "Usage examples?"
+- "Trigger phrases: 'Remove red-eye', 'Rotate image'—others?"
 
-- "What functionality should the image-editor skill support? Editing, rotating, anything else?"
-- "Can you give some examples of how this skill would be used?"
-- "I can imagine users asking for things like 'Remove the red-eye from this image' or 'Rotate this image'. Are there other ways you imagine this skill being used?"
-- "What would a user say that should trigger this skill?"
+Avoid overwhelming users. Start with key questions, follow up as needed.
 
-To avoid overwhelming users, avoid asking too many questions in a single message. Start with the most important questions and follow up as needed for better effectiveness.
-
-Conclude this step when there is a clear sense of the functionality the skill should support.
+Conclude when there is a clear sense of the functionality the skill should support.
 
 ### Step 2: Planning the Reusable Skill Contents
 
@@ -114,22 +123,12 @@ To turn concrete examples into an effective skill, analyze each example by:
 1. Considering how to execute on the example from scratch
 2. Identifying what scripts, references, and assets would be helpful when executing these workflows repeatedly
 
-Example: When building a `pdf-editor` skill to handle queries like "Help me rotate this PDF," the analysis shows:
+Examples:
+- `pdf-editor` skill for "Rotate this PDF" → store `scripts/rotate-pdf.sh` to avoid rewriting code each time
+- `frontend-app-builder` for "Build a todo app" → store `assets/hello-world/` boilerplate template
+- `big-query` for "How many users logged in today?" → store `references/schema.md` with table schemas
 
-1. Rotating a PDF requires re-writing the same code each time
-2. A `scripts/rotate-pdf.sh` script would be helpful to store in the skill
-
-Example: When designing a `frontend-app-builder` skill for queries like "Build me a todo app" or "Build me a dashboard to track my steps," the analysis shows:
-
-1. Writing a frontend app requires the same boilerplate React/Next.js code each time
-2. An `assets/hello-world/` template containing the boilerplate project files would be helpful to store in the skill
-
-Example: When building a `big-query` skill to handle queries like "How many users have logged in today?" the analysis shows:
-
-1. Querying BigQuery requires re-discovering the table schemas and relationships each time
-2. A `references/schema.md` file documenting the table schemas would be helpful to store in the skill
-
-To establish the skill's contents, analyze each concrete example to create a list of the reusable resources to include: scripts, references, and assets.
+Analyze each concrete example to create a list of reusable resources: scripts, references, and assets.
 
 ### Step 3: Initializing the Skill
 
