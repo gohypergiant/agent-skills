@@ -2,8 +2,6 @@
 
 Server Actions (functions with `"use server"`) are exposed as public endpoints, just like API routes. Always verify authentication and authorization **inside** each Server Action—do not rely solely on middleware, layout guards, or page-level checks, as Server Actions can be invoked directly.
 
-## Why This Matters
-
 Next.js documentation explicitly states: "Treat Server Actions with the same security considerations as public-facing API endpoints, and verify if the user is allowed to perform a mutation."
 
 Server Actions can be called:
@@ -184,10 +182,3 @@ export async function deletePost(postId: string) {
 
 - [Next.js Authentication Guide](https://nextjs.org/docs/app/guides/authentication)
 - [Server Actions Security](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations#security)
-- [Input Validation with Zod](https://zod.dev/)
-
----
-
-**Related Patterns:**
-- 2.6 Use after() for Non-Blocking Operations (audit logging)
-- 1.1 Prevent Waterfall Chains (parallelize auth + data fetching)

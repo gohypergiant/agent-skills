@@ -65,8 +65,3 @@ export default function Page() {
 - [1.1 Prevent Waterfall Chains](./prevent-waterfall-chains.md) - API route parallelization
 - [1.2 Parallelize Independent Operations](./parallelize-independent-operations.md) - Promise.allSettled()
 - [1.3 Strategic Suspense Boundaries](./strategic-suspense-boundaries.md) - Progressive rendering
-
-## References
-
-- [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components)
-- [Next.js Parallel Routes](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes)

@@ -2,16 +2,6 @@
 
 In API routes and Server Actions, start independent operations immediately, even if you don't await them yet.
 
-## Why This Matters
-
-Waterfall chains occur when independent async operations execute sequentially instead of in parallel. This multiplies response time: if auth takes 50ms and config takes 50ms, sequential execution takes 100ms, while parallel execution takes only 50ms.
-
-**Impact:** 2-10x faster response times for routes with multiple independent operations.
-
-## The Pattern
-
-Start all independent operations immediately by creating promises, then await only when you need the results.
-
 **❌ Incorrect: config waits for auth, data waits for both**
 ```ts
 export async function GET(request: Request) {
@@ -117,7 +107,7 @@ export async function updateProfile(formData: FormData) {
 
 ## What NOT to Do
 
-**❌ Don't use Promise.all() - use Promise.allSettled()**
+**❌ Incorrect: don't use Promise.all() - use Promise.allSettled()**
 ```ts
 // Bad: if one fails, all fail
 const [a, b, c] = await Promise.all([fetchA(), fetchB(), fetchC()])
@@ -129,7 +119,7 @@ if (a.status === 'rejected') {
 }
 ```
 
-**❌ Don't await in a loop**
+**❌ Incorrect: don't await in a loop**
 ```ts
 // Bad: sequential (100ms × 3 = 300ms)
 const results = []
@@ -143,14 +133,6 @@ const results = await Promise.allSettled(
 )
 ```
 
-## Performance Impact
-
-**Example timing:**
-- Sequential: auth(50ms) → config(50ms) → data(100ms) = **200ms total**
-- Parallel: max(auth(50ms), config(50ms)) + data(100ms) = **100ms total**
-
-**Result:** 2x faster response time
-
 ## Related Patterns
 
 - [1.2 Parallelize Independent Operations](./parallelize-independent-operations.md) - Use Promise.allSettled() for fully independent operations
@@ -160,10 +142,3 @@ const results = await Promise.allSettled(
 ## References
 
 - [Promise.allSettled() MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
-- [Next.js Data Fetching](https://nextjs.org/docs/app/building-your-application/data-fetching)
-
----
-
-**Related Sections:**
-- AGENTS.md § 1.1
-- Quick Checklist: API Route Checklist

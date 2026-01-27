@@ -2,8 +2,6 @@
 
 RSC→client serialization deduplicates by object reference, not value. Same reference = serialized once; new reference = serialized again. Do transformations (`.toSorted()`, `.filter()`, `.map()`) in client, not server.
 
-## The Pattern
-
 Pass the original data reference to the client and transform it there, rather than transforming on the server and creating new references.
 
 **❌ Incorrect: duplicates array**
@@ -103,8 +101,3 @@ async function Page() {
 
 - [2.3 Minimize Serialization at RSC Boundaries](./minimize-serialization.md) - Only pass necessary fields
 - [1.2 Parallelize Independent Operations](./parallelize-independent-operations.md) - Optimize data fetching
-
-## References
-
-- [React Server Components Serialization](https://github.com/reactwg/server-components/discussions/2)
-- [Next.js Data Fetching](https://nextjs.org/docs/app/building-your-application/data-fetching)

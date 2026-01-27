@@ -2,17 +2,11 @@
 
 Instead of awaiting data in async components before returning JSX, use Suspense boundaries to show the wrapper UI faster while data loads.
 
-## Why This Matters
-
 When you await data at the top level of a Server Component, the entire component tree waits before rendering. This blocks static content (headers, sidebars, footers) that could render immediately.
 
 Suspense boundaries allow static UI to render while dynamic data loads, improving perceived performance.
 
 **Impact:** Faster Time to First Byte (TTFB) and better user experience with progressive rendering.
-
-## The Pattern
-
-Move data fetching into separate components wrapped with Suspense, or pass promises to components using the `use()` hook.
 
 **❌ Incorrect: wrapper blocked by data fetching**
 ```ts
@@ -224,29 +218,6 @@ async function CommentsList({ commentsPromise }: { commentsPromise: Promise<Comm
 - Each section streams in as its data becomes available
 - No waterfall chains
 
-### Pattern 4: Conditional Suspense
-```tsx
-function Page({ showAnalytics }: { showAnalytics: boolean }) {
-  return (
-    <div>
-      <Header />
-
-      <Suspense fallback={<ContentSkeleton />}>
-        <Content />
-      </Suspense>
-
-      {showAnalytics && (
-        <Suspense fallback={<AnalyticsSkeleton />}>
-          <Analytics />
-        </Suspense>
-      )}
-
-      <Footer />
-    </div>
-  )
-}
-```
-
 ## The `use()` Hook
 
 The `use()` hook unwraps promises in React components (React 19+):
@@ -265,47 +236,6 @@ function DataDisplay({ dataPromise }: { dataPromise: Promise<Data> }) {
 - Can be used conditionally (unlike hooks)
 - Integrates with Suspense boundaries
 
-## When NOT to Use Suspense
-
-**❌ Don't use Suspense if the data is truly critical:**
-```tsx
-// Bad: if userId is needed for everything, just await it
-async function Page() {
-  const userIdPromise = fetchUserId()
-
-  return (
-    <Suspense fallback={<Skeleton />}>
-      <Dashboard userIdPromise={userIdPromise} />
-    </Suspense>
-  )
-}
-
-// Better: await critical data at top level
-async function Page() {
-  const userId = await fetchUserId()
-
-  return <Dashboard userId={userId} />
-}
-```
-
-**✅ Use Suspense when:**
-- Some UI can render without the data
-- Data isn't needed for layout/navigation
-- You want progressive rendering
-- Multiple data sources load at different speeds
-
-## Performance Impact
-
-**Without Suspense:**
-- Time to First Byte (TTFB): 500ms (waits for all data)
-- User sees: Nothing → Full page
-
-**With Suspense:**
-- TTFB: 50ms (static content)
-- User sees: Layout → Skeletons → Full page
-
-**Result:** 10x faster perceived load time
-
 ## Related Patterns
 
 - [1.1 Prevent Waterfall Chains](./prevent-waterfall-chains.md) - Start fetches immediately
@@ -317,9 +247,3 @@ async function Page() {
 - [React Suspense Documentation](https://react.dev/reference/react/Suspense)
 - [React use() Hook](https://react.dev/reference/react/use)
 - [Next.js Loading UI](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming)
-
----
-
-**Related Sections:**
-- AGENTS.md § 1.3
-- Quick Checklist: Server Component Checklist

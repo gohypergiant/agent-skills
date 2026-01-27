@@ -67,8 +67,3 @@ async function Page() {
 - [2.2 Avoid Duplicate Serialization](./avoid-duplicate-serialization.md) - Share references, not copies
 - [1.1 Prevent Waterfall Chains](./prevent-waterfall-chains.md) - Fetch data efficiently
 - [3.2 Server vs Client Component](./server-vs-client-component.md) - Keep data in Server Components when possible
-
-## References
-
-- [React Server Components](https://github.com/reactwg/server-components/discussions/2)
-- [Next.js Data Fetching](https://nextjs.org/docs/app/building-your-application/data-fetching)

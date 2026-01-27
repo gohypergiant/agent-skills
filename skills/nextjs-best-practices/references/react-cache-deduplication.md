@@ -2,8 +2,6 @@
 
 Use `React.cache()` for server-side request deduplication. Authentication and database queries benefit most.
 
-## Why This Matters
-
 In a single request, the same data might be needed by multiple Server Components. Without caching, each component would run the same query, wasting database connections and time.
 
 `React.cache()` ensures each unique function call runs only once per request, with subsequent calls returning the cached result.
@@ -32,7 +30,6 @@ export const getCurrentUser = cache(async () => {
 ```
 
 **Result:** Within a single request, multiple calls to `getCurrentUser()` execute the query only once.
-
 ```tsx
 // Page Component
 async function Page() {
@@ -207,70 +204,6 @@ async function Component2() {
 - File system operations
 - Any non-fetch async work
 
-## Common Use Cases
-
-### ✅ Always cache these:
-```typescript
-// Authentication
-export const getCurrentUser = cache(async () => { /* ... */ })
-export const getSession = cache(async () => { /* ... */ })
-
-// User-specific data
-export const getUserPreferences = cache(async (userId: string) => { /* ... */ })
-export const getUserPermissions = cache(async (userId: string) => { /* ... */ })
-
-// Database queries used across components
-export const getPost = cache(async (id: string) => { /* ... */ })
-export const getComments = cache(async (postId: string) => { /* ... */ })
-
-// Expensive computations
-export const calculateStats = cache(async (data: Data) => { /* ... */ })
-```
-
-### ❌ Don't cache these:
-```typescript
-// Mutations (writes)
-export const createPost = async (data: PostData) => { /* ... */ }
-export const deleteUser = async (id: string) => { /* ... */ }
-
-// Time-sensitive data
-export const getCurrentTime = async () => new Date()
-
-// Random/non-deterministic operations
-export const generateToken = async () => crypto.randomUUID()
-
-// Already cached (fetch)
-export const fetchData = async () => fetch('/api/data')
-```
-
-## Performance Impact
-
-**Example: Dashboard with 5 components needing user data:**
-
-**Without React.cache():**
-```tsx
-// 5 separate database queries
-Component1: await db.user.findUnique({ where: { id } })
-Component2: await db.user.findUnique({ where: { id } })
-Component3: await db.user.findUnique({ where: { id } })
-Component4: await db.user.findUnique({ where: { id } })
-Component5: await db.user.findUnique({ where: { id } })
-
-// Total: 5 queries × 20ms = 100ms
-```
-
-**With React.cache():**
-```tsx
-// 1 database query, 4 cache hits
-Component1: await getCurrentUser()  // Query (20ms)
-Component2: await getCurrentUser()  // Cache hit (0ms)
-Component3: await getCurrentUser()  // Cache hit (0ms)
-Component4: await getCurrentUser()  // Cache hit (0ms)
-Component5: await getCurrentUser()  // Cache hit (0ms)
-
-// Total: 1 query = 20ms (5x faster)
-```
-
 ## Debugging Cache Hits/Misses
 
 Add logging to see cache behavior:
@@ -308,11 +241,6 @@ await getUser(1)  // Cache hit
 await getUser(1)  // Query runs again (new request)
 ```
 
-For cross-request caching, use Next.js revalidation:
-```tsx
-export const revalidate = 3600 // Cache for 1 hour across requests
-```
-
 ## Related Patterns
 
 - [2.1 Authenticate Server Actions](./server-actions-security.md) - Cache auth checks
@@ -323,9 +251,3 @@ export const revalidate = 3600 // Cache for 1 hour across requests
 
 - [React.cache() Documentation](https://react.dev/reference/react/cache)
 - [Next.js Request Memoization](https://nextjs.org/docs/app/building-your-application/caching#request-memoization)
-
----
-
-**Related Sections:**
-- AGENTS.md § 2.5
-- Quick Checklist: Server Component Checklist, Performance Review Checklist
