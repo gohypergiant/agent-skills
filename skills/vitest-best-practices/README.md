@@ -23,12 +23,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    clearMocks: true      
-    resetMocks: true      
-    restoreMocks: true    
+    clearMocks: true // Clear call history before each test     
+    resetMocks: true // Reset implementation before each test     
+    restoreMocks: true // Restore original implementation before each test   
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
+      reporter: ['text', 'html', 'lcov'],
     },
   },
 });
@@ -64,7 +64,9 @@ vitest --ui         # Visual UI
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "test:typecheck": "vitest typecheck"
   }
 }
 ```
