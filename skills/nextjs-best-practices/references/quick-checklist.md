@@ -263,17 +263,3 @@ High-impact, low-effort optimizations:
 5. **Use `after()` for logging** (5 min) - Faster responses
 6. **Minimize RSC serialization** (10 min) - Smaller HTML
 
----
-
-## Resources
-
-- [Next.js App Router Docs](https://nextjs.org/docs/app)
-- [Server Actions Security](https://nextjs.org/docs/app/guides/authentication)
-- [Performance Best Practices](https://nextjs.org/docs/app/building-your-application/optimizing)
-- [React.cache() Documentation](https://react.dev/reference/react/cache)
-
----
-
-**Related Files:**
-- [AGENTS.md](../AGENTS.md) - Complete pattern reference
-- [server-actions-security.md](./server-actions-security.md) - Detailed security guide

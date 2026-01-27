@@ -53,11 +53,11 @@ Use this skill when the task involves:
 ## When NOT to Use This Skill
 
 Do not activate for:
-- React-specific optimizations (use react-best-practices skill)
+- React-specific optimizations (use `react-best-practices` skill)
 - Build configuration (webpack, turbopack) unless Next.js-specific
-- General TypeScript/JavaScript questions
+- General TypeScript/JavaScript questions (use `js-ts-best-practices` skill)
 - Deployment/hosting configuration
-- Testing setup (use a testing-specific skill if available)
+- Testing setup (use `vitest-best-practices` skill)
 
 ## Example Trigger Phrases
 
@@ -135,32 +135,6 @@ Each reference file contains:
 - Explanations of why the pattern matters
 - Performance impact metrics
 - Related patterns and references
-
-## Important Notes
-
-### Server Actions Security
-Server Actions are **public endpoints** just like API routes. Always authenticate and authorize inside each Server Action - do not rely solely on middleware or page-level checks.
-
-### RSC Serialization
-The React Server/Client boundary serializes all data into the HTML response. This directly impacts page weight and load time:
-- Only pass fields the client actually uses
-- Avoid duplicate serialization by sharing object references
-- Transform data on the client when possible
-
-### App Router vs Pages Router
-This skill primarily focuses on the **App Router** (Next.js 13+) patterns:
-- Server Components (default)
-- Server Actions
-- React.cache() for deduplication
-- Suspense boundaries
-- Parallel data fetching patterns
-
-### Performance Philosophy
-- Start independent operations immediately (prevent waterfalls)
-- Parallelize independent data fetches
-- Use Suspense boundaries strategically
-- Minimize serialization at RSC boundaries
-- Use `after()` for non-blocking operations
 
 ## Examples
 

@@ -11,7 +11,9 @@ Comprehensive performance optimization guide for Next.js applications, designed 
 
 **Focus:** Next.js App Router patterns including Server Components, Server Actions, RSC serialization, and server-side optimization.
 
-**For React-specific patterns**, use the `react-best-practices` skill.
+- **For React specific patterns**, use the `react-best-practices` skill.
+- **For JavaScript/TypeScript specific patterns**, use the `js-ts-best-practices` skill.
+- **For Testing patterns**, use the `vitest-best-practices` skill.
 
 ---
 
@@ -56,14 +58,6 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 - Server Action has no auth check → 2.1 Authenticate Server Actions
 - Server Action doesn't validate input → 2.1 Authenticate Server Actions (with Zod validation)
 - Server Action allows unauthorized mutations → 2.1 Authenticate Server Actions (authorization check)
-
----
-
-## Table of Contents
-
-1. [General](#1-general) - Core patterns for optimal server-side execution
-2. [Server-Side Performance](#2-server-side-performance) - RSC, Server Actions, caching
-3. [Misc](#3-misc) - Imports, component decisions
 
 ---
 
@@ -178,17 +172,8 @@ When writing or reviewing Next.js code, prioritize in this order:
 5. **Caching** - Deduplicate with React.cache()
 6. **Default to Server** - Only use Client Components when needed
 
-### Common Mistakes to Avoid
-
-- ❌ Server Actions without authentication
-- ❌ Sequential awaits for independent operations
-- ❌ Passing entire objects when only 1-2 fields are used
-- ❌ Awaiting data before rendering wrapper UI
-- ❌ Using inline objects as React.cache() keys
-- ❌ Logging/analytics blocking responses
-- ❌ Barrel file imports from large libraries
-- ❌ Adding 'use client' to static components
-
 ### Related Skills
 
-- **react-best-practices** - React-specific patterns and optimizations
+- **react-best-practices** - React specific patterns and optimizations
+- **js-ts-best-practices** - JavaScript/TypeScript patterns and optimizations
+- **vitest-best-practices** - Vitest patterns and optimizations
