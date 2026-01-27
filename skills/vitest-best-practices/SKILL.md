@@ -1,10 +1,10 @@
 ---
 name: vitest-best-practices
-description: Comprehensive vitest testing patterns covering test structure, AAA pattern, parameterized tests, assertions, mocking, test doubles, error handling, async testing, and performance optimization. Use when writing, reviewing, or refactoring vitest tests, or when user mentions vitest, testing, TDD, test coverage, mocking, assertions, or test files (*.test.ts, *.spec.ts).
+description: Use when writing, reviewing, or refactoring vitest tests, or when user mentions vitest, testing, TDD, test coverage, mocking, assertions, or test files (*.test.ts, *.spec.ts).
 compatibility: Requires vitest testing framework
 metadata:
   author: gohypergiant
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Vitest Best Practices
@@ -88,7 +88,7 @@ When you identify a relevant optimization, load the corresponding reference file
 - [vitest-features.md](references/vitest-features.md)
 - [snapshot-testing.md](references/snapshot-testing.md)
 
-### 3. Apply the Pattern
+### 4. Apply the Pattern
 Each reference file contains:
 - ❌ Incorrect examples showing the anti-pattern
 - ✅ Correct examples showing the optimal implementation
@@ -96,41 +96,4 @@ Each reference file contains:
 
 ## Quick Example
 
-This skill helps you transform unclear tests into clear, maintainable ones:
-
-**Before (unclear):**
-```ts
-test('product test', () => {
-  const p = new ProductService().add({name: 'Widget'});
-  expect(p.status).toBe('pendingApproval');
-});
-```
-
-**After (optimized with this skill):**
-```ts
-describe('ProductService', () => {
-  describe('Add new product', () => {
-    it('should have status "pending approval" when no price is specified', () => {
-      // Arrange
-      const productService = new ProductService();
-
-      // Act
-      const newProduct = productService.add({name: 'Widget'});
-
-      // Assert
-      expect(newProduct.status).toEqual('pendingApproval');
-    });
-  });
-});
-```
-
-## Key Principles
-
-- **Clarity over cleverness**: Tests should be instantly understandable
-- **Flat structure**: Avoid deep nesting in describe blocks
-- **One assertion per concept**: Focus tests on single behaviors
-- **Strict assertions**: Prefer `toEqual` over `toBe`, `toStrictEqual` when needed
-- **Minimal mocking**: Use real implementations when practical
-- **Fast execution**: Keep tests quick through efficient setup/teardown
-- **Configuration over repetition**: Use `clearMocks: true` in config instead of manual cleanup
-- **Discover before writing**: Check vitest.config.ts and setup files before writing new tests
+See [quick-start.md](references/quick-start.md) for a complete before/after example showing how this skill transforms unclear tests into clear, maintainable ones.

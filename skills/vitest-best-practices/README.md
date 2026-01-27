@@ -16,6 +16,8 @@ npm install -D @vitest/ui @vitest/coverage-v8
 
 ### Basic Configuration
 
+**Note:** Before creating a new config, check if `vitest.config.ts` already exists in your project. See [AGENTS.md](AGENTS.md#workflow-before-writing-tests) for the discovery workflow.
+
 Create `vitest.config.ts`:
 
 ```ts
