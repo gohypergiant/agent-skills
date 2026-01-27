@@ -524,9 +524,3 @@ export async function uploadImage(formData: FormData) {
 - [2.4 Parallel Data Fetching](./parallel-data-fetching.md)
 - [2.5 React.cache() Deduplication](./react-cache-deduplication.md)
 - [2.6 Use after() for Non-Blocking Operations](./use-after-non-blocking.md)
-
----
-
-**Related Sections:**
-- AGENTS.md (all sections)
-- Quick Checklist: Performance Review Checklist
