@@ -7,9 +7,9 @@
 
 ## Abstract
 
-Comprehensive guide for testing with `vitest`, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+Expert-level vitest testing guidance designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
-Use the `vitest` testing framework. Design tests to be short, simple, flat, and instantly understandable.
+**Token efficiency principle:** This guide focuses on expert-level insights and non-obvious patterns. It assumes understanding of basic vitest concepts (`describe`, `it`, `expect`, `vi`) and focuses on decisions experts make: when to mock vs use real code, how to structure tests for maintainability, and performance optimization patterns.
 
 ---
 
@@ -57,24 +57,6 @@ If global config handles mocks, DO NOT add manual mock cleanup:
 Mock cleanup is a safety concern. Configure it once globally to make forgetting impossible. Manual cleanup in every test violates DRY and creates maintenance burden.
 
 See [vitest-features.md](references/vitest-features.md#discovering-existing-setup-files) and [performance.md](references/performance.md#cleanup-between-tests) for detailed examples.
-
----
-
-## General Test Structure
-
-Use `it()` with sentence-style descriptions:
-
-**✅ Correct: appropriate structure**
-```ts
-describe('ProductsService', () => {
-  describe('Add new product', () => {
-    it('should have status "pending approval" when no price is specified', () => {
-      const newProduct = new ProductService().add(/*...*/);
-      expect(newProduct.status).toEqual('pendingApproval');
-    });
-  });
-});
-```
 
 ---
 
