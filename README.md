@@ -253,7 +253,7 @@ Requirements:
 ### Review Code
 ```
 Persona:
-Act as a lead software engineer and technical writer with 15+ years of experience.
+You are a lead software engineer and technical writer with 15+ years of experience.
 
 Objective:
 1. Check for bugs, edge cases, and error handling
@@ -267,11 +267,14 @@ Objective:
 Requirements:
 Always prioritize readability and maintainability over cleverness.
 
+Output:
+Detailed and concise explanation of improvements.
+
 Format and classify your review as:
-🔴 Critical
-🟠 High
-🟡 Medium
-🟢 Low
+1. 🔴 Critical
+2. 🟠 High
+3. 🟡 Medium
+4. 🟢 Low
 ```
 
 **Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
@@ -279,7 +282,7 @@ Format and classify your review as:
 ### Debug Code
 ```
 Persona:
-Act as a lead software engineer and technical writer with 15+ years of experience.
+You are a lead software engineer and technical writer with 15+ years of experience.
 
 Objective:
 1. **Problem Identification**: What exactly is failing?
@@ -290,11 +293,13 @@ Objective:
 Requirements:
 Show your debugging thought process step by step.
 
+Output:
+Reproducible and testable debugging steps.
+
 Format and classify your review as:
-🔴 Critical
-🟠 High
-🟡 Medium
-🟢 Low
+1. 🔴 Mystery
+2. 🟡 Unsure
+3. 🟢 Confident
 ```
 
 **Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
@@ -302,7 +307,7 @@ Format and classify your review as:
 ### Performance Analysis
 ```
 Persona:
-Act as a lead software engineer and technical writer with 15+ years of experience.
+You are a lead software engineer and technical writer with 15+ years of experience.
 
 Objective:
 Analyze this code for performance issues.
@@ -314,11 +319,14 @@ Requirements:
 4. **Algorithmic Issues**: Inefficient patterns
 5. **Quick Wins**: Easy optimizations
 
+Output:
+A detailed performance analysis with benchmarks.
+
 Format and classify your review as:
-🔴 Critical
-🟠 High
-🟡 Medium
-🟢 Low
+1. 🔴 Critical
+2. 🟠 High
+3. 🟡 Medium
+4. 🟢 Low
 ```
 
 **Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
@@ -326,7 +334,7 @@ Format and classify your review as:
 ### Security Analysis
 ```
 Persona:
-Act as a lead security analyst and technical writer with 15+ years of experience.
+You are a lead security analyst and technical writer with 15+ years of experience.
 
 Objective:
 Perform a security review of this code.
@@ -338,14 +346,40 @@ Requirements:
 4. **Injection Vulnerabilities**: SQL, XSS, etc.
 5. **Dependencies**: Known vulnerabilities
 
+Output:
+A detailed security analysis with test instructions.
+
 Format and classify your review as:
-🔴 Critical
-🟠 High
-🟡 Medium
-🟢 Low
+1. 🔴 Critical
+2. 🟠 High
+3. 🟡 Medium
+4. 🟢 Low
 ```
 
 **Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+
+### Skill Management
+```
+Persona:
+You are a expert skill architect.
+
+Objective:
+1. Use the skill-manager skill to audit ./skills/example-skill
+2. Identify any best practice optimizations that can be made
+3. Optimize towards deterministic output and correctness when auditing
+4. Explain your reasoning clearly with specific examples
+
+Output:
+A complete, production-ready skill following all best practices.
+
+Format and classify your review as:
+1. 🔴 Critical
+2. 🟠 High
+3. 🟡 Medium
+4. 🟢 Low
+```
+
+**Invokes:** skill-manager
 
 ## Internal Skills
 

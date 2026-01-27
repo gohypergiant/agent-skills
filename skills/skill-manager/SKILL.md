@@ -127,6 +127,8 @@ To create or refactor a skill, follow the "Skill Creation Workflow" in order, sk
 - [ ] Step 4: Editing - Write agent-focused content with procedural knowledge
 ```
 
+Include what rules from this skill are being applied, and why, in your summary.
+
 ### Step 1: Understanding the Skill with Concrete Examples
 
 Skip this step only when the skill's usage patterns are already clearly understood. It remains valuable even when working with an existing skill.
