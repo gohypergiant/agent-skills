@@ -92,32 +92,6 @@ Develop skill content with agent-focused information:
 
 ---
 
-## Directory Structure
-
-Skills follow a standardized layout:
-
-```
-skill-name/
-├── SKILL.md           # Main skill file (for agents)
-├── AGENTS.md          # Detailed implementation guide (for agents)
-├── README.md          # Human-friendly overview (this file)
-├── references/        # Detailed examples and guidelines
-│   ├── file-system.md
-│   ├── progressive-disclosure.md
-│   └── *.md
-├── scripts/           # Executable helper scripts
-│   └── *.sh
-└── assets/            # Templates, examples, or other resources
-```
-
-**Naming Conventions:**
-- Skill directories: `kebab-case` (e.g., `js-ts-best-practices`)
-- Required files: `SKILL.md`, `AGENTS.md`, `README.md` (uppercase)
-- Scripts: `kebab-case.sh` (e.g., `run.sh`, `fetch-logs.sh`)
-- References: `kebab-case.md` (e.g., `aaa-pattern.md`, `derive-state.md`)
-
----
-
 ## Key Features
 
 ### Progressive Disclosure
@@ -179,14 +153,16 @@ This skill is designed to be used with environments such as Claude Code. It auto
 **prompt**
 ```bash
 Persona:
-Act as yourself, a cutting edge LLM agent with profound knowledge on how your models work internally.
+You are an expert skill architect.
 
 Objective:
 1. Use the skill-manager skill to audit ./skills/example-skill
 2. Identify any best practice optimizations that can be made
 3. Optimize towards deterministic output and correctness when auditing
-4. Ensure the assets/skill-template is adhered to, especially for the skill's README.md
-5. Explain your reasoning clearly with specific examples
+4. Explain your reasoning clearly with specific examples
+
+Output:
+A complete, production-ready skill following all best practices.
 ```
 
 ### Creating a New Skill
@@ -200,7 +176,7 @@ Objective:
 1. Use the skill-manager skill
 2. Create a new skill for [domain/tool/workflow]
 3. Follow the 4-step workflow
-4. Ensure adherence to all conventions in AGENTS.md
+4. Ensure adherence to all conventions
 
 Output:
 A complete, production-ready skill following all best practices.
