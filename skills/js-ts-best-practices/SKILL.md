@@ -1,6 +1,7 @@
 ---
 name: js-ts-best-practices
 description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling, optimizing performance (loops, conditionals, caching), or improving documentation (JSDoc, comments).
+license: Apache-2.0
 metadata:
   author: gohypergiant
   version: "1.2"
