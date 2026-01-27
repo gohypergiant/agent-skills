@@ -141,13 +141,3 @@ Each reference file contains:
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
 
-## Examples
-
-See [README.md](README.md#examples) for detailed usage examples including:
-- Optimizing array operations (reduce vs chained methods)
-- Fixing TypeScript `any` usage
-- Improving error messages
-- Caching storage API calls
-
-Each example shows the progression from identifying issues through AGENTS.md to applying patterns from reference files.
-
