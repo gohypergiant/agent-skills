@@ -1,9 +1,10 @@
 ---
 name: skill-manager
 description: Guide for creating effective skills. Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
+license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Skill Manager
