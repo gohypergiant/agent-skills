@@ -440,9 +440,24 @@ describe('UserService', () => {
 
 **✅ Correct: restoring spies**
 ```ts
+// vitest.config.ts should have:
+// restoreMocks: true  // Handles spy restoration automatically
+
+describe('Logger', () => {
+  it('should log to console', () => {
+    const spy = vi.spyOn(console, 'log');
+    logger.info('test message');
+    expect(spy).toHaveBeenCalledWith('[INFO]', 'test message');
+    // Spy automatically restored by global config
+  });
+});
+```
+
+**❌ Anti-pattern: manual spy restoration**
+```ts
 describe('Logger', () => {
   afterEach(() => {
-    vi.restoreAllMocks(); // Restore all spies
+    vi.restoreAllMocks(); // ❌ Use restoreMocks: true in config instead
   });
 
   it('should log to console', () => {

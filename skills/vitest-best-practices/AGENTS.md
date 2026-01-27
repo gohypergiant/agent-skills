@@ -16,10 +16,47 @@ Use the `vitest` testing framework. Design tests to be short, simple, flat, and 
 ## How to Use This Guide
 
 1. **Start here**: Scan the rule summaries to identify relevant patterns
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with examples
+2. **Check for existing setup files**: Before writing tests, look for setup files that configure global mocks and utilities
+3. **Load references as needed**: Click through to detailed examples only when implementing
+4. **Progressive loading**: Each reference file is self-contained with examples
 
 This structure minimizes context usage while providing complete implementation guidance when needed.
+
+## Workflow: Before Writing Tests
+
+**1. Check vitest.config.ts for global configuration**
+Verify mock cleanup is configured globally:
+```ts
+// Look for these settings:
+clearMocks: true      // Mock cleanup configured?
+resetMocks: true      // Mock reset configured?
+restoreMocks: true    // Mock restore configured?
+```
+
+If not present, recommend adding them. This eliminates the entire class of mock cleanup errors.
+
+**2. Discover existing test setup files**
+Check common locations for test setup configuration:
+- `test/setup.{ts,js}` or `testing/setup.{ts,js}`
+- `vitest.setup.{ts,js}` or `src/test/setup.{ts,js}`
+- Check `vitest.config.ts` for configured `setupFiles` and `globalSetup`
+
+**3. Analyze setup file contents**
+When found, identify:
+- Global mocks (fetch, timers, etc.)
+- Custom matchers (e.g., `@testing-library/jest-dom`)
+- Test utilities and helpers
+- Environment configuration
+
+**4. Only add per-test cleanup for non-mock resources**
+If global config handles mocks, DO NOT add manual mock cleanup:
+- ❌ Don't add `vi.clearAllMocks()` (handled by config)
+- ✅ Do clean up listeners, connections, custom state
+
+**Principle: Configuration over repetition**
+Mock cleanup is a safety concern. Configure it once globally to make forgetting impossible. Manual cleanup in every test violates DRY and creates maintenance burden.
+
+See [vitest-features.md](references/vitest-features.md#discovering-existing-setup-files) and [performance.md](references/performance.md#cleanup-between-tests) for detailed examples.
 
 ---
 

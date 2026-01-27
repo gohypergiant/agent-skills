@@ -25,6 +25,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+
+    // Mock cleanup - prevents flaky tests
+    clearMocks: true,      // Clear call history before each test
+    resetMocks: true,      // Reset implementation before each test
+    restoreMocks: true,    // Restore original implementation before each test
+
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
@@ -98,14 +104,16 @@ npx vitest --ui
 - **Strict assertions**: Prefer `toEqual` over `toBe`, `toStrictEqual` when needed
 - **Minimal mocking**: Use real implementations when practical
 - **Fast execution**: Keep tests quick through efficient setup/teardown
+- **Configuration over repetition**: Use `clearMocks: true` in config to eliminate cleanup errors
 
 ## Progressive Documentation Structure
 
 This skill uses **progressive disclosure** to minimize context usage:
 
-1. **Start with AGENTS.md** - Scan rule summaries to identify relevant patterns
-2. **Load specific references** - Click through to detailed examples only when implementing
-3. **Each reference is self-contained** - Complete implementation guidance with examples
+1. **Start with AGENTS.md** - Scan rule summaries and workflow for discovering existing test configuration
+2. **Check existing config** - Before writing tests, verify `vitest.config.ts` has mock cleanup configured
+3. **Load specific references** - Click through to detailed examples only when implementing
+4. **Each reference is self-contained** - Complete implementation guidance with examples
 
 This structure provides complete guidance while keeping your context lean.
 

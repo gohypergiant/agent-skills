@@ -209,6 +209,117 @@ it('should apply discount to orders over $50', () => {
 ```
 *Why?* Complex setup obscures the test's purpose. Extract to helper functions or test-utils.
 
+## Extracting Duplicated Setup Code
+
+When the same setup code appears in multiple tests, extract it into a generic setup function.
+
+**❌ Incorrect: duplicated setup across tests**
+```ts
+describe('callNextSecond', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should execute callback at next clock second', () => {
+    // Arrange
+    const callback = vi.fn();
+    const now = 1234567890;
+    const SECOND = 1000;
+    vi.setSystemTime(now);
+    const expectedDelay = SECOND - (now % SECOND);
+
+    // Act
+    callNextSecond(callback);
+
+    // Assert
+    expect(callback).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(expectedDelay);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('should set timeout with correct delay', () => {
+    // Arrange
+    const callback = vi.fn();
+    const now = 1500; // 1500 % 1000 = 500
+    const SECOND = 1000;
+    vi.setSystemTime(now);
+    const expectedDelay = SECOND - (now % SECOND); // 500
+
+    // Act
+    callNextSecond(callback);
+
+    // Assert
+    vi.advanceTimersByTime(expectedDelay - 1);
+    expect(callback).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+});
+```
+
+**✅ Correct: extracted generic setup function**
+```ts
+describe('callNextSecond', () => {
+  const SECOND = 1000;
+
+  /**
+   * Sets up test environment for timer tests
+   * @returns Test fixtures with callback, expected delay, and utility to advance timers
+   */
+  function setupTimerTest(now: number) {
+    const callback = vi.fn();
+    vi.setSystemTime(now);
+    const expectedDelay = SECOND - (now % SECOND);
+
+    return {
+      callback,
+      expectedDelay,
+      advanceToNextSecond: () => vi.advanceTimersByTime(expectedDelay),
+    };
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should execute callback at next clock second', () => {
+    // Arrange
+    const { callback, advanceToNextSecond } = setupTimerTest(1234567890);
+
+    // Act
+    callNextSecond(callback);
+
+    // Assert
+    expect(callback).not.toHaveBeenCalled();
+    advanceToNextSecond();
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('should set timeout with correct delay', () => {
+    // Arrange
+    const { callback, expectedDelay } = setupTimerTest(1500);
+
+    // Act
+    callNextSecond(callback);
+
+    // Assert
+    vi.advanceTimersByTime(expectedDelay - 1);
+    expect(callback).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+});
+```
+*Why?* Duplicated setup code makes tests harder to maintain and increases the chance of inconsistencies. Extract common setup into a function that returns test fixtures. This also allows you to add useful utilities (like `advanceToNextSecond()`) that make tests more readable.
+
 ## Async/Await with AAA
 
 AAA works perfectly with async tests - just add await in the Act section.
