@@ -1,5 +1,21 @@
 # Skill Name
 
+<!-- NOTE: README.md is for HUMANS and DISTRIBUTION ONLY.
+
+     Include README.md when:
+     - Publishing skill to npm/registry
+     - Sharing skill on GitHub
+     - Distributing to other users
+
+     EXCLUDE README.md for:
+     - Private/local skills
+     - Company-internal skills
+     - Skills that won't be distributed
+
+     Why: Skills aren't software projects. Agents don't read READMEs.
+     README is purely for human discovery and installation.
+-->
+
 Brief description of what this skill does and who it's for.
 
 ## Installation
@@ -90,11 +106,18 @@ Expected result: [description]
 
 Contributions are welcome! When contributing to this skill:
 
-1. Follow the skill structure guidelines in the skill-manager skill
-2. Ensure all examples use ❌/✅ format for clarity
-3. Keep SKILL.md under 500 lines (move details to references/)
-4. Test changes with actual use cases
-5. Update README.md and examples when adding features
+1. **CRITICAL**: Ensure description field in SKILL.md answers WHAT/WHEN/KEYWORDS - this determines if skill gets activated
+2. Follow the skill structure guidelines in the skill-manager skill
+3. Ensure all examples use ❌/✅ format for clarity
+4. Keep SKILL.md under 500 lines (move details to references/)
+5. Focus on expert-only knowledge - assume Claude knows basics
+6. Test changes with actual use cases
+
+**NEVER create:**
+- CHANGELOG.md - Use git history instead and `metadata.version` in the `SKILL.md` frontmatter
+- CONTRIBUTING.md - Keep contribution guide in README only
+- INSTALLATION.md - Keep installation in README only
+- Other meta-documentation - Skills aren't software projects
 
 ---
 

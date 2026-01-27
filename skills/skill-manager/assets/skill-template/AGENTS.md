@@ -9,6 +9,8 @@
 
 Brief summary of what this skill provides and how it's organized. Explain that each rule includes one-line summaries with links to detailed examples in the `references/` folder.
 
+**Token efficiency principle:** This guide maximizes knowledge delta by providing only expert-level insights Claude doesn't already know. All rules assume Claude understands standard concepts, libraries, and patterns. Focus is on non-obvious decisions, trade-offs, and edge cases.
+
 ---
 
 ## How to Use This Guide

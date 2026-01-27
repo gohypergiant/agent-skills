@@ -4,9 +4,15 @@
 
 <!-- State the problem this rule solves and why it matters for agents.
      Focus on: What goes wrong without this rule? What does this optimize?
-     Keep to 2-3 sentences. -->
+     Keep to 2-3 sentences.
 
-Brief explanation of what this rule covers and why it matters.
+     CRITICAL: Focus on EXPERT-ONLY knowledge Claude doesn't have.
+     Ask: "Does Claude already know this?" If yes, delete it.
+     NEVER explain basic concepts, standard library usage, or common patterns.
+     Only include non-obvious trade-offs, edge cases, and expert decisions.
+-->
+
+Brief explanation of what this rule covers and why it matters (expert knowledge only).
 
 ## Key Principles
 
