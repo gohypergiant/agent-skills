@@ -1,6 +1,12 @@
 # 1.3 Control Flow
 
-Use simple, flat control flow. Prefer early returns over nested conditionals.
+## Overview
+
+Use simple, flat control flow. Prefer early returns over nested conditionals to reduce cognitive load and improve readability.
+
+## Examples
+
+### Early Returns vs Nested Conditionals
 
 **❌ Incorrect: nested structure**
 ```ts

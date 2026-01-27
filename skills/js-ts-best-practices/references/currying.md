@@ -1,20 +1,8 @@
 # 4.13 Currying and Partial Application for Performance
 
-## Issues
+## Overview
 
-- Repeated computation of constant parameters
-- Function calls with mostly-static arguments
-- Expensive setup/validation repeated on every call
-- Missing opportunities to precompute intermediate values
-- Performance penalties in loops and hot paths
-
-## Optimizations
-
-- Convert functions to curried form when parameters are constant across many calls
-- Precompute expensive operations (exponentiation, regex compilation, lookups)
-- Use function overloads to support both curried and direct-call patterns
-- Cache derived values from constant parameters
-- Reduce repeated work in tight loops
+Convert functions to curried form when parameters are constant across many calls. Precompute expensive operations (exponentiation, regex compilation, lookups) and cache them in closures to eliminate repeated work in loops and hot paths.
 
 ## Examples
 
