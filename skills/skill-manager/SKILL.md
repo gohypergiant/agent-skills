@@ -1,6 +1,6 @@
 ---
 name: skill-manager
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends an agent's capabilities with specialized knowledge, workflows, or tool integrations.
+description: Guide for creating effective skills. Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
 metadata:
   author: gohypergiant
   version: "1.0"
@@ -22,9 +22,26 @@ Skills are modular, self-contained packages that extend Claude's capabilities by
 4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
 5. Best practices - Documentation and examples regarding best practices for particular subjects
 
+## When NOT to Use This Skill
+
+Skip this skill when:
+- User is just asking questions about existing skills (not creating/modifying)
+- Task involves running/executing skills (not authoring them)
+- Request is for general coding help unrelated to skill packaging
+- User wants to modify skill behavior but not the skill file itself
+
 ## Skill Creation Workflow
 
-To create a or refactor a skill, follow the "Skill Creation Workflow" in order, skipping steps only if there is a clear reason why they are not applicable.
+To create or refactor a skill, follow the "Skill Creation Workflow" in order, skipping steps only if there is a clear reason why they are not applicable.
+
+**Copy this checklist to track progress:**
+
+```
+- [ ] Step 1: Understanding - Gather concrete examples of skill usage
+- [ ] Step 2: Planning - Identify reusable scripts, references, assets
+- [ ] Step 3: Initializing - Check existing skills, create directory structure
+- [ ] Step 4: Editing - Write agent-focused content with procedural knowledge
+```
 
 ### Step 1: Understanding the Skill with Concrete Examples
 
@@ -74,8 +91,8 @@ At this point, it is time to actually create the skill.
 Check available skills to identify potentially relevant ones the user may have missed:
 
 ```bash
-view .claude/skills    # Current project skills (if available)
-view ~/.claude/skills  # Global skills (if available)
+ls -la .claude/skills 2>/dev/null || echo "No project skills found"
+ls -la ~/.claude/skills 2>/dev/null || echo "No global skills found"
 ```
 
 Look for skills related to:
@@ -89,8 +106,10 @@ Present relevant skills to the user:
 
 Skip this step only if the skill being developed already exists, and iteration or packaging is needed. In this case, continue to the next step.
 
+For new skills, use the template in [assets/skill-template/](assets/skill-template/) as a starting point. Copy the template directory and customize it for your specific skill.
+
 Follow the instructions and conventions outlined in the [AGENTS.md](AGENTS.md) outline as well as the references.
 
 ### Step 4: Edit the Skill
 
-When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively.
+When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively. If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherance.
