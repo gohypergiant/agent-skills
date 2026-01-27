@@ -345,7 +345,14 @@ Format and classify your review as:
 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices
+**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+
+## Internal Skills
+
+This repository leverages the following third party agent skills internally:
+
+- https://skills.sh/softaworks/agent-toolkit/humanizer
+- https://skills.sh/trailofbits/skills/ask-questions-if-underspecified
 
 ## Contributing
 
