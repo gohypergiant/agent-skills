@@ -1,4 +1,4 @@
-# Documentation Audit Skill
+# Documentation Skill
 
 Expert-level JavaScript/TypeScript documentation auditing skill with comprehensive guidance on JSDoc, comments, anti-patterns, and judgment frameworks. Delegates to js-ts-best-practices for detailed implementation rules.
 

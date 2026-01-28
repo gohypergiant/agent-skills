@@ -165,22 +165,4 @@ Curry functions to precompute constant parameters; reduce repeated work in loops
 
 ## 5. Documentation
 
-### 5.1 JSDoc
-All code needs JSDoc; exports require full documentation; internal code may use reduced tags; document object parameters with nested properties using dot notation.
-[View detailed examples](references/jsdoc.md)
-
-### 5.2 Comment Markers
-Use markers (TODO, FIXME, HACK, NOTE, REVIEW, PERF, DEBUG, REMARK) for non-docblock comments.
-[View detailed examples](references/comment-markers.md)
-
-### 5.3 Comments to Remove
-Remove commented-out code, edit history, and comments restating obvious code.
-[View detailed examples](references/comments-to-remove.md)
-
-### 5.4 Comments to Preserve
-Preserve markers, linter directives, business logic explanations, and docblocks.
-[View detailed examples](references/comments-to-preserve.md)
-
-### 5.5 Comments Placement
-Move end-of-line comments to their own line above the code.
-[View detailed examples](references/comments-placement.md)
+**For documentation-specific tasks**, use the `audit-documentation` skill instead. It provides comprehensive guidance for JSDoc comments, comment markers, and code comment quality.

@@ -1,10 +1,10 @@
 ---
 name: js-ts-best-practices
-description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling, optimizing performance (loops, conditionals, caching), or improving documentation (JSDoc, comments).
+description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling, or optimizing performance (loops, conditionals, caching). For documentation tasks, use audit-documentation skill instead.
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.4"
+  version: "1.5"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -64,11 +64,7 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [performance-misc.md](references/performance-misc.md) - Strings, regex, async overhead, closures, try/catch
 
 **Documentation:**
-- [jsdoc.md](references/jsdoc.md) - Well-formed JSDoc for exports
-- [comment-markers.md](references/comment-markers.md) - TODO, FIXME, HACK, NOTE markers
-- [comments-to-remove.md](references/comments-to-remove.md) - Commented code, edit history
-- [comments-to-preserve.md](references/comments-to-preserve.md) - Markers, linter directives, business logic
-- [comments-placement.md](references/comments-placement.md) - Move end-of-line comments above code
+- **For documentation tasks**, use the `audit-documentation` skill for comprehensive JSDoc and comment guidance
 
 ### 3. Apply the Pattern
 Each reference file contains:
