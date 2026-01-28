@@ -4,7 +4,7 @@ description: Use when writing JavaScript/TypeScript code, implementing control f
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.3"
+  version: "1.4"
 ---
 
 # JavaScript and TypeScript Best Practices

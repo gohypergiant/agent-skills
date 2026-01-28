@@ -16,10 +16,29 @@ This structure minimizes context usage while providing complete implementation g
 
 ---
 
+## Critical Anti-Patterns
+
+**NEVER** do these - they appear in codebases frequently but significantly degrade performance or maintainability:
+
+- **NEVER** use `any` type - use `unknown` for truly unknown types or generics for flexible types
+- **NEVER** use `enum` keyword - use `as const` objects to avoid extra JavaScript output
+- **NEVER** chain array methods (.filter().map().reduce()) - use single `reduce` pass for better performance
+- **NEVER** use `Array.includes()` for repeated lookups - use `Set.has()` instead (O(n) → O(1))
+- **NEVER** await before checking if you need the result - defer `await` into branches that use it
+- **NEVER** recompute constants inside loops - hoist invariants or curry functions to precompute
+- **NEVER** mutate function parameters - creates hidden side effects and breaks pure function principles
+- **NEVER** return `null` or `undefined` - return zero values instead ([], {}, 0, "") to eliminate downstream null checks
+- **NEVER** create unbounded loops or queues - set explicit limits to prevent runaway resource consumption
+- **NEVER** place `try/catch` in hot paths - degrades V8 optimization; validate inputs instead
+
+See individual reference files for detailed alternatives and ✅ correct patterns.
+
+---
+
 ## 1. General
 
 ### 1.1 Naming Conventions
-Use descriptive names; append qualifiers in descending order; prefix booleans with `is`/`has`.
+Append qualifiers in descending order (latencyMsMax not maxLatencyMs) to enable autocomplete grouping; prefix booleans with `is`/`has`.
 [View detailed examples](references/naming-conventions.md)
 
 ### 1.2 Functions
@@ -27,15 +46,15 @@ Keep functions under 50 lines; explicitly type return values; avoid defaults; us
 [View detailed examples](references/functions.md)
 
 ### 1.3 Control Flow
-Prefer early returns over nested conditionals; use block style for control flow.
+Always use block style `{ }` for control flow (prevents bugs when adding code); use early returns for guard clauses.
 [View detailed examples](references/control-flow.md)
 
 ### 1.4 State Management
-Use `const` over `let`; never mutate passed references; keep leaf functions pure.
+Use `const` to signal immutability; never mutate function parameters (creates hidden side effects); keep leaf functions pure for testability.
 [View detailed examples](references/state-management.md)
 
 ### 1.5 Return Values
-Always return zero values ([], {}, 0) instead of `null` or `undefined`.
+Return zero values ([], {}, 0, '') instead of null/undefined to eliminate defensive null checks and enable method chaining.
 [View detailed examples](references/return-values.md)
 
 ### 1.6 Misc
@@ -51,11 +70,11 @@ Extract common patterns into utility functions; consolidate duplicated logic; ap
 ## 2. TypeScript
 
 ### 2.1 Any
-Avoid `any`; use `unknown` for truly unknown types or generics for flexible types.
+Never use `any` (disables type checking and propagates through codebase); use `unknown` to force validation or generics to preserve types.
 [View detailed examples](references/any.md)
 
 ### 2.2 Enums
-Avoid `enum`; use `as const` structs to prevent extra JavaScript code.
+Never use `enum` (generates 5+ lines of runtime code per enum); use `as const` objects for zero-cost type-safe constants.
 [View detailed examples](references/enums.md)
 
 ### 2.3 Type vs. Interface
@@ -86,6 +105,8 @@ Make user errors empathetic and actionable; make developer errors specific with 
 
 ## 4. Performance
 
+**Before optimizing**: Profile first to identify actual bottlenecks. Premature optimization wastes effort on code that doesn't impact user experience.
+
 Design for performance from the start. Optimize slowest resources first: `network >> disk >> memory >> cpu`
 
 ### 4.1 Reduce Branching
@@ -93,7 +114,7 @@ Use table lookups instead of conditionals for static values.
 [View detailed examples](references/reduce-branching.md)
 
 ### 4.2 Reduce Looping
-Use `reduce` instead of chained array methods; use `Set.has()` over `Array.includes()`.
+Combine `.filter().map()` into single `reduce` pass; use `Set.has()` over `Array.includes()` for 10-50x speedup (O(1) vs O(n)).
 [View detailed examples](references/reduce-looping.md)
 
 ### 4.3 Memoization
