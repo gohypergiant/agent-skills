@@ -1,50 +1,64 @@
 # 1.1 Naming Conventions
 
-## Overview
+## Descending Order Rule for Qualifiers
 
-Use descriptive, meaningful names with complete words. Append qualifiers in descending order of significance. Prefix booleans with `is` or `has`.
+When combining measurements with qualifiers (min, max, avg) or units (ms, px, count), append them in **descending order of significance**. This creates natural autocomplete grouping and prevents scattered naming.
 
-## Examples
-
-### Descriptive Names
-
-**❌ Incorrect: non descriptive and meaning cannot be inferred**
+**❌ Incorrect: qualifier comes first**
 ```ts
-const usrNm = /**/;
-const a = /**/;
-let data;
+const maxLatencyMs = 1000;
+const minLatencyMs = 100;
+const avgLatencyMs = 500;
+
+// In autocomplete these appear scattered alphabetically:
+// - avgLatencyMs
+// - maxLatencyMs
+// - minLatencyMs
 ```
 
-**✅ Correct: descriptive and meaningful**
+**✅ Correct: qualifiers appended in descending order**
 ```ts
-const numberOfProducts = /**/;
-const customerList = /**/;
-const radarCrossSection = lookupCrossSection(entity.platformType);
+const latencyMsMax = 1000;
+const latencyMsMin = 100;
+const latencyMsAvg = 500;
+
+// In autocomplete these group together naturally:
+// - latencyMsAvg
+// - latencyMsMax
+// - latencyMsMin
 ```
 
-For units and qualifiers append in descending order of significance.
+**Why this matters**: Enables efficient discovery via autocomplete. Type `latency` and all related metrics appear together. The pattern scales:
 
-**❌ Incorrect: max qualifier is not appended**
 ```ts
-const maxLatencyMs = /**/;
+// Cache metrics grouped by prefix
+const cacheHitsCount = 0;
+const cacheMissesCount = 0;
+const cacheRatioPercent = 0;
+
+// Timing metrics grouped by prefix
+const renderTimeMs = 0;
+const renderTimeMsMax = 0;
+const renderTimeMsMin = 0;
 ```
 
-**✅ Correct: qualifiers appended and in correct order**
+## Boolean Prefixes
+
+Prefix boolean variables and functions with `is`, `has`, `should`, or `can` to make their type obvious.
+
+**❌ Incorrect: ambiguous type**
 ```ts
-const latencyMsMax = /**/;
-const latencyMsMin = /**/;
+const visible = getVisibility();  // Function? Boolean? String?
+const children = countChildren(); // Array? Number? Boolean?
 ```
 
-For Booleans prefix with `is` or `has`.
-
-**❌ Incorrect: no is or has prefix**
+**✅ Correct: unambiguous boolean**
 ```ts
-const visible = true;
-const children = false;
+const isVisible = getVisibility();
+const hasChildren = countChildren() > 0;
 ```
 
-**✅ Correct: contains is or has prefix**
+**Why this matters**: Prevents type confusion and makes conditionals self-documenting:
 ```ts
-const isVisible = true;
-const hasChildren = false;
+if (hasChildren) { /* clear intent */ }
 ```

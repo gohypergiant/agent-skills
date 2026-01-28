@@ -4,82 +4,16 @@ description: Use when writing JavaScript/TypeScript code, implementing control f
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.2"
+  version: "1.4"
 ---
 
 # JavaScript and TypeScript Best Practices
 
 Comprehensive coding standards and performance optimization guide for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
 
-## When to Activate This Skill
+## When to Use This Skill
 
-Use this skill when the task involves:
-
-### Writing JavaScript/TypeScript Code
-- Creating new functions, classes, or modules
-- Implementing control flow logic (conditionals, loops, early returns)
-- Managing state with variables (`const` vs `let`)
-- Writing TypeScript type definitions, interfaces, or generics
-- Defining enums or constant objects
-- Structuring code with proper naming conventions
-
-### TypeScript-Specific Tasks
-- Fixing type errors or improving type safety
-- Replacing `any` with proper types (`unknown`, generics)
-- Converting `enum` to `as const` objects
-- Choosing between `type` and `interface`
-- Adding type annotations to untyped code
-- Implementing generic functions or utilities
-
-### Code Quality & Style
-- Refactoring nested conditionals to early returns
-- Simplifying complex control flow
-- Improving variable naming (descriptive names, proper prefixes for booleans)
-- Reducing code duplication (extracting common patterns)
-- Applying consistent code style
-- Removing commented-out code or outdated comments
-
-### Safety & Validation
-- Adding input validation at system boundaries
-- Implementing assertions for programmer error detection
-- Improving error handling patterns
-- Writing better error messages (user-facing or developer-facing)
-- Validating external data with schemas (Zod, etc.)
-- Preventing null/undefined propagation
-
-### Performance Optimization
-- Reducing unnecessary branching or conditionals
-- Optimizing array operations (reduce instead of chained filter/map)
-- Implementing efficient data structures (Set vs Array for lookups)
-- Caching expensive computations or API calls
-- Optimizing loops (cache property access, array length)
-- Deferring `await` operations to avoid blocking
-- Caching `localStorage`, `sessionStorage`, or cookie reads
-
-### Documentation
-- Adding JSDoc comments to exported functions
-- Using proper comment markers (TODO, FIXME, HACK, NOTE, PERF)
-- Removing unnecessary comments
-- Preserving important comments (business logic, linter directives)
-- Documenting function parameters, return types, and examples
-
-### Code Review
-- Reviewing code for style violations
-- Identifying performance anti-patterns
-- Checking for safety issues (missing validation, poor error handling)
-- Ensuring TypeScript best practices
-- Verifying proper documentation
-
-## When NOT to Use This Skill
-
-Do not activate for:
-- Framework-specific code (React, Vue, Angular) - use framework-specific skills instead
-- Node.js-specific APIs or server-side concerns (unless general JS/TS patterns apply)
-- Build tooling configuration (webpack, vite, tsconfig.json) unless code quality-related
-- Testing code (use a testing-specific skill if available)
-- Database queries or ORM usage
-- CSS, HTML, or styling (unless embedded in JS/TS files)
-- Package management (npm, yarn, pnpm)
+This skill provides expert-level patterns for JavaScript and TypeScript code. Load [AGENTS.md](AGENTS.md) to scan rule summaries and identify relevant optimizations for your task.
 
 ## How to Use
 
