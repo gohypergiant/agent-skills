@@ -1,5 +1,5 @@
 ---
-name: rtl-best-practices
+name: react-testing
 description: Use when writing, reviewing, or refactoring React component tests with Testing Library. Load when you see render(), screen, fireEvent, userEvent, waitFor, or *.test.tsx files. Covers query priority (getByRole > getByLabelText > getByText), user-centric testing patterns, async utilities, custom renders with providers, and accessibility-first assertions. Keywords include RTL, Testing Library, screen, getByRole, findBy, queryBy, userEvent, waitFor, toBeInTheDocument, testing-library/react, testing-library/user-event, jest-dom.
 compatibility: Requires @testing-library/react, works with vitest or jest
 license: Apache-2.0
@@ -8,7 +8,7 @@ metadata:
   version: "1.0"
 ---
 
-# React Testing Library Best Practices
+# React Testing Best Practices
 
 Expert guidance for writing maintainable, user-centric React component tests with Testing Library. Focused on query selection, accessibility-first testing, and avoiding implementation details.
 
