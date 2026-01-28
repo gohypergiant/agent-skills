@@ -293,3 +293,188 @@ Avoid currying when:
 - Setup cost is trivial (simple primitives)
 - Currying complexity outweighs performance gain
 - Premature optimization in cold paths
+
+## Fallback Patterns
+
+When currying doesn't work, use these alternatives:
+
+### Fallback 1: Direct function calls when parameters vary
+
+**Scenario**: All parameters change on every call
+```ts
+// ❌ Don't curry - no benefit
+const add = (a: number) => (b: number) => a + b;
+
+for (let i = 0; i < items.length; i++) {
+  totals[i] = add(items[i].price)(items[i].tax); // Awkward and slow
+}
+```
+
+**✅ Use direct function call**
+```ts
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+for (let i = 0; i < items.length; i++) {
+  totals[i] = add(items[i].price, items[i].tax); // Clear and fast
+}
+```
+
+**Why**: Currying adds closure overhead (function creation, variable capture) with zero benefit when all parameters vary.
+
+### Fallback 2: Inline computation when setup cost is trivial
+
+**Scenario**: Operation is so simple that currying adds complexity
+```ts
+// ❌ Over-engineered
+const multiply = (factor: number) => (value: number) => factor * value;
+const double = multiply(2);
+
+for (const x of values) {
+  results.push(double(x));
+}
+```
+
+**✅ Inline the trivial operation**
+```ts
+for (const x of values) {
+  results.push(x * 2); // No abstraction needed
+}
+```
+
+**Why**: For trivial operations (multiplication, addition), the overhead of function calls exceeds any benefit. Inline when the operation is simpler than the abstraction.
+
+### Fallback 3: Configuration objects for complex state
+
+**Scenario**: Too many parameters to curry elegantly
+```ts
+// ❌ Curry chain becomes unwieldy
+const format = (symbol: string) =>
+  (decimals: number) =>
+    (locale: string) =>
+      (grouping: boolean) =>
+        (amount: number) => { /* ... */ };
+
+const formatUSD = format('$')(2)('en-US')(true);
+```
+
+**✅ Use configuration object**
+```ts
+interface FormatConfig {
+  symbol: string;
+  decimals: number;
+  locale: string;
+  grouping: boolean;
+}
+
+class CurrencyFormatter {
+  private config: FormatConfig;
+
+  constructor(config: FormatConfig) {
+    this.config = config;
+  }
+
+  format(amount: number): string {
+    // Use this.config...
+  }
+}
+
+const formatter = new CurrencyFormatter({
+  symbol: '$',
+  decimals: 2,
+  locale: 'en-US',
+  grouping: true,
+});
+
+for (const transaction of transactions) {
+  display(formatter.format(transaction.amount));
+}
+```
+
+**Why**: Configuration objects are more maintainable than deep currying. They support optional parameters, validation, and clear intent.
+
+### Fallback 4: Memoization for expensive pure functions
+
+**Scenario**: Function is expensive but parameters vary frequently
+```ts
+// ❌ Currying doesn't help - parameters vary
+function fibonacci(n: number): number {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+// Called with different values each time
+for (const num of numbers) {
+  results.push(fibonacci(num)); // O(2^n) each call
+}
+```
+
+**✅ Use memoization instead**
+```ts
+const fibCache = new Map<number, number>();
+
+function fibonacci(n: number): number {
+  if (n <= 1) return n;
+  if (fibCache.has(n)) return fibCache.get(n)!;
+
+  const result = fibonacci(n - 1) + fibonacci(n - 2);
+  fibCache.set(n, result);
+  return result;
+}
+
+for (const num of numbers) {
+  results.push(fibonacci(num)); // O(n) total with cache
+}
+```
+
+**Why**: When parameters vary but repeat, memoization is more effective than currying. Cache stores results by input rather than precomputing constants.
+
+### Fallback 5: Regular functions when TypeScript inference breaks
+
+**Scenario**: Generics don't infer correctly in curried form
+```ts
+// ❌ Type inference fails
+function map<T, U>(fn: (item: T) => U): (items: T[]) => U[] {
+  return (items: T[]) => items.map(fn);
+}
+
+// TypeScript can't infer T and U
+const doubled = map(x => x * 2); // Error: Cannot infer type
+```
+
+**✅ Use standard function signature**
+```ts
+function map<T, U>(items: T[], fn: (item: T) => U): U[] {
+  return items.map(fn);
+}
+
+// TypeScript infers correctly
+const doubled = map([1, 2, 3], x => x * 2); // Works: number[]
+```
+
+**Why**: Type safety is more valuable than currying. When generics fail to infer, the cognitive overhead of manual type annotations outweighs currying benefits.
+
+### Fallback 6: Loop hoisting for simple invariants
+
+**Scenario**: Simple invariant doesn't need currying
+```ts
+// ❌ Overkill for simple hoisting
+const addTax = (rate: number) => (amount: number) => amount * (1 + rate);
+const withTax = addTax(0.08);
+
+for (const price of prices) {
+  totals.push(withTax(price));
+}
+```
+
+**✅ Hoist the invariant**
+```ts
+const TAX_RATE = 1.08;
+
+for (const price of prices) {
+  totals.push(price * TAX_RATE); // Simple and clear
+}
+```
+
+**Why**: When the invariant is a simple primitive, hoisting it outside the loop is clearer than creating a curried function.
