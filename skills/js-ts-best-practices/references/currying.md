@@ -345,56 +345,7 @@ for (const x of values) {
 
 **Why**: For trivial operations (multiplication, addition), the overhead of function calls exceeds any benefit. Inline when the operation is simpler than the abstraction.
 
-### Fallback 3: Configuration objects for complex state
-
-**Scenario**: Too many parameters to curry elegantly
-```ts
-// ❌ Curry chain becomes unwieldy
-const format = (symbol: string) =>
-  (decimals: number) =>
-    (locale: string) =>
-      (grouping: boolean) =>
-        (amount: number) => { /* ... */ };
-
-const formatUSD = format('$')(2)('en-US')(true);
-```
-
-**✅ Use configuration object**
-```ts
-interface FormatConfig {
-  symbol: string;
-  decimals: number;
-  locale: string;
-  grouping: boolean;
-}
-
-class CurrencyFormatter {
-  private config: FormatConfig;
-
-  constructor(config: FormatConfig) {
-    this.config = config;
-  }
-
-  format(amount: number): string {
-    // Use this.config...
-  }
-}
-
-const formatter = new CurrencyFormatter({
-  symbol: '$',
-  decimals: 2,
-  locale: 'en-US',
-  grouping: true,
-});
-
-for (const transaction of transactions) {
-  display(formatter.format(transaction.amount));
-}
-```
-
-**Why**: Configuration objects are more maintainable than deep currying. They support optional parameters, validation, and clear intent.
-
-### Fallback 4: Memoization for expensive pure functions
+### Fallback 3: Memoization for expensive pure functions
 
 **Scenario**: Function is expensive but parameters vary frequently
 ```ts
@@ -430,32 +381,7 @@ for (const num of numbers) {
 
 **Why**: When parameters vary but repeat, memoization is more effective than currying. Cache stores results by input rather than precomputing constants.
 
-### Fallback 5: Regular functions when TypeScript inference breaks
-
-**Scenario**: Generics don't infer correctly in curried form
-```ts
-// ❌ Type inference fails
-function map<T, U>(fn: (item: T) => U): (items: T[]) => U[] {
-  return (items: T[]) => items.map(fn);
-}
-
-// TypeScript can't infer T and U
-const doubled = map(x => x * 2); // Error: Cannot infer type
-```
-
-**✅ Use standard function signature**
-```ts
-function map<T, U>(items: T[], fn: (item: T) => U): U[] {
-  return items.map(fn);
-}
-
-// TypeScript infers correctly
-const doubled = map([1, 2, 3], x => x * 2); // Works: number[]
-```
-
-**Why**: Type safety is more valuable than currying. When generics fail to infer, the cognitive overhead of manual type annotations outweighs currying benefits.
-
-### Fallback 6: Loop hoisting for simple invariants
+### Fallback 4: Loop hoisting for simple invariants
 
 **Scenario**: Simple invariant doesn't need currying
 ```ts
