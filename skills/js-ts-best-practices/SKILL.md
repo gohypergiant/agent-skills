@@ -1,15 +1,17 @@
 ---
 name: js-ts-best-practices
-description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling, or optimizing performance (loops, conditionals, caching). For documentation tasks, use audit-documentation skill instead.
+description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling. For performance optimization, use ts-performance skill. For documentation tasks, use audit-documentation skill.
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.5"
+  version: "2.0"
 ---
 
 # JavaScript and TypeScript Best Practices
 
-Comprehensive coding standards and performance optimization guide for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
+Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
+
+**Note:** This skill focuses on general best practices, TypeScript patterns, and safety. For performance optimization, use the `ts-performance` skill instead.
 
 ## When to Use This Skill
 
@@ -49,19 +51,7 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [error-messages.md](references/error-messages.md) - User-friendly vs developer-specific messages
 
 **Performance:**
-- [reduce-branching.md](references/reduce-branching.md) - Convert conditionals to lookups, hoist invariants, early returns
-- [reduce-looping.md](references/reduce-looping.md) - Single-pass operations, O(1) lookups, typed arrays
-- [memoization.md](references/memoization.md) - Hoist invariants, precompute constants, cache expensive operations
-- [batching.md](references/batching.md) - Batch I/O operations
-- [predictable-execution.md](references/predictable-execution.md) - Sequential access, cache locality, grouped data
-- [bounded-iteration.md](references/bounded-iteration.md) - Set limits on loops and queues
-- [defer-await.md](references/defer-await.md) - Move await into branches that need it
-- [cache-property-access.md](references/cache-property-access.md) - Cache lookups, eliminate aliases, avoid unnecessary destructuring
-- [cache-storage-api.md](references/cache-storage-api.md) - Cache localStorage/sessionStorage/cookie reads
-- [object-operations.md](references/object-operations.md) - Safe mutation, shallow clones, preallocate shapes
-- [avoid-allocations.md](references/avoid-allocations.md) - Inline simple computations, avoid needless variables, reduce GC pressure
-- [currying.md](references/currying.md) - Curry to precompute constant parameters, optimize hot paths
-- [performance-misc.md](references/performance-misc.md) - Strings, regex, async overhead, closures, try/catch
+- **For performance optimization tasks**, use the `ts-performance` skill for comprehensive profiling workflows and optimization patterns
 
 **Documentation:**
 - **For documentation tasks**, use the `audit-documentation` skill for comprehensive JSDoc and comment guidance

@@ -54,7 +54,7 @@ Use `const` to signal immutability; never mutate function parameters (creates hi
 [View detailed examples](references/state-management.md)
 
 ### 1.5 Return Values
-Return zero values ([], {}, 0, '') instead of null/undefined to eliminate defensive null checks and enable method chaining.
+Return zero values ([], {}, 0, '') instead of null/undefined to eliminate defensive null checks and enable method chaining and composition.
 [View detailed examples](references/return-values.md)
 
 ### 1.6 Misc
@@ -105,61 +105,11 @@ Make user errors empathetic and actionable; make developer errors specific with 
 
 ## 4. Performance
 
-**Before optimizing**: Profile first to identify actual bottlenecks. Premature optimization wastes effort on code that doesn't impact user experience.
-
-Design for performance from the start. Optimize slowest resources first: `network >> disk >> memory >> cpu`
-
-### 4.1 Reduce Branching
-Use table lookups instead of conditionals for static values.
-[View detailed examples](references/reduce-branching.md)
-
-### 4.2 Reduce Looping
-Combine `.filter().map()` into single `reduce` pass; use `Set.has()` over `Array.includes()` for 10-50x speedup (O(1) vs O(n)).
-[View detailed examples](references/reduce-looping.md)
-
-### 4.3 Memoization
-Use only when appropriate; avoid memoizing trivial computations.
-[View detailed examples](references/memoization.md)
-
-### 4.4 Batching
-Batch operations to amortize costly processes, especially for I/O-bound operations.
-[View detailed examples](references/batching.md)
-
-### 4.5 Predictable Execution and Cache Locality
-Write code with clear execution paths; use sequential memory access; group related data.
-[View detailed examples](references/predictable-execution.md)
-
-### 4.6 Bounded Iteration
-Set limits on all loops, queues, and data structures.
-[View detailed examples](references/bounded-iteration.md)
-
-### 4.7 Defer Await
-Move `await` into branches where they're actually used to avoid blocking.
-[View detailed examples](references/defer-await.md)
-
-### 4.8 Cache Property Access and Variable Aliases
-Cache property lookups; eliminate single-use aliases; avoid unnecessary destructuring.
-[View detailed examples](references/cache-property-access.md)
-
-### 4.9 Cache Storage API Calls
-Cache `localStorage`, `sessionStorage`, and `document.cookie` reads in memory.
-[View detailed examples](references/cache-storage-api.md)
-
-### 4.10 Object Operations
-Mutate when safe; use shallow clones when needed; preallocate object shapes.
-[View detailed examples](references/object-operations.md)
-
-### 4.11 Additional Performance Concerns
-Batch string operations; compile regex once; avoid async overhead; minimize closure scope.
-[View detailed examples](references/performance-misc.md)
-
-### 4.12 Avoid Needless Allocations
-Inline simple computations; avoid intermediate variables in hot paths; reduce GC pressure.
-[View detailed examples](references/avoid-allocations.md)
-
-### 4.13 Currying and Partial Application
-Curry functions to precompute constant parameters; reduce repeated work in loops and hot paths.
-[View detailed examples](references/currying.md)
+**For performance optimization tasks**, use the `ts-performance` skill instead. It provides:
+- 4-phase workflow (Profile → Analyze → Optimize → Verify)
+- Comprehensive optimization patterns for all performance categories
+- Profiling tool guidance (Chrome DevTools, Node.js --prof)
+- Bottleneck categorization and decision frameworks
 
 ---
 
