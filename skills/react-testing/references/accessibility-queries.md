@@ -12,7 +12,7 @@ If you can't query an element by its accessible properties (role, label, text), 
 
 **Principle:** All interactive elements should have appropriate ARIA roles and accessible names.
 
-### ❌ Incorrect: Non-semantic queries for interactive elements
+**❌ Incorrect: Non-semantic queries for interactive elements
 
 ```tsx
 // ❌ Test ID doesn't verify accessibility
@@ -30,7 +30,7 @@ const button = screen.getByText('Submit');
 - No verification of accessible name
 - Doesn't test user/AT experience
 
-### ✅ Correct: Role-based queries
+**✅ Correct: Role-based queries
 
 ```tsx
 // ✅ Verifies button role and accessible name
@@ -54,7 +54,7 @@ const heading = screen.getByRole('heading', { name: /welcome/i, level: 1 });
 
 **Principle:** Form inputs must have associated labels for accessibility.
 
-### ❌ Incorrect: Unlabeled or poorly labeled inputs
+**❌ Incorrect: Unlabeled or poorly labeled inputs
 
 ```tsx
 // ❌ No label verification
@@ -72,7 +72,7 @@ const input = screen.getByTestId('email-input');
 - Touch targets unclear for motor-impaired users
 - Fails WCAG 2.1 Level A
 
-### ✅ Correct: Label-based queries
+**✅ Correct: Label-based queries
 
 ```tsx
 // ✅ via <label htmlFor="...">
@@ -116,7 +116,7 @@ const input = screen.getByRole('searchbox', { name: /search products/i });
 
 **Principle:** The accessible name should match what users see or what makes sense in context.
 
-### ❌ Incorrect: Mismatched or missing names
+**❌ Incorrect: Mismatched or missing names
 
 ```tsx
 // ❌ Button text doesn't match accessible name
@@ -134,7 +134,7 @@ const input = screen.getByRole('searchbox', { name: /search products/i });
 // Screen readers say "button" - no context
 ```
 
-### ✅ Correct: Descriptive accessible names
+**✅ Correct: Descriptive accessible names
 
 ```tsx
 // ✅ Icon button with descriptive label

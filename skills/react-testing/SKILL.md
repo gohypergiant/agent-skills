@@ -66,7 +66,6 @@ Use these explicit triggers to know when to load each reference file:
 - **Components using Context, Redux, Router** → [custom-render.md](references/custom-render.md)
 - **Testing accessibility or ARIA attributes** → [accessibility-queries.md](references/accessibility-queries.md)
 - **Using container, wrapper, or rerender extensively** → [anti-patterns.md](references/anti-patterns.md)
-- **Need for RTL-specific jest-dom matchers** → [assertions.md](references/assertions.md)
 - **Queries failing or can't find right selector** → [query-variants.md](references/query-variants.md) for screen.debug() usage
 
 **Do NOT Load Unless Specifically Needed:**
@@ -104,7 +103,6 @@ Expert guidance on React Testing Library patterns:
 5. **Custom Render** - Setting up providers (Context, Redux, Router) for complex components
 6. **Accessibility Queries** - Testing with roles, labels, and ARIA attributes
 7. **Anti-patterns** - Avoiding implementation details, container usage, excessive snapshots
-8. **Assertions** - RTL-specific jest-dom matchers for idiomatic tests
 9. **Audit Scripts** - Automated detection of suboptimal patterns in existing tests
 
 ## Query Selection Decision Tree

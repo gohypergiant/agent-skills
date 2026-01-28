@@ -12,7 +12,7 @@ React state updates are asynchronous. Tests must wait for updates to complete be
 
 **Principle:** findBy* queries wait for elements loaded via useEffect, API calls, or timers.
 
-### ❌ Incorrect: Synchronous query for async content
+**❌ Incorrect: Synchronous query for async content
 
 ```tsx
 test('loads user data', () => {
@@ -23,7 +23,7 @@ test('loads user data', () => {
 });
 ```
 
-### ✅ Correct: Async query waits for content
+**✅ Correct: Async query waits for content
 
 ```tsx
 test('loads user data', async () => {
@@ -41,7 +41,7 @@ test('loads user data', async () => {
 
 **Principle:** waitFor retries callback until it succeeds or times out. Use for assertions that can't be expressed as findBy queries.
 
-### ❌ Incorrect: Synchronous assertions on async state
+**❌ Incorrect: Synchronous assertions on async state
 
 ```tsx
 // ❌ Assertion runs before state updates
@@ -53,7 +53,7 @@ await userEvent.click(closeButton);
 expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 ```
 
-### ✅ Correct: waitFor for non-query assertions
+**✅ Correct: waitFor for non-query assertions
 
 ```tsx
 // ✅ Waits for callback invocation
@@ -73,7 +73,7 @@ await screen.findByText('Success');
 
 **Principle:** Act warnings mean state updates happened outside Testing Library's awareness.
 
-### ❌ Incorrect: Missing await on async operations
+**❌ Incorrect: Missing await on async operations
 
 ```tsx
 // ❌ No await - state update after test finishes
@@ -85,7 +85,7 @@ fetchData().then(data => setState(data));
 expect(screen.getByText('Data')).toBeInTheDocument();
 ```
 
-### ✅ Correct: Await all async operations
+**✅ Correct: Await all async operations
 
 ```tsx
 // ✅ Wait for click to complete
@@ -102,7 +102,7 @@ await screen.findByText('Data');
 
 **Principle:** When elements should disappear, waitForElementToBeRemoved is more explicit than queryBy.
 
-### ❌ Incorrect: queryBy without waiting
+**❌ Incorrect: queryBy without waiting
 
 ```tsx
 await userEvent.click(closeButton);
@@ -110,7 +110,7 @@ await userEvent.click(closeButton);
 expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 ```
 
-### ✅ Correct: Wait for removal
+**✅ Correct: Wait for removal
 
 ```tsx
 const dialog = screen.getByRole('dialog');
@@ -198,7 +198,7 @@ test('retries failed request', async () => {
 
 **Principle:** waitFor retries its callback multiple times. Side effects inside get executed repeatedly.
 
-### ❌ Incorrect: Actions inside waitFor
+**❌ Incorrect: Actions inside waitFor
 
 ```tsx
 // ❌ Button clicked on every retry (10+ times)
@@ -226,7 +226,7 @@ await waitFor(() => {
 - State mutations accumulate unpredictably
 - Tests become flaky and slow
 
-### ✅ Correct: Side effects outside, assertions inside
+**✅ Correct: Side effects outside, assertions inside
 
 ```tsx
 // ✅ Click once, wait for callback
@@ -261,7 +261,7 @@ await waitFor(() => {
 
 **Principle:** findBy queries are specifically designed for waiting. waitFor + getBy is verbose and less clear.
 
-### ❌ Incorrect: waitFor wrapping getBy
+**❌ Incorrect: waitFor wrapping getBy
 
 ```tsx
 // ❌ Verbose and less intention-revealing
@@ -276,7 +276,7 @@ await waitFor(() => {
 });
 ```
 
-### ✅ Correct: Use findBy directly
+**✅ Correct: Use findBy directly
 
 ```tsx
 // ✅ Concise and clear

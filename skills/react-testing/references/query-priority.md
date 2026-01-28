@@ -20,7 +20,7 @@ The query hierarchy reflects how users and assistive technologies interact with 
 
 **Principle:** Role queries verify both presence and accessibility in one assertion.
 
-### ❌ Incorrect: Skipping accessible queries
+**❌ Incorrect: Skipping accessible queries
 
 ```tsx
 // Using test ID first bypasses accessibility checks
@@ -38,7 +38,7 @@ const modal = container.querySelector('.modal-overlay');
 - getByText can match any element - no semantic verification
 - querySelector tests CSS implementation, not user experience
 
-### ✅ Correct: Role-first approach
+**✅ Correct: Role-first approach
 
 ```tsx
 // Verify button role AND accessible name
@@ -63,7 +63,7 @@ const modal = screen.getByRole('dialog', { name: /confirm delete/i });
 
 **Principle:** Form fields should always have associated labels for accessibility.
 
-### ❌ Incorrect: Querying inputs without labels
+**❌ Incorrect: Querying inputs without labels
 
 ```tsx
 // Placeholder is not a label replacement
@@ -81,7 +81,7 @@ const input = screen.getByTestId('email-input');
 - Placeholders disappear when user types
 - Missing labels reduce usability for all users
 
-### ✅ Correct: Label-first for form fields
+**✅ Correct: Label-first for form fields
 
 ```tsx
 // Label via <label> element
@@ -105,7 +105,7 @@ const input = screen.getByRole('searchbox', { name: /search products/i });
 
 **Principle:** Test IDs should be last resort when semantic queries are impossible.
 
-### ❌ Incorrect: Test IDs as default
+**❌ Incorrect: Test IDs as default
 
 ```tsx
 // Static button doesn't need test ID
@@ -123,7 +123,7 @@ const item = screen.getByTestId(`item-${id}`);
 - Test IDs add maintenance burden to components
 - Doesn't reflect how users interact with UI
 
-### ✅ Correct: Semantic queries with test ID fallback
+**✅ Correct: Semantic queries with test ID fallback
 
 ```tsx
 // Use role for interactive elements
@@ -148,7 +148,7 @@ const avatar = screen.getByTestId(`user-avatar-${userId}`);
 
 **Principle:** Text queries work well for non-interactive content when role isn't specific.
 
-### ❌ Incorrect: Text queries for interactive elements
+**❌ Incorrect: Text queries for interactive elements
 
 ```tsx
 // Button might have icon, state text, etc.
@@ -166,7 +166,7 @@ const heading = screen.getByText('Error');
 - Doesn't verify semantic meaning
 - Fails if text is split across elements
 
-### ✅ Correct: Text for paragraphs, role for interactive
+**✅ Correct: Text for paragraphs, role for interactive
 
 ```tsx
 // Text query fine for static content

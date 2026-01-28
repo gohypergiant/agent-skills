@@ -6,7 +6,7 @@ Avoid these common mistakes that make tests brittle, hard to maintain, or provid
 
 **Principle:** Test what users experience (outputs, rendered content), not how components achieve it internally (state, function calls, private methods).
 
-### ❌ Incorrect: Testing implementation
+**❌ Incorrect: Testing implementation
 
 ```tsx
 // ❌ Testing state variable
@@ -38,7 +38,7 @@ test('validates input', () => {
 - No confidence in user experience
 - Couples tests to implementation
 
-### ✅ Correct: Test user-observable behavior
+**✅ Correct: Test user-observable behavior
 
 ```tsx
 // ✅ Test rendered output
@@ -79,7 +79,7 @@ test('shows validation error', async () => {
 
 **Principle:** The `screen` export never goes stale after re-renders. Destructured queries from render() can miss updates.
 
-### ❌ Incorrect: Using container or destructured queries
+**❌ Incorrect: Using container or destructured queries
 
 ```tsx
 // ❌ Destructured queries go stale
@@ -101,7 +101,7 @@ expect(container.firstChild).toHaveClass('active'); // ❌ Fragile
 - container queries test DOM structure, not user experience
 - querySelector couples tests to CSS classes
 
-### ✅ Correct: Always use screen
+**✅ Correct: Always use screen
 
 ```tsx
 // ✅ screen always queries current DOM
@@ -123,7 +123,7 @@ expect(button).toBeEnabled();
 
 **Principle:** Snapshots are useful for small, stable structures. Large snapshots create noise and require blind updates.
 
-### ❌ Incorrect: Snapshotting entire component tree
+**❌ Incorrect: Snapshotting entire component tree
 
 ```tsx
 // ❌ 500+ line snapshot
@@ -144,7 +144,7 @@ test('modal content', () => {
 - Reviewers approve snapshot updates without understanding changes
 - No semantic assertions about what matters
 
-### ✅ Correct: Targeted assertions or small snapshots
+**✅ Correct: Targeted assertions or small snapshots
 
 ```tsx
 // ✅ Assert specific critical content
@@ -176,14 +176,14 @@ test('formats currency correctly', () => {
 
 **Principle:** The wrapper utility is deprecated and less clear than screen queries.
 
-### ❌ Incorrect: Using wrapper
+**❌ Incorrect: Using wrapper
 
 ```tsx
 const { wrapper } = render(<Component />);
 const button = wrapper.getByRole('button'); // ❌ Deprecated
 ```
 
-### ✅ Correct: Use screen or within()
+**✅ Correct: Use screen or within()
 
 ```tsx
 // ✅ screen for root queries
@@ -201,7 +201,7 @@ const closeButton = within(dialog).getByRole('button', { name: /close/i });
 
 **Principle:** Update state through user actions, not by forcing re-renders.
 
-### ❌ Incorrect: Forcing re-render with rerender()
+**❌ Incorrect: Forcing re-render with rerender()
 
 ```tsx
 // ❌ Manually forcing re-render
@@ -220,7 +220,7 @@ expect(screen.getByRole('switch')).toBeChecked();
 - Skips event handlers and side effects
 - Tests unrealistic scenarios
 
-### ✅ Correct: Trigger state changes through interactions
+**✅ Correct: Trigger state changes through interactions
 
 ```tsx
 // ✅ User clicks button
@@ -255,7 +255,7 @@ test('toggle switch', async () => {
 
 **Principle:** Mocking internal components hides integration bugs and reduces test value.
 
-### ❌ Incorrect: Mocking internal components
+**❌ Incorrect: Mocking internal components
 
 ```tsx
 // ❌ Mocking internal component
@@ -275,7 +275,7 @@ test('profile page', () => {
 - Doesn't test real component interactions
 - Mock gets out of sync with real component
 
-### ✅ Correct: Test with real components
+**✅ Correct: Test with real components
 
 ```tsx
 // ✅ Use real component
@@ -311,7 +311,7 @@ vi.mock('./api', () => ({
 
 **Principle:** If you're importing from `@testing-library/react/internal` or using `debug()` in production tests, you're doing it wrong.
 
-### ❌ Incorrect: Using internal APIs
+**❌ Incorrect: Using internal APIs
 
 ```tsx
 // ❌ Internal imports
@@ -324,7 +324,7 @@ test('example', () => {
 });
 ```
 
-### ✅ Correct: Use public API
+**✅ Correct: Use public API
 
 ```tsx
 // ✅ Use documented Testing Library exports
@@ -343,7 +343,7 @@ test('example', () => {
 
 **Principle:** queryBy returns null silently. getBy throws with helpful suggestions about what's actually in the DOM.
 
-### ❌ Incorrect: queryBy with toBeInTheDocument
+**❌ Incorrect: queryBy with toBeInTheDocument
 
 ```tsx
 // ❌ null + expect gives unhelpful errors
@@ -357,7 +357,7 @@ expect(button).toBeInTheDocument();
 - Doesn't suggest similar elements or available roles
 - Adds extra line of code for no benefit
 
-### ✅ Correct: getBy for presence, queryBy only for absence
+**✅ Correct: getBy for presence, queryBy only for absence
 
 ```tsx
 // ✅ getBy throws with helpful error immediately
@@ -380,7 +380,7 @@ expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
 **Principle:** waitFor retries its callback multiple times. Side effects get executed repeatedly, causing unpredictable behavior.
 
-### ❌ Incorrect: Actions inside waitFor
+**❌ Incorrect: Actions inside waitFor
 
 ```tsx
 // ❌ Click runs on every retry
@@ -404,7 +404,7 @@ await waitFor(() => {
 - Unpredictable behavior based on timing
 - Hard to debug flaky tests
 
-### ✅ Correct: Actions outside waitFor, only assertions inside
+**✅ Correct: Actions outside waitFor, only assertions inside
 
 ```tsx
 // ✅ Click once, then wait for result
@@ -436,7 +436,7 @@ await waitFor(() => {
 
 **Principle:** If you need to add aria-label or role to make tests pass, the component has an accessibility problem.
 
-### ❌ Incorrect: Adding test-only ARIA
+**❌ Incorrect: Adding test-only ARIA
 
 ```tsx
 // ❌ Component code
@@ -461,7 +461,7 @@ const button = screen.getByRole('button', { name: /submit/i });
 - Manual ARIA attributes often wrong or incomplete
 - Test passes while real users struggle
 
-### ✅ Correct: Fix the component semantics
+**✅ Correct: Fix the component semantics
 
 ```tsx
 // ✅ Component code

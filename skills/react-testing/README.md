@@ -34,7 +34,6 @@ npm install -D @testing-library/react @testing-library/user-event @testing-libra
 - **custom-render.md** - Setting up providers (Context, Redux, Router)
 - **accessibility-queries.md** - Role-based queries and ARIA patterns
 - **anti-patterns.md** - Implementation details, container usage to avoid
-- **assertions.md** - jest-dom matchers for semantic assertions
 
 ### Utilities
 

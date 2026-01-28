@@ -14,7 +14,7 @@ Real users trigger sequences of events (focus → mousedown → mouseup → clic
 
 **Principle:** userEvent simulates how real users interact with your application.
 
-### ❌ Incorrect: fireEvent for user interactions
+**❌ Incorrect: fireEvent for user interactions
 
 ```tsx
 import { fireEvent, screen } from '@testing-library/react';
@@ -35,7 +35,7 @@ fireEvent.mouseOver(screen.getByRole('tooltip'));
 - Keyboard navigation not simulated properly
 - Pointer events not in correct order
 
-### ✅ Correct: userEvent for realistic simulation
+**✅ Correct: userEvent for realistic simulation
 
 ```tsx
 import userEvent from '@testing-library/user-event';
@@ -62,7 +62,7 @@ await userEvent.hover(screen.getByRole('button'));
 
 **Principle:** userEvent methods are async and return promises. Forgetting await causes race conditions.
 
-### ❌ Incorrect: Not awaiting userEvent
+**❌ Incorrect: Not awaiting userEvent
 
 ```tsx
 // No await - test continues before interaction completes
@@ -80,7 +80,7 @@ expect(input).toHaveValue('text'); // ❌ Input still empty
 - Causes "act" warnings
 - Creates flaky tests
 
-### ✅ Correct: Always await userEvent
+**✅ Correct: Always await userEvent
 
 ```tsx
 // Wait for click to complete
@@ -109,7 +109,7 @@ expect(screen.getByText('Both clicked')).toBeInTheDocument();
 
 **Principle:** Call userEvent.setup() per test for proper isolation and realistic delays.
 
-### ❌ Incorrect: Importing userEvent directly
+**❌ Incorrect: Importing userEvent directly
 
 ```tsx
 // Default import skips setup
@@ -126,7 +126,7 @@ test('button click', async () => {
 - Can't configure delay or other options
 - Less explicit about test setup
 
-### ✅ Correct: setup() per test
+**✅ Correct: setup() per test
 
 ```tsx
 import userEvent from '@testing-library/user-event';

@@ -12,7 +12,7 @@ Don't repeat provider setup in every test. Create custom render utilities that w
 
 **Principle:** Centralize provider setup in test utils instead of duplicating in every test file.
 
-### ❌ Incorrect: Repeating provider setup
+**❌ Incorrect: Repeating provider setup
 
 ```tsx
 // ❌ Every test file repeats this
@@ -39,7 +39,7 @@ test('other component', () => {
 - Hard to update when providers change
 - Easy to forget required providers
 
-### ✅ Correct: Custom render utility
+**✅ Correct: Custom render utility
 
 ```tsx
 // test-utils.tsx
@@ -232,7 +232,7 @@ export function renderWithAllProviders(
 
 **Principle:** Re-export Testing Library utilities from test-utils for consistent imports.
 
-### ❌ Incorrect: Mixed imports
+**❌ Incorrect: Mixed imports
 
 ```tsx
 // ❌ Mixing custom and standard imports
@@ -245,7 +245,7 @@ test('example', () => {
 });
 ```
 
-### ✅ Correct: Single import source
+**✅ Correct: Single import source
 
 ```tsx
 // test-utils.tsx

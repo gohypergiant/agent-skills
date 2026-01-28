@@ -32,7 +32,6 @@ This structure minimizes context usage while providing complete implementation g
 - [1.5 Custom Render](#15-custom-render) - Wrap components with providers in test utils
 - [1.6 Accessibility Queries](#16-accessibility-queries) - Query by role, ARIA attributes, semantic HTML
 - [1.7 Anti-patterns](#17-anti-patterns) - Avoid implementation details, container queries, wrapper usage
-- [1.8 Assertions](#18-assertions) - Use jest-dom matchers for clear, semantic test assertions
 
 ---
 
@@ -65,7 +64,3 @@ Query by semantic roles and labels; test ensures accessibility by design.
 ### 1.7 Anti-patterns
 Never test implementation details, use container queries, rely on excessive snapshots, use queryBy for presence, or put side effects in waitFor.
 [View detailed examples](references/anti-patterns.md)
-
-### 1.8 Assertions
-Use jest-dom matchers (toBeInTheDocument, toHaveAccessibleName) for semantic assertions.
-[View detailed examples](references/assertions.md)

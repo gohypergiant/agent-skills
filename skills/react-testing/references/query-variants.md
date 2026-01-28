@@ -16,7 +16,7 @@ Understanding when to use getBy*, findBy*, or queryBy* is critical for reliable 
 
 **Principle:** When element should already be in DOM, use getBy* for immediate failure feedback.
 
-### ❌ Incorrect: Async query for sync content
+**❌ Incorrect: Async query for sync content
 
 ```tsx
 // Element renders immediately, no need for async
@@ -35,7 +35,7 @@ expect(title).toBeInTheDocument();
 - queryBy + expect masks helpful error message from getBy
 - Tests run slower without gaining reliability
 
-### ✅ Correct: getBy for synchronous content
+**✅ Correct: getBy for synchronous content
 
 ```tsx
 // Element in initial render
@@ -59,7 +59,7 @@ const title = screen.getByText('Dashboard');
 
 **Principle:** Elements loaded via useEffect, API calls, or timers need async queries.
 
-### ❌ Incorrect: getBy for async content
+**❌ Incorrect: getBy for async content
 
 ```tsx
 // useEffect loads data - might not be ready
@@ -80,7 +80,7 @@ await waitFor(() => {
 - setTimeout creates race conditions
 - waitFor + getBy more verbose than findBy
 
-### ✅ Correct: findBy for async content
+**✅ Correct: findBy for async content
 
 ```tsx
 // Waits for element loaded in useEffect
@@ -105,7 +105,7 @@ const message = await screen.findByText(/saved successfully/i);
 
 **Principle:** To verify element is NOT present, queryBy returns null instead of throwing.
 
-### ❌ Incorrect: Expecting getBy to not find element
+**❌ Incorrect: Expecting getBy to not find element
 
 ```tsx
 // getBy throws, can't catch in expect
@@ -128,7 +128,7 @@ try {
 - findBy wastes time waiting for element that shouldn't appear
 - try/catch makes intent unclear
 
-### ✅ Correct: queryBy for absence assertions
+**✅ Correct: queryBy for absence assertions
 
 ```tsx
 // Element not present initially
@@ -155,7 +155,7 @@ expect(screen.queryByText('Details')).toBeNull();
 
 **Principle:** When element should disappear after action, waitForElementToBeRemoved is clearer than queryBy.
 
-### ❌ Incorrect: queryBy in waitFor for removal
+**❌ Incorrect: queryBy in waitFor for removal
 
 ```tsx
 // Verbose and less clear
@@ -178,7 +178,7 @@ expect(screen.queryByRole('dialog')).toBeNull(); // ❌ Race condition
 - Manual polling error-prone
 - No waiting creates race conditions
 
-### ✅ Correct: waitForElementToBeRemoved
+**✅ Correct: waitForElementToBeRemoved
 
 ```tsx
 // Wait for loading spinner to disappear
@@ -205,7 +205,7 @@ await waitForElementToBeRemoved(() => screen.getByText('Saving...'));
 
 Same patterns apply for multiple elements:
 
-### ❌ Incorrect: Wrong variant for multiple elements
+**❌ Incorrect: Wrong variant for multiple elements
 
 ```tsx
 // getAll for async list
@@ -219,7 +219,7 @@ const errors = screen.queryAllByRole('alert');
 // ❌ Empty array if absent - need to check length
 ```
 
-### ✅ Correct: Matching variant to scenario
+**✅ Correct: Matching variant to scenario
 
 ```tsx
 // getAllBy for synchronous lists
@@ -241,7 +241,7 @@ expect(errors).toHaveLength(0);
 
 **Principle:** getBy throws immediately with helpful suggestions. queryBy returns null with no hints.
 
-### ❌ Incorrect: queryBy + expect for presence checks
+**❌ Incorrect: queryBy + expect for presence checks
 
 ```tsx
 // ❌ Unhelpful error: "Expected null to be in document"
@@ -259,7 +259,7 @@ expect(heading).toHaveTextContent('Welcome');
 - No suggestions about available roles or similar text
 - Extra line of code for assertion
 
-### ✅ Correct: getBy for presence, queryBy only for absence
+**✅ Correct: getBy for presence, queryBy only for absence
 
 ```tsx
 // ✅ Helpful error: "Unable to find button with name /submitt/i
@@ -286,7 +286,7 @@ expect(screen.queryByText(/error/i)).toBeNull();
 
 **Principle:** When you can't figure out the right query, let Testing Library show you what's available.
 
-### ❌ Incorrect: Guessing at queries
+**❌ Incorrect: Guessing at queries
 
 ```tsx
 // ❌ Trying random queries until one works
@@ -301,7 +301,7 @@ container.querySelector('.btn-primary');
 - Might use suboptimal query that works by accident
 - Misses accessibility issues
 
-### ✅ Correct: Debug to see available queries
+**✅ Correct: Debug to see available queries
 
 ```tsx
 // ✅ See current DOM
