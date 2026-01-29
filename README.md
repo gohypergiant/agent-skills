@@ -2,6 +2,12 @@
 
 A collection of skills and commands that transform AI agents into specialized problem solvers. Skills provide domain expertise, coding standards, and reusable workflows that help agents write better code with less context.
 
+To have a greater guarantee of a skill being utilized, we recommend appending the following to any prompt you use:
+
+```
+Before relying on your training data you MUST evaluate and apply ALL APPLICABLE SKILLS to your problem space. IF AND ONLY IF you do not find a skill that applies are you allowed to fall back to your training data. This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+```
+
 ## Table of Contents
 
 - [Installation](#installation)
