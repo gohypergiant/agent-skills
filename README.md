@@ -41,7 +41,7 @@ pnpm dlx skills add gohypergiant/agent-skills
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
 ```
-# Agents will use js-ts-best-practices when you ask:
+# Agents will use ts-best-practices when you ask:
 "Add input validation to this function"
 
 # Agents will use react-best-practices when you ask:
@@ -54,14 +54,8 @@ For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
 Commands can be invoked directly:
 ```bash
-# Audit JSDoc comments in your codebase
-claude /audit:js-ts-docs ./src
-
 # Generate implementation plans for a feature
 claude /feature-planning:implementation ./requirements.md
-
-# Create a new skill
-claude /create:skill
 ```
 
 ## What are Agent Skills?
@@ -88,17 +82,28 @@ Skills are designed for agents, not humans. They're structured for efficient con
 
 ## Available Skills
 
-### js-ts-best-practices
+### ts-best-practices
 
-JavaScript and TypeScript coding standards covering:
+TypeScript and JavaScript coding standards covering:
 
 - Naming conventions and code structure
 - TypeScript patterns (avoid `any`, prefer `type` over `interface`, use `as const` instead of `enum`)
 - Safety patterns (input validation, assertions, error handling)
-- Performance optimization (reduce branching, memoization, caching, avoid allocations)
-- Documentation standards (JSDoc, comment markers)
+- Function design and control flow
 
-**Activates when:** Writing JS/TS functions, fixing type errors, optimizing loops, adding validation, reviewing code quality.
+**Activates when:** Writing JS/TS functions, fixing type errors, adding validation, reviewing code quality.
+
+### ts-performance
+
+Systematic JavaScript/TypeScript performance optimization using V8 profiling:
+
+- Algorithmic complexity fixes (O(n²) → O(n) with Maps/Sets)
+- Loop optimization and allocation reduction
+- Caching and memoization patterns
+- I/O batching and async optimization
+- Memory locality and predictable execution
+
+**Activates when:** Code is measurably slow, optimizing hot paths, profiling shows bottlenecks, fixing excessive allocations, improving execution speed.
 
 ### react-best-practices
 
@@ -123,6 +128,17 @@ Testing patterns for Vitest:
 - Snapshot testing guidelines
 
 **Activates when:** Writing `*.test.ts` files, adding test coverage, debugging flaky tests, reviewing test code.
+
+### ts-documentation
+
+Documentation standards for JavaScript and TypeScript:
+
+- JSDoc comment structure (@param, @returns, @template, @example with code fences)
+- Comment markers (TODO, FIXME, HACK, NOTE, PERF, REVIEW, DEBUG, REMARK)
+- Documentation sufficiency for exported vs internal code
+- Comment quality (removing unnecessary comments, preserving important ones)
+
+**Activates when:** Adding JSDoc comments, documenting functions or types, auditing documentation completeness, adding TODO/FIXME markers, improving code comments.
 
 ### nextjs-best-practices
 
@@ -177,22 +193,6 @@ README documentation generator and updater:
 ## Available Commands
 
 Commands are task-specific specifications stored in `commands/`. They define workflows that Claude executes autonomously.
-
-### Audit Commands
-
-| Command | Description |
-|---------|-------------|
-| `/audit:js-ts-docs` | Audit JSDoc comments for completeness against js-ts-best-practices standards. Supports interactive fixing. |
-| `/audit:js-ts-perf` | Audit JavaScript/TypeScript code for performance issues. |
-| `/audit:js-test-coverage` | Audit unit test coverage and format compliance. Identifies untested branches, error paths, boundaries, and async patterns. Also validates existing tests against vitest-best-practices (AAA pattern, descriptions, assertions). Supports interactive or automatic fixing. |
-
-### Create Commands
-
-| Command | Description |
-|---------|-------------|
-| `/create:skill` | Create a new skill with proper structure and documentation. |
-| `/create:command` | Create a new Claude Code command specification. |
-| `/create:readme` | Generate or update README.md for a package by analyzing its codebase. Uses readme-writer skill to identify public APIs and produce documentation with practical examples. |
 
 ### Feature Planning Commands
 
@@ -283,7 +283,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
 
 ### Debug Code
 ```
@@ -308,7 +308,7 @@ Format and classify your review as:
 3. 🟢 Confident
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
 
 ### Performance Analysis
 ```
@@ -335,7 +335,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+**Invokes:** ts-best-practices, ts-performance, react-best-practices, nextjs-best-practices
 
 ### Security Analysis
 ```
@@ -362,7 +362,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+**Invokes:** ts-best-practices, ts-performance, react-best-practices, nextjs-best-practices
 
 ### Skill Management
 ```

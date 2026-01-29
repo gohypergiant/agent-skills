@@ -1,15 +1,17 @@
 ---
-name: js-ts-best-practices
-description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling, optimizing performance (loops, conditionals, caching), or improving documentation (JSDoc, comments).
+name: ts-best-practices
+description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness. Use when: (1) Writing or reviewing TS/JS code, (2) Fixing type errors or avoiding any/enum/null, (3) Implementing control flow, state management, or error handling, (4) Applying zero-value pattern or immutability, (5) Code review for TypeScript anti-patterns. Covers: naming conventions, function design, return values, bounded iteration, input validation. For performance optimization, use ts-performance skill. For documentation, use ts-documentation skill.
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.4"
+  version: "2.1"
 ---
 
 # JavaScript and TypeScript Best Practices
 
-Comprehensive coding standards and performance optimization guide for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
+Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
+
+**Note:** This skill focuses on general best practices, TypeScript patterns, and safety. For performance optimization, use the `ts-performance` skill instead.
 
 ## When to Use This Skill
 
@@ -49,26 +51,10 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [error-messages.md](references/error-messages.md) - User-friendly vs developer-specific messages
 
 **Performance:**
-- [reduce-branching.md](references/reduce-branching.md) - Convert conditionals to lookups, hoist invariants, early returns
-- [reduce-looping.md](references/reduce-looping.md) - Single-pass operations, O(1) lookups, typed arrays
-- [memoization.md](references/memoization.md) - Hoist invariants, precompute constants, cache expensive operations
-- [batching.md](references/batching.md) - Batch I/O operations
-- [predictable-execution.md](references/predictable-execution.md) - Sequential access, cache locality, grouped data
-- [bounded-iteration.md](references/bounded-iteration.md) - Set limits on loops and queues
-- [defer-await.md](references/defer-await.md) - Move await into branches that need it
-- [cache-property-access.md](references/cache-property-access.md) - Cache lookups, eliminate aliases, avoid unnecessary destructuring
-- [cache-storage-api.md](references/cache-storage-api.md) - Cache localStorage/sessionStorage/cookie reads
-- [object-operations.md](references/object-operations.md) - Safe mutation, shallow clones, preallocate shapes
-- [avoid-allocations.md](references/avoid-allocations.md) - Inline simple computations, avoid needless variables, reduce GC pressure
-- [currying.md](references/currying.md) - Curry to precompute constant parameters, optimize hot paths
-- [performance-misc.md](references/performance-misc.md) - Strings, regex, async overhead, closures, try/catch
+- **For performance optimization tasks**, use the `ts-performance` skill for comprehensive profiling workflows and optimization patterns
 
 **Documentation:**
-- [jsdoc.md](references/jsdoc.md) - Well-formed JSDoc for exports
-- [comment-markers.md](references/comment-markers.md) - TODO, FIXME, HACK, NOTE markers
-- [comments-to-remove.md](references/comments-to-remove.md) - Commented code, edit history
-- [comments-to-preserve.md](references/comments-to-preserve.md) - Markers, linter directives, business logic
-- [comments-placement.md](references/comments-placement.md) - Move end-of-line comments above code
+- **For documentation tasks**, use the `ts-documentation` skill for comprehensive JSDoc and comment guidance
 
 ### 3. Apply the Pattern
 Each reference file contains:

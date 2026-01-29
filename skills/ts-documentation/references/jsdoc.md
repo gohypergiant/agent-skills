@@ -1,4 +1,4 @@
-# 5.1 JSDoc
+# JSDoc Documentation Standards
 
 ## Scope
 

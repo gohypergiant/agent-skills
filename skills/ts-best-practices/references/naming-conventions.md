@@ -58,7 +58,12 @@ const isVisible = getVisibility();
 const hasChildren = countChildren() > 0;
 ```
 
-**Why this matters**: Prevents type confusion and makes conditionals self-documenting:
-```ts
-if (hasChildren) { /* clear intent */ }
-```
+**Why this matters**:
+
+1. **Prevents type confusion**: Reading `visible` in code, you can't tell if it's a boolean, string ('visible'/'hidden'), or function without checking the definition. `isVisible` is unambiguous.
+
+2. **Self-documenting conditionals**: `if (hasChildren)` clearly checks existence, while `if (children)` is ambiguous - are we checking array length? Truthiness? Existence of the property?
+
+3. **IDE autocomplete grouping**: Typing `is` shows all boolean state flags together; typing `has` shows all existence checks; typing `should` shows all permission/policy flags.
+
+4. **Reduces cognitive load**: Developers can pattern-match on prefixes to understand variable behavior without reading the declaration
