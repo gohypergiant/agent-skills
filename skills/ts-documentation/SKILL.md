@@ -186,13 +186,12 @@ Before marking documentation as "sufficient", verify:
 
 ## Documentation Audit Anti-Patterns
 
-When performing documentation audits, NEVER:
+When performing documentation audits, avoid these common mistakes:
 
-❌ **Over-document internal code**
+### ❌ Incorrect: Over-documenting internal code
 
-WHY (from experience): Internal docs rot faster than public API docs because they're adjacent to frequently-changed implementation. Team members can read the actual implementation faster than reading outdated documentation that creates confusion. Reserve comprehensive docs for stable exported APIs where consumers cannot access implementation.
 ```typescript
-// WRONG - internal utility with verbose documentation
+// Internal utility with verbose documentation
 /**
  * Internal helper function that validates input
  * @internal
@@ -206,8 +205,13 @@ WHY (from experience): Internal docs rot faster than public API docs because the
 function isValid(x: unknown): boolean {
   return x != null;
 }
+```
 
-// CORRECT - minimal docs for internal utilities, comprehensive for public API
+Why this is wrong: Internal docs rot faster than public API docs because they're adjacent to frequently-changed implementation. Team members can read the actual implementation faster than reading outdated documentation that creates confusion. Reserve comprehensive docs for stable exported APIs where consumers cannot access implementation.
+
+### ✅ Correct: Minimal internal docs, comprehensive public API docs
+
+```typescript
 // Internal utility - minimal documentation
 /** Checks if value is not null/undefined */
 function isValid(x: unknown): boolean {
@@ -231,19 +235,23 @@ export function validateInput(data: unknown): boolean {
 }
 ```
 
-❌ **Document HOW instead of WHAT/WHY**
+### ❌ Incorrect: Documenting HOW instead of WHAT/WHY
 
-WHY (from experience): JSDoc appears in IDE autocomplete for API consumers who don't have access to implementation. Explaining HOW in JSDoc creates confusion ("why am I seeing implementation details in my autocomplete?") and increases refactoring surface area - every implementation change requires doc updates, leading to drift.
 ```typescript
-// WRONG - JSDoc should describe WHAT/WHY, not HOW
+// JSDoc describes implementation details
 /**
  * Loops through array using reduce to accumulate values into a sum
  */
 function sum(numbers: number[]): number {
   return numbers.reduce((a, b) => a + b, 0);
 }
+```
 
-// CORRECT - describe purpose and behavior, not implementation
+Why this is wrong: JSDoc appears in IDE autocomplete for API consumers who don't have access to implementation. Explaining HOW in JSDoc creates confusion ("why am I seeing implementation details in my autocomplete?") and increases refactoring surface area - every implementation change requires doc updates, leading to drift.
+
+### ✅ Correct: Describe purpose and behavior, not implementation
+
+```typescript
 /**
  * Calculates the sum of all numbers in the array
  * @param numbers - Array of numbers to sum
@@ -254,15 +262,19 @@ function sum(numbers: number[]): number {
 }
 ```
 
-❌ **Add vague comment markers**
+### ❌ Incorrect: Using vague comment markers
 
-WHY (from experience): "TODO: fix this" creates diffusion of responsibility. After months pass, nobody knows if it's still relevant, who should fix it, or what "this" refers to. Vague markers accumulate as noise that reduces trust in ALL markers, making developers ignore even critical ones.
 ```typescript
-// WRONG - not actionable
+// Not actionable
 // TODO: fix this
 // TODO: improve performance
+```
 
-// CORRECT - specific with ownership and context
+Why this is wrong: "TODO: fix this" creates diffusion of responsibility. After months pass, nobody knows if it's still relevant, who should fix it, or what "this" refers to. Vague markers accumulate as noise that reduces trust in ALL markers, making developers ignore even critical ones.
+
+### ✅ Correct: Specific markers with ownership and context
+
+```typescript
 // TODO(username): Replace with binary search for O(log n) lookup
 // FIXME(username): Throws error on empty array, add guard clause
 ```
