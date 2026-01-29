@@ -1,5 +1,5 @@
 ---
-name: skill-manager
+name: accelint-skill-manager
 description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating/auditing existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
 license: Apache-2.0
 metadata:
@@ -127,7 +127,7 @@ Analyze each concrete example to create a list of reusable resources: scripts, r
 
 ### Step 3: Initializing the Skill
 
-At this point, it is time to actually create the skill. 
+At this point, it is time to actually create the skill.
 
 Check available skills to identify potentially relevant ones the user may have missed:
 

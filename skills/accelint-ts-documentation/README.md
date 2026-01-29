@@ -1,6 +1,6 @@
 # Documentation Skill
 
-Expert-level JavaScript/TypeScript documentation auditing skill with comprehensive guidance on JSDoc, comments, anti-patterns, and judgment frameworks. Delegates to ts-best-practices for detailed implementation rules.
+Expert-level JavaScript/TypeScript documentation auditing skill with comprehensive guidance on JSDoc, comments, anti-patterns, and judgment frameworks.
 
 ## Design Philosophy
 
@@ -12,11 +12,6 @@ This skill combines **focused activation** with **expert judgment frameworks**:
 4. **Decision trees** - Clear sufficiency evaluation for all code element types
 5. **Edge case coverage** - Handles deprecated APIs, overloads, generics, callbacks, builders, events
 6. **Conflict resolution** - Principles for resolving documentation dilemmas
-7. **Drift-resilient delegation** - Loads documentation references from ts-best-practices with fallback strategies
-
-## Requirements
-
-**ts-best-practices** skill must be available. This skill loads documentation-specific references from it.
 
 ## What This Skill Covers
 
@@ -95,15 +90,14 @@ The skill provides structured audit reports:
 
 ### Activation & Loading (Drift-Resilient)
 
-1. **Verify Parent Skill** - Checks ts-best-practices availability
-2. **Verify Current Structure** - Reads parent SKILL.md to confirm current file organization
-3. **Load Documentation References** - Loads 5 expected files with fallback discovery if reorganized:
+1. **Verify Current Structure** - Reads parent SKILL.md to confirm current file organization
+2. **Load Documentation References** - Loads 5 expected files with fallback discovery if reorganized:
    - `jsdoc.md` - JSDoc syntax and tag requirements
    - `comment-markers.md` - TODO, FIXME, HACK markers
    - `comments-to-remove.md` - What to delete
    - `comments-to-preserve.md` - What to keep
    - `comments-placement.md` - Where to put comments
-4. **Apply Audit Workflow** - Uses thinking frameworks and decision trees
+3. **Apply Audit Workflow** - Uses thinking frameworks and decision trees
 
 **Hybrid approach** provides specific file list for clarity while verifying against parent SKILL.md for drift-resilience.
 
@@ -222,26 +216,12 @@ Side-by-side comparison of excellent vs poor documentation with annotated explan
 - You're reviewing comment quality and markers
 - You need guidance on edge cases (deprecated, overloads, generics, etc.)
 
-**Use ts-best-practices when**:
-- You need comprehensive code quality across all dimensions
-- Documentation is one of many concerns (performance, safety, types, control flow, etc.)
-- You need implementation-level rules (naming, functions, state management)
-
-**Use both when**:
-- Comprehensive code review where documentation is critical
-- The codebase has both documentation and code quality issues
-- You need audit-level thinking (this skill) + implementation rules (parent skill)
-
 ## Skill Metrics
 
 - **Size**: ~640 lines (SKILL.md)
 - **Knowledge ratio**: 70% expert / 20% activation / 10% redundant
 - **Pattern**: Navigation wrapper with substantial original content
-- **Dependencies**: ts-best-practices (loads ~470 lines of references)
-- **Total context**: ~1100 lines when fully loaded
 
 ## License
 
 Apache-2.0
-
-Authored by gohypergiant. Delegates to ts-best-practices v1.4 by gohypergiant.

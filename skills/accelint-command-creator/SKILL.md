@@ -1,6 +1,10 @@
 ---
-name: command-creator
+name: accelint-command-creator
 description: Guide for creating Claude Code commands with skill integration. Use when users want to create a new Claude Code command specification, whether skill-based or standalone. Assists with command definition, skill discovery, argument specification, and command generation.
+license: Apache-2.0
+metadata:
+  author: gohypergiant
+  version: "1.0"
 ---
 
 # Command Creator

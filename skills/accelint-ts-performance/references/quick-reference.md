@@ -2,11 +2,6 @@
 
 Quick lookup for common performance bottleneck patterns and optimization categories.
 
-**Note:** This reference uses categories rather than specific filenames to avoid drift. To find actual reference files:
-1. Check ts-best-practices/SKILL.md Performance section
-2. List files: `ls ./.claude/skills/ts-best-practices/references/` (or `~/.claude/skills/...`)
-3. Match category keywords (loop, cache, alloc, batch, etc.) to file names
-
 ## Bottleneck → Category Mapping
 
 ### Nested Loops (O(n²) Complexity)
@@ -19,7 +14,9 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 **Category:** Algorithmic optimization
 
-**Search for files containing:** "loop", "looping", "branch", "branching"
+**Reference files:**
+- [reduce-looping.md](reduce-looping.md)
+- [reduce-branching.md](reduce-branching.md)
 
 **Expected speedup:** 10-1000x for large datasets
 
@@ -35,7 +32,9 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 **Category:** Caching & memoization
 
-**Search for files containing:** "memoiz", "cache", "property"
+**Reference files:**
+- [memoization.md](memoization.md)
+- [cache-property-access.md](cache-property-access.md)
 
 **Expected speedup:** 2-100x depending on computation cost
 
@@ -52,7 +51,9 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 **Category:** Allocation reduction
 
-**Search for files containing:** "alloc", "allocation", "object", "operation"
+**Reference files:**
+- [avoid-allocations.md](avoid-allocations.md)
+- [object-operations.md](object-operations.md)
 
 **Expected speedup:** 1.5-5x plus reduced GC pauses
 
@@ -68,7 +69,8 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 **Category:** Caching
 
-**Search for files containing:** "cache", "storage"
+**Reference files:**
+- [cache-storage-api.md](cache-storage-api.md)
 
 **Expected speedup:** 5-20x for storage-heavy operations
 
@@ -84,7 +86,9 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 **Category:** I/O optimization
 
-**Search for files containing:** "defer", "await", "batch", "async"
+**Reference files:**
+- [defer-await.md](defer-await.md)
+- [batching.md](batching.md)
 
 **Expected speedup:** 2-10x for I/O-bound operations
 
@@ -100,7 +104,8 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 **Category:** Memory locality
 
-**Search for files containing:** "predict", "execution", "sequential", "locality"
+**Reference files:**
+- [predictable-execution.md](predictable-execution.md)
 
 **Expected speedup:** 1.5-3x for large datasets
 
@@ -116,7 +121,8 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 **Category:** Bounded execution
 
-**Search for files containing:** "bound", "iteration", "limit"
+**Reference files:**
+- [bounded-iteration.md](bounded-iteration.md)
 
 **Expected speedup:** Prevents pathological cases (DoS prevention)
 
@@ -124,16 +130,16 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 
 ## Profiler Output → Category Lookup
 
-| Profiler Shows | Issue Type | Category | Search Keywords |
+| Profiler Shows | Issue Type | Category | Reference Files |
 |----------------|------------|----------|-----------------|
-| `Array.prototype.filter` high % | Chained array methods | Algorithmic | loop, looping, reduce |
-| `Map.get` in tight loop | Should cache lookup | Caching | cache, property |
-| `Object.assign` / spread high % | Object allocation | Allocation | alloc, object |
-| `localStorage.getItem` frequent | Storage not cached | Caching | cache, storage |
-| Long async function | Sequential awaits | I/O | defer, await |
-| GC taking >10% time | Allocation pressure | Allocation | alloc, allocation |
-| Random access pattern | Poor locality | Memory locality | predict, execution |
-| Nested loop consuming >20% | O(n²) algorithm | Algorithmic | loop, looping |
+| `Array.prototype.filter` high % | Chained array methods | Algorithmic | [reduce-looping.md](reduce-looping.md) |
+| `Map.get` in tight loop | Should cache lookup | Caching | [cache-property-access.md](cache-property-access.md) |
+| `Object.assign` / spread high % | Object allocation | Allocation | [object-operations.md](object-operations.md), [avoid-allocations.md](avoid-allocations.md) |
+| `localStorage.getItem` frequent | Storage not cached | Caching | [cache-storage-api.md](cache-storage-api.md) |
+| Long async function | Sequential awaits | I/O | [defer-await.md](defer-await.md) |
+| GC taking >10% time | Allocation pressure | Allocation | [avoid-allocations.md](avoid-allocations.md) |
+| Random access pattern | Poor locality | Memory locality | [predictable-execution.md](predictable-execution.md) |
+| Nested loop consuming >20% | O(n²) algorithm | Algorithmic | [reduce-looping.md](reduce-looping.md), [reduce-branching.md](reduce-branching.md) |
 
 ---
 
@@ -149,23 +155,21 @@ Quick lookup for common performance bottleneck patterns and optimization categor
           └─ YES ──→ What's the issue?
                      │
                      ├─ O(n²) or worse ──→ Algorithmic fix (10-1000x)
-                     │                      Search: loop, branch files
+                     │                      reduce-looping.md, reduce-branching.md
                      │
                      ├─ Repeated computation ──→ Caching (2-100x)
-                     │                            Search: memoiz, cache files
+                     │                            memoization.md, cache-property-access.md
                      │
                      ├─ Many allocations ──→ Reduce GC (1.5-5x)
-                     │                        Search: alloc, object files
+                     │                        avoid-allocations.md, object-operations.md
                      │
                      ├─ Sequential I/O ──→ Parallel/defer (2-50x)
-                     │                      Search: defer, await, batch files
+                     │                      defer-await.md, batching.md
                      │
                      └─ Loop overhead ──→ Micro-optimization (1.05-2x)
-                                         Search: cache, property files
+                                         currying.md, performance-misc.md
                                          Only if hot path!
 ```
-
-**To find files:** Use `ls ./.claude/skills/ts-best-practices/references/ | grep <keyword>` or consult SKILL.md Performance section.
 
 ---
 
@@ -174,34 +178,40 @@ Quick lookup for common performance bottleneck patterns and optimization categor
 **Before loading any references, scan for these common anti-patterns and identify categories:**
 
 ```typescript
-// ❌ O(n²) - Category: Algorithmic (search: loop, branch)
+// ❌ O(n²) - Category: Algorithmic
+// References: reduce-looping.md, reduce-branching.md
 for (const item of itemsA) {
   const match = itemsB.find(x => x.id === item.id);
 }
 
-// ❌ Repeated expensive computation - Category: Caching (search: memoiz, cache)
+// ❌ Repeated expensive computation - Category: Caching
+// References: memoization.md, cache-property-access.md
 for (let i = 0; i < array.length; i++) {
   const result = expensiveFunction(sameInput);
 }
 
-// ❌ Property access in loop - Category: Caching (search: cache, property)
+// ❌ Property access in loop - Category: Caching
+// References: cache-property-access.md
 for (let i = 0; i < items.length; i++) {
   process(config.settings.nested.property);
 }
 
-// ❌ Storage API not cached - Category: Caching (search: cache, storage)
+// ❌ Storage API not cached - Category: Caching
+// References: cache-storage-api.md
 function getValue() {
   return JSON.parse(localStorage.getItem('key') || '{}');
 }
 
-// ❌ Sequential awaits - Category: I/O (search: defer, await, batch)
+// ❌ Sequential awaits - Category: I/O
+// References: defer-await.md, batching.md
 async function process() {
   const a = await fetchA();
   const b = await fetchB(); // Could be parallel
   return combine(a, b);
 }
 
-// ❌ Allocation in loop - Category: Allocation (search: alloc, object)
+// ❌ Allocation in loop - Category: Allocation
+// References: avoid-allocations.md, object-operations.md
 const results = [];
 for (const item of items) {
   results.push({ ...item, newProp: value }); // Spread creates new object
@@ -210,5 +220,5 @@ for (const item of items) {
 
 **When you see these patterns:**
 1. Identify the category from the comments
-2. Search ts-best-practices/references/ for files matching the keywords
-3. Load relevant reference files to find optimization patterns
+2. Load the reference files listed for that category
+3. Find optimization patterns in the reference files

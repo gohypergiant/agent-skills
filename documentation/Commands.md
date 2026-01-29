@@ -38,11 +38,11 @@ Commands and skills can be stored at two levels:
 
 ## Command Creation Tools
 
-### command-creator Skill and /creation:command Command
+### accelint-command-creator Skill and /creation:command Command
 
-The `command-creator` skill provides a structured workflow for creating command specifications. A corresponding `/creation:command` command invokes this skill to automate the process.
+The `accelint-command-creator` skill provides a structured workflow for creating command specifications. A corresponding `/creation:command` command invokes this skill to automate the process.
 
-**command-creator skill** guides you through:
+**accelint-command-creator skill** guides you through:
 - Command purpose definition
 - Skill dependency identification
 - Relevant skill discovery across `.claude/skills/` and `~/.claude/skills/` directories
@@ -50,7 +50,7 @@ The `command-creator` skill provides a structured workflow for creating command 
 - Workflow structure design
 - Command file generation
 
-**Location**: Typically in `~/.claude/skills/command-creator/SKILL.md` for global use.
+**Location**: Typically in `~/.claude/skills/acceling-command-creator/SKILL.md` for global use.
 
 **Usage**:
 ```bash
@@ -387,7 +387,7 @@ do-stuff           ✗ Unclear purpose
 
 ### Discovering Relevant Skills
 
-Skills provide domain-specific knowledge and workflows. The `command-creator` skill (invoked via `/creation:command`) automates skill discovery, but you can also manually check these directories:
+Skills provide domain-specific knowledge and workflows. The `accelint-command-creator` skill (invoked via `/creation:command`) automates skill discovery, but you can also manually check these directories:
 
 ```bash
 # Project-level skills (most common)
@@ -404,7 +404,7 @@ skills/
 ├── public/          # Core Claude skills (docx, pdf, xlsx, pptx)
 ├── private/         # Organization-specific skills
 ├── examples/        # Reference implementations
-└── user/            # User-defined skills (e.g., command-creator)
+└── user/            # User-defined skills (e.g., accelint-command-creator)
 ```
 
 **Note**: The exact subdirectory structure may vary. Project-level skills often have a flatter structure with skills directly in `.claude/skills/`.
@@ -466,7 +466,7 @@ Claude Code loads all referenced skills and applies their combined knowledge dur
 
 ## Command Development Workflow
 
-The `command-creator` skill provides a structured workflow for creating well-formed command specifications. The `/creation:command` command invokes this skill to automate the entire process.
+The `accelint-command-creator` skill provides a structured workflow for creating well-formed command specifications. The `/creation:command` command invokes this skill to automate the entire process.
 
 ### Using /creation:command (Recommended)
 
@@ -483,7 +483,7 @@ This command will:
 4. Help structure workflow execution sequences
 5. Generate a compliant command specification file
 
-The underlying command-creator skill follows this decision tree:
+The underlying accelint-command-creator skill follows this decision tree:
 
 ```
 Define command purpose
@@ -524,7 +524,7 @@ Check for skills in:
 - `./.claude/skills/` (project-level)
 - `~/.claude/skills/` (global)
 
-**Tip**: The `/creation:command` command automates this discovery process by invoking the command-creator skill.
+**Tip**: The `/creation:command` command automates this discovery process by invoking the accelint-command-creator skill.
 
 ### 3. Design Arguments
 
@@ -713,12 +713,12 @@ For CPU-intensive operations, consider parallel processing:
 
 For detailed examples and advanced patterns, see:
 
-- Command-creator skill: `./.claude/skills/command-creator/SKILL.md` (project) or `~/.claude/skills/command-creator/SKILL.md` (global)
-- `/creation:command` command: Invokes the command-creator skill for automated command generation
+- Accelint-command-creator skill: `./.claude/skills/accelint-command-creator/SKILL.md` (project) or `~/.claude/skills/accelint-command-creator/SKILL.md` (global)
+- `/creation:command` command: Invokes the accelint-command-creator skill for automated command generation
 - `command-patterns.md`: Common command structures and implementation patterns
 - Example commands in `./.claude/commands/` or `~/.claude/commands/`: Real-world command implementations
 
-### Using /creation:command and command-creator
+### Using /creation:command and acceling-command-creator
 
 To create a new command:
 
@@ -727,8 +727,8 @@ To create a new command:
 claude /creation:command <command-name>
 
 # Manual approach - view the skill documentation first
-cat ./.claude/skills/command-creator/SKILL.md  # project-level
-cat ~/.claude/skills/command-creator/SKILL.md  # global
+cat ./.claude/skills/accelint-command-creator/SKILL.md  # project-level
+cat ~/.claude/skills/accelint-command-creator/SKILL.md  # global
 ```
 
 The `/creation:command` command and underlying skill provide comprehensive guidance on:
@@ -743,7 +743,7 @@ The `/creation:command` command and underlying skill provide comprehensive guida
 When adding new commands:
 
 1. **Use /creation:command (recommended)**: Automate command generation with `claude /creation:command <command-name>`
-2. **Or use the command-creator skill directly**: Leverage the structured workflow in `./.claude/skills/command-creator/SKILL.md` or `~/.claude/skills/command-creator/SKILL.md`
+2. **Or use the accelint-command-creator skill directly**: Leverage the structured workflow in `./.claude/skills/accelint-command-creator/SKILL.md` or `~/.claude/skills/accelint-command-creator/SKILL.md`
 3. Follow the command specification format exactly
 4. Reference existing skills when applicable
 5. Provide comprehensive examples
@@ -751,7 +751,7 @@ When adding new commands:
 7. Document all arguments with validation rules
 8. Test with edge cases before committing
 
-The `/creation:command` command and command-creator skill ensure:
+The `/creation:command` command and accelint-command-creator skill ensure:
 - Proper skill discovery and integration
 - Complete argument specifications
 - Well-structured workflow definitions

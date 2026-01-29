@@ -6,12 +6,12 @@ Comprehensive guide for creating effective agent skills that extend Claude's cap
 
 **npm**
 ```bash
-npx skills add https://github.com/gohypergiant/agent-skills --skill skill-manager
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-manager
 ```
 
 **pnpm**
 ```bash
-pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill skill-manager
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-manager
 ```
 
 ## Overview
@@ -156,7 +156,7 @@ Persona:
 You are an expert skill architect.
 
 Objective:
-1. Use the skill-manager skill to audit ./skills/example-skill
+1. Use the accelint-skill-manager skill to audit ./skills/example-skill
 2. Identify any best practice optimizations that can be made
 3. Optimize towards deterministic output and correctness when auditing
 4. Explain your reasoning clearly with specific examples
@@ -173,7 +173,7 @@ Persona:
 You are an expert skill architect.
 
 Objective:
-1. Use the skill-manager skill
+1. Use the accelint-skill-manager skill
 2. Create a new skill for [domain/tool/workflow]
 3. Follow the 4-step workflow
 4. Ensure adherence to all conventions
@@ -186,7 +186,7 @@ A complete, production-ready skill following all best practices.
 
 **command**
 ```bash
-/skill-manager
+/accelint-skill-manager
 ```
 
 See [SKILL.md](SKILL.md) for complete activation criteria and detailed workflow.

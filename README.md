@@ -41,13 +41,13 @@ pnpm dlx skills add gohypergiant/agent-skills
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
 ```
-# Agents will use ts-best-practices when you ask:
+# Agents will use accelint-ts-best-practices when you ask:
 "Add input validation to this function"
 
-# Agents will use react-best-practices when you ask:
+# Agents will use accelint-react-best-practices when you ask:
 "Optimize this component's re-renders"
 
-# Agents will use vitest-best-practices when you ask:
+# Agents will use accelint-vitest-best-practices when you ask:
 "Write tests for this utility function"
 ```
 For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
@@ -82,7 +82,7 @@ Skills are designed for agents, not humans. They're structured for efficient con
 
 ## Available Skills
 
-### ts-best-practices
+### accelint-ts-best-practices
 
 TypeScript and JavaScript coding standards covering:
 
@@ -93,7 +93,7 @@ TypeScript and JavaScript coding standards covering:
 
 **Activates when:** Writing JS/TS functions, fixing type errors, adding validation, reviewing code quality.
 
-### ts-performance
+### accelint-ts-performance
 
 Systematic JavaScript/TypeScript performance optimization using V8 profiling:
 
@@ -105,7 +105,7 @@ Systematic JavaScript/TypeScript performance optimization using V8 profiling:
 
 **Activates when:** Code is measurably slow, optimizing hot paths, profiling shows bottlenecks, fixing excessive allocations, improving execution speed.
 
-### react-best-practices
+### accelint-react-best-practices
 
 React performance optimization and modern patterns for React 19+:
 
@@ -117,7 +117,7 @@ React performance optimization and modern patterns for React 19+:
 
 **Activates when:** Writing React components, debugging re-renders, fixing hydration errors, optimizing list rendering.
 
-### vitest-best-practices
+### accelint-vitest-best-practices
 
 Testing patterns for Vitest:
 
@@ -129,7 +129,7 @@ Testing patterns for Vitest:
 
 **Activates when:** Writing `*.test.ts` files, adding test coverage, debugging flaky tests, reviewing test code.
 
-### ts-documentation
+### accelint-ts-documentation
 
 Documentation standards for JavaScript and TypeScript:
 
@@ -140,7 +140,7 @@ Documentation standards for JavaScript and TypeScript:
 
 **Activates when:** Adding JSDoc comments, documenting functions or types, auditing documentation completeness, adding TODO/FIXME markers, improving code comments.
 
-### nextjs-best-practices
+### accelint-nextjs-best-practices
 
 Next.js performance optimization and best practices:
 
@@ -156,7 +156,7 @@ Next.js performance optimization and best practices:
 
 **Activates when:** Writing Server Components/Actions, implementing data fetching in RSC, optimizing API routes, debugging waterfall issues, reviewing Next.js code for performance, fixing authentication in Server Actions, reducing HTML payload size, or deciding between Server/Client Components.
 
-### skill-manager
+### accelint-skill-manager
 
 A meta-skill for creating and managing other skills:
 
@@ -167,7 +167,7 @@ A meta-skill for creating and managing other skills:
 
 **Activates when:** Creating new skills or updating existing ones.
 
-### command-creator
+### accelint-command-creator
 
 Guide for creating Claude Code commands:
 
@@ -178,7 +178,7 @@ Guide for creating Claude Code commands:
 
 **Activates when:** Creating new Claude Code commands.
 
-### readme-writer
+### accelint-readme-writer
 
 README documentation generator and updater:
 
@@ -283,7 +283,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-vitest-best-practices, accelint-nextjs-best-practices (depending on code type)
 
 ### Debug Code
 ```
@@ -308,7 +308,7 @@ Format and classify your review as:
 3. 🟢 Confident
 ```
 
-**Invokes:** ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-vitest-best-practices, accelint-nextjs-best-practices (depending on code type)
 
 ### Performance Analysis
 ```
@@ -335,7 +335,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** ts-best-practices, ts-performance, react-best-practices, nextjs-best-practices
+**Invokes:** accelint-ts-best-practices, accelint-ts-performance, accelint-react-best-practices, accelint-nextjs-best-practices
 
 ### Security Analysis
 ```
@@ -362,7 +362,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** ts-best-practices, ts-performance, react-best-practices, nextjs-best-practices
+**Invokes:** accelint-ts-best-practices, accelint-ts-performance, accelint-react-best-practices, accelint-nextjs-best-practices
 
 ### Skill Management
 ```
@@ -370,7 +370,7 @@ Persona:
 You are a expert agent skill architect.
 
 Objective:
-1. Use the skill-manager skill to audit ./skills/example-skill
+1. Use the accelint-skill-manager skill to audit ./skills/example-skill
 2. Identify any best practice optimizations that can be made
 3. Optimize towards deterministic output and correctness when auditing
 4. Explain your reasoning clearly with specific examples
@@ -385,7 +385,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** skill-manager
+**Invokes:** accelint-skill-manager
 
 ## Internal Skills
 

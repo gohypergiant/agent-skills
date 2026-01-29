@@ -1,5 +1,5 @@
 ---
-name: nextjs-best-practices
+name: accelint-nextjs-best-practices
 description: Next.js performance optimization and best practices. Use when writing Next.js code (App Router or Pages Router); implementing Server Components, Server Actions, or API routes; optimizing RSC serialization, data fetching, or server-side rendering; reviewing Next.js code for performance issues; fixing authentication in Server Actions; or implementing Suspense boundaries, parallel data fetching, or request deduplication.
 license: Apache-2.0
 metadata:
@@ -54,11 +54,11 @@ Use this skill when the task involves:
 ## When NOT to Use This Skill
 
 Do not activate for:
-- React-specific optimizations (use `react-best-practices` skill)
+- React-specific optimizations (use `accelint-react-best-practices` skill)
 - Build configuration (webpack, turbopack) unless Next.js-specific
-- General TypeScript/JavaScript questions (use `ts-best-practices` skill)
+- General TypeScript/JavaScript questions (use `accelint-ts-best-practices` skill)
 - Deployment/hosting configuration
-- Testing setup (use `vitest-best-practices` skill)
+- Testing setup (use `accelint-vitest-best-practices` skill)
 
 ## Example Trigger Phrases
 

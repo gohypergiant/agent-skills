@@ -4,7 +4,7 @@
 
 Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs. This guide focuses on **code correctness, type safety, and defensive programming**. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
-**Note:** For performance optimization tasks, use the `ts-performance` skill instead. For documentation tasks, use the `ts-documentation` skill.
+**Note:** For performance optimization tasks, use the `accelint-ts-performance` skill instead. For documentation tasks, use the `accelint-ts-documentation` skill.
 
 ---
 
@@ -133,7 +133,7 @@ Never create unbounded loops, queues, or recursive calls; set explicit limits to
 
 ## 4. Performance
 
-**For performance optimization tasks**, use the `ts-performance` skill instead. It provides:
+**For performance optimization tasks**, use the `accelint-ts-performance` skill instead. It provides:
 - 4-phase workflow (Profile → Analyze → Optimize → Verify)
 - Comprehensive optimization patterns for all performance categories
 - Profiling tool guidance (Chrome DevTools, Node.js --prof)
@@ -143,4 +143,4 @@ Never create unbounded loops, queues, or recursive calls; set explicit limits to
 
 ## 5. Documentation
 
-**For documentation-specific tasks**, use the `ts-documentation` skill instead. It provides comprehensive guidance for JSDoc comments, comment markers, and code comment quality.
+**For documentation-specific tasks**, use the `accelint-ts-documentation` skill instead. It provides comprehensive guidance for JSDoc comments, comment markers, and code comment quality.

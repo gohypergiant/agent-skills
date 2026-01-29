@@ -1,5 +1,5 @@
 ---
-name: ts-performance
+name: accelint-ts-performance
 description: "Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling and runtime patterns. Use when: (1) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', 'check performance', (2) Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste), (3) Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple, (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Audits ALL code for anti-patterns and reports findings with expected gains. Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
 license: Apache-2.0
 metadata:
@@ -13,7 +13,7 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 
 ## NEVER Do When Optimizing Performance
 
-**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `ts-best-practices` skill instead. This section focuses exclusively on performance-specific anti-patterns.
+**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `accelint-ts-best-practices` skill instead. This section focuses exclusively on performance-specific anti-patterns.
 
 - **NEVER assume code is cold path** - Utility functions, formatters, parsers, and validators appear simple but are frequently called in loops, rendering pipelines, or real-time systems. Always audit ALL code for performance anti-patterns. Do not make assumptions about usage frequency or skip auditing based on perceived simplicity.
 
