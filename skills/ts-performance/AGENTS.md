@@ -27,7 +27,7 @@ This structure minimizes context usage while providing complete implementation g
 - **NEVER** create unbounded loops or queues - prevents runaway resource consumption; set explicit limits to prevent DoS and crashes
 - **NEVER** place `try/catch` in hot paths - V8 cannot inline functions with try-catch (3-5x slowdown); validate inputs before loops
 
-**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `js-ts-best-practices` skill instead.
+**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `ts-best-practices` skill instead.
 
 See individual reference files for detailed alternatives and ✅ correct patterns.
 

@@ -12,7 +12,7 @@ Comprehensive performance optimization guide for Next.js applications, designed 
 **Focus:** Next.js App Router patterns including Server Components, Server Actions, RSC serialization, and server-side optimization.
 
 - **For React specific patterns**, use the `react-best-practices` skill.
-- **For JavaScript/TypeScript specific patterns**, use the `js-ts-best-practices` skill.
+- **For JavaScript/TypeScript specific patterns**, use the `ts-best-practices` skill.
 - **For Testing patterns**, use the `vitest-best-practices` skill.
 
 ---
@@ -175,5 +175,5 @@ When writing or reviewing Next.js code, prioritize in this order:
 ### Related Skills
 
 - **react-best-practices** - React specific patterns and optimizations
-- **js-ts-best-practices** - JavaScript/TypeScript patterns and optimizations
+- **ts-best-practices** - JavaScript/TypeScript patterns and optimizations
 - **vitest-best-practices** - Vitest patterns and optimizations

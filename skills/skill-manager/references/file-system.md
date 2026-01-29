@@ -6,7 +6,7 @@ A skill is a directory containing at minimum a SKILL.md file. You can optionally
 
 ### Naming Conventions
 
-- **Skill directory**: `kebab-case` (e.g., `js-ts-best-practices`)
+- **Skill directory**: `kebab-case` (e.g., `ts-best-practices`)
 - **SKILL.md**: Always uppercase, always this exact filename
 - **AGENTS.md**: Always uppercase, always this exact filename
 - **README.md**: Always uppercase, always this exact filename

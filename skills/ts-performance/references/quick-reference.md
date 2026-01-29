@@ -3,8 +3,8 @@
 Quick lookup for common performance bottleneck patterns and optimization categories.
 
 **Note:** This reference uses categories rather than specific filenames to avoid drift. To find actual reference files:
-1. Check js-ts-best-practices/SKILL.md Performance section
-2. List files: `ls ./.claude/skills/js-ts-best-practices/references/` (or `~/.claude/skills/...`)
+1. Check ts-best-practices/SKILL.md Performance section
+2. List files: `ls ./.claude/skills/ts-best-practices/references/` (or `~/.claude/skills/...`)
 3. Match category keywords (loop, cache, alloc, batch, etc.) to file names
 
 ## Bottleneck → Category Mapping
@@ -165,7 +165,7 @@ Quick lookup for common performance bottleneck patterns and optimization categor
                                          Only if hot path!
 ```
 
-**To find files:** Use `ls ./.claude/skills/js-ts-best-practices/references/ | grep <keyword>` or consult SKILL.md Performance section.
+**To find files:** Use `ls ./.claude/skills/ts-best-practices/references/ | grep <keyword>` or consult SKILL.md Performance section.
 
 ---
 
@@ -210,5 +210,5 @@ for (const item of items) {
 
 **When you see these patterns:**
 1. Identify the category from the comments
-2. Search js-ts-best-practices/references/ for files matching the keywords
+2. Search ts-best-practices/references/ for files matching the keywords
 3. Load relevant reference files to find optimization patterns

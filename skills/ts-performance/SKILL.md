@@ -13,7 +13,7 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 
 ## NEVER Do When Optimizing Performance
 
-**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `js-ts-best-practices` skill instead. This section focuses exclusively on performance-specific anti-patterns.
+**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `ts-best-practices` skill instead. This section focuses exclusively on performance-specific anti-patterns.
 
 - **NEVER optimize without measuring first** - Use profilers (Chrome DevTools, Node.js --prof) to identify actual bottlenecks. Premature optimization wastes time on code that doesn't impact performance. 80% of runtime is typically spent in 20% of code; optimizing the wrong 80% yields zero user-visible improvement while adding maintenance burden.
 

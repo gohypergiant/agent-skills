@@ -88,7 +88,7 @@ Use words an agent would search for:
 **When writing documentation that references other skills:**
 
 Use skill name only, with explicit requirement markers:
-- ✅ Correct: `**REQUIRED SUB-SKILL:** Use js-ts-best-practices`
+- ✅ Correct: `**REQUIRED SUB-SKILL:** Use ts-best-practices`
 - ✅ Correct: `**REQUIRED BACKGROUND:** You MUST understand vitest-best-practices`
 - ❌ Incorrect: `See skills/vitest-best-practices` (unclear if required)
 - ❌ Incorrect: `@skills/react-best-practices/SKILL.md` (force-loads, burns context)

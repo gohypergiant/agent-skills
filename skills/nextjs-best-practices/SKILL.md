@@ -56,7 +56,7 @@ Use this skill when the task involves:
 Do not activate for:
 - React-specific optimizations (use `react-best-practices` skill)
 - Build configuration (webpack, turbopack) unless Next.js-specific
-- General TypeScript/JavaScript questions (use `js-ts-best-practices` skill)
+- General TypeScript/JavaScript questions (use `ts-best-practices` skill)
 - Deployment/hosting configuration
 - Testing setup (use `vitest-best-practices` skill)
 

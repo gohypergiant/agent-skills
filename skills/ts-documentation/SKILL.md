@@ -35,9 +35,9 @@ Use this skill when the task involves:
 ## When NOT to Use This Skill
 
 Do not activate for:
-- General code quality issues (use js-ts-best-practices instead)
-- Performance optimization (use js-ts-best-practices instead)
-- Type safety improvements (use js-ts-best-practices instead)
+- General code quality issues (use ts-best-practices instead)
+- Performance optimization (use ts-best-practices instead)
+- Type safety improvements (use ts-best-practices instead)
 - Framework-specific documentation (React PropTypes, Vue props, etc.)
 
 ## How to Use

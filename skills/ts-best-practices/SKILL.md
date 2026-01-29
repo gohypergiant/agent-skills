@@ -1,5 +1,5 @@
 ---
-name: js-ts-best-practices
+name: ts-best-practices
 description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling. For performance optimization, use ts-performance skill. For documentation tasks, use ts-documentation skill.
 license: Apache-2.0
 metadata:

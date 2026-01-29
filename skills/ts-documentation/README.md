@@ -1,6 +1,6 @@
 # Documentation Skill
 
-Expert-level JavaScript/TypeScript documentation auditing skill with comprehensive guidance on JSDoc, comments, anti-patterns, and judgment frameworks. Delegates to js-ts-best-practices for detailed implementation rules.
+Expert-level JavaScript/TypeScript documentation auditing skill with comprehensive guidance on JSDoc, comments, anti-patterns, and judgment frameworks. Delegates to ts-best-practices for detailed implementation rules.
 
 ## Design Philosophy
 
@@ -12,11 +12,11 @@ This skill combines **focused activation** with **expert judgment frameworks**:
 4. **Decision trees** - Clear sufficiency evaluation for all code element types
 5. **Edge case coverage** - Handles deprecated APIs, overloads, generics, callbacks, builders, events
 6. **Conflict resolution** - Principles for resolving documentation dilemmas
-7. **Drift-resilient delegation** - Loads documentation references from js-ts-best-practices with fallback strategies
+7. **Drift-resilient delegation** - Loads documentation references from ts-best-practices with fallback strategies
 
 ## Requirements
 
-**js-ts-best-practices** skill must be available. This skill loads documentation-specific references from it.
+**ts-best-practices** skill must be available. This skill loads documentation-specific references from it.
 
 ## What This Skill Covers
 
@@ -95,7 +95,7 @@ The skill provides structured audit reports:
 
 ### Activation & Loading (Drift-Resilient)
 
-1. **Verify Parent Skill** - Checks js-ts-best-practices availability
+1. **Verify Parent Skill** - Checks ts-best-practices availability
 2. **Verify Current Structure** - Reads parent SKILL.md to confirm current file organization
 3. **Load Documentation References** - Loads 5 expected files with fallback discovery if reorganized:
    - `jsdoc.md` - JSDoc syntax and tag requirements
@@ -222,7 +222,7 @@ Side-by-side comparison of excellent vs poor documentation with annotated explan
 - You're reviewing comment quality and markers
 - You need guidance on edge cases (deprecated, overloads, generics, etc.)
 
-**Use js-ts-best-practices when**:
+**Use ts-best-practices when**:
 - You need comprehensive code quality across all dimensions
 - Documentation is one of many concerns (performance, safety, types, control flow, etc.)
 - You need implementation-level rules (naming, functions, state management)
@@ -237,11 +237,11 @@ Side-by-side comparison of excellent vs poor documentation with annotated explan
 - **Size**: ~640 lines (SKILL.md)
 - **Knowledge ratio**: 70% expert / 20% activation / 10% redundant
 - **Pattern**: Navigation wrapper with substantial original content
-- **Dependencies**: js-ts-best-practices (loads ~470 lines of references)
+- **Dependencies**: ts-best-practices (loads ~470 lines of references)
 - **Total context**: ~1100 lines when fully loaded
 
 ## License
 
 Apache-2.0
 
-Authored by gohypergiant. Delegates to js-ts-best-practices v1.4 by gohypergiant.
+Authored by gohypergiant. Delegates to ts-best-practices v1.4 by gohypergiant.
