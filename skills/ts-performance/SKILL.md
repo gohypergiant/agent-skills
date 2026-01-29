@@ -1,6 +1,6 @@
 ---
 name: ts-performance
-description: "Systematic JavaScript/TypeScript performance optimization using V8 profiling and runtime patterns. Use when: (1) Code is measurably slow (profiler data shows bottlenecks), (2) Optimizing hot paths with O(n²) complexity, excessive allocations, or I/O blocking, (3) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
+description: "Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling and runtime patterns. Use when: (1) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', 'check performance', (2) Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste), (3) Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple, (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Audits ALL code for anti-patterns and reports findings with expected gains. Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
 license: Apache-2.0
 metadata:
   author: gohypergiant
@@ -15,9 +15,9 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 
 **Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `ts-best-practices` skill instead. This section focuses exclusively on performance-specific anti-patterns.
 
-- **NEVER optimize without measuring first** - Use profilers (Chrome DevTools, Node.js --prof) to identify actual bottlenecks. Premature optimization wastes time on code that doesn't impact performance. 80% of runtime is typically spent in 20% of code; optimizing the wrong 80% yields zero user-visible improvement while adding maintenance burden.
+- **NEVER assume code is cold path** - Utility functions, formatters, parsers, and validators appear simple but are frequently called in loops, rendering pipelines, or real-time systems. Always audit ALL code for performance anti-patterns. Do not make assumptions about usage frequency or skip auditing based on perceived simplicity.
 
-- **NEVER apply all optimizations blindly** - Performance patterns have trade-offs. Micro-optimizations in cold paths (executed <100 times) add complexity without measurable benefit. A 2x speedup of code consuming 0.1% of runtime saves 0.05% total—unnoticeable to users. Profile-guided optimization is mandatory to focus effort where it matters.
+- **NEVER apply all optimizations blindly** - Performance patterns have trade-offs. Balance optimization gains against code complexity. When conducting audits, identify ALL anti-patterns through systematic analysis and report them with expected gains. Let users decide which optimizations to apply based on their specific context.
 
 - **NEVER ignore algorithmic complexity** - Optimizing O(n²) code with micro-optimizations is futile. For n=1000, algorithmic fix (O(n² → O(n)) yields 1000x speedup; micro-optimizations yield 1.1-2x at best. Fix algorithm first: use Maps/Sets for O(1) lookups, eliminate nested iterations, choose appropriate data structures.
 
@@ -46,9 +46,9 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 Apply these tests to focus optimization efforts effectively:
 
 ### Impact Assessment
-- **Is this code actually slow?** Profile first. User perception matters - if users don't notice, optimization isn't needed regardless of measurements.
-- **What percentage of runtime does this represent?** Optimize the 20% of code that consumes 80% of runtime. Use flame graphs to identify hot paths.
-- **Is this a hot path or cold path?** Hot paths demand optimization. Cold paths (initialization, error handling) don't.
+- **Is this code actually slow?** When profiling data is available, use it to inform prioritization. When unavailable, audit all code for anti-patterns.
+- **What percentage of runtime does this represent?** When profiling data is available, flame graphs help identify the highest-impact issues. When unavailable, report all anti-patterns found.
+- **Raw performance matters** - Audit ALL code for performance anti-patterns regardless of current usage context. Utility functions, formatters, parsers, and data transformations are frequently called in loops, rendering pipelines, or real-time systems even when they appear simple.
 
 ### Correctness Verification
 - **Do I have tests covering this code?** Performance bugs are subtle. Comprehensive tests catch regressions from optimizations. Add tests before optimizing.
@@ -85,22 +85,30 @@ When you identify specific performance issues, load corresponding reference file
 
 ### Phase 1: Profile to Identify Bottlenecks
 
-Use profiling tools to establish baseline measurements:
-- **Browser**: Chrome DevTools Performance tab → identify functions consuming >5% total time
+**CRITICAL: Audit ALL code for performance anti-patterns.** Do not skip code based on assumptions about usage frequency. Utility functions, formatters, parsers, validators, and data transformations are frequently called in loops, rendering pipelines, or real-time systems even if their implementation appears simple.
+
+**When profiling tools are available**, use them to establish baseline measurements:
+- **Browser**: Chrome DevTools Performance tab
 - **Node.js**: `node --prof script.js && node --prof-process isolate-*.log`
 
-**Output**: List of functions/code sections consuming >5% of execution time. Focus only on hot paths.
+**Whether profiling data is available or not**: Perform systematic static code analysis to identify ALL performance anti-patterns:
+- O(n²) complexity (nested loops, repeated searches)
+- Excessive allocations (template literals, object spreads, array methods)
+- Template literal allocation when String() would suffice
+- Array method chaining (.filter().map())
+- Blocking async operations
+- Try/catch in loops
 
-**Skip this phase when**: Slow code is already known from production metrics or obvious from code inspection (e.g., O(n²) nested loops on 10k+ items).
+**Output**: Complete list of ALL identified anti-patterns with their locations and expected performance impact. Do not filter based on "severity" or "priority" - report everything found.
 
 ### Phase 2: Analyze and Categorize Issues
 
-For each identified bottleneck from Phase 1, categorize by optimization type:
+For EVERY issue identified in Phase 1, categorize by optimization type:
 
-**Categorize bottlenecks by optimization type:**
+**Categorize ALL issues by optimization type:**
 
-| Issue Type | Category | Typical Speedup |
-|------------|----------|-----------------|
+| Issue Type | Category | Expected Gain |
+|------------|----------|---------------|
 | Nested loops, O(n²) complexity | Algorithmic optimization | 10-1000x |
 | Repeated expensive computations | Caching & memoization | 2-100x |
 | Allocation-heavy code | Allocation reduction | 1.5-5x |
@@ -109,11 +117,11 @@ For each identified bottleneck from Phase 1, categorize by optimization type:
 | Blocking async operations | I/O optimization | 2-10x |
 | Property access in loops | Caching & memoization | 1.2-2x |
 
-**Quick reference for mapping bottlenecks:**
+**Quick reference for mapping issues:**
 
-Load [references/quick-reference.md](references/quick-reference.md) for detailed bottleneck-to-category mapping and anti-pattern detection.
+Load [references/quick-reference.md](references/quick-reference.md) for detailed issue-to-category mapping and anti-pattern detection.
 
-**Output:** Categorized list of bottlenecks with identified optimization categories. Load specific reference files in Phase 3.
+**Output:** Categorized list of ALL issues with their optimization categories. Do not filter or prioritize - list everything found in Phase 1.
 
 ### Phase 3: Optimize Using Performance Patterns
 
@@ -223,7 +231,8 @@ Even 1.05x improvements matter in critical hot paths. Use frame timing profiler 
 
 ## Important Notes
 
-- **Profiling is mandatory** - Every optimization must be justified by profiler data. Never optimize based on intuition alone.
+- **Audit everything philosophy** - Audit ALL code for performance anti-patterns. Utility functions, formatters, parsers, and validators are frequently called in loops or real-time systems even when they appear simple. Do not make assumptions about usage frequency.
+- **Report all findings** - Whether profiling data is available or not, perform systematic static analysis to identify and report ALL anti-patterns with their expected gains. Do not filter based on "severity" or "priority."
 - **Reference files are authoritative** - The patterns in references/ have been validated. Follow them exactly unless measurements prove otherwise.
 - **Hot path definition** - Code executed >1000 times per user interaction or >100 times per second in server contexts. For real-time systems (60fps rendering, live visualization), hot paths are functions in the critical rendering loop consuming >1ms per frame.
 - **Real-time systems have stricter requirements** - 60fps = 16.67ms frame budget. 120fps = 8.33ms. Even 1.05x improvements in hot paths are valuable. Profile with frame timing, not just total execution time.
@@ -232,7 +241,9 @@ Even 1.05x improvements matter in critical hot paths. Use frame timing profiler 
 
 ## Quick Decision Tree
 
-Use this table to rapidly identify which optimization category applies:
+Use this table to rapidly identify which optimization category applies.
+
+**Audit everything**: Identify ALL performance anti-patterns in the code regardless of current usage context. Report all findings with expected gains.
 
 | If You See... | Root Cause | Optimization Category | Expected Gain |
 |---------------|------------|----------------------|---------------|
