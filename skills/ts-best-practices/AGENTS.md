@@ -18,12 +18,39 @@ This structure minimizes context usage while providing complete implementation g
 
 ---
 
+## Loading Strategy
+
+**When writing new code:**
+- **MANDATORY**: Read [quick-start.md](references/quick-start.md) for complete workflow examples
+- Load specific pattern files only as you encounter relevant scenarios
+- Start with the pattern, then check related safety rules
+
+**When reviewing existing code:**
+- Start with the rule summaries below to identify anti-patterns
+- Load corresponding reference files for detailed fixes
+- **Do NOT load all references at once** - use progressive loading
+
+**When fixing type errors:**
+- Read [any.md](references/any.md) if encountering `any` types
+- Read [enums.md](references/enums.md) if replacing `enum`
+- Read [type-vs-interface.md](references/type-vs-interface.md) for declaration choices
+
+**When implementing safety features:**
+- **MANDATORY**: Read [input-validation.md](references/input-validation.md) for external data
+- Read [bounded-iteration.md](references/bounded-iteration.md) for any loops or queues
+- Read [error-handling.md](references/error-handling.md) for proper error patterns
+
+**General rule:** Load reference files on-demand based on the specific pattern you're implementing. Each reference is self-contained with ❌/✅ examples.
+
+---
+
 ## Critical Anti-Patterns
 
 **NEVER** do these - they appear in codebases frequently but significantly degrade code quality, safety, or maintainability:
 
 - **NEVER** use `any` type - use `unknown` for truly unknown types or generics for flexible types
 - **NEVER** use `enum` keyword - use `as const` objects to avoid extra JavaScript output and runtime overhead
+- **NEVER** use `interface` for simple type aliases - use `type` instead; reserve `interface` only for declaration merging or legacy API compatibility
 - **NEVER** mutate function parameters - creates hidden side effects and breaks pure function principles
 - **NEVER** return `null` or `undefined` - return zero values instead ([], {}, 0, "") to eliminate downstream null checks
 - **NEVER** create unbounded loops or queues - set explicit limits to prevent runaway resource consumption and crashes

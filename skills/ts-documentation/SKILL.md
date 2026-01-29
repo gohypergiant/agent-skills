@@ -42,56 +42,37 @@ Do not activate for:
 
 ## How to Use
 
-### 1. Determine Task Type and Load References
+### 1. Load References Based on Task Type
 
-**For JSDoc additions or validation:**
+**For JSDoc additions/validation:**
 
-**MANDATORY - READ ENTIRE FILE**: Before adding or validating JSDoc, you MUST read [`jsdoc.md`](references/jsdoc.md) completely (510 lines, no line limits). This file contains:
-- Required tags for functions, types, interfaces, classes, constants
-- @example code fence syntax (critical - failures common here)
-- Object parameter dot notation rules
-- @template requirements for generics
-- All edge cases (deprecated APIs, overloaded functions, callbacks, etc.)
+**MANDATORY**: Read [`jsdoc.md`](references/jsdoc.md) in full before implementing.
+Critical content: @example code fence syntax (failures common here), object parameter dot notation, @template requirements, edge cases.
 
 **For comment quality audits:**
 
-**MANDATORY - READ ENTIRE FILE**: Before reviewing comments, you MUST read [`comments.md`](references/comments.md) completely (210 lines, no line limits). This file contains:
-- Comment marker standards (TODO, FIXME, HACK, etc.)
-- Comments to remove (commented-out code, edit history, obvious statements)
-- Comments to preserve (markers, linter directives, business logic)
-- Comment placement rules
+**MANDATORY**: Read [`comments.md`](references/comments.md) in full before implementing.
+Critical content: Comment marker standards, what to remove vs preserve, placement rules.
 
-**Do NOT load references when:**
-- Only answering questions about documentation (not implementing changes)
-- Task is general code quality (not documentation-specific)
+**Do NOT load** when only answering questions (not implementing changes) or task is general code quality.
 
-### 2. Documentation Audit Mindset
+### 2. Expert Judgment Framework
 
-Documentation audits require expert judgment. Before checking syntax or completeness, develop the right mental model:
-
-#### Expert Thinking Framework
+Apply this thinking framework before auditing:
 
 **Question 1: Who is the reader?**
-- **API consumers** (external users): They lack implementation context. Everything seems obvious to you because you wrote it. To them, it's opaque. Document comprehensively.
-- **Team members** (internal code): They have codebase context but not mind-reading powers. Document what's not self-evident: hidden behaviors, edge cases, business rules.
-- **Future you** (6 months later): You'll forget subtle decisions. Document things you'd ask "why did I do this?"
+- API consumers: Lack implementation context → Document comprehensively
+- Team members: Have codebase context → Document non-self-evident behaviors only
+- Future you (6 months): Will forget subtle decisions → Document rationale
 
-**Question 2: What is the documentation's job?**
-- **Not to teach programming**: Claude knows JavaScript/TypeScript. Don't explain what @param is.
-- **Not to restate the code**: If the code says `user.name`, don't write "Gets the user's name."
-- **To capture intent**: WHY this exists, WHEN to use it, WHAT edge cases matter, HOW it fails.
+**Question 2: Opacity vs Complexity?**
+- Opacity = Intent is hidden → Must document (e.g., cache.invalidate() - why? performance? correctness?)
+- Complexity = Implementation is intricate → Implementation comments, not JSDoc
 
-**Question 3: Is this opacity or complexity?**
-- **Opacity** = Intent is hidden but important → Must document
-  - Example: `cache.invalidate()` - Why invalidate? Performance? Correctness? Document it.
-- **Complexity** = Implementation is intricate → Implementation comments, not JSDoc
-  - Example: Complex regex - Add inline comments, but JSDoc describes WHAT it validates, not HOW.
-
-**Question 4: What is the maintenance cost?**
-- Documentation is code. It rots. It lies when outdated.
-- **High churn code**: Minimal docs that won't drift (focus on stable behaviors)
-- **Stable API**: Comprehensive docs (they'll stay accurate)
-- **Internal utilities**: Brief docs (low reader count × low reading frequency = minimal docs worth it)
+**Question 3: Maintenance cost trade-off?**
+- High churn code: Minimal docs (won't stay accurate)
+- Stable API: Comprehensive docs (will stay accurate)
+- Internal utilities: Brief docs (low reader count × low frequency = minimal ROI)
 
 #### Two-Tier Decision Rule
 
@@ -207,7 +188,9 @@ Before marking documentation as "sufficient", verify:
 
 When performing documentation audits, NEVER:
 
-❌ **Over-document internal code (wastes maintenance effort)**
+❌ **Over-document internal code**
+
+WHY (from experience): Internal docs rot faster than public API docs because they're adjacent to frequently-changed implementation. Team members can read the actual implementation faster than reading outdated documentation that creates confusion. Reserve comprehensive docs for stable exported APIs where consumers cannot access implementation.
 ```typescript
 // WRONG - internal utility with verbose documentation
 /**
@@ -249,6 +232,8 @@ export function validateInput(data: unknown): boolean {
 ```
 
 ❌ **Document HOW instead of WHAT/WHY**
+
+WHY (from experience): JSDoc appears in IDE autocomplete for API consumers who don't have access to implementation. Explaining HOW in JSDoc creates confusion ("why am I seeing implementation details in my autocomplete?") and increases refactoring surface area - every implementation change requires doc updates, leading to drift.
 ```typescript
 // WRONG - JSDoc should describe WHAT/WHY, not HOW
 /**
@@ -270,6 +255,8 @@ function sum(numbers: number[]): number {
 ```
 
 ❌ **Add vague comment markers**
+
+WHY (from experience): "TODO: fix this" creates diffusion of responsibility. After months pass, nobody knows if it's still relevant, who should fix it, or what "this" refers to. Vague markers accumulate as noise that reduces trust in ALL markers, making developers ignore even critical ones.
 ```typescript
 // WRONG - not actionable
 // TODO: fix this

@@ -1,6 +1,6 @@
 ---
 name: ts-performance
-description: Use when auditing or optimizing JavaScript/TypeScript performance with V8 engine, implementing performance patterns (loops, caching, allocation reduction), profiling bottlenecks, fixing O(n²) complexity, V8 deoptimization issues, JIT optimization, inline caching problems, or when users say "optimize performance", "this is slow", "profile code", "reduce allocations", "improve speed", "V8 optimization", "monomorphic", "polymorphic".
+description: "Systematic JavaScript/TypeScript performance optimization using V8 profiling and runtime patterns. Use when: (1) Code is measurably slow (profiler data shows bottlenecks), (2) Optimizing hot paths with O(n²) complexity, excessive allocations, or I/O blocking, (3) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
 license: Apache-2.0
 metadata:
   author: gohypergiant
@@ -48,7 +48,7 @@ Apply these tests to focus optimization efforts effectively:
 ### Impact Assessment
 - **Is this code actually slow?** Profile first. User perception matters - if users don't notice, optimization isn't needed regardless of measurements.
 - **What percentage of runtime does this represent?** Optimize the 20% of code that consumes 80% of runtime. Use flame graphs to identify hot paths.
-- **Is this a hot path or cold path?** Hot paths (executed thousands of times per second) demand optimization. Cold paths (initialization, error handling) don't.
+- **Is this a hot path or cold path?** Hot paths demand optimization. Cold paths (initialization, error handling) don't.
 
 ### Correctness Verification
 - **Do I have tests covering this code?** Performance bugs are subtle. Comprehensive tests catch regressions from optimizations. Add tests before optimizing.
@@ -85,28 +85,13 @@ When you identify specific performance issues, load corresponding reference file
 
 ### Phase 1: Profile to Identify Bottlenecks
 
-Before loading any performance patterns, establish baseline measurements:
+Use profiling tools to establish baseline measurements:
+- **Browser**: Chrome DevTools Performance tab → identify functions consuming >5% total time
+- **Node.js**: `node --prof script.js && node --prof-process isolate-*.log`
 
-**For browser code:**
-```bash
-# Use Chrome DevTools Performance profiler
-# 1. Open DevTools → Performance tab
-# 2. Click Record → Perform action → Stop
-# 3. Identify functions taking >5% of total time
-```
+**Output**: List of functions/code sections consuming >5% of execution time. Focus only on hot paths.
 
-**For Node.js code:**
-```bash
-# Generate CPU profile
-node --prof your-script.js
-node --prof-process isolate-*.log > profile.txt
-
-# Identify functions in "Bottom up" view consuming >5% ticks
-```
-
-**Output:** List of functions/code sections ranked by runtime percentage. Focus only on code consuming >5% of total execution time.
-
-**Skip this phase only when:** The slow code is already known from production metrics or obvious from code inspection (e.g., O(n²) nested loops processing 10k+ items).
+**Skip this phase when**: Slow code is already known from production metrics or obvious from code inspection (e.g., O(n²) nested loops on 10k+ items).
 
 ### Phase 2: Analyze and Categorize Issues
 
@@ -134,69 +119,21 @@ Load [references/quick-reference.md](references/quick-reference.md) for detailed
 
 **Step 1: Identify your bottleneck category** from Phase 2 analysis.
 
-**Step 2: Load the MANDATORY reference files** for your category:
+**Step 2**: Load MANDATORY references for your category. Read each file completely with no range limits.
 
-#### For Algorithmic Optimization (O(n²) issues, nested loops, repeated lookups)
+| Category | MANDATORY Files | Optional | Do NOT Load |
+|----------|----------------|----------|-------------|
+| **Algorithmic** (O(n²), nested loops, repeated lookups) | reduce-looping.md<br>reduce-branching.md | — | memoization, caching, I/O, allocation |
+| **Caching** (property access in loops, repeated calculations) | memoization.md<br>cache-property-access.md | cache-storage-api.md (for Storage APIs) | I/O, allocation |
+| **I/O** (blocking async, excessive I/O operations) | batching.md<br>defer-await.md | — | algorithmic, memory |
+| **Memory** (allocation-heavy, GC pressure) | object-operations.md<br>avoid-allocations.md | — | I/O, caching |
+| **Locality** (sequential access violations, cache misses) | predictable-execution.md | — | all others |
+| **Safety** (unbounded loops, runaway queues) | bounded-iteration.md | — | all others |
+| **Micro-opt** (hot path fine-tuning, 1.1-2x improvements) | currying.md<br>performance-misc.md | — | all others (apply only after algorithmic fixes) |
 
-**MANDATORY - READ ENTIRE FILE**: Before optimizing algorithmic issues, you MUST read:
-- [`reduce-looping.md`](references/reduce-looping.md) - Complete file, no range limits
-- [`reduce-branching.md`](references/reduce-branching.md) - Complete file, no range limits
-
-**Do NOT load** memoization, caching, I/O, or allocation references unless bottleneck spans multiple categories.
-
-#### For Caching & Repeated Computation (property access in loops, repeated calculations)
-
-**MANDATORY - READ ENTIRE FILE**: Before implementing caching, you MUST read:
-- [`memoization.md`](references/memoization.md) - Complete file, no range limits
-- [`cache-property-access.md`](references/cache-property-access.md) - Complete file, no range limits
-
-**Optional**: If caching browser storage APIs:
-- [`cache-storage-api.md`](references/cache-storage-api.md)
-
-**Do NOT load** I/O or allocation references unless bottleneck spans multiple categories.
-
-#### For I/O Optimization (blocking async, excessive I/O operations)
-
-**MANDATORY - READ ENTIRE FILE**: Before optimizing I/O, you MUST read:
-- [`batching.md`](references/batching.md) - Complete file, no range limits
-- [`defer-await.md`](references/defer-await.md) - Complete file, no range limits
-
-**Do NOT load** algorithmic or memory references unless bottleneck spans multiple categories.
-
-#### For Memory & Allocation (allocation-heavy code, GC pressure)
-
-**MANDATORY - READ ENTIRE FILE**: Before reducing allocations, you MUST read:
-- [`object-operations.md`](references/object-operations.md) - Complete file, no range limits
-- [`avoid-allocations.md`](references/avoid-allocations.md) - Complete file, no range limits
-
-**Do NOT load** I/O or caching references unless bottleneck spans multiple categories.
-
-#### For Memory Locality (sequential access violations, cache misses)
-
-**MANDATORY - READ ENTIRE FILE**: Before optimizing memory access, you MUST read:
-- [`predictable-execution.md`](references/predictable-execution.md) - Complete file, no range limits
-
-**Do NOT load** other references unless bottleneck spans multiple categories.
-
-#### For Safety & Bounds (unbounded loops, runaway queues)
-
-**MANDATORY - READ ENTIRE FILE**: Before adding bounds, you MUST read:
-- [`bounded-iteration.md`](references/bounded-iteration.md) - Complete file, no range limits
-
-**Do NOT load** other references unless bottleneck spans multiple categories.
-
-#### For Micro-optimizations (hot path fine-tuning, 1.1-2x improvements)
-
-**Only apply micro-optimizations if:**
-- Bottleneck is in a hot path (>1000 executions/sec)
-- Algorithmic optimization already applied
-- Need to squeeze additional 1.1-2x performance
-
-**MANDATORY - READ ENTIRE FILE**: Read relevant micro-optimization references:
-- [`currying.md`](references/currying.md) - If precomputing constant parameters
-- [`performance-misc.md`](references/performance-misc.md) - For string, regex, async, closure optimizations
-
-**Do NOT apply micro-optimizations** to cold paths or before fixing algorithmic issues.
+**Notes**:
+- If bottleneck spans multiple categories, load references for all relevant categories
+- Only apply micro-optimizations if: bottleneck is in hot path, algorithmic optimization already applied, need additional 1.1-2x performance
 
 ---
 
