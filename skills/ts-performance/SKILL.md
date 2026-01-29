@@ -13,6 +13,8 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 
 ## NEVER Do When Optimizing Performance
 
+**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `js-ts-best-practices` skill instead. This section focuses exclusively on performance-specific anti-patterns.
+
 - **NEVER optimize without measuring first** - Use profilers (Chrome DevTools, Node.js --prof) to identify actual bottlenecks. Premature optimization wastes time on code that doesn't impact performance. 80% of runtime is typically spent in 20% of code; optimizing the wrong 80% yields zero user-visible improvement while adding maintenance burden.
 
 - **NEVER apply all optimizations blindly** - Performance patterns have trade-offs. Micro-optimizations in cold paths (executed <100 times) add complexity without measurable benefit. A 2x speedup of code consuming 0.1% of runtime saves 0.05% total—unnoticeable to users. Profile-guided optimization is mandatory to focus effort where it matters.
@@ -27,10 +29,6 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 
 - **NEVER assume performance across environments** - V8 optimizations differ between Node.js versions (v18 vs v20), browsers (Chrome vs Safari), and architectures (x64 vs ARM). An optimization yielding 3x speedup in Chrome may regress 1.5x in Safari. Profile in ALL target environments before shipping; maintain fallback implementations for environment-specific optimizations.
 
-- **NEVER use `any` type** - Disables TypeScript type checking AND prevents V8 from optimizing property access. V8 relies on type stability for inline caching; `any` forces polymorphic property access which is ~10x slower than monomorphic access. Use `unknown` with type guards or generics to maintain type information for both compiler and runtime optimizer.
-
-- **NEVER use `enum` keyword** - TypeScript enums generate lookup objects at runtime (~50-100 bytes per enum plus property access overhead). For performance-critical code, use `as const` objects which compile to zero runtime code while providing identical type safety and autocomplete. Example: `const Status = { Active: 0, Inactive: 1 } as const` generates no runtime code vs `enum Status { Active, Inactive }` which generates lookup object.
-
 - **NEVER chain array methods** (.filter().map().reduce()) - Each method creates intermediate arrays and iterates separately. For arrays with 10k items, `.filter().map()` allocates 10k + 5k items (if 50% pass filter) and iterates twice. Use single `reduce` pass to iterate once with zero intermediate allocations, yielding 2-5x speedup in hot paths.
 
 - **NEVER use `Array.includes()` for repeated lookups** - Array.includes() is O(n) linear search. Checking 1000 items against array of 100 is O(n×m) = 100k operations. Use `Set.has()` instead: O(1) lookup via hash table, reducing 100k operations to 1000 for ~100x speedup. Build Set once upfront; amortized cost is negligible.
@@ -38,8 +36,6 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 - **NEVER await before checking if you need the result** - `await` suspends execution immediately, even if the value isn't needed. Move `await` into conditional branches that actually use the result. Example: `const data = await fetch(url); if (condition) { use(data); }` wastes I/O time when condition is false. Better: `if (condition) { const data = await fetch(url); use(data); }` skips fetch entirely when unneeded.
 
 - **NEVER recompute constants inside loops** - Recomputing invariants wastes CPU in every iteration. For 10k iterations, `array.length` lookup (even if cached by engine) or `Math.max(a, b)` runs 10k times unnecessarily. Hoist invariants outside loops: `const len = array.length; for (let i = 0; i < len; i++)` or curry functions to precompute constant parameters once.
-
-- **NEVER return `null` or `undefined` from functions** - Forces every caller to add null checks (`if (result) { ... }`), adding branching overhead. Return zero values ([], {}, 0, "") instead; callers can use results directly without checks. For 10k calls, eliminating null checks saves 10k branches, improving branch prediction and reducing instruction count.
 
 - **NEVER create unbounded loops or queues** - Prevents runaway resource consumption from bugs or malicious input. Set explicit limits (`for (let i = 0; i < Math.min(items.length, 10000); i++)`) or timeouts. Unbounded loops can freeze UI threads; unbounded queues cause OOM crashes. Fail fast with clear limits rather than degrading gracefully into unusability.
 

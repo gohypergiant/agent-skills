@@ -1,10 +1,10 @@
 ---
 name: js-ts-best-practices
-description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling. For performance optimization, use ts-performance skill. For documentation tasks, use audit-documentation skill.
+description: Use when writing JavaScript/TypeScript code, implementing control flow or state management, fixing type errors, adding validation or error handling. For performance optimization, use ts-performance skill. For documentation tasks, use ts-documentation skill.
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "2.0"
+  version: "2.1"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -54,7 +54,7 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - **For performance optimization tasks**, use the `ts-performance` skill for comprehensive profiling workflows and optimization patterns
 
 **Documentation:**
-- **For documentation tasks**, use the `audit-documentation` skill for comprehensive JSDoc and comment guidance
+- **For documentation tasks**, use the `ts-documentation` skill for comprehensive JSDoc and comment guidance
 
 ### 3. Apply the Pattern
 Each reference file contains:

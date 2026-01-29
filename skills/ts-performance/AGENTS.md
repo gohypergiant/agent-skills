@@ -16,20 +16,18 @@ This structure minimizes context usage while providing complete implementation g
 
 ---
 
-## Critical Anti-Patterns
+## Critical Performance Anti-Patterns
 
-**NEVER** do these - they appear in codebases frequently but significantly degrade performance or maintainability:
+**NEVER** do these - they appear in codebases frequently but significantly degrade performance:
 
-- **NEVER** use `any` type - prevents V8 optimizations; use `unknown` for truly unknown types or generics
-- **NEVER** use `enum` keyword - generates extra runtime code; use `as const` objects for zero-cost constants
-- **NEVER** chain array methods (.filter().map().reduce()) - use single `reduce` pass for better performance
-- **NEVER** use `Array.includes()` for repeated lookups - use `Set.has()` instead (O(n) → O(1))
-- **NEVER** await before checking if you need the result - defer `await` into branches that use it
-- **NEVER** recompute constants inside loops - hoist invariants or curry functions to precompute
-- **NEVER** mutate function parameters - creates hidden side effects and breaks pure function principles
-- **NEVER** return `null` or `undefined` - return zero values instead ([], {}, 0, "") to eliminate downstream null checks
-- **NEVER** create unbounded loops or queues - set explicit limits to prevent runaway resource consumption
-- **NEVER** place `try/catch` in hot paths - degrades V8 optimization; validate inputs instead
+- **NEVER** chain array methods (.filter().map().reduce()) - creates intermediate arrays and multiple iterations; use single `reduce` pass (2-5x faster)
+- **NEVER** use `Array.includes()` for repeated lookups - O(n) linear search; use `Set.has()` instead for O(1) hash lookup (10-100x faster)
+- **NEVER** await before checking if you need the result - suspends execution unnecessarily; defer `await` into branches that actually use the value
+- **NEVER** recompute constants inside loops - wastes CPU in every iteration; hoist invariants outside loops or curry functions to precompute
+- **NEVER** create unbounded loops or queues - prevents runaway resource consumption; set explicit limits to prevent DoS and crashes
+- **NEVER** place `try/catch` in hot paths - V8 cannot inline functions with try-catch (3-5x slowdown); validate inputs before loops
+
+**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `js-ts-best-practices` skill instead.
 
 See individual reference files for detailed alternatives and ✅ correct patterns.
 
