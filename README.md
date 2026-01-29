@@ -35,7 +35,7 @@ pnpm dlx skills add gohypergiant/agent-skills
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
 ```
-# Agents will use js-ts-best-practices when you ask:
+# Agents will use ts-best-practices when you ask:
 "Add input validation to this function"
 
 # Agents will use react-best-practices when you ask:
@@ -76,16 +76,28 @@ Skills are designed for agents, not humans. They're structured for efficient con
 
 ## Available Skills
 
-### js-ts-best-practices
+### ts-best-practices
 
-JavaScript and TypeScript coding standards covering:
+TypeScript and JavaScript coding standards covering:
 
 - Naming conventions and code structure
 - TypeScript patterns (avoid `any`, prefer `type` over `interface`, use `as const` instead of `enum`)
 - Safety patterns (input validation, assertions, error handling)
-- Performance optimization (reduce branching, memoization, caching, avoid allocations)
+- Function design and control flow
 
-**Activates when:** Writing JS/TS functions, fixing type errors, optimizing loops, adding validation, reviewing code quality.
+**Activates when:** Writing JS/TS functions, fixing type errors, adding validation, reviewing code quality.
+
+### ts-performance
+
+Systematic JavaScript/TypeScript performance optimization using V8 profiling:
+
+- Algorithmic complexity fixes (O(n²) → O(n) with Maps/Sets)
+- Loop optimization and allocation reduction
+- Caching and memoization patterns
+- I/O batching and async optimization
+- Memory locality and predictable execution
+
+**Activates when:** Code is measurably slow, optimizing hot paths, profiling shows bottlenecks, fixing excessive allocations, improving execution speed.
 
 ### react-best-practices
 
@@ -265,7 +277,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
 
 ### Debug Code
 ```
@@ -290,7 +302,7 @@ Format and classify your review as:
 3. 🟢 Confident
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
 
 ### Performance Analysis
 ```
@@ -317,7 +329,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+**Invokes:** ts-best-practices, ts-performance, react-best-practices, nextjs-best-practices
 
 ### Security Analysis
 ```
@@ -344,7 +356,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+**Invokes:** ts-best-practices, ts-performance, react-best-practices, nextjs-best-practices
 
 ### Skill Management
 ```
