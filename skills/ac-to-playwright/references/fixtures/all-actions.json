@@ -1,0 +1,52 @@
+{
+  "suiteName": "All Actions Present",
+  "source": { "repo": "metronome", "path": "path/to/file.md" },
+  "tests": [
+    {
+      "name": "Properly validate all actions",
+      "startUrl": "https://example.com",
+      "steps": [
+        {
+          "action": "goto",
+          "value": "https://example.com/login"
+        },
+        {
+          "action": "fill",
+          "target": "username",
+          "value": "someone"
+        },
+        {
+          "action": "fill",
+          "target": "password",
+          "value": "password123"
+        },
+        {
+          "action": "select",
+          "target": "dropdown.role",
+          "value": "admin"
+        },
+        {
+          "action": "click",
+          "target": "button.login"
+        },
+        {
+          "action": "expectUrl",
+          "value": "https://example.com/dashboard"
+        },
+        {
+          "action": "expectVisible",
+          "target": "banner.welcome"
+        },
+        {
+          "action": "expectNotVisible",
+          "target": "banner.error"
+        },
+        {
+          "action": "expectText",
+          "target": "banner.welcome",
+          "value": "Welcome!"
+        }
+      ]
+    }
+  ]
+}
