@@ -13,7 +13,7 @@ Comprehensive performance optimization guide for Next.js applications, designed 
 
 - **For React specific patterns**, use the `accelint-react-best-practices` skill.
 - **For JavaScript/TypeScript specific patterns**, use the `accelint-ts-best-practices` skill.
-- **For Testing patterns**, use the `accelint-vitest-best-practices` skill.
+- **For Testing patterns**, use the `accelint-ts-testing` skill.
 
 ---
 
@@ -176,4 +176,4 @@ When writing or reviewing Next.js code, prioritize in this order:
 
 - **accelint-react-best-practices** - React specific patterns and optimizations
 - **accelint-ts-best-practices** - JavaScript/TypeScript patterns and optimizations
-- **accelint-vitest-best-practices** - Vitest patterns and optimizations
+- **accelint-ts-testing** - Vitest patterns and optimizations

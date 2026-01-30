@@ -47,7 +47,7 @@ Once installed, skills activate automatically when relevant tasks are detected. 
 # Agents will use accelint-react-best-practices when you ask:
 "Optimize this component's re-renders"
 
-# Agents will use accelint-vitest-best-practices when you ask:
+# Agents will use accelint-ts-testing when you ask:
 "Write tests for this utility function"
 ```
 For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
@@ -117,7 +117,7 @@ React performance optimization and modern patterns for React 19+:
 
 **Activates when:** Writing React components, debugging re-renders, fixing hydration errors, optimizing list rendering.
 
-### accelint-vitest-best-practices
+### accelint-ts-testing
 
 Testing patterns for Vitest:
 
@@ -283,7 +283,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-vitest-best-practices, accelint-nextjs-best-practices (depending on code type)
+**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-nextjs-best-practices (depending on code type)
 
 ### Debug Code
 ```
@@ -308,7 +308,7 @@ Format and classify your review as:
 3. 🟢 Confident
 ```
 
-**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-vitest-best-practices, accelint-nextjs-best-practices (depending on code type)
+**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-nextjs-best-practices (depending on code type)
 
 ### Performance Analysis
 ```

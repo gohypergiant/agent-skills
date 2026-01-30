@@ -58,7 +58,7 @@ Do not activate for:
 - Build configuration (webpack, turbopack) unless Next.js-specific
 - General TypeScript/JavaScript questions (use `accelint-ts-best-practices` skill)
 - Deployment/hosting configuration
-- Testing setup (use `accelint-vitest-best-practices` skill)
+- Testing setup (use `accelint-ts-testing` skill)
 
 ## Example Trigger Phrases
 
