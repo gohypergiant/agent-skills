@@ -2,6 +2,14 @@
 
 A collection of skills and commands that transform AI agents into specialized problem solvers. Skills provide domain expertise, coding standards, and reusable workflows that help agents write better code with less context.
 
+To have a greater guarantee of a skill being utilized, we recommend appending the following to any prompt you use:
+
+```markdown
+Before relying on your training data you MUST evaluate and apply ALL APPLICABLE SKILLS to your problem space. 
+IF AND ONLY IF you do not find a skill that applies are you allowed to fall back to your training data. 
+This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+```
+
 ## Table of Contents
 
 - [Installation](#installation)
@@ -35,27 +43,21 @@ pnpm dlx skills add gohypergiant/agent-skills
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
 ```
-# Agents will use js-ts-best-practices when you ask:
+# Agents will use accelint-ts-best-practices when you ask:
 "Add input validation to this function"
 
-# Agents will use react-best-practices when you ask:
+# Agents will use accelint-react-best-practices when you ask:
 "Optimize this component's re-renders"
 
-# Agents will use vitest-best-practices when you ask:
+# Agents will use accelint-ts-testing when you ask:
 "Write tests for this utility function"
 ```
 For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
 Commands can be invoked directly:
 ```bash
-# Audit JSDoc comments in your codebase
-claude /audit:js-ts-docs ./src
-
 # Generate implementation plans for a feature
 claude /feature-planning:implementation ./requirements.md
-
-# Create a new skill
-claude /create:skill
 ```
 
 ## What are Agent Skills?
@@ -82,19 +84,30 @@ Skills are designed for agents, not humans. They're structured for efficient con
 
 ## Available Skills
 
-### js-ts-best-practices
+### accelint-ts-best-practices
 
-JavaScript and TypeScript coding standards covering:
+TypeScript and JavaScript coding standards covering:
 
 - Naming conventions and code structure
 - TypeScript patterns (avoid `any`, prefer `type` over `interface`, use `as const` instead of `enum`)
 - Safety patterns (input validation, assertions, error handling)
-- Performance optimization (reduce branching, memoization, caching, avoid allocations)
-- Documentation standards (JSDoc, comment markers)
+- Function design and control flow
 
-**Activates when:** Writing JS/TS functions, fixing type errors, optimizing loops, adding validation, reviewing code quality.
+**Activates when:** Writing JS/TS functions, fixing type errors, adding validation, reviewing code quality.
 
-### react-best-practices
+### accelint-ts-performance
+
+Systematic JavaScript/TypeScript performance optimization using V8 profiling:
+
+- Algorithmic complexity fixes (O(n²) → O(n) with Maps/Sets)
+- Loop optimization and allocation reduction
+- Caching and memoization patterns
+- I/O batching and async optimization
+- Memory locality and predictable execution
+
+**Activates when:** Code is measurably slow, optimizing hot paths, profiling shows bottlenecks, fixing excessive allocations, improving execution speed.
+
+### accelint-react-best-practices
 
 React performance optimization and modern patterns for React 19+:
 
@@ -106,7 +119,7 @@ React performance optimization and modern patterns for React 19+:
 
 **Activates when:** Writing React components, debugging re-renders, fixing hydration errors, optimizing list rendering.
 
-### vitest-best-practices
+### accelint-ts-testing
 
 Testing patterns for Vitest:
 
@@ -118,7 +131,18 @@ Testing patterns for Vitest:
 
 **Activates when:** Writing `*.test.ts` files, adding test coverage, debugging flaky tests, reviewing test code.
 
-### nextjs-best-practices
+### accelint-ts-documentation
+
+Documentation standards for JavaScript and TypeScript:
+
+- JSDoc comment structure (@param, @returns, @template, @example with code fences)
+- Comment markers (TODO, FIXME, HACK, NOTE, PERF, REVIEW, DEBUG, REMARK)
+- Documentation sufficiency for exported vs internal code
+- Comment quality (removing unnecessary comments, preserving important ones)
+
+**Activates when:** Adding JSDoc comments, documenting functions or types, auditing documentation completeness, adding TODO/FIXME markers, improving code comments.
+
+### accelint-nextjs-best-practices
 
 Next.js performance optimization and best practices:
 
@@ -134,7 +158,7 @@ Next.js performance optimization and best practices:
 
 **Activates when:** Writing Server Components/Actions, implementing data fetching in RSC, optimizing API routes, debugging waterfall issues, reviewing Next.js code for performance, fixing authentication in Server Actions, reducing HTML payload size, or deciding between Server/Client Components.
 
-### skill-manager
+### accelint-skill-manager
 
 A meta-skill for creating and managing other skills:
 
@@ -145,7 +169,7 @@ A meta-skill for creating and managing other skills:
 
 **Activates when:** Creating new skills or updating existing ones.
 
-### command-creator
+### accelint-command-creator
 
 Guide for creating Claude Code commands:
 
@@ -156,7 +180,7 @@ Guide for creating Claude Code commands:
 
 **Activates when:** Creating new Claude Code commands.
 
-### readme-writer
+### accelint-readme-writer
 
 README documentation generator and updater:
 
@@ -171,22 +195,6 @@ README documentation generator and updater:
 ## Available Commands
 
 Commands are task-specific specifications stored in `commands/`. They define workflows that Claude executes autonomously.
-
-### Audit Commands
-
-| Command | Description |
-|---------|-------------|
-| `/audit:js-ts-docs` | Audit JSDoc comments for completeness against js-ts-best-practices standards. Supports interactive fixing. |
-| `/audit:js-ts-perf` | Audit JavaScript/TypeScript code for performance issues. |
-| `/audit:js-test-coverage` | Audit unit test coverage and format compliance. Identifies untested branches, error paths, boundaries, and async patterns. Also validates existing tests against vitest-best-practices (AAA pattern, descriptions, assertions). Supports interactive or automatic fixing. |
-
-### Create Commands
-
-| Command | Description |
-|---------|-------------|
-| `/create:skill` | Create a new skill with proper structure and documentation. |
-| `/create:command` | Create a new Claude Code command specification. |
-| `/create:readme` | Generate or update README.md for a package by analyzing its codebase. Uses readme-writer skill to identify public APIs and produce documentation with practical examples. |
 
 ### Feature Planning Commands
 
@@ -277,7 +285,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-nextjs-best-practices (depending on code type)
 
 ### Debug Code
 ```
@@ -302,7 +310,7 @@ Format and classify your review as:
 3. 🟢 Confident
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, vitest-best-practices, nextjs-best-practices (depending on code type)
+**Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-nextjs-best-practices (depending on code type)
 
 ### Performance Analysis
 ```
@@ -329,7 +337,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+**Invokes:** accelint-ts-best-practices, accelint-ts-performance, accelint-react-best-practices, accelint-nextjs-best-practices
 
 ### Security Analysis
 ```
@@ -356,7 +364,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** js-ts-best-practices, react-best-practices, nextjs-best-practices
+**Invokes:** accelint-ts-best-practices, accelint-ts-performance, accelint-react-best-practices, accelint-nextjs-best-practices
 
 ### Skill Management
 ```
@@ -364,7 +372,7 @@ Persona:
 You are a expert agent skill architect.
 
 Objective:
-1. Use the skill-manager skill to audit ./skills/example-skill
+1. Use the accelint-skill-manager skill to audit ./skills/example-skill
 2. Identify any best practice optimizations that can be made
 3. Optimize towards deterministic output and correctness when auditing
 4. Explain your reasoning clearly with specific examples
@@ -379,7 +387,7 @@ Format and classify your review as:
 4. 🟢 Low
 ```
 
-**Invokes:** skill-manager
+**Invokes:** accelint-skill-manager
 
 ## Internal Skills
 
