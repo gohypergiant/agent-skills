@@ -3,7 +3,7 @@ name: accelint-nextjs-best-practices
 description: Next.js performance optimization and best practices. Use when writing Next.js code (App Router or Pages Router); implementing Server Components, Server Actions, or API routes; optimizing RSC serialization, data fetching, or server-side rendering; reviewing Next.js code for performance issues; fixing authentication in Server Actions; or implementing Suspense boundaries, parallel data fetching, or request deduplication.
 license: Apache-2.0
 metadata:
-  author: gohypergiant
+  author: accelint
   version: "1.0"
 ---
 

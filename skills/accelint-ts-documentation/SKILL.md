@@ -3,7 +3,7 @@ name: accelint-ts-documentation
 description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments (@param, @returns, @template, @example), comment markers (TODO, FIXME, HACK), and code comment quality. Use when asked to 'add JSDoc', 'document this function', 'audit documentation', 'fix comments', 'add TODO/FIXME markers', or 'improve code documentation'.
 license: Apache-2.0
 metadata:
-  author: gohypergiant
+  author: accelint
   version: "1.0"
 ---
 

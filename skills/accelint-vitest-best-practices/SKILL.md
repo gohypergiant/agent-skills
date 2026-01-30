@@ -4,8 +4,8 @@ description: Use when writing, reviewing, or refactoring vitest tests. Load when
 compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
-  author: gohypergiant
-  version: "2.3"
+  author: accelint
+  version: "1.0"
 ---
 
 # Vitest Best Practices

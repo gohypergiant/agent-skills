@@ -3,7 +3,7 @@ name: accelint-react-best-practices
 description: React performance optimization and best practices. Use when writing React components, hooks, or JSX; refactoring React code; optimizing re-renders, memoization, or state management; reviewing React code for performance issues; fixing hydration mismatches; or implementing transitions, lazy initialization, or effect dependencies. Covers React 19+ features including useEffectEvent, Activity component, and ref props.
 license: Apache-2.0
 metadata:
-  author: gohypergiant
+  author: accelint
   version: "1.0"
 ---
 
