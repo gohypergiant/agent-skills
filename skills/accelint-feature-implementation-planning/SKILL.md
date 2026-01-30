@@ -22,6 +22,35 @@ Transform acceptance criteria into detailed, executable implementation plans thr
 - **NEVER forget external documentation** - Link to specific sections with anchors: `https://docs.example.com#exact-section`, not just homepage URLs.
 - **NEVER assume one approach** - Document design decisions, trade-offs, and alternatives considered. Future maintainers need context.
 
+## When NOT to Use This Skill
+
+Skip this comprehensive planning process for:
+
+**Simple, obvious changes:**
+- Single-line fixes or typos
+- Adding a single export to an existing file
+- Updating a configuration value
+- Simple refactors with clear scope (rename variable, extract constant)
+
+**When implementation is self-evident:**
+- User provides exact code and just needs it placed in a file
+- Copy-paste tasks with minimal adaptation
+- Trivial additions following obvious existing patterns
+
+**Quick experiments or spikes:**
+- Proof-of-concept code that will be thrown away
+- Debugging or diagnostic code
+- Temporary test code
+
+**For these cases:** Just implement directly. The overhead of this planning process exceeds its value.
+
+**Use this skill when:**
+- Feature touches 3+ files
+- Multiple integration points exist
+- Dependency ordering matters
+- Patterns need to be extracted and followed
+- Implementation approach is not immediately obvious
+
 ## Before Planning Implementation, Ask
 
 Apply these tests to ensure thorough planning:
@@ -61,25 +90,20 @@ Follow this 8-step workflow to create comprehensive implementation plans:
 Read the acceptance criteria file provided by the user.
 
 **Extract feature name for consistent naming:**
-```bash
-# Feature name should be kebab-case from acceptance file
-rg "^# Acceptance: " "$REQUIREMENTS_PATH" | cut -d' ' -f3
-```
-
-**Validate requirements exist and are readable.**
+- Feature names should follow the project's naming convention (typically kebab-case)
+- Look in the acceptance criteria header or title
+- This name will be used for directory names, file names, and plan file naming
 
 Skip this step only if requirements are already loaded and understood.
 
 ### Step 2: Codebase Intelligence - Find Patterns
 
-**Identify project structure and language:**
-```bash
-# Check for config files to understand project type
-cat package.json tsconfig.json Cargo.toml pyproject.toml 2>/dev/null
+**Identify project architecture patterns:**
 
-# Sample file structure to understand organization
-fd -t f -e ts -e rs -e c -e py | head -20
-```
+Examine configuration files and codebase structure to understand:
+- **Language & tooling**: package.json (Node/TS), Cargo.toml (Rust), pyproject.toml (Python)
+- **Project type**: Monolith vs modular vs microservices architecture
+- **Build system**: pnpm/npm/yarn, cargo, poetry - affects validation commands
 
 **Find similar implementations:**
 Use Grep to search for analogous features or patterns. Look for:
@@ -95,11 +119,10 @@ Use Grep to search for analogous features or patterns. Look for:
 - Error handling patterns (Result types? Try-catch? Error classes?)
 - Anti-patterns observed (what NOT to do based on existing issues)
 
-**Check project conventions:**
-```bash
-# Look for project-specific guidelines
-bat CLAUDE.md AGENTS.md .agents/README.md 2>/dev/null
-```
+**Check for explicit project guidelines:**
+- Look for CLAUDE.md, AGENTS.md, .agents/README.md, or CONTRIBUTING.md
+- These files override inferred patterns when they conflict
+- Document any explicit style guides, testing requirements, or workflows
 
 ### Step 3: Identify Integration Points
 
@@ -107,13 +130,7 @@ Determine what files need to be touched.
 
 **Files to Read (with specific line ranges):**
 
-Find existing implementations that provide patterns:
-```bash
-# Example: Find similar feature for pattern reference
-bat path/to/similar/feature.ts
-```
-
-Document with precise line numbers and rationale:
+Find existing implementations that provide patterns, then document with precise line numbers and rationale:
 - `path/to/file.ts` (lines X-Y) - Why: Pattern for feature type
 - `path/to/model.ts` (lines A-B) - Why: Type structure to follow
 - `path/to/handler.ts` (lines C-D) - Why: Error handling approach
@@ -348,139 +365,137 @@ Capture:
 4. Consider multi-factor authentication
 ```
 
+## Resolving Common Planning Conflicts
+
+Real codebases have inconsistencies. Use these decision trees when you encounter conflicts.
+
+### Conflict: Multiple Valid Patterns Exist
+
+When you find 3 different error handling approaches in the codebase:
+
+**Decision tree:**
+1. **Check git history** - Run `git log --oneline --all -- path/to/files` to find most recent pattern
+   - Most recent pattern often indicates where the project is evolving toward
+2. **Check CLAUDE.md or AGENTS.md** - Explicit guidance overrides recency
+3. **If still tied, prefer type-safe over runtime** - Result types > exceptions > unchecked errors
+   - Type-safe patterns catch errors at compile time, reducing runtime failures
+
+**Example**: Found 3 error patterns: Result<T,E> (newest), try-catch (common), unchecked (legacy)
+→ Choose Result<T,E> unless docs say otherwise
+
+### Conflict: Task Granularity - One Large Task or Many Small?
+
+**Split task if ANY of these is true:**
+- Task requires multiple validation commands (e.g., `typecheck` + `test` + `build`)
+- Task creates AND integrates (e.g., create type.ts + update exports + register in index)
+- Task crosses architectural boundaries (e.g., types → business logic → API layer)
+- Task has multiple independent failure modes
+
+**Keep single task if:**
+- Single file creation with one validation command
+- Purely additive change (add export, register route, update config)
+- Changes are tightly coupled (can't validate one without the other)
+
+**Example**: "Create auth types and register in barrel file"
+→ SPLIT: Task 1: CREATE types.ts, Task 2: UPDATE index.ts exports
+
+### Conflict: When to Use WebSearch vs Local Patterns
+
+**Prefer local patterns when:**
+- Similar feature exists in codebase (e.g., existing auth when adding another auth method)
+- Library version is >1 year old (stable API, unlikely to have changed)
+- Technology is mature and well-established (React, Express, PostgreSQL)
+
+**Use WebSearch when:**
+- No analogous feature exists in codebase
+- Library version is <6 months old OR major version just released
+- Known breaking changes between versions (check package.json + CHANGELOG.md first)
+- Using bleeding-edge or experimental technology
+
+**Example**: Project uses React Query v3, latest is v5 (2+ years old)
+→ WebSearch for migration guide, then apply patterns to existing code
+
+### Conflict: Validation Command Specificity
+
+**Too vague**: `npm test` (runs entire suite, slow feedback)
+**Too specific**: `jest --testPathPattern=src/auth/validator.test.ts --coverage --verbose` (brittle)
+**Just right**: `npm test -- src/auth/validator.test.ts` (focused, follows project conventions)
+
+**Decision rule:**
+- Use project's package.json scripts when they exist
+- Target specific test files for fast feedback
+- Avoid flags that aren't in project's CI configuration
+
+## Planning Quality Self-Check
+
+Before finalizing the implementation plan, validate it against these criteria:
+
+### Completeness Check
+
+**Required elements present:**
+- [ ] All patterns documented with file:line references (not just "see auth.ts")
+- [ ] Every task has executable validation command (not "run tests" but `npm test -- specific.test.ts`)
+- [ ] Dependencies ordered correctly (types → utils → core → integration → tests)
+- [ ] Integration points identified (which files to read, create, update)
+- [ ] External documentation linked with section anchors (not just homepage URLs)
+
+**Missing any?** Go back to the relevant step and complete it.
+
+### Specificity Check
+
+**Anti-patterns to avoid:**
+- ❌ Vague task: "Add feature logic" → ✅ Specific: "CREATE src/features/auth/validator.ts implementing RFC 5322 email validation"
+- ❌ Generic reference: "Follow existing patterns" → ✅ Specific: "PATTERN: src/utils/errors.ts:23-45 - Result type wrapper"
+- ❌ Unclear validation: "Test the code" → ✅ Specific: "VALIDATE: `pnpm test -- src/auth/validator.test.ts`"
+
+**Found vague guidance?** Make it specific with concrete examples and references.
+
+### Dependency Order Validation
+
+**Check task sequence:**
+1. Read your task list from top to bottom
+2. For each task, ask: "Does this depend on any task below it?"
+3. If yes, you have a dependency inversion - reorder tasks
+
+**Common mistakes:**
+- Integration task before core implementation
+- Tests before the code they test
+- Exports before the thing being exported
+
+### Actionability Test
+
+**For each task, ask:**
+- Can an agent execute this without asking clarifying questions?
+- Are imports specified (not just "import necessary types")?
+- Are gotchas documented (edge cases, known issues, constraints)?
+- Is the pattern reference actually helpful (file + lines + what to learn from it)?
+
+**If any task fails this test**, add more detail to make it independently executable.
+
+### Knowledge Transfer Check
+
+**For design decisions section, verify:**
+- Rationale explains WHY, not just WHAT
+- Trade-offs are explicit (what was sacrificed for what benefit)
+- Alternatives considered are documented (what was rejected and why)
+
+This preserves context for future maintainers and helps the implementation agent understand the "why" behind decisions.
+
 ## Output Format
 
 **File location**: `.agents/implementation/{feature-name}-plan.md`
 
-The plan file structure:
+**MANDATORY - READ ENTIRE FILE**: Before writing the implementation plan, you MUST read
+[`references/template.md`](references/template.md) completely to understand the exact
+structure and all required sections.
 
-```markdown
-# Implementation Plan: {Feature Name}
+The template contains:
+- Complete markdown structure for the plan file
+- All section headers with descriptions
+- Examples of how to fill each section
+- Required formatting for tasks, patterns, and documentation
 
-Date: {ISO timestamp}
-
----
-
-## CONTEXT REFERENCES
-
-### Relevant Codebase Files
-**IMPORTANT: YOU MUST READ THESE FILES BEFORE IMPLEMENTING!**
-
-- `path/to/file.ts` (lines 15-45) - Why: {Specific pattern to follow}
-- `path/to/model.ts` (lines 100-120) - Why: {Type structure reference}
-
-### New Files to Create
-
-- `path/to/new/file.ts` - {Purpose and description}
-- `path/to/test.ts` - {Test file purpose}
-
-### Files to Update
-
-- `path/to/existing.ts` - {What kind of update needed}
-
-### Relevant Documentation
-**YOU SHOULD READ THESE BEFORE IMPLEMENTING!**
-
-- [Library Docs - Section](https://example.com/docs#section)
-  - Specific section: {Section name}
-  - Why: {Why this is needed}
-  - Version: {version from package.json}
-
-### Patterns to Follow
-
-**Copyright Header:**
-```{language}
-{Actual copyright header from project}
-```
-
-**Naming Conventions:**
-- Classes: {convention with example}
-- Files: {convention with example}
-- Variables: {convention with example}
-
-**Error Handling Pattern:**
-```{language}
-// From: src/path/file.ts:lines
-{Actual code example}
-```
-
-**Logger Pattern:**
-```{language}
-// From: src/path/logger.ts:lines
-{Actual code example}
-```
-
-**Testing Pattern:**
-```{language}
-// From: tests/example.test.ts:lines
-{Actual code example}
-```
-
----
-
-## IMPLEMENTATION PLAN
-
-### Phase 1: {Phase Name}
-
-{Description of what this phase accomplishes}
-
-**Tasks:**
-- {High-level task 1}
-- {High-level task 2}
-
-### Phase 2: {Phase Name}
-
-{Description}
-
-**Tasks:**
-- {High-level task}
-
-{... additional phases ...}
-
----
-
-## STEP-BY-STEP TASKS
-
-**IMPORTANT: Execute every task in order, top to bottom. Each task is atomic and independently testable.**
-
-### {ACTION} {target_file}
-
-- **IMPLEMENT**: {What to build}
-  ```{language}
-  {Code template/example}
-  ```
-- **PATTERN**: {file:line reference}
-- **IMPORTS**: {Required imports}
-- **GOTCHA**: {Known issues/constraints}
-- **VALIDATE**: `{executable command}`
-
-{Repeat for all tasks in dependency order}
-
----
-
-## NOTES
-
-### Design Decisions
-
-{Document key architectural and design choices with rationale}
-
-**Decision: {Choice}**
-- Rationale: {Why}
-- Trade-off: {What we're sacrificing}
-- Alternative considered: {What else was considered}
-
-### Performance Considerations
-
-{Document performance implications and optimizations}
-
-### Trade-offs
-
-{Document what was chosen and what was sacrificed}
-
-### Future Enhancements
-
-{Possible improvements for later}
-```
+Use the template exactly as structured. Fill in each section based on your research from Steps 1-8.
 
 ## Report to User
 

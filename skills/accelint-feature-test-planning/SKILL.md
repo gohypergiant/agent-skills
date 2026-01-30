@@ -1,6 +1,6 @@
 ---
 name: accelint-feature-test-planning
-description: Use when users say "create test plan", "plan testing", "testing strategy", or when defining validation and test coverage for a feature. Analyzes implementation plans to create comprehensive testing strategies with unit tests, integration tests, edge cases, and validation commands. Keywords: test planning, testing strategy, validation, test coverage, QA planning.
+description: Create comprehensive test plans for Accelint features with unit, integration, E2E tests, and edge case coverage. Use when: (1) User requests "create test plan", "plan testing", "testing strategy", "QA plan", or "how should I test this", (2) After implementation planning phase to define validation strategy, (3) Need to identify test coverage gaps or validation approaches, (4) Planning validation commands and manual test procedures. Analyzes implementation plans to generate testing strategies including test framework detection, validation levels (syntax/build/unit/manual), and concrete test examples. Keywords: test planning, testing strategy, test coverage, QA planning, validation commands, edge cases, test framework.
 license: Apache-2.0
 metadata:
   author: gohypergiant
@@ -21,6 +21,30 @@ Define comprehensive testing strategy and validation commands for feature implem
 - **NEVER forget manual validation steps** - Not everything is unit testable. UI verification, visual checks, performance validation need manual procedures.
 - **NEVER create tests without framework detection** - Testing approach varies by framework (Jest/Vitest/pytest/cargo test). Must detect and follow project conventions.
 - **NEVER omit coverage requirements** - Test coverage standards (80%+ or project-specific) drive testing scope. Check CI config and package.json for requirements.
+- **NEVER assume tests passing locally means they'll pass everywhere** - Tests using cross-region resources fail in EU due to GDPR data residency requirements. Example: File sync tests using cross-region S3 buckets violate compliance and fail in production EU deployments.
+- **NEVER assume "happy path works" means the feature is complete** - 80% of production bugs occur in edge cases ignored during testing. Example: File upload works perfectly for 1MB test files but causes OOM errors at 100MB in production (observed in 3 consecutive releases). Test the extremes, not just the average.
+- **NEVER write E2E tests without a cleanup strategy** - Test data accumulation causes flaky tests after 100+ runs and fills test databases. Example: "Create project" E2E test fails intermittently when test user account hits project quota limit (200 orphaned test projects). Always include teardown steps or use isolated test data.
+
+## Test Planning Mindset
+
+Before creating any test plan, think through these critical dimensions:
+
+### Risk Assessment
+- **Blast radius**: If this feature breaks, does it affect one user or all users? Single workflow or entire system?
+- **Critical path**: Is this on the critical path (login, data sync, file access) or optional (UI polish, preferences)?
+- **Rollback complexity**: Can this be rolled back with a feature flag, or does it require database migration rollback?
+
+### User Impact Lens
+- **Persona frequency**: Which user types (casual, power users, admins) interact with this feature daily vs occasionally?
+- **Workflow dependency**: What user workflows does this feature enable or block? What happens if it fails?
+- **Data at risk**: What user data could be corrupted, lost, or exposed if tests miss critical bugs?
+
+### Coverage Philosophy
+- **Unit tests answer**: "Can this component do its job in isolation?"
+- **Integration tests answer**: "Do these components communicate correctly?"
+- **E2E tests answer**: "Can a real user complete their actual goal?"
+
+Higher risk → More comprehensive testing. Lower risk → Focus on smoke tests.
 
 ## Before Planning Tests, Ask
 
