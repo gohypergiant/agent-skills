@@ -1,0 +1,30 @@
+{
+  "suiteName": "Site navigation",
+  "tags": ["@navigation"],
+  "source": {
+    "repo": "metronome",
+    "path": "skills/ac-to-playwright/artifacts/acceptance/sample-app.feature"
+  },
+  "tests": [
+    {
+      "name": "user navigates to the settings page",
+      "startUrl": "/",
+      "tags": ["@smoke"],
+      "steps": [
+        { "action": "click", "target": "header.link.settings" },
+        { "action": "expectUrl", "value": "/settings" },
+        { "action": "expectText", "target": "header.text.page-heading", "value": "Settings" }
+      ]
+    },
+    {
+      "name": "user navigates to the home page",
+      "startUrl": "/settings",
+      "tags": ["@regression", "@wip"],
+      "steps": [
+        { "action": "click", "target": "header.link.home" },
+        { "action": "expectUrl", "value": "/" },
+        { "action": "expectText", "target": "header.text.page-heading", "value": "Home" }
+      ]
+    }
+  ]
+}

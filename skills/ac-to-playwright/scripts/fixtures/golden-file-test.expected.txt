@@ -1,0 +1,89 @@
+import { expect, test } from "@playwright/test";
+
+test.describe("Golden file test", {
+  tag: ["@smoke", "@fast"],
+  annotation: {
+    type: "source",
+    description: "metronome/skills/ac-to-playwright/artifacts/acceptance/golden-file-test.feature"
+  }
+}, () => {
+  test("happy path", {
+    tag: "@wip"
+  }, async ({ page }, testInfo) => {
+    await page.goto("https://example.com");
+
+    try {
+      await expect(page.getByTestId("login.form.login")).toHaveCount(1);
+      await page.getByTestId("login.form.login").click();
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "click", testId: "login.form.login" });
+      throw error;
+    }
+
+    try {
+      await expect(page.getByTestId("login.form.email")).toHaveCount(1);
+      await page.getByTestId("login.form.email").fill("a@b.com");
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "fill", testId: "login.form.email" });
+      throw error;
+    }
+
+    try {
+      await expect(page.getByTestId("login.header.h1")).toHaveCount(1);
+      await expect(page.getByTestId("login.header.h1")).toContainText("Welcome");
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectText", testId: "login.header.h1" });
+      throw error;
+    }
+
+    try {
+      await expect(page).toHaveURL(/dashboard/);
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "expectUrl" });
+      throw error;
+    }
+  });
+
+});
+
+async function attachFailureArtifacts(args: {
+  page: import("@playwright/test").Page;
+  testInfo: import("@playwright/test").TestInfo;
+  stepIndex: number;
+  action: string;
+  testId?: string;
+}) {
+  const { page, testInfo, stepIndex, action, testId } = args;
+  if (!testInfo) return;
+  const payload = {
+    url: page.url(),
+    stepIndex,
+    action,
+    testId,
+  };
+  await testInfo.attach("step failure", {
+    contentType: "application/json",
+    body: Buffer.from(JSON.stringify(payload, null, 2), "utf8"),
+  });
+  try {
+    const screenshot = await page.screenshot({ fullPage: true });
+    await testInfo.attach("step screenshot", {
+      contentType: "image/png",
+      body: screenshot,
+    });
+  } catch {
+    // ignore screenshot issues
+  }
+  try {
+    const video = page.video?.();
+    if (video) {
+      const path = await video.path();
+      await testInfo.attach("step video", {
+        contentType: "video/webm",
+        path,
+      });
+    }
+  } catch {
+    // ignore video issues
+  }
+}

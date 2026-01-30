@@ -1,1 +1,9 @@
 .DS_Store
+**/blob-report/
+**/coverage/
+**/dist/
+**/node_modules/
+**/playwright-report/
+**/playwright/.auth/
+**/playwright/.cache/
+**/test-results/

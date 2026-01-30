@@ -1,0 +1,29 @@
+{
+  "name": "ac-to-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Convert acceptance criteria into JSON test plans and Playwright spec files",
+  "license": "UNLICENSED",
+  "bin": {
+    "generate-tests": "dist/scripts/generate-tests.js",
+    "validate-plan": "dist/scripts/validate-plan.js",
+    "append-json-summary-entry": "dist/scripts/append-json-summary-entry.js",
+    "create-markdown-summary": "dist/scripts/create-markdown-summary.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@vitest/coverage-istanbul": "^4.0.18",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "zod": "^4.2.1"
+  },
+  "engines": {
+    "node": ">=25.3.0"
+  }
+}

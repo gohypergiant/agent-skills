@@ -1,0 +1,61 @@
+{
+  "suiteName": "Missing Required Fields",
+  "source": { "repo": "metronome", "path": "path/to/file.md" },
+  "tests": [
+    {
+      "name": "Missing click.target",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "click" }]
+    },
+    {
+      "name": "Missing expectNotVisible.target",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "expectNotVisible" }]
+    },
+    {
+      "name": "Missing expectText.target",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "expectText", "value": "Welcome" }]
+    },
+    {
+      "name": "Missing expectText.value",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "expectText", "target": "#welcome" }]
+    },
+    {
+      "name": "Missing expectUrl.value",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "expectUrl" }]
+    },
+    {
+      "name": "Missing expectVisible.target",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "expectVisible" }]
+    },
+    {
+      "name": "Missing fill.target",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "fill", "value": "something" }]
+    },
+    {
+      "name": "Missing fill.value",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "fill", "target": "#username" }]
+    },
+    {
+      "name": "Missing goto.value",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "goto" }]
+    },
+    {
+      "name": "Missing select.target",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "select", "value": "admin" }]
+    },
+    {
+      "name": "Missing select.value",
+      "startUrl": "https://example.com",
+      "steps": [{ "action": "select", "target": "#role" }]
+    }
+  ]
+}
