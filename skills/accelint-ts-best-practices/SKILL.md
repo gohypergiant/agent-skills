@@ -1,17 +1,17 @@
 ---
-name: ts-best-practices
-description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness. Use when: (1) Writing or reviewing TS/JS code, (2) Fixing type errors or avoiding any/enum/null, (3) Implementing control flow, state management, or error handling, (4) Applying zero-value pattern or immutability, (5) Code review for TypeScript anti-patterns. Covers: naming conventions, function design, return values, bounded iteration, input validation. For performance optimization, use ts-performance skill. For documentation, use ts-documentation skill.
+name: accelint-ts-best-practices
+description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness. Use when: (1) Writing or reviewing TS/JS code, (2) Fixing type errors or avoiding any/enum/null, (3) Implementing control flow, state management, or error handling, (4) Applying zero-value pattern or immutability, (5) Code review for TypeScript anti-patterns. Covers: naming conventions, function design, return values, bounded iteration, input validation. For performance optimization, use accelint-ts-performance skill. For documentation, use accelint-ts-documentation skill.
 license: Apache-2.0
 metadata:
-  author: gohypergiant
-  version: "2.1"
+  author: accelint
+  version: "1.0"
 ---
 
 # JavaScript and TypeScript Best Practices
 
 Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
 
-**Note:** This skill focuses on general best practices, TypeScript patterns, and safety. For performance optimization, use the `ts-performance` skill instead.
+**Note:** This skill focuses on general best practices, TypeScript patterns, and safety. For performance optimization, use the `accelint-ts-performance` skill instead.
 
 ## When to Use This Skill
 
@@ -51,10 +51,10 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [error-messages.md](references/error-messages.md) - User-friendly vs developer-specific messages
 
 **Performance:**
-- **For performance optimization tasks**, use the `ts-performance` skill for comprehensive profiling workflows and optimization patterns
+- **For performance optimization tasks**, use the `accelint-ts-performance` skill for comprehensive profiling workflows and optimization patterns
 
 **Documentation:**
-- **For documentation tasks**, use the `ts-documentation` skill for comprehensive JSDoc and comment guidance
+- **For documentation tasks**, use the `accelint-ts-documentation` skill for comprehensive JSDoc and comment guidance
 
 ### 3. Apply the Pattern
 Each reference file contains:

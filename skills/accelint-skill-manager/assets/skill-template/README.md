@@ -107,7 +107,7 @@ Expected result: [description]
 Contributions are welcome! When contributing to this skill:
 
 1. **CRITICAL**: Ensure description field in SKILL.md answers WHAT/WHEN/KEYWORDS - this determines if skill gets activated
-2. Follow the skill structure guidelines in the skill-manager skill
+2. Follow the skill structure guidelines in the accelint-skill-manager skill
 3. Ensure all examples use ❌/✅ format for clarity
 4. Keep SKILL.md under 500 lines (move details to references/)
 5. Focus on expert-only knowledge - assume Claude knows basics

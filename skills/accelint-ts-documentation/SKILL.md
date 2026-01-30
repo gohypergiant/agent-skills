@@ -1,9 +1,9 @@
 ---
-name: ts-documentation
+name: accelint-ts-documentation
 description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments (@param, @returns, @template, @example), comment markers (TODO, FIXME, HACK), and code comment quality. Use when asked to 'add JSDoc', 'document this function', 'audit documentation', 'fix comments', 'add TODO/FIXME markers', or 'improve code documentation'.
 license: Apache-2.0
 metadata:
-  author: gohypergiant
+  author: accelint
   version: "1.0"
 ---
 
@@ -35,9 +35,9 @@ Use this skill when the task involves:
 ## When NOT to Use This Skill
 
 Do not activate for:
-- General code quality issues (use ts-best-practices instead)
-- Performance optimization (use ts-best-practices instead)
-- Type safety improvements (use ts-best-practices instead)
+- General code quality issues (use accelint-ts-best-practices instead)
+- Performance optimization (use accelint-ts-performance instead)
+- Type safety improvements (use accelint-ts-best-practices instead)
 - Framework-specific documentation (React PropTypes, Vue props, etc.)
 
 ## How to Use

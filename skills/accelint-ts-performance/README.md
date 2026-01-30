@@ -23,7 +23,7 @@ Use this skill when:
 ## Structure
 
 ```
-ts-performance/
+accelint-ts-performance/
 ├── SKILL.md                    # 4-phase workflow + guidance
 ├── AGENTS.md                   # Compressed rule overview
 ├── README.md                   # This file

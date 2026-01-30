@@ -83,7 +83,7 @@ The skill follows a consistent structure:
 ## File Structure
 
 ```
-readme-writer/
+accelint-readme-writer/
 ├── SKILL.md              # Main skill instructions
 ├── AGENTS.md             # Detailed implementation guide
 ├── README.md             # This file

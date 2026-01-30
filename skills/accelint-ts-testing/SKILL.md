@@ -1,11 +1,11 @@
 ---
-name: vitest-best-practices
+name: accelint-ts-testing
 description: Use when writing, reviewing, or refactoring vitest tests. Load when you see *.test.ts or *.spec.ts files, nested describe blocks, loose assertions (toBeTruthy), over-mocking, slow tests, or async testing needs. Covers AAA pattern, parameterized tests, test doubles hierarchy, mock cleanup, test isolation, and performance optimization. Keywords include vitest, testing, TDD, assertions, mocks, stubs, fakes, spies, beforeEach, describe, it, expect, vi.mock, it.each.
 compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
-  author: gohypergiant
-  version: "2.3"
+  author: accelint
+  version: "1.0"
 ---
 
 # Vitest Best Practices

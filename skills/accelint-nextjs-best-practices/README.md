@@ -12,7 +12,7 @@ This skill provides structured guidance for Next.js performance optimization and
 - Request deduplication with React.cache()
 - Server vs Client Component decisions
 
-**Note:** This skill focuses on Next.js-specific optimizations for the App Router. For React-specific patterns (hooks, memoization, etc.), use the `react-best-practices` skill.
+**Note:** This skill focuses on Next.js-specific optimizations for the App Router. For React-specific patterns (hooks, memoization, etc.), use the `accelint-react-best-practices` skill.
 
 ---
 
