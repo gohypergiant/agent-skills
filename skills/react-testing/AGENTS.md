@@ -9,7 +9,7 @@
 
 Comprehensive guide for React Testing Library best practices, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
-**Token efficiency principle:** This guide maximizes knowledge delta by providing only expert-level insights Claude doesn't already know. All rules assume Claude understands Testing Library basics, React fundamentals, and standard testing patterns. Focus is on non-obvious decisions, accessibility-first testing, and avoiding common pitfalls.
+**Token efficiency principle:** This guide maximizes knowledge delta by providing only expert-level insights and non-obvious patterns. All rules assume understanding React Testing Library basics, React fundamentals, and standard testing patterns. Focus is on non-obvious decisions, accessibility-first testing, and avoiding common pitfalls.
 
 ---
 

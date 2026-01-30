@@ -107,7 +107,7 @@ expect(screen.getByText('Both clicked')).toBeInTheDocument();
 
 ## Rule: Use setup() for Test Isolation
 
-**Principle:** Call userEvent.setup() per test for proper isolation and realistic delays.
+**Principle:** Call userEvent.setup() per test for proper isolation and realistic delays. Always call setup() at the beginning of the test block, before render().
 
 **❌ Incorrect: Importing userEvent directly
 
@@ -121,12 +121,24 @@ test('button click', async () => {
 });
 ```
 
+**❌ Incorrect: Calling setup() after render
+
+```tsx
+test('button click', async () => {
+  render(<Button />); // ❌ render before setup
+  const user = userEvent.setup(); // ❌ too late
+  
+  await user.click(screen.getByRole('button'));
+});
+```
+
 **Problems:**
 - State might leak between tests
 - Can't configure delay or other options
 - Less explicit about test setup
+- Setup after render may miss initialization events
 
-**✅ Correct: setup() per test
+**✅ Correct: setup() before render in each test
 
 ```tsx
 import userEvent from '@testing-library/user-event';
@@ -148,10 +160,11 @@ test('with custom delay', async () => {
 ```
 
 **Benefits:**
-- Explicit test setup
+- Explicit test setup with proper ordering
 - Configurable delays and options
 - Better test isolation
 - Can mock clipboard, pointer lock, etc.
+- Ensures all user interactions are properly tracked from component mount
 
 ---
 
@@ -405,6 +418,7 @@ test('shows loading then success', async () => {
 
 - **Always use userEvent for user interactions** (clicks, typing, selecting)
 - **Always await userEvent calls** - they return promises
+- **Call userEvent.setup() at the beginning of each test, before render()** - ensures proper isolation and trackingises
 - **Use userEvent.setup()** at the start of each test
 - **fireEvent only for non-user events** (scroll, resize, animation end)
 - **userEvent catches more bugs** by simulating complete interaction sequences
