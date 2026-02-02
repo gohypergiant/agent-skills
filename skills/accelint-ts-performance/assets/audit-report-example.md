@@ -1,6 +1,9 @@
-**Performance Audit Report: Color Converters**
+╭──────────────────────────╮
+│ accelint-ts-performance] │
+╰──────────────────────────╯
+# Performance Audit Report: Color Converters
 
-Executive Summary
+## Executive Summary
 
 Completed systematic audit of packages/converters/src/color/index.ts following accelint-ts-performance workflow. Identified 10 performance anti-patterns with expected gains ranging from 1.2x to 3x. These are color conversion
 utilities likely called frequently in rendering loops, real-time color pickers, batch processing, and visualization contexts where even 1.5x improvements are valuable.
@@ -17,9 +20,9 @@ Color converters appear simple but are frequently called in hot paths:
 - Real-time theme switching
 - Batch color processing pipelines
 
-Phase 1: Identified Anti-Patterns
+## Phase 1: Identified Anti-Patterns
 
-1. hexToColor:88-91 - String Allocation Chain
+### 1. hexToColor:88-91 - String Allocation Chain
 
 Location: `packages/converters/src/color/index.ts:88-91`
 ```ts
@@ -52,7 +55,8 @@ if (hexValue.length === 3) {
 ```
 
 ---
-2. colorToHex:130-136 - Multiple Template Literal Allocations
+
+### 2. colorToHex:130-136 - Multiple Template Literal Allocations
 
 Location: `packages/converters/src/color/index.ts:130-136`
 ```ts
@@ -96,7 +100,8 @@ return result;
 ```
 
 ---
-3. colorToCssRgbaString:225 - Template Literal Allocation
+
+### 3. colorToCssRgbaString:225 - Template Literal Allocation
 
 Location: `packages/converters/src/color/index.ts:225`
 ```ts
@@ -125,7 +130,8 @@ export function colorToCssRgbaString(color: Color): string {
 ```
 
 ---
-4-8. Array .every() with Inline Closures (5 instances)
+
+### 4-8. Array .every() with Inline Closures (5 instances)
 
 Locations:
 - `cssRgbaStringToColor:185`
@@ -184,7 +190,8 @@ const rgbValid =
 ```
 
 ---
-Phase 2: Categorized Issues
+
+## Phase 2: Categorized Issues
 
 | # | Location | Issue | Category | Expected Gain |
 |---|---|---|---|---|

@@ -1,3 +1,6 @@
+╭────────────────────────────╮
+│ accelint-ts-best-practices │
+╰────────────────────────────╯
 # Code Correctness Audit Report: Task Queue Manager
 
 ## Executive Summary
