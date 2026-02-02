@@ -72,7 +72,24 @@ Load [AGENTS.md](AGENTS.md) to scan compressed rule summaries organized by categ
 ### 3. Load Specific Performance Patterns as Needed
 When you identify specific performance issues, load corresponding reference files for detailed ❌/✅ examples.
 
+### 4. Use the Audit Report Template (For Explicit Audit Requests)
+When users explicitly request a performance audit, load the template for consistent reporting:
+- [assets/audit-report-template.md](assets/audit-report-template.md) - Structured template with guidance
+- [assets/audit-report-example.md](assets/audit-report-example.md) - Real-world reference example
+
 ## Performance Optimization Workflow
+
+**Two modes of operation:**
+
+1. **Audit Mode** - Skill invoked directly (`/accelint-ts-performance <path>`) or user explicitly requests performance audit
+   - Generate a structured audit report using the template (Phases 1-2 only)
+   - Report findings for user review before implementation
+   - User decides which optimizations to apply
+
+2. **Implementation Mode** - Skill triggers automatically during feature work
+   - Identify and apply optimizations directly (all 4 phases)
+   - No formal report needed
+   - Focus on fixing issues inline
 
 **Copy this checklist to track progress:**
 
@@ -100,6 +117,11 @@ When you identify specific performance issues, load corresponding reference file
 - Try/catch in loops
 
 **Output**: Complete list of ALL identified anti-patterns with their locations and expected performance impact. Do not filter based on "severity" or "priority" - report everything found.
+
+**When generating audit reports** (when skill is invoked directly via `/accelint-ts-performance <path>` or user explicitly requests performance audit), use the structured template:
+1. Load [assets/audit-report-template.md](assets/audit-report-template.md) for the report structure
+2. Load [assets/audit-report-example.md](assets/audit-report-example.md) to see a real-world example
+3. Follow the template's guidance for consistent formatting and issue grouping
 
 ### Phase 2: Analyze and Categorize Issues
 
