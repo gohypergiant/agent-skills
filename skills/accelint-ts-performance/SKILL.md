@@ -72,10 +72,9 @@ Load [AGENTS.md](AGENTS.md) to scan compressed rule summaries organized by categ
 ### 3. Load Specific Performance Patterns as Needed
 When you identify specific performance issues, load corresponding reference files for detailed ❌/✅ examples.
 
-### 4. Use the Audit Report Template (For Explicit Audit Requests)
+### 4. Use the Report Template (For Explicit Audit Requests)
 When users explicitly request a performance audit, load the template for consistent reporting:
-- [assets/audit-report-template.md](assets/audit-report-template.md) - Structured template with guidance
-- [assets/audit-report-example.md](assets/audit-report-example.md) - Real-world reference example
+- [assets/output-report-template.md](assets/output-report-template.md) - Structured template with guidance
 
 ## Performance Optimization Workflow
 
@@ -119,9 +118,8 @@ When users explicitly request a performance audit, load the template for consist
 **Output**: Complete list of ALL identified anti-patterns with their locations and expected performance impact. Do not filter based on "severity" or "priority" - report everything found.
 
 **When generating audit reports** (when skill is invoked directly via `/accelint-ts-performance <path>` or user explicitly requests performance audit), use the structured template:
-1. Load [assets/audit-report-template.md](assets/audit-report-template.md) for the report structure
-2. Load [assets/audit-report-example.md](assets/audit-report-example.md) to see a real-world example
-3. Follow the template's guidance for consistent formatting and issue grouping
+1. Load [assets/output-report-template.md](assets/output-report-template.md) for the report structure
+2. Follow the template's guidance for consistent formatting and issue grouping
 
 ### Phase 2: Analyze and Categorize Issues
 

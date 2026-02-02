@@ -158,12 +158,11 @@ If you encounter scenarios not covered in references or standard patterns:
 
 For these, default to clear descriptions in natural language rather than incomplete JSDoc tags.
 
-### 5. Use the Audit Report Template (For Explicit Audit Requests)
+### 4. Use the Report Template (For Explicit Audit Requests)
 
 When users explicitly request a documentation audit or invoke the skill directly (`/accelint-ts-documentation <path>`), use the standardized report format:
 
-**Template:** [`assets/audit-report-template.md`](assets/audit-report-template.md)
-**Example:** [`assets/audit-report-example.md`](assets/audit-report-example.md)
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
 The audit report format provides:
 - Numbered findings with clear before/after examples

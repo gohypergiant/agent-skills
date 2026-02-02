@@ -1,7 +1,7 @@
 ╭────────────────────────────╮
 │ accelint-ts-best-practices │
 ╰────────────────────────────╯
-# Code Correctness Audit Report: [Target Name]
+# Report: [Target Name]
 
 <!--
 INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
