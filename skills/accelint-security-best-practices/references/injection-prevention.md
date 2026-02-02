@@ -2,6 +2,8 @@
 
 Never concatenate untrusted input into queries, commands, or code. Use parameterized queries, prepared statements, and safe APIs to prevent SQL injection, NoSQL injection, and command injection attacks.
 
+**Database & ORM Examples**: This document uses generic database patterns. Apply to your ORM/query builder: Prisma, TypeORM, Sequelize, Mongoose, Drizzle, Kysely, or raw SQL with parameterized queries. Principles apply universally across SQL and NoSQL databases.
+
 ## Why This Matters
 
 Injection vulnerabilities allow attackers to execute arbitrary code or commands:

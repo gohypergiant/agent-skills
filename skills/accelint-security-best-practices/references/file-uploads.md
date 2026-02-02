@@ -2,6 +2,8 @@
 
 Never accept file uploads without validation. Malicious file uploads enable remote code execution, XSS attacks, denial of service, and data breaches.
 
+**File Upload Library Examples**: This document uses common patterns for file upload handling. Apply to your upload solution: multer, formidable, busboy, multer-s3, @fastify/multipart, Next.js file routes, or cloud storage SDKs (AWS S3, Google Cloud Storage, etc.).
+
 ## Why This Matters
 
 Insecure file uploads enable:

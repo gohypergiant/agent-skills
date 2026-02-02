@@ -2,6 +2,8 @@
 
 Never skip authorization checks. Authentication verifies identity; authorization verifies permission. Attackers will manipulate IDs, skip authentication, or guess URLs to access unauthorized resources.
 
+**Framework Examples**: This document uses generic middleware patterns. Apply to your framework's authorization system: middleware (Express, Fastify), guards (Nest.js), server actions (Next.js), or custom authorization hooks. Principles apply universally.
+
 ## Why This Matters
 
 Broken access control is the #1 OWASP vulnerability because:

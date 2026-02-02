@@ -2,6 +2,8 @@
 
 Never deploy without security headers. HTTP security headers provide critical defense-in-depth protection against XSS, clickjacking, MIME sniffing, and other attacks.
 
+**Framework Examples**: This document uses middleware patterns for setting headers. Apply to your framework: helmet (Express), @fastify/helmet (Fastify), built-in headers (Nest.js), next.config.js headers (Next.js), or manual header setting in your framework. Security headers apply universally across all frameworks.
+
 ## Why This Matters
 
 Security headers protect against:

@@ -2,6 +2,8 @@
 
 Never hardcode secrets in source code. All API keys, passwords, tokens, and credentials must be stored in environment variables and validated at application startup.
 
+**Environment & Secrets Examples**: This document uses generic patterns for environment variables and secrets management. Apply to your deployment environment: dotenv (.env files), platform environment variables (Vercel, Netlify, AWS), secrets managers (AWS Secrets Manager, HashiCorp Vault, Google Secret Manager), or container secrets (Docker, Kubernetes).
+
 ## Why This Matters
 
 Hardcoded secrets in source code are immediately compromised when:

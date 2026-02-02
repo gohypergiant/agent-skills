@@ -11,6 +11,8 @@ metadata:
 
 Systematic security auditing and vulnerability detection for JavaScript/TypeScript applications. Combines audit workflow with OWASP Top 10 security patterns for production-ready code.
 
+**Framework-Agnostic Guidance**: This skill provides security principles applicable across frameworks (Express, Fastify, Nest.js, Next.js, etc.). Code examples illustrate concepts using common patterns—adapt them to your project's specific framework and package manager (npm, yarn, pnpm, bun).
+
 ## NEVER Do When Implementing Security
 
 **Note:** For general best practices (type safety, code quality, documentation), use the respective accelint skills. This section focuses exclusively on security-specific anti-patterns.
@@ -247,11 +249,11 @@ Security fixes sometimes conflict with existing functionality. Here are expert s
 | Issue | ❌ Wrong Approach | ✅ Correct Approach |
 |-------|------------------|---------------------|
 | Parameterized queries break dynamic column sorting | Add try-catch, fall back to concatenation | Use column name whitelist: `const allowed = ['name', 'email', 'created_at']; if (!allowed.includes(column)) throw Error;` then safely concatenate |
-| Rate limiting breaks load tests | Disable rate limiting in test environment | Use separate rate limit config for tests: `maxRequests: process.env.NODE_ENV === 'test' ? 10000 : 100` |
-| CSRF tokens break API integration tests | Skip CSRF validation in tests | Generate valid CSRF tokens in test setup: `const token = csrfTokens.create(secret);` |
+| Rate limiting breaks load tests | Disable rate limiting in test environment | Use separate rate limit config for tests based on environment detection |
+| CSRF tokens break API integration tests | Skip CSRF validation in tests | Generate valid CSRF tokens in test setup using your CSRF library's token generation function |
 | Input validation rejects legitimate edge cases | Loosen validation rules | Investigate the edge case - is it legitimate? If yes, update schema. If no, reject it. Real users shouldn't hit validation errors. |
 | Authorization checks break admin impersonation | Skip auth checks for admin users | Implement proper impersonation: admin gets temporary token with target user's permissions, logged for audit |
-| HTTPOnly cookies break mobile app auth | Store tokens in localStorage for mobile | Use secure token storage: iOS Keychain, Android Keystore. For React Native: `expo-secure-store` or `react-native-keychain` |
+| HTTPOnly cookies break mobile app auth | Store tokens in localStorage for mobile | Use secure token storage: iOS Keychain, Android Keystore, or platform-specific secure storage APIs |
 
 ### When Security and Functionality Conflict
 

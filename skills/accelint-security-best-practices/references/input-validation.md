@@ -2,6 +2,8 @@
 
 Never trust user input. All input from users, APIs, file uploads, or external sources is potentially malicious. Validate type, format, size, and content with schemas before processing.
 
+**Validation Library Examples**: This document uses common validation patterns. Apply to your validation library: Zod, Yup, Joi, Ajv, class-validator, or framework-built-in validators. Principles apply universally across validation approaches.
+
 ## Why This Matters
 
 Unvalidated user input is the root cause of most security vulnerabilities:

@@ -2,6 +2,8 @@
 
 Implement multi-factor authentication for enhanced security. MFA adds a second verification factor beyond passwords, significantly reducing account takeover risk.
 
+**MFA Library Examples**: This document uses common MFA patterns. Apply to your MFA solution: speakeasy (TOTP), otplib, @otplib/preset-default, or third-party services (Auth0, Clerk, AWS Cognito, Firebase Auth). Principles apply universally across MFA implementations.
+
 ## Why This Matters
 
 MFA protects against:

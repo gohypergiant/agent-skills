@@ -2,6 +2,8 @@
 
 Never render user input without sanitization. Cross-Site Scripting (XSS) allows attackers to inject malicious scripts that steal credentials, perform actions as the victim, or redirect to phishing sites.
 
+**Framework Examples**: This document uses React patterns for illustration (dangerouslySetInnerHTML). Apply to your framework's rendering: Vue (v-html), Angular (innerHTML), Svelte (@html), or vanilla JavaScript (innerHTML). Sanitization libraries: DOMPurify, sanitize-html, isomorphic-dompurify.
+
 ## Why This Matters
 
 XSS attacks enable:

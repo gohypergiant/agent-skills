@@ -2,6 +2,8 @@
 
 Never accept state-changing operations without CSRF tokens. Cross-Site Request Forgery (CSRF) tricks authenticated users into performing unwanted actions without their knowledge.
 
+**Framework Examples**: This document uses common CSRF protection patterns. Apply to your framework: csurf/csrf-csrf (Express), @fastify/csrf-protection (Fastify), built-in protection (Nest.js), or framework-specific CSRF middleware. Some frameworks (Next.js) may require custom implementation.
+
 ## Why This Matters
 
 CSRF attacks enable:

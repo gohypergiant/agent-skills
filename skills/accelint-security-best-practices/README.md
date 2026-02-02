@@ -2,6 +2,8 @@
 
 Systematic security auditing and vulnerability detection for JavaScript/TypeScript applications. Combines audit workflow with OWASP Top 10 security patterns for production-ready code.
 
+**Framework-Agnostic**: This skill provides security principles applicable across frameworks (Express, Fastify, Nest.js, Next.js, etc.), package managers (npm, yarn, pnpm, bun), and libraries. Code examples illustrate concepts—adapt them to your project's specific stack.
+
 ## Overview
 
 This skill provides:

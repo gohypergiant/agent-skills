@@ -2,6 +2,8 @@
 
 Never deploy with known vulnerabilities in dependencies. Outdated packages contain exploitable security flaws that attackers actively target.
 
+**Package Manager Examples**: This document uses npm commands for illustration. Apply these principles to your package manager: npm, yarn, pnpm, or bun. Each has equivalent audit and security scanning capabilities.
+
 ## Why This Matters
 
 Vulnerable dependencies enable:
@@ -14,16 +16,16 @@ A single outdated package with a critical vulnerability exposes your entire appl
 
 ## Anti-Patterns to Avoid
 
-### ❌ NEVER: Ignore npm audit Warnings
+### ❌ NEVER: Ignore Dependency Security Warnings
 
 ```bash
 # ❌ NEVER: Skip security audits
-npm install
+npm install  # or: yarn install, pnpm install, bun install
 # 23 vulnerabilities (5 critical, 10 high, 8 moderate)
 # ❌ Developer ignores warnings and deploys
 
 # ❌ NEVER: Use --force to bypass warnings
-npm install --force
+npm install --force  # or: yarn install --force, etc.
 # Ignores all warnings and installs anyway
 ```
 
@@ -50,16 +52,17 @@ npm install --force
 ### ❌ NEVER: Install Packages from Unknown Sources
 
 ```bash
-# ❌ NEVER: Install from random GitHub repos
+# ❌ NEVER: Install from untrusted sources
 npm install github:random-user/suspicious-package
+# Applies to all package managers
 
 # ❌ NEVER: Install packages with typosquatting names
 npm install expres # Typo of "express" - could be malicious!
-npm install cross-env # Typo of "crossenv" - known malware
+# Watch for common typos in popular packages
 
 # ❌ NEVER: Install packages without checking reputation
 npm install brand-new-package-no-downloads
-# Package has 0 downloads, no GitHub repo, created yesterday
+# Package has 0 downloads, no source repo, created yesterday
 ```
 
 **Risk:** Critical - Supply chain attack, malicious code execution
@@ -98,27 +101,37 @@ npm install brand-new-package-no-downloads
 
 ## Correct Patterns
 
-### ✅ ALWAYS: Run npm audit Before Deployment
+### ✅ ALWAYS: Run Security Audits Before Deployment
 
 ```bash
-# ✅ Check for vulnerabilities
-npm audit
+# ✅ Check for vulnerabilities using your package manager
+npm audit          # npm
+yarn audit         # yarn
+pnpm audit         # pnpm
+bun audit          # bun (when available)
 
 # ✅ Fix automatically when possible
-npm audit fix
-
-# ✅ Review and fix manually if needed
-npm audit fix --force # Only if you understand the changes
+npm audit fix      # npm
+yarn upgrade       # yarn
+pnpm update        # pnpm
 
 # ✅ View detailed vulnerability report
 npm audit --json > audit-report.json
 
 # ✅ Fail CI/CD if vulnerabilities found
 npm audit --audit-level=moderate
+yarn audit --level moderate
+pnpm audit --audit-level moderate
 # Exit code 1 if moderate or higher vulnerabilities found
 ```
 
 **Benefit:** Identifies and fixes known vulnerabilities before deployment
+
+**Package Manager Commands**:
+- **npm**: `npm audit`, `npm audit fix`
+- **yarn**: `yarn audit`, `yarn upgrade`
+- **pnpm**: `pnpm audit`, `pnpm update`
+- **bun**: Check docs for audit commands
 
 ---
 
@@ -138,20 +151,26 @@ npm audit --audit-level=moderate
 
 ---
 
-### ✅ ALWAYS: Lock Dependencies with package-lock.json
+### ✅ ALWAYS: Lock Dependencies with Lockfiles
 
 ```bash
-# ✅ Commit package-lock.json to version control
-git add package-lock.json
+# ✅ Commit lockfiles to version control (package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb)
+git add package-lock.json    # npm
+git add yarn.lock            # yarn
+git add pnpm-lock.yaml       # pnpm
+git add bun.lockb            # bun
 git commit -m "Lock dependencies"
 
-# ✅ Use ci command in production/CI
-npm ci
-# Installs exact versions from package-lock.json
-# Fails if package.json and package-lock.json don't match
+# ✅ Use CI-optimized install commands in production/CI
+npm ci           # npm: Installs exact versions from lockfile
+yarn install --frozen-lockfile  # yarn: Fails if lockfile out of sync
+pnpm install --frozen-lockfile  # pnpm: Fails if lockfile out of sync
+bun install --frozen-lockfile   # bun: Fails if lockfile out of sync
 
-# ❌ NEVER use npm install in CI/production
-npm install # Can install different versions than package-lock.json
+# ❌ NEVER use regular install commands in CI/production
+npm install      # Can install different versions than lockfile
+yarn install     # May update lockfile
+pnpm install     # May update lockfile
 ```
 
 **Benefit:** Consistent installs across all environments, no version drift
@@ -361,47 +380,69 @@ npm config set security-advisory-frequency daily
 
 ---
 
-### ✅ ALWAYS: Keep Node.js Updated
+### ✅ ALWAYS: Keep Runtime Updated
 
 ```bash
-# ✅ Use LTS (Long Term Support) version
+# ✅ Use LTS (Long Term Support) version for Node.js
+# With nvm (Node Version Manager):
 nvm install --lts
 nvm use --lts
 
-# ✅ Update Node.js regularly
-nvm install 18 # Latest 18.x
-nvm use 18
+# With volta:
+volta install node@lts
 
-# ✅ Specify Node.js version in package.json
+# With fnm (Fast Node Manager):
+fnm install --lts
+
+# ✅ Update runtime regularly
+nvm install 18     # nvm
+volta install node@18  # volta
+fnm install 18     # fnm
+
+# ✅ Specify runtime version in package.json
 {
   "engines": {
-    "node": ">=18.0.0 <19.0.0"
+    "node": ">=18.0.0 <19.0.0",
+    "bun": ">=1.0.0"  // If using Bun
   }
 }
 
-# ✅ Use .nvmrc for consistent versions
-echo "18" > .nvmrc
-nvm use # Automatically uses version from .nvmrc
+# ✅ Use version files for consistent versions across team
+echo "18" > .nvmrc           # nvm
+echo "18" > .node-version    # fnm, volta
 ```
 
 **Benefit:** Security patches, performance improvements, modern features
 
+**Runtime Version Managers**:
+- **nvm**: Node Version Manager (most common)
+- **volta**: Fast, cross-platform version manager
+- **fnm**: Fast Node Manager (written in Rust)
+- **asdf**: Multi-language version manager
+- **n**: Simple Node version manager
+
 ---
 
-### ✅ ALWAYS: Verify Package Signatures
+### ✅ ALWAYS: Verify Package Integrity
 
 ```bash
 # ✅ Enable signature verification (npm 8.15.0+)
 npm config set audit-signatures true
 
-# ✅ Verify specific package
-npm audit signatures
+# ✅ Verify packages
+npm audit signatures        # npm
+yarn audit signatures       # yarn (if available)
 
-# ✅ Check registry signatures
+# ✅ Check package registry signatures and checksums
 npm view package-name dist.signatures
+npm view package-name dist.integrity
+
+# Package managers verify checksums automatically during install
 ```
 
 **Benefit:** Ensures packages haven't been tampered with
+
+**Integrity Checks**: All major package managers (npm, yarn, pnpm, bun) verify package integrity using checksums from lockfiles during installation.
 
 ---
 
@@ -409,17 +450,17 @@ npm view package-name dist.signatures
 
 Before deploying to production:
 
-- [ ] npm audit run with no high or critical vulnerabilities
-- [ ] package-lock.json committed to version control
+- [ ] Security audit run with no high or critical vulnerabilities (using your package manager's audit command)
+- [ ] Lockfile committed to version control (package-lock.json, yarn.lock, pnpm-lock.yaml, or bun.lockb)
 - [ ] Dependencies use exact or tilde version ranges (not wildcards)
 - [ ] All direct dependencies actively maintained (check last update)
 - [ ] No dependencies from unknown or untrusted sources
 - [ ] Dependency count minimized (only necessary packages)
-- [ ] Node.js version is latest LTS
+- [ ] Runtime version is latest LTS (Node.js, Bun, etc.)
 - [ ] CI/CD pipeline fails on high/critical vulnerabilities
-- [ ] Dependabot or Renovate configured for automated updates
+- [ ] Automated dependency updates configured (Dependabot, Renovate, or similar)
 - [ ] Security advisories monitored for critical dependencies
-- [ ] npm ci used in production (not npm install)
-- [ ] Transitive dependencies reviewed (npm ls)
+- [ ] CI-optimized install command used in production (npm ci, yarn --frozen-lockfile, etc.)
+- [ ] Transitive dependencies reviewed (using dependency tree command for your package manager)
 - [ ] No packages with known malware or suspicious behavior
-- [ ] Package signatures verified (if available)
+- [ ] Package integrity verification enabled

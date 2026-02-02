@@ -2,6 +2,8 @@
 
 Never allow unlimited API requests. Rate limiting prevents brute force attacks, denial of service, data scraping, and resource exhaustion.
 
+**Framework Examples**: This document uses Express.js patterns for illustration. Apply these principles to your framework's middleware system (Fastify plugins, Nest.js guards, Next.js middleware, etc.) and distributed storage solution (Redis, Memcached, DynamoDB, etc.).
+
 ## Why This Matters
 
 Without rate limiting, attackers can:
@@ -18,19 +20,20 @@ For a login endpoint, no rate limiting means attacker tries 10,000 passwords in 
 ### ❌ NEVER: Allow Unlimited Login Attempts
 
 ```typescript
-// ❌ NEVER: No rate limiting on authentication
-app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
+// ❌ NEVER: No rate limiting on authentication endpoint
+// Example shows generic HTTP endpoint - adapt to your framework
+async function handleLogin(request, response) {
+  const { email, password } = request.body;
 
-  const user = await db.users.findUnique({ where: { email } });
+  const user = await database.findUserByEmail(email);
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+  if (!user || !(await verifyPassword(password, user.hashedPassword))) {
+    return response.status(401).json({ error: 'Invalid credentials' });
   }
 
   // Attacker can try unlimited passwords!
   // 1000 attempts/second = crack weak passwords in minutes
-});
+}
 ```
 
 **Risk:** Critical - Account compromise via brute force attacks
@@ -137,9 +140,10 @@ app.post('/api/login', loginLimiter, async (req, res) => {
 ### ✅ ALWAYS: Rate Limit Authentication Endpoints
 
 ```typescript
-import rateLimit from 'express-rate-limit';
+// ✅ Strict rate limiting for login (example using Express middleware)
+// Adapt to your framework: Fastify plugins, Nest.js guards, Next.js middleware, etc.
+import rateLimit from 'express-rate-limit'; // Or your framework's rate limiting solution
 
-// ✅ Strict rate limiting for login
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // 5 attempts per 15 minutes
@@ -152,12 +156,13 @@ const loginLimiter = rateLimit({
   },
 });
 
+// Apply rate limiting middleware to login endpoint
 app.post('/api/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await db.users.findUnique({ where: { email } });
+  const user = await database.findUserByEmail(email);
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !(await verifyPassword(password, user.hashedPassword))) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
@@ -190,6 +195,12 @@ app.post('/api/request-password-reset', passwordResetLimiter, async (req, res) =
 ```
 
 **Benefit:** Brute force attacks slowed to impractical speeds
+
+**Framework Notes**:
+- Express/Fastify: Use `express-rate-limit` or `@fastify/rate-limit`
+- Nest.js: Use `@nestjs/throttler` with guards
+- Next.js: Implement in middleware or API route handlers
+- Custom: Track request counts in Redis/memory with TTL
 
 ---
 

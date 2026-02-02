@@ -2,6 +2,8 @@
 
 Never store JWT tokens in localStorage or use weak session management. Authentication must use secure token storage, strong password hashing, and proper session lifecycle management.
 
+**Framework Examples**: This document uses common patterns with JWT and bcrypt for illustration. Apply these principles to your authentication strategy: session-based (Passport.js, NextAuth.js), token-based (JWT, OAuth), or framework-specific solutions. Password hashing libraries include bcrypt, argon2, or scrypt.
+
 ## Why This Matters
 
 Weak authentication enables attackers to:
@@ -51,22 +53,22 @@ document.cookie = `token=${token}; path=/`;
 import crypto from 'crypto';
 
 // ❌ NEVER: Plain text passwords
-await db.users.create({
+await database.createUser({
   email,
   password: password, // Stored in plain text!
 });
 
 // ❌ NEVER: MD5 or SHA hashing (too fast)
 const hash = crypto.createHash('md5').update(password).digest('hex');
-await db.users.create({ email, password: hash });
+await database.createUser({ email, password: hash });
 // Attackers crack MD5 at 1+ billion hashes/second
 
 // ❌ NEVER: SHA-256 without salt
 const hash = crypto.createHash('sha256').update(password).digest('hex');
 // Rainbow tables crack common passwords instantly
 
-// ❌ NEVER: Weak bcrypt rounds
-import bcrypt from 'bcrypt';
+// ❌ NEVER: Weak work factors with password hashing libraries
+import bcrypt from 'bcrypt'; // Example library
 const hash = await bcrypt.hash(password, 4); // 4 rounds = too fast!
 // Attacker can test thousands of passwords per second
 ```
@@ -227,73 +229,64 @@ app.post('/api/logout', (req, res) => {
 
 ---
 
-### ✅ ALWAYS: Use bcrypt with Strong Work Factor
+### ✅ ALWAYS: Use Strong Password Hashing
 
 ```typescript
-import bcrypt from 'bcrypt';
+// ✅ Use bcrypt, argon2, or scrypt with strong work factor
+import bcrypt from 'bcrypt'; // Or: import argon2 from 'argon2'; import { scrypt } from 'crypto';
 
-// ✅ Strong bcrypt configuration
-const BCRYPT_ROUNDS = 12; // 12 rounds = good balance of security and performance
+// ✅ Strong work factor configuration
+const WORK_FACTOR = 12; // bcrypt rounds, adjust based on library (argon2 uses memory/iterations)
 
 // ✅ Hash password during registration
-app.post('/api/register', async (req, res) => {
-  const { email, password } = req.body;
-
-  // Validate password strength first
-  const PasswordSchema = z.string()
-    .min(8)
-    .regex(/[A-Z]/, 'Must contain uppercase')
-    .regex(/[a-z]/, 'Must contain lowercase')
-    .regex(/[0-9]/, 'Must contain number')
-    .regex(/[^A-Za-z0-9]/, 'Must contain special character');
-
-  try {
-    PasswordSchema.parse(password);
-  } catch (error) {
-    return res.status(400).json({ error: 'Password too weak' });
+async function registerUser(email: string, password: string) {
+  // Validate password strength first (use your validation library: zod, joi, etc.)
+  if (!isPasswordStrong(password)) {
+    throw new Error('Password too weak');
   }
 
   // ✅ Hash with strong work factor
-  const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
+  const hashedPassword = await bcrypt.hash(password, WORK_FACTOR);
+  // With argon2: await argon2.hash(password)
+  // With scrypt: use crypto.scrypt with appropriate parameters
 
-  const user = await db.users.create({
-    data: {
-      email,
-      password: hashedPassword, // Stored securely
-    },
+  const user = await database.createUser({
+    email,
+    password: hashedPassword, // Stored securely
   });
 
-  res.json({
-    message: 'User created',
-    userId: user.id,
-  });
-});
+  return user;
+}
 
 // ✅ Compare password during login
-app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await db.users.findUnique({
-    where: { email },
-  });
+async function loginUser(email: string, password: string) {
+  const user = await database.findUserByEmail(email);
 
   if (!user) {
     // ✅ Generic error message (don't reveal if email exists)
-    return res.status(401).json({ error: 'Invalid credentials' });
+    throw new Error('Invalid credentials');
   }
 
-  // ✅ Use bcrypt.compare for timing-safe comparison
+  // ✅ Use timing-safe comparison function from your hashing library
   const isValidPassword = await bcrypt.compare(password, user.password);
+  // With argon2: await argon2.verify(user.password, password)
+  // With scrypt: use crypto.timingSafeEqual for comparison
 
   if (!isValidPassword) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+    throw new Error('Invalid credentials');
   }
 
   // Generate and send token...
-});
+}
 ```
 
-**Benefit:** bcrypt is slow by design (prevents brute force), includes automatic salting
+**Benefit:** Strong hashing algorithms are intentionally slow (prevents brute force), include automatic salting
+
+**Library Options**:
+- **bcrypt**: Industry standard, well-tested (12+ rounds recommended)
+- **argon2**: Modern, memory-hard (winner of Password Hashing Competition)
+- **scrypt**: Memory-hard, good alternative to bcrypt
+- Avoid: pbkdf2 (less secure), plain SHA/MD5 (completely insecure)
 
 ---
 
