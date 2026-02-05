@@ -37,8 +37,6 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
 6. PHASE 2: Generate summary table from Phase 1 findings
    - Include all vulnerabilities with their numbers
    - Keep it concise - one row per vulnerability/group
-
-See assets/audit-report-example.md for a real-world example.
 -->
 
 ## Executive Summary

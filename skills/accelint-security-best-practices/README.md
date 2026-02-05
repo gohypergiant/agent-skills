@@ -47,8 +47,7 @@ accelint-security-best-practices/
 │   ├── security-headers.md     # CSP, HSTS, helmet
 │   └── ssrf-prevention.md      # URL validation, allowlists
 └── assets/
-    ├── audit-report-template.md
-    └── audit-report-example.md
+    └── output-report-template.md
 ```
 
 ## Progressive Disclosure
