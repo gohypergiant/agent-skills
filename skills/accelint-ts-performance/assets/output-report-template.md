@@ -1,4 +1,7 @@
-# Performance Audit Report: [Target Name]
+╭──────────────────────────╮
+│ accelint-ts-performance] │
+╰──────────────────────────╯
+# Report: [Target Name]
 
 <!--
 INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:

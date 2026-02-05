@@ -150,6 +150,28 @@ Each reference file contains:
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
 
+### 4. Use the Report Template
+When this skill is invoked, use the standardized report format:
+
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
+
+The report format provides:
+- Executive Summary with impact assessment
+- Severity levels (Critical, High, Medium, Low) for prioritization
+- Impact analysis (potential bugs, type safety, maintainability, runtime failures)
+- Categorization (Type Safety, Safety, State Management, Return Values, Code Quality)
+- Pattern references linking to detailed guidance in references/
+- Phase 2 summary table for tracking all issues
+
+**When to use the audit template:**
+- Skill invoked directly via `/accelint-ts-best-practices <path>`
+- User asks to "review code quality" or "audit code" across file(s), invoking skill implicitly
+
+**When NOT to use the report template:**
+- User asks to "fix this type error" (direct implementation)
+- User asks "what's wrong with this code?" (answer the question)
+- User requests specific fixes (apply fixes directly without formal report)
+
 ## Examples
 
 ### Example 1: Optimizing Re-renders

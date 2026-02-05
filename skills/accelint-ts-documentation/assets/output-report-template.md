@@ -1,4 +1,7 @@
-# Documentation Audit Report: [Target Name]
+╭───────────────────────────╮
+│ accelint-ts-documentation │
+╰───────────────────────────╯
+# Report: [Target Name]
 
 <!--
 INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:

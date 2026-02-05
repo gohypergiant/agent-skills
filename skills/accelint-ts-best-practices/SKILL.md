@@ -62,13 +62,12 @@ Each reference file contains:
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
 
-### 4. Use the Audit Report Template (For Explicit Audit Requests)
-When users explicitly request a code correctness audit or invoke the skill directly (`/accelint-ts-best-practices <path>`), use the standardized report format:
+### 4. Use the Report Template
+When this skill is invoked, use the standardized report format:
 
-**Template:** [`assets/audit-report-template.md`](assets/audit-report-template.md)
-**Example:** [`assets/audit-report-example.md`](assets/audit-report-example.md)
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
-The audit report format provides:
+The report format provides:
 - Executive Summary with impact assessment
 - Severity levels (Critical, High, Medium, Low) for prioritization
 - Impact analysis (potential bugs, type safety, maintainability, runtime failures)
@@ -78,10 +77,9 @@ The audit report format provides:
 
 **When to use the audit template:**
 - Skill invoked directly via `/accelint-ts-best-practices <path>`
-- User explicitly requests "code audit", "audit code correctness", or "check for best practices violations"
-- User asks to "review code quality" across file(s)
+- User asks to "review code quality" or "audit code" across file(s), invoking skill implicitly
 
-**When NOT to use the audit template:**
+**When NOT to use the report template:**
 - User asks to "fix this type error" (direct implementation)
 - User asks "what's wrong with this code?" (answer the question)
 - User requests specific fixes (apply fixes directly without formal report)

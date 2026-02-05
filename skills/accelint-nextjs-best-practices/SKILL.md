@@ -137,6 +137,28 @@ Each reference file contains:
 - Performance impact metrics
 - Related patterns and references
 
+### 4. Use the Report Template
+When this skill is invoked for Next.js code review, use the standardized report format:
+
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
+
+The report format provides:
+- Executive Summary with impact assessment
+- Severity levels (Critical, High, Medium, Low) for prioritization
+- Impact analysis (performance, security, data transfer, maintainability)
+- Categorization (Server Actions, RSC Serialization, Data Fetching, Component Architecture)
+- Pattern references linking to detailed guidance in references/
+- Summary table for tracking all issues
+
+**When to use the report template:**
+- Skill invoked directly via `/accelint-nextjs-best-practices <path>`
+- User asks to "review Next.js code" or "audit Next.js app" across file(s), invoking skill implicitly
+
+**When NOT to use the report template:**
+- User asks to "fix this Server Action" (direct implementation)
+- User asks "what's wrong with this code?" (answer the question)
+- User requests specific fixes (apply fixes directly without formal report)
+
 ## Examples
 
 ### Example 1: Optimizing Server Action Security
