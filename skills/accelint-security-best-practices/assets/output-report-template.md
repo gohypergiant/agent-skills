@@ -1,4 +1,7 @@
-# Security Audit Report: [Target Name]
+╭──────────────────────────────────╮
+│ accelint-security-best-practices │
+╰──────────────────────────────────╯
+# Report: [Target Name]
 
 <!--
 INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:

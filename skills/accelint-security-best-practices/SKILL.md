@@ -1,6 +1,6 @@
 ---
 name: accelint-security-best-practices
-description: "Comprehensive security audit and vulnerability detection for JavaScript/TypeScript applications following OWASP Top 10. Use when: (1) Users say 'audit security', 'check for vulnerabilities', 'security review', 'implement authentication', 'secure this code', (2) Adding authentication, API endpoints, file uploads, or handling user input, (3) Working with secrets, credentials, or sensitive data, (4) Implementing payment features or blockchain integrations, (5) Conducting pre-deployment security checks. Audits for: hardcoded secrets, injection vulnerabilities, XSS/CSRF, broken access control, insecure authentication, rate limiting, dependency vulnerabilities, sensitive data exposure."
+description: "Comprehensive security audit and vulnerability detection for JavaScript/TypeScript applications following OWASP Top 10. Use when (1) Users say 'audit security', 'check for vulnerabilities', 'security review', 'implement authentication', 'secure this code', (2) Adding authentication, API endpoints, file uploads, or handling user input, (3) Working with secrets, credentials, or sensitive data, (4) Implementing payment features or blockchain integrations, (5) Conducting pre-deployment security checks. Audits for: hardcoded secrets, injection vulnerabilities, XSS/CSRF, broken access control, insecure authentication, rate limiting, dependency vulnerabilities, sensitive data exposure."
 license: Apache-2.0
 metadata:
   author: accelint
@@ -69,10 +69,10 @@ Load [AGENTS.md](AGENTS.md) to scan compressed security rule summaries organized
 ### 3. Load Specific Security Patterns as Needed
 When you identify specific security issues, load corresponding reference files for detailed ❌/✅ examples.
 
-### 4. Use the Audit Report Template (For Explicit Audit Requests)
-When users explicitly request a security audit, load the template for consistent reporting:
-- [assets/audit-report-template.md](assets/audit-report-template.md) - Structured template with guidance
-- [assets/audit-report-example.md](assets/audit-report-example.md) - Real-world reference example
+### 4. Use the Report Template
+When this skill is invoked, use the standardized report format:
+
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
 ## Security Audit Workflow
 
@@ -115,11 +115,6 @@ When users explicitly request a security audit, load the template for consistent
 - SSRF vulnerabilities (unvalidated URL fetching)
 
 **Output**: Complete list of ALL identified vulnerabilities with their locations, severity, and OWASP category. Do not filter based on "likelihood" - report everything found.
-
-**When generating audit reports** (when skill is invoked directly via `/accelint-security-best-practices <path>` or user explicitly requests security audit), use the structured template:
-1. Load [assets/audit-report-template.md](assets/audit-report-template.md) for the report structure
-2. Load [assets/audit-report-example.md](assets/audit-report-example.md) to see a real-world example
-3. Follow the template's guidance for consistent formatting and vulnerability grouping
 
 ### Phase 2: Categorize and Assess Risk
 
