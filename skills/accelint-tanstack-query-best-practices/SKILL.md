@@ -1,6 +1,6 @@
 ---
 name: accelint-tanstack-query-best-practices
-description: Use when users say "setup TanStack Query", "implement mutations", "fix query performance", "add optimistic updates", "configure query client", or when working with @tanstack/react-query in Next.js App Router applications. Covers QueryClient factory patterns for Server Components, query key hierarchies, cache invalidation strategies, optimistic vs pessimistic mutations, observer performance debugging, server-client hydration with HydrationBoundary, and multi-layer caching with Next.js use cache. Keywords are TanStack Query, React Query, useSuspenseQuery, useQuery, useMutation, invalidateQueries, query keys, cache strategy, staleTime, gcTime, refetch, hydration.
+description: Use when configuring QueryClient, implementing mutations, debugging performance, or adding optimistic updates with @tanstack/react-query in Next.js App Router. Covers factory patterns, query keys, cache invalidation, observer debugging, HydrationBoundary, multi-layer caching. Keywords TanStack Query, useSuspenseQuery, useQuery, useMutation, invalidateQueries, staleTime, gcTime, refetch, hydration.
 license: Apache-2.0
 metadata:
   author: gohypergiant
@@ -164,14 +164,70 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 | Symptom | Root Cause | Solution | Fallback if Solution Fails |
 |---------|------------|----------|---------------------------|
 | Data doesn't update after save | Copied query data to useState | Use query data directly, derive with useMemo | Force refetch with refetch() method, check network tab for actual API response |
-| Infinite requests | Unstable query keys (Date.now(), unsorted arrays) | Use deterministic key construction | Add staleness detection with useRef to track request count, use enabled guard to break loop |
-| N duplicate requests | Query in every list item | Hoist query to parent, pass data as props | Use query deduplication with same queryKey, increase staleTime to prevent immediate refetches |
+| Infinite requests | Unstable query keys (Date.now(), unsorted arrays) | Use deterministic key construction | Add staleness detection: `const requestCount = useRef(0); useEffect(() => { requestCount.current++; if (requestCount.current > 10) console.error('Infinite loop detected', queryKey); }, [data]);` See fundamentals.md for key stability patterns |
+| N duplicate requests | Query in every list item | Hoist query to parent, pass data as props | Ensure all components use identical queryKey (same object reference or values): `const queryKey = useMemo(() => keys.list(filters), [filters]);` Increase staleTime to 30s to deduplicate rapid requests |
 | Query fires with undefined params | Missing enabled guard | Add `enabled: Boolean(dependency)` | Use placeholderData to show loading state, add type guards in queryFn to throw early |
 | Slow list rendering | N queries + N observers | Single parent query, distribute via props | Use select to subscribe to subset, implement virtual scrolling to reduce mounted components |
 | Cache never clears | gcTime: Infinity on frequently-changing data | Match gcTime to data lifecycle | Force removal with queryClient.removeQueries(), monitor cache size with DevTools |
 | UI shows stale data flash | Server cache stale, client cache fresh | Unified invalidation with same keys | Use initialData from server props, set refetchOnMount: false for hydrated queries |
 | Optimistic update won't rollback | onError not restoring context | Use context from onMutate in onError | Force invalidation with invalidateQueries, implement manual rollback with previous state snapshot |
 | Server hydration mismatch | Timestamp/user-specific data in SSR | Use suppressHydrationWarning on container | Client-only rendering with dynamic import and ssr: false, or normalize timestamps to UTC |
+| Query never refetches | enabled: false guard blocking, or gcTime expired | Check enabled conditions, verify query isn't filtered by predicate | Increase gcTime to keep cache alive longer, use refetchInterval for polling behavior, check if staleTime: Infinity is preventing background refetches |
+| Server action not invalidating | updateTag/revalidateTag using different keys than queryClient | Use same key factories for both server and client caches | Manually call router.refresh() after server action, verify tag names match query key hierarchy |
+| Mutation succeeds but UI doesn't update | Missing onSuccess invalidation or wrong queryKey | Add `onSuccess: () => queryClient.invalidateQueries({ queryKey })` | Use setQueryData to manually update cache: `queryClient.setQueryData(keys.detail(id), newData)`, verify queryKey matches exactly |
+
+## Troubleshooting Decision Tree
+
+### Performance Issues
+
+**Step 1: Check observer count in DevTools** (use thresholds at lines 136-145)
+- **>100 observers** → Immediate refactor: hoist queries to parent component, distribute data via props
+- **51-100 observers** → Refactor: hoist queries or use select to subscribe to data subsets
+- **<50 observers** → Issue is elsewhere, continue to Step 2
+
+**Step 2: Check data size and update frequency**
+- **>1000 items + frequent updates** → Disable structural sharing: `structuralSharing: false` (see fundamentals.md for details)
+- **Large payloads (>500KB)** → Check network tab, consider pagination or infinite queries
+- **Fast updates (<1s interval)** → Lower staleTime or use refetchInterval, verify cache strategy
+
+**Step 3: Check React DevTools Profiler**
+- Look for unnecessary re-renders in components using query data
+- Verify select function isn't recreated on every render (use useCallback)
+- Check if derived data should use useMemo instead of inline transformation
+- Profile component render times to identify bottlenecks
+
+### Network Issues
+
+**Flaky connections:**
+- Configure retry logic: `retry: 3, retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)`
+- See query-client-setup.md for production retry configuration
+
+**Token refresh needed:**
+- Implement auth interceptor pattern in queryFn wrapper
+- Use queryClient.setQueryDefaults() for global auth headers
+- See patterns-and-pitfalls.md for token refresh patterns
+
+**Race conditions:**
+- Review invalidation timing: use cancelQueries before setQueryData
+- Check if optimistic updates compete with background refetches
+- Verify mutation onMutate uses await cancelQueries({ queryKey })
+
+### Hydration Issues
+
+**SSR mismatch (hydration error in console):**
+- Add suppressHydrationWarning to container element
+- Normalize data: ensure server and client produce identical output (stable timestamps, sorted arrays)
+- Check if user-specific data is being rendered server-side
+
+**Client-server data drift:**
+- Verify revalidateTag timing on server mutations
+- Check if server cache (Next.js use cache) is stale while client cache is fresh
+- Use initialData from server props: `initialData: serverData, refetchOnMount: false`
+
+**HydrationBoundary not working:**
+- Verify client component boundaries: HydrationBoundary must wrap 'use client' components
+- Check if dehydratedState is being serialized correctly from server
+- Ensure shouldDehydrateQuery includes queries you want to hydrate
 
 ## Freedom Calibration
 
