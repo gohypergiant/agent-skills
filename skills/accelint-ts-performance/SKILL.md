@@ -1,6 +1,6 @@
 ---
 name: accelint-ts-performance
-description: "Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling and runtime patterns. Use when: (1) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', 'check performance', (2) Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste), (3) Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple, (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Audits ALL code for anti-patterns and reports findings with expected gains. Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
+description: "Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling and runtime patterns. Use when (1) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', 'check performance', (2) Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste), (3) Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple, (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Audits ALL code for anti-patterns and reports findings with expected gains. Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
 license: Apache-2.0
 metadata:
   author: accelint
@@ -72,7 +72,23 @@ Load [AGENTS.md](AGENTS.md) to scan compressed rule summaries organized by categ
 ### 3. Load Specific Performance Patterns as Needed
 When you identify specific performance issues, load corresponding reference files for detailed ❌/✅ examples.
 
+### 4. Use the Report Template (For Explicit Audit Requests)
+When users explicitly request a performance audit, load the template for consistent reporting:
+- [assets/output-report-template.md](assets/output-report-template.md) - Structured template with guidance
+
 ## Performance Optimization Workflow
+
+**Two modes of operation:**
+
+1. **Audit Mode** - Skill invoked directly (`/accelint-ts-performance <path>`) or user explicitly requests performance audit
+   - Generate a structured audit report using the template (Phases 1-2 only)
+   - Report findings for user review before implementation
+   - User decides which optimizations to apply
+
+2. **Implementation Mode** - Skill triggers automatically during feature work
+   - Identify and apply optimizations directly (all 4 phases)
+   - No formal report needed
+   - Focus on fixing issues inline
 
 **Copy this checklist to track progress:**
 
@@ -100,6 +116,10 @@ When you identify specific performance issues, load corresponding reference file
 - Try/catch in loops
 
 **Output**: Complete list of ALL identified anti-patterns with their locations and expected performance impact. Do not filter based on "severity" or "priority" - report everything found.
+
+**When generating audit reports** (when skill is invoked directly via `/accelint-ts-performance <path>` or user explicitly requests performance audit), use the structured template:
+1. Load [assets/output-report-template.md](assets/output-report-template.md) for the report structure
+2. Follow the template's guidance for consistent formatting and issue grouping
 
 ### Phase 2: Analyze and Categorize Issues
 
