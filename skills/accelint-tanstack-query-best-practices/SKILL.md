@@ -1,10 +1,10 @@
 ---
 name: accelint-tanstack-query-best-practices
-description: Use when implementing TanStack Query in React/Next.js applications, setting up query clients, managing cache invalidation, handling optimistic updates, or debugging query performance issues. Covers query keys, server-client hydration, mutation patterns, staleTime vs gcTime, observer optimization, and integration with Next.js App Router.
+description: Use when users say "setup TanStack Query", "implement mutations", "fix query performance", "add optimistic updates", "configure query client", or when working with @tanstack/react-query in Next.js App Router applications. Covers QueryClient factory patterns for Server Components, query key hierarchies, cache invalidation strategies, optimistic vs pessimistic mutations, observer performance debugging, server-client hydration with HydrationBoundary, and multi-layer caching with Next.js use cache. Keywords are TanStack Query, React Query, useSuspenseQuery, useQuery, useMutation, invalidateQueries, query keys, cache strategy, staleTime, gcTime, refetch, hydration.
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.1"
+  version: "1.2"
 ---
 
 # TanStack Query Best Practices
