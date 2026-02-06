@@ -158,6 +158,20 @@ Next.js performance optimization and best practices:
 
 **Activates when:** Writing Server Components/Actions, implementing data fetching in RSC, optimizing API routes, debugging waterfall issues, reviewing Next.js code for performance, fixing authentication in Server Actions, reducing HTML payload size, or deciding between Server/Client Components.
 
+### accelint-tanstack-query-best-practices
+
+TanStack Query best practices for React applications with Next.js App Router:
+
+- QueryClient configuration (server isolation, retry logic, cache defaults)
+- Query key architecture (deterministic factories, hierarchical invalidation)
+- Observer economics (N queries vs N observers, hoisting patterns)
+- Mutation patterns (optimistic vs pessimistic updates, rollback handling)
+- Cache invalidation strategies (invalidateQueries, setQueryData, cancelQueries)
+- Server-client integration (HydrationBoundary, SSR/SSG patterns, multi-layer caching)
+- Performance optimization (structural sharing, observer count management)
+
+**Activates when:** Configuring QueryClient, implementing mutations, debugging performance issues, adding optimistic updates, working with query keys, handling cache invalidation, integrating with Next.js Server Components, debugging hydration issues, or using TanStack Query hooks (useQuery, useSuspenseQuery, useMutation).
+
 ### accelint-security-best-practices
 
 Comprehensive security audit and vulnerability detection following OWASP Top 10:
@@ -223,6 +237,7 @@ Commands are task-specific specifications stored in `commands/`. They define wor
 These third-party skills have been vetted for use alongside the Accelint skills:
 
 - [Context7](https://skills.sh/intellectronica/agent-skills/context7) - Context management
+- [Next Cache Components](https://skills.sh/vercel-labs/next-skills/next-cache-components) - Next.js Cache Components Usage and Best Practices
 
 Install ecosystem skills the same way:
 
