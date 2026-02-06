@@ -1,6 +1,16 @@
 ╭─────────────────────╮
 │ accelint-ts-testing │
 ╰─────────────────────╯
+
+<!-- Make sure to display this warning block to the user -->
+┌─────────────────────────────────────────────────────┐
+│ ⚠️  WARNING: This skill does it's best to process   │
+│ the context needed to suggest correct unit tests    │
+│ but it can make mistakes. Please make sure to read  │
+│ the suggested unit tests to make sure that they are │
+│ correct.                                            │
+└─────────────────────────────────────────────────────┘
+
 # Report: [Target Name]
 
 <!--

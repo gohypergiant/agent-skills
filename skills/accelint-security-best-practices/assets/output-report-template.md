@@ -1,6 +1,18 @@
 ╭──────────────────────────────────╮
 │ accelint-security-best-practices │
 ╰──────────────────────────────────╯
+
+<!-- Make sure to display this warning block to the user -->
+┌──────────────────────────────────────────────────────┐
+│ ⚠️  WARNING: Security is highly context-dependent.   │
+│ This skill provides general security guidance but    │
+│ cannot know your application's threat model, risk    │
+│ tolerance, or deployment context. Please evaluate    │
+│ each finding against your specific security          │
+│ requirements. Not all identified issues may be       │
+│ relevant or critical for your use case.              │
+└──────────────────────────────────────────────────────┘
+
 # Report: [Target Name]
 
 <!--
