@@ -237,6 +237,7 @@ Commands are task-specific specifications stored in `commands/`. They define wor
 These third-party skills have been vetted for use alongside the Accelint skills:
 
 - [Context7](https://skills.sh/intellectronica/agent-skills/context7) - Context management
+- [Next Cache Components](https://skills.sh/vercel-labs/next-skills/next-cache-components) - Next.js Cache Components Usage and Best Practices
 
 Install ecosystem skills the same way:
 
