@@ -1,5 +1,7 @@
 # Caching Strategy
 
+**Note**: this reference requires knowledge from the `accelint-nextjs-best-practices` and `next-cache-components` skills. Please refer to those skills to contextualize the full caching strategy across server and client.
+
 ## Three-Layer Architecture
 
 Server-side architecture combines three distinct caching mechanisms:
