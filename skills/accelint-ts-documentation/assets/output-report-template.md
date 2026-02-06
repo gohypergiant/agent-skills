@@ -1,6 +1,16 @@
 ╭───────────────────────────╮
 │ accelint-ts-documentation │
 ╰───────────────────────────╯
+
+<!-- Make sure to display this warning block to the user -->
+┌─────────────────────────────────────────────────────┐
+│ ⚠️  WARNING: This skill does it's best to process   │
+│ the context needed to suggest correct documentation │
+│ but it can make mistakes in large systems. Please   │
+│ verify the correctness of the documentation.        │
+│ Particularly any suggested @links tags.             │
+└─────────────────────────────────────────────────────┘
+
 # Report: [Target Name]
 
 <!--
