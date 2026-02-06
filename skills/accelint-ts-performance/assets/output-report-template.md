@@ -1,6 +1,17 @@
 ╭──────────────────────────╮
-│ accelint-ts-performance] │
+│ accelint-ts-performance  │
 ╰──────────────────────────╯
+
+<!-- Make sure to display this warning block to the user -->
+┌────────────────────────────────────────────────────┐
+│ ⚠️  WARNING: This skill assumes hot path first. If │
+│ you know that the suggested change is only used in │
+│ a cold path and won't be used in a hot path then   │
+│ you are free to ignore any micro-opt suggestions.  │
+│ You know better than the robots. When in doubt,    │
+│ assume hot path.                                   │
+└────────────────────────────────────────────────────┘
+
 # Report: [Target Name]
 
 <!--
