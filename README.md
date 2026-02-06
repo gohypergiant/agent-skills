@@ -234,12 +234,14 @@ Commands are task-specific specifications stored in `commands/`. They define wor
 
 ## Ecosystem
 
+You can search and audit third party skills at [skills.sh](https://skills.sh/)
+
 These third-party skills have been vetted for use alongside the Accelint skills:
 
-- [Context7](https://skills.sh/intellectronica/agent-skills/context7) - Context management
+- [Context7](https://skills.sh/intellectronica/agent-skills/context7) - MCP based context management
 - [Next Cache Components](https://skills.sh/vercel-labs/next-skills/next-cache-components) - Next.js Cache Components Usage and Best Practices
 
-Install ecosystem skills the same way:
+Install ecosystem skills the same way you do Accelint skills:
 
 ```bash
 npx skills add https://github.com/intellectronica/agent-skills --skill context7
@@ -256,10 +258,10 @@ Skills in `.claude/skills/` take precedence over globally installed skills.
 
 ## Documentation
 
-For detailed guides on how skills and commands work:
+For detailed guides on how skills work: 
 
-- [Skills Guide](./documentation/Skills.md) - Comprehensive guide to skill architecture, progressive disclosure, and development workflow
-- [Commands Guide](./documentation/Commands.md) - Full specification for creating Claude Code commands
+- [Agent Skills Spec](https://agentskills.io/home) - Agent Skills Specification and Overview
+- [Accelint Skills Guide](./documentation/Skills.md) - Comprehensive guide to Accelint skill architecture, progressive disclosure, and development workflow
 
 ## Prompt Patterns
 
@@ -419,8 +421,9 @@ Objective:
 
 This repository leverages the following third party agent skills internally:
 
-- https://skills.sh/softaworks/agent-toolkit/humanizer
-- https://skills.sh/trailofbits/skills/ask-questions-if-underspecified
+- [humanizer](https://skills.sh/softaworks/agent-toolkit/humanizer)
+- [ask-questions-if-underspecified](https://skills.sh/trailofbits/skills/ask-questions-if-underspecified)
+- [skill-judge](https://skills.sh/softaworks/agent-toolkit/skill-judge)
 
 ## Contributing
 
