@@ -1,11 +1,11 @@
 ---
 name: accelint-ts-testing
-description: Use when writing, reviewing, or refactoring vitest tests. Load when you see *.test.ts or *.spec.ts files, nested describe blocks, loose assertions (toBeTruthy), over-mocking, slow tests, or async testing needs. Covers AAA pattern, parameterized tests, test doubles hierarchy, mock cleanup, test isolation, and performance optimization. Keywords include vitest, testing, TDD, assertions, mocks, stubs, fakes, spies, beforeEach, describe, it, expect, vi.mock, it.each.
+description: Use when writing, reviewing, or refactoring vitest tests. Load when you see *.test.ts or *.spec.ts files, nested describe blocks, loose assertions (toBeTruthy), over-mocking, slow tests, async testing needs, or property-based testing patterns. Covers AAA pattern, parameterized tests, test doubles hierarchy, mock cleanup, test isolation, performance optimization, and property-based testing with fast-check. Detects encode/decode pairs, validators, normalizers, pure functions, and invariants. Keywords include vitest, testing, TDD, assertions, mocks, stubs, fakes, spies, beforeEach, describe, it, expect, vi.mock, it.each, fast-check, property testing, roundtrip, idempotence, fc.property.
 compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "2.0"
 ---
 
 # Vitest Best Practices
@@ -21,6 +21,7 @@ Comprehensive patterns for writing maintainable, effective vitest tests. Focused
 - **NEVER test implementation details instead of behavior** - Tests that verify "function X was called 3 times" create false failures: you optimize code to call X once via memoization, all tests fail, yet the user experience is identical (and faster). These tests actively punish performance improvements and refactoring. Test what users observe (outputs given inputs), not how your code achieves it internally.
 - **NEVER share mutable state between tests** - Tests that depend on execution order or previous test state create flaky, unreliable suites. Each test must be fully independent with fresh setup.
 - **NEVER use `any` or skip type checking in test files** - When implementation signatures change, tests with `as any` silently pass while calling functions with wrong arguments. You ship broken code that TypeScript could have caught. Tests are executable documentation: `user as any` communicates nothing, but `createTestUser(Partial<User>)` shows exactly what properties matter for this test case.
+- **NEVER write weak properties when stronger ones exist** - Property-based tests that only verify "no exception thrown" or "returns a value" provide minimal coverage. When testing encode/decode pairs, verify roundtrip equality (`decode(encode(x)) === x`), not just that decode succeeds. When testing normalization, verify idempotence (`normalize(normalize(x)) === normalize(x)`), not just that it returns a string. Weak properties give false confidence: they pass but don't actually validate correctness.
 
 ## Before Writing Tests, Ask
 
@@ -56,6 +57,7 @@ Expert guidance on vitest testing patterns:
 8. **Performance** - Fast tests through efficient setup and global config
 9. **Vitest Features** - Coverage, watch mode, setup files, config discovery
 10. **Snapshot Testing** - When snapshots help vs hurt maintainability
+11. **Property-Based Testing** - Using fast-check for stronger coverage with generated inputs
 
 ## How to Use
 
@@ -87,6 +89,9 @@ Use these explicit triggers to know when to load each reference file:
 - **Tests running slow (>100ms per test)** → [performance.md](references/performance.md)
 - **Need coverage, watch mode, or vitest-specific features** → [vitest-features.md](references/vitest-features.md)
 - **Considering or reviewing snapshot tests** → [snapshot-testing.md](references/snapshot-testing.md)
+- **Encode/decode pairs, validators, normalizers, or pure functions** → [property-based-testing.md](references/property-based-testing.md)
+- **Code with invariants, mathematical properties, or data transformations** → [property-based-testing.md](references/property-based-testing.md)
+- **Existing fast-check or property-based tests** → [property-based-testing.md](references/property-based-testing.md)
 
 **Do NOT Load Unless Specifically Needed:**
 - Do NOT load [performance.md](references/performance.md) if tests are fast (<50ms)

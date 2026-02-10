@@ -101,3 +101,7 @@ Use coverage, watch mode, benchmarking, and other vitest-specific features.
 ### 1.10 Snapshot Testing
 Use snapshots for appropriate cases; avoid common pitfalls.
 [View detailed examples](references/snapshot-testing.md)
+
+### 1.11 Property-Based Testing
+Use fast-check for stronger coverage with generated inputs; test encode/decode pairs, validators, normalizers, and invariants.
+[View detailed examples](references/property-based-testing.md)
