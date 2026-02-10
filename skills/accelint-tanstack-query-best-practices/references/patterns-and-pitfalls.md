@@ -270,11 +270,13 @@ function Component() {
 **✅ Correct: transform in select within custom hook**
 ```typescript
 // data-access/items/client.ts
+const selectSorted = (items: Item[]) => items.sort((a, b) => a.timestamp - b.timestamp);
+
 export function useItemsSorted() {
   return useSuspenseQuery({
     queryKey: keys.all(),
     queryFn: fetchItems,
-    select: (items) => items.sort((a, b) => a.timestamp - b.timestamp),
+    select: selectSorted, // Stable reference — won't re-run unless data changes
   });
 }
 
@@ -287,6 +289,82 @@ function Component() {
 **When to Use:** `select` only runs when data exists (no undefined checks with `useSuspenseQuery`) and sits next to query definition.
 
 **Warning:** For datasets >1000 items with frequent updates, `select` causes double structural sharing overhead. See [fundamentals.md#select-option-double-overhead](fundamentals.md#select-option-double-overhead).
+
+### Memoization: Stabilize select Function References
+
+`select` re-executes only when **the function reference changes** or the **underlying data changes**. Inline arrow functions create a new reference on every render, causing `select` to re-run even when data is unchanged — defeating its render-optimization purpose.
+
+**❌ Incorrect: inline select re-runs on every render**
+```typescript
+export function useTodoCount() {
+  // New function reference each render → select re-runs even when todos are unchanged
+  return useTodos({ select: (data) => data.length });
+}
+```
+
+**✅ Correct Option 1: extract to a stable module-level variable (preferred with custom hooks)**
+```typescript
+const selectTodoCount = (data: Todo[]) => data.length;
+
+export function useTodoCount() {
+  return useTodos({ select: selectTodoCount }); // Same reference every render
+}
+```
+
+**✅ Correct Option 2: useCallback when selector depends on runtime values**
+```typescript
+export function useTodosByStatus(status: string) {
+  const selectByStatus = useCallback(
+    (data: Todo[]) => data.filter(t => t.status === status),
+    [status]
+  );
+
+  return useTodos({ select: selectByStatus });
+}
+```
+
+**Rule:** Prefer extraction to a stable module-level variable — it aligns naturally with the custom hook pattern and has zero runtime cost. Use `useCallback` only when the selector closes over runtime values that can change.
+
+### Errors: select Only Runs on Successful Data
+
+`select` is called **exclusively on successfully cached data**. It is never invoked when the query is in an error state. Do not use `select` to throw errors, validate responses, or handle failure cases — the `queryFn` is the authoritative source for errors.
+
+**❌ Incorrect: validation/error logic in select**
+```typescript
+export function useSafeItems() {
+  return useSuspenseQuery({
+    queryKey: keys.all(),
+    queryFn: fetchItems,
+    select: (data) => {
+      if (!data.length) {
+        throw new Error('No items found'); // Never reached on fetch failure
+      }
+      return data;
+    },
+  });
+}
+```
+
+**✅ Correct: errors and validation belong in queryFn**
+```typescript
+const selectSorted = (items: Item[]) => items.sort((a, b) => a.timestamp - b.timestamp);
+
+export function useSafeItems() {
+  return useSuspenseQuery({
+    queryKey: keys.all(),
+    queryFn: async () => {
+      const data = await fetchItems();
+      if (!data.length) {
+        throw new Error('No items found'); // Surfaces to error state
+      }
+      return data;
+    },
+    select: selectSorted, // Pure transformation layer — only runs on success
+  });
+}
+```
+
+**Rule:** `select` is a pure transformation layer for successful results. Put all validation, error detection, and throwing inside `queryFn`.
 
 ## Query Options Per Data Type
 

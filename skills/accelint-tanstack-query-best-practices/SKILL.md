@@ -4,7 +4,7 @@ description: Use when configuring QueryClient, implementing mutations, debugging
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.2"
+  version: "1.3"
 ---
 
 # TanStack Query Best Practices
@@ -155,7 +155,7 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 |---------|----------|---------|
 | **useSuspenseQuery** | Server Components integration, Suspense boundaries | `useSuspenseQuery({ queryKey, queryFn })` |
 | **useQuery with enabled** | Dependent queries, conditional fetching | `useQuery({ queryKey, queryFn, enabled: !!userId })` |
-| **useQuery with select** | Data transformation, subset selection | `useQuery({ queryKey, queryFn, select: (data) => data.slice(0, 10) })` |
+| **useQuery with select** | Data transformation, subset selection | `useQuery({ queryKey, queryFn, select: selectFn })` — extract `selectFn` to a stable module-level variable; inline functions re-run on every render |
 | **useMutation optimistic** | Low-latency UI updates, easily reversible | `useMutation({ onMutate, onError, onSettled })` |
 | **useMutation pessimistic** | High-stakes operations, server validation | `useMutation({ onSuccess })` |
 
@@ -253,5 +253,6 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 - revalidateTag vs updateTag matters: revalidateTag uses stale-while-revalidate, updateTag invalidates immediately
 - Background refetches run even when no components are mounted if gcTime hasn't expired
 - Structural sharing runs twice when using select: once on raw data, once on transformed data
+- `select` only runs on successfully cached data — it is never called in error states; put validation and error throwing in `queryFn`
 - cancelQueries in onMutate is critical - background refetches can overwrite optimistic updates
 - Context returned from onMutate is passed to onError and onSettled for rollback state

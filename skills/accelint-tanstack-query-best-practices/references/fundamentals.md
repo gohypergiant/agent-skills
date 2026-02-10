@@ -95,12 +95,15 @@ When using `select`, structural sharing runs twice:
 For large datasets (>1000 items) with frequent updates, double structural sharing adds overhead. Disable with `structuralSharing: false`.
 
 ```typescript
+// Stable selector — extract outside hook so reference doesn't change on re-render
+const selectSorted = (items: Item[]) => items.sort((a, b) => a.timestamp - b.timestamp);
+
 // Disable structural sharing with select on large data
 export function useItemsSorted() {
   return useSuspenseQuery({
     queryKey: keys.all(),
     queryFn: fetchItems,
-    select: (items) => items.sort((a, b) => a.timestamp - b.timestamp),
+    select: selectSorted,
     refetchInterval: 1000,
     structuralSharing: false, // Skip double overhead
   });
@@ -165,12 +168,14 @@ function TrackItem({ track }) {
 **Solution 2:** Use select to minimize re-renders
 
 ```typescript
+const selectTrackName = (track: Track) => track.name;
+
 // ✅ Observers still exist but select reduces re-render frequency
 export function useTrackName(id: string) {
   return useSuspenseQuery({
     queryKey: keys.detail(id),
     queryFn: () => fetchTrack(id),
-    select: (track) => track.name, // Only re-render when name changes
+    select: selectTrackName, // Stable reference — only re-renders when name changes
   });
 }
 ```
