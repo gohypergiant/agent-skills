@@ -25,31 +25,14 @@ Property-based testing generates hundreds of random test inputs to verify that p
 
 ## Prerequisites
 
-Property-based testing with vitest requires the `fast-check` package.
+Property-based testing requires the `fast-check` package.
 
-**Before writing property-based tests**, verify it's installed:
+**Agent workflow if fast-check is not installed:**
+1. Check package.json devDependencies for fast-check
+2. If missing, ask user: "Property-based testing would provide stronger coverage for [specific pattern]. Install fast-check?"
+3. If approved, detect package manager and install; if declined, write example-based tests instead
 
-```bash
-# Check if fast-check is in package.json devDependencies
-grep -q "fast-check" package.json && echo "✓ fast-check is installed" || echo "⚠ fast-check not found"
-```
-
-If `fast-check` is not installed, you have two options:
-
-1. **Install it** (requires user approval):
-   - Detect the package manager by checking for lock files (`package-lock.json` → npm, `pnpm-lock.yaml` → pnpm, `bun.lockb` → bun)
-   - Use the appropriate command:
-     ```bash
-     npm install --save-dev fast-check    # for npm
-     pnpm add -D fast-check              # for pnpm
-     bun add -d fast-check               # for bun
-     ```
-
-2. **Write example-based tests instead** - Use standard vitest assertions without property-based testing.
-
-**Important:** Do not install packages without explicit user permission. If fast-check is missing, inform the user and ask whether to:
-- Install fast-check and write property-based tests (detect and use their package manager)
-- Write example-based tests with the existing setup
+**Do NOT install packages without explicit user approval.**
 
 ## Property Catalog
 

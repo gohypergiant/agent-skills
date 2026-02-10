@@ -1,6 +1,6 @@
 ---
 name: accelint-ts-testing
-description: Use when writing, reviewing, or refactoring vitest tests. Load when you see *.test.ts or *.spec.ts files, nested describe blocks, loose assertions (toBeTruthy), over-mocking, slow tests, async testing needs, or property-based testing patterns. Covers AAA pattern, parameterized tests, test doubles hierarchy, mock cleanup, test isolation, performance optimization, and property-based testing with fast-check. Detects encode/decode pairs, validators, normalizers, pure functions, and invariants. Keywords include vitest, testing, TDD, assertions, mocks, stubs, fakes, spies, beforeEach, describe, it, expect, vi.mock, it.each, fast-check, property testing, roundtrip, idempotence, fc.property.
+description: Comprehensive vitest testing guidance for TypeScript projects. Use when: (1) Writing new tests with AAA pattern, parameterized tests, or async/await, (2) Reviewing test code for anti-patterns like loose assertions (toBeTruthy), over-mocking, or nested describe blocks, (3) Optimizing slow test suites, (4) Implementing property-based testing with fast-check - especially for encode/decode pairs, roundtrip properties, validators, normalizers, and idempotence checks. Covers test organization, assertions, test doubles hierarchy (fakes/stubs/mocks), async testing, performance patterns, and property-based testing patterns. Trigger keywords: vitest, *.test.ts, describe, it, expect, vi.mock, fast-check, fc.property, roundtrip, idempotence.
 compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
