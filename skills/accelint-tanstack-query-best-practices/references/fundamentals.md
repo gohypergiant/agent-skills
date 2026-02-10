@@ -175,7 +175,7 @@ export function useTrackName(id: string) {
   return useSuspenseQuery({
     queryKey: keys.detail(id),
     queryFn: () => fetchTrack(id),
-    select: selectTrackName, // Stable reference — only re-renders when name changes
+    select: selectTrackName, // Stable reference
   });
 }
 ```
