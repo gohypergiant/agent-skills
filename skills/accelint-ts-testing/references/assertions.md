@@ -27,7 +27,6 @@ it('should return user object', () => {
   expect(user).toBe({ name: 'John' }); // Always fails - different references!
 });
 ```
-*Why?* `toBe` uses `Object.is()` reference equality. For objects/arrays, use `toEqual`.
 
 ## toEqual vs toStrictEqual
 
