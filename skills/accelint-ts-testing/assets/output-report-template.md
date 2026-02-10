@@ -16,17 +16,17 @@
 <!--
 INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
 
-1. Replace [Target Name] with the specific file/module being audited (e.g., "User Authentication", "Data Processing Utils")
+1. Replace [Target Name] with the specific file/module being audited (e.g., "UserService Tests", "cart.test.ts")
 
 2. EXECUTIVE SUMMARY: Provide a high-level overview
    - Summarize what was audited and the scope
    - Count issues by severity and category
-   - Include Impact Assessment explaining the potential risks and maintainability concerns
+   - Include Impact Assessment explaining test reliability risks and maintainability concerns
 
 3. PHASE 1 - ISSUE GROUPING RULES:
    - Group issues when they share the SAME root cause AND same fix pattern
-   - Example: Multiple instances of missing memoization → group together
-   - Example: Different safety violations → separate issues
+   - Example: Multiple instances of loose toBeTruthy() assertions → group together
+   - Example: Different async testing violations → separate issues
    - Use subsections (4-8) for grouped issues, individual numbers (1, 2, 3) for unique issues
 
 4. PHASE 1 - EACH ISSUE/GROUP MUST INCLUDE:
@@ -34,63 +34,63 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
    - Current code with ❌ marker
    - Clear explanation of the issue
    - Severity (Critical, High, Medium, Low)
-   - Category (Derived State, Safety, State Management, Hoisting Static JSX, Code Quality, etc...)
-   - Impact (potential bugs, maintainability concerns, runtime failures)
+   - Category (Test Organization, AAA Pattern, Assertions, Test Doubles, Async Testing, Performance, Snapshot Testing, Code Quality)
+   - Impact (false confidence, test flakiness, maintainability concerns)
    - Pattern Reference (which references/*.md file)
    - Recommended Fix with ✅ marker
 
 5. SEVERITY LEVELS:
-   - Critical: Could cause infinite re-renders, memory leaks, hydration failures, app crashes
-     Examples: missing useCallback in effect dependencies, infinite effect loops, client-only state in SSR
-   - High: Causes frequent unnecessary re-renders, stale closure bugs, or significant performance degradation
-     Examples: inline object/array creation in props, missing memoization on expensive computations, effect dependency issues
-   - Medium: Suboptimal patterns affecting performance or maintainability
-     Examples: large static JSX not hoisted, missing content-visibility on long lists, unnecessary useMemo
-   - Low: Minor optimizations and style preferences
-     Examples: could use lazy initialization, could extract component for clarity
+   - Critical: Tests that actively lie — give false confidence that code is correct when it isn't
+     Examples: loose toBeTruthy() on return values with multiple valid types, shared mutable state causing order-dependent failures, missing global mock cleanup leaking across files
+   - High: Tests that punish safe refactoring or hide real bugs
+     Examples: testing implementation details (spy call counts on internal functions), mocking your own pure functions, using `any` types that let wrong argument types pass silently
+   - Medium: Tests that are hard to maintain or understand
+     Examples: describe nesting >2 levels deep, duplicate test structures that should be parameterized, unclear AAA boundaries, no error case coverage
+   - Low: Minor clarity and style improvements
+     Examples: could use it.each() for small variations, test name could be more descriptive, minor naming issues
 
 6. CATEGORIES:
-   - Re-render Optimization: Unnecessary re-renders, missing memoization, inline object creation
-   - Hooks: useEffect dependencies, stale closures, infinite loops, useCallback/useMemo usage
-   - State Management: Derived state, functional updates, state initialization, ref usage
-   - Performance: Bundle size (static JSX hoisting, SVG optimization), rendering performance (content-visibility)
-   - Hydration: SSR/SSG mismatches, client-only state, synchronization issues
-   - React 19: forwardRef deprecation, named imports, Activity component, useEffectEvent
-   - Code Quality: Component extraction, naming conventions, readability
+   - Test Organization: File placement, describe nesting depth, test naming, co-location with implementation
+   - AAA Pattern: Missing or unclear Arrange/Act/Assert boundaries, multiple concepts per test
+   - Assertions: Loose assertions (toBeTruthy, toBeDefined), wrong assertion for the type, multiple unrelated assertions per test
+   - Test Doubles: Wrong level of hierarchy (using mocks when fakes/stubs suffice), mocking own pure functions, over-mocking
+   - Async Testing: Missing await, incorrect async patterns, timer handling, concurrent test issues
+   - Performance: Tests running >100ms, expensive setup in tests, missing global mock config (clearMocks/resetMocks/restoreMocks)
+   - Snapshot Testing: Overuse of snapshots, unstable snapshots, snapshots masking real assertions
+   - Code Quality: Using `any` in tests, unclear naming, missing type coverage, poor test isolation
 
 7. IMPACT FIELD SHOULD DESCRIBE:
-   - User experience impact (UI jank, input lag, slow page loads)
-   - Re-render frequency and performance degradation
-   - Memory leaks or infinite loops that could crash the app
-   - Hydration mismatches that break SSR/SSG
-   - Bundle size impact on load time
-   - Stale closure bugs that cause incorrect behavior
-   - Maintainability concerns for future developers
+   - False confidence: Does this test pass for values you never intended?
+   - Test reliability: Could this test fail non-deterministically (flakiness, order-dependence)?
+   - Refactor safety: Will this test break when you safely refactor internals without changing behavior?
+   - Test clarity: Can someone understand what this test verifies in 5 seconds?
+   - CI performance: Is this slowing the test suite and feedback loop?
+   - Production safety: What bugs could ship because this test doesn't catch them?
 
 8. PHASE 2: Generate summary table from Phase 1 findings
    - Include all issues with their numbers
    - Keep it concise - one row per issue/group
 
-See assets/audit-report-example.md for a real-world example.
+See references/ for pattern guidance on each category.
 -->
 
 ## Executive Summary
 
-Completed systematic audit of [file/module path] following accelint-react-best-practices standards. Identified [N] performance and correctness issues across [N] severity levels. [Brief description of what this component/feature does and why performance matters].
+Completed systematic audit of [file/module path] following accelint-ts-testing standards. Identified [N] test quality issues across [N] severity levels. [Brief description of what this module does and why reliable tests matter here].
 
 **Key Findings:**
-- [N] Critical issues (infinite re-renders, memory leaks, hydration mismatches)
-- [N] High severity issues (unnecessary re-renders, stale closures, effect dependency problems)
-- [N] Medium severity issues (suboptimal patterns, bundle size concerns)
-- [N] Low severity issues (minor optimizations)
+- [N] Critical issues (false confidence, shared state, mock leakage across test files)
+- [N] High severity issues (implementation testing, over-mocking, type safety gaps)
+- [N] Medium severity issues (hard to maintain, missing parameterization, unclear structure)
+- [N] Low severity issues (minor clarity and naming improvements)
 
 **Impact Assessment:**
-[Explain the overall performance profile and user experience concerns. Consider:]
-- What are the potential runtime failures or performance degradation issues?
-- How do unnecessary re-renders affect user experience (UI jank, input lag)?
-- What hydration mismatches or SSR issues exist?
-- Are there memory leaks in effects or subscriptions?
-- How do these issues affect bundle size, load time, and interactivity?
+[Explain the overall test quality and reliability concerns. Consider:]
+- Are there tests that always pass but don't catch real bugs (false confidence)?
+- Are there flaky tests that fail non-deterministically due to shared state or mock leakage?
+- Do implementation tests block safe refactoring of internals?
+- Are async tests properly awaited to avoid race conditions?
+- Does the test suite run fast enough to support TDD workflows?
 
 ---
 
@@ -100,7 +100,7 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 
 **Location:** `[file:line]` or `[file:line-range]`
 
-```tsx
+```ts
 // ❌ Current: [Brief description of problem]
 [code snippet showing the issue]
 ```
@@ -111,17 +111,17 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 - [Point 3 quantifying the impact if possible]
 
 **Severity:** [Critical|High|Medium|Low]
-**Category:** [Re-render Optimization|Hooks|State Management|Performance|Hydration|React 19|Code Quality]
+**Category:** [Test Organization|AAA Pattern|Assertions|Test Doubles|Async Testing|Performance|Snapshot Testing|Code Quality]
 **Impact:**
-- **User experience:** [UI jank, input lag, slow renders]
-- **Re-renders:** [How often and why unnecessary re-renders occur]
-- **Performance:** [Bundle size, memory, runtime performance impact]
-- **Correctness:** [Stale closures, hydration mismatches, infinite loops]
+- **False confidence:** [Does this test pass for values you never intended?]
+- **Reliability:** [Could this fail non-deterministically or due to test order?]
+- **Refactor safety:** [Will this break when safely refactoring internals?]
+- **Production safety:** [What bugs could ship undetected?]
 
 **Pattern Reference:** [filename.md]
 
 **Recommended Fix:**
-```tsx
+```ts
 // ✅ [Brief description of solution]
 [code snippet showing the fix]
 ```
@@ -132,7 +132,7 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 
 **Location:** `[file:line]` or `[file:line-range]`
 
-```tsx
+```ts
 // ❌ Current: [Brief description of problem]
 [code snippet]
 ```
@@ -141,17 +141,17 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 - [Explanation]
 
 **Severity:** [Critical|High|Medium|Low]
-**Category:** [Re-render Optimization|Hooks|State Management|Performance|Hydration|React 19|Code Quality]
+**Category:** [Test Organization|AAA Pattern|Assertions|Test Doubles|Async Testing|Performance|Snapshot Testing|Code Quality]
 **Impact:**
-- **User experience:** [UI jank, input lag, slow renders]
-- **Re-renders:** [How often and why unnecessary re-renders occur]
-- **Performance:** [Bundle size, memory, runtime performance impact]
-- **Correctness:** [Stale closures, hydration mismatches, infinite loops]
+- **False confidence:** [Does this test pass for values you never intended?]
+- **Reliability:** [Could this fail non-deterministically or due to test order?]
+- **Refactor safety:** [Will this break when safely refactoring internals?]
+- **Production safety:** [What bugs could ship undetected?]
 
 **Pattern Reference:** [filename.md]
 
 **Recommended Fix:**
-```tsx
+```ts
 // ✅ [Brief description of solution]
 [code snippet]
 ```
@@ -168,7 +168,7 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 - `[file:line]` - [function/context]
 
 **Example from [specific location]:**
-```tsx
+```ts
 // ❌ Current: [Brief description of problem]
 [representative code snippet]
 ```
@@ -179,12 +179,12 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 - [Impact across all instances]
 
 **Severity:** [Critical|High|Medium|Low]
-**Category:** [Re-render Optimization|Hooks|State Management|Performance|Hydration|React 19|Code Quality]
+**Category:** [Test Organization|AAA Pattern|Assertions|Test Doubles|Async Testing|Performance|Snapshot Testing|Code Quality]
 **Impact:**
-- **User experience:** [UI jank, input lag, slow renders across all instances]
-- **Re-renders:** [How often and why unnecessary re-renders occur]
-- **Performance:** [Bundle size, memory, runtime performance impact]
-- **Correctness:** [Stale closures, hydration mismatches, infinite loops]
+- **False confidence:** [Does this test pass for values you never intended, across all instances?]
+- **Reliability:** [Could these fail non-deterministically or due to test order?]
+- **Refactor safety:** [Will these break when safely refactoring internals?]
+- **Production safety:** [What bugs could ship undetected?]
 
 **Pattern Reference:** [filename.md]
 
@@ -195,7 +195,7 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 ```
 
 **Same pattern applies to all [N] instances:**
-```tsx
+```ts
 // [Location/function 2]
 // ❌ Current
 [code snippet]

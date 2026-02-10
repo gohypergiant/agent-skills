@@ -92,6 +92,28 @@ Use the provided scripts to audit existing test suites:
 ./scripts/detect-wrapper-queries.sh
 ```
 
+### 5. Use the Report Template
+When this skill is invoked for test code review, use the standardized report format:
+
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
+
+The report format provides:
+- Executive Summary with test quality impact assessment
+- Severity levels (Critical, High, Medium, Low) for prioritization
+- Impact analysis (test reliability, maintainability, performance, clarity)
+- Categorization (Test Organization, Assertions, Test Doubles, Async Testing, Performance)
+- Pattern references linking to detailed guidance in references/
+- Summary table for tracking all issues
+
+**When to use the report template:**
+- Skill invoked directly via `/accelint-react-testing <path>`
+- User asks to "review test code" or "audit tests" across file(s), invoking skill implicitly
+
+**When NOT to use the report template:**
+- User asks to "write a test for this function" (direct implementation)
+- User asks "what's wrong with this test?" (answer the question)
+- User requests specific test fixes (apply fixes directly without formal report)
+
 ## What This Skill Covers
 
 Expert guidance on React Testing Library patterns:

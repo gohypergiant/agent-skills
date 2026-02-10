@@ -4,13 +4,10 @@
 
 import { render, RenderOptions, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ReactElement, ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { MemoryRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { configureStore, PreloadedState } from '@reduxjs/toolkit';
-// import { ThemeProvider } from './ThemeProvider'; // Uncomment if using themes
-// import { rootReducer, RootState } from './store'; // Uncomment if using Redux
+import { ReactElement, ReactNode } from 'react';
+import { getQueryClient } from '~/configs/query-client';
+// import { ThemeProvider } from '~/configs/theme'; // Uncomment if using themes
 
 // Re-export Testing Library utilities for convenience
 export { 
@@ -32,9 +29,6 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   // React Query
   queryClient?: QueryClient;
   
-  // React Router
-  initialEntries?: string[];
-  
   // Theme
   // theme?: Theme;
 }
@@ -53,6 +47,19 @@ interface CustomRenderResult extends RenderResult {
   user: ReturnType<typeof userEvent.setup>;
 }
 
+const defaultQueryClient = getQueryClient({
+  defaultOptions: {
+    queries: { 
+      retry: false, 
+      cacheTime: 0,
+      staleTime: 0
+    },
+    mutations: { 
+      retry: false 
+    },
+  },
+})
+
 /**
  * Custom render function that wraps components with all necessary providers
  * 
@@ -60,8 +67,7 @@ interface CustomRenderResult extends RenderResult {
  * ```tsx
  * test('example', async () => {
  *   const { user, queryClient } = renderWithProviders(<MyComponent />, {
- *     queryClient: new QueryClient(),
- *     initialEntries: ['/dashboard']
+ *     queryClient: new QueryClient(...),
  *   });
  *   
  *   await user.click(screen.getByRole('button'));
@@ -80,25 +86,11 @@ export function renderWithProviders(
     // }),
     
     // React Query setup - disable retries for faster tests
-    queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { 
-          retry: false, 
-          cacheTime: 0,
-          staleTime: 0
-        },
-        mutations: { 
-          retry: false 
-        },
-      },
-    }),
-    
-    // Router setup
-    initialEntries = ['/'],
+    queryClient = defaultQueryClient,
     
     // Theme setup
     // theme = defaultTheme,
-    
+
     ...options
   }: CustomRenderOptions = {}
 ): CustomRenderResult {
@@ -110,13 +102,9 @@ export function renderWithProviders(
   function Wrapper({ children }: { children: ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        {/* <Provider store={store}> */}
-          <MemoryRouter initialEntries={initialEntries}>
-            {/* <ThemeProvider theme={theme}> */}
-              {children}
-            {/* </ThemeProvider> */}
-          </MemoryRouter>
-        {/* </Provider> */}
+        {/* <ThemeProvider theme={theme}> */}
+          {children}
+        {/* </ThemeProvider> */}
       </QueryClientProvider>
     );
   }
