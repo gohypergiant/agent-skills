@@ -213,6 +213,61 @@ Completed systematic audit of [file/module path] following accelint-ts-testing s
 
 ---
 
+## Property-Based Testing Opportunities
+
+<!-- ALWAYS include this section when performing test audits. Check for high-value PBT patterns. -->
+
+### [Function/Pattern] - [PBT Pattern Type]
+
+**Location:** `[file:line]` (implementation under test)
+
+**Current Test Approach:**
+```ts
+// Example-based test
+[current test code snippet]
+```
+
+**Why Property-Based Testing Would Help:**
+- [Reason 1: broader coverage, edge case discovery, etc.]
+- [Reason 2: specific property that example tests can't verify]
+- [Reason 3: quantify improvement - "100 generated inputs vs 3 examples"]
+
+**Pattern Identified:** [Encode/Decode | Normalization | Validator | Pure Function | Sorting | Data Structure | Other]
+
+**Recommended Properties to Test:**
+1. **[Property name]**: `[property formula]`
+   - Verifies: [what this property guarantees]
+2. **[Property name]**: `[property formula]`
+   - Verifies: [what this property guarantees]
+
+**Implementation Sketch:**
+```ts
+// ✅ Property-based test with fast-check
+import fc from 'fast-check'
+
+it('[property description]', () => {
+  fc.assert(
+    fc.property(
+      [arbitrary],
+      (input) => {
+        // Property verification
+        expect([assertion]).toBe([expected])
+      }
+    )
+  )
+})
+```
+
+**Prerequisites:**
+- [ ] fast-check installed? [Yes/No - if No, requires `npm install -D fast-check`]
+
+---
+
+**Summary:**
+Identified [N] high-value opportunities for property-based testing. These patterns would benefit from broader input coverage and stronger guarantees than example-based tests alone provide.
+
+---
+
 ## Phase 2: Categorized Issues
 
 | # | Location | Issue | Category | Severity |

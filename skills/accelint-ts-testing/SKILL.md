@@ -5,7 +5,7 @@ compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.0"
+  version: "2.1"
 ---
 
 # Vitest Best Practices
@@ -78,6 +78,7 @@ Use these explicit triggers to know when to load each reference file:
 **MANDATORY Loading (load entire file):**
 - **Writing async tests with promises/timers** → [async-testing.md](references/async-testing.md)
 - **Working with mocks, stubs, spies, or fakes** → [test-doubles.md](references/test-doubles.md)
+- **Auditing/reviewing existing test files** → [property-based-testing.md](references/property-based-testing.md) (to identify PBT opportunities)
 
 **Load When You See These Patterns:**
 - **Nested describe blocks >2 levels deep** → [organization.md](references/organization.md)
@@ -125,6 +126,12 @@ The report format provides:
 - User asks to "write a test for this function" (direct implementation)
 - User asks "what's wrong with this test?" (answer the question)
 - User requests specific test fixes (apply fixes directly without formal report)
+
+**IMPORTANT: When auditing tests, ALWAYS check for property-based testing opportunities**
+- Load [property-based-testing.md](references/property-based-testing.md) during every audit
+- Follow the "Workflow: Test Code Review/Audit" in [AGENTS.md](AGENTS.md)
+- Check for high-value PBT patterns: encode/decode pairs, normalizers, validators, pure functions, sorting functions
+- Include PBT opportunities in the audit report even if no other issues are found
 
 ## Quick Example
 
