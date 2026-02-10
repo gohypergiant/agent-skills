@@ -5,7 +5,7 @@ compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0"
+  version: "1.1"
 ---
 
 # Vitest Best Practices
@@ -98,6 +98,28 @@ Each reference file contains:
 - ❌ Incorrect examples showing the anti-pattern
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
+
+### 5. Use the Report Template
+When this skill is invoked for test code review, use the standardized report format:
+
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
+
+The report format provides:
+- Executive Summary with test quality impact assessment
+- Severity levels (Critical, High, Medium, Low) for prioritization
+- Impact analysis (test reliability, maintainability, performance, clarity)
+- Categorization (Test Organization, Assertions, Test Doubles, Async Testing, Performance)
+- Pattern references linking to detailed guidance in references/
+- Summary table for tracking all issues
+
+**When to use the report template:**
+- Skill invoked directly via `/accelint-ts-testing <path>`
+- User asks to "review test code" or "audit tests" across file(s), invoking skill implicitly
+
+**When NOT to use the report template:**
+- User asks to "write a test for this function" (direct implementation)
+- User asks "what's wrong with this test?" (answer the question)
+- User requests specific test fixes (apply fixes directly without formal report)
 
 ## Quick Example
 
