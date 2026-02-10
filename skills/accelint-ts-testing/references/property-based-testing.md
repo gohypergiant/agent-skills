@@ -1,6 +1,6 @@
 # Property-Based Testing with fast-check
 
-Property-based testing generates hundreds of random test inputs to verify that properties (invariants) hold for all inputs, providing stronger coverage than example-based tests. Use fast-check with vitest for TypeScript/JavaScript property testing.
+Property-based testing (PBT) generates hundreds of random test inputs to verify that properties (invariants) hold for all inputs, providing stronger coverage than example-based tests. Use fast-check with vitest for TypeScript/JavaScript property testing.
 
 ## When to Use Property-Based Testing
 
