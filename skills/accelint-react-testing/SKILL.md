@@ -98,10 +98,10 @@ When this skill is invoked for test code review, use the standardized report for
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
 The report format provides:
-- Executive Summary with test quality impact assessment
+- Executive Summary with accessibility confidence and user-centric coverage assessment
 - Severity levels (Critical, High, Medium, Low) for prioritization
-- Impact analysis (test reliability, maintainability, performance, clarity)
-- Categorization (Test Organization, Assertions, Test Doubles, Async Testing, Performance)
+- Impact analysis (accessibility confidence, user-centric confidence, test reliability, refactor safety)
+- Categorization (Query Priority, Query Variants, User Events, Async Testing, Custom Render, Accessibility, Anti-patterns)
 - Pattern references linking to detailed guidance in references/
 - Summary table for tracking all issues
 
