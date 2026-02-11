@@ -174,11 +174,13 @@ function joinOutDir(outDir: string, filename: string): string {
   return `${trimmed}${separator}${filename}`;
 }
 
-// Converts a string to a regex literal
-function toRegexLiteral(pattern: string): string {
-  const escaped = pattern.replace(/\//g, "\\/");
-  return `/${escaped}/`;
-}
+// Converts a string to a regex literal, escaping all special regex characters
+  function toRegexLiteral(pattern: string): string {
+    const escaped = pattern
+      .replace(/[\\^$.*+?()[\]{}|]/g, "\\$&")  // Escape all regex metacharacters
+      .replace(/\//g, "\\/");                  // Also escape forward slashes for the literal
+    return `/${escaped}/`;
+  }
 
 // Outputs tags in the correct format for Playwright
 function formatTags(tags: string[]): string {

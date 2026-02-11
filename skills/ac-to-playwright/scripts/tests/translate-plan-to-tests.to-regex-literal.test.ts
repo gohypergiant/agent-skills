@@ -14,8 +14,24 @@ describe("_toRegexLiteral", () => {
     expect(_toRegexLiteral("a/b/c")).toBe("/a\\/b\\/c/");
   });
 
-  it("preserves other characters", () => {
-    expect(_toRegexLiteral("a.b?")).toBe("/a.b?/");
+  it("escapes regex metacharacters", () => {
+    expect(_toRegexLiteral("a.b?")).toBe("/a\\.b\\?/");
+  });
+
+  it("escapes backslashes", () => {
+    expect(_toRegexLiteral("foo\\bar")).toBe("/foo\\\\bar/");
+  });
+
+  it("escapes backslashes before forward slashes", () => {
+    expect(_toRegexLiteral("C:\\path\\to\\file")).toBe("/C:\\\\path\\\\to\\\\file/");
+  });
+
+  it("escapes all special regex characters", () => {
+    expect(_toRegexLiteral("^$.*+?()[]{}|")).toBe("/\\^\\$\\.\\*\\+\\?\\(\\)\\[\\]\\{\\}\\|/");
+  });
+
+  it("escapes combination of metacharacters and slashes", () => {
+    expect(_toRegexLiteral("https://example.com/*")).toBe("/https:\\/\\/example\\.com\\/\\*/");
   });
 
   it("handles empty pattern", () => {
