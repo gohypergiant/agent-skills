@@ -1,16 +1,6 @@
 # 1.6 Test Doubles
 
-Test doubles replace real dependencies in tests. Use them sparingly and prefer real implementations when practical.
-
-## Hierarchy of Test Doubles
-
-Prefer in this order (best to worst):
-
-1. **Real Implementation**: Use the actual code whenever possible
-2. **Fakes**: Lightweight working implementations (e.g., in-memory database)
-3. **Stubs**: Return pre-configured responses without behavior
-4. **Spies**: Record calls while allowing real implementation to run
-5. **Mocks**: Replace behavior AND verify interactions (last resort)
+Prefer real implementation > fakes > stubs > spies > mocks. Each step down adds brittleness.
 
 ## When to Use Test Doubles
 

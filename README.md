@@ -158,6 +158,34 @@ Next.js performance optimization and best practices:
 
 **Activates when:** Writing Server Components/Actions, implementing data fetching in RSC, optimizing API routes, debugging waterfall issues, reviewing Next.js code for performance, fixing authentication in Server Actions, reducing HTML payload size, or deciding between Server/Client Components.
 
+### accelint-tanstack-query-best-practices
+
+TanStack Query best practices for React applications with Next.js App Router:
+
+- QueryClient configuration (server isolation, retry logic, cache defaults)
+- Query key architecture (deterministic factories, hierarchical invalidation)
+- Observer economics (N queries vs N observers, hoisting patterns)
+- Mutation patterns (optimistic vs pessimistic updates, rollback handling)
+- Cache invalidation strategies (invalidateQueries, setQueryData, cancelQueries)
+- Server-client integration (HydrationBoundary, SSR/SSG patterns, multi-layer caching)
+- Performance optimization (structural sharing, observer count management)
+
+**Activates when:** Configuring QueryClient, implementing mutations, debugging performance issues, adding optimistic updates, working with query keys, handling cache invalidation, integrating with Next.js Server Components, debugging hydration issues, or using TanStack Query hooks (useQuery, useSuspenseQuery, useMutation).
+
+### accelint-security-best-practices
+
+Comprehensive security audit and vulnerability detection following OWASP Top 10:
+
+- Secrets management (never hardcode, use environment variables)
+- Input validation and file upload security
+- Injection prevention (SQL, NoSQL, XSS)
+- Authentication and authorization patterns
+- CSRF protection and rate limiting
+- Sensitive data protection and security headers
+- Dependency security and SSRF prevention
+
+**Activates when:** Auditing security, checking for vulnerabilities, implementing authentication, adding API endpoints, handling user input, working with secrets or sensitive data, implementing payment features, or conducting pre-deployment security checks.
+
 ### accelint-skill-manager
 
 A meta-skill for creating and managing other skills:
@@ -218,15 +246,17 @@ Commands are task-specific specifications stored in `commands/`. They define wor
 
 ## Ecosystem
 
+You can search and audit third party skills at [skills.sh](https://skills.sh/)
+
 These third-party skills have been vetted for use alongside the Accelint skills:
 
-- [Motion Skill](https://skills.sh/onmax/nuxt-skills/motion) - Motion animation library patterns
-- [Context7](https://skills.sh/intellectronica/agent-skills/context7) - Context management
-- [Tanstack Query](https://skills.sh/jezweb/claude-skills/tanstack-query) - Data fetching patterns
+- [Context7](https://skills.sh/intellectronica/agent-skills/context7) - MCP based context management
+- [Next Cache Components](https://skills.sh/vercel-labs/next-skills/next-cache-components) - Next.js Cache Components Usage and Best Practices
 
-Install ecosystem skills the same way:
+Install ecosystem skills the same way you do Accelint skills:
+
 ```bash
-npx skills add onmax/nuxt-skills --skill "motion"
+npx skills add https://github.com/intellectronica/agent-skills --skill context7
 ```
 
 ## Testing
@@ -240,14 +270,56 @@ Skills in `.claude/skills/` take precedence over globally installed skills.
 
 ## Documentation
 
-For detailed guides on how skills and commands work:
+For detailed guides on how skills work: 
 
-- [Skills Guide](./documentation/Skills.md) - Comprehensive guide to skill architecture, progressive disclosure, and development workflow
-- [Commands Guide](./documentation/Commands.md) - Full specification for creating Claude Code commands
+- [Agent Skills Spec](https://agentskills.io/home) - Agent Skills Specification and Overview
+- [Accelint Skills Guide](./documentation/Skills.md) - Comprehensive guide to Accelint skill architecture, progressive disclosure, and development workflow
 
 ## Prompt Patterns
 
 Reusable prompt patterns for common development tasks. These patterns work well with the skills and commands in this repository.
+
+### Tips
+
+- Voice dictation (fn x2 on macOS): You speak 3x faster than you type. Your prompts get way more detailed.
+- Plan Mode (Shift+Tab twice): Claude drafts a plan before acting. Use it for anything beyond a one-liner.
+- Subagents: Append "use subagents" to any request where you want Claude to throw more compute at the problem.
+
+### Planning
+
+```
+# Start with a plan
+I want to [your task]. Research the codebase and create a plan. Do NOT write any code yet.
+
+# Get a second opinion on the plan
+Review this plan as a skeptical staff engineer. What's missing? What could go wrong? What would you push back on?
+
+# Surface unknowns before proceeding
+Make the plan extremely concise. At the end, give me a list of unresolved questions to answer before we start.
+
+# Re-plan when stuck
+This approach isn't working. Stop. Let's go back to plan mode. What went wrong and what's a better approach?
+```
+
+### Quality Check
+
+```
+# Demand elegance
+Knowing everything you know now, scrap this and implement the elegant solution.
+
+# Make Agent your reviewer
+Grill me on these changes and don't make a PR until I pass your test.
+
+# Prove it works
+Prove to me this works. Diff the behavior between main and this branch.
+```
+
+### Self Improvement
+
+```
+# After Agent makes a mistake and you correct it
+Update AGENTS.md so you don't make that mistake again.
+```
 
 ### Explain Like I'm 5 (ELI5)
 ```
@@ -286,15 +358,6 @@ Objective:
 
 Requirements:
 Always prioritize readability and maintainability over cleverness.
-
-Output:
-Detailed and concise explanation of improvements.
-
-Format and classify your review as:
-1. 🔴 Critical
-2. 🟠 High
-3. 🟡 Medium
-4. 🟢 Low
 ```
 
 **Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-nextjs-best-practices (depending on code type)
@@ -312,14 +375,6 @@ Objective:
 
 Requirements:
 Show your debugging thought process step by step.
-
-Output:
-Reproducible and testable debugging steps.
-
-Format and classify your review as:
-1. 🔴 Mystery
-2. 🟡 Unsure
-3. 🟢 Confident
 ```
 
 **Invokes:** accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-nextjs-best-practices (depending on code type)
@@ -338,15 +393,6 @@ Requirements:
 3. **I/O Bottlenecks**: Database, network, disk
 4. **Algorithmic Issues**: Inefficient patterns
 5. **Quick Wins**: Easy optimizations
-
-Output:
-A detailed performance analysis with benchmarks.
-
-Format and classify your review as:
-1. 🔴 Critical
-2. 🟠 High
-3. 🟡 Medium
-4. 🟢 Low
 ```
 
 **Invokes:** accelint-ts-best-practices, accelint-ts-performance, accelint-react-best-practices, accelint-nextjs-best-practices
@@ -365,18 +411,9 @@ Requirements:
 3. **Data Protection**: Sensitive data handling
 4. **Injection Vulnerabilities**: SQL, XSS, etc.
 5. **Dependencies**: Known vulnerabilities
-
-Output:
-A detailed security analysis with test instructions.
-
-Format and classify your review as:
-1. 🔴 Critical
-2. 🟠 High
-3. 🟡 Medium
-4. 🟢 Low
 ```
 
-**Invokes:** accelint-ts-best-practices, accelint-ts-performance, accelint-react-best-practices, accelint-nextjs-best-practices
+**Invokes:** accelint-ts-best-practices, accelint-ts-performance, accelint-react-best-practices, accelint-nextjs-best-practices, accelint-security-best-practices
 
 ### Skill Management
 ```
@@ -388,15 +425,6 @@ Objective:
 2. Identify any best practice optimizations that can be made
 3. Optimize towards deterministic output and correctness when auditing
 4. Explain your reasoning clearly with specific examples
-
-Output:
-A complete, production-ready skill following all best practices.
-
-Format and classify your review as:
-1. 🔴 Critical
-2. 🟠 High
-3. 🟡 Medium
-4. 🟢 Low
 ```
 
 **Invokes:** accelint-skill-manager
@@ -426,8 +454,9 @@ Validated JSON plans and Playwright spec files, plus a brief summary of what was
 
 This repository leverages the following third party agent skills internally:
 
-- https://skills.sh/softaworks/agent-toolkit/humanizer
-- https://skills.sh/trailofbits/skills/ask-questions-if-underspecified
+- [humanizer](https://skills.sh/softaworks/agent-toolkit/humanizer)
+- [ask-questions-if-underspecified](https://skills.sh/trailofbits/skills/ask-questions-if-underspecified)
+- [skill-judge](https://skills.sh/softaworks/agent-toolkit/skill-judge)
 
 ## Contributing
 

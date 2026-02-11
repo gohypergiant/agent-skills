@@ -1,10 +1,10 @@
 ---
 name: accelint-ts-best-practices
-description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness. Use when: (1) Writing or reviewing TS/JS code, (2) Fixing type errors or avoiding any/enum/null, (3) Implementing control flow, state management, or error handling, (4) Applying zero-value pattern or immutability, (5) Code review for TypeScript anti-patterns. Covers: naming conventions, function design, return values, bounded iteration, input validation. For performance optimization, use accelint-ts-performance skill. For documentation, use accelint-ts-documentation skill.
+description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness. Use when (1) Writing or reviewing TS/JS code, (2) Fixing type errors or avoiding any/enum/null, (3) Implementing control flow, state management, or error handling, (4) Applying zero-value pattern or immutability, (5) Code review for TypeScript anti-patterns. Covers naming conventions, function design, return values, bounded iteration, input validation. For performance optimization, use accelint-ts-performance skill. For documentation, use accelint-ts-documentation skill.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0"
+  version: "1.1"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -61,4 +61,26 @@ Each reference file contains:
 - ❌ Incorrect examples showing the anti-pattern
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
+
+### 4. Use the Report Template
+When this skill is invoked, use the standardized report format:
+
+**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
+
+The report format provides:
+- Executive Summary with impact assessment
+- Severity levels (Critical, High, Medium, Low) for prioritization
+- Impact analysis (potential bugs, type safety, maintainability, runtime failures)
+- Categorization (Type Safety, Safety, State Management, Return Values, Code Quality)
+- Pattern references linking to detailed guidance in references/
+- Phase 2 summary table for tracking all issues
+
+**When to use the audit template:**
+- Skill invoked directly via `/accelint-ts-best-practices <path>`
+- User asks to "review code quality" or "audit code" across file(s), invoking skill implicitly
+
+**When NOT to use the report template:**
+- User asks to "fix this type error" (direct implementation)
+- User asks "what's wrong with this code?" (answer the question)
+- User requests specific fixes (apply fixes directly without formal report)
 
