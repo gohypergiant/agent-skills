@@ -4,7 +4,7 @@
 # Identifies potentially hoistable static JSX in React components
 # Related to: 2.3 Hoist Static JSX (references/hoist-static-jsx.md)
 
-set -e
+set -Eeuo pipefail
 
 # Colors for output
 RED='\033[0;31m'
