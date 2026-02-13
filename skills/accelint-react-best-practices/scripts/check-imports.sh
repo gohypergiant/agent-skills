@@ -4,7 +4,7 @@
 # Validates that React code uses named imports instead of default or wildcard imports
 # Related to: 4.1 Named Imports (references/named-imports.md)
 
-set -e
+set -Eeuo pipefail
 
 # Colors for output
 RED='\033[0;31m'

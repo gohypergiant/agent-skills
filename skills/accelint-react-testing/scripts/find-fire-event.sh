@@ -2,7 +2,7 @@
 # Detect fireEvent usage that should be userEvent
 # fireEvent should only be used for non-user events (scroll, resize, etc.)
 
-set -e
+set -Eeuo pipefail
 
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
@@ -12,7 +12,7 @@ NC='\033[0m'
 echo "🔍 Detecting fireEvent usage in tests..."
 echo
 
-test_files=$(find . -type f \( -name "*.test.tsx" -o -name "*.test.ts" -o -name "*.spec.tsx" -o -name "*.spec.ts" \) ! -path "*/node_modules/*" ! -path "*/dist/*" ! -path "*/build/*")
+mapfile -t test_files < <(find . -type f \( -name "*.test.tsx" -o -name "*.test.ts" -o -name "*.spec.tsx" -o -name "*.spec.ts" \) ! -path "*/node_modules/*" ! -path "*/dist/*" ! -path "*/build/*" || true)
 
 issues_found=0
 
@@ -47,7 +47,7 @@ acceptable_events=(
   "error"
 )
 
-for file in $test_files; do
+for file in "${test_files[@]}"; do
   for event in "${user_events[@]}"; do
     if grep -n "fireEvent\.$event\|fireEvent\.(['\"]$event" "$file" > /dev/null 2>&1; then
       if [ $issues_found -eq 0 ]; then
@@ -62,14 +62,14 @@ for file in $test_files; do
       echo "    ❌ Use userEvent.$event() instead of fireEvent.$event()"
       echo "    💡 userEvent simulates complete interaction sequences"
       echo
-      ((issues_found++))
+      issues_found=$((issues_found + 1))
     fi
   done
 done
 
 # Report acceptable fireEvent usage
 acceptable_found=0
-for file in $test_files; do
+for file in "${test_files[@]}"; do
   for event in "${acceptable_events[@]}"; do
     if grep -n "fireEvent\.$event" "$file" > /dev/null 2>&1; then
       if [ $acceptable_found -eq 0 ]; then

@@ -4,7 +4,7 @@
 # Finds deprecated forwardRef usage in React code
 # Related to: 4.2 No forwardRef (references/no-forwardref.md)
 
-set -e
+set -Eeuo pipefail
 
 # Colors for output
 RED='\033[0;31m'

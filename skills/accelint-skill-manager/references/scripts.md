@@ -21,6 +21,8 @@ Bash scripts are preferred. When using bash scripts:
 - Include a cleanup trap for temp files
 - Reference the script path as `skills/{skill-name}/scripts/{script}.sh`
 
+After creating any script, audit it with the `bash-defensive-patterns` skill and apply any necessary changes.
+
 ---
 
 Reference: https://agentskills.io/specification#scripts%2F
