@@ -95,10 +95,10 @@ Examples (plans-output-dir = `plans/generated`):
   - Do not invent assertions. If a result is implied but not specified (and it’s not navigation or visibility‑change), ask a question.
 
 ## Resources
-- `references/plan-schema.ts` — schema and validation logic to consult when generating plans.
-- `scripts/validate-plan.ts` — validator script for JSON plans (run via `npx validate-plan` after build).
+- `scripts/plan-schema.ts` — schema and validation logic to consult when generating plans.
+- `scripts/cli/validate-plan.ts` — validator script for JSON plans (run via `npx validate-plan` after build).
 - `scripts/translate-plan-to-tests.ts` — converts a validated plan to a Playwright spec.
-- `scripts/generate-tests.ts` — CLI wrapper for reading, validating, and writing spec files.
+- `scripts/cli/generate-tests.ts` — CLI wrapper for reading, validating, and writing spec files.
 
 ## Validation
 - Use `npx validate-plan path/to/plan.json` to validate a plan against `references/plan-schema.ts` (after build).

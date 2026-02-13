@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import { vi } from "vitest";
-import { _extractSourceDescription, type CliRuntime } from "../generate-tests";
+import { _extractSourceDescription, type CliRuntime } from "../cli/generate-tests";
 
 type FakeDirent = { name: string };
 

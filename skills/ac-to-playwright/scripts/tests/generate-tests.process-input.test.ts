@@ -1,6 +1,6 @@
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { _processInput } from "../generate-tests";
+import { _processInput } from "../cli/generate-tests";
 import { addDir, addFile, makeRuntime } from "./generate-tests.test-utils";
 
 describe("processInput", () => {

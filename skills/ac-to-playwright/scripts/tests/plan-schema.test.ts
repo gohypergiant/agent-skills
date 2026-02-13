@@ -269,7 +269,7 @@ describe("Test-specific tags", () => {
 // Helper functions
 
 function readFixture(fileName: FixtureName): unknown {
-  const fullPath = path.resolve(__dirname, "..", "fixtures", fileName);
+  const fullPath = path.resolve(__dirname, "fixtures", fileName);
   const raw = fs.readFileSync(fullPath, "utf-8");
   return JSON.parse(raw) as unknown;
 }

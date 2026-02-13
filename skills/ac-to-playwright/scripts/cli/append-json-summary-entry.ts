@@ -3,8 +3,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { type TestSuite, testSuiteSchema } from "./plan-schema";
-import { handleCliCommonErrors } from "./utils/cli";
+import { type TestSuite, testSuiteSchema } from "../plan-schema";
+import { handleCliCommonErrors } from "../utils/cli";
 
 type FsSubset = Pick<
   typeof fs,

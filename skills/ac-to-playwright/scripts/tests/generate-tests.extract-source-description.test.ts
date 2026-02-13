@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { _extractSourceDescription } from "../generate-tests";
+import { _extractSourceDescription } from "../cli/generate-tests";
 
 describe("extractSourceDescription", () => {
   it("returns the source description when present", () => {

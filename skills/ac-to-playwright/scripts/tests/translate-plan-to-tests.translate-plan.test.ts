@@ -87,5 +87,5 @@ describe("translatePlan - source annotation", () => {
 // Helper functions
 
 function readFixture(name: string) {
-  return readFileSync(resolve(__dirname, "..", "fixtures", name), "utf8");
+  return readFileSync(resolve(__dirname, "fixtures", name), "utf8");
 }

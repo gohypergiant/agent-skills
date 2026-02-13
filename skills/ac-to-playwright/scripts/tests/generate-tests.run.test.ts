@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type CliRuntime, run } from "../generate-tests";
+import { type CliRuntime, run } from "../cli/generate-tests";
 import { addFile, makeRuntime } from "./generate-tests.test-utils";
 
 const defaultArgs = [

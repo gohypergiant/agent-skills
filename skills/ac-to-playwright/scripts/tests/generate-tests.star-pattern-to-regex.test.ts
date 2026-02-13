@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { _starPatternToRegex } from "../generate-tests"; 
+import { _starPatternToRegex } from "../cli/generate-tests"; 
 
 describe("starPatternToRegex", () => {
   it("matches any string when pattern is '*'", () => {

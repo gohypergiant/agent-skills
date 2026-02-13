@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { _hasHiddenSegment } from "../generate-tests"; 
+import { _hasHiddenSegment } from "../cli/generate-tests"; 
 
 describe("hasHiddenSegment", () => {
   it("returns false for normal paths", () => {

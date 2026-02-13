@@ -1,6 +1,6 @@
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { _expandSegment } from "../generate-tests";
+import { _expandSegment } from "../cli/generate-tests";
 import { addDir, makeRuntime } from "./generate-tests.test-utils";
 
 describe("expandSegment", () => {

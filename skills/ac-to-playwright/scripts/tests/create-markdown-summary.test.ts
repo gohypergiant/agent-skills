@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { CliRuntime as MarkdownRuntime } from "../create-markdown-summary";
-import { _normalizeSummaryFile, _parseArgs, run } from "../create-markdown-summary";
+import type { CliRuntime as MarkdownRuntime } from "../cli/create-markdown-summary";
+import { _normalizeSummaryFile, _parseArgs, run } from "../cli/create-markdown-summary";
 import { makeMarkdownRuntime } from "./summary-scripts.test-utils";
 
 describe("parseArgs", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { _escapeRegex } from "../generate-tests"; 
+import { _escapeRegex } from "../cli/generate-tests"; 
 
 describe("escapeRegex", () => {
   it("returns the same string when there are no regex metacharacters", () => {

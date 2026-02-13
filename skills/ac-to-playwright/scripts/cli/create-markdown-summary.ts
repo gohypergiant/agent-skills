@@ -2,7 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { handleCliCommonErrors } from "./utils/cli";
+import { handleCliCommonErrors } from "../utils/cli";
 
 type FsSubset = Pick<typeof fs, "readFileSync" | "mkdirSync" | "writeFileSync">;
 

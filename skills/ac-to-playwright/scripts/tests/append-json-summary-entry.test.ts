@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { CliRuntime as AppendRuntime } from "../append-json-summary-entry";
+import type { CliRuntime as AppendRuntime } from "../cli/append-json-summary-entry";
 import {
   _extractHooks,
   _normalizeSummaryFile,
   _parseArgs,
   run,
-} from "../append-json-summary-entry";
+} from "../cli/append-json-summary-entry";
 import { makeAppendRuntime } from "./summary-scripts.test-utils";
 
 describe("parseArgs", () => {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
-import { testSuiteSchema } from "./plan-schema";
+import { testSuiteSchema } from "../plan-schema";
 
 export type Runtime = {
   fs: Pick<typeof fs, "readFileSync">;

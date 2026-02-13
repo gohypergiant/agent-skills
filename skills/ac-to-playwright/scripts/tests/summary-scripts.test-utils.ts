@@ -1,7 +1,7 @@
 import * as path from "node:path";
 import { vi } from "vitest";
-import type { CliRuntime as AppendRuntime } from "../append-json-summary-entry";
-import type { CliRuntime as MarkdownRuntime } from "../create-markdown-summary";
+import type { CliRuntime as AppendRuntime } from "../cli/append-json-summary-entry";
+import type { CliRuntime as MarkdownRuntime } from "../cli/create-markdown-summary";
 
 type AppendRuntimeOverrides = Omit<Partial<AppendRuntime>, "fs" | "path"> & {
   fs?: Partial<AppendRuntime["fs"]>;

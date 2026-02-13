@@ -5,10 +5,10 @@
   "description": "Convert acceptance criteria into JSON test plans and Playwright spec files",
   "license": "UNLICENSED",
   "bin": {
-    "generate-tests": "dist/scripts/generate-tests.js",
-    "validate-plan": "dist/scripts/validate-plan.js",
-    "append-json-summary-entry": "dist/scripts/append-json-summary-entry.js",
-    "create-markdown-summary": "dist/scripts/create-markdown-summary.js"
+    "generate-tests": "dist/scripts/cli/generate-tests.js",
+    "validate-plan": "dist/scripts/cli/validate-plan.js",
+    "append-json-summary-entry": "dist/scripts/cli/append-json-summary-entry.js",
+    "create-markdown-summary": "dist/scripts/cli/create-markdown-summary.js"
   },
   "scripts": {
     "build": "tsc",

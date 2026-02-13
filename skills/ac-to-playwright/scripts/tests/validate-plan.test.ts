@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type Runtime, run } from "../validate-plan";
+import { type Runtime, run } from "../cli/validate-plan";
 
 type RuntimeOverrides = {
   readFileSync?: (path: string, encoding: string) => string;

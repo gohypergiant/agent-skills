@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { _parseArgs } from "../generate-tests";
+import { _parseArgs } from "../cli/generate-tests";
 
 const baseArgs = ["plan.json", "--tests-dir", "tests", "--summary-dir", "summaries"];
 
