@@ -1,6 +1,6 @@
 {
   "suiteName": "All Actions Present",
-  "source": { "repo": "metronome", "path": "path/to/file.md" },
+  "source": { "repo": "some-repo", "path": "path/to/file.md" },
   "tests": [
     {
       "name": "Properly validate all actions",

@@ -7,12 +7,12 @@ describe("extractSourceDescription", () => {
       test.describe("Suite", {
         annotation: {
           type: "source",
-          description: "metronome/path/to/file.md"
+          description: "some-repo/path/to/file.md"
         }
       }, () => {});
     `;
 
-    expect(_extractSourceDescription(content)).toBe("metronome/path/to/file.md");
+    expect(_extractSourceDescription(content)).toBe("some-repo/path/to/file.md");
   });
 
   it("returns null when description is missing", () => {

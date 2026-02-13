@@ -119,13 +119,13 @@ describe("run()", () => {
     expect(writtenContent).toContain(`test.describe("My Suite", {`);
     expect(writtenContent).toContain(`annotation: {`);
     expect(writtenContent).toContain(`type: "source",`);
-    expect(writtenContent).toContain(`description: "metronome/path/to/file.md"`);
+    expect(writtenContent).toContain(`description: "some-repo/path/to/file.md"`);
     expect(writtenContent).toContain(`test("Suite name", async ({ page }, testInfo) => {`);
     expect(logs.join("\n")).toContain("Wrote:");
     expect(appendArgs).toContain("--summary-json");
     expect(appendArgs).toContain("summaries/2026-01-28-14-03-52Z-summary.json");
     expect(appendArgs).toContain("--input");
-    expect(appendArgs).toContain("metronome/path/to/file.md");
+    expect(appendArgs).toContain("some-repo/path/to/file.md");
     expect(appendArgs).toContain("--plan");
     expect(appendArgs).toContain("plan.json");
     expect(appendArgs).toContain("--test");
@@ -274,12 +274,12 @@ describe("run()", () => {
     });
   
     const code = runWithDefaults(runtime, [
-      "skills/ac-to-playwright/artifacts/plans/nope*.json",
+      "path/to/plans/nope*.json",
     ]);
   
     expect(code).toBe(1);
     expect(errors.join("\n")).toContain(
-      "Warning: Glob pattern matched no files: skills/ac-to-playwright/artifacts/plans/nope*.json"
+      "Warning: Glob pattern matched no files: path/to/plans/nope*.json"
     );
     expect(errors.join("\n")).toContain("Error: Missing inputs");
   });
@@ -390,7 +390,7 @@ function makeValidPlanJson(overrides?: Partial<{
 }>) {
   return JSON.stringify({
     suiteName: overrides?.suiteName ?? "My Suite",
-    source: { "repo": "metronome", "path": "path/to/file.md" },
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
     tests: [
       {
         name: overrides?.testName ?? "Suite name",

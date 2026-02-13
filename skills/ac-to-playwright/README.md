@@ -8,14 +8,15 @@ This skill converts acceptance criteria into JSON test plans and then Playwright
 - `references/`:
   - [ACCEPTANCE_CRITERIA.md](references/ACCEPTANCE_CRITERIA.md) contains guidance for writing and reading AC
   - [TEST_HOOKS.md](references/TEST_HOOKS.md) contains rules for structuring test hooks
-  - This [schema](references/plan-schema.ts) is used to validate JSON test plans
+  - This [schema](scripts/plan-schema.ts) is used to validate JSON test plans
 - `scripts/` — translators, validators, and CLI entry points.
-- `artifacts/` (for local development/demo only!):
-  - Acceptance criteria files are stored in [artifacts/acceptance/](artifacts/acceptance/).
-  - Test plans are stored in [artifacts/plans/](artifacts/plans/).
-  - Playwright tests are created in [artifacts/tests/](artifacts/tests/).
-  - Summary files are created in [artifacts/summaries/](artifacts/summaries/).
-- `playwright.config.ts` — portable Playwright config for running generated specs.
+- `assets/examples/` (for local development/demo only!):
+  - Acceptance criteria files are stored in [assets/examples/acceptance/](assets/examples/acceptance/).
+  - Test plans are stored in [assets/examples/plans/](assets/examples/plans/).
+  - Playwright tests are created in [assets/examples/tests/](assets/examples/tests/).
+  - Summary files are created in [assets/examples/summaries/](assets/examples/summaries/).
+- `assets/templates/` — template files users can copy as starting points:
+  - [playwright.config.ts](assets/templates/playwright.config.ts) — portable Playwright config for running generated specs.
 
 ## Quick usage
 
@@ -54,7 +55,7 @@ In order to produce test plan files deterministically and without excessive ques
 
 ## Playwright config notes
 
-The skill-local `playwright.config.ts` is a portable template that can be copied over along with the generated tests.
-- `testDir` points at `./artifacts/generated`. Please update this based on where the tests and config land in your repo.
+The skill provides a template at `assets/templates/playwright.config.ts` that can be copied to your project.
+- `testDir` defaults to `./tests`. Please update this based on where the tests and config land in your repo.
 - `baseURL` defaults to `http://localhost:3000` as a placeholder. Please update if necessary.
 - The rest of the config can be reviewed and changed as necessary based on your target repo and environment.

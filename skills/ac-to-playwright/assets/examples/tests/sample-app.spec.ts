@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test.describe("Sample app", {
   annotation: {
     type: "source",
-    description: "metronome/skills/ac-to-playwright/artifacts/acceptance/sample-app.md"
+    description: "agent-skills/skills/ac-to-playwright/assets/examples/acceptance/sample-app.md"
   }
 }, () => {
   test("navigates to settings from home", async ({ page }, testInfo) => {

@@ -4,7 +4,7 @@ test.describe("Golden file test", {
   tag: ["@smoke", "@fast"],
   annotation: {
     type: "source",
-    description: "metronome/skills/ac-to-playwright/artifacts/acceptance/golden-file-test.feature"
+    description: "some-repo/acceptance/golden-file-test.feature"
   }
 }, () => {
   test("happy path", {

@@ -22,7 +22,7 @@ Do not take shortcuts. Do not assume intermediate files exist. Do not reuse exis
 1. Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
 1. Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
 1. Work on the next input file, if any remain.
-1. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/ac-to-playwright/playwright.config.ts` into the user‑specified summaries location.
+1. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
 
 
 ## Inputs
@@ -109,15 +109,15 @@ Examples (plans-output-dir = `plans/generated`):
 If any required field is unclear (target, value, startUrl, expected text, tag handling, source, etc.), ask questions and do not generate JSON until clarified.
 
 ## Example
-Input (`skills/ac-to-playwright/artifacts/acceptance/sample-plan.md`):
+Input (`path/to/sample-plan.md`):
 - From the home page, a user can navigate to the Settings page by clicking the Settings link in the header and should see the page heading text in the header say "Settings".
 
-Output (`<plans-output-dir>/sample-plan.json`):
+Output (`output/to/sample-plan.json`):
 {
   "suiteName": "Sample plan",
   "source": {
-    "repo": "metronome",
-    "path": "skills/ac-to-playwright/artifacts/acceptance/sample-plan.md"
+    "repo": "your-repo",
+    "path": "path/to/sample-plan.md"
   },
   "tests": [
     {

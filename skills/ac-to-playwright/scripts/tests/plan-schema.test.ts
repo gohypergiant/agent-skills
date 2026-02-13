@@ -10,7 +10,7 @@ describe("Plan schema", () => {
   it("accepts a minimal valid suite", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
           name: "Basic test",
@@ -27,7 +27,7 @@ describe("Plan schema", () => {
   it("rejects an empty tests array", () => {
     const input = { 
       suiteName: "Smoke", 
-      source: { "repo": "metronome", "path": "path/to/file.feature" },
+      source: { "repo": "some-repo", "path": "path/to/file.feature" },
       tests: [] 
     };
     const result = testSuiteSchema.safeParse(input);
@@ -47,7 +47,7 @@ describe("Plan schema", () => {
   it("rejects unknown action", () => {
     const input = {
       suiteName: "Smoke",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
           name: "A",
@@ -64,7 +64,7 @@ describe("Plan schema", () => {
   it("rejects extra keys due to strict()", () => {
     const input = {
       suiteName: "Smoke",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
           name: "A",
@@ -121,7 +121,7 @@ describe("Suite-specific tags", () => {
   it("accepts one tag", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tags: ["@smoke"],
       tests: [
         {
@@ -139,7 +139,7 @@ describe("Suite-specific tags", () => {
   it("accepts multiple tags", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tags: ["@smoke", "@wip"],
       tests: [
         {
@@ -157,7 +157,7 @@ describe("Suite-specific tags", () => {
   it("rejects empty tags array", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tags: [],
       tests: [
         {
@@ -175,7 +175,7 @@ describe("Suite-specific tags", () => {
   it("rejects non-string tags", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tags: [123],
       tests: [
         {
@@ -196,7 +196,7 @@ describe("Test-specific tags", () => {
   it("accepts one tag", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
           name: "Basic test",
@@ -214,7 +214,7 @@ describe("Test-specific tags", () => {
   it("accepts multiple tags", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
           name: "Basic test",
@@ -232,7 +232,7 @@ describe("Test-specific tags", () => {
   it("rejects empty tags array", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
           name: "Basic test",
@@ -250,7 +250,7 @@ describe("Test-specific tags", () => {
   it("rejects non-string tags", () => {
     const input = {
       suiteName: "Basic suite",
-      source: { "repo": "metronome", "path": "path/to/file.md" },
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
           name: "Basic test",

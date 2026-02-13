@@ -47,7 +47,7 @@ describe("validate-plan", () => {
   it("errors on schema failure", () => {
     const invalidPlan = JSON.stringify({
       suiteName: "Suite",
-      source: { repo: "metronome", path: "path/to/file.md" },
+      source: { repo: "some-repo", path: "path/to/file.md" },
       tests: [{ name: "t", steps: [] }],
     });
 
@@ -64,7 +64,7 @@ describe("validate-plan", () => {
   it("returns 0 on success", () => {
     const validPlan = JSON.stringify({
       suiteName: "Suite",
-      source: { repo: "metronome", path: "path/to/file.md" },
+      source: { repo: "some-repo", path: "path/to/file.md" },
       tests: [
         {
           name: "t",

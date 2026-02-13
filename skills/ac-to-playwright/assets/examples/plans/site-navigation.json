@@ -1,13 +1,15 @@
 {
-  "suiteName": "Sample app",
+  "suiteName": "Site navigation",
+  "tags": ["@navigation"],
   "source": {
-    "repo": "metronome",
-    "path": "skills/ac-to-playwright/artifacts/acceptance/sample-app.md"
+    "repo": "agent-skills",
+    "path": "skills/ac-to-playwright/assets/examples/acceptance/sample-app.feature"
   },
   "tests": [
     {
-      "name": "navigates to settings from home",
+      "name": "user navigates to the settings page",
       "startUrl": "/",
+      "tags": ["@smoke"],
       "steps": [
         { "action": "click", "target": "header.link.settings" },
         { "action": "expectUrl", "value": "/settings" },
@@ -15,8 +17,9 @@
       ]
     },
     {
-      "name": "navigates to home from settings",
+      "name": "user navigates to the home page",
       "startUrl": "/settings",
+      "tags": ["@regression", "@wip"],
       "steps": [
         { "action": "click", "target": "header.link.home" },
         { "action": "expectUrl", "value": "/" },

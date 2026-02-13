@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { testSuiteSchema } from "../references/plan-schema";
+import { testSuiteSchema } from "./plan-schema";
 import { run as appendSummaryEntry } from "./append-json-summary-entry";
 import { run as createMarkdownSummary } from "./create-markdown-summary";
 import { type PlanFile, translatePlan } from "./translate-plan-to-tests";

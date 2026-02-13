@@ -11,5 +11,5 @@
     "resolveJsonModule": true
   },
   "include": ["scripts", "references"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "assets"]
 }

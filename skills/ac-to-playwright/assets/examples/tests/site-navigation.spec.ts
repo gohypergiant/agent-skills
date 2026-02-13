@@ -4,7 +4,7 @@ test.describe("Site navigation", {
   tag: "@navigation",
   annotation: {
     type: "source",
-    description: "metronome/skills/ac-to-playwright/artifacts/acceptance/sample-app.feature"
+    description: "agent-skills/skills/ac-to-playwright/assets/examples/acceptance/sample-app.feature"
   }
 }, () => {
   test("user navigates to the settings page", {

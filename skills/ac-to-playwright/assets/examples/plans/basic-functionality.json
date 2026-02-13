@@ -2,8 +2,8 @@
   "suiteName": "Basic functionality",
   "tags": ["@smoke"],
   "source": {
-    "repo": "metronome",
-    "path": "skills/ac-to-playwright/artifacts/acceptance/sample-app-functionality.feature"
+    "repo": "agent-skills",
+    "path": "skills/ac-to-playwright/assets/examples/acceptance/sample-app-functionality.feature"
   },
   "tests": [
     {

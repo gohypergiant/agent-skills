@@ -1,6 +1,6 @@
 {
   "suiteName": "Missing Required Fields",
-  "source": { "repo": "metronome", "path": "path/to/file.md" },
+  "source": { "repo": "some-repo", "path": "path/to/file.md" },
   "tests": [
     {
       "name": "Missing click.target",

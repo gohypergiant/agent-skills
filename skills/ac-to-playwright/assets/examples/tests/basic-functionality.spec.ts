@@ -4,7 +4,7 @@ test.describe("Basic functionality", {
   tag: "@smoke",
   annotation: {
     type: "source",
-    description: "metronome/skills/ac-to-playwright/artifacts/acceptance/sample-app-functionality.feature"
+    description: "agent-skills/skills/ac-to-playwright/assets/examples/acceptance/sample-app-functionality.feature"
   }
 }, () => {
   test("user changes circle color from settings", async ({ page }, testInfo) => {

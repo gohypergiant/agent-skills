@@ -200,7 +200,7 @@ describe("run()", () => {
   it("errors when existing summary JSON is invalid", () => {
     const validPlan = JSON.stringify({
       suiteName: "Suite",
-      source: { repo: "metronome", path: "path/to/ac.feature" },
+      source: { repo: "some-repo", path: "path/to/ac.feature" },
       tests: [{ name: "Test A", startUrl: "/", steps: [{ action: "click", target: "a" }] }],
     });
 
@@ -243,7 +243,7 @@ describe("run()", () => {
 
     const validPlan = JSON.stringify({
       suiteName: "Suite",
-      source: { repo: "metronome", path: "path/to/ac.feature" },
+      source: { repo: "some-repo", path: "path/to/ac.feature" },
       tests: [
         {
           name: "Test A",
@@ -327,7 +327,7 @@ describe("run()", () => {
 
     const validPlan = JSON.stringify({
       suiteName: "Suite",
-      source: { repo: "metronome", path: "path/to/ac.feature" },
+      source: { repo: "some-repo", path: "path/to/ac.feature" },
       tests: [
         {
           name: "Test A",

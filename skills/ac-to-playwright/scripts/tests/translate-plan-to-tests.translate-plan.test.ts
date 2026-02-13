@@ -9,8 +9,8 @@ describe("translatePlan (golden file)", () => {
       suiteName: "Golden file test",
       tags: ["@smoke", "@fast"],
       source: {
-        repo: "metronome",
-        path: "skills/ac-to-playwright/artifacts/acceptance/golden-file-test.feature",
+        repo: "some-repo",
+        path: "acceptance/golden-file-test.feature",
       },
       tests: [
         {

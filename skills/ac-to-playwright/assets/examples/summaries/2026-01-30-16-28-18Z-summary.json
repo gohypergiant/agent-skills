@@ -2,10 +2,10 @@
   "runDate": "2026-01-30T16:28:18.640Z",
   "entries": [
     {
-      "input": "metronome/skills/ac-to-playwright/artifacts/acceptance/sample-app-functionality.feature",
+      "input": "agent-skills/skills/ac-to-playwright/assets/examples/acceptance/sample-app-functionality.feature",
       "outputs": {
-        "plan": "skills/ac-to-playwright/artifacts/plans/basic-functionality.json",
-        "test": "skills/ac-to-playwright/artifacts/tests/basic-functionality.spec.ts"
+        "plan": "skills/ac-to-playwright/assets/examples/plans/basic-functionality.json",
+        "test": "skills/ac-to-playwright/assets/examples/tests/basic-functionality.spec.ts"
       },
       "tests": [
         {
@@ -27,10 +27,10 @@
       ]
     },
     {
-      "input": "metronome/skills/ac-to-playwright/artifacts/acceptance/sample-app.feature",
+      "input": "agent-skills/skills/ac-to-playwright/assets/examples/acceptance/sample-app.feature",
       "outputs": {
-        "plan": "skills/ac-to-playwright/artifacts/plans/site-navigation.json",
-        "test": "skills/ac-to-playwright/artifacts/tests/site-navigation.spec.ts"
+        "plan": "skills/ac-to-playwright/assets/examples/plans/site-navigation.json",
+        "test": "skills/ac-to-playwright/assets/examples/tests/site-navigation.spec.ts"
       },
       "tests": [
         {
@@ -50,10 +50,10 @@
       ]
     },
     {
-      "input": "metronome/skills/ac-to-playwright/artifacts/acceptance/sample-app.md",
+      "input": "agent-skills/skills/ac-to-playwright/assets/examples/acceptance/sample-app.md",
       "outputs": {
-        "plan": "skills/ac-to-playwright/artifacts/plans/sample-app.json",
-        "test": "skills/ac-to-playwright/artifacts/tests/sample-app.spec.ts"
+        "plan": "skills/ac-to-playwright/assets/examples/plans/sample-app.json",
+        "test": "skills/ac-to-playwright/assets/examples/tests/sample-app.spec.ts"
       },
       "tests": [
         {
