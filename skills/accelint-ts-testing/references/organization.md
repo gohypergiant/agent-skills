@@ -308,6 +308,58 @@ describe('ShoppingCart', () => {
 ```
 *Why?* Deep nesting makes tests harder to read and adds unnecessary indentation. Put context in the test name instead.
 
+## Test Description Format
+
+Test descriptions must be written in lowercase and complete the sentence "it ...".
+
+**❌ Incorrect: capitalized or non-sentence formats**
+```ts
+describe('ShoppingCart', () => {
+  it('Add item to cart', () => { /* ... */ });
+  it('It should calculate total', () => { /* ... */ });
+  it('Calculate Total', () => { /* ... */ });
+  it('SHOULD_REMOVE_ITEM', () => { /* ... */ });
+  it('addToCart test', () => { /* ... */ });
+});
+```
+
+**✅ Correct: lowercase sentence format**
+```ts
+describe('ShoppingCart', () => {
+  it('should add item to cart', () => { /* ... */ });
+  it('should calculate total price', () => { /* ... */ });
+  it('should remove item when quantity reaches zero', () => { /* ... */ });
+  it('should apply discount to premium members', () => { /* ... */ });
+});
+```
+*Why?* The test description completes the sentence "it ..." — reading as "it should add item to cart", "it should calculate total price". This creates natural, readable test output and maintains consistency across test suites. When tests fail, the output reads like English: "ShoppingCart › should add item to cart ✗".
+
+**Pattern: it('should [action] [context]')**
+- Start with "should" to describe expected behavior
+- Use lowercase for the entire description
+- Be specific about what is being tested
+- Include relevant context when needed
+
+**Examples of good test descriptions:**
+```ts
+it('should return empty array when no results found')
+it('should throw error for invalid email format')
+it('should update user profile with new data')
+it('should calculate discount for premium members')
+it('should preserve order when sorting by date')
+it('should retry failed requests up to 3 times')
+```
+
+**Special case: Property-based tests**
+```ts
+// Property-based tests use 'property:' prefix
+it('property: decode(encode(x)) === x for all valid inputs', () => {
+  fc.assert(fc.property(fc.string(), (input) => {
+    expect(decode(encode(input))).toEqual(input);
+  }));
+});
+```
+
 ## Setup and Teardown
 
 Use `beforeEach` and `afterEach` for common setup, but keep tests independent.
