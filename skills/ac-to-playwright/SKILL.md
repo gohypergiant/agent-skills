@@ -1,18 +1,34 @@
 ---
 name: ac-to-playwright
-description: Convert acceptance criteria files into JSON test plans that conform to references/plan-schema.ts, and then convert those JSON test plans into Playwright spec files. Use when asked to turn AC files into tests. Always follow references/ACCEPTANCE_CRITERIA.md for writing rules and mapping details. Follow references/TEST_HOOKS.md for target naming.
+description: Convert acceptance criteria to Playwright test specs. Use when user asks to: (1) turn AC into tests, (2) generate tests from acceptance criteria, (3) convert .md bullets or .feature Gherkin files to Playwright specs, (4) create test automation from requirements. Handles both bullet-style markdown and Gherkin syntax with JSON test plan generation and validation.
 ---
 
 # AC To Playwright
 
-## Overview
-Convert acceptance criteria into JSON test plans that match the schema and project conventions. Always consult `references/ACCEPTANCE_CRITERIA.md`; it is the authoritative source for AC writing rules and mappings. 
+**MANDATORY - READ ENTIRE FILE**: Before processing ANY acceptance criteria, you MUST read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) (~175 lines) completely from start to finish. **NEVER set any range limits when reading this file.** It is the authoritative source for AC writing rules and mappings.
 
-Do not take shortcuts. Do not assume intermediate files exist. Do not reuse existing plans or tests; always regenerate. When triggered, always run the full workflow.
+**Note on test-hooks.md**: Load `references/test-hooks.md` when converting AC → JSON plans — it contains the controlled vocabulary for area/component/intent target naming patterns. **Do NOT load** when converting plans → tests (translation script handles this automatically).
+
+## Recognition Patterns
+Before processing AC, identify these quality signals:
+
+**Good AC** (can process directly):
+| Check | Question | If NO → Action |
+|-------|----------|----------------|
+| **Targets** | Does every action specify area.component.intent? | Ask user to clarify which specific element |
+| **Values** | Are all fill/select values quoted literals? | Ask user for exact values to use |
+| **Outcomes** | Are expectations measurable (specific text/element/state)? | Ask user what exactly to verify |
+
+**Bad patterns** (ask the user questions):
+- "interact with" (and other similar language) → too vague, agent can't map to Playwright action
+- Dropdown: "select the first option" → fails, needs exact text
+- Always quote exact literals: `'test@example.com'` not "a valid email"
+
+The above table directs you to ask for clarifications because guessing creates tests that fail unpredictably.
 
 ## Workflow
-1. Read `references/ACCEPTANCE_CRITERIA.md`.
-1. Work one input file at a time.
+1. Read `references/acceptance-criteria.md`.
+1. Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
 1. Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
 1. Build a JSON test plan that conforms to `references/plan-schema.ts`.
 1. Validate the test plan and report results.
@@ -25,43 +41,27 @@ Do not take shortcuts. Do not assume intermediate files exist. Do not reuse exis
 1. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
 
 
-## Inputs
-- One AC file becomes one suite within one resulting plan file.
-- (Bullet-style AC) If the input is a `*.md` file, then each `- ` bullet in the file is one test. 
-- (Gherkin-style AC) If the input is a `*.feature` file, then each Scenario is one test, and each non-header row of an Examples section used within the Scenario Outline immediately preceding it is one test.
+## Naming Transformations
 
-## Suite naming
-- `.feature`: `Feature: ` text, lowercase then capitalize first character.
-- `.md`: filename, lowercase, dashes to spaces, capitalize first character.
+**Input to output mapping**: One AC file → one suite → one plan file (`<plans-dir>/<suite-slug>.json`) → one test file
+- `.md` bullet-style: each `- ` bullet = one test
+- `.feature` Gherkin: each Scenario = one test; each Examples row in Scenario Outline = one test
 
-Examples: 
-- `sAmplE-APP.md` -> `Sample app`.
-- `Feature: Site navigation` -> `Site navigation`
+| Input | Suite Name | Test Name | Output Slug |
+|-------|------------|-----------|-------------|
+| `.feature` | `Feature:` text → lowercase → capitalize first | Scenario text (lowercase, ~64 char limit) + ` (params)` for Scenario Outlines | suite name → lowercase, spaces to dashes |
+| `.md` | filename → lowercase → dashes to spaces → capitalize first | Summarize bullet intent (present tense, lowercase, ~64 char) | suite name → lowercase, spaces to dashes |
 
-## Output file 
-- Output location: `<plans-output-dir>/<suite-name-slug>.json` (must be explicitly provided by the user)
-- Slug: test suite's name, lowercase, spaces to dashes.
+**Scenario Outline parameters**: Use shortest left-to-right column combo that uniquely identifies each row, joined with `/`.
 
-Examples (plans-output-dir = `plans/generated`):
-- `Sample app` -> `plans/generated/sample-app.json`
-- `Site navigation` -> `plans/generated/site-navigation.json`
-
-## Test naming
-`.feature` files: 
-- Start from `Scenario:`/`Scenario Outline:` text; shorten only if too long (~64 char soft limit); lowercase.
-- For `Scenario Outline:` tests, append ` (parameters)` where `parameters` is the shortest left‑to‑right combination of Example columns that uniquely identifies each row, joined with `/`.
-
-  Example:
-  ```
-  Examples:
-    | username | password | message       |
-    | user1    | pass1    | Welcome user1 |
-    | user2    | pass2    | Welcome user2 |
-  ```
-  Appends ` (user1/pass1)` and ` (user2/pass2)` respectively.
-
-`.md` files: 
-- Summarize intent in present indicative; lowercase; ~64 char soft limit. Do not quote the full bullet unless it is already short and in present indicative.
+Example:
+```
+Examples:
+  | username | password | message       |
+  | user1    | pass1    | Welcome user1 |
+  | user2    | pass2    | Welcome user2 |
+```
+Appends ` (user1/pass1)` and ` (user2/pass2)` respectively.
 
 ## Tags (Gherkin only)
 - Feature-level tags -> suite tags.
@@ -82,17 +82,16 @@ Examples (plans-output-dir = `plans/generated`):
 - Top-level field order: suiteName, tags (if any), source, tests.
 
 ### Test-level fields
-- Start URL: default '/', otherwise infer from explicit starting page per `references/ACCEPTANCE_CRITERIA.md`.
-  - Examples:
-    - "settings page" -> `/settings`
-    - "new order page" -> `/new-order`
-    - "home page" -> `/`
-- Steps: use only schema actions (but do not use `goto`) and preserve the order implied by bullet text or explicitly used in the Gherkin steps.
+- Start URL: always default to '/' unless the user provides an explicit starting page in a given AC per `references/acceptance-criteria.md`.
+- Steps: use only schema actions (but do not use `goto`) and preserve the order in the bullet text or in the Gherkin steps.
 - Assertions: 
-  - If navigation is stated or implied, add `expectUrl` using the Start URL mapping.
+  - If navigation is triggered, add `expectUrl` using the Start URL mapping.
   - For visibility changes (e.g., visible/appears/shows/hides and similar wording), add `expectNotVisible` immediately before the action and `expectVisible` immediately after (or vice versa as appropriate).
   - Only add `expectText` / `expectVisible` / `expectNotVisible` when the AC explicitly names text or visibility.
-  - Do not invent assertions. If a result is implied but not specified (and it’s not navigation or visibility‑change), ask a question.
+  - Do not invent assertions. NEVER infer unstated information.  Required fields that MUST be explicit (not inferred):
+    - target: Must include area + component + intent
+    - value: Must be quoted literal for fills 
+    - expected outcomes: Must include verifiable element/text
 
 ## Resources
 - `scripts/plan-schema.ts` — schema and validation logic to consult when generating plans.
@@ -100,34 +99,42 @@ Examples (plans-output-dir = `plans/generated`):
 - `scripts/translate-plan-to-tests.ts` — converts a validated plan to a Playwright spec.
 - `scripts/cli/generate-tests.ts` — CLI wrapper for reading, validating, and writing spec files.
 
-## Validation
-- Use `npx validate-plan path/to/plan.json` to validate a plan against `references/plan-schema.ts` (after build).
-- If validation fails, make one correction pass and re-validate.
-- If it still fails, do not write a file; report the error.
+## Validation and Retry Protocol
+Use `npx validate-plan path/to/plan.json` to validate a plan against `references/plan-schema.ts` (after build).
 
-## Ambiguity Policy
-If any required field is unclear (target, value, startUrl, expected text, tag handling, source, etc.), ask questions and do not generate JSON until clarified.
+**Maximum attempts**: 2 total (initial + 1 correction)
 
-## Example
-Input (`path/to/sample-plan.md`):
-- From the home page, a user can navigate to the Settings page by clicking the Settings link in the header and should see the page heading text in the header say "Settings".
+1. **Attempt 1**: Generate JSON → validate
+  - Pass → proceed to write file
+  - Fail → go to Attempt 2
 
-Output (`output/to/sample-plan.json`):
-{
-  "suiteName": "Sample plan",
-  "source": {
-    "repo": "your-repo",
-    "path": "path/to/sample-plan.md"
-  },
-  "tests": [
-    {
-      "name": "navigates to settings from home",
-      "startUrl": "/",
-      "steps": [
-        { "action": "click", "target": "nav.link.settings" },
-        { "action": "expectUrl", "value": "/settings" },
-        { "action": "expectText", "target": "header.text.page-heading", "value": "Settings" }
-      ]
-    }
-  ]
-}
+2. **Attempt 2**: Read validation error → fix ONE specific issue → re-validate
+  - Pass → proceed to write file
+  - Fail → STOP, report error to user
+
+**NEVER**:
+- Make multiple changes at once (fix one thing, validate, repeat)
+- Retry by rephrasing same JSON differently
+- Guess at schema requirements if error is unclear
+
+## Error Recovery
+
+| Error Type | Diagnostic Question | Common Causes | Fix Strategy |
+|------------|---------------------|---------------|--------------|
+| **Schema validation fails** | What field does error message name? | Wrong field order, missing required field, extra field not in schema, incorrect field type | Check schema for exact field names and order; compare your JSON structure to schema requirements |
+| **Target naming invalid** | Does target match `area.component.intent`? | Wrong pattern structure, invalid keywords from controlled lists, missing dots | Review `test-hooks.md` for controlled vocabulary (area: nav/header/footer/etc, component: button/link/input/etc); use fallback keywords (last in each list) if AC term doesn't match |
+| **Translation script errors** | Which action/assertion caused failure? | Unsupported action type, malformed target selector, missing required field in step | Verify action is in allowed list (click/fill/select); check target has all three parts; ensure step has target and any required fields (e.g., fill needs value) |
+| **Validation passes but tests fail** | Do test hooks match actual page elements? | Target selectors don't match DOM, wrong start URL, timing issues | Ask user to verify page structure matches expected targets; check if startUrl needs adjustment; consider if dynamic content needs wait conditions |
+| **Multiple validation failures after fixes** | Did first fix break something else? | Making multiple speculative changes, misunderstanding schema requirements | Stop after 2 attempts; report specific schema violations to user; ask if AC has ambiguities or if schema has changed |
+
+## NEVER Do
+
+- **NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.
+- **NEVER invent assertions** — only add `expectText`, `expectVisible`, `expectNotVisible` when AC explicitly states expected outcomes (exception: `expectUrl` for navigation, visibility pairs for show/hide actions)
+- **NEVER store absolute file paths in source metadata** — the expected convention is to use repo-relative paths for git repos, basename only for external files
+- **NEVER assume targets or values** — if AC says "click the button" without identifying which button, ask for clarification rather than guessing. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
+- **NEVER skip validation** — even if JSON looks correct, always run `npx validate-plan` before writing files to catch errors and reduce incorrect artifact cleanup
+- **NEVER reuse existing plans or tests** — this has caused problems in the past with changes being lost, so always regenerate all steps from AC source to ensure accuracy
+- **NEVER write a plan file without validating first** — validation catches structural errors; writing invalid plans creates broken artifacts requiring manual cleanup
+- **NEVER process multiple steps of one file in parallel** — complete the full pipeline (AC → plan → test → summary) for each file before moving to the next to avoid partial artifacts and state confusion
+- **NEVER take shortcuts.** - agents have gone off the rails when trying to define their own shortcuts, so when triggered you must always run the full workflow.

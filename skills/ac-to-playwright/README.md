@@ -6,8 +6,8 @@ This skill converts acceptance criteria into JSON test plans and then Playwright
 
 - `SKILL.md` — skill instructions.
 - `references/`:
-  - [ACCEPTANCE_CRITERIA.md](references/ACCEPTANCE_CRITERIA.md) contains guidance for writing and reading AC
-  - [TEST_HOOKS.md](references/TEST_HOOKS.md) contains rules for structuring test hooks
+  - [acceptance-criteria.md](references/acceptance-criteria.md) contains guidance for writing and reading AC
+  - [test-hooks.md](references/test-hooks.md) contains rules for structuring test hooks
   - This [schema](scripts/plan-schema.ts) is used to validate JSON test plans
 - `scripts/` — translators, validators, and CLI entry points.
 - `assets/examples/` (for local development/demo only!):
@@ -51,7 +51,7 @@ And the following assertions:
 
 Acceptance criteria can be provided either in Gherkin (`.feature` files) or bullets (`.md` files). Gherkin provides more functionality as well as better clarity to the agent and is the recommended option.
 
-In order to produce test plan files deterministically and without excessive questions, some care when drafting AC is essential. Please see the full guidelines (and examples) for both bullet-format and Gherkin-format AC at [ACCEPTANCE_CRITERIA.md](references/ACCEPTANCE_CRITERIA.md).
+In order to produce test plan files deterministically and without excessive questions, some care when drafting AC is essential. Please see the full guidelines (and examples) for both bullet-format and Gherkin-format AC at [acceptance-criteria.md](references/acceptance-criteria.md).
 
 ## Playwright config notes
 
