@@ -1,7 +1,7 @@
 #!/bin/bash
 # Find potential waterfall chains (sequential awaits)
 
-set -e
+set -Eeuo pipefail
 
 DIR="${1:-.}"
 
@@ -9,11 +9,11 @@ echo "🔍 Finding potential waterfall chains..."
 echo
 
 # Find files with multiple awaits in sequence
-FILES=$(find "$DIR" -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) 2>/dev/null)
+mapfile -t FILES < <(find "$DIR" -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) 2>/dev/null || true)
 
 HAS_ISSUES=0
 
-for file in $FILES; do
+for file in "${FILES[@]}"; do
   # Look for multiple awaits within 5 lines of each other
   if grep -Pzo '(?s)await[^\n]*\n([^\n]*\n){0,5}await' "$file" > /dev/null 2>&1; then
     echo "⚠️  $file"

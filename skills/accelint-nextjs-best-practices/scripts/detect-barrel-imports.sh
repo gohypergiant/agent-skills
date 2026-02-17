@@ -1,7 +1,7 @@
 #!/bin/bash
 # Detect barrel file imports from large libraries
 
-set -e
+set -Eeuo pipefail
 
 DIR="${1:-.}"
 

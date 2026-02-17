@@ -1,7 +1,7 @@
 #!/bin/bash
 # Check for Server Actions without authentication checks
 
-set -e
+set -Eeuo pipefail
 
 DIR="${1:-.}"
 
@@ -9,16 +9,16 @@ echo "🔍 Checking for Server Actions without authentication..."
 echo
 
 # Find all files with 'use server'
-FILES=$(grep -r -l "'use server'\|\"use server\"" "$DIR" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" 2>/dev/null || true)
+mapfile -t FILES < <(grep -r -l "'use server'\|\"use server\"" "$DIR" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.jsx" 2>/dev/null || true)
 
-if [ -z "$FILES" ]; then
+if [[ ${#FILES[@]} -eq 0 ]]; then
   echo "✅ No Server Actions found"
   exit 0
 fi
 
 HAS_ISSUES=0
 
-for file in $FILES; do
+for file in "${FILES[@]}"; do
   # Extract Server Action functions
   while IFS= read -r line; do
     # Check if function has auth check keywords
