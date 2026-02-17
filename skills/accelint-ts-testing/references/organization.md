@@ -120,6 +120,146 @@ it('should update user email', () => {
   // ...
 });
 ```
+## Test Only the Public API Surface
+
+Never export internal functions, private helpers, or implementation details just to make them testable.
+
+**❌ Incorrect: exporting internal functions for testing**
+```ts
+// user-service.ts
+export class UserService {
+  createUser(data: UserData): User {
+    const validated = this.validateUserData(data);
+    const normalized = this.normalizeEmail(validated.email);
+    return { ...validated, email: normalized };
+  }
+
+  // ❌ Exported only for testing!
+  export function validateUserData(data: UserData): UserData { /* ... */ }
+
+  // ❌ Exported only for testing!
+  export function normalizeEmail(email: string): string { /* ... */ }
+}
+
+// user-service.test.ts
+describe('UserService', () => {
+  // ❌ Testing implementation details
+  it('should validate user data', () => {
+    const result = validateUserData({ email: 'TEST@EXAMPLE.COM' });
+    expect(result).toBeDefined();
+  });
+
+  // ❌ Testing implementation details
+  it('should normalize email', () => {
+    expect(normalizeEmail('TEST@EXAMPLE.COM')).toBe('test@example.com');
+  });
+});
+```
+*Why?* This creates several problems: (1) Pollutes the module's public API with implementation details, (2) Makes refactoring harder because "private" functions are now part of the public contract, (3) Tests become coupled to implementation, breaking when you refactor even if behavior is unchanged.
+
+**✅ Correct: test through public API**
+```ts
+// user-service.ts
+export class UserService {
+  createUser(data: UserData): User {
+    const validated = this.validateUserData(data);
+    const normalized = this.normalizeEmail(validated.email);
+    return { ...validated, email: normalized };
+  }
+
+  // Private - not exported
+  private validateUserData(data: UserData): UserData { /* ... */ }
+
+  // Private - not exported
+  private normalizeEmail(email: string): string { /* ... */ }
+}
+
+// user-service.test.ts
+describe('UserService', () => {
+  describe('createUser', () => {
+    // ✅ Test validation through public API
+    it('should reject invalid email addresses', () => {
+      const service = new UserService();
+      expect(() => service.createUser({ email: 'not-an-email' }))
+        .toThrow('Invalid email');
+    });
+
+    // ✅ Test normalization through public API
+    it('should normalize email to lowercase', () => {
+      const service = new UserService();
+      const user = service.createUser({
+        name: 'Test User',
+        email: 'TEST@EXAMPLE.COM'
+      });
+      expect(user.email).toBe('test@example.com');
+    });
+
+    // ✅ Test multiple validation rules through public API
+    it('should accept valid user data', () => {
+      const service = new UserService();
+      const user = service.createUser({
+        name: 'John Doe',
+        email: 'john@example.com',
+        age: 30,
+      });
+      expect(user.name).toBe('John Doe');
+      expect(user.email).toBe('john@example.com');
+    });
+  });
+});
+```
+*Why?* Private functions are tested indirectly through the public API that uses them. This makes tests resilient to refactoring - you can change how validation or normalization works internally without breaking tests, as long as the behavior stays the same.
+
+**✅ Alternative: extract complex logic into separate module**
+```ts
+// email-validator.ts (new module with its own public API)
+export function isValidEmail(email: string): boolean { /* ... */ }
+export function normalizeEmail(email: string): string { /* ... */ }
+
+// email-validator.test.ts
+describe('Email Validator', () => {
+  describe('isValidEmail', () => {
+    it('should accept valid emails', () => {
+      expect(isValidEmail('test@example.com')).toBe(true);
+    });
+
+    it('should reject invalid emails', () => {
+      expect(isValidEmail('not-an-email')).toBe(false);
+    });
+  });
+
+  describe('normalizeEmail', () => {
+    it('should convert to lowercase', () => {
+      expect(normalizeEmail('TEST@EXAMPLE.COM')).toBe('test@example.com');
+    });
+  });
+});
+
+// user-service.ts (uses the new module)
+import { isValidEmail, normalizeEmail } from './email-validator';
+
+export class UserService {
+  createUser(data: UserData): User {
+    if (!isValidEmail(data.email)) {
+      throw new Error('Invalid email');
+    }
+    return { ...data, email: normalizeEmail(data.email) };
+  }
+}
+
+// user-service.test.ts (tests high-level behavior)
+describe('UserService', () => {
+  it('should create user with normalized email', () => {
+    const service = new UserService();
+    const user = service.createUser({
+      name: 'Test',
+      email: 'TEST@EXAMPLE.COM',
+    });
+    expect(user.email).toBe('test@example.com');
+  });
+});
+```
+*Why?* If internal logic is complex enough to deserve dedicated unit tests, it's complex enough to be its own module. This gives it a real public API, makes it reusable, and allows both focused unit tests (email-validator.test.ts) and integration tests (user-service.test.ts).
 
 ## Describe Block Organization
 
