@@ -1,7 +1,7 @@
 ---
 description: Evaluate Figma designs from operator persona perspectives. Use when reviewing UX for specific user roles (e.g., air-surveillance-tech, weapons-director). Analyzes cognitive load, communication patterns, pain points, and system visibility. Works with Figma MCP (desktop/URL) and Outline docs.
 keywords: figma, persona, review, ux, operator, design critique, user experience, evaluation
-version: 1.1
+version: 1.2
 invocations:
   - keyword: persona-review
     type: user-invocable
@@ -39,6 +39,10 @@ Then load the specific persona requested by the user:
 Read references/personas/{persona-id}.md
 ```
 
+**Do NOT load multiple persona files** - only load the one requested by the user.
+
+**Do NOT load evaluation-examples.md yet** - wait until Step 4.
+
 If the persona doesn't exist, list available options from the index and ask the user to choose.
 
 ### 2. Gather Design Context
@@ -48,6 +52,9 @@ Use appropriate Figma MCP tool to fetch the design (e.g., `mcp__figma-desktop__g
 
 **No URL (default):**
 Use Figma MCP desktop to get current file/selection. If nothing selected, prompt user to select a frame or component.
+
+**Figma MCP unavailable:**
+Ask user to provide a screenshot of the design. Analyze the screenshot using visual inspection, but note that without full design context (component properties, layout constraints, interaction states), the review will be limited to visual elements only.
 
 ### 3. Search Supporting Documentation
 
@@ -64,6 +71,9 @@ Search for documents covering:
 - Training materials or user guides
 
 Prioritize documents mentioning the persona's role, responsibilities, or systems they interact with.
+
+**Outline MCP unavailable:**
+Proceed with the review based solely on the persona profile and design context. Note in your review that supporting documentation wasn't available, and recommend areas where organizational standards should be consulted.
 
 ### 4. Analyze & Critique
 
@@ -163,6 +173,14 @@ The critical elements are:
 **Consider the full context**: Review their entire profile - insights often emerge from connections between sections. A pain point in one area may relate to systems they monitor or communication channels they use.
 
 **Connect across profile sections**: The most valuable insights synthesize multiple parts of the persona profile (e.g., a pain point + systems they see + actions they take = integrated solution opportunity).
+
+## NEVER Do When Reviewing
+
+- **NEVER give generic UX advice** like "make it more intuitive" or "improve the user experience" - these could apply to any interface. Ground every observation in the persona's specific profile.
+- **NEVER suggest simplifications that remove necessary complexity** - these operators are domain experts. Complexity that serves their documented responsibilities is valuable.
+- **NEVER ignore operational context** - a minor UI inconsistency that breaks muscle memory matters more than major visual polish issues for high-tempo operators.
+- **NEVER treat all personas as the same** - an E4 AST review should differ from an O4 MCC review for the same interface.
+- **NEVER skip loading the persona profile** - generic reviews without persona context miss the entire value of this skill.
 
 ## References
 
