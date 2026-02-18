@@ -435,7 +435,7 @@ export default defineConfig({
   test: {
     // ← Check for these first
     clearMocks: true,      // Mock cleanup configured globally?
-    resetMocks: true,      // Mock reset configured?
+    mockReset: true,       // Mock reset configured?
     restoreMocks: true,    // Mock restore configured?
 
     // Then check for setup files
@@ -446,7 +446,7 @@ export default defineConfig({
 ```
 
 **If mock cleanup is NOT configured:**
-Recommend adding `clearMocks: true`, `resetMocks: true`, `restoreMocks: true` to eliminate the entire class of mock cleanup errors.
+Recommend adding `clearMocks: true`, `mockReset: true`, `restoreMocks: true` to eliminate the entire class of mock cleanup errors.
 
 **✅ Correct: Common setup file locations to check**
 ```bash
@@ -513,7 +513,7 @@ export default defineConfig({
   test: {
     // Mock cleanup - configure once for all tests
     clearMocks: true,      // Clear call history
-    resetMocks: true,      // Reset implementation
+    mockReset: true,       // Reset implementation
     restoreMocks: true,    // Restore original implementation
 
     // Setup files for non-mock initialization

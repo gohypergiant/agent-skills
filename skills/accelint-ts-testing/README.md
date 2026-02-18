@@ -24,7 +24,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     clearMocks: true // Clear call history before each test     
-    resetMocks: true // Reset implementation before each test     
+    mockReset: true // Reset implementation before each test     
     restoreMocks: true // Restore original implementation before each test   
     coverage: {
       provider: 'v8',

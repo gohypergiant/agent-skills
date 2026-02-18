@@ -327,7 +327,7 @@ Always clean up to prevent memory leaks and test pollution. Use **global configu
 export default defineConfig({
   test: {
     clearMocks: true,      // Clear call history before each test
-    resetMocks: true,      // Reset implementation before each test
+    mockReset: true,       // Reset implementation before each test
     restoreMocks: true,    // Restore original implementation before each test
   },
 });
@@ -379,7 +379,7 @@ If global config exists, this is redundant. If it doesn't exist, one forgotten f
 export default defineConfig({
   test: {
     clearMocks: true,
-    resetMocks: true,
+    mockReset: true,
     restoreMocks: true,
   },
 });

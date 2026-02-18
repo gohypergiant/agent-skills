@@ -29,7 +29,7 @@ Verify mock cleanup is configured globally:
 ```ts
 // Look for these settings:
 clearMocks: true      // Mock cleanup configured?
-resetMocks: true      // Mock reset configured?
+mockReset: true       // Mock reset configured?
 restoreMocks: true    // Mock restore configured?
 ```
 
