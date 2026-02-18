@@ -5,22 +5,19 @@ A collection of skills and commands that transform AI agents into specialized pr
 To have a greater guarantee of a skill being utilized, we recommend appending the following to any prompt you use:
 
 ```markdown
-Before relying on your training data you MUST evaluate and apply ALL APPLICABLE SKILLS to your problem space. 
-IF AND ONLY IF you do not find a skill that applies are you allowed to fall back to your training data. 
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+Before relying on your training data you MUST evaluate and apply ALL APPLICABLE SKILLS to your problem space. IF AND ONLY IF you do not find a skill that applies are you allowed to fall back to your training data. This is not negotiable. This is not optional. You cannot rationalize your way out of this.
 ```
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Skill Development Workflow](#skill-development-workflow)
 - [What are Agent Skills?](#what-are-agent-skills)
 - [Why Agent Skills?](#why-agent-skills)
 - [Available Skills](#available-skills)
-- [Available Commands](#available-commands)
 - [Ecosystem](#ecosystem)
 - [Testing](#testing)
-- [Documentation](#documentation)
 - [Prompt Patterns](#prompt-patterns)
 - [Contributing](#contributing)
 - [License](#license)
@@ -42,8 +39,9 @@ pnpm dlx skills add gohypergiant/agent-skills
 ## Quick Start
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
-```
-# Agents will use accelint-ts-best-practices when you ask:
+
+```bash
+# Agents will use accelint-ts-security when you ask:
 "Add input validation to this function"
 
 # Agents will use accelint-react-best-practices when you ask:
@@ -51,14 +49,43 @@ Once installed, skills activate automatically when relevant tasks are detected. 
 
 # Agents will use accelint-ts-testing when you ask:
 "Write tests for this utility function"
+
+# Skills can be explicitly requested in prompt:
+"Use the accelint-react-testing skill to write tests for this interactive modal"
+
+# Skills can be invoked directly with slash command:
+claude /accelint-react-best-practices <dir>
 ```
+
 For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
-Commands can be invoked directly:
-```bash
-# Generate implementation plans for a feature
-claude /feature-planning:implementation ./requirements.md
+## Skill Development Workflow
+
+To scaffold and establish a new skill you can invoke the `accelint-skill-manager` skill like so:
+
 ```
+/accelint-skill-manager <description of skill>. Can you help me refine and complete it?
+```
+
+After creating or significantly modifying a skill, run this 4-step audit loop before considering the work done.
+
+### Step 1 — Initial skill-judge audit
+
+Run the `skill-judge` skill against the completed skill. Apply all suggested improvements before proceeding.
+
+### Step 2 — accelint-skill-manager audit
+
+Run `/clear` to reset context, then run the `accelint-skill-manager` skill against the skill. Apply all structural and content suggestions before proceeding.
+
+### Step 3 — Final skill-judge audit
+
+Run `/clear`, then run `skill-judge` again. Apply remaining suggestions. Target **grade A or higher (>=108/120)**.
+
+### Step 4 — Frontmatter verification checklist
+
+- [ ] `name` is lowercase, no uppercase letters, no consecutive hyphens, ≤64 chars, matches directory name
+- [ ] `description` answers WHAT + WHEN + KEYWORDS, is non-empty, ≤1024 chars
+- [ ] `metadata.version` is bumped (major for substantial changes, minor for small fixes)
 
 ## What are Agent Skills?
 
@@ -220,18 +247,6 @@ README documentation generator and updater:
 
 **Activates when:** Creating or updating README.md files, documenting packages, or auditing documentation completeness.
 
-## Available Commands
-
-Commands are task-specific specifications stored in `commands/`. They define workflows that Claude executes autonomously.
-
-### Feature Planning Commands
-
-| Command | Description |
-|---------|-------------|
-| `/feature-planning:acceptance` | Define acceptance criteria for a feature. |
-| `/feature-planning:implementation` | Research codebase patterns and create implementation tasks. |
-| `/feature-planning:testing` | Generate test plans based on implementation. |
-
 ## Ecosystem
 
 You can search and audit third party skills at [skills.sh](https://skills.sh/)
@@ -255,13 +270,6 @@ To test a skill locally before publishing:
 2. Or install globally to `~/.claude/skills/` for cross-project testing
 
 Skills in `.claude/skills/` take precedence over globally installed skills.
-
-## Documentation
-
-For detailed guides on how skills work: 
-
-- [Agent Skills Spec](https://agentskills.io/home) - Agent Skills Specification and Overview
-- [Accelint Skills Guide](./documentation/Skills.md) - Comprehensive guide to Accelint skill architecture, progressive disclosure, and development workflow
 
 ## Prompt Patterns
 
@@ -413,9 +421,10 @@ Objective:
 2. Identify any best practice optimizations that can be made
 3. Optimize towards deterministic output and correctness when auditing
 4. Explain your reasoning clearly with specific examples
+5. Re-run this loop but with the skill-judge skill instead
 ```
 
-**Invokes:** accelint-skill-manager
+**Invokes:** accelint-skill-manager, skill-judge
 
 ## Internal Skills
 
@@ -424,6 +433,7 @@ This repository leverages the following third party agent skills internally:
 - [humanizer](https://skills.sh/softaworks/agent-toolkit/humanizer)
 - [ask-questions-if-underspecified](https://skills.sh/trailofbits/skills/ask-questions-if-underspecified)
 - [skill-judge](https://skills.sh/softaworks/agent-toolkit/skill-judge)
+- [bash-defensive-patterns](https://skills.sh/wshobson/agents/bash-defensive-patterns)
 
 ## Contributing
 
