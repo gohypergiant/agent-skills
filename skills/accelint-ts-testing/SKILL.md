@@ -14,7 +14,7 @@ Comprehensive patterns for writing maintainable, effective vitest tests. Focused
 
 ## NEVER Do When Writing Vitest Tests
 
-- **NEVER skip global mock cleanup configuration** - Manual cleanup appears safe but creates "action at a distance" failures: a mock in test file A leaks into test file B running 3 files later, causing non-deterministic failures that only appear when tests run in specific orders. These Heisenbugs waste hours in CI debugging. Configure `clearMocks: true`, `resetMocks: true`, `restoreMocks: true` in `vitest.config.ts` once to eliminate this entire class of order-dependent failure.
+- **NEVER skip global mock cleanup configuration** - Manual cleanup appears safe but creates "action at a distance" failures: a mock in test file A leaks into test file B running 3 files later, causing non-deterministic failures that only appear when tests run in specific orders. These Heisenbugs waste hours in CI debugging. Configure `clearMocks: true`, `mockReset: true`, `restoreMocks: true` in `vitest.config.ts` once to eliminate this entire class of order-dependent failure.
 - **NEVER nest describe blocks more than 2 levels deep** - Deep nesting creates cognitive overhead and excessive indentation. Put context in test names instead: `it('should add item to empty cart')` vs `describe('when cart is empty', () => describe('addItem', ...))`.
 - **NEVER write test descriptions that don't read as sentences** - Test descriptions must complete the sentence "it ..." in lowercase. Write `it('should add item to cart')` not `it('Add item to cart')` or `it('It should add item to cart')`. The description reads as a sentence when prefixed with "it": "it should add item to cart". Capitalized starts, non-sentence formats like `it('addToCart test')`, or redundant "It should" break readability and test output consistency. Example-based tests use `it('should...')` while property-based tests use `it('property: ...')` format.
 - **NEVER export internal functions just to test them** - Tests should verify behavior through the public API, not reach into implementation details. Exporting private helpers, internal utilities, or implementation functions solely to enable testing is a code smell that indicates either: (1) the public API is insufficient for testing the behavior, or (2) the tests are verifying implementation details instead of behavior. If internal logic is complex enough to warrant dedicated testing, extract it into a separate module with its own public API and test file. Private functions get tested indirectly through the public functions that call them.
@@ -70,7 +70,7 @@ Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line su
 
 ### 2. Check for Existing Test Configuration
 Before writing tests:
-- First check `vitest.config.ts` for global mock cleanup settings (`clearMocks`, `resetMocks`, `restoreMocks`)
+- First check `vitest.config.ts` for global mock cleanup settings (`clearMocks`, `mockReset`, `restoreMocks`)
 - Then search for setup files (`test/setup.ts`, `vitest.setup.ts`, etc.) and analyze their configuration
 - See the workflow in [AGENTS.md](AGENTS.md#workflow-before-writing-tests)
 

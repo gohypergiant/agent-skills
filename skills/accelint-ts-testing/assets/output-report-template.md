@@ -55,7 +55,7 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
    - Assertions: Loose assertions (toBeTruthy, toBeDefined), wrong assertion for the type, multiple unrelated assertions per test
    - Test Doubles: Wrong level of hierarchy (using mocks when fakes/stubs suffice), mocking own pure functions, over-mocking
    - Async Testing: Missing await, incorrect async patterns, timer handling, concurrent test issues
-   - Performance: Tests running >100ms, expensive setup in tests, missing global mock config (clearMocks/resetMocks/restoreMocks)
+   - Performance: Tests running >100ms, expensive setup in tests, missing global mock config (clearMocks/mockReset/restoreMocks)
    - Snapshot Testing: Overuse of snapshots, unstable snapshots, snapshots masking real assertions
    - Code Quality: Using `any` in tests, unclear naming, missing type coverage, poor test isolation
 
