@@ -5,9 +5,7 @@ A collection of skills and commands that transform AI agents into specialized pr
 To have a greater guarantee of a skill being utilized, we recommend appending the following to any prompt you use:
 
 ```markdown
-Before relying on your training data you MUST evaluate and apply ALL APPLICABLE SKILLS to your problem space. 
-IF AND ONLY IF you do not find a skill that applies are you allowed to fall back to your training data. 
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+Before relying on your training data you MUST evaluate and apply ALL APPLICABLE SKILLS to your problem space. IF AND ONLY IF you do not find a skill that applies are you allowed to fall back to your training data. This is not negotiable. This is not optional. You cannot rationalize your way out of this.
 ```
 
 ## Table of Contents
@@ -42,8 +40,9 @@ pnpm dlx skills add gohypergiant/agent-skills
 ## Quick Start
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
-```
-# Agents will use accelint-ts-best-practices when you ask:
+
+```bash
+# Agents will use accelint-ts-security when you ask:
 "Add input validation to this function"
 
 # Agents will use accelint-react-best-practices when you ask:
@@ -51,14 +50,15 @@ Once installed, skills activate automatically when relevant tasks are detected. 
 
 # Agents will use accelint-ts-testing when you ask:
 "Write tests for this utility function"
-```
-For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
-Commands can be invoked directly:
-```bash
-# Generate implementation plans for a feature
-claude /feature-planning:implementation ./requirements.md
+# Skills can be explicitly requested in prompt:
+"Use the accelint-react-testing skill to write tests for this interactive modal"
+
+# Skills can be invoked directly with slash command:
+claude /accelint-react-best-practices <dir>
 ```
+
+For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
 ## What are Agent Skills?
 
@@ -220,18 +220,6 @@ README documentation generator and updater:
 
 **Activates when:** Creating or updating README.md files, documenting packages, or auditing documentation completeness.
 
-## Available Commands
-
-Commands are task-specific specifications stored in `commands/`. They define workflows that Claude executes autonomously.
-
-### Feature Planning Commands
-
-| Command | Description |
-|---------|-------------|
-| `/feature-planning:acceptance` | Define acceptance criteria for a feature. |
-| `/feature-planning:implementation` | Research codebase patterns and create implementation tasks. |
-| `/feature-planning:testing` | Generate test plans based on implementation. |
-
 ## Ecosystem
 
 You can search and audit third party skills at [skills.sh](https://skills.sh/)
@@ -255,13 +243,6 @@ To test a skill locally before publishing:
 2. Or install globally to `~/.claude/skills/` for cross-project testing
 
 Skills in `.claude/skills/` take precedence over globally installed skills.
-
-## Documentation
-
-For detailed guides on how skills work: 
-
-- [Agent Skills Spec](https://agentskills.io/home) - Agent Skills Specification and Overview
-- [Accelint Skills Guide](./documentation/Skills.md) - Comprehensive guide to Accelint skill architecture, progressive disclosure, and development workflow
 
 ## Prompt Patterns
 
@@ -413,9 +394,10 @@ Objective:
 2. Identify any best practice optimizations that can be made
 3. Optimize towards deterministic output and correctness when auditing
 4. Explain your reasoning clearly with specific examples
+5. Re-run this loop but with the skill-judge skill instead
 ```
 
-**Invokes:** accelint-skill-manager
+**Invokes:** accelint-skill-manager, skill-judge
 
 ## Internal Skills
 
@@ -424,6 +406,7 @@ This repository leverages the following third party agent skills internally:
 - [humanizer](https://skills.sh/softaworks/agent-toolkit/humanizer)
 - [ask-questions-if-underspecified](https://skills.sh/trailofbits/skills/ask-questions-if-underspecified)
 - [skill-judge](https://skills.sh/softaworks/agent-toolkit/skill-judge)
+- [bash-defensive-patterns](https://skills.sh/wshobson/agents/bash-defensive-patterns)
 
 ## Contributing
 
