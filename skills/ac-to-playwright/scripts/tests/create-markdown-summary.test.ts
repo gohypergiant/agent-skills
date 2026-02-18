@@ -145,6 +145,7 @@ describe("run()", () => {
   });
 
   it("renders markdown summary from JSON", () => {
+    // Arrange
     const summaryPath = "summary.json";
     const markdownPath = "summary.md";
 
@@ -184,6 +185,7 @@ describe("run()", () => {
       },
     });
 
+    // Act
     const code = run(
       [
         "node",
@@ -196,6 +198,7 @@ describe("run()", () => {
       runtime
     );
 
+    // Assert
     expect(code).toBe(0);
     expect(writtenMarkdown).toContain("# Post-creation summary");
     expect(writtenMarkdown).toContain("- Run date: 2026-01-28T14:03:52Z");

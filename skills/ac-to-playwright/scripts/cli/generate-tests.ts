@@ -7,21 +7,42 @@ import fs from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { testSuiteSchema } from "../plan-schema";
-import { run as appendSummaryEntry } from "./append-json-summary-entry";
-import { run as createMarkdownSummary } from "./create-markdown-summary";
 import { type PlanFile, translatePlan } from "../translate-plan-to-tests";
 import { handleCliCommonErrors } from "../utils/cli";
+import { run as appendSummaryEntry } from "./append-json-summary-entry";
+import { run as createMarkdownSummary } from "./create-markdown-summary";
 
 // Types
-type FsSubset = Pick<
-  typeof fs,
-  "existsSync" | "statSync" | "readdirSync" | "readFileSync" | "mkdirSync" | "writeFileSync"
->;
+// Explicit types matching actual usage patterns (instead of Pick<typeof fs, ...>)
+// This allows TypeScript to properly type-check mocks without overload ambiguity
+type FsSubset = {
+  existsSync: (path: fs.PathLike) => boolean;
+  statSync: (path: fs.PathLike) => fs.Stats;
+  // readdirSync has complex overloads - using loose typing here
+  readdirSync: (path: fs.PathLike, options?: any) => any;
+  readFileSync: (
+    path: fs.PathOrFileDescriptor,
+    encoding: BufferEncoding,
+  ) => string;
+  mkdirSync: (
+    path: fs.PathLike,
+    options?: fs.MakeDirectoryOptions,
+  ) => string | undefined;
+  writeFileSync: (
+    path: fs.PathOrFileDescriptor,
+    data: string | NodeJS.ArrayBufferView,
+    options?: fs.WriteFileOptions,
+  ) => void;
+};
 
-type PathSubset = Pick<
-  typeof path,
-  "resolve" | "dirname" | "basename" | "join" | "isAbsolute" | "parse"
->;
+type PathSubset = {
+  resolve: (...paths: string[]) => string;
+  dirname: (path: string) => string;
+  basename: (path: string, suffix?: string) => string;
+  join: (...paths: string[]) => string;
+  isAbsolute: (path: string) => boolean;
+  parse: (path: string) => path.ParsedPath;
+};
 
 export type CliRuntime = {
   fs: FsSubset;
@@ -51,7 +72,10 @@ if (require.main === module) {
   process.exit(code);
 }
 
-export function run(argv: string[], runtime: CliRuntime = defaultRuntime): number {
+export function run(
+  argv: string[],
+  runtime: CliRuntime = defaultRuntime,
+): number {
   // Parse args
   const parsed = parseArgs(argv.slice(2));
   const commonErrors = handleCliCommonErrors({
@@ -68,21 +92,21 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
 
   const summaryJsonPath = runtime.path.join(
     parsed.summaryDir,
-    formatSummaryFilename(runtime.now())
+    formatSummaryFilename(runtime.now()),
   );
 
   // Reads inputs
   const inputs = parsed.inputs;
 
   const files: string[] = [];
-  
+
   for (const input of inputs) {
     let matches: string[] = [];
 
     try {
       matches = processInput(input, runtime);
     } catch (e) {
-      runtime.error(e instanceof Error? e.message : String(e));
+      runtime.error(e instanceof Error ? e.message : String(e));
       return 1;
     }
 
@@ -95,7 +119,9 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
 
   // Errors if no inputs were given or resolved from globs
   if (files.length === 0) {
-    runtime.error("Error: Missing inputs. Please submit input file(s) separated by spaces.");
+    runtime.error(
+      "Error: Missing inputs. Please submit input file(s) separated by spaces.",
+    );
     printUsage(runtime.error);
     return 1;
   }
@@ -105,17 +131,17 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
     original,
     resolved: runtime.path.resolve(original),
   }));
-  
+
   // Deduplicate by resolved path (preserve first original)
   const seen = new Set<string>();
   const uniquePairs: typeof inputPairs = [];
-  
+
   for (const pair of inputPairs) {
     if (!seen.has(pair.resolved)) {
       seen.add(pair.resolved);
       uniquePairs.push(pair);
     }
-  }  
+  }
 
   // Errors if dotfiles or dotdirs are passed in as inputs
   const hidden = uniquePairs.filter((p) => hasHiddenSegment(p.original));
@@ -155,16 +181,20 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
     const planFile = parsedPlan as PlanFile;
     const testFile = translatePlan(planFile, { outDir: parsed.testsDir });
 
-    runtime.fs.mkdirSync(runtime.path.dirname(testFile.path), { recursive: true });
+    runtime.fs.mkdirSync(runtime.path.dirname(testFile.path), {
+      recursive: true,
+    });
     runtime.fs.writeFileSync(testFile.path, testFile.content, "utf8");
     runtime.log(`-> Read:        ${original}`);
     runtime.log(`   Wrote:       ${testFile.path}`);
     runtime.log(`   To run, do:  npx playwright test ${testFile.path}`);
 
-    const sourceFromAnnotation = runtime.extractSourceDescription(testFile.content);
+    const sourceFromAnnotation = runtime.extractSourceDescription(
+      testFile.content,
+    );
     if (!sourceFromAnnotation) {
       runtime.error(
-        "Error: Unable to read source annotation from generated test file."
+        "Error: Unable to read source annotation from generated test file.",
       );
       return 1;
     }
@@ -278,7 +308,7 @@ function parseArgs(args: string[]): ParsedArgs {
 function printUsage(log: (...args: unknown[]) => void): void {
   log("Usage:");
   log(
-    "  npx generate-tests <plan.json> [more plans...] --tests-dir <path> --summary-dir <path>"
+    "  npx generate-tests <plan.json> [more plans...] --tests-dir <path> --summary-dir <path>",
   );
 }
 
@@ -305,7 +335,7 @@ function starPatternToRegex(pattern: string): RegExp {
 // This ensures parallel functionality for Windows and Linux non-bash users
 function processInput(input: string, runtime: CliRuntime): string[] {
   const { fs, path } = runtime;
-  
+
   // It's a literal path
   if (!input.includes("*")) return [input];
 
@@ -320,8 +350,8 @@ function processInput(input: string, runtime: CliRuntime): string[] {
   const normalizedRoot = root.replace(/\\/g, "/");
 
   const relativePart = isAbs
-  ? normalizedInput.slice(normalizedRoot.length)
-  : normalizedInput;
+    ? normalizedInput.slice(normalizedRoot.length)
+    : normalizedInput;
 
   // Expand wildcards
   const segments = relativePart.split("/").filter(Boolean);
@@ -363,7 +393,7 @@ function extractSourceDescription(testContent: string): string | null {
 function expandSegment(
   basePaths: string[],
   segment: string,
-  runtime: CliRuntime
+  runtime: CliRuntime,
 ): string[] {
   const { fs, path } = runtime;
 

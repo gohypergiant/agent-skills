@@ -77,6 +77,7 @@ describe("run()", () => {
   });  
 
   it("returns 0 and writes a generated test file for a valid plan", () => {
+    // Arrange
     const validPlan = makeValidPlanJson();
   
     let mkdirCalledWith = "";
@@ -91,6 +92,7 @@ describe("run()", () => {
         readFileSync: (() => validPlan) as unknown as CliRuntime["fs"]["readFileSync"],
         mkdirSync: (p) => {
           mkdirCalledWith = String(p);
+          return undefined;
         },
         writeFileSync: (p, data) => {
           writtenPath = String(p);
@@ -106,9 +108,11 @@ describe("run()", () => {
         return 0;
       },
     });
-  
+
+    // Act
     const code = runWithDefaults(runtime, ["plan.json"]);
-  
+
+    // Assert
     expect(code).toBe(0);
     expect(errors.length).toBe(0);
   
@@ -143,7 +147,7 @@ describe("run()", () => {
       fs: {
         existsSync: () => true,
         readFileSync: (() => validPlan) as unknown as CliRuntime["fs"]["readFileSync"],
-        mkdirSync: () => {},
+        mkdirSync: () => undefined,
         writeFileSync: () => {},
       },
       appendSummaryEntry: () => 1,
@@ -162,7 +166,7 @@ describe("run()", () => {
       fs: {
         existsSync: () => true,
         readFileSync: (() => validPlan) as unknown as CliRuntime["fs"]["readFileSync"],
-        mkdirSync: () => {},
+        mkdirSync: () => undefined,
         writeFileSync: () => {},
       },
       appendSummaryEntry: () => 0,
@@ -182,7 +186,7 @@ describe("run()", () => {
       fs: {
         existsSync: () => true,
         readFileSync: (() => validPlan) as unknown as CliRuntime["fs"]["readFileSync"],
-        mkdirSync: () => {},
+        mkdirSync: () => undefined,
         writeFileSync: () => {},
       },
       appendSummaryEntry: () => 0,
@@ -208,7 +212,7 @@ describe("run()", () => {
           readCount += 1;
           return validPlan;
         }) as unknown as CliRuntime["fs"]["readFileSync"],
-        mkdirSync: () => {},
+        mkdirSync: () => undefined,
         writeFileSync: () => {
           writeCount += 1;
         },
@@ -242,8 +246,8 @@ describe("run()", () => {
         readFileSync: ((p: Parameters<CliRuntime["fs"]["readFileSync"]>[0]) => {
           const name = runtime.path.basename(String(p));
           return fileContents[name];
-        }) as unknown as CliRuntime["fs"]["readFileSync"],           
-        mkdirSync: () => {},
+        }) as unknown as CliRuntime["fs"]["readFileSync"],
+        mkdirSync: () => undefined,
         writeFileSync: (p) => {
           writtenPaths.push(String(p));
         },
@@ -383,11 +387,13 @@ describe("run()", () => {
 
 // Helper functions
 
-function makeValidPlanJson(overrides?: Partial<{
-  suiteName: string;
-  testName: string;
-  startUrl: string;
-}>) {
+function makeValidPlanJson(
+  overrides?: Partial<{
+    suiteName: string;
+    testName: string;
+    startUrl: string;
+  }>,
+) {
   return JSON.stringify({
     suiteName: overrides?.suiteName ?? "My Suite",
     source: { "repo": "some-repo", "path": "path/to/file.md" },

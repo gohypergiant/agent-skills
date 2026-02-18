@@ -3,8 +3,15 @@
 import fs from "node:fs";
 import { testSuiteSchema } from "../plan-schema";
 
+// Explicit types matching actual usage patterns (instead of Pick<typeof fs, ...>)
+// This allows TypeScript to properly type-check mocks without overload ambiguity
 export type Runtime = {
-  fs: Pick<typeof fs, "readFileSync">;
+  fs: {
+    readFileSync: (
+      path: fs.PathOrFileDescriptor,
+      encoding: BufferEncoding,
+    ) => string;
+  };
   log: (...args: unknown[]) => void;
   error: (...args: unknown[]) => void;
 };

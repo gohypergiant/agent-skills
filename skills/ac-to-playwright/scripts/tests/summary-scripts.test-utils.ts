@@ -8,7 +8,10 @@ type AppendRuntimeOverrides = Omit<Partial<AppendRuntime>, "fs" | "path"> & {
   path?: Partial<AppendRuntime["path"]>;
 };
 
-type MarkdownRuntimeOverrides = Omit<Partial<MarkdownRuntime>, "fs" | "path"> & {
+type MarkdownRuntimeOverrides = Omit<
+  Partial<MarkdownRuntime>,
+  "fs" | "path"
+> & {
   fs?: Partial<MarkdownRuntime["fs"]>;
   path?: Partial<MarkdownRuntime["path"]>;
 };
@@ -20,17 +23,17 @@ type RuntimeState<T> = {
 };
 
 export function makeAppendRuntime(
-  overrides?: AppendRuntimeOverrides
+  overrides?: AppendRuntimeOverrides,
 ): RuntimeState<AppendRuntime> {
   const logs: string[] = [];
   const errors: string[] = [];
 
   const defaultRuntime: AppendRuntime = {
     fs: {
-      existsSync: vi.fn() as unknown as AppendRuntime["fs"]["existsSync"],
-      readFileSync: vi.fn() as unknown as AppendRuntime["fs"]["readFileSync"],
-      mkdirSync: vi.fn() as unknown as AppendRuntime["fs"]["mkdirSync"],
-      writeFileSync: vi.fn() as unknown as AppendRuntime["fs"]["writeFileSync"],
+      existsSync: vi.fn<AppendRuntime["fs"]["existsSync"]>(),
+      readFileSync: vi.fn<AppendRuntime["fs"]["readFileSync"]>(),
+      mkdirSync: vi.fn<AppendRuntime["fs"]["mkdirSync"]>(),
+      writeFileSync: vi.fn<AppendRuntime["fs"]["writeFileSync"]>(),
     },
     path: {
       dirname: path.dirname,
@@ -50,16 +53,16 @@ export function makeAppendRuntime(
 }
 
 export function makeMarkdownRuntime(
-  overrides?: MarkdownRuntimeOverrides
+  overrides?: MarkdownRuntimeOverrides,
 ): RuntimeState<MarkdownRuntime> {
   const logs: string[] = [];
   const errors: string[] = [];
 
   const defaultRuntime: MarkdownRuntime = {
     fs: {
-      readFileSync: vi.fn() as unknown as MarkdownRuntime["fs"]["readFileSync"],
-      mkdirSync: vi.fn() as unknown as MarkdownRuntime["fs"]["mkdirSync"],
-      writeFileSync: vi.fn() as unknown as MarkdownRuntime["fs"]["writeFileSync"],
+      readFileSync: vi.fn<MarkdownRuntime["fs"]["readFileSync"]>(),
+      mkdirSync: vi.fn<MarkdownRuntime["fs"]["mkdirSync"]>(),
+      writeFileSync: vi.fn<MarkdownRuntime["fs"]["writeFileSync"]>(),
     },
     path: {
       dirname: path.dirname,

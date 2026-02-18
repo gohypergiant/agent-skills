@@ -235,6 +235,7 @@ describe("run()", () => {
   });
 
   it("creates a new summary file when missing", () => {
+    // Arrange
     const planPath = "plan.json";
     const summaryPath = "summary.json";
     const inputPath = "ac.feature";
@@ -275,6 +276,7 @@ describe("run()", () => {
       },
     });
 
+    // Act
     const code = run(
       [
         "node",
@@ -293,6 +295,7 @@ describe("run()", () => {
       runtime
     );
 
+    // Assert
     expect(code).toBe(0);
     expect(errors.length).toBe(0);
 

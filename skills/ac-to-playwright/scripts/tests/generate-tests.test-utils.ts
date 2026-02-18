@@ -1,3 +1,4 @@
+import type * as fs from "node:fs";
 import * as path from "node:path";
 import { vi } from "vitest";
 import { _extractSourceDescription, type CliRuntime } from "../cli/generate-tests";
@@ -48,7 +49,7 @@ export function makeRuntime(overrides?: RuntimeOverrides): RuntimeState {
         return dirs.has(key) || files.has(key);
       }),
 
-      statSync: vi.fn((p) => {
+      statSync: vi.fn<CliRuntime["fs"]["statSync"]>((p) => {
         const key = toPathKey(p);
 
         const stat: FakeStat = {
@@ -56,14 +57,18 @@ export function makeRuntime(overrides?: RuntimeOverrides): RuntimeState {
           isFile: () => files.has(key),
         };
 
-        return stat;
-      }) as unknown as CliRuntime["fs"]["statSync"],
+        return stat as fs.Stats;
+      }),
 
-      readdirSync: vi.fn((p) => dirListings.get(toPathKey(p)) ?? []) as unknown as CliRuntime["fs"]["readdirSync"],
+      readdirSync: vi.fn((p) => {
+        const entries = dirListings.get(toPathKey(p)) ?? [];
+        // Return FakeDirent[] which has .name property used by production code
+        return entries;
+      }),
 
-      readFileSync: vi.fn() as unknown as CliRuntime["fs"]["readFileSync"],
-      mkdirSync: vi.fn() as unknown as CliRuntime["fs"]["mkdirSync"],
-      writeFileSync: vi.fn() as unknown as CliRuntime["fs"]["writeFileSync"],
+      readFileSync: vi.fn<CliRuntime["fs"]["readFileSync"]>(),
+      mkdirSync: vi.fn<CliRuntime["fs"]["mkdirSync"]>(),
+      writeFileSync: vi.fn<CliRuntime["fs"]["writeFileSync"]>(),
     },
 
     path: {

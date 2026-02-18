@@ -6,12 +6,28 @@ import { z } from "zod";
 import { type TestSuite, testSuiteSchema } from "../plan-schema";
 import { handleCliCommonErrors } from "../utils/cli";
 
-type FsSubset = Pick<
-  typeof fs,
-  "existsSync" | "readFileSync" | "mkdirSync" | "writeFileSync"
->;
+// Explicit types matching actual usage patterns (instead of Pick<typeof fs, ...>)
+// This allows TypeScript to properly type-check mocks without overload ambiguity
+type FsSubset = {
+  existsSync: (path: fs.PathLike) => boolean;
+  readFileSync: (
+    path: fs.PathOrFileDescriptor,
+    encoding: BufferEncoding,
+  ) => string;
+  mkdirSync: (
+    path: fs.PathLike,
+    options?: fs.MakeDirectoryOptions,
+  ) => string | undefined;
+  writeFileSync: (
+    path: fs.PathOrFileDescriptor,
+    data: string | NodeJS.ArrayBufferView,
+    options?: fs.WriteFileOptions,
+  ) => void;
+};
 
-type PathSubset = Pick<typeof path, "dirname">;
+type PathSubset = {
+  dirname: (path: string) => string;
+};
 
 export type CliRuntime = {
   fs: FsSubset;
@@ -60,7 +76,10 @@ if (require.main === module) {
   process.exit(code);
 }
 
-export function run(argv: string[], runtime: CliRuntime = defaultRuntime): number {
+export function run(
+  argv: string[],
+  runtime: CliRuntime = defaultRuntime,
+): number {
   // Parse args
   const parsed = parseArgs(argv.slice(2));
   const commonErrors = handleCliCommonErrors({
@@ -130,7 +149,7 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
       summary = normalizeSummaryFile(existing, summaryPath);
     } catch (error) {
       runtime.error(
-        `Error: Unable to parse existing summary file: ${summaryPath}`
+        `Error: Unable to parse existing summary file: ${summaryPath}`,
       );
       if (error instanceof Error) runtime.error(error.message);
       return 1;
@@ -147,7 +166,7 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
   runtime.fs.writeFileSync(
     summaryPath,
     `${JSON.stringify(summary, null, 2)}\n`,
-    "utf8"
+    "utf8",
   );
 
   runtime.log(`-> Appended entry: ${inputPath}`);
@@ -262,7 +281,7 @@ function parseArgs(args: string[]): ParsedArgs {
 function printUsage(log: (...args: unknown[]) => void): void {
   log("Usage:");
   log(
-    "  npx append-json-summary-entry --summary-json <path> --input <ac-file> --plan <plan.json> --test <spec.ts>"
+    "  npx append-json-summary-entry --summary-json <path> --input <ac-file> --plan <plan.json> --test <spec.ts>",
   );
   log("");
   log("Optional:");

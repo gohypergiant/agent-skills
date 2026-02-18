@@ -4,9 +4,27 @@ import fs from "node:fs";
 import path from "node:path";
 import { handleCliCommonErrors } from "../utils/cli";
 
-type FsSubset = Pick<typeof fs, "readFileSync" | "mkdirSync" | "writeFileSync">;
+// Explicit types matching actual usage patterns (instead of Pick<typeof fs, ...>)
+// This allows TypeScript to properly type-check mocks without overload ambiguity
+type FsSubset = {
+  readFileSync: (
+    path: fs.PathOrFileDescriptor,
+    encoding: BufferEncoding,
+  ) => string;
+  mkdirSync: (
+    path: fs.PathLike,
+    options?: fs.MakeDirectoryOptions,
+  ) => string | undefined;
+  writeFileSync: (
+    path: fs.PathOrFileDescriptor,
+    data: string | NodeJS.ArrayBufferView,
+    options?: fs.WriteFileOptions,
+  ) => void;
+};
 
-type PathSubset = Pick<typeof path, "dirname">;
+type PathSubset = {
+  dirname: (path: string) => string;
+};
 
 export type CliRuntime = {
   fs: FsSubset;
@@ -52,7 +70,10 @@ if (require.main === module) {
   process.exit(code);
 }
 
-export function run(argv: string[], runtime: CliRuntime = defaultRuntime): number {
+export function run(
+  argv: string[],
+  runtime: CliRuntime = defaultRuntime,
+): number {
   // Parse args
   const parsed = parseArgs(argv.slice(2));
   const commonErrors = handleCliCommonErrors({
@@ -75,7 +96,7 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
     summary = normalizeSummaryFile(parsedJson, parsed.summaryJson);
   } catch (error) {
     runtime.error(
-      `Error: Unable to read summary JSON file: ${parsed.summaryJson}`
+      `Error: Unable to read summary JSON file: ${parsed.summaryJson}`,
     );
     if (error instanceof Error) runtime.error(error.message);
     return 1;
@@ -83,8 +104,12 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
 
   // Build the text and write the file
   const inputs = uniqueInOrder(summary.entries.map((entry) => entry.input));
-  const outputs = uniqueInOrder(summary.entries.map((entry) => entry.outputs.test));
-  const requiredHooksByTestFile = collectRequiredHooksByTestFile(summary.entries);
+  const outputs = uniqueInOrder(
+    summary.entries.map((entry) => entry.outputs.test),
+  );
+  const requiredHooksByTestFile = collectRequiredHooksByTestFile(
+    summary.entries,
+  );
 
   const markdown = renderMarkdown({
     runDate: summary.runDate,
@@ -93,7 +118,9 @@ export function run(argv: string[], runtime: CliRuntime = defaultRuntime): numbe
     requiredHooksByTestFile,
   });
 
-  runtime.fs.mkdirSync(runtime.path.dirname(parsed.summaryMd), { recursive: true });
+  runtime.fs.mkdirSync(runtime.path.dirname(parsed.summaryMd), {
+    recursive: true,
+  });
   runtime.fs.writeFileSync(parsed.summaryMd, markdown, "utf8");
 
   runtime.log(`-> Wrote: ${parsed.summaryMd}`);
@@ -161,7 +188,7 @@ function parseArgs(args: string[]): ParsedArgs {
 function printUsage(log: (...args: unknown[]) => void): void {
   log("Usage:");
   log(
-    "  npx create-markdown-summary --summary-json <path> --summary-md <path>"
+    "  npx create-markdown-summary --summary-json <path> --summary-md <path>",
   );
 }
 
@@ -207,7 +234,10 @@ function renderMarkdown(data: {
   runDate: string;
   inputs: string[];
   outputs: string[];
-  requiredHooksByTestFile: Map<string, Array<{ name: string; hooks: string[] }>>;
+  requiredHooksByTestFile: Map<
+    string,
+    Array<{ name: string; hooks: string[] }>
+  >;
 }): string {
   const lines: string[] = [];
 
@@ -223,19 +253,19 @@ function renderMarkdown(data: {
   lines.push("");
   lines.push("## Next steps");
   lines.push(
-    "- Copy the generated Playwright spec files into your project repo."
+    "- Copy the generated Playwright spec files into your project repo.",
   );
   lines.push(
-    "- Ensure the codebase includes the required test hooks (data-testid attributes on the appropriate elements). If there's any ambiguity, review the input AC file alongside the JSON plan to most easily see the intended test flow and targets."
+    "- Ensure the codebase includes the required test hooks (data-testid attributes on the appropriate elements). If there's any ambiguity, review the input AC file alongside the JSON plan to most easily see the intended test flow and targets.",
   );
   lines.push(
-    "- If Playwright isn't yet configured for your project and you requested the config template, copy it to your repo root and adjust baseURL, testDir, and reporter/output paths to match your project."
+    "- If Playwright isn't yet configured for your project and you requested the config template, copy it to your repo root and adjust baseURL, testDir, and reporter/output paths to match your project.",
   );
   lines.push(
-    "- Consider reviewing your Vitest (or other) test configs to make sure these new Playwright *.spec.ts files won't get picked up with other testing."
+    "- Consider reviewing your Vitest (or other) test configs to make sure these new Playwright *.spec.ts files won't get picked up with other testing.",
   );
   lines.push(
-    "- Add a CI step to run Playwright and upload traces/screenshots on failure."
+    "- Add a CI step to run Playwright and upload traces/screenshots on failure.",
   );
   lines.push("");
   lines.push("## Required test hooks");
@@ -267,7 +297,7 @@ function renderList(items: string[]): string[] {
 
 // Collects required hooks grouped by output test file in entry order.
 function collectRequiredHooksByTestFile(
-  entries: SummaryEntry[]
+  entries: SummaryEntry[],
 ): Map<string, Array<{ name: string; hooks: string[] }>> {
   const output = new Map<string, Array<{ name: string; hooks: string[] }>>();
 
