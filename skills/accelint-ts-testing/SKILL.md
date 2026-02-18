@@ -5,7 +5,7 @@ compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.3"
+  version: "2.4"
 ---
 
 # Vitest Best Practices
