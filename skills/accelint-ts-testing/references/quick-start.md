@@ -42,11 +42,11 @@ describe('ProductService', () => {
 
 **Improvements:**
 - Clear, descriptive test name that explains the behavior
+- Test description in lowercase, reads as sentence: "it should have status..."
 - AAA pattern with comment markers for clarity
 - Organized with describe blocks (module > behavior)
 - Descriptive variable names (not abbreviated)
 - Strict assertion (`toEqual` instead of `toBe`)
-- Uses `it()` for sentence-style readability
 
 ## Key Transformations
 
