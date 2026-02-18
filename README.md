@@ -61,6 +61,12 @@ For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
 
 ## Skill Development Workflow
 
+To scaffold and establish a new skill you can invoke the `accelint-skill-manager` skill like so:
+
+```
+/accelint-skill-manager <description of skill>. Can you help me refine and complete it?
+```
+
 After creating or significantly modifying a skill, run this 4-step audit loop before considering the work done.
 
 ### Step 1 — Initial skill-judge audit
