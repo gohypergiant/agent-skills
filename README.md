@@ -12,13 +12,12 @@ Before relying on your training data you MUST evaluate and apply ALL APPLICABLE 
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Skill Development Workflow](#skill-development-workflow)
 - [What are Agent Skills?](#what-are-agent-skills)
 - [Why Agent Skills?](#why-agent-skills)
 - [Available Skills](#available-skills)
-- [Available Commands](#available-commands)
 - [Ecosystem](#ecosystem)
 - [Testing](#testing)
-- [Documentation](#documentation)
 - [Prompt Patterns](#prompt-patterns)
 - [Contributing](#contributing)
 - [License](#license)
@@ -59,6 +58,28 @@ claude /accelint-react-best-practices <dir>
 ```
 
 For more in-depth examples, see [Prompt Patterns](#prompt-patterns)
+
+## Skill Development Workflow
+
+After creating or significantly modifying a skill, run this 4-step audit loop before considering the work done.
+
+### Step 1 — Initial skill-judge audit
+
+Run the `skill-judge` skill against the completed skill. Apply all suggested improvements before proceeding.
+
+### Step 2 — accelint-skill-manager audit
+
+Run `/clear` to reset context, then run the `accelint-skill-manager` skill against the skill. Apply all structural and content suggestions before proceeding.
+
+### Step 3 — Final skill-judge audit
+
+Run `/clear`, then run `skill-judge` again. Apply remaining suggestions. Target **grade A or higher (>=108/120)**.
+
+### Step 4 — Frontmatter verification checklist
+
+- [ ] `name` is lowercase, no uppercase letters, no consecutive hyphens, ≤64 chars, matches directory name
+- [ ] `description` answers WHAT + WHEN + KEYWORDS, is non-empty, ≤1024 chars
+- [ ] `metadata.version` is bumped (major for substantial changes, minor for small fixes)
 
 ## What are Agent Skills?
 
