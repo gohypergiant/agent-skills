@@ -80,7 +80,7 @@ Use the project's package manager to run TypeScript:
 ```
 
 To detect the package manager, check for:
-- `bun.lockb` → use `bunx`
+- `bun.lockb` or `bun.lock` → use `bunx`
 - `pnpm-lock.yaml` → use `pnpm exec`
 - `yarn.lock` → use `yarn exec`
 - `package-lock.json` → use `npm exec`
