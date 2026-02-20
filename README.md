@@ -36,6 +36,10 @@ npx skills add gohypergiant/agent-skills
 pnpm dlx skills add gohypergiant/agent-skills
 ```
 
+- Only select skills that are relevant for your project
+- We recommend "Project" for the installation scope
+- We recommend "Symlink" for the installation method
+
 ## Quick Start
 
 Once installed, skills activate automatically when relevant tasks are detected. No configuration needed.
