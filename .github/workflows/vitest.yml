@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: skills/ac-to-playwright
+        working-directory: skills/accelint-ac-to-playwright
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,4 +27,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vitest-coverage
-          path: skills/ac-to-playwright/coverage
+          path: skills/accelint-ac-to-playwright/coverage

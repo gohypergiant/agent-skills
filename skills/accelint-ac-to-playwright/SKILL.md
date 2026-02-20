@@ -1,5 +1,5 @@
 ---
-name: ac-to-playwright
+name: accelint-ac-to-playwright
 description: Convert acceptance criteria to Playwright test specs. Use when user asks to: (1) turn AC into tests, (2) generate tests from acceptance criteria, (3) convert .md bullets or .feature Gherkin files to Playwright specs, (4) create test automation from requirements. Handles both bullet-style markdown and Gherkin syntax with JSON test plan generation and validation.
 license: Apache-2.0
 metadata:
@@ -42,7 +42,7 @@ The above table directs you to ask for clarifications because guessing creates t
 9. Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
 10. Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
 11. Work on the next input file, if any remain.
-12. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
+12. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/accelint-ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
 
 
 ## Naming Transformations

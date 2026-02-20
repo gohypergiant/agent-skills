@@ -1,4 +1,4 @@
-# ac-to-playwright
+# accelint-ac-to-playwright
 
 This skill converts acceptance criteria into JSON test plans and then Playwright spec files.
 

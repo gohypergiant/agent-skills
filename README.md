@@ -247,7 +247,7 @@ README documentation generator and updater:
 
 **Activates when:** Creating or updating README.md files, documenting packages, or auditing documentation completeness.
 
-### ac-to-playwright
+### accelint-ac-to-playwright
 
 Converts acceptance criteria into JSON test plans and then Playwright `*.spec.ts` files:
 
