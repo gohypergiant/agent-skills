@@ -25,10 +25,18 @@ Use the same key factories for both server and client caches:
 
 ```typescript
 // data-access/tracks/keys.ts
+type TaggedKey<T extends readonly string[]> = T & { readonly tag: string }
+
+function key<T extends readonly string[]>(parts: T): TaggedKey<T> {
+  const arr = [...parts] as unknown as TaggedKey<T>
+  Object.defineProperty(arr, 'tag', { get: () => parts.join(':'), enumerable: false })
+  return arr
+}
+
 export const keys = {
-  all: () => ['tracks'] as const,
-  details: () => [...keys.all(), 'detail'] as const,
-  detail: (id: string) => [...keys.details(), id] as const,
+  all:     ()           => key(['tracks']),
+  details: ()           => key([...keys.all(), 'detail']),
+  detail:  (id: string) => key([...keys.details(), id]),
 };
 ```
 
@@ -37,7 +45,7 @@ export const keys = {
 // data-access/tracks/server.ts
 export async function getOne(id: string) {
   'use cache';
-  cacheTag(...keys.detail(id)); // Spread factory into cacheTag
+  cacheTag(keys.detail(id).tag); // .tag serializes to 'tracks:detail:id'
 
   const rawData = await db.query('SELECT * FROM tracks WHERE id = $1', [id]);
   return trackSchema.parse(rawData);
@@ -48,7 +56,7 @@ export async function update(id: string, payload: Partial<Track>) {
   await db.query('UPDATE tracks SET lon = $1, lat = $2 WHERE id = $3',
     [validated.lon, validated.lat, id]);
 
-  updateTag(...keys.detail(id)); // Immediate invalidation
+  updateTag(keys.detail(id).tag); // Immediate invalidation
 }
 ```
 
@@ -91,8 +99,8 @@ export async function updateTrack(id: string, formData: FormData) {
   // ... perform update
 
   // Invalidate server-side cache (Next.js use cache)
-  updateTag(...keys.detail(id));
-  updateTag(...keys.all());
+  updateTag(keys.detail(id).tag);
+  updateTag(keys.all().tag);
 
   // Client-side invalidation handled by TanStack Query mutation callback
 }
@@ -118,7 +126,7 @@ Use `updateTag` when users need to see their own mutations reflected immediately
 
 **Solution: Unified invalidation**
 1. Mutation updates database
-2. `updateTag(...keys.detail(id))` busts server cache
+2. `updateTag(keys.detail(id).tag)` busts server cache
 3. `queryClient.invalidateQueries({ queryKey: keys.detail(id) })` busts client cache
 4. Next render hits database for both server and client
 5. Both caches repopulate with same fresh data
@@ -144,7 +152,7 @@ queryKey: ['track', 'details', id] // Typo creates cache inconsistency
 ```typescript
 export async function getOne(id: string) {
   'use cache';
-  cacheTag(...keys.detail(id)); // Same factory everywhere
+  cacheTag(keys.detail(id).tag); // .tag gives consistent serialized string
 }
 
 queryKey: keys.detail(id) // Consistent hierarchy
