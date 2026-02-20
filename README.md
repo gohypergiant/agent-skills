@@ -251,6 +251,26 @@ README documentation generator and updater:
 
 **Activates when:** Creating or updating README.md files, documenting packages, or auditing documentation completeness.
 
+### accelint-ac-to-playwright
+
+Converts acceptance criteria into JSON test plans and then Playwright `*.spec.ts` files:
+
+- AC -> JSON plan generation that conforms to a plan schema (via LLM)
+- JSON plan -> Playwright test generation (via code)
+- Supports Gherkin (.feature) and bullet (.md) acceptance criteria
+- Acceptance criteria writing and mapping patterns
+- Test hook naming/structure conventions
+
+**Activates when:** Turning acceptance criteria into Playwright `*.spec.ts` tests.
+
+### Feature Planning Commands
+
+| Command | Description |
+|---------|-------------|
+| `/feature-planning:acceptance` | Define acceptance criteria for a feature. |
+| `/feature-planning:implementation` | Research codebase patterns and create implementation tasks. |
+| `/feature-planning:testing` | Generate test plans based on implementation. |
+
 ## Ecosystem
 
 You can search and audit third party skills at [skills.sh](https://skills.sh/)
@@ -429,6 +449,27 @@ Objective:
 ```
 
 **Invokes:** accelint-skill-manager, skill-judge
+
+### Generate Playwright Tests from Acceptance Criteria
+```
+Persona:
+You are a senior QA automation engineer with deep Playwright experience.
+
+Objective:
+1. Convert the acceptance criteria at [AC_PATH] into JSON test plans.
+2. Validate each plan against the schema.
+3. Translate validated plans into Playwright spec files.
+
+Requirements:
+- Follow the AC rules and mappings in the skill references.
+- Process one AC file at a time.
+- Ask for any missing required fields before generating plans.
+- Do not invent assertions. If the correct assertion to use isn't clear from the AC, ask.
+- Require explicit output directories for plans, tests, and summaries before writing files.
+
+Output:
+Validated JSON plans and Playwright spec files, plus a brief summary of what was generated.
+```
 
 ## Internal Skills
 

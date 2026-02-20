@@ -1,0 +1,42 @@
+{
+	"suiteName": "Basic functionality",
+	"tags": ["@smoke"],
+	"source": {
+		"repo": "agent-skills",
+		"path": "skills/accelint-ac-to-playwright/assets/examples/acceptance/sample-app-functionality.feature"
+	},
+	"tests": [
+		{
+			"name": "user changes circle color from settings",
+			"startUrl": "/settings",
+			"steps": [
+				{ "action": "expectNotVisible", "target": "page.div.pink-circle" },
+				{ "action": "expectVisible", "target": "page.div.plain-circle" },
+				{
+					"action": "select",
+					"target": "page.dropdown.color-choice",
+					"value": "Pink"
+				},
+				{ "action": "expectVisible", "target": "page.div.pink-circle" },
+				{ "action": "expectNotVisible", "target": "page.div.plain-circle" }
+			]
+		},
+		{
+			"name": "user submits name and sees welcome message",
+			"startUrl": "/",
+			"steps": [
+				{
+					"action": "fill",
+					"target": "page.input.fname",
+					"value": "Harry Potter"
+				},
+				{ "action": "click", "target": "page.button.submit" },
+				{
+					"action": "expectText",
+					"target": "page.text.fname-output",
+					"value": "Hello, Harry Potter."
+				}
+			]
+		}
+	]
+}
