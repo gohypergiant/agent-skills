@@ -259,10 +259,6 @@ Converts acceptance criteria into JSON test plans and then Playwright `*.spec.ts
 
 **Activates when:** Turning acceptance criteria into Playwright `*.spec.ts` tests.
 
-## Available Commands
-
-Commands are task-specific specifications stored in `commands/`. They define workflows that Claude executes autonomously.
-
 ### Feature Planning Commands
 
 | Command | Description |
