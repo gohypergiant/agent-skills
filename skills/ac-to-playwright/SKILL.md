@@ -32,17 +32,17 @@ The above table directs you to ask for clarifications because guessing creates t
 
 ## Workflow
 1. Read `references/acceptance-criteria.md`.
-1. Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
-1. Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
-1. Build a JSON test plan that conforms to `references/plan-schema.ts`.
-1. Validate the test plan and report results.
-1. Require the user to explicitly provide output directories for plans, tests, and summaries before writing any files.
-1. If validation passed, write the plan to the user-specified output directory: `<plans-output-dir>/<suite-slug>.json`.
-1. Once the file is written, translate the plan with `scripts/translate-plan-to-tests.ts`.
-1. Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
-1. Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
-1. Work on the next input file, if any remain.
-1. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
+2. Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
+3. Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
+4. Build a JSON test plan that conforms to `references/plan-schema.ts`.
+5. Validate the test plan and report results.
+6. Require the user to explicitly provide output directories for plans, tests, and summaries before writing any files.
+7. If validation passed, write the plan to the user-specified output directory: `<plans-output-dir>/<suite-slug>.json`.
+8. Once the file is written, translate the plan with `scripts/translate-plan-to-tests.ts`.
+9. Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
+10. Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
+11. Work on the next input file, if any remain.
+12. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
 
 
 ## Naming Transformations
