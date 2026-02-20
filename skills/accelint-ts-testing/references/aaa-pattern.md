@@ -355,7 +355,7 @@ it('should fetch user from API', async () => {
 
 ## When to Omit AAA Comments
 
-For very simple tests, AAA comments can be omitted if blank lines provide sufficient clarity.
+For simple tests (≤10 lines with obvious structure), AAA comments add noise without value. Use blank lines for separation instead.
 
 **✅ Correct: simple test without AAA comments**
 ```ts
@@ -368,4 +368,26 @@ it('should add two numbers', () => {
 });
 ```
 
-However, **when in doubt, include the comments**. They never hurt and help onboarding developers understand your test structure.
+**Guidelines for AAA comments:**
+- **Omit** for simple tests: single setup line, single action, single assertion
+- **Include** for complex tests: multiple setup steps, complex assertions, or when AAA boundaries are unclear
+- **Always use blank lines** between sections regardless of whether comments are present
+
+**✅ More examples of simple tests without AAA comments:**
+```ts
+it('should return empty array for no items', () => {
+  const cart = new ShoppingCart();
+
+  const items = cart.getItems();
+
+  expect(items).toEqual([]);
+});
+
+it('should concatenate strings', () => {
+  const result = concat('hello', 'world');
+
+  expect(result).toEqual('helloworld');
+});
+```
+
+**When the test structure is obvious from blank lines alone, omit the comments.** Comments should clarify, not state the obvious.

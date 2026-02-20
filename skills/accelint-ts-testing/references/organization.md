@@ -261,6 +261,234 @@ describe('UserService', () => {
 ```
 *Why?* If internal logic is complex enough to deserve dedicated unit tests, it's complex enough to be its own module. This gives it a real public API, makes it reusable, and allows both focused unit tests (email-validator.test.ts) and integration tests (user-service.test.ts).
 
+## What to Test: Your Code, Not Libraries
+
+Test your business logic, not library internals. Standard libraries (JavaScript/TypeScript built-ins) and well-established third-party libraries are already thoroughly tested. Testing that libraries work correctly wastes time and adds no value.
+
+**❌ Incorrect: testing library functionality**
+```ts
+describe('array operations', () => {
+  // ❌ Testing that Array.prototype.map works
+  it('should map array values', () => {
+    const input = [1, 2, 3];
+    const result = input.map(x => x * 2);
+    expect(result).toEqual([2, 4, 6]);
+  });
+
+  // ❌ Testing that Array.prototype.filter works
+  it('should filter array values', () => {
+    const input = [1, 2, 3, 4];
+    const result = input.filter(x => x > 2);
+    expect(result).toEqual([3, 4]);
+  });
+
+  // ❌ Testing that lodash works
+  it('should deeply clone object', () => {
+    const input = { a: { b: 1 } };
+    const result = _.cloneDeep(input);
+    expect(result).toEqual({ a: { b: 1 } });
+    expect(result).not.toBe(input);
+  });
+});
+
+describe('React hooks', () => {
+  // ❌ Testing that useState works
+  it('should update state', () => {
+    const { result } = renderHook(() => useState(0));
+    const [, setState] = result.current;
+    act(() => setState(1));
+    expect(result.current[0]).toBe(1);
+  });
+});
+
+describe('axios', () => {
+  // ❌ Testing that axios makes HTTP requests
+  it('should make GET request', async () => {
+    const response = await axios.get('https://api.example.com/data');
+    expect(response.status).toBe(200);
+  });
+});
+```
+
+*Why incorrect?* These tests verify that the language, framework, and libraries work correctly. JavaScript's `Array.prototype.map`, lodash's `cloneDeep`, React's `useState`, and axios's HTTP functionality are already extensively tested by their maintainers. These tests add no value and waste time.
+
+**✅ Correct: test how YOUR code uses libraries**
+```ts
+describe('UserProcessor', () => {
+  // ✅ Testing business logic that happens to use map
+  it('should extract user IDs from user objects', () => {
+    const users = [
+      { id: 1, name: 'Alice' },
+      { id: 2, name: 'Bob' },
+    ];
+
+    const processor = new UserProcessor();
+    const ids = processor.extractIds(users);
+
+    expect(ids).toEqual([1, 2]);
+  });
+
+  // ✅ Testing business rules that use filter
+  it('should return only active premium users', () => {
+    const users = [
+      { id: 1, status: 'active', tier: 'premium' },
+      { id: 2, status: 'inactive', tier: 'premium' },
+      { id: 3, status: 'active', tier: 'free' },
+    ];
+
+    const processor = new UserProcessor();
+    const activePremium = processor.getActivePremiumUsers(users);
+
+    expect(activePremium).toEqual([
+      { id: 1, status: 'active', tier: 'premium' },
+    ]);
+  });
+
+  // ✅ Testing business logic that uses lodash
+  it('should create user snapshot without modifying original', () => {
+    const user = { id: 1, profile: { name: 'Alice' } };
+
+    const processor = new UserProcessor();
+    const snapshot = processor.createSnapshot(user);
+    snapshot.profile.name = 'Bob';
+
+    // Testing OUR business requirement: snapshots are independent
+    expect(user.profile.name).toBe('Alice');
+    expect(snapshot.profile.name).toBe('Bob');
+  });
+});
+
+describe('useUserData hook', () => {
+  // ✅ Testing custom hook behavior, not useState itself
+  it('should initialize with loading state', () => {
+    const { result } = renderHook(() => useUserData('user-123'));
+
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.user).toBeNull();
+  });
+
+  // ✅ Testing business logic: error handling
+  it('should set error when user not found', async () => {
+    mockAPI.getUser.mockRejectedValue(new Error('User not found'));
+
+    const { result } = renderHook(() => useUserData('invalid-id'));
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBe('User not found');
+    });
+  });
+});
+
+describe('ApiClient', () => {
+  // ✅ Testing OUR API client logic, not axios
+  it('should add authentication header to requests', async () => {
+    const mockAxios = { get: vi.fn().mockResolvedValue({ data: 'test' }) };
+    const client = new ApiClient(mockAxios, 'auth-token-123');
+
+    await client.fetchData('/api/users');
+
+    expect(mockAxios.get).toHaveBeenCalledWith(
+      '/api/users',
+      expect.objectContaining({
+        headers: { Authorization: 'Bearer auth-token-123' },
+      })
+    );
+  });
+
+  // ✅ Testing OUR retry logic, not axios
+  it('should retry failed requests up to 3 times', async () => {
+    const mockAxios = {
+      get: vi.fn()
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce({ data: 'success' }),
+    };
+    const client = new ApiClient(mockAxios);
+
+    const result = await client.fetchWithRetry('/api/data');
+
+    expect(result).toBe('success');
+    expect(mockAxios.get).toHaveBeenCalledTimes(3);
+  });
+});
+```
+
+*Why correct?* These tests verify YOUR business logic, YOUR error handling, YOUR authentication logic, and YOUR retry strategy. The libraries are implementation details—you could swap lodash for Ramda, or axios for fetch, and these tests should still pass (after adjusting the implementation).
+
+### Guidelines for What to Test
+
+**Test YOUR code:**
+- Business logic and rules
+- Data transformations specific to your domain
+- Error handling and edge cases in your code
+- Integration points where your code coordinates multiple libraries
+- Custom behavior and workflows
+
+**Do NOT test library code:**
+- Standard library methods (`Array.map`, `String.split`, `Object.keys`)
+- Framework internals (React hooks, Vue reactivity, Angular services)
+- Third-party library functionality (lodash, axios, moment, zod)
+- Language features (promises, async/await, destructuring)
+
+### When Library Usage Needs Testing
+
+Test library usage only when:
+
+1. **You're wrapping/adapting the library** → Test your wrapper, not the library
+```ts
+// ✅ Test your date formatting wrapper
+it('should format date in US format', () => {
+  const formatter = new DateFormatter();
+  expect(formatter.toUSFormat(new Date('2024-01-15'))).toBe('01/15/2024');
+});
+```
+
+2. **You're combining libraries in complex ways** → Test the integration
+```ts
+// ✅ Test how you integrate zod validation with axios
+it('should validate response schema before returning data', async () => {
+  const client = new TypedApiClient(UserSchema);
+  await expect(client.fetchUser('invalid'))
+    .rejects.toThrow('Invalid response schema');
+});
+```
+
+3. **You suspect the library has a bug** → Fix/report the bug upstream, don't test around it
+```ts
+// ❌ Don't test library bugs in your test suite
+it('should work around lodash bug in version X.Y.Z', () => {
+  // This belongs in the library's test suite, not yours
+});
+```
+
+### The "Trust Boundary" Principle
+
+Libraries you depend on form a **trust boundary**:
+- **Inside the boundary (your code):** Test thoroughly
+- **Outside the boundary (libraries):** Trust, don't test
+- **At the boundary (integration points):** Test that your code uses libraries correctly
+
+```
+┌─────────────────────────────────────┐
+│  Your Application (test this)       │
+│  ┌────────────────────────────────┐ │
+│  │ Business Logic                 │ │ ← Test
+│  │ Error Handling                 │ │ ← Test
+│  │ Data Transformations           │ │ ← Test
+│  └────────────────────────────────┘ │
+│  ┌────────────────────────────────┐ │
+│  │ Library Integration Layer      │ │ ← Test (how you use libraries)
+│  └────────────────────────────────┘ │
+└─────────────────────────────────────┘
+┌─────────────────────────────────────┐
+│  Libraries (don't test)              │
+│  ├─ React, lodash, axios, zod       │ ← Don't test
+│  ├─ Array.map, Promise, fetch       │ ← Don't test
+│  └─ TypeScript standard library     │ ← Don't test
+└─────────────────────────────────────┘
+```
+
 ## Describe Block Organization
 
 Use flat, focused describe blocks to group related tests.
