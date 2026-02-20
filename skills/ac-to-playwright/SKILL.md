@@ -1,6 +1,10 @@
 ---
 name: ac-to-playwright
 description: Convert acceptance criteria to Playwright test specs. Use when user asks to: (1) turn AC into tests, (2) generate tests from acceptance criteria, (3) convert .md bullets or .feature Gherkin files to Playwright specs, (4) create test automation from requirements. Handles both bullet-style markdown and Gherkin syntax with JSON test plan generation and validation.
+license: Apache-2.0
+metadata:
+  author: accelint
+  version: "0.5"
 ---
 
 # AC To Playwright
