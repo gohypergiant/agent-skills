@@ -7,12 +7,20 @@ Query keys enable cache management. Factories provide type safety, consistency, 
 ```typescript
 // data-access/tracks/keys.ts
 
+type TaggedKey<T extends readonly string[]> = T & { readonly tag: string }
+
+function key<T extends readonly string[]>(parts: T): TaggedKey<T> {
+  const arr = [...parts] as unknown as TaggedKey<T>
+  Object.defineProperty(arr, 'tag', { get: () => parts.join(':'), enumerable: false })
+  return arr
+}
+
 export const keys = {
-  all: () => ['tracks'] as const,
-  lists: () => [...keys.all(), 'list'] as const,
-  list: (filters: string) => [...keys.lists(), filters] as const,
-  details: () => [...keys.all(), 'detail'] as const,
-  detail: (id: string) => [...keys.details(), id] as const,
+  all:     ()              => key(['tracks']),
+  lists:   ()              => key([...keys.all(), 'list']),
+  list:    (filters: string) => key([...keys.lists(), filters]),
+  details: ()              => key([...keys.all(), 'detail']),
+  detail:  (id: string)    => key([...keys.details(), id]),
 };
 ```
 
@@ -38,7 +46,7 @@ Use the same factories for TanStack Query and Next.js `use cache`:
 // Server-side with use cache
 export async function getOne(id: string) {
   'use cache';
-  cacheTag(...keys.detail(id)); // Spread factory into cacheTag
+  cacheTag(keys.detail(id).tag); // .tag serializes key to 'tracks:detail:id'
 
   const rawData = await db.query('SELECT * FROM tracks WHERE id = $1', [id]);
   return trackSchema.parse(rawData);
@@ -68,8 +76,8 @@ queryClient.invalidateQueries({ queryKey: keys.lists() });
 queryClient.invalidateQueries({ queryKey: keys.detail('abc-123') });
 
 // Server-side invalidation uses same hierarchy
-revalidateTag(...keys.all()); // Invalidate everything
-updateTag(...keys.detail(id)); // Invalidate one item immediately
+revalidateTag(keys.all().tag, 'max'); // Invalidate everything
+updateTag(keys.detail(id).tag);       // Invalidate one item immediately
 ```
 
 ## Key Stability Rules
@@ -101,31 +109,44 @@ queryKey: ['tracks', String(id)]
 ```typescript
 // data-access/users/keys.ts
 
+type TaggedKey<T extends readonly string[]> = T & { readonly tag: string }
+
+function key<T extends readonly string[]>(parts: T): TaggedKey<T> {
+  const arr = [...parts] as unknown as TaggedKey<T>
+  Object.defineProperty(arr, 'tag', { get: () => parts.join(':'), enumerable: false })
+  return arr
+}
+
 export const keys = {
   // Base key for all user queries
-  all: () => ['users'] as const,
+  all: () => key(['users']),
 
   // List queries with optional filters
-  lists: () => [...keys.all(), 'list'] as const,
+  lists: () => key([...keys.all(), 'list']),
   list: (filters?: { role?: string; status?: string }) =>
-    [...keys.lists(), filters ? JSON.stringify(filters) : 'all'] as const,
+    key([...keys.lists(), filters ? JSON.stringify(filters) : 'all']),
 
   // Detail queries for individual users
-  details: () => [...keys.all(), 'detail'] as const,
-  detail: (userId: string) => [...keys.details(), userId] as const,
+  details: () => key([...keys.all(), 'detail']),
+  detail: (userId: string) => key([...keys.details(), userId]),
 
   // Nested resources
-  preferences: (userId: string) => [...keys.detail(userId), 'preferences'] as const,
-  sessions: (userId: string) => [...keys.detail(userId), 'sessions'] as const,
+  preferences: (userId: string) => key([...keys.detail(userId), 'preferences']),
+  sessions:    (userId: string) => key([...keys.detail(userId), 'sessions']),
 };
 
-// Usage examples:
+// Array value examples (for TanStack Query):
 // keys.all()                                    -> ['users']
 // keys.list({ role: 'admin' })                  -> ['users', 'list', '{"role":"admin"}']
 // keys.detail('user-123')                       -> ['users', 'detail', 'user-123']
 // keys.preferences('user-123')                  -> ['users', 'detail', 'user-123', 'preferences']
 
-// Invalidation examples:
+// .tag examples (for cacheTag / revalidateTag / updateTag):
+// keys.all().tag                                -> 'users'
+// keys.detail('user-123').tag                   -> 'users:detail:user-123'
+// keys.preferences('user-123').tag              -> 'users:detail:user-123:preferences'
+
+// TanStack Query invalidation:
 // queryClient.invalidateQueries({ queryKey: keys.all() })           // Everything
 // queryClient.invalidateQueries({ queryKey: keys.lists() })         // All lists
 // queryClient.invalidateQueries({ queryKey: keys.detail(id) })      // One user + nested

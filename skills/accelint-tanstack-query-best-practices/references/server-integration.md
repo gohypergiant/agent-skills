@@ -38,7 +38,7 @@ import { keys } from './keys';
 
 export async function getOne(id: string) {
   'use cache';
-  cacheTag(...keys.detail(id));
+  cacheTag(keys.detail(id).tag);
 
   const rawData = await db.query('SELECT * FROM tracks WHERE id = $1', [id]);
   return trackSchema.parse(rawData);
@@ -91,7 +91,7 @@ Server-side data functions use Next.js `use cache` for server-side caching, then
 // Server-side cached function
 export async function getAll() {
   'use cache';
-  cacheTag(...keys.all());
+  cacheTag(keys.all().tag);
 
   const rawData = await db.query('SELECT * FROM tracks ORDER BY timestamp DESC');
   return trackListSchema.parse(rawData);

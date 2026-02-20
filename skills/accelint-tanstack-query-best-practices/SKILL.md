@@ -4,7 +4,7 @@ description: Use when configuring QueryClient, implementing mutations, debugging
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.3"
+  version: "1.4"
 ---
 
 # TanStack Query Best Practices
@@ -129,7 +129,7 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 
 **Unified invalidation strategy:**
 1. Use same key factories for both server and client caches
-2. Server mutations call updateTag(...keys.detail(id))
+2. Server mutations call updateTag(keys.detail(id).tag)
 3. Client mutations call queryClient.invalidateQueries({ queryKey: keys.detail(id) })
 4. Both caches stay synchronized with same hierarchy
 
