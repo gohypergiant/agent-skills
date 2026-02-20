@@ -11,16 +11,13 @@
 For each code file, you MUST follow this sequence:
 
 1. **Initial Test Coverage** - Run `accelint-ts-testing` to ensure good test coverage exists before refactoring
-2. **Interactive Changes** - Present the proposed change for each recommendation, with accept/deny/other options
+2. **Interactive Changes** - Use two-phase pattern: show ALL issues in numbered table with emoji severity (🛑⚠️⚡🔵✅), display detailed before/after for each, accept via numbered list. If PBTs added, MUST run test suite 100 times and achieve 100 consecutive passes before proceeding. **SAVE PROGRESS after this step.**
 3. **Code Quality Analysis** - Run `accelint-ts-best-practices` AND `accelint-ts-performance` in parallel to avoid contradictory suggestions
-4. **Interactive Changes** - Present the proposed change for each recommendation, with accept/deny/other options. If a quality and performance recommendation overlap, do the following:
-   - If they are able to be merged, provide the merge recommendation
-   - If they can not be merged, display each and allow me to chose which to implement.
-   Include `// PERF:` comments where they add value
-5. **Verify Changes** - Run `accelint-ts-testing` again to catch any issues from refactoring
-6. **Interactive Changes (if needed)** - Present the proposed change for each recommendation, with accept/deny/other options
+4. **Interactive Changes** - Use two-phase pattern with numbered table. If quality and performance recommendations overlap: merge if possible, otherwise present both and let user choose. Include `// PERF:` comments only where they add genuine insight. **SAVE PROGRESS after this step.**
+5. **Verify Changes** - Run EXACT verification commands from "Verification Commands" section below (NEVER improvise)
+6. **Interactive Changes (if needed)** - Use two-phase pattern if verification fails. **SAVE PROGRESS after this step.**
 7. **Documentation Pass** - Run `accelint-ts-documentation` to complete the audit
-8. **Interactive Changes** - Present the proposed change for each recommendation, with accept/deny/other options
+8. **Interactive Changes** - Use two-phase pattern with numbered table. **SAVE PROGRESS after this step before archiving.**
 
 **Progress Tracking:**
 - After each step, save detailed progress to the "Current File - Detailed Progress" section in this file
@@ -87,13 +84,16 @@ For each code file, you MUST follow this sequence:
 
 ### Audit Guidelines
 - Test files (*.test.ts) and benchmark files (*.bench.ts) are excluded from this audit
+- **ALWAYS use two-phase interactive pattern:** Show ALL issues in emoji severity table first, then detailed before/after for each, then accept via numbered list. NEVER present one-by-one.
 - Performance comments (`// PERF:`) should only be added when they provide meaningful insight
-- User must approve each change before applying (accept/deny/other workflow)
+- User must approve each change before applying (numbered list acceptance workflow)
+- **BLOCKING:** Save progress to this file after completing EACH step (2, 4, 6, 8) before continuing
 - This audit will require multiple sessions due to context window constraints
-- Update this file after completing each step to track progress
-- If a property based test are added, double and triple check that the test properties won't fail random. Have seen a lot of false positives thanks to randomness.
-  - Run the tests for the changed file 100 times to make sure that there are not random failures
-- If a property based test fails, make sure to check the fix against the exact seed that failed
+- **BLOCKING:** If property-based tests are added, run test suite 100 times and achieve 100 consecutive passes before proceeding. Random failures are common with PBT.
+  - If ANY run fails, examine the seed that failed
+  - Fix test properties (add constraints to arbitraries: date ranges, filtered NaNs, safe strings)
+  - Re-run 100 times until 100 consecutive passes achieved
+- **Use EXACT verification commands from "Verification Commands" section - NEVER improvise or run one-off commands**
 
 ---
 

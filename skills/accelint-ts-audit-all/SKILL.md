@@ -2,7 +2,7 @@
 name: accelint-ts-audit-all
 description: Comprehensive TypeScript file audit system. Command-only skill (no natural triggers). Accepts file or directory path to systematically audit through accelint-ts-testing, accelint-ts-best-practices, accelint-ts-performance, and accelint-ts-documentation skills. Maintains progress tracking across sessions with interactive change approval.
 metadata:
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Audit All
@@ -13,7 +13,11 @@ Comprehensive TypeScript file audit system that systematically applies multiple 
 
 - **NEVER skip the initial test coverage step** - Refactoring without test coverage first leads to undetected breakage. Always run `accelint-ts-testing` before any code changes.
 - **NEVER run best-practices and performance sequentially** - Running them separately creates contradictory recommendations for the same code. Always run in parallel to see merged suggestions.
+- **NEVER present issues one-by-one for approval** - Always show ALL issues in a numbered table first, then display each issue's detailed before/after code, THEN ask for numbered list acceptance. This prevents wildly inconsistent presentations and allows users to spot conflicts across parallel processes.
 - **NEVER auto-apply all recommendations** - Each change needs user approval (accept/deny/other) to maintain code ownership and prevent unwanted modifications.
+- **NEVER run one-off commands instead of documented verification commands** - The audit-process file documents EXACT verification commands. Use those commands verbatim. Never improvise with `npm test`, `bun test`, or similar unless they match the documented commands exactly.
+- **NEVER skip saving progress after completing a step** - After EVERY step completion (Steps 1, 2, 3, 4, 5, 6, 7, 8), immediately save detailed progress to audit-process file BEFORE moving to next step. Context limits will break otherwise.
+- **NEVER skip the 100-pass PBT verification** - When property-based tests are added, you MUST run the test suite 100 times to verify stability. Random failures are common with PBT. This is a blocking requirement - do not proceed until 100 consecutive passes are achieved.
 - **NEVER lose progress when context runs out** - Save detailed progress to audit-process file after each step. Context limits are guaranteed in large audits.
 - **NEVER assume property-based tests are stable** - Random test failures are common with PBT. Run new property tests 100 times to verify stability before accepting.
 - **NEVER add PERF comments everywhere** - Only add `// PERF:` comments when they provide meaningful insight that future developers wouldn't discover on their own.
@@ -96,11 +100,20 @@ For each file in the pending list, follow this exact sequence:
 ```
 
 **Step 2: Interactive Changes**
-- Present each recommendation with accept/deny/other options
+- Use the two-phase interactive pattern (table overview → detailed changes → numbered acceptance)
 - Apply accepted changes
-- If property-based tests added, run test suite 100 times to verify stability
+- **BLOCKING REQUIREMENT:** If property-based tests added, run verification:
+  ```bash
+  # Run test suite 100 times to verify PBT stability
+  for i in {1..100}; do <test-command> || break; done
+  ```
+  - If ANY run fails, examine the seed that failed
+  - Fix test properties (add constraints to arbitraries: date ranges, filtered NaNs, safe strings)
+  - Re-run 100 times until 100 consecutive passes achieved
+  - DO NOT proceed to Step 3 until this verification passes
 - Document findings in "Current File - Detailed Progress" section
 - Update status to show Step 1 ✅, Step 2 ✅
+- **SAVE PROGRESS to audit-process file NOW before continuing**
 
 #### Phase 2: Code Quality & Performance Analysis
 
@@ -117,29 +130,33 @@ CRITICAL: Run these together to avoid contradictory suggestions:
 - **If recommendations overlap:**
   - Try to merge them into single fix if possible
   - If conflicting, present both and let user choose
-- Present each change with accept/deny/other options
+- Use the two-phase interactive pattern (table overview → detailed changes → numbered acceptance)
 - Apply accepted changes
 - Add `// PERF:` comments only where they add genuine insight
 - Document in "Current File - Detailed Progress"
 - Update status to show Step 3 ✅, Step 4 ✅
+- **SAVE PROGRESS to audit-process file NOW before continuing**
 
 #### Phase 3: Verify Changes
 
 **Step 5: Run verification commands**
 
+⚠️ **CRITICAL:** Use EXACT commands from audit-process file "Verification Commands" section. DO NOT improvise or run one-off commands.
+
 Run ALL verification commands documented in audit-process file:
 ```bash
-# Example commands (use exact commands from audit-process file):
+# Example commands (MUST match audit-process file exactly):
 cd <project-root>; npm test
 cd <project-root>; npm run build
 cd <project-root>; npm run lint
 ```
 
 **Step 6: Interactive Changes (if needed)**
-- If verification fails, present fixes with accept/deny/other
+- If verification fails, use two-phase interactive pattern to present fixes
 - If verification passes, no changes needed
 - Document results in "Current File - Detailed Progress"
 - Update status to show Step 5 ✅, Step 6 ✅
+- **SAVE PROGRESS to audit-process file NOW before continuing**
 
 #### Phase 4: Documentation
 
@@ -149,11 +166,12 @@ cd <project-root>; npm run lint
 ```
 
 **Step 8: Interactive Changes**
-- Present each documentation improvement with accept/deny/other
+- Use the two-phase interactive pattern (table overview → detailed changes → numbered acceptance)
 - Apply accepted changes
-- Run final verification to ensure docs didn't break anything
+- Run final verification to ensure docs didn't break anything (use EXACT commands from audit-process file)
 - Document in "Current File - Detailed Progress"
 - Update status to show Step 7 ✅, Step 8 ✅
+- **SAVE PROGRESS to audit-process file NOW before continuing to Step 3 (Archive)**
 
 ### Step 3: Archive Completed File
 
@@ -213,30 +231,86 @@ When all 8 steps complete for a file:
 
 ## Interactive Change Approval Pattern
 
-For each recommendation from audit skills, present in this format:
+**CRITICAL:** Always use the two-phase presentation pattern. NEVER present issues one-by-one or ask for approval before showing all changes.
+
+### Phase 1: Overview Table (Quick Scan)
+
+Present ALL issues in a numbered table using emoji severity indicators:
 
 ```markdown
-**Issue X (Severity):** [Description] - Line(s) Y
+## Found Issues Summary (X total)
 
-**Problem:** [What's wrong]
-**Impact:** [Why it matters]
-**Proposed Fix:**
-
-❌ Before:
-[code]
-
-✅ After:
-[code]
-
-**Expected Benefit:** [Performance gain / type safety / etc.]
-
-Options:
-1. Accept - Apply this change
-2. Deny - Skip this change
-3. Other - Modify the proposed fix
+| # | Severity | Type | Lines | Description |
+|---|----------|------|-------|-------------|
+| 1 | 🛑 Critical | Type Safety | 45-47 | Missing null check on user object |
+| 2 | ⚠️ High | Performance | 89 | N+1 query in loop - use batch fetch |
+| 3 | ⚡ Medium | Performance | 120-125 | Filter+map → single pass with reduce |
+| 4 | 🔵 Low | Best Practice | 78 | Use const assertion for readonly array |
+| 5 | ✅ Info | Documentation | 12 | Missing JSDoc return type |
 ```
 
-Wait for user response before applying or proceeding.
+**Severity Legend:**
+- 🛑 **Critical** - Causes runtime errors, security vulnerabilities, or data loss
+- ⚠️ **High** - Type errors, significant performance issues, or API breaking changes
+- ⚡ **Medium** - Moderate performance gains, maintainability improvements
+- 🔵 **Low** - Minor optimizations, style improvements
+- ✅ **Info** - Documentation, comments, non-functional improvements
+
+### Phase 2: Detailed Changes (Full Context)
+
+After showing the overview table, display each issue with complete before/after code:
+
+```markdown
+---
+
+### Issue #1: Missing null check (🛑 Critical - Type Safety)
+**Lines:** 45-47
+**Problem:** Function doesn't handle null user case
+**Impact:** Runtime TypeError when user is null
+
+❌ **Before:**
+```typescript
+function getUsername(user: User | null) {
+  return user.name; // TS error + runtime crash
+}
+```
+
+✅ **After:**
+```typescript
+function getUsername(user: User | null) {
+  return user?.name ?? 'Anonymous';
+}
+```
+
+**Expected Benefit:** Prevents runtime TypeError, fixes TS compilation error
+
+---
+
+### Issue #2: N+1 Query Performance (⚠️ High - Performance)
+[... same detailed format for each issue ...]
+
+---
+
+### Issue #3: Filter+map optimization (⚡ Medium - Performance)
+[... same detailed format for each issue ...]
+
+---
+
+[Continue for all issues...]
+
+---
+
+**Apply which issues?** Enter numbers (e.g., "1, 2, 5" or "all" or "skip"):
+```
+
+**Key Benefits:**
+- Overview table allows quick scanning for conflicts across parallel processes
+- Numbered list makes acceptance explicit and trackable
+- All code changes shown upfront before any approval
+- Emoji severity indicators enable instant visual prioritization
+- Consistent format prevents wildly varying presentations
+
+Wait for user response with numbered list before applying any changes.
 
 ## Verification Commands
 
