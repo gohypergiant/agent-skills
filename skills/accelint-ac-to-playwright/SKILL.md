@@ -4,7 +4,7 @@ description: Convert acceptance criteria to Playwright test specs. Use when user
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.5"
+  version: "0.7"
 ---
 
 # AC To Playwright
