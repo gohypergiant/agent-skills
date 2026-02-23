@@ -26,7 +26,9 @@ export type Step = {
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
   | { action: "mouseClick"; x: number; y: number; button?: "left" | "right" | "middle" }
+  | { action: "mouseDown"; button?: "left" | "right" | "middle" }
   | { action: "mouseMove"; x: number; y: number }
+  | { action: "mouseUp"; button?: "left" | "right" | "middle" }
   | { action: "select"; target: string; value: string };
   
 export type Test = {
@@ -291,6 +293,18 @@ function renderStep(step: Step, stepIndex: number): string {
       ].join("\n");
     }
 
+    case "mouseDown": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.down(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
     case "mouseMove":
       return [
         `    try {`,
@@ -300,6 +314,18 @@ function renderStep(step: Step, stepIndex: number): string {
         `      throw error;`,
         `    }`
       ].join("\n");
+
+    case "mouseUp": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.up(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
 
     case "select": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;

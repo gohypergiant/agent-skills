@@ -90,11 +90,43 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseMove", x: 150, y: 250 },
+      { action: "mouseDown" },
       3,
       [
+        'await page.mouse.down();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "mouseDown" })'
+      ],
+    ],
+    [
+      { action: "mouseDown", button: "middle" },
+      4,
+      [
+        'await page.mouse.down({ button: "middle" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "mouseDown" })'
+      ],
+    ],
+    [
+      { action: "mouseMove", x: 150, y: 250 },
+      5,
+      [
         'await page.mouse.move(150, 250);',
-        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "mouseMove" })'
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 5, action: "mouseMove" })'
+      ],
+    ],
+    [
+      { action: "mouseUp" },
+      6,
+      [
+        'await page.mouse.up();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 6, action: "mouseUp" })'
+      ],
+    ],
+    [
+      { action: "mouseUp", button: "right" },
+      7,
+      [
+        'await page.mouse.up({ button: "right" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 7, action: "mouseUp" })'
       ],
     ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {

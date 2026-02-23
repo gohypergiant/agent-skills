@@ -63,10 +63,19 @@ When writing AC that involve mouse operations, distinguish between element-based
 - **Mouse movement** (for positioning before other operations): "the user moves the mouse to position 150, 250"
   - Positions the cursor at specific x,y coordinates without clicking
   - The agent translates this to a `mouseMove` action
+- **Press and hold** (for drag operations): "the user presses the left mouse button"
+  - Presses a mouse button at the current cursor position
+  - The agent translates this to a `mouseDown` action
+  - Always use `mouseMove` first to position the cursor
+  - Optional: specify button type: "the user presses the right mouse button"
+- **Release button** (for drag operations): "the user releases the mouse button"
+  - Releases a held mouse button at the current cursor position
+  - The agent translates this to a `mouseUp` action
+  - Optional: specify button type: "the user releases the middle mouse button"
 
 Valid buttons: `left` (default), `right`, `middle`
 
-Use coordinate clicks only when the AC explicitly requires clicking at specific positions (drawing apps, canvas interactions, coordinate-based interfaces).
+Use coordinate-based actions only when the AC explicitly requires precise positioning (drawing apps, canvas interactions, drag-and-drop with coordinates).
 
 ## Targets
 

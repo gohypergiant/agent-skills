@@ -247,6 +247,108 @@ describe("Plan schema", () => {
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
+
+  it("accepts mouseDown with default button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Press mouse button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseDown" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts mouseDown with explicit button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Press right button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseDown", button: "right" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects mouseDown with invalid button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseDown", button: "invalid" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts mouseUp with default button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Release mouse button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseUp" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts mouseUp with explicit button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Release middle button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseUp", button: "middle" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects mouseUp with invalid button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseUp", button: "invalid" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("Test fixture validations", () => {
@@ -273,7 +375,9 @@ describe("Test fixture validations", () => {
         "fill",
         "goto",
         "mouseClick",
+        "mouseDown",
         "mouseMove",
+        "mouseUp",
         "select",
       ])
     );

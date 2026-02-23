@@ -45,9 +45,15 @@
           "button": "right"
         },
         {
+          "action": "mouseDown"
+        },
+        {
           "action": "mouseMove",
           "x": 500,
           "y": 600
+        },
+        {
+          "action": "mouseUp"
         },
         {
           "action": "expectVisible",
