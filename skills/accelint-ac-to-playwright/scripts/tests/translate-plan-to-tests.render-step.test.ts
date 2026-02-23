@@ -73,6 +73,14 @@ describe("renderStep", () => {
         'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "expectUrl" })'
       ],
     ],
+    [
+      { action: "press", value: "Enter" },
+      7,
+      [
+        'await page.keyboard.press("Enter");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 7, action: "press" })'
+      ],
+    ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
     const out = _renderStep(step, stepIndex);
 

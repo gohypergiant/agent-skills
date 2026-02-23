@@ -37,8 +37,9 @@ AC files are first converted to JSON plan files, which are validated against a s
 
 Tests can currently use the following actions:
 - click - clicks something.
-- fill - adds text to an element (generally `<input>` or `<textarea>` elements only).
+- fill - adds text to an element (generally `<input>` or `<textarea>` elements only). Use this for entering data into form fields.
 - goto - generally only used at the start of a test to get to the starting URL.
+- press - presses a single keyboard key (accepts unmodified characters like `a`, `1`, `,` or named keys like `Enter`, `Tab`, `F7`, `Space`, `ArrowLeft`). Intended for page-wide keyboard shortcuts, not for entering text into input fields (use `fill` instead). Does not support modifier combinations like `Shift+g`.
 - select - picks an item from a select dropdown.
 
 And the following assertions:

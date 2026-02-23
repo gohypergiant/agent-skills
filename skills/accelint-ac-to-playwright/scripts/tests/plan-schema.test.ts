@@ -77,6 +77,74 @@ describe("Plan schema", () => {
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
+
+  it("accepts press action with single key", () => {
+    const input = {
+      suiteName: "Press test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test press",
+          startUrl: "https://example.com",
+          steps: [{ action: "press", value: "Enter" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts press action with unmodified character", () => {
+    const input = {
+      suiteName: "Press test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test press",
+          startUrl: "https://example.com",
+          steps: [{ action: "press", value: "a" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects press action with modified character (requires Shift)", () => {
+    const input = {
+      suiteName: "Press test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test press",
+          startUrl: "https://example.com",
+          steps: [{ action: "press", value: "+" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects press action with modifier combination", () => {
+    const input = {
+      suiteName: "Press test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test press",
+          startUrl: "https://example.com",
+          steps: [{ action: "press", value: "Shift+g" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("Test fixture validations", () => {
@@ -102,6 +170,7 @@ describe("Test fixture validations", () => {
         "expectVisible",
         "fill",
         "goto",
+        "press",
         "select",
       ])
     );

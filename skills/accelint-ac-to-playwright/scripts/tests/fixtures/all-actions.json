@@ -26,6 +26,10 @@
           "value": "admin"
         },
         {
+          "action": "press",
+          "value": "Enter"
+        },
+        {
           "action": "click",
           "target": "button.login"
         },
