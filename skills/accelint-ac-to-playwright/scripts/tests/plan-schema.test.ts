@@ -179,6 +179,74 @@ describe("Plan schema", () => {
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
+
+  it("accepts mouseMove with valid coordinates", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Move mouse",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseMove", x: 150, y: 250 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects mouseMove with negative x coordinate", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid move",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseMove", x: -10, y: 100 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects mouseMove with negative y coordinate", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid move",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseMove", x: 100, y: -50 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects mouseMove with non-integer coordinates", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid move",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseMove", x: 100.5, y: 200 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("Test fixture validations", () => {
@@ -205,6 +273,7 @@ describe("Test fixture validations", () => {
         "fill",
         "goto",
         "mouseClick",
+        "mouseMove",
         "select",
       ])
     );

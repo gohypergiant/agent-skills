@@ -45,6 +45,11 @@
           "button": "right"
         },
         {
+          "action": "mouseMove",
+          "x": 500,
+          "y": 600
+        },
+        {
           "action": "expectVisible",
           "target": "banner.welcome"
         },

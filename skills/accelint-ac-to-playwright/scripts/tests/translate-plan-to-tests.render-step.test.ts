@@ -89,6 +89,14 @@ describe("renderStep", () => {
         'attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "mouseClick" })'
       ],
     ],
+    [
+      { action: "mouseMove", x: 150, y: 250 },
+      3,
+      [
+        'await page.mouse.move(150, 250);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "mouseMove" })'
+      ],
+    ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
     const out = _renderStep(step, stepIndex);
 

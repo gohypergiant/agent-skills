@@ -51,7 +51,7 @@ And a user clicks the Submit button on the login form
 
 ## Mouse actions
 
-When writing AC that involve mouse clicks, distinguish between element-based and coordinate-based clicks:
+When writing AC that involve mouse operations, distinguish between element-based and coordinate-based actions:
 
 - **Element clicks** (most common): "the user clicks the Submit button on the form"
   - Uses test hooks to identify elements (see Targets below)
@@ -60,6 +60,9 @@ When writing AC that involve mouse clicks, distinguish between element-based and
   - Uses x,y coordinates for clicking specific positions
   - The agent translates this to a `mouseClick` action
   - Optional: specify button type: "the user right-clicks at position 300, 400"
+- **Mouse movement** (for positioning before other operations): "the user moves the mouse to position 150, 250"
+  - Positions the cursor at specific x,y coordinates without clicking
+  - The agent translates this to a `mouseMove` action
 
 Valid buttons: `left` (default), `right`, `middle`
 

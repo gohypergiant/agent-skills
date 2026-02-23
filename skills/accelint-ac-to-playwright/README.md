@@ -40,6 +40,7 @@ Tests can currently use the following actions:
 - fill - adds text to an element (generally `<input>` or `<textarea>` elements only).
 - goto - generally only used at the start of a test to get to the starting URL.
 - mouseClick - clicks at x,y coordinates (not element-based).
+- mouseMove - moves the mouse cursor to x,y coordinates.
 - select - picks an item from a select dropdown.
 
 And the following assertions:

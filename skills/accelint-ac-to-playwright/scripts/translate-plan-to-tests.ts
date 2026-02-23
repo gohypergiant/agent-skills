@@ -26,6 +26,7 @@ export type Step = {
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
   | { action: "mouseClick"; x: number; y: number; button?: "left" | "right" | "middle" }
+  | { action: "mouseMove"; x: number; y: number }
   | { action: "select"; target: string; value: string };
   
 export type Test = {
@@ -289,6 +290,16 @@ function renderStep(step: Step, stepIndex: number): string {
         `    }`
       ].join("\n");
     }
+
+    case "mouseMove":
+      return [
+        `    try {`,
+        `      await page.mouse.move(${step.x}, ${step.y});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
 
     case "select": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;

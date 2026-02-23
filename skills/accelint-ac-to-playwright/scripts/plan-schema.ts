@@ -48,6 +48,12 @@ const mouseClickStep = z.object({
   button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
+const mouseMoveStep = z.object({
+  action: z.literal("mouseMove"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+}).strict();
+
 const selectStep = z.object({
   action: z.literal("select"),
   target: z.string(),
@@ -63,6 +69,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   fillStep,
   gotoStep,
   mouseClickStep,
+  mouseMoveStep,
   selectStep,
 ]);
 
