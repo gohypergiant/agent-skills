@@ -13,6 +13,22 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { action: "doubleClick", x: 100, y: 200 },
+      4,
+      [
+        'await page.mouse.dblclick(100, 200);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "doubleClick" })'
+      ],
+    ],
+    [
+      { action: "doubleClick", x: 50, y: 75, button: "right" },
+      5,
+      [
+        'await page.mouse.dblclick(50, 75, { button: "right" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 5, action: "doubleClick" })'
+      ],
+    ],
+    [
       { action: "expectNotVisible", target: "#modal" },
       1,
       [

@@ -37,6 +37,7 @@ AC files are first converted to JSON plan files, which are validated against a s
 
 Tests can currently use the following actions:
 - click - clicks an element.
+- doubleClick - double-clicks at x,y coordinates (not element-based).
 - fill - adds text to an element (generally `<input>` or `<textarea>` elements only).
 - goto - generally only used at the start of a test to get to the starting URL.
 - mouseClick - clicks at x,y coordinates (not element-based).

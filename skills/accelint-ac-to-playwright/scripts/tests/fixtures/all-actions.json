@@ -30,6 +30,11 @@
           "target": "button.login"
         },
         {
+          "action": "doubleClick",
+          "x": 250,
+          "y": 300
+        },
+        {
           "action": "expectUrl",
           "value": "https://example.com/dashboard"
         },

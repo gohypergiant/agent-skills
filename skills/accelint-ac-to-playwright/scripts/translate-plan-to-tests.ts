@@ -19,6 +19,7 @@ export type PlanFile = {
 
 export type Step = {
   action: "click"; target: string }
+  | { action: "doubleClick"; x: number; y: number; button?: "left" | "right" | "middle" }
   | { action: "expectNotVisible"; target: string }
   | { action: "expectText"; target: string; value: string }
   | { action: "expectUrl"; value: string }
@@ -204,6 +205,18 @@ function renderStep(step: Step, stepIndex: number): string {
         `      await ${locator}.click();`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "doubleClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.dblclick(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
         `      throw error;`,
         `    }`
       ].join("\n");

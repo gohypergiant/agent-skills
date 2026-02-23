@@ -9,6 +9,13 @@ const clickStep = z.object({
   target: z.string(),
 }).strict();
 
+const doubleClickStep = z.object({
+  action: z.literal("doubleClick"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+  button: mouseButtonValidator.optional().default("left"),
+}).strict();
+
 const expectNotVisibleStep = z.object({
   action: z.literal("expectNotVisible"),
   target: z.string(),
@@ -72,6 +79,7 @@ const selectStep = z.object({
 
 export const stepSchema = z.discriminatedUnion("action", [
   clickStep,
+  doubleClickStep,
   expectNotVisibleStep,
   expectTextStep,
   expectUrlStep,

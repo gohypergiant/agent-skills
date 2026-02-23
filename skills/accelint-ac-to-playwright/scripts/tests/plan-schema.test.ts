@@ -78,6 +78,74 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts doubleClick with default button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Double click at coordinates",
+          startUrl: "https://example.com",
+          steps: [{ action: "doubleClick", x: 100, y: 200 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts doubleClick with explicit button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Right double click",
+          startUrl: "https://example.com",
+          steps: [{ action: "doubleClick", x: 50, y: 75, button: "right" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects doubleClick with negative coordinates", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid double click",
+          startUrl: "https://example.com",
+          steps: [{ action: "doubleClick", x: -10, y: 200 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects doubleClick with invalid button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid button",
+          startUrl: "https://example.com",
+          steps: [{ action: "doubleClick", x: 100, y: 200, button: "invalid" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
   it("accepts mouseClick with default button", () => {
     const input = {
       suiteName: "Mouse test",
@@ -368,6 +436,7 @@ describe("Test fixture validations", () => {
     expect(unique).toEqual(
       new Set([
         "click",
+        "doubleClick",
         "expectNotVisible",
         "expectText",
         "expectUrl",

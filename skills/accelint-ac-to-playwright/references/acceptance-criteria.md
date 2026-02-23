@@ -60,6 +60,10 @@ When writing AC that involve mouse operations, distinguish between element-based
   - Uses x,y coordinates for clicking specific positions
   - The agent translates this to a `mouseClick` action
   - Optional: specify button type: "the user right-clicks at position 300, 400"
+- **Double-clicks** (for coordinate-based actions): "the user double-clicks at position 150, 200"
+  - Uses x,y coordinates for double-clicking specific positions
+  - The agent translates this to a `doubleClick` action
+  - Optional: specify button type: "the user double-clicks with the right button at position 300, 400"
 - **Mouse movement** (for positioning before other operations): "the user moves the mouse to position 150, 250"
   - Positions the cursor at specific x,y coordinates without clicking
   - The agent translates this to a `mouseMove` action
