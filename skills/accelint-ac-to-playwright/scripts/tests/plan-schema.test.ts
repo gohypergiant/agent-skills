@@ -77,6 +77,108 @@ describe("Plan schema", () => {
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
+
+  it("accepts mouseClick with default button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Click at coordinates",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseClick", x: 100, y: 200 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts mouseClick with explicit button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Right click",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseClick", x: 50, y: 75, button: "right" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects mouseClick with negative x coordinate", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid click",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseClick", x: -10, y: 200 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects mouseClick with negative y coordinate", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid click",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseClick", x: 100, y: -50 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects mouseClick with non-integer coordinates", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid click",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseClick", x: 100.5, y: 200 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects mouseClick with invalid button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid click",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseClick", x: 100, y: 200, button: "invalid" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("Test fixture validations", () => {
@@ -102,6 +204,7 @@ describe("Test fixture validations", () => {
         "expectVisible",
         "fill",
         "goto",
+        "mouseClick",
         "select",
       ])
     );

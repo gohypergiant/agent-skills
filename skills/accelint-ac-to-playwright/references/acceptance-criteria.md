@@ -49,6 +49,22 @@ And a user clicks the Submit button on the login form
 - Visibility changes: be explicit when something appears/disappears. The agent is looking for clue words to understand that visibility changes are expected (e.g., "visible", "appears", "shows", "see", "changes", "hides", and similar wording).
   - Example: "the tracks table shows up on the page"
 
+## Mouse actions
+
+When writing AC that involve mouse clicks, distinguish between element-based and coordinate-based clicks:
+
+- **Element clicks** (most common): "the user clicks the Submit button on the form"
+  - Uses test hooks to identify elements (see Targets below)
+  - The agent translates this to a standard `click` action with a target
+- **Coordinate clicks** (for precise positioning): "the user clicks at position 150, 200"
+  - Uses x,y coordinates for clicking specific positions
+  - The agent translates this to a `mouseClick` action
+  - Optional: specify button type: "the user right-clicks at position 300, 400"
+
+Valid buttons: `left` (default), `right`, `middle`
+
+Use coordinate clicks only when the AC explicitly requires clicking at specific positions (drawing apps, canvas interactions, coordinate-based interfaces).
+
 ## Targets
 
 To make your target unambiguous to the agent, use this pattern:

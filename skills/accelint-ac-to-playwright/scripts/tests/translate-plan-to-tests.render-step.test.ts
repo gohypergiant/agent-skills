@@ -73,6 +73,22 @@ describe("renderStep", () => {
         'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "expectUrl" })'
       ],
     ],
+    [
+      { action: "mouseClick", x: 100, y: 200 },
+      1,
+      [
+        'await page.mouse.click(100, 200);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "mouseClick" })'
+      ],
+    ],
+    [
+      { action: "mouseClick", x: 50, y: 75, button: "right" },
+      2,
+      [
+        'await page.mouse.click(50, 75, { button: "right" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "mouseClick" })'
+      ],
+    ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
     const out = _renderStep(step, stepIndex);
 

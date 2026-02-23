@@ -36,9 +36,10 @@ npx generate-tests path/to/plan.json --tests-dir path/to/tests --summary-dir pat
 AC files are first converted to JSON plan files, which are validated against a schema. Validated JSON plan files are then converted to Playwright tests.
 
 Tests can currently use the following actions:
-- click - clicks something.
+- click - clicks an element.
 - fill - adds text to an element (generally `<input>` or `<textarea>` elements only).
 - goto - generally only used at the start of a test to get to the starting URL.
+- mouseClick - clicks at x,y coordinates (not element-based).
 - select - picks an item from a select dropdown.
 
 And the following assertions:

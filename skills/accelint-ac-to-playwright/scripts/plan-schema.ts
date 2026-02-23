@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { mouseButtonValidator } from "./mouse-validator";
 
 /**
  * Step schemas
@@ -40,6 +41,13 @@ const gotoStep = z.object({
   value: z.string(),
 }).strict();
 
+const mouseClickStep = z.object({
+  action: z.literal("mouseClick"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+  button: mouseButtonValidator.optional().default("left"),
+}).strict();
+
 const selectStep = z.object({
   action: z.literal("select"),
   target: z.string(),
@@ -54,6 +62,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   expectVisibleStep,
   fillStep,
   gotoStep,
+  mouseClickStep,
   selectStep,
 ]);
 

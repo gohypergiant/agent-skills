@@ -34,6 +34,17 @@
           "value": "https://example.com/dashboard"
         },
         {
+          "action": "mouseClick",
+          "x": 150,
+          "y": 200
+        },
+        {
+          "action": "mouseClick",
+          "x": 300,
+          "y": 400,
+          "button": "right"
+        },
+        {
           "action": "expectVisible",
           "target": "banner.welcome"
         },

@@ -17,7 +17,7 @@ export type PlanFile = {
   tests: Test[];
 };
 
-export type Step = { 
+export type Step = {
   action: "click"; target: string }
   | { action: "expectNotVisible"; target: string }
   | { action: "expectText"; target: string; value: string }
@@ -25,6 +25,7 @@ export type Step = {
   | { action: "expectVisible"; target: string }
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
+  | { action: "mouseClick"; x: number; y: number; button?: "left" | "right" | "middle" }
   | { action: "select"; target: string; value: string };
   
 export type Test = {
@@ -276,7 +277,19 @@ function renderStep(step: Step, stepIndex: number): string {
         `      throw error;`,
         `    }`
       ].join("\n");
-    
+
+    case "mouseClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.click(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
     case "select": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [
