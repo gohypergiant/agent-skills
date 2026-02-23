@@ -78,7 +78,10 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts press action with single key", () => {
+  it.each([
+    ["single key", "Enter"],
+    ["unmodified character", "a"],
+  ])("accepts press action with %s", (_description, value) => {
     const input = {
       suiteName: "Press test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -86,7 +89,7 @@ describe("Plan schema", () => {
         {
           name: "Test press",
           startUrl: "https://example.com",
-          steps: [{ action: "press", value: "Enter" }],
+          steps: [{ action: "press", value }],
         },
       ],
     };
@@ -95,7 +98,10 @@ describe("Plan schema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts press action with unmodified character", () => {
+  it.each([
+    ["modified character (requires Shift)", "+"],
+    ["modifier combination", "Shift+g"],
+  ])("rejects press action with %s", (_description, value) => {
     const input = {
       suiteName: "Press test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -103,24 +109,7 @@ describe("Plan schema", () => {
         {
           name: "Test press",
           startUrl: "https://example.com",
-          steps: [{ action: "press", value: "a" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("rejects press action with modified character (requires Shift)", () => {
-    const input = {
-      suiteName: "Press test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Test press",
-          startUrl: "https://example.com",
-          steps: [{ action: "press", value: "+" }],
+          steps: [{ action: "press", value }],
         },
       ],
     };
@@ -129,24 +118,10 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects press action with modifier combination", () => {
-    const input = {
-      suiteName: "Press test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Test press",
-          startUrl: "https://example.com",
-          steps: [{ action: "press", value: "Shift+g" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("accepts keyDown action with valid modifier key", () => {
+  it.each([
+    ["valid modifier key", "Shift"],
+    ["app-specific modifier 'a'", "a"],
+  ])("accepts keyDown action with %s", (_description, value) => {
     const input = {
       suiteName: "KeyDown test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -154,24 +129,7 @@ describe("Plan schema", () => {
         {
           name: "Test keyDown",
           startUrl: "https://example.com",
-          steps: [{ action: "keyDown", value: "Shift" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("accepts keyDown action with app-specific modifier 'a'", () => {
-    const input = {
-      suiteName: "KeyDown test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Test keyDown",
-          startUrl: "https://example.com",
-          steps: [{ action: "keyDown", value: "a" }],
+          steps: [{ action: "keyDown", value }],
         },
       ],
     };
