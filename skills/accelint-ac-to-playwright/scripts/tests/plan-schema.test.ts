@@ -78,15 +78,18 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts doubleClick with default button", () => {
+  it.each([
+    ["default button", 100, 200, undefined],
+    ["explicit button", 50, 75, "right"],
+  ])("accepts doubleClick with %s", (_description, x, y, button) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Double click at coordinates",
+          name: "Double click test",
           startUrl: "https://example.com",
-          steps: [{ action: "doubleClick", x: 100, y: 200 }],
+          steps: [{ action: "doubleClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -95,24 +98,10 @@ describe("Plan schema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts doubleClick with explicit button", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Right double click",
-          startUrl: "https://example.com",
-          steps: [{ action: "doubleClick", x: 50, y: 75, button: "right" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("rejects doubleClick with negative coordinates", () => {
+  it.each([
+    ["negative coordinates", -10, 200, undefined],
+    ["invalid button", 100, 200, "invalid"],
+  ])("rejects doubleClick with %s", (_description, x, y, button) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -120,7 +109,7 @@ describe("Plan schema", () => {
         {
           name: "Invalid double click",
           startUrl: "https://example.com",
-          steps: [{ action: "doubleClick", x: -10, y: 200 }],
+          steps: [{ action: "doubleClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -129,32 +118,18 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects doubleClick with invalid button", () => {
+  it.each([
+    ["default button", 100, 200, undefined],
+    ["explicit button", 50, 75, "right"],
+  ])("accepts mouseClick with %s", (_description, x, y, button) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Invalid button",
+          name: "Click test",
           startUrl: "https://example.com",
-          steps: [{ action: "doubleClick", x: 100, y: 200, button: "invalid" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("accepts mouseClick with default button", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Click at coordinates",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x: 100, y: 200 }],
+          steps: [{ action: "mouseClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -163,24 +138,12 @@ describe("Plan schema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts mouseClick with explicit button", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Right click",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x: 50, y: 75, button: "right" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("rejects mouseClick with negative x coordinate", () => {
+  it.each([
+    ["negative x coordinate", -10, 200, undefined],
+    ["negative y coordinate", 100, -50, undefined],
+    ["non-integer coordinates", 100.5, 200, undefined],
+    ["invalid button", 100, 200, "invalid"],
+  ])("rejects mouseClick with %s", (_description, x, y, button) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -188,58 +151,7 @@ describe("Plan schema", () => {
         {
           name: "Invalid click",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x: -10, y: 200 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects mouseClick with negative y coordinate", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid click",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x: 100, y: -50 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects mouseClick with non-integer coordinates", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid click",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x: 100.5, y: 200 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects mouseClick with invalid button", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid click",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x: 100, y: 200, button: "invalid" }],
+          steps: [{ action: "mouseClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -265,7 +177,11 @@ describe("Plan schema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects mouseMove with negative x coordinate", () => {
+  it.each([
+    ["negative x coordinate", -10, 100],
+    ["negative y coordinate", 100, -50],
+    ["non-integer coordinates", 100.5, 200],
+  ])("rejects mouseMove with %s", (_description, x, y) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -273,7 +189,7 @@ describe("Plan schema", () => {
         {
           name: "Invalid move",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseMove", x: -10, y: 100 }],
+          steps: [{ action: "mouseMove", x, y }],
         },
       ],
     };
@@ -282,41 +198,10 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects mouseMove with negative y coordinate", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid move",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseMove", x: 100, y: -50 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects mouseMove with non-integer coordinates", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid move",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseMove", x: 100.5, y: 200 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("accepts mouseDown with default button", () => {
+  it.each([
+    ["default button", undefined],
+    ["explicit button", "right"],
+  ])("accepts mouseDown with %s", (_description, button) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -324,24 +209,7 @@ describe("Plan schema", () => {
         {
           name: "Press mouse button",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseDown" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("accepts mouseDown with explicit button", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Press right button",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseDown", button: "right" }],
+          steps: [{ action: "mouseDown", ...(button && { button }) }],
         },
       ],
     };
@@ -367,7 +235,10 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts mouseUp with default button", () => {
+  it.each([
+    ["default button", undefined],
+    ["explicit button", "middle"],
+  ])("accepts mouseUp with %s", (_description, button) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
@@ -375,24 +246,7 @@ describe("Plan schema", () => {
         {
           name: "Release mouse button",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseUp" }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("accepts mouseUp with explicit button", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Release middle button",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseUp", button: "middle" }],
+          steps: [{ action: "mouseUp", ...(button && { button }) }],
         },
       ],
     };
@@ -418,15 +272,20 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts scroll with valid direction and amount", () => {
+  it.each([
+    ["down", 100],
+    ["up", 50],
+    ["left", 75],
+    ["right", 25],
+  ])("accepts scroll with %s direction", (direction, amount) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Scroll down",
+          name: "Scroll test",
           startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "down", amount: 100 }],
+          steps: [{ action: "scroll", direction, amount }],
         },
       ],
     };
@@ -435,117 +294,20 @@ describe("Plan schema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts scroll with up direction", () => {
+  it.each([
+    ["invalid direction", "diagonal", 100],
+    ["zero amount", "down", 0],
+    ["negative amount", "up", -50],
+    ["non-integer amount", "down", 50.5],
+  ])("rejects scroll with %s", (_description, direction, amount) => {
     const input = {
       suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Scroll up",
+          name: "Invalid scroll",
           startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "up", amount: 50 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("accepts scroll with left direction", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Scroll left",
-          startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "left", amount: 75 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("accepts scroll with right direction", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Scroll right",
-          startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "right", amount: 25 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
-  it("rejects scroll with invalid direction", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid direction",
-          startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "diagonal", amount: 100 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects scroll with zero amount", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid amount",
-          startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "down", amount: 0 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects scroll with negative amount", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid amount",
-          startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "up", amount: -50 }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejects scroll with non-integer amount", () => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Invalid amount",
-          startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction: "down", amount: 50.5 }],
+          steps: [{ action: "scroll", direction, amount }],
         },
       ],
     };
