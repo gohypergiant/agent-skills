@@ -30,6 +30,7 @@ export type Step = {
   | { action: "mouseDown"; button?: "left" | "right" | "middle" }
   | { action: "mouseMove"; x: number; y: number }
   | { action: "mouseUp"; button?: "left" | "right" | "middle" }
+  | { action: "scroll"; direction: "up" | "down" | "left" | "right"; amount: number }
   | { action: "select"; target: string; value: string };
   
 export type Test = {
@@ -333,6 +334,19 @@ function renderStep(step: Step, stepIndex: number): string {
       return [
         `    try {`,
         `      await page.mouse.up(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "scroll": {
+      const deltaX = step.direction === "left" ? -step.amount : step.direction === "right" ? step.amount : 0;
+      const deltaY = step.direction === "up" ? -step.amount : step.direction === "down" ? step.amount : 0;
+      return [
+        `    try {`,
+        `      await page.mouse.wheel(${deltaX}, ${deltaY});`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
         `      throw error;`,

@@ -44,6 +44,7 @@ Tests can currently use the following actions:
 - mouseDown - presses a mouse button at the current cursor position.
 - mouseMove - moves the mouse cursor to x,y coordinates.
 - mouseUp - releases a mouse button at the current cursor position.
+- scroll - scrolls the page in a direction by a specified pixel amount.
 - select - picks an item from a select dropdown.
 
 And the following assertions:

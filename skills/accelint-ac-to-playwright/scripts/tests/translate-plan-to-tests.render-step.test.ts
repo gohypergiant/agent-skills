@@ -145,6 +145,38 @@ describe("renderStep", () => {
         'attachFailureArtifacts({ page, testInfo, stepIndex: 7, action: "mouseUp" })'
       ],
     ],
+    [
+      { action: "scroll", direction: "down", amount: 100 },
+      8,
+      [
+        'await page.mouse.wheel(0, 100);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "scroll" })'
+      ],
+    ],
+    [
+      { action: "scroll", direction: "up", amount: 50 },
+      9,
+      [
+        'await page.mouse.wheel(0, -50);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 9, action: "scroll" })'
+      ],
+    ],
+    [
+      { action: "scroll", direction: "right", amount: 75 },
+      10,
+      [
+        'await page.mouse.wheel(75, 0);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 10, action: "scroll" })'
+      ],
+    ],
+    [
+      { action: "scroll", direction: "left", amount: 25 },
+      11,
+      [
+        'await page.mouse.wheel(-25, 0);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 11, action: "scroll" })'
+      ],
+    ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
     const out = _renderStep(step, stepIndex);
 

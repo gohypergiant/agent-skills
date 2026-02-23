@@ -76,6 +76,11 @@ When writing AC that involve mouse operations, distinguish between element-based
   - Releases a held mouse button at the current cursor position
   - The agent translates this to a `mouseUp` action
   - Optional: specify button type: "the user releases the middle mouse button"
+- **Scrolling** (for page navigation): "the user scrolls down 200 pixels"
+  - Scrolls the page in a specified direction by a pixel amount
+  - The agent translates this to a `scroll` action
+  - Valid directions: `up`, `down`, `left`, `right`
+  - Example: "the user scrolls right 150 pixels"
 
 Valid buttons: `left` (default), `right`, `middle`
 

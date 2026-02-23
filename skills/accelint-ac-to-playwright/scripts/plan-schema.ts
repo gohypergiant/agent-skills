@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { mouseButtonValidator } from "./mouse-validator";
+import { mouseButtonValidator, wheelDirectionValidator } from "./mouse-validator";
 
 /**
  * Step schemas
@@ -71,6 +71,12 @@ const mouseUpStep = z.object({
   button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
+const scrollStep = z.object({
+  action: z.literal("scroll"),
+  direction: wheelDirectionValidator,
+  amount: z.number().int().positive(),
+}).strict();
+
 const selectStep = z.object({
   action: z.literal("select"),
   target: z.string(),
@@ -90,6 +96,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   mouseDownStep,
   mouseMoveStep,
   mouseUpStep,
+  scrollStep,
   selectStep,
 ]);
 

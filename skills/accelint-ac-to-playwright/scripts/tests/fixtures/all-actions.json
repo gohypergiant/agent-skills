@@ -61,6 +61,11 @@
           "action": "mouseUp"
         },
         {
+          "action": "scroll",
+          "direction": "down",
+          "amount": 200
+        },
+        {
           "action": "expectVisible",
           "target": "banner.welcome"
         },

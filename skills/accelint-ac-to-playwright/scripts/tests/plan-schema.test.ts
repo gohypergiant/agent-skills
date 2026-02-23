@@ -417,6 +417,142 @@ describe("Plan schema", () => {
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
+
+  it("accepts scroll with valid direction and amount", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Scroll down",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "down", amount: 100 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts scroll with up direction", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Scroll up",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "up", amount: 50 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts scroll with left direction", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Scroll left",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "left", amount: 75 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts scroll with right direction", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Scroll right",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "right", amount: 25 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects scroll with invalid direction", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid direction",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "diagonal", amount: 100 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects scroll with zero amount", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid amount",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "down", amount: 0 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects scroll with negative amount", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid amount",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "up", amount: -50 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects scroll with non-integer amount", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid amount",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction: "down", amount: 50.5 }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("Test fixture validations", () => {
@@ -447,6 +583,7 @@ describe("Test fixture validations", () => {
         "mouseDown",
         "mouseMove",
         "mouseUp",
+        "scroll",
         "select",
       ])
     );
