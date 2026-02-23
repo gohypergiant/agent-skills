@@ -25,6 +25,8 @@ export type Step = {
   | { action: "expectVisible"; target: string }
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
+  | { action: "keyDown"; value: string }
+  | { action: "keyUp"; value: string }
   | { action: "press"; value: string }
   | { action: "select"; target: string; value: string };
   
@@ -272,6 +274,26 @@ function renderStep(step: Step, stepIndex: number): string {
       return [
         `    try {`,
         `      await page.goto(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "keyDown":
+      return [
+        `    try {`,
+        `      await page.keyboard.down(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "keyUp":
+      return [
+        `    try {`,
+        `      await page.keyboard.up(${JSON.stringify(step.value)});`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
         `      throw error;`,

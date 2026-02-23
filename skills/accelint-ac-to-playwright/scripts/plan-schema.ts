@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { keyValidator } from "./keyboard-key-validator";
+import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validator";
 
 /**
  * Step schemas
@@ -41,6 +41,16 @@ const gotoStep = z.object({
   value: z.string(),
 }).strict();
 
+const keyDownStep = z.object({
+  action: z.literal("keyDown"),
+  value: modifierKeyValidator,
+}).strict();
+
+const keyUpStep = z.object({
+  action: z.literal("keyUp"),
+  value: modifierKeyValidator,
+}).strict();
+
 const selectStep = z.object({
   action: z.literal("select"),
   target: z.string(),
@@ -49,7 +59,7 @@ const selectStep = z.object({
 
 const pressStep = z.object({
   action: z.literal("press"),
-  value: keyValidator,
+  value: pressKeyValidator,
 }).strict();
 
 export const stepSchema = z.discriminatedUnion("action", [
@@ -60,6 +70,8 @@ export const stepSchema = z.discriminatedUnion("action", [
   expectVisibleStep,
   fillStep,
   gotoStep,
+  keyDownStep,
+  keyUpStep,
   pressStep,
   selectStep,
 ]);

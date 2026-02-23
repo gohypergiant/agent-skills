@@ -26,8 +26,16 @@
           "value": "admin"
         },
         {
+          "action": "keyDown",
+          "value": "Shift"
+        },
+        {
           "action": "press",
           "value": "Enter"
+        },
+        {
+          "action": "keyUp",
+          "value": "Shift"
         },
         {
           "action": "click",

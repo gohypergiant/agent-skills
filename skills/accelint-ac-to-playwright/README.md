@@ -39,7 +39,9 @@ Tests can currently use the following actions:
 - click - clicks something.
 - fill - adds text to an element (generally `<input>` or `<textarea>` elements only). Use this for entering data into form fields.
 - goto - generally only used at the start of a test to get to the starting URL.
-- press - presses a single keyboard key (accepts unmodified characters like `a`, `1`, `,` or named keys like `Enter`, `Tab`, `F7`, `Space`, `ArrowLeft`). Intended for page-wide keyboard shortcuts, not for entering text into input fields (use `fill` instead). Does not support modifier combinations like `Shift+g`.
+- press - presses and immediately releases a single keyboard key (accepts unmodified characters like `a`, `1`, `,` or named keys like `Enter`, `Tab`, `F7`, `Space`, `ArrowLeft`). For simple keyboard actions or for pressing keys while a modifier is held (between `keyDown` and `keyUp`). Intended for page-wide keyboard shortcuts, not for entering text into input fields (use `fill` instead).
+- keyDown - presses and holds a modifier key (accepts `Shift`, `Control`, or app-specific modifier `a`). Must be paired with `keyUp` to release the key.
+- keyUp - releases a held modifier key (accepts `Shift`, `Control`, or app-specific modifier `a`). Must be paired with a preceding `keyDown`.
 - select - picks an item from a select dropdown.
 
 And the following assertions:
