@@ -1,17 +1,90 @@
 ---
 name: accelint-ac-to-playwright
-description: Convert acceptance criteria to Playwright test specs. Use when user asks to: (1) turn AC into tests, (2) generate tests from acceptance criteria, (3) convert .md bullets or .feature Gherkin files to Playwright specs, (4) create test automation from requirements. Handles both bullet-style markdown and Gherkin syntax with JSON test plan generation and validation.
+description: Convert and validate acceptance criteria for Playwright test automation. Use when user asks to: (1) review/evaluate/check if AC are ready for automation, (2) assess if AC can be converted as-is, (3) validate AC quality for Playwright, (4) turn AC into tests, (5) generate tests from acceptance criteria, (6) convert .md bullets or .feature Gherkin files to Playwright specs, (7) create test automation from requirements. Handles both bullet-style markdown and Gherkin syntax with JSON test plan generation and validation.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.5"
+  version: "0.8"
 ---
 
 # AC To Playwright
 
 **MANDATORY - READ ENTIRE FILE**: Before processing ANY acceptance criteria, you MUST read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) (~175 lines) completely from start to finish. **NEVER set any range limits when reading this file.** It is the authoritative source for AC writing rules and mappings.
 
-**Note on test-hooks.md**: Load `references/test-hooks.md` when converting AC → JSON plans — it contains the controlled vocabulary for area/component/intent target naming patterns. **Do NOT load** when converting plans → tests (translation script handles this automatically).
+**Note on test-hooks.md**: Load `references/test-hooks.md` when converting AC → JSON plans or when running Assessment mode — it contains the controlled vocabulary for area/component/intent target naming patterns. **Do NOT load** when converting plans → tests (translation script handles this automatically).
+
+## Intent Detection
+
+The skill supports two modes based on user phrasing:
+
+**Assessment mode** (triggers on):
+- "review these AC"
+- "evaluate these AC"
+- "check if these AC are ready"
+- "can these AC be converted as-is"
+- "are these AC automation-ready"
+- "assess these acceptance criteria"
+
+**Full conversion mode** (triggers on):
+- "convert these AC"
+- "generate tests from AC"
+- "turn AC into Playwright tests"
+- "create test automation"
+
+Assessment mode analyzes AC text only (no artifact generation). Full conversion mode generates plans and tests.
+
+### Assessment Workflow
+0. **Detect intent**: User asks to review/evaluate/assess/check AC readiness.
+1. **Prepare for the task**:
+  - Read `references/acceptance-criteria.md` and `references/test-hooks.md`.
+  - Work one input file at a time.
+2. **Analyze AC text** against all conversion requirements:
+   - **Structure & Format**:
+     - Bullet format: proper `- ` markers for each AC
+     - Gherkin format: valid Feature/Scenario/Examples/Given/When/Then/tags structure
+     - Step ordering: all Givens → all Whens → all Thens (no mixing within a scenario)
+   - **Targets** (semantic validation):
+     - Every action specifies a target
+     - Target meets the area/component/intent pattern (all three parts present)
+     - Area matches controlled vocabulary from `test-hooks.md` (nav, header, footer, form, drawer, card, toast, modal, table, page, area)
+     - Component matches controlled vocabulary (button, link, input, dropdown, checkbox, radio, text, div, component)
+     - Intent is present
+   - **Actions**:
+     - Verbs are recognized and mappable to Playwright actions (click, fill, select)
+     - No vague verbs (interact, use, hover without x/y coordinates)
+     - Fill/select actions have quoted literal values (not "a valid email" or "any value")
+   - **Expected Outcomes**:
+     - Explicitly stated (not implied or inferred)
+     - Measurable (specific text content, element, or state)
+     - Visibility changes use trigger words (appears, shows, hides, visible, see)
+3. **Report results**:
+   - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
+   - If no issues: Report "✓ AC are conversion-ready" with validated checklist
+   - Do NOT generate any files (no JSON plans, no test files)
+   - Report results for all input files - do not stop Assessment mode after a single failure to ensure all issues are surfaced to the user at once.
+
+### Conversion Workflow
+0. **Detect intent**: User asks to generate/convert/write tests from AC files.
+1. **Run Assessment mode**:
+  - Run Assessment mode against all input files and report pass/fail result.
+  - If Assessment mode reported any failures across all files, **STOP**. **Do not** proceed with the rest of Conversion mode.
+2. **Prepare for the task**:
+  - Require the user to explicitly provide output directories for plans, tests, and summaries before writing any files.
+  - Read `references/acceptance-criteria.md`.
+  -  Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
+  -  Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
+3. **JSON test plan**:
+  - Build a JSON test plan that conforms to `references/plan-schema.ts`.
+  - Validate the test plan and report results.
+  - If validation failed, **stop**. Do not write the plan. Skip the rest of these steps for the current input file and move on to the next input file.
+  - If validation passed, write the plan to the user-specified output directory: `<plans-output-dir>/<suite-slug>.json`.
+4. **Translate the plan to tests**:
+  - Once the plan file is written, translate the plan with `scripts/translate-plan-to-tests.ts`.
+  - Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
+  -  Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
+5. **Next steps**: 
+  - Work on the next input file, if any remain.
+  - After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/accelint-ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
 
 ## Recognition Patterns
 Before processing AC, identify these quality signals:
@@ -29,21 +102,6 @@ Before processing AC, identify these quality signals:
 - Always quote exact literals: `'test@example.com'` not "a valid email"
 
 The above table directs you to ask for clarifications because guessing creates tests that fail unpredictably.
-
-## Workflow
-1. Read `references/acceptance-criteria.md`.
-2. Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
-3. Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
-4. Build a JSON test plan that conforms to `references/plan-schema.ts`.
-5. Validate the test plan and report results.
-6. Require the user to explicitly provide output directories for plans, tests, and summaries before writing any files.
-7. If validation passed, write the plan to the user-specified output directory: `<plans-output-dir>/<suite-slug>.json`.
-8. Once the file is written, translate the plan with `scripts/translate-plan-to-tests.ts`.
-9. Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
-10. Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
-11. Work on the next input file, if any remain.
-12. After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/accelint-ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
-
 
 ## Naming Transformations
 
@@ -133,6 +191,8 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `references
 
 ## NEVER Do
 
+- **NEVER generate artifacts in assessment mode** — when the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
+- **NEVER skip controlled vocabulary checks in assessment** — verify that area and component keywords in targets match the lists in `test-hooks.md`. 
 - **NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.
 - **NEVER invent assertions** — only add `expectText`, `expectVisible`, `expectNotVisible` when AC explicitly states expected outcomes (exception: `expectUrl` for navigation, visibility pairs for show/hide actions)
 - **NEVER store absolute file paths in source metadata** — the expected convention is to use repo-relative paths for git repos, basename only for external files
@@ -142,3 +202,56 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `references
 - **NEVER write a plan file without validating first** — validation catches structural errors; writing invalid plans creates broken artifacts requiring manual cleanup
 - **NEVER process multiple steps of one file in parallel** — complete the full pipeline (AC → plan → test → summary) for each file before moving to the next to avoid partial artifacts and state confusion
 - **NEVER take shortcuts.** - agents have gone off the rails when trying to define their own shortcuts, so when triggered you must always run the full workflow.
+
+## Assessment mode output format
+
+When validation fails, report issues in this structure:
+
+```
+❌ AC are not conversion-ready. Issues found:
+
+File: [filename]
+1. [Line/Scenario reference]: [Specific issue]
+   - Problem: [What's wrong]
+   - Example: [Quote from AC]
+   - Fix: [What needs to change]
+
+File: [filename]
+2. [Next issue...]
+```
+
+Example output:
+```
+❌ AC are not conversion-ready. Issues found:
+
+File: form-actions.feature
+1. Scenario "User submits form": Unknown action verb
+   - Problem: "hovers" is not a recognized Playwright action
+   - Example: "the user hovers over the tooltip"
+   - Fix: Use a supported action (click, fill, select) or clarify the intent
+
+File: login-flow.feature
+2. Scenario "User logs in": Missing target intent
+   - Problem: Test hook selector incomplete (button.form instead of button.form.submit)
+   - Example: "clicks the button on the form"
+   - Fix: Specify intent: "clicks the Submit button on the form"
+```
+
+When assessment passes:
+```
+✓ AC are conversion-ready
+
+Validated ([X] AC in [Y] files):
+- Structure: Proper format (bullets or Gherkin) with correct step ordering
+- Targets: All meet the area/component/intent pattern with controlled vocabulary
+- Actions: All verbs recognized (click/fill/select) with input values where required
+- Expected outcomes: All explicitly stated and measurable
+- Vocabulary: All areas/components match test-hooks.md keywords
+
+These AC can be converted without modification.
+
+Files analyzed:
+[filename 1]
+[filename 2]
+...
+```
