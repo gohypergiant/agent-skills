@@ -40,6 +40,10 @@ const gotoStep = z.object({
   value: z.string(),
 }).strict();
 
+const reloadStep = z.object({
+  action: z.literal("reload"),
+}).strict();
+
 const selectStep = z.object({
   action: z.literal("select"),
   target: z.string(),
@@ -54,6 +58,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   expectVisibleStep,
   fillStep,
   gotoStep,
+  reloadStep,
   selectStep,
 ]);
 

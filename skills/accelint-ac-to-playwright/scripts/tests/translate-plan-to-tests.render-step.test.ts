@@ -66,6 +66,14 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { action: "reload" },
+      2,
+      [
+        'await page.reload();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "reload" })'
+      ],
+    ],
+    [
       { action: "expectUrl", value: "dashboard" },
       1,
       [

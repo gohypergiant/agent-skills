@@ -39,6 +39,7 @@ Tests can currently use the following actions:
 - click - clicks something.
 - fill - adds text to an element (generally `<input>` or `<textarea>` elements only).
 - goto - generally only used at the start of a test to get to the starting URL.
+- reload - refreshes the page.
 - select - picks an item from a select dropdown.
 
 And the following assertions:
