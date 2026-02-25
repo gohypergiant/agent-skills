@@ -5,7 +5,7 @@ compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "3.0"
+  version: "3.1"
 ---
 
 # Vitest Best Practices
@@ -14,6 +14,7 @@ Comprehensive patterns for writing maintainable, effective vitest tests. Focused
 
 ## NEVER Do When Writing Vitest Tests
 
+- **NEVER write tests for files with no behavior** - Constants files (just `export const X = value`), type definition files, GLSL uniform declarations, and pure data files contain no logic to test. Testing `expect(MY_CONSTANT).toBe(42)` verifies nothing: if the value changes, the test changes with it, providing zero protection. These "tests" waste CI time and create maintenance burden when values change. Test behavior (functions, logic, transformations), not data declarations. If a file exports only types, constants, or data structures with no functions or logic, skip testing it entirely.
 - **NEVER skip global mock cleanup configuration** - Manual cleanup appears safe but creates "action at a distance" failures: a mock in test file A leaks into test file B running 3 files later, causing non-deterministic failures that only appear when tests run in specific orders. These Heisenbugs waste hours in CI debugging. Configure `clearMocks: true`, `mockReset: true`, `restoreMocks: true` in `vitest.config.ts` once to eliminate this entire class of order-dependent failure.
 - **NEVER nest describe blocks more than 2 levels deep** - Deep nesting creates cognitive overhead and excessive indentation. Put context in test names instead: `it('should add item to empty cart')` vs `describe('when cart is empty', () => describe('addItem', ...))`.
 - **NEVER write test descriptions that don't read as sentences** - Test descriptions must complete the sentence "it ..." in lowercase. Write `it('should add item to cart')` not `it('Add item to cart')` or `it('It should add item to cart')`. The description reads as a sentence when prefixed with "it": "it should add item to cart". Capitalized starts, non-sentence formats like `it('addToCart test')`, or redundant "It should" break readability and test output consistency. Example-based tests use `it('should...')` while property-based tests use `it('property: ...')` format.
@@ -24,12 +25,16 @@ Comprehensive patterns for writing maintainable, effective vitest tests. Focused
 - **NEVER test implementation details instead of behavior** - Tests that verify "function X was called 3 times" create false failures: you optimize code to call X once via memoization, all tests fail, yet the user experience is identical (and faster). These tests actively punish performance improvements and refactoring. Test what users observe (outputs given inputs), not how your code achieves it internally.
 - **NEVER share mutable state between tests** - Tests that depend on execution order or previous test state create flaky, unreliable suites. Each test must be fully independent with fresh setup.
 - **NEVER use `any` or skip type checking in test files** - When implementation signatures change, tests with `as any` silently pass while calling functions with wrong arguments. You ship broken code that TypeScript could have caught. Tests are executable documentation: `user as any` communicates nothing, but `createTestUser(Partial<User>)` shows exactly what properties matter for this test case.
+- **NEVER mark test files as complete without running TypeScript type checking** - Test files are typically excluded from `tsconfig.json` compilation paths, so running `tsc` at the project root won't catch type errors in tests. Type errors in tests cause runtime failures, incorrect test behavior, and false confidence from tests that don't test what they claim. Before marking any test file as "done", you MUST run `tsc --noEmit` directly against the test file using the project's package manager (npm/pnpm/bun/yarn). For monorepos, `cd` into the specific package directory first, then run type checking. Fix all type errors before proceeding - never use `as any` or `@ts-ignore` to bypass errors.
 - **NEVER assume TypeScript types prevent runtime errors** - TS types are compile-time only and vanish at runtime. Testing only "type-valid" inputs creates a false sense of security. In production, functions receive invalid data from JSON APIs without validation, `JSON.parse()` results, external libraries, user input, and database records. A function typed as `process(data: ValidData)` can still receive `null`, `undefined`, or malformed objects at runtime. Test defensive programming scenarios: pass `null` to non-nullable parameters, `undefined` to required fields, malformed objects to typed parameters. These "type-invalid" tests catch real bugs that TypeScript cannot prevent.
 - **NEVER write weak properties when stronger ones exist** - Property-based tests that only verify "no exception thrown" or "returns a value" provide minimal coverage. When testing encode/decode pairs, verify roundtrip equality (`decode(encode(x)) === x`), not just that decode succeeds. When testing normalization, verify idempotence (`normalize(normalize(x)) === normalize(x)`), not just that it returns a string. Weak properties give false confidence: they pass but don't actually validate correctness.
 
 ## Before Writing Tests, Ask
 
 Apply these expert thinking patterns before implementing tests:
+
+### Should This File Be Tested?
+- **Does this file contain behavior to test?** Files that only declare constants, types, or data structures without logic don't need tests. Constants files (`export const X = 42`), type definition files (`type User = {...}`), GLSL uniform declarations, configuration objects, and pure data files have no behavior to verify. If the file contains no functions, no logic, no transformations - skip testing it. Test behavior, not data.
 
 ### Test Isolation and Setup
 - **Where should cleanup logic live?** Think in layers: configuration eliminates entire error classes (mock cleanup in vitest.config.ts), setup files handle project-wide concerns (custom matchers, global mocks), beforeEach handles test-specific state. Each test doing its own mock cleanup is like each function doing its own null checks - it works but misses the point. Push concerns to the highest appropriate layer.

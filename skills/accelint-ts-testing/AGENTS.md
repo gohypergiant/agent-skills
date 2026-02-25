@@ -24,6 +24,13 @@ This structure minimizes context usage while providing complete implementation g
 
 ## Workflow: Before Writing Tests
 
+**0. Verify the file contains testable behavior**
+Before writing any tests, check if the file actually needs testing:
+- Does it contain functions or logic? → Test it
+- Does it only export constants, types, or data? → Skip testing it
+
+Files without behavior (constants files, type definitions, GLSL uniform declarations, pure data files) don't need tests. Testing `expect(CONSTANT).toBe(value)` provides no value and wastes CI time.
+
 **1. Check vitest.config.ts for global configuration**
 Verify mock cleanup is configured globally:
 ```ts
@@ -60,16 +67,27 @@ See [vitest-features.md](references/vitest-features.md#discovering-existing-setu
 
 ## Workflow: Before Marking Test Files Complete
 
+**CRITICAL: This workflow is MANDATORY. Never skip type checking test files.**
+
 Before marking any test file as "complete" or "done", verify type correctness:
 
-**Why this matters:** Test files are typically excluded from `tsconfig.json` compilation (not in `include` paths), so running `tsc` won't catch type errors in tests. Type errors in tests can cause:
+**Why this matters:** Test files are typically excluded from `tsconfig.json` compilation (not in `include` paths), so running `tsc` at the project root won't catch type errors in tests. Type errors in tests can cause:
 - Runtime failures that should have been caught at compile time
 - Incorrect test behavior due to type mismatches
 - False confidence from tests that don't actually test what they claim
 
 **Verification steps:**
 
-1. **Check test file directly with TypeScript:**
+1. **Navigate to the package directory (CRITICAL for monorepos):**
+For monorepos or multi-package projects, you MUST `cd` into the specific package directory before running type checking. TypeScript needs to run from where the `tsconfig.json` and `node_modules` are located for that package.
+
+```bash
+# Example for monorepo:
+cd packages/my-package
+# Then run tsc from here
+```
+
+2. **Check test file directly with TypeScript:**
 Use the project's package manager to run TypeScript:
 ```bash
 # Detect which package manager to use:
@@ -92,11 +110,13 @@ To detect the package manager, check for:
 - Missing type parameters on generic functions
 - Incorrect use of type guards or type assertions
 
-3. **Fix all type errors before marking complete**
+3. **Fix all type errors before marking complete (NON-NEGOTIABLE)**
+This step is MANDATORY, not optional. Type errors in tests are as critical as type errors in production code.
 - Do NOT use `as any` or `@ts-ignore` to bypass type checking
 - Update test data to match actual types
 - Fix mock return types to match implementation
 - Add proper type annotations where TypeScript cannot infer
+- If you encounter type errors, STOP and fix them - do not proceed with "I'll fix types later"
 
 **Example type errors to catch:**
 
@@ -116,6 +136,8 @@ const mockGetUser = vi.fn<() => User>().mockReturnValue({ id: 1, name: 'Alice', 
 
 **Principle: Type-safe tests prevent silent failures**
 Type errors in tests are as critical as type errors in production code. Catch them before marking work complete.
+
+**CRITICAL REMINDER:** This workflow is NOT optional. Running `tsc --noEmit` against test files is a REQUIRED step before marking test work as complete. If you skip this step, you risk shipping broken tests that provide false confidence.
 
 ## Workflow: Test Code Review/Audit
 
