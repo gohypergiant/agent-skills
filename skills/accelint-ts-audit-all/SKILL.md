@@ -17,9 +17,9 @@ Comprehensive TypeScript file audit system that systematically applies multiple 
 - **NEVER auto-apply all recommendations** - Each change needs user approval (accept/deny/other) to maintain code ownership and prevent unwanted modifications.
 - **NEVER run one-off commands instead of documented verification commands** - The audit-process file documents EXACT verification commands. Use those commands verbatim. Never improvise with `npm test`, `bun test`, or similar unless they match the documented commands exactly.
 - **NEVER skip saving progress after completing a step** - After EVERY step completion (Steps 1, 2, 3, 4, 5, 6, 7, 8), immediately save detailed progress to audit-process file BEFORE moving to next step. Context limits will break otherwise.
-- **NEVER skip the 100-pass PBT verification** - When property-based tests are added, you MUST run the test suite 100 times to verify stability. Random failures are common with PBT. This is a blocking requirement - do not proceed until 100 consecutive passes are achieved.
+- **NEVER skip the 100-pass PBT verification** - When property-based tests are added, you MUST run the test suite 100 times to verify stability. Random failures are common with PBT. This is a blocking requirement - do not proceed until 100 consecutive passes are achieved. Run the tests without coverage reporting on to increase speed and stability.
 - **NEVER lose progress when context runs out** - Save detailed progress to audit-process file after each step. Context limits are guaranteed in large audits.
-- **NEVER assume property-based tests are stable** - Random test failures are common with PBT. Run new property tests 100 times to verify stability before accepting.
+- **NEVER assume property-based tests are stable** - Random test failures are common with PBT. Run new property tests 100 times to verify stability before accepting. Run the tests without coverage reporting on to increase speed and stability.
 - **NEVER add PERF comments everywhere** - Only add `// PERF:` comments when they provide meaningful insight that future developers wouldn't discover on their own.
 - **NEVER mark a file complete without all 8 steps** - Partial audits leave files in inconsistent states. Complete all steps or mark as in-progress.
 - **NEVER move on from a broken build** - Fix compilation errors, test failures, and lint issues immediately before proceeding to the next step.
@@ -107,6 +107,7 @@ For each file in the pending list, follow this exact sequence:
   # Run test suite 100 times to verify PBT stability
   for i in {1..100}; do <test-command> || break; done
   ```
+  - Run the tests without coverage reporting to prevent coverage conflicts
   - If ANY run fails, examine the seed that failed
   - Fix test properties (add constraints to arbitraries: date ranges, filtered NaNs, safe strings)
   - Re-run 100 times until 100 consecutive passes achieved

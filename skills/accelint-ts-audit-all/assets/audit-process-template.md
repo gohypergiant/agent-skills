@@ -11,7 +11,7 @@
 For each code file, you MUST follow this sequence:
 
 1. **Initial Test Coverage** - Run `accelint-ts-testing` to ensure good test coverage exists before refactoring
-2. **Interactive Changes** - Use two-phase pattern: show ALL issues in numbered table with emoji severity (🛑⚠️⚡🔵✅), display detailed before/after for each, accept via numbered list. If PBTs added, MUST run test suite 100 times and achieve 100 consecutive passes before proceeding. **SAVE PROGRESS after this step.**
+2. **Interactive Changes** - Use two-phase pattern: show ALL issues in numbered table with emoji severity (🛑⚠️⚡🔵✅), display detailed before/after for each, accept via numbered list. If PBTs added, MUST run test suite 100 times and achieve 100 consecutive passes before proceeding. Run with tests with coverage disabled. **SAVE PROGRESS after this step.**
 3. **Code Quality Analysis** - Run `accelint-ts-best-practices` AND `accelint-ts-performance` in parallel to avoid contradictory suggestions
 4. **Interactive Changes** - Use two-phase pattern with numbered table. If quality and performance recommendations overlap: merge if possible, otherwise present both and let user choose. Include `// PERF:` comments only where they add genuine insight. **SAVE PROGRESS after this step.**
 5. **Verify Changes** - Run EXACT verification commands from "Verification Commands" section below (NEVER improvise)
