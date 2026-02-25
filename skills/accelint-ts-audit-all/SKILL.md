@@ -297,7 +297,7 @@ When all 8 steps complete for a file:
    - Optimized performance where beneficial
    - Enhanced documentation
 
-   Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
+   Co-Authored-By: {current_model}"
 
    # Switch back to original branch
    cd "${repo_root}"
