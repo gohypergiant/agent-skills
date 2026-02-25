@@ -1,8 +1,8 @@
 ---
 name: accelint-ts-audit-all
-description: Comprehensive TypeScript file audit system. Command-only skill (no natural triggers). Accepts file or directory path to systematically audit through accelint-ts-testing, accelint-ts-best-practices, accelint-ts-performance, and accelint-ts-documentation skills. Maintains progress tracking across sessions with interactive change approval.
+description: Comprehensive TypeScript file audit system. Command-only skill (no natural triggers). Accepts file or directory path to systematically audit through accelint-ts-testing, accelint-ts-best-practices, accelint-ts-performance, and accelint-ts-documentation skills. Maintains progress tracking across sessions with interactive change approval. Uses isolated git worktrees to enable parallel audits without conflicts.
 metadata:
-  version: "2.0"
+  version: "1.0"
 ---
 
 # Audit All
@@ -14,6 +14,8 @@ Comprehensive TypeScript file audit system that systematically applies multiple 
 - **NEVER skip the initial test coverage step** - Refactoring without test coverage first leads to undetected breakage. Always run `accelint-ts-testing` before any code changes.
 - **NEVER run best-practices and performance sequentially** - Running them separately creates contradictory recommendations for the same code. Always run in parallel to see merged suggestions.
 - **NEVER present issues one-by-one for approval** - Always show ALL issues in a numbered table first, then display each issue's detailed before/after code, THEN ask for numbered list acceptance. This prevents wildly inconsistent presentations and allows users to spot conflicts across parallel processes.
+- **NEVER skip displaying the overview table** - BLOCKING: You MUST display the emoji severity table with ALL issues before showing any detailed changes. No exceptions.
+- **NEVER ask for approval before showing all detailed changes** - BLOCKING: You MUST show the complete before/after code for EVERY issue before asking "Apply which issues?"
 - **NEVER auto-apply all recommendations** - Each change needs user approval (accept/deny/other) to maintain code ownership and prevent unwanted modifications.
 - **NEVER run one-off commands instead of documented verification commands** - The audit-process file documents EXACT verification commands. Use those commands verbatim. Never improvise with `npm test`, `bun test`, or similar unless they match the documented commands exactly.
 - **NEVER skip saving progress after completing a step** - After EVERY step completion (Steps 1, 2, 3, 4, 5, 6, 7, 8), immediately save detailed progress to audit-process file BEFORE moving to next step. Context limits will break otherwise.
@@ -23,6 +25,7 @@ Comprehensive TypeScript file audit system that systematically applies multiple 
 - **NEVER add PERF comments everywhere** - Only add `// PERF:` comments when they provide meaningful insight that future developers wouldn't discover on their own.
 - **NEVER mark a file complete without all 8 steps** - Partial audits leave files in inconsistent states. Complete all steps or mark as in-progress.
 - **NEVER move on from a broken build** - Fix compilation errors, test failures, and lint issues immediately before proceeding to the next step.
+- **NEVER run audit in main branch** - Always create an isolated worktree to prevent conflicts with parallel audits and allow safe experimentation.
 
 ## Before Starting an Audit, Ask
 
@@ -59,9 +62,40 @@ This skill creates and maintains an audit process file that tracks progress acro
 
 **Check for existing audit:** Look in `.agents/audit/` directory for existing audit-process files.
 
-If resuming an existing audit, read the audit-process file and continue from "Resume Instructions" section. Skip to Step 2.
+If resuming an existing audit, read the audit-process file to understand current status:
 
-**For new audits, create tracking files:**
+1. **Check completion status:**
+   - Review "Current Status" section for files completed vs remaining
+   - Review "Files to Audit" section for pending/completed breakdown
+   - If all files are marked "Completed", the audit is done
+
+2. **Check worktree status (backwards compatibility):**
+   - If "Worktree Information" section exists: verify worktree still exists and switch to it
+   - If no worktree documented: this is a legacy audit from before worktree support. Continue in current branch without creating a worktree.
+   - Note: Only NEW audits created after this feature will use worktrees
+
+3. **Continue from "Resume Instructions" section**
+
+Skip to Step 2 if resuming.
+
+**For new audits, create isolated worktree:**
+
+BLOCKING: All audit work MUST happen in an isolated worktree to prevent conflicts with parallel audits and allow safe rollback.
+
+1. **Create worktree with timestamped branch:**
+   ```bash
+   timestamp=$(date +%Y%m%d-%H%M%S)
+   git worktree add .agents/audit/worktree-${timestamp} -b audit/${timestamp}
+   ```
+
+2. **Switch to the worktree directory:**
+   ```bash
+   cd .agents/audit/worktree-${timestamp}
+   ```
+
+3. **Log the worktree path** - You will work in this directory for the entire audit
+
+**Create tracking files:**
 
 **MANDATORY - READ ENTIRE FILE**: Before creating any tracking files, you MUST read
 [`assets/audit-process-template.md`](assets/audit-process-template.md) completely
@@ -74,15 +108,16 @@ to understand the archival format.
 **Do NOT load** these templates again after the initial setup - they are only needed
 once at the start of a new audit.
 
-Create timestamped tracking files:
-- `.agents/audit/audit-process-{YYYY-MM-DD-HHMMSS}.md` (use current timestamp)
-- `.agents/audit/audit-history-{YYYY-MM-DD-HHMMSS}.md` (same timestamp)
+Create timestamped tracking files IN THE WORKTREE:
+- `.agents/audit/audit-process-${timestamp}.md` (use same timestamp as worktree)
+- `.agents/audit/audit-history-${timestamp}.md` (same timestamp)
 
 **Build the TODO list:**
 
 Find all TypeScript files in the target directory, excluding `.test.ts`, `.spec.ts`, and `.bench.ts` files. If given a single file, validate it's not a test/benchmark file.
 
 **Populate the audit-process file:**
+- Add worktree path and branch to "Worktree Information" section
 - Add all files to "Files to Audit" section as "Pending"
 - Document the exact verification commands (test/build/lint)
 - Set "Current File" to first pending file
@@ -100,7 +135,14 @@ For each file in the pending list, follow this exact sequence:
 ```
 
 **Step 2: Interactive Changes**
-- Use the two-phase interactive pattern (table overview → detailed changes → numbered acceptance)
+
+**BLOCKING - Interactive Approval Required:**
+> You MUST complete all three checkpoints before proceeding:
+> 1. ✅ Display emoji severity table with ALL issues (see "Interactive Change Approval Pattern")
+> 2. ✅ Show detailed before/after code for EVERY issue
+> 3. ✅ Ask "Apply which issues?" with numbered list acceptance
+> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
+
 - Apply accepted changes
 - **BLOCKING REQUIREMENT:** If property-based tests added, run verification:
   ```bash
@@ -131,7 +173,14 @@ CRITICAL: Run these together to avoid contradictory suggestions:
 - **If recommendations overlap:**
   - Try to merge them into single fix if possible
   - If conflicting, present both and let user choose
-- Use the two-phase interactive pattern (table overview → detailed changes → numbered acceptance)
+
+**BLOCKING - Interactive Approval Required:**
+> You MUST complete all three checkpoints before proceeding:
+> 1. ✅ Display emoji severity table with ALL issues from BOTH skills (see "Interactive Change Approval Pattern")
+> 2. ✅ Show detailed before/after code for EVERY issue
+> 3. ✅ Ask "Apply which issues?" with numbered list acceptance
+> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
+
 - Apply accepted changes
 - Add `// PERF:` comments only where they add genuine insight
 - Document in "Current File - Detailed Progress"
@@ -153,8 +202,17 @@ cd <project-root>; npm run lint
 ```
 
 **Step 6: Interactive Changes (if needed)**
-- If verification fails, use two-phase interactive pattern to present fixes
-- If verification passes, no changes needed
+
+If verification passes, skip to documenting results. Otherwise:
+
+**BLOCKING - Interactive Approval Required:**
+> You MUST complete all three checkpoints before proceeding:
+> 1. ✅ Display emoji severity table with ALL verification failures (see "Interactive Change Approval Pattern")
+> 2. ✅ Show detailed before/after code for EVERY issue
+> 3. ✅ Ask "Apply which fixes?" with numbered list acceptance
+> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
+
+- Apply accepted changes
 - Document results in "Current File - Detailed Progress"
 - Update status to show Step 5 ✅, Step 6 ✅
 - **SAVE PROGRESS to audit-process file NOW before continuing**
@@ -167,7 +225,14 @@ cd <project-root>; npm run lint
 ```
 
 **Step 8: Interactive Changes**
-- Use the two-phase interactive pattern (table overview → detailed changes → numbered acceptance)
+
+**BLOCKING - Interactive Approval Required:**
+> You MUST complete all three checkpoints before proceeding:
+> 1. ✅ Display emoji severity table with ALL documentation issues (see "Interactive Change Approval Pattern")
+> 2. ✅ Show detailed before/after code for EVERY issue
+> 3. ✅ Ask "Apply which issues?" with numbered list acceptance
+> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
+
 - Apply accepted changes
 - Run final verification to ensure docs didn't break anything (use EXACT commands from audit-process file)
 - Document in "Current File - Detailed Progress"
@@ -199,9 +264,59 @@ When all 8 steps complete for a file:
 - Monitor context usage - if approaching limit, stop and save progress
 
 **If all files completed:**
-- Update audit-process file with completion summary
-- Run final full test suite + lint verification
-- Report total statistics across all files
+
+1. **Run final verification in worktree:**
+   - Run final full test suite + lint verification
+   - Ensure all changes pass before merging
+
+2. **Merge worktree back to original branch:**
+   ```bash
+   # Extract timestamp from current worktree directory name
+   # We're in .agents/audit/worktree-YYYYMMDD-HHMMSS
+   timestamp=$(basename $(pwd) | sed 's/worktree-//')
+   audit_process_file=".agents/audit/audit-process-${timestamp}.md"
+
+   # Get the original branch from this audit's process file
+   original_branch=$(grep "^**Original Branch:**" ${audit_process_file} | cut -d'`' -f2)
+
+   # Commit all changes in worktree
+   git add -A
+   git commit -m "audit: complete TypeScript audit
+
+   - Improved test coverage across all files
+   - Applied type safety and best practice improvements
+   - Optimized performance where beneficial
+   - Enhanced documentation
+
+   Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
+
+   # Switch back to original branch (robust path handling)
+   repo_root=$(git rev-parse --show-toplevel)
+   cd "${repo_root}"
+   git checkout ${original_branch}
+
+   # Merge the audit branch
+   git merge --no-ff audit/${timestamp}
+   ```
+
+3. **Clean up worktree:**
+   ```bash
+   # Remove the worktree
+   git worktree remove .agents/audit/worktree-*
+
+   # Optionally delete the audit branch
+   git branch -d audit/*
+   ```
+
+4. **Update audit-process file with completion:**
+   - Add completion summary with total statistics
+   - Document merge commit hash
+   - Mark audit as "✅ COMPLETE - Merged to ${original_branch}"
+
+5. **Report results:**
+   - Total statistics across all files
+   - Merge commit information
+   - Confirmation that worktree was cleaned up
 
 ## Progress Tracking Format
 

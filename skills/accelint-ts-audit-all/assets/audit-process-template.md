@@ -6,6 +6,14 @@
 
 ---
 
+## Worktree Information
+
+**Original Branch:** `{branch-name}`
+
+> All audit work happens in an isolated worktree (derived from this file's timestamp) to prevent conflicts with parallel audits. When complete, changes will be merged back to the original branch.
+
+---
+
 ## Audit Process Overview
 
 For each code file, you MUST follow this sequence:
