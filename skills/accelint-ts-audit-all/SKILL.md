@@ -60,7 +60,9 @@ This skill creates and maintains an audit process file that tracks progress acro
 
 ### Step 1: Initialize the Audit
 
-**Check for existing audit:** Look in `.agents/audit/` directory for existing audit-process files.
+**Check for existing audit:** Look in `.agents/audit/` directory (in the original repository root) for existing audit-process files.
+
+**Note:** Ensure `.agents/audit/` is in your project's `.gitignore` to prevent committing audit tracking files.
 
 If resuming an existing audit, read the audit-process file to understand current status:
 
@@ -85,15 +87,17 @@ BLOCKING: All audit work MUST happen in an isolated worktree to prevent conflict
 1. **Create worktree with timestamped branch:**
    ```bash
    timestamp=$(date +%Y%m%d-%H%M%S)
-   git worktree add .agents/audit/worktree-${timestamp} -b audit/${timestamp}
+   git worktree add .agents/worktrees/audit-${timestamp} -b audit/${timestamp}
    ```
 
 2. **Switch to the worktree directory:**
    ```bash
-   cd .agents/audit/worktree-${timestamp}
+   cd .agents/worktrees/audit-${timestamp}
    ```
 
 3. **Log the worktree path** - You will work in this directory for the entire audit
+
+**Important:** The worktree is created in `.agents/worktrees/` (not `.agents/audit/`) to avoid conflicts with the gitignored `.agents/audit/` directory where tracking files are stored.
 
 **Create tracking files:**
 
@@ -108,9 +112,13 @@ to understand the archival format.
 **Do NOT load** these templates again after the initial setup - they are only needed
 once at the start of a new audit.
 
-Create timestamped tracking files IN THE WORKTREE:
-- `.agents/audit/audit-process-${timestamp}.md` (use same timestamp as worktree)
-- `.agents/audit/audit-history-${timestamp}.md` (same timestamp)
+Create timestamped tracking files in the ORIGINAL repository (not in the worktree):
+- Go back to the original repository root: `cd $(git rev-parse --show-toplevel)`
+- Create `.agents/audit/audit-process-${timestamp}.md` (use same timestamp as worktree)
+- Create `.agents/audit/audit-history-${timestamp}.md` (same timestamp)
+- Return to the worktree: `cd .agents/worktrees/audit-${timestamp}`
+
+**Important:** Tracking files live in the original repo's `.agents/audit/` directory (which should be gitignored) so they are NOT committed with audit changes.
 
 **Build the TODO list:**
 
@@ -272,16 +280,17 @@ When all 8 steps complete for a file:
 2. **Merge worktree back to original branch:**
    ```bash
    # Extract timestamp from current worktree directory name
-   # We're in .agents/audit/worktree-YYYYMMDD-HHMMSS
-   timestamp=$(basename $(pwd) | sed 's/worktree-//')
-   audit_process_file=".agents/audit/audit-process-${timestamp}.md"
+   # We're in .agents/worktrees/audit-YYYYMMDD-HHMMSS
+   timestamp=$(basename $(pwd) | sed 's/audit-//')
 
-   # Get the original branch from this audit's process file
+   # Get the original branch from this audit's process file (in original repo)
+   repo_root=$(git rev-parse --show-toplevel)
+   audit_process_file="${repo_root}/.agents/audit/audit-process-${timestamp}.md"
    original_branch=$(grep "^**Original Branch:**" ${audit_process_file} | cut -d'`' -f2)
 
    # Commit all changes in worktree
    git add -A
-   git commit -m "audit: complete TypeScript audit
+   git commit -m "refactor: complete TypeScript audit
 
    - Improved test coverage across all files
    - Applied type safety and best practice improvements
@@ -290,8 +299,7 @@ When all 8 steps complete for a file:
 
    Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 
-   # Switch back to original branch (robust path handling)
-   repo_root=$(git rev-parse --show-toplevel)
+   # Switch back to original branch
    cd "${repo_root}"
    git checkout ${original_branch}
 
@@ -301,11 +309,11 @@ When all 8 steps complete for a file:
 
 3. **Clean up worktree:**
    ```bash
-   # Remove the worktree
-   git worktree remove .agents/audit/worktree-*
+   # Remove the worktree (use the timestamp extracted earlier)
+   git worktree remove .agents/worktrees/audit-${timestamp}
 
    # Optionally delete the audit branch
-   git branch -d audit/*
+   git branch -d audit/${timestamp}
    ```
 
 4. **Update audit-process file with completion:**
@@ -457,6 +465,8 @@ Always use the EXACT commands from the audit-process file. Never guess.
 ## Important Notes
 
 - **Do NOT load README.md** - It contains user-facing documentation that duplicates this file. All Agent instructions are contained in SKILL.md.
+- **Worktree location:** All audit work happens in `.agents/worktrees/audit-${timestamp}` to avoid conflicts with the gitignored `.agents/audit/` directory.
+- **Tracking files location:** Audit process and history files are stored in the original repository's `.agents/audit/` directory (gitignored) and are NOT committed with audit changes.
 - **Property-based test stability:** If property tests fail randomly, check the exact seed that failed and verify the fix against that seed. Add constraints to arbitraries (date ranges, filtered NaNs, safe strings) to prevent false positives.
 - **Parallel skill execution:** When running ts-best-practices and ts-performance in parallel, wait for BOTH to complete before presenting recommendations. This allows you to identify and merge overlapping suggestions.
 - **Context window management:** Audit-process files are designed to survive context limits. After completing each step, save progress. If you must stop mid-file, document exactly which step you're on and what the next action should be.
