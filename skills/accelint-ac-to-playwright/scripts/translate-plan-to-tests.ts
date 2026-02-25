@@ -25,6 +25,7 @@ export type Step = {
   | { action: "expectVisible"; target: string }
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
+  | { action: "hover"; target: string }
   | { action: "reload" }
   | { action: "select"; target: string; value: string };
   
@@ -277,6 +278,19 @@ function renderStep(step: Step, stepIndex: number): string {
         `      throw error;`,
         `    }`
       ].join("\n");
+
+    case "hover": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await ${locator}.hover();`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
 
     case "reload":
       return [
