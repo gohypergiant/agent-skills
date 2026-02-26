@@ -17,14 +17,23 @@ export type PlanFile = {
   tests: Test[];
 };
 
-export type Step = { 
+export type Step = {
   action: "click"; target: string }
+  | { action: "doubleClick"; x: number; y: number; button?: "left" | "right" | "middle" }
   | { action: "expectNotVisible"; target: string }
   | { action: "expectText"; target: string; value: string }
   | { action: "expectUrl"; value: string }
   | { action: "expectVisible"; target: string }
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
+  | { action: "keyDown"; value: string }
+  | { action: "keyUp"; value: string }
+  | { action: "mouseClick"; x: number; y: number; button?: "left" | "right" | "middle" }
+  | { action: "mouseDown"; button?: "left" | "right" | "middle" }
+  | { action: "mouseMove"; x: number; y: number }
+  | { action: "mouseUp"; button?: "left" | "right" | "middle" }
+  | { action: "press"; value: string }
+  | { action: "scroll"; direction: "up" | "down" | "left" | "right"; amount: number }
   | { action: "select"; target: string; value: string };
   
 export type Test = {
@@ -243,6 +252,18 @@ function renderStep(step: Step, stepIndex: number): string {
       ].join("\n");
     }
 
+    case "doubleClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.dblclick(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
     case "expectNotVisible": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [
@@ -314,7 +335,96 @@ function renderStep(step: Step, stepIndex: number): string {
         `      throw error;`,
         `    }`
       ].join("\n");
-    
+      
+    case "keyDown":
+      return [
+        `    try {`,
+        `      await page.keyboard.down(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "keyUp":
+      return [
+        `    try {`,
+        `      await page.keyboard.up(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "mouseClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.click(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+  
+    case "mouseDown": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.down(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "mouseMove":
+      return [
+        `    try {`,
+        `      await page.mouse.move(${step.x}, ${step.y});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+  
+    case "mouseUp": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.up(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+  
+    case "press":
+      return [
+        `    try {`,
+        `      await page.keyboard.press(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "scroll": {
+      const deltaX = step.direction === "left" ? -step.amount : step.direction === "right" ? step.amount : 0;
+      const deltaY = step.direction === "up" ? -step.amount : step.direction === "down" ? step.amount : 0;
+      return [
+        `    try {`,
+        `      await page.mouse.wheel(${deltaX}, ${deltaY});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+  
     case "select": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [
