@@ -73,6 +73,30 @@ describe("renderStep", () => {
         'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "expectUrl" })'
       ],
     ],
+    [
+      { action: "keyDown", value: "Shift" },
+      7,
+      [
+        'await page.keyboard.down("Shift");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 7, action: "keyDown" })'
+      ],
+    ],
+    [
+      { action: "press", value: "Enter" },
+      9,
+      [
+        'await page.keyboard.press("Enter");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 9, action: "press" })'
+      ],
+    ],
+    [
+      { action: "keyUp", value: "Shift" },
+      8,
+      [
+        'await page.keyboard.up("Shift");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "keyUp" })'
+      ],
+    ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
     const out = _renderStep(step, stepIndex);
 

@@ -4,7 +4,7 @@ description: Convert acceptance criteria to Playwright test specs. Use when user
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.5"
+  version: "0.6"
 ---
 
 # AC To Playwright
@@ -88,6 +88,12 @@ Appends ` (user1/pass1)` and ` (user2/pass2)` respectively.
 ### Test-level fields
 - Start URL: always default to '/' unless the user provides an explicit starting page in a given AC per `references/acceptance-criteria.md`.
 - Steps: use only schema actions (but do not use `goto`) and preserve the order in the bullet text or in the Gherkin steps.
+  - **Keyboard modifier combinations**: When AC describes pressing a key combination (e.g., "press Shift+g", "press Control+Enter"), translate it into a three-step sequence:
+    1. `keyDown` with the modifier key (e.g., `Shift`, `Control`, or app-specific modifier `a`)
+    2. `press` with the non-modifier key (e.g., `g`, `Enter`)
+    3. `keyUp` with the same modifier key
+    - Valid modifiers for `keyDown`/`keyUp`: `Shift`, `Control`, `a` (app-specific)
+    - The `press` action only accepts single unmodified keys and should never receive combination syntax like `Shift+g`
 - Assertions: 
   - If navigation is triggered, add `expectUrl` using the Start URL mapping.
   - For visibility changes (e.g., visible/appears/shows/hides and similar wording), add `expectNotVisible` immediately before the action and `expectVisible` immediately after (or vice versa as appropriate).
