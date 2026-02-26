@@ -82,6 +82,23 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { action: "hover", target: "#tooltip-trigger" },
+      3,
+      [
+        'await expect(page.getByTestId("#tooltip-trigger")).toHaveCount(1);',
+        'await page.getByTestId("#tooltip-trigger").hover();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "hover", testId: "#tooltip-trigger" })'
+      ],
+    ],
+    [
+      { action: "reload" },
+      2,
+      [
+        'await page.reload();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "reload" })'
+      ],
+    ],
+    [
       { action: "expectUrl", value: "dashboard" },
       1,
       [

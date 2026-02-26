@@ -49,6 +49,11 @@ const gotoStep = z.object({
   value: z.string(),
 }).strict();
 
+const hoverStep = z.object({
+  action: z.literal("hover"),
+  target: z.string(),
+}).strict();
+
 const keyDownStep = z.object({
   action: z.literal("keyDown"),
   value: modifierKeyValidator,
@@ -87,6 +92,10 @@ const pressStep = z.object({
   value: pressKeyValidator,
 }).strict();
 
+const reloadStep = z.object({
+  action: z.literal("reload"),
+}).strict();
+
 const scrollStep = z.object({
   action: z.literal("scroll"),
   direction: wheelDirectionValidator,
@@ -108,6 +117,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   expectVisibleStep,
   fillStep,
   gotoStep,
+  hoverStep,
   keyDownStep,
   keyUpStep,
   mouseClickStep,
@@ -115,6 +125,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   mouseMoveStep,
   mouseUpStep,
   pressStep,
+  reloadStep,
   scrollStep,
   selectStep,
 ]);
