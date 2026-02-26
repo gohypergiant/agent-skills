@@ -13,6 +13,22 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { action: "doubleClick", x: 100, y: 200 },
+      4,
+      [
+        'await page.mouse.dblclick(100, 200);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "doubleClick" })'
+      ],
+    ],
+    [
+      { action: "doubleClick", x: 50, y: 75, button: "right" },
+      5,
+      [
+        'await page.mouse.dblclick(50, 75, { button: "right" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 5, action: "doubleClick" })'
+      ],
+    ],
+    [
       { action: "expectNotVisible", target: "#modal" },
       1,
       [
@@ -71,6 +87,118 @@ describe("renderStep", () => {
       [
         "await expect(page).toHaveURL(/dashboard/);",
         'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "expectUrl" })'
+      ],
+    ],
+    [
+      { action: "mouseClick", x: 100, y: 200 },
+      1,
+      [
+        'await page.mouse.click(100, 200);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "mouseClick" })'
+      ],
+    ],
+    [
+      { action: "mouseClick", x: 50, y: 75, button: "right" },
+      2,
+      [
+        'await page.mouse.click(50, 75, { button: "right" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "mouseClick" })'
+      ],
+    ],
+    [
+      { action: "mouseDown" },
+      3,
+      [
+        'await page.mouse.down();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "mouseDown" })'
+      ],
+    ],
+    [
+      { action: "mouseDown", button: "middle" },
+      4,
+      [
+        'await page.mouse.down({ button: "middle" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "mouseDown" })'
+      ],
+    ],
+    [
+      { action: "mouseMove", x: 150, y: 250 },
+      5,
+      [
+        'await page.mouse.move(150, 250);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 5, action: "mouseMove" })'
+      ],
+    ],
+    [
+      { action: "mouseUp" },
+      6,
+      [
+        'await page.mouse.up();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 6, action: "mouseUp" })'
+      ],
+    ],
+    [
+      { action: "mouseUp", button: "right" },
+      7,
+      [
+        'await page.mouse.up({ button: "right" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 7, action: "mouseUp" })'
+      ],
+    ],
+    [
+      { action: "scroll", direction: "down", amount: 100 },
+      8,
+      [
+        'await page.mouse.wheel(0, 100);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "scroll" })'
+      ],
+    ],
+    [
+      { action: "scroll", direction: "up", amount: 50 },
+      9,
+      [
+        'await page.mouse.wheel(0, -50);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 9, action: "scroll" })'
+      ],
+    ],
+    [
+      { action: "scroll", direction: "right", amount: 75 },
+      10,
+      [
+        'await page.mouse.wheel(75, 0);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 10, action: "scroll" })'
+      ],
+    ],
+    [
+      { action: "scroll", direction: "left", amount: 25 },
+      11,
+      [
+        'await page.mouse.wheel(-25, 0);',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 11, action: "scroll" })'
+      ],
+    ],
+    [
+      { action: "keyDown", value: "Shift" },
+      7,
+      [
+        'await page.keyboard.down("Shift");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 7, action: "keyDown" })'
+      ],
+    ],
+    [
+      { action: "press", value: "Enter" },
+      9,
+      [
+        'await page.keyboard.press("Enter");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 9, action: "press" })'
+      ],
+    ],
+    [
+      { action: "keyUp", value: "Shift" },
+      8,
+      [
+        'await page.keyboard.up("Shift");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "keyUp" })'
       ],
     ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
