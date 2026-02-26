@@ -4,7 +4,11 @@ description: Convert and validate acceptance criteria for Playwright test automa
 license: Apache-2.0
 metadata:
   author: accelint
+<<<<<<< HEAD
+  version: "0.9"
+=======
   version: "0.8"
+>>>>>>> main
 ---
 
 # AC To Playwright

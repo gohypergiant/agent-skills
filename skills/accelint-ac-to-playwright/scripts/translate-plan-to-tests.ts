@@ -127,6 +127,39 @@ export function translatePlan(
   lines.push(`  }`);
   lines.push(`}`);
 
+  // Helper to attach console logs (if present)
+  lines.push(``);
+  lines.push(`async function setupConsoleTracking(args: {`);
+  lines.push(`  page: import("@playwright/test").Page;`);
+  lines.push(`  testInfo: import("@playwright/test").TestInfo;`);
+  lines.push(`}) {`);
+  lines.push(`  const { page, testInfo } = args;`);
+  lines.push(`  const consoleMessages: Array<{ type: string; text: string; stepIndex: number; timestamp: string; location: { url: string; lineNumber?: number; columnNumber?: number } }> = [];`);
+  lines.push(`  let currentStep = 0;`);
+  lines.push(``);
+  lines.push(`  page.on('console', msg => {`);
+  lines.push(`    consoleMessages.push({`);
+  lines.push(`      type: msg.type(),`);
+  lines.push(`      text: msg.text(),`);
+  lines.push(`      stepIndex: currentStep,`);
+  lines.push(`      timestamp: new Date().toISOString(),`);
+  lines.push(`      location: msg.location()`);
+  lines.push(`    });`);
+  lines.push(`  });`);
+  lines.push(``);
+  lines.push(`  return {`);
+  lines.push(`    setStep: (step: number) => { currentStep = step; },`);
+  lines.push(`    attachMessages: async () => {`);
+  lines.push(`      if (consoleMessages.length > 0) {`);
+  lines.push(`        await testInfo.attach('console-messages', {`);
+  lines.push(`          contentType: 'application/json',`);
+  lines.push(`          body: Buffer.from(JSON.stringify(consoleMessages, null, 2), 'utf8')`);
+  lines.push(`        });`);
+  lines.push(`      }`);
+  lines.push(`    }`);
+  lines.push(`  };`);
+  lines.push(`}`);
+
   const suiteSlug = slug(planFile.suiteName);
   if (!suiteSlug) {
     throw new Error(
@@ -154,13 +187,18 @@ function translateSingleTest(test: Test): string {
     lines.push(`  test(${JSON.stringify(test.name)}, async ({ page }, testInfo) => {`);
   }
 
+  lines.push(`    const tracker = await setupConsoleTracking({ page, testInfo });`);
+  lines.push(``);
   lines.push(`    await page.goto(${JSON.stringify(test.startUrl)});`);
 
   test.steps.forEach((step, index) => {
     lines.push(``);
+    lines.push(`    tracker.setStep(${index + 1});`);
     lines.push(renderStep(step, index + 1));
   });
-
+  
+  lines.push(``);
+  lines.push(`    await tracker.attachMessages();`);
   lines.push(`  });`);
   lines.push(``);
 

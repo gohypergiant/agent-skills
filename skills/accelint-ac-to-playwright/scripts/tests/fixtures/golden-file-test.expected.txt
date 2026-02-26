@@ -10,8 +10,11 @@ test.describe("Golden file test", {
   test("happy path", {
     tag: "@wip"
   }, async ({ page }, testInfo) => {
+    const tracker = await setupConsoleTracking({ page, testInfo });
+
     await page.goto("https://example.com");
 
+    tracker.setStep(1);
     try {
       await expect(page.getByTestId("login.form.login")).toHaveCount(1);
       await page.getByTestId("login.form.login").click();
@@ -20,6 +23,7 @@ test.describe("Golden file test", {
       throw error;
     }
 
+    tracker.setStep(2);
     try {
       await expect(page.getByTestId("login.form.email")).toHaveCount(1);
       await page.getByTestId("login.form.email").fill("a@b.com");
@@ -28,6 +32,7 @@ test.describe("Golden file test", {
       throw error;
     }
 
+    tracker.setStep(3);
     try {
       await expect(page.getByTestId("login.header.h1")).toHaveCount(1);
       await expect(page.getByTestId("login.header.h1")).toContainText("Welcome");
@@ -36,12 +41,15 @@ test.describe("Golden file test", {
       throw error;
     }
 
+    tracker.setStep(4);
     try {
       await expect(page).toHaveURL(/dashboard/);
     } catch (error) {
       await attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "expectUrl" });
       throw error;
     }
+
+    await tracker.attachMessages();
   });
 
 });
@@ -86,4 +94,35 @@ async function attachFailureArtifacts(args: {
   } catch {
     // ignore video issues
   }
+}
+
+async function setupConsoleTracking(args: {
+  page: import("@playwright/test").Page;
+  testInfo: import("@playwright/test").TestInfo;
+}) {
+  const { page, testInfo } = args;
+  const consoleMessages: Array<{ type: string; text: string; stepIndex: number; timestamp: string; location: { url: string; lineNumber?: number; columnNumber?: number } }> = [];
+  let currentStep = 0;
+
+  page.on('console', msg => {
+    consoleMessages.push({
+      type: msg.type(),
+      text: msg.text(),
+      stepIndex: currentStep,
+      timestamp: new Date().toISOString(),
+      location: msg.location()
+    });
+  });
+
+  return {
+    setStep: (step: number) => { currentStep = step; },
+    attachMessages: async () => {
+      if (consoleMessages.length > 0) {
+        await testInfo.attach('console-messages', {
+          contentType: 'application/json',
+          body: Buffer.from(JSON.stringify(consoleMessages, null, 2), 'utf8')
+        });
+      }
+    }
+  };
 }

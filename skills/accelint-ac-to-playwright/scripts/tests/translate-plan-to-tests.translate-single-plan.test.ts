@@ -63,7 +63,7 @@ describe("_translateSingleTest", () => {
     expect(second).toBeGreaterThan(-1);
     expect(first).toBeLessThan(second);
 
-    expect(out).toMatch(/\n\n\s+try \{\n\s+await page\.goto\("\/one"\);/);
+    expect(out).toMatch(/\n\n\s+tracker\.setStep\(1\);\n\s+try \{\n\s+await page\.goto\("\/one"\);/);
   });
 
   it("includes a trailing blank line at the end", () => {
