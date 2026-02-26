@@ -317,6 +317,117 @@ describe("Plan schema", () => {
   });
 });
 
+it.each([
+  ["single key", "Enter"],
+  ["unmodified character", "a"],
+])("accepts press action with %s", (_description, value) => {
+  const input = {
+    suiteName: "Press test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test press",
+        startUrl: "https://example.com",
+        steps: [{ action: "press", value }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(true);
+});
+
+it.each([
+  ["modified character (requires Shift)", "+"],
+  ["modifier combination", "Shift+g"],
+])("rejects press action with %s", (_description, value) => {
+  const input = {
+    suiteName: "Press test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test press",
+        startUrl: "https://example.com",
+        steps: [{ action: "press", value }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(false);
+});
+
+it.each([
+  ["valid modifier key", "Shift"],
+  ["app-specific modifier 'a'", "a"],
+])("accepts keyDown action with %s", (_description, value) => {
+  const input = {
+    suiteName: "KeyDown test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyDown",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyDown", value }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(true);
+});
+
+it("rejects keyDown action with non-modifier key", () => {
+  const input = {
+    suiteName: "KeyDown test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyDown",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyDown", value: "Enter" }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(false);
+});
+
+it("accepts keyUp action with valid modifier key", () => {
+  const input = {
+    suiteName: "KeyUp test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyUp",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyUp", value: "Control" }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(true);
+});
+
+it("rejects keyUp action with non-modifier key", () => {
+  const input = {
+    suiteName: "KeyUp test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyUp",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyUp", value: "b" }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(false);
+});
+
 describe("Test fixture validations", () => {
   it("fixtures/all-actions.json should parse", () => {
     const data = readFixture("all-actions.json");
@@ -341,10 +452,13 @@ describe("Test fixture validations", () => {
         "expectVisible",
         "fill",
         "goto",
+        "keyDown",
+        "keyUp",
         "mouseClick",
         "mouseDown",
         "mouseMove",
         "mouseUp",
+        "press",
         "scroll",
         "select",
       ])

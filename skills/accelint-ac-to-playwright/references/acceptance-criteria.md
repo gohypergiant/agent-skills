@@ -41,7 +41,7 @@ And a user clicks the Submit button on the login form
 
 - Start URL: the default starting page is `/`. If a test needs a different starting page, state it at the start of your AC.
   - Example: "Given the user is on the settings page"
-- Action verbs: use clear action verbs so that the agent can map to test steps (such as "click", "fill", "select", "see"). Avoid vague verbs like "interact" or "use".
+- Action verbs: use clear action verbs so that the agent can map to test steps (such as "click", "fill", "select", "press", "see"). Avoid vague verbs like "interact" or "use".
 - Input values: include exact values for fills/selects.
   - Example: "the user fills the email input field with 'test@example.com'"
 - Expected outcomes: state exactly what should happen and how to verify it.
@@ -85,6 +85,20 @@ When writing AC that involve mouse operations, distinguish between element-based
 Valid buttons: `left` (default), `right`, `middle`
 
 Use coordinate-based actions only when the AC explicitly requires precise positioning (drawing apps, canvas interactions, drag-and-drop with coordinates).
+
+## Keyboard actions
+
+When writing AC that involve keyboard interactions, use natural language to describe what keys are pressed:
+
+- **Single key press**: "the user presses Enter" or "the user presses the g key"
+- **Modifier combination**: "the user presses Shift+g" or "the user presses Control+Enter"
+
+The agent will automatically translate modifier combinations into the proper sequence:
+1. Hold down the modifier key 
+2. Press the non-modifier key
+3. Release the modifier key
+
+Valid modifiers: `Shift`, `Control`, `a`
 
 ## Targets
 

@@ -38,12 +38,15 @@ AC files are first converted to JSON plan files, which are validated against a s
 Tests can currently use the following actions:
 - click - clicks an element.
 - doubleClick - double-clicks at x,y coordinates (not element-based).
-- fill - adds text to an element (generally `<input>` or `<textarea>` elements only).
+- fill - adds text to an element (generally `<input>` or `<textarea>` elements only). Use this for entering data into form fields.
 - goto - generally only used at the start of a test to get to the starting URL.
+- keyDown - presses and holds a modifier key (accepts `Shift`, `Control`, or app-specific modifier `a`). Must be paired with `keyUp` to release the key.
+- keyUp - releases a held modifier key (accepts `Shift`, `Control`, or app-specific modifier `a`). Must be paired with a preceding `keyDown`.
 - mouseClick - clicks at x,y coordinates (not element-based).
 - mouseDown - presses a mouse button at the current cursor position.
 - mouseMove - moves the mouse cursor to x,y coordinates.
 - mouseUp - releases a mouse button at the current cursor position.
+- press - presses and immediately releases a single keyboard key (accepts unmodified characters like `a`, `1`, `,` or named keys like `Enter`, `Tab`, `F7`, `Space`, `ArrowLeft`). For simple keyboard actions or for pressing keys while a modifier is held (between `keyDown` and `keyUp`). Intended for page-wide keyboard shortcuts, not for entering text into input fields (use `fill` instead).
 - scroll - scrolls the page in a direction by a specified pixel amount.
 - select - picks an item from a select dropdown.
 

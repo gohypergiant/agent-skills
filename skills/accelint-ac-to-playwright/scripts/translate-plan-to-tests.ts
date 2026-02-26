@@ -26,10 +26,13 @@ export type Step = {
   | { action: "expectVisible"; target: string }
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
+  | { action: "keyDown"; value: string }
+  | { action: "keyUp"; value: string }
   | { action: "mouseClick"; x: number; y: number; button?: "left" | "right" | "middle" }
   | { action: "mouseDown"; button?: "left" | "right" | "middle" }
   | { action: "mouseMove"; x: number; y: number }
   | { action: "mouseUp"; button?: "left" | "right" | "middle" }
+  | { action: "press"; value: string }
   | { action: "scroll"; direction: "up" | "down" | "left" | "right"; amount: number }
   | { action: "select"; target: string; value: string };
   
@@ -294,6 +297,26 @@ function renderStep(step: Step, stepIndex: number): string {
         `      throw error;`,
         `    }`
       ].join("\n");
+      
+    case "keyDown":
+      return [
+        `    try {`,
+        `      await page.keyboard.down(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "keyUp":
+      return [
+        `    try {`,
+        `      await page.keyboard.up(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
 
     case "mouseClick": {
       const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
@@ -306,7 +329,7 @@ function renderStep(step: Step, stepIndex: number): string {
         `    }`
       ].join("\n");
     }
-
+  
     case "mouseDown": {
       const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
       return [
@@ -328,7 +351,7 @@ function renderStep(step: Step, stepIndex: number): string {
         `      throw error;`,
         `    }`
       ].join("\n");
-
+  
     case "mouseUp": {
       const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
       return [
@@ -340,6 +363,16 @@ function renderStep(step: Step, stepIndex: number): string {
         `    }`
       ].join("\n");
     }
+  
+    case "press":
+      return [
+        `    try {`,
+        `      await page.keyboard.press(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
 
     case "scroll": {
       const deltaX = step.direction === "left" ? -step.amount : step.direction === "right" ? step.amount : 0;
@@ -353,7 +386,7 @@ function renderStep(step: Step, stepIndex: number): string {
         `    }`
       ].join("\n");
     }
-
+  
     case "select": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [

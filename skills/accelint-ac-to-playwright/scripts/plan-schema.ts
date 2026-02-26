@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validator";
 import { mouseButtonValidator, wheelDirectionValidator } from "./mouse-validator";
 
 /**
@@ -48,6 +49,16 @@ const gotoStep = z.object({
   value: z.string(),
 }).strict();
 
+const keyDownStep = z.object({
+  action: z.literal("keyDown"),
+  value: modifierKeyValidator,
+}).strict();
+
+const keyUpStep = z.object({
+  action: z.literal("keyUp"),
+  value: modifierKeyValidator,
+}).strict();
+
 const mouseClickStep = z.object({
   action: z.literal("mouseClick"),
   x: z.number().int().min(0),
@@ -71,6 +82,11 @@ const mouseUpStep = z.object({
   button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
+const pressStep = z.object({
+  action: z.literal("press"),
+  value: pressKeyValidator,
+}).strict();
+
 const scrollStep = z.object({
   action: z.literal("scroll"),
   direction: wheelDirectionValidator,
@@ -92,10 +108,13 @@ export const stepSchema = z.discriminatedUnion("action", [
   expectVisibleStep,
   fillStep,
   gotoStep,
+  keyDownStep,
+  keyUpStep,
   mouseClickStep,
   mouseDownStep,
   mouseMoveStep,
   mouseUpStep,
+  pressStep,
   scrollStep,
   selectStep,
 ]);
