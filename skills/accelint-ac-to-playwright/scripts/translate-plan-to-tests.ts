@@ -19,6 +19,7 @@ export type PlanFile = {
 
 export type Step = {
   action: "click"; target: string }
+  | { action: "doubleClick"; x: number; y: number; button?: "left" | "right" | "middle" }
   | { action: "expectNotVisible"; target: string }
   | { action: "expectText"; target: string; value: string }
   | { action: "expectUrl"; value: string }
@@ -26,7 +27,15 @@ export type Step = {
   | { action: "fill"; target: string; value: string }
   | { action: "goto"; value: string }
   | { action: "hover"; target: string }
+  | { action: "keyDown"; value: string }
+  | { action: "keyUp"; value: string }
+  | { action: "mouseClick"; x: number; y: number; button?: "left" | "right" | "middle" }
+  | { action: "mouseDown"; button?: "left" | "right" | "middle" }
+  | { action: "mouseMove"; x: number; y: number }
+  | { action: "mouseUp"; button?: "left" | "right" | "middle" }
+  | { action: "press"; value: string }
   | { action: "reload" }
+  | { action: "scroll"; direction: "up" | "down" | "left" | "right"; amount: number }
   | { action: "select"; target: string; value: string };
   
 export type Test = {
@@ -120,6 +129,39 @@ export function translatePlan(
   lines.push(`  }`);
   lines.push(`}`);
 
+  // Helper to attach console logs (if present)
+  lines.push(``);
+  lines.push(`async function setupConsoleTracking(args: {`);
+  lines.push(`  page: import("@playwright/test").Page;`);
+  lines.push(`  testInfo: import("@playwright/test").TestInfo;`);
+  lines.push(`}) {`);
+  lines.push(`  const { page, testInfo } = args;`);
+  lines.push(`  const consoleMessages: Array<{ type: string; text: string; stepIndex: number; timestamp: string; location: { url: string; lineNumber?: number; columnNumber?: number } }> = [];`);
+  lines.push(`  let currentStep = 0;`);
+  lines.push(``);
+  lines.push(`  page.on('console', msg => {`);
+  lines.push(`    consoleMessages.push({`);
+  lines.push(`      type: msg.type(),`);
+  lines.push(`      text: msg.text(),`);
+  lines.push(`      stepIndex: currentStep,`);
+  lines.push(`      timestamp: new Date().toISOString(),`);
+  lines.push(`      location: msg.location()`);
+  lines.push(`    });`);
+  lines.push(`  });`);
+  lines.push(``);
+  lines.push(`  return {`);
+  lines.push(`    setStep: (step: number) => { currentStep = step; },`);
+  lines.push(`    attachMessages: async () => {`);
+  lines.push(`      if (consoleMessages.length > 0) {`);
+  lines.push(`        await testInfo.attach('console-messages', {`);
+  lines.push(`          contentType: 'application/json',`);
+  lines.push(`          body: Buffer.from(JSON.stringify(consoleMessages, null, 2), 'utf8')`);
+  lines.push(`        });`);
+  lines.push(`      }`);
+  lines.push(`    }`);
+  lines.push(`  };`);
+  lines.push(`}`);
+
   const suiteSlug = slug(planFile.suiteName);
   if (!suiteSlug) {
     throw new Error(
@@ -147,13 +189,18 @@ function translateSingleTest(test: Test): string {
     lines.push(`  test(${JSON.stringify(test.name)}, async ({ page }, testInfo) => {`);
   }
 
+  lines.push(`    const tracker = await setupConsoleTracking({ page, testInfo });`);
+  lines.push(``);
   lines.push(`    await page.goto(${JSON.stringify(test.startUrl)});`);
 
   test.steps.forEach((step, index) => {
     lines.push(``);
+    lines.push(`    tracker.setStep(${index + 1});`);
     lines.push(renderStep(step, index + 1));
   });
-
+  
+  lines.push(``);
+  lines.push(`    await tracker.attachMessages();`);
   lines.push(`  });`);
   lines.push(``);
 
@@ -202,6 +249,18 @@ function renderStep(step: Step, stepIndex: number): string {
         `      await ${locator}.click();`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "doubleClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.dblclick(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
         `      throw error;`,
         `    }`
       ].join("\n");
@@ -291,6 +350,82 @@ function renderStep(step: Step, stepIndex: number): string {
         `    }`
       ].join("\n");
     }
+    
+    case "keyDown":
+      return [
+        `    try {`,
+        `      await page.keyboard.down(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+      
+    case "keyUp":
+      return [
+        `    try {`,
+        `      await page.keyboard.up(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+        
+    case "mouseClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.click(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+        
+    case "mouseDown": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.down(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+        
+    case "mouseMove":
+      return [
+        `    try {`,
+        `      await page.mouse.move(${step.x}, ${step.y});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+          
+    case "mouseUp": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.up(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+          
+    case "press":
+      return [
+        `    try {`,
+        `      await page.keyboard.press(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
 
     case "reload":
       return [
@@ -302,6 +437,19 @@ function renderStep(step: Step, stepIndex: number): string {
         `    }`
       ].join("\n");
 
+    case "scroll": {
+      const deltaX = step.direction === "left" ? -step.amount : step.direction === "right" ? step.amount : 0;
+      const deltaY = step.direction === "up" ? -step.amount : step.direction === "down" ? step.amount : 0;
+      return [
+        `    try {`,
+        `      await page.mouse.wheel(${deltaX}, ${deltaY});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+  
     case "select": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [

@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validator";
+import { mouseButtonValidator, wheelDirectionValidator } from "./mouse-validator";
 
 /**
  * Step schemas
@@ -6,6 +8,13 @@ import { z } from "zod";
 const clickStep = z.object({
   action: z.literal("click"),
   target: z.string(),
+}).strict();
+
+const doubleClickStep = z.object({
+  action: z.literal("doubleClick"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+  button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
 const expectNotVisibleStep = z.object({
@@ -45,8 +54,52 @@ const hoverStep = z.object({
   target: z.string(),
 }).strict();
 
+const keyDownStep = z.object({
+  action: z.literal("keyDown"),
+  value: modifierKeyValidator,
+}).strict();
+
+const keyUpStep = z.object({
+  action: z.literal("keyUp"),
+  value: modifierKeyValidator,
+}).strict();
+
+const mouseClickStep = z.object({
+  action: z.literal("mouseClick"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+  button: mouseButtonValidator.optional().default("left"),
+}).strict();
+
+const mouseDownStep = z.object({
+  action: z.literal("mouseDown"),
+  button: mouseButtonValidator.optional().default("left"),
+}).strict();
+
+const mouseMoveStep = z.object({
+  action: z.literal("mouseMove"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+}).strict();
+
+const mouseUpStep = z.object({
+  action: z.literal("mouseUp"),
+  button: mouseButtonValidator.optional().default("left"),
+}).strict();
+
+const pressStep = z.object({
+  action: z.literal("press"),
+  value: pressKeyValidator,
+}).strict();
+
 const reloadStep = z.object({
   action: z.literal("reload"),
+}).strict();
+
+const scrollStep = z.object({
+  action: z.literal("scroll"),
+  direction: wheelDirectionValidator,
+  amount: z.number().int().positive(),
 }).strict();
 
 const selectStep = z.object({
@@ -57,6 +110,7 @@ const selectStep = z.object({
 
 export const stepSchema = z.discriminatedUnion("action", [
   clickStep,
+  doubleClickStep,
   expectNotVisibleStep,
   expectTextStep,
   expectUrlStep,
@@ -64,7 +118,15 @@ export const stepSchema = z.discriminatedUnion("action", [
   fillStep,
   gotoStep,
   hoverStep,
+  keyDownStep,
+  keyUpStep,
+  mouseClickStep,
+  mouseDownStep,
+  mouseMoveStep,
+  mouseUpStep,
+  pressStep,
   reloadStep,
+  scrollStep,
   selectStep,
 ]);
 
