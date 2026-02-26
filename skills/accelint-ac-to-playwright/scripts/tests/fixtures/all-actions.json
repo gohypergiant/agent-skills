@@ -42,8 +42,40 @@
           "target": "button.login"
         },
         {
+          "action": "doubleClick",
+          "x": 250,
+          "y": 300
+        },
+        {
           "action": "expectUrl",
           "value": "https://example.com/dashboard"
+        },
+        {
+          "action": "mouseClick",
+          "x": 150,
+          "y": 200
+        },
+        {
+          "action": "mouseClick",
+          "x": 300,
+          "y": 400,
+          "button": "right"
+        },
+        {
+          "action": "mouseDown"
+        },
+        {
+          "action": "mouseMove",
+          "x": 500,
+          "y": 600
+        },
+        {
+          "action": "mouseUp"
+        },
+        {
+          "action": "scroll",
+          "direction": "down",
+          "amount": 200
         },
         {
           "action": "expectVisible",

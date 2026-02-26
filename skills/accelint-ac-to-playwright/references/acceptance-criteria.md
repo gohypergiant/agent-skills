@@ -49,6 +49,43 @@ And a user clicks the Submit button on the login form
 - Visibility changes: be explicit when something appears/disappears. The agent is looking for clue words to understand that visibility changes are expected (e.g., "visible", "appears", "shows", "see", "changes", "hides", and similar wording).
   - Example: "the tracks table shows up on the page"
 
+## Mouse actions
+
+When writing AC that involve mouse operations, distinguish between element-based and coordinate-based actions:
+
+- **Element clicks** (most common): "the user clicks the Submit button on the form"
+  - Uses test hooks to identify elements (see Targets below)
+  - The agent translates this to a standard `click` action with a target
+- **Coordinate clicks** (for precise positioning): "the user clicks at position 150, 200"
+  - Uses x,y coordinates for clicking specific positions
+  - The agent translates this to a `mouseClick` action
+  - Optional: specify button type: "the user right-clicks at position 300, 400"
+- **Double-clicks** (for coordinate-based actions): "the user double-clicks at position 150, 200"
+  - Uses x,y coordinates for double-clicking specific positions
+  - The agent translates this to a `doubleClick` action
+  - Optional: specify button type: "the user double-clicks with the right button at position 300, 400"
+- **Mouse movement** (for positioning before other operations): "the user moves the mouse to position 150, 250"
+  - Positions the cursor at specific x,y coordinates without clicking
+  - The agent translates this to a `mouseMove` action
+- **Press and hold** (for drag operations): "the user presses the left mouse button"
+  - Presses a mouse button at the current cursor position
+  - The agent translates this to a `mouseDown` action
+  - Always use `mouseMove` first to position the cursor
+  - Optional: specify button type: "the user presses the right mouse button"
+- **Release button** (for drag operations): "the user releases the mouse button"
+  - Releases a held mouse button at the current cursor position
+  - The agent translates this to a `mouseUp` action
+  - Optional: specify button type: "the user releases the middle mouse button"
+- **Scrolling** (for page navigation): "the user scrolls down 200 pixels"
+  - Scrolls the page in a specified direction by a pixel amount
+  - The agent translates this to a `scroll` action
+  - Valid directions: `up`, `down`, `left`, `right`
+  - Example: "the user scrolls right 150 pixels"
+
+Valid buttons: `left` (default), `right`, `middle`
+
+Use coordinate-based actions only when the AC explicitly requires precise positioning (drawing apps, canvas interactions, drag-and-drop with coordinates).
+
 ## Keyboard actions
 
 When writing AC that involve keyboard interactions, use natural language to describe what keys are pressed:

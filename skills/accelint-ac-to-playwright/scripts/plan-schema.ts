@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validator";
+import { mouseButtonValidator, wheelDirectionValidator } from "./mouse-validator";
 
 /**
  * Step schemas
@@ -7,6 +8,13 @@ import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validato
 const clickStep = z.object({
   action: z.literal("click"),
   target: z.string(),
+}).strict();
+
+const doubleClickStep = z.object({
+  action: z.literal("doubleClick"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+  button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
 const expectNotVisibleStep = z.object({
@@ -51,10 +59,27 @@ const keyUpStep = z.object({
   value: modifierKeyValidator,
 }).strict();
 
-const selectStep = z.object({
-  action: z.literal("select"),
-  target: z.string(),
-  value: z.string(),
+const mouseClickStep = z.object({
+  action: z.literal("mouseClick"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+  button: mouseButtonValidator.optional().default("left"),
+}).strict();
+
+const mouseDownStep = z.object({
+  action: z.literal("mouseDown"),
+  button: mouseButtonValidator.optional().default("left"),
+}).strict();
+
+const mouseMoveStep = z.object({
+  action: z.literal("mouseMove"),
+  x: z.number().int().min(0),
+  y: z.number().int().min(0),
+}).strict();
+
+const mouseUpStep = z.object({
+  action: z.literal("mouseUp"),
+  button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
 const pressStep = z.object({
@@ -62,8 +87,21 @@ const pressStep = z.object({
   value: pressKeyValidator,
 }).strict();
 
+const scrollStep = z.object({
+  action: z.literal("scroll"),
+  direction: wheelDirectionValidator,
+  amount: z.number().int().positive(),
+}).strict();
+
+const selectStep = z.object({
+  action: z.literal("select"),
+  target: z.string(),
+  value: z.string(),
+}).strict();
+
 export const stepSchema = z.discriminatedUnion("action", [
   clickStep,
+  doubleClickStep,
   expectNotVisibleStep,
   expectTextStep,
   expectUrlStep,
@@ -72,7 +110,12 @@ export const stepSchema = z.discriminatedUnion("action", [
   gotoStep,
   keyDownStep,
   keyUpStep,
+  mouseClickStep,
+  mouseDownStep,
+  mouseMoveStep,
+  mouseUpStep,
   pressStep,
+  scrollStep,
   selectStep,
 ]);
 

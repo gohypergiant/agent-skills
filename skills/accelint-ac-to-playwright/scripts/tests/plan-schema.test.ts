@@ -79,17 +79,17 @@ describe("Plan schema", () => {
   });
 
   it.each([
-    ["single key", "Enter"],
-    ["unmodified character", "a"],
-  ])("accepts press action with %s", (_description, value) => {
+    ["default button", 100, 200, undefined],
+    ["explicit button", 50, 75, "right"],
+  ])("accepts doubleClick with %s", (_description, x, y, button) => {
     const input = {
-      suiteName: "Press test",
+      suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Test press",
+          name: "Double click test",
           startUrl: "https://example.com",
-          steps: [{ action: "press", value }],
+          steps: [{ action: "doubleClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -99,17 +99,17 @@ describe("Plan schema", () => {
   });
 
   it.each([
-    ["modified character (requires Shift)", "+"],
-    ["modifier combination", "Shift+g"],
-  ])("rejects press action with %s", (_description, value) => {
+    ["negative coordinates", -10, 200, undefined],
+    ["invalid button", 100, 200, "invalid"],
+  ])("rejects doubleClick with %s", (_description, x, y, button) => {
     const input = {
-      suiteName: "Press test",
+      suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Test press",
+          name: "Invalid double click",
           startUrl: "https://example.com",
-          steps: [{ action: "press", value }],
+          steps: [{ action: "doubleClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -119,17 +119,17 @@ describe("Plan schema", () => {
   });
 
   it.each([
-    ["valid modifier key", "Shift"],
-    ["app-specific modifier 'a'", "a"],
-  ])("accepts keyDown action with %s", (_description, value) => {
+    ["default button", 100, 200, undefined],
+    ["explicit button", 50, 75, "right"],
+  ])("accepts mouseClick with %s", (_description, x, y, button) => {
     const input = {
-      suiteName: "KeyDown test",
+      suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Test keyDown",
+          name: "Click test",
           startUrl: "https://example.com",
-          steps: [{ action: "keyDown", value }],
+          steps: [{ action: "mouseClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -138,15 +138,20 @@ describe("Plan schema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects keyDown action with non-modifier key", () => {
+  it.each([
+    ["negative x coordinate", -10, 200, undefined],
+    ["negative y coordinate", 100, -50, undefined],
+    ["non-integer coordinates", 100.5, 200, undefined],
+    ["invalid button", 100, 200, "invalid"],
+  ])("rejects mouseClick with %s", (_description, x, y, button) => {
     const input = {
-      suiteName: "KeyDown test",
+      suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Test keyDown",
+          name: "Invalid click",
           startUrl: "https://example.com",
-          steps: [{ action: "keyDown", value: "Enter" }],
+          steps: [{ action: "mouseClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -155,15 +160,15 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts keyUp action with valid modifier key", () => {
+  it("accepts mouseMove with valid coordinates", () => {
     const input = {
-      suiteName: "KeyUp test",
+      suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Test keyUp",
+          name: "Move mouse",
           startUrl: "https://example.com",
-          steps: [{ action: "keyUp", value: "Control" }],
+          steps: [{ action: "mouseMove", x: 150, y: 250 }],
         },
       ],
     };
@@ -172,15 +177,19 @@ describe("Plan schema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rejects keyUp action with non-modifier key", () => {
+  it.each([
+    ["negative x coordinate", -10, 100],
+    ["negative y coordinate", 100, -50],
+    ["non-integer coordinates", 100.5, 200],
+  ])("rejects mouseMove with %s", (_description, x, y) => {
     const input = {
-      suiteName: "KeyUp test",
+      suiteName: "Mouse test",
       source: { "repo": "some-repo", "path": "path/to/file.md" },
       tests: [
         {
-          name: "Test keyUp",
+          name: "Invalid move",
           startUrl: "https://example.com",
-          steps: [{ action: "keyUp", value: "b" }],
+          steps: [{ action: "mouseMove", x, y }],
         },
       ],
     };
@@ -188,6 +197,235 @@ describe("Plan schema", () => {
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
+
+  it.each([
+    ["default button", undefined],
+    ["explicit button", "right"],
+  ])("accepts mouseDown with %s", (_description, button) => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Press mouse button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseDown", ...(button && { button }) }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects mouseDown with invalid button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseDown", button: "invalid" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it.each([
+    ["default button", undefined],
+    ["explicit button", "middle"],
+  ])("accepts mouseUp with %s", (_description, button) => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Release mouse button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseUp", ...(button && { button }) }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects mouseUp with invalid button", () => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid button",
+          startUrl: "https://example.com",
+          steps: [{ action: "mouseUp", button: "invalid" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it.each([
+    ["down", 100],
+    ["up", 50],
+    ["left", 75],
+    ["right", 25],
+  ])("accepts scroll with %s direction", (direction, amount) => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Scroll test",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction, amount }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it.each([
+    ["invalid direction", "diagonal", 100],
+    ["zero amount", "down", 0],
+    ["negative amount", "up", -50],
+    ["non-integer amount", "down", 50.5],
+  ])("rejects scroll with %s", (_description, direction, amount) => {
+    const input = {
+      suiteName: "Mouse test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid scroll",
+          startUrl: "https://example.com",
+          steps: [{ action: "scroll", direction, amount }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+});
+
+it.each([
+  ["single key", "Enter"],
+  ["unmodified character", "a"],
+])("accepts press action with %s", (_description, value) => {
+  const input = {
+    suiteName: "Press test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test press",
+        startUrl: "https://example.com",
+        steps: [{ action: "press", value }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(true);
+});
+
+it.each([
+  ["modified character (requires Shift)", "+"],
+  ["modifier combination", "Shift+g"],
+])("rejects press action with %s", (_description, value) => {
+  const input = {
+    suiteName: "Press test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test press",
+        startUrl: "https://example.com",
+        steps: [{ action: "press", value }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(false);
+});
+
+it.each([
+  ["valid modifier key", "Shift"],
+  ["app-specific modifier 'a'", "a"],
+])("accepts keyDown action with %s", (_description, value) => {
+  const input = {
+    suiteName: "KeyDown test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyDown",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyDown", value }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(true);
+});
+
+it("rejects keyDown action with non-modifier key", () => {
+  const input = {
+    suiteName: "KeyDown test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyDown",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyDown", value: "Enter" }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(false);
+});
+
+it("accepts keyUp action with valid modifier key", () => {
+  const input = {
+    suiteName: "KeyUp test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyUp",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyUp", value: "Control" }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(true);
+});
+
+it("rejects keyUp action with non-modifier key", () => {
+  const input = {
+    suiteName: "KeyUp test",
+    source: { "repo": "some-repo", "path": "path/to/file.md" },
+    tests: [
+      {
+        name: "Test keyUp",
+        startUrl: "https://example.com",
+        steps: [{ action: "keyUp", value: "b" }],
+      },
+    ],
+  };
+
+  const result = testSuiteSchema.safeParse(input);
+  expect(result.success).toBe(false);
 });
 
 describe("Test fixture validations", () => {
@@ -207,6 +445,7 @@ describe("Test fixture validations", () => {
     expect(unique).toEqual(
       new Set([
         "click",
+        "doubleClick",
         "expectNotVisible",
         "expectText",
         "expectUrl",
@@ -215,7 +454,12 @@ describe("Test fixture validations", () => {
         "goto",
         "keyDown",
         "keyUp",
+        "mouseClick",
+        "mouseDown",
+        "mouseMove",
+        "mouseUp",
         "press",
+        "scroll",
         "select",
       ])
     );

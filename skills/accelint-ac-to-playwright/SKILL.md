@@ -4,7 +4,7 @@ description: Convert acceptance criteria to Playwright test specs. Use when user
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.6"
+  version: "0.7"
 ---
 
 # AC To Playwright
@@ -140,6 +140,10 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `references
 ## NEVER Do
 
 - **NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.
+- **NEVER use `doubleClick` for element interactions** — `doubleClick` is only for coordinate-based double-clicks (x,y positions). For double-clicking elements, use the element-based `click` action twice in sequence. Only use `doubleClick` when AC explicitly specifies coordinates.
+- **NEVER use `mouseClick` for element interactions** — `mouseClick` is only for coordinate-based clicks (x,y positions). For clicking elements, always use `click` with test IDs. Only use `mouseClick` when AC explicitly specifies coordinates.
+- **NEVER use `mouseMove` without a follow-up action** — `mouseMove` positions the cursor but doesn't interact with anything. It should only be used before actions like `mouseDown`, `mouseUp`, `mouseClick`, or when AC explicitly requires moving to specific coordinates before other mouse operations.
+- **NEVER use `mouseDown` or `mouseUp` without `mouseMove` first** — these actions press/release buttons at the current cursor position. Always use `mouseMove` to position the cursor before `mouseDown`/`mouseUp`, otherwise the position is unpredictable.
 - **NEVER invent assertions** — only add `expectText`, `expectVisible`, `expectNotVisible` when AC explicitly states expected outcomes (exception: `expectUrl` for navigation, visibility pairs for show/hide actions)
 - **NEVER store absolute file paths in source metadata** — the expected convention is to use repo-relative paths for git repos, basename only for external files
 - **NEVER assume targets or values** — if AC says "click the button" without identifying which button, ask for clarification rather than guessing. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
