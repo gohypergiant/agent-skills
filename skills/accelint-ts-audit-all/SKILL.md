@@ -1,8 +1,10 @@
 ---
 name: accelint-ts-audit-all
 description: Comprehensive TypeScript file audit system. Command-only skill (no natural triggers). Accepts file or directory path to systematically audit through accelint-ts-testing, accelint-ts-best-practices, accelint-ts-performance, and accelint-ts-documentation skills. Maintains progress tracking across sessions with interactive change approval. Uses isolated git worktrees to enable parallel audits without conflicts.
+license: Apache-2.0
 metadata:
-  version: "1.0"
+  author: accelint
+  version: "1.1"
 ---
 
 # Audit All
@@ -18,12 +20,12 @@ Comprehensive TypeScript file audit system that systematically applies multiple 
 - **NEVER ask for approval before showing all detailed changes** - BLOCKING: You MUST show the complete before/after code for EVERY issue before asking "Apply which issues?"
 - **NEVER auto-apply all recommendations** - Each change needs user approval (accept/deny/other) to maintain code ownership and prevent unwanted modifications.
 - **NEVER run one-off commands instead of documented verification commands** - The audit-process file documents EXACT verification commands. Use those commands verbatim. Never improvise with `npm test`, `bun test`, or similar unless they match the documented commands exactly.
-- **NEVER skip saving progress after completing a step** - After EVERY step completion (Steps 1, 2, 3, 4, 5, 6, 7, 8), immediately save detailed progress to audit-process file BEFORE moving to next step. Context limits will break otherwise.
+- **NEVER skip saving progress after completing a step** - After EVERY step completion, immediately save detailed progress to audit-process file BEFORE moving to next step. Context limits will break otherwise.
 - **NEVER skip the 100-pass PBT verification** - When property-based tests are added, you MUST run the test suite 100 times to verify stability. Random failures are common with PBT. This is a blocking requirement - do not proceed until 100 consecutive passes are achieved. Run the tests without coverage reporting on to increase speed and stability.
 - **NEVER lose progress when context runs out** - Save detailed progress to audit-process file after each step. Context limits are guaranteed in large audits.
 - **NEVER assume property-based tests are stable** - Random test failures are common with PBT. Run new property tests 100 times to verify stability before accepting. Run the tests without coverage reporting on to increase speed and stability.
 - **NEVER add PERF comments everywhere** - Only add `// PERF:` comments when they provide meaningful insight that future developers wouldn't discover on their own.
-- **NEVER mark a file complete without all 8 steps** - Partial audits leave files in inconsistent states. Complete all steps or mark as in-progress.
+- **NEVER mark a file complete without all 9 steps** - Partial audits leave files in inconsistent states. Complete all steps or mark as in-progress.
 - **NEVER move on from a broken build** - Fix compilation errors, test failures, and lint issues immediately before proceeding to the next step.
 - **NEVER run audit in main branch** - Always create an isolated worktree to prevent conflicts with parallel audits and allow safe experimentation.
 
@@ -52,7 +54,7 @@ This skill creates and maintains an audit process file that tracks progress acro
 ### Workflow Overview
 
 1. **Initialize** - Create TODO list and audit tracking files
-2. **For each file** - Run 8-step audit process with user approval
+2. **For each file** - Run 9-step audit process with user approval
 3. **Track progress** - Save after each step to survive context limits
 4. **Archive completed** - Move finished files to history file
 
@@ -249,7 +251,7 @@ If verification passes, skip to documenting results. Otherwise:
 
 ### Step 3: Archive Completed File
 
-When all 8 steps complete for a file:
+When all 9 steps complete for a file:
 
 1. **Move detailed progress to history file**
    - Copy entire "Current File - Detailed Progress" section
@@ -330,7 +332,7 @@ When all 8 steps complete for a file:
 
 **File Status Markers:**
 - `[ ]` - Pending (not started)
-- `[x]` - Completed (all 8 steps done, moved to history)
+- `[x]` - Completed (all 9 steps done, moved to history)
 
 **Step Status Markers:**
 - ✅ - Complete

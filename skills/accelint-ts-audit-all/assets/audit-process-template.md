@@ -29,7 +29,7 @@ For each code file, you MUST follow this sequence:
 
 **Progress Tracking:**
 - After each step, save detailed progress to the "Current File - Detailed Progress" section in this file
-- When a file is complete (all 8 steps done), move its detailed progress to `audit-history-{same date as audit-process file}-{same time as audit-process file}.md`
+- When a file is complete (all 9 steps done), move its detailed progress to `audit-history-{same date as audit-process file}-{same time as audit-process file}.md`
 - Update the file status in the "Files to Audit" section (Pending → In Progress → Completed)
 
 ---
@@ -45,7 +45,7 @@ For each code file, you MUST follow this sequence:
 
 ### Completed (0)
 
-> **Note:** Detailed progress for completed files is archived in `audit-history.md`. Only read that file if you need to understand previous decisions or revert changes.
+> **Note:** Detailed progress for completed files is archived in `audit-history-{timestamp}.md`. Only read that file if you need to understand previous decisions or revert changes.
 
 ---
 
@@ -87,7 +87,7 @@ For each code file, you MUST follow this sequence:
 
 ### File Organization
 - **In-progress work** → Document in "Current File - Detailed Progress" section of this file
-- **Completed work** → Move to `audit-history.md` when all 8 steps are done
+- **Completed work** → Move to `audit-history.md` when all 9 steps are done
 - **Historical reference** → Only read `audit-history.md` if you need to revert or understand past decisions
 
 ### Audit Guidelines
@@ -95,7 +95,7 @@ For each code file, you MUST follow this sequence:
 - **ALWAYS use two-phase interactive pattern:** Show ALL issues in emoji severity table first, then detailed before/after for each, then accept via numbered list. NEVER present one-by-one.
 - Performance comments (`// PERF:`) should only be added when they provide meaningful insight
 - User must approve each change before applying (numbered list acceptance workflow)
-- **BLOCKING:** Save progress to this file after completing EACH step (2, 4, 6, 8) before continuing
+- **BLOCKING:** Save progress to this file after completing EACH step before continuing
 - This audit will require multiple sessions due to context window constraints
 - **BLOCKING:** If property-based tests are added, run test suite 100 times and achieve 100 consecutive passes before proceeding. Random failures are common with PBT.
   - If ANY run fails, examine the seed that failed

@@ -4,10 +4,10 @@ Comprehensive JavaScript and TypeScript file audit system that systematically ap
 
 ## Overview
 
-`accelint-ts-audit-all` is a meta-skill that orchestrates four specialized JavaScript and TypeScript audit skills (`accelint-ts-testing`, `accelint-ts-best-practices`, `accelint-ts-performance`, `accelint-ts-documentation`) in a systematic 8-step process. It maintains detailed progress tracking across sessions and requires interactive approval for all changes.
+`accelint-ts-audit-all` is a meta-skill that orchestrates four specialized JavaScript and TypeScript audit skills (`accelint-ts-testing`, `accelint-ts-best-practices`, `accelint-ts-performance`, `accelint-ts-documentation`) in a systematic 9-step process. It maintains detailed progress tracking across sessions and requires interactive approval for all changes.
 
 **Key Features:**
-- 🔄 8-step audit process per file with progress tracking
+- 🔄 9-step audit process per file with progress tracking
 - 🤝 Interactive change approval (accept/deny/other)
 - 📊 Parallel execution of quality + performance to avoid contradictions
 - 💾 Session persistence with audit-process and audit-history files
@@ -43,7 +43,7 @@ If you don't provide a path, the skill will ask for one.
 
 ## What It Does
 
-For each TypeScript file (excluding `.test.ts`, `.spec.ts`, `.bench.ts`), the skill runs this 8-step process:
+For each TypeScript file (excluding `.test.ts`, `.spec.ts`, `.bench.ts`), the skill runs this 9-step process:
 
 ### Phase 1: Initial Test Coverage
 1. Run `accelint-ts-testing` to check test quality
@@ -126,7 +126,7 @@ This skill embodies these principles:
 2. **Progressive Context** - Detailed progress tracking allows audits to span multiple sessions without losing state
 3. **Parallel Analysis** - Running quality + performance skills together prevents contradictory recommendations on the same code
 4. **Verification First** - Test coverage check before refactoring, verification after changes, ensures safety
-5. **Complete or In-Progress** - Files are either fully audited (all 8 steps) or marked in-progress, never partially done with no record
+5. **Complete or In-Progress** - Files are either fully audited (all 9 steps) or marked in-progress, never partially done with no record
 
 ## Common Scenarios
 
