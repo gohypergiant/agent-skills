@@ -1,12 +1,6 @@
 ---
 name: accelint-skill-manager
-description: >-
-  Use when users say "create a skill", "make a new skill", "build a skill",
-  "skill for X", "package this as a skill", "audit this skill", "review this skill",
-  "check skill quality", "fix this skill", "improve this skill", "refactor this skill",
-  "update this skill", "optimize this skill", or when creating, refactoring, auditing,
-  or packaging domain expertise into agent skills with specialized knowledge, workflows,
-  or tool integrations.
+description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", "audit this skill", "review this skill", "check skill quality", "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill", or when creating, refactoring, auditing, or packaging domain expertise into agent skills with specialized knowledge, workflows, or tool integrations.
 license: Apache-2.0
 metadata:
   author: accelint
