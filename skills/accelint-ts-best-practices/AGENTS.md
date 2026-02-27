@@ -10,6 +10,19 @@ Comprehensive coding standards for JavaScript and TypeScript applications, desig
 
 ## How to Use This Guide
 
+### Option 1: Use Automation Scripts (Recommended)
+
+For maximum efficiency, use the provided scripts to automate detection and reporting:
+- **[scripts/detect-best-practice-violations.sh](scripts/detect-best-practice-violations.sh)** - Scan for violations, output JSON
+- **[scripts/generate-audit-report.sh](scripts/generate-audit-report.sh)** - Generate pre-filled audit report
+- **[scripts/quick-categorize.sh](scripts/quick-categorize.sh)** - Quick categorization lookup
+
+Scripts catch ~60-70% of mechanical violations automatically. See [scripts/README.md](scripts/README.md) for coverage model and workflow.
+
+**Context savings: ~2,100 tokens per audit**
+
+### Option 2: Manual Review
+
 1. **Start here**: Scan the rule summaries to identify relevant patterns
 2. **Load references as needed**: Click through to detailed examples only when implementing
 3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples

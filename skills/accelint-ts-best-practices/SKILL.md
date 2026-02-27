@@ -4,7 +4,7 @@ description: Comprehensive TypeScript/JavaScript coding standards focusing on ty
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "2.0"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -21,10 +21,32 @@ This skill provides expert-level patterns for JavaScript and TypeScript code. Lo
 
 This skill uses a **progressive disclosure** structure to minimize context usage:
 
-### 1. Start with the Overview (AGENTS.md)
+### 1. Use Automation Scripts (Recommended)
+For maximum efficiency, use the provided scripts to automate detection and reporting:
+- **[scripts/detect-best-practice-violations.sh](scripts/detect-best-practice-violations.sh)** - Scans code for best practice violations, outputs JSON
+- **[scripts/generate-audit-report.sh](scripts/generate-audit-report.sh)** - Generates pre-filled audit report from JSON
+- **[scripts/quick-categorize.sh](scripts/quick-categorize.sh)** - Quick lookup for violation categorization
+
+**Example workflow:**
+```bash
+# Detect violations in a file/directory
+./scripts/detect-best-practice-violations.sh src/ > violations.json
+
+# Generate audit report
+./scripts/generate-audit-report.sh violations.json "MyComponent" > report.md
+
+# Quick categorize a specific issue
+echo "using any type" | ./scripts/quick-categorize.sh
+```
+
+See [scripts/README.md](scripts/README.md) for detailed usage, coverage model, and workflow examples.
+
+Scripts automate detection of ~60-70% of mechanical violations. **Context savings: ~2,100 tokens per full audit workflow**.
+
+### 2. Start with the Overview (AGENTS.md)
 Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries organized by category.
 
-### 2. Load Specific Rules as Needed
+### 3. Load Specific Rules as Needed
 When you identify a relevant pattern or issue, load the corresponding reference file for detailed implementation guidance:
 
 **Quick Start:**
@@ -56,13 +78,13 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 **Documentation:**
 - **For documentation tasks**, use the `accelint-ts-documentation` skill for comprehensive JSDoc and comment guidance
 
-### 3. Apply the Pattern
+### 4. Apply the Pattern
 Each reference file contains:
 - ❌ Incorrect examples showing the anti-pattern
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
 
-### 4. Use the Report Template
+### 5. Use the Report Template (For Manual Audits)
 When this skill is invoked, use the standardized report format:
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)

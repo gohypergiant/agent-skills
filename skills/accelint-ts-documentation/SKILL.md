@@ -4,7 +4,7 @@ description: Audit and improve JavaScript/TypeScript documentation including JSD
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "2.0"
 ---
 
 # Code Documentation Skill
@@ -42,7 +42,32 @@ Do not activate for:
 
 ## How to Use
 
-### 1. Load References Based on Task Type
+This skill uses a **progressive disclosure** structure to minimize context usage:
+
+### 1. Use Automation Scripts (Recommended)
+
+For maximum efficiency, use the provided scripts to automate detection and reporting:
+- **[scripts/detect-jsdoc-issues.sh](scripts/detect-jsdoc-issues.sh)** - Scans code for JSDoc violations, outputs JSON
+- **[scripts/detect-comment-issues.sh](scripts/detect-comment-issues.sh)** - Scans code for comment quality issues, outputs JSON
+- **[scripts/generate-doc-audit-report.sh](scripts/generate-doc-audit-report.sh)** - Generates pre-filled audit report from JSON
+
+**Example workflow:**
+```bash
+# Detect JSDoc issues
+./scripts/detect-jsdoc-issues.sh src/ > jsdoc-issues.json
+
+# Detect comment issues
+./scripts/detect-comment-issues.sh src/ > comment-issues.json
+
+# Generate audit report
+./scripts/generate-doc-audit-report.sh jsdoc-issues.json comment-issues.json "MyComponent" > report.md
+```
+
+See [scripts/README.md](scripts/README.md) for detailed usage, coverage model, and workflow examples.
+
+Scripts automate detection of ~65-70% of mechanical documentation issues. **Context savings: ~1,800 tokens per full audit workflow**.
+
+### 2. Load References Based on Task Type
 
 **For JSDoc additions/validation:**
 
@@ -60,7 +85,7 @@ Critical content: Comment marker standards, what to remove vs preserve, placemen
 
 **Do NOT load any references** when only answering questions (not implementing changes) or task is general code quality.
 
-### 2. Expert Judgment Framework
+### 3. Expert Judgment Framework
 
 Apply this thinking framework before auditing:
 
@@ -95,7 +120,7 @@ After applying the thinking framework:
 
 **Rule of thumb**: If a competent team member would ask "why?" or "what's the edge case?" - document it. If they'd say "obvious" - skip it.
 
-### 3. Evaluating Documentation Sufficiency
+### 4. Evaluating Documentation Sufficiency
 
 Use this decision tree to determine if documentation is complete:
 
@@ -140,7 +165,7 @@ Before marking documentation as "sufficient", verify:
 - [ ] Object parameters use dot notation for property documentation
 - [ ] Descriptions focus on WHAT/WHY, not HOW
 
-### 4. When References Are Insufficient
+### 5. When References Are Insufficient
 
 If you encounter scenarios not covered in references or standard patterns:
 
@@ -158,7 +183,7 @@ If you encounter scenarios not covered in references or standard patterns:
 
 For these, default to clear descriptions in natural language rather than incomplete JSDoc tags.
 
-### 4. Use the Report Template (For Explicit Audit Requests)
+### 6. Use the Report Template (For Explicit Audit Requests)
 
 When users explicitly request a documentation audit or invoke the skill directly (`/accelint-ts-documentation <path>`), use the standardized report format:
 

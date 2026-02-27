@@ -5,7 +5,7 @@ compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Vitest Best Practices
@@ -75,11 +75,23 @@ This skill uses a **progressive disclosure** structure to minimize context usage
 ### 1. Start with the Overview (AGENTS.md)
 Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries and the workflow for discovering existing test configuration.
 
-### 2. Check for Existing Test Configuration
-Before writing tests:
-- First check `vitest.config.ts` for global mock cleanup settings (`clearMocks`, `mockReset`, `restoreMocks`)
-- Then search for setup files (`test/setup.ts`, `vitest.setup.ts`, etc.) and analyze their configuration
-- See the workflow in [AGENTS.md](AGENTS.md#workflow-before-writing-tests)
+### 2. Use Automation Scripts (Recommended)
+For maximum efficiency, use the provided scripts to automate detection, reporting, and validation:
+
+**Before Writing Tests:**
+- **[scripts/check-vitest-config.sh](scripts/check-vitest-config.sh)** - Verify global mock cleanup settings
+- **[scripts/find-setup-files.sh](scripts/find-setup-files.sh)** - Discover existing test setup files
+
+**For Test Audits:**
+- **[scripts/detect-test-anti-patterns.sh](scripts/detect-test-anti-patterns.sh)** - Scan test files for anti-patterns, outputs JSON
+- **[scripts/generate-test-audit-report.sh](scripts/generate-test-audit-report.sh)** - Generate pre-filled audit report from JSON
+
+**After Writing/Fixing Tests:**
+- **[scripts/check-test-types.sh](scripts/check-test-types.sh)** - Verify TypeScript type correctness
+
+See [scripts/README.md](scripts/README.md) for detailed usage and workflow examples.
+
+Scripts automate repetitive validation tasks and handle edge cases (config inheritance, package manager detection). **Context savings: ~2,000 tokens per full audit workflow**.
 
 ### 3. Load Specific Rules as Needed
 Use these explicit triggers to know when to load each reference file:
