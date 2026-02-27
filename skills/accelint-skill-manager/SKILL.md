@@ -1,15 +1,13 @@
 ---
 name: accelint-skill-manager
-description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", or when refactoring/updating/auditing existing skills that extend agent capabilities with specialized knowledge, workflows, or tool integrations.
+description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", "audit this skill", "review this skill", "check skill quality", "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill", or when creating, refactoring, auditing, or packaging domain expertise into agent skills with specialized knowledge, workflows, or tool integrations.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Skill Manager
-
-This skill provides guidance for creating and managing effective agent skills.
 
 ## NEVER Do When Creating Skills
 
@@ -20,6 +18,9 @@ This skill provides guidance for creating and managing effective agent skills.
 - **NEVER use same freedom level for all tasks** - Creative domains (design, architecture) need high freedom with principles. Fragile operations (file formats, APIs) need low freedom with exact scripts.
 - **NEVER explain standard operations** - Assume Claude knows how to read files, write code, use common libraries. Focus on non-obvious decisions and edge cases.
 - **NEVER include obvious procedures** - "Step 1: Open file, Step 2: Edit, Step 3: Save" wastes tokens. Include only domain-specific workflows Claude wouldn't know.
+- **NEVER skip the anti-patterns section** — It's half of expert knowledge. A skill without "NEVER Do" is missing what makes it valuable: the mistakes experts learned the hard way.
+- **NEVER write a vague description** — "A skill for X" causes false positives and missed activations. The description must include concrete trigger phrases users actually say.
+- **NEVER mix creation and audit concerns** — Creating a skill, refactoring a skill, and auditing a skill are distinct workflows. Each has different inputs, outputs, and success criteria.
 
 ## Before Creating a Skill, Ask
 
@@ -42,32 +43,6 @@ Apply these tests to ensure the skill provides genuine value:
 - **Can this be compressed without losing expert knowledge?** References loaded on-demand save context.
 - **Are there repetitive procedures that could become scripts?** Reusable code belongs in scripts/, not repeated in instructions.
 
-## Flowchart Usage
-
-```
-digraph when_flowchart {
-  "Need to show information?" [shape=diamond];
-  "Decision where I might go wrong?" [shape=diamond];
-  "Use markdown" [shape=box];
-  "Small inline flowchart" [shape=box];
-
-  "Need to show information?" -> "Decision where I might go wrong?" [label="yes"];
-  "Decision where I might go wrong?" -> "Small inline flowchart" [label="yes"];
-  "Decision where I might go wrong?" -> "Use markdown" [label="no"];
-}
-```
-
-**Use flowcharts ONLY for:**
-- Non-obvious decision points
-- Process loops where you might stop too early
-- "When to use A vs B" decisions
-
-**Never use flowcharts for:**
-- Reference material → Tables, lists
-- Code examples → Markdown blocks
-- Linear instructions → Numbered lists
-- Labels without semantic meaning (step1, helper2)
-
 ## How to Use
 
 This skill uses **progressive disclosure** to minimize context usage:
@@ -78,8 +53,17 @@ Follow the 4-step workflow below for skill creation or refactoring.
 ### 2. Reference Implementation Details (AGENTS.md)
 Load [AGENTS.md](AGENTS.md) for file system conventions, naming patterns, and structural rules.
 
-### 3. Load Specific Examples as Needed
-When implementing specific rules, load corresponding reference files for ❌/✅ examples.
+### 3. Load Specific References as Needed
+Each workflow step below notes which reference files to load. Only load what you need for the current step:
+- Directory structure → [references/file-system.md](references/file-system.md)
+- Description field conventions → [references/skill.md](references/skill.md)
+- AGENTS.md patterns → [references/agents.md](references/agents.md)
+- Progressive disclosure rules → [references/progressive-disclosure.md](references/progressive-disclosure.md)
+- Reference file format → [references/references.md](references/references.md)
+- Script conventions → [references/scripts.md](references/scripts.md)
+- Asset guidelines → [references/assets.md](references/assets.md)
+
+**Do NOT load all references at once** — load only the ones relevant to your current step.
 
 ## Skill Creation Workflow
 
@@ -127,31 +111,26 @@ Analyze each concrete example to create a list of reusable resources: scripts, r
 
 ### Step 3: Initializing the Skill
 
-At this point, it is time to actually create the skill.
+**MANDATORY**: Load [references/file-system.md](references/file-system.md) before creating directory structure.
 
-Check available skills to identify potentially relevant ones the user may have missed:
+**For new skills:** Copy the template in [assets/skill-template/](assets/skill-template/) as a starting point and customize it.
+
+**For existing skills being refactored:** Skip directly to Step 4 — the skill already exists.
+
+Before creating, check for existing skills that overlap:
 
 ```bash
 ls -la .claude/skills 2>/dev/null || echo "No project skills found"
 ls -la ~/.claude/skills 2>/dev/null || echo "No global skills found"
 ```
 
-Look for skills related to:
-- File types the command will process (docx, pdf, xlsx, pptx)
-- Domain expertise (frontend-design, product-self-knowledge)
-- Workflows or patterns (skill-creator, mcp-builder)
+If relevant skills exist, mention them briefly: "I found [list] — should any of these be included or merged?"
 
-Present relevant skills to the user:
-- "I found these skills that might be relevant: [list]. Should any of these be included?"
-- Be concise; only mention skills with clear relevance
-
-Skip this step only if the skill being developed already exists, and iteration or packaging is needed. In this case, continue to the next step.
-
-For new skills, use the template in [assets/skill-template/](assets/skill-template/) as a starting point. Copy the template directory and customize it for your specific skill.
-
-Follow the instructions and conventions outlined in the [AGENTS.md](AGENTS.md) outline as well as the references.
+Follow the conventions in [AGENTS.md](AGENTS.md) and reference files for directory structure and naming.
 
 ### Step 4: Edit the Skill
+
+**MANDATORY**: Load [references/skill.md](references/skill.md) for description field conventions and frontmatter rules.
 
 When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively.
 
@@ -171,3 +150,25 @@ When editing the (newly-generated or existing) skill, remember that the skill is
 If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherence.
 
 When updating an existing skill, ensure that the frontmatter `metadata.version` value is bumped. If the scope of the change is substantial do a major change 1.0 to 2.0, otherwise minor 1.0 to 1.1.
+
+## Skill Audit Workflow
+
+When auditing or reviewing an existing skill (not creating from scratch), follow this structured approach:
+
+### 1. Frontmatter Audit
+Check each field against requirements:
+- `name`: lowercase, hyphens only, ≤64 chars, matches directory name
+- `description`: starts with "Use when", includes WHAT/WHEN/KEYWORDS, has concrete trigger phrases
+- `license`: present (optional but recommended)
+- `metadata.version`: present and meaningful
+
+### 2. Structure Audit
+Compare against expected sections: NEVER Do, Before [Action] Ask, How to Use, Main Workflow. Note missing sections.
+
+### 3. Knowledge Delta Test
+For each content block, ask: "Does Claude already know this?" Mark as REDUNDANT or EXPERT-ONLY. Calculate the percentage of redundant content. If >50% redundant, recommend substantial revision.
+
+### 4. Produce Actionable Output
+- Provide specific improvement recommendations ranked by priority
+- Include a concrete improved description (not just criticism)
+- Provide an improved SKILL.md alongside the audit report
