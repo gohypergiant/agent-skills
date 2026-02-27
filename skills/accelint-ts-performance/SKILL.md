@@ -59,6 +59,27 @@ Apply these tests to focus optimization efforts effectively:
 - **Will this optimization persist?** If the code changes frequently, optimization may be discarded soon. Optimize stable code first.
 - **What's the readability cost?** Manual loops are faster but harder to maintain than `.map()`. Balance performance with team velocity.
 
+### Choosing Between Optimization Approaches
+
+When multiple optimization paths exist for the same bottleneck:
+
+**Trade-off Assessment:**
+- **Maintenance burden**: Will this pattern be obvious to other developers in 6 months?
+- **Correctness risk**: How many edge cases does this optimization introduce?
+- **Environment portability**: Does this rely on V8-specific behavior that may change?
+- **Memory cost**: What's the memory/CPU trade-off ratio? Is it sustainable?
+
+**The 10x Rule:**
+- If optimization A gives 10x speedup but adds 20% complexity → Do it
+- If optimization B gives 1.5x speedup but adds 50% complexity → Skip it
+- If both give 10x speedup, choose simpler/safer approach
+
+**When Multiple Patterns Apply (priority order):**
+1. Fix algorithmic complexity first (O(n²) → O(n)) — always highest ROI
+2. Then cache if repeated expensive work exists
+3. Then I/O batching if network/disk bound
+4. Finally micro-optimize only hot paths (>1000 executions/sec)
+
 ## How to Use
 
 This skill uses **progressive disclosure** to minimize context usage:
@@ -139,9 +160,11 @@ This detects:
 - Nested property access in loops
 - Template literals with single variables
 
-**When profiling tools are available**, use them to establish baseline measurements:
-- **Browser**: Chrome DevTools Performance tab
-- **Node.js**: `node --prof script.js && node --prof-process isolate-*.log`
+**When profiling tools are available**, use them to identify V8-specific optimization failures:
+- **V8 deoptimizations**: Look for "not optimized" markers indicating inline caching failures
+- **Monomorphic/polymorphic call sites**: Type instability preventing V8 optimizations
+- **Hidden class transitions**: Object shape changes causing performance degradation
+- **Flame graphs**: Identify functions consuming >5% runtime for targeted optimization
 
 **Manual analysis**: If scripts aren't available, perform systematic static code analysis to identify ALL performance anti-patterns:
 - O(n²) complexity (nested loops, repeated searches)
@@ -202,9 +225,11 @@ Load [references/quick-reference.md](references/quick-reference.md) for detailed
 
 ---
 
-**Step 3: Scan for quick reference during optimization**
+**Step 3: Quick reference for implementing patterns**
 
-Load [AGENTS.md](AGENTS.md) to see compressed rule summaries organized by category. Use as a quick lookup while implementing patterns from the detailed reference files above.
+**LOAD NOW**: Read [AGENTS.md](AGENTS.md) completely to access compressed rule summaries.
+
+Use AGENTS.md as quick lookup while implementing patterns from detailed reference files above. Scan category-organized rules to refresh optimization techniques without reloading full reference files.
 
 **Apply patterns systematically:**
 

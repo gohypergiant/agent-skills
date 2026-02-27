@@ -136,18 +136,7 @@ BLOCKING: All audit work MUST happen in an isolated worktree to prevent conflict
 
 **Create tracking files:**
 
-**MANDATORY - READ ENTIRE FILE**: Before creating any tracking files, you MUST read
-[`assets/audit-process-template.md`](assets/audit-process-template.md) completely
-from start to finish to understand the exact format and structure required.
-**NEVER set any range limits when reading this file.**
-
-Similarly, you MUST read [`assets/audit-history-template.md`](assets/audit-history-template.md)
-to understand the archival format.
-
-**Do NOT load** these templates again after the initial setup - they are only needed
-once at the start of a new audit.
-
-Create timestamped tracking files in the ORIGINAL repository (not in the worktree):
+The `init-audit.sh` script automatically creates and populates tracking files from templates. If running manually without scripts, create timestamped tracking files in the ORIGINAL repository (not in the worktree):
 - Go back to the original repository root: `cd $(git rev-parse --show-toplevel)`
 - Create `.agents/audit/audit-process-${timestamp}.md` (use same timestamp as worktree)
 - Create `.agents/audit/audit-history-${timestamp}.md` (same timestamp)
@@ -481,29 +470,9 @@ Wait for user response with numbered list before applying any changes.
 
 ## Verification Commands
 
-The audit-process file MUST document exact verification commands. Common patterns:
+The audit-process file MUST document exact verification commands. Always use the EXACT commands from the audit-process file. Never guess or improvise.
 
-**Node.js projects:**
-```bash
-cd <project-root>; npm test
-cd <project-root>; npm run build
-cd <project-root>; npm run lint
-```
-
-**Bun projects:**
-```bash
-cd <project-root>; bun run test
-cd <project-root>; bun run build
-cd <project-root>; bun run lint
-cd <project-root>; bun run bench  # if applicable
-```
-
-**Monorepo packages:**
-```bash
-cd <workspace-root>/packages/<package-name>; npm test
-```
-
-Always use the EXACT commands from the audit-process file. Never guess.
+**For custom or non-standard projects:** If you need verification command examples, load [`references/verification-patterns.md`](references/verification-patterns.md) for common patterns across different project types (Node.js, Bun, monorepos, TypeScript-direct, etc.).
 
 ## Important Notes
 

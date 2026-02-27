@@ -81,12 +81,13 @@ Initializes a complete audit workflow with isolated worktree, file discovery, an
 **What it does:**
 1. Creates timestamped worktree at `.agents/worktrees/audit-YYYYMMDD-HHMMSS`
 2. Discovers all `.ts` files excluding `*.test.ts`, `*.spec.ts`, `*.bench.ts`
-3. Creates `audit-process-YYYYMMDD-HHMMSS.md` in `.agents/audit/` (gitignored)
-4. Creates `audit-history-YYYYMMDD-HHMMSS.md` for archival
-5. Documents verification commands and file list
-6. Sets up "Resume Instructions" for first file
+3. Reads template files from `assets/` directory
+4. Creates and populates `audit-process-YYYYMMDD-HHMMSS.md` in `.agents/audit/` (gitignored)
+5. Creates and populates `audit-history-YYYYMMDD-HHMMSS.md` for archival
+6. Documents verification commands and file list
+7. Sets up "Resume Instructions" for first file
 
-**Context savings: ~800-1,000 tokens per audit initialization**
+**Context savings: ~800-1,000 tokens per audit initialization** (includes automatic template reading and population)
 
 ---
 

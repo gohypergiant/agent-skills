@@ -1,6 +1,6 @@
 ---
 name: accelint-ts-documentation
-description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments (@param, @returns, @template, @example), comment markers (TODO, FIXME, HACK), and code comment quality. Use when asked to 'add JSDoc', 'document this function', 'audit documentation', 'fix comments', 'add TODO/FIXME markers', or 'improve code documentation'.
+description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments (@param, @returns, @template, @example), comment markers (TODO, FIXME, HACK), and code comment quality. Use when asked to 'add JSDoc', 'document this function', 'audit documentation', 'fix comments', 'add TODO/FIXME markers', or 'improve code documentation'. Delegates to accelint-ts-best-practices for general code quality, accelint-ts-performance for optimization, or framework-specific skills for React/Vue documentation.
 license: Apache-2.0
 metadata:
   author: accelint
@@ -31,14 +31,6 @@ Use this skill when the task involves:
 - Reviewing code for documentation completeness
 - Ensuring exported code has comprehensive documentation
 - Validating internal code has minimum required documentation
-
-## When NOT to Use This Skill
-
-Do not activate for:
-- General code quality issues (use accelint-ts-best-practices instead)
-- Performance optimization (use accelint-ts-performance instead)
-- Type safety improvements (use accelint-ts-best-practices instead)
-- Framework-specific documentation (React PropTypes, Vue props, etc.)
 
 ## How to Use
 
@@ -102,6 +94,11 @@ Apply this thinking framework before auditing:
 - High churn code: Minimal docs (won't stay accurate)
 - Stable API: Comprehensive docs (will stay accurate)
 - Internal utilities: Brief docs (low reader count × low frequency = minimal ROI)
+
+**Question 4: Documentation lifecycle stage?**
+- Pre-release API: Comprehensive docs prevent support burden later
+- Deprecated code: Minimal updates (document deprecation path only)
+- Migration period: Document BOTH old and new patterns with transition guidance
 
 #### Two-Tier Decision Rule
 
@@ -298,6 +295,33 @@ Why this is wrong: "TODO: fix this" creates diffusion of responsibility. After m
 ```typescript
 // TODO(username): Replace with binary search for O(log n) lookup
 // FIXME(username): Throws error on empty array, add guard clause
+```
+
+### ❌ Incorrect: @template without constraint explanations
+
+```typescript
+/**
+ * Filters array items
+ * @template T
+ */
+function filter<T extends object>(items: T[], predicate: (item: T) => boolean): T[] {
+  return items.filter(predicate);
+}
+```
+
+Why this is wrong: Constraint `extends object` is non-obvious - why object only? Generic constraints often encode important business rules (e.g., "must be serializable", "must have id property"). Without explanation, consumers don't understand usage boundaries and will attempt invalid uses, leading to cryptic type errors.
+
+### ✅ Correct: Document constraint rationale
+
+```typescript
+/**
+ * Filters array items that can be safely serialized
+ * @template T - Must extend object because primitives don't need filtering logic
+ *                (they're immutable and have no properties to inspect)
+ */
+function filter<T extends object>(items: T[], predicate: (item: T) => boolean): T[] {
+  return items.filter(predicate);
+}
 ```
 
 ## Documentation Quality Example

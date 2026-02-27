@@ -1,62 +1,64 @@
 # 1.2 Functions
 
 - Keep functions under 50 lines
-- Limit parameters; prefer simple return types
 - Avoid default parameters; make all values explicit at call site
-- Always explicitly type function return values in the function signature
-- Use `function` keyword for pure functions
-- Use arrow functions only for simple cases (< 3 instructions)
+- Always explicitly type function return values
+- Use `function` keyword for pure functions; arrow functions only for simple cases (< 3 instructions)
 
-**❌ Incorrect: implicit defaults**
+## Avoid Default Parameters
+
+**❌ Incorrect: hidden default**
 ```ts
-const position = getPosition();
+function getPosition(offset = 0) { /* ... */ }
+const pos = getPosition();  // What's the offset? Must read function definition
 ```
 
-**✅ Correct: explicit values**
+**✅ Correct: explicit value at call site**
 ```ts
-const position = getPosition(330);
+function getPosition(offset: number) { /* ... */ }
+const pos = getPosition(0);  // Offset is 0 - visible in code
 ```
 
-**Why this matters**:
+**The hidden change bug**: If you change the default from `0` to `330`, all existing calls silently change behavior with no diff at call sites. Explicit values make changes visible:
 
-1. **Call-site clarity**: Reading `getPosition()` gives no hint about what the default is. Reading `getPosition(330)` shows the exact value being used at this specific call site.
+```ts
+// Before: getPosition(0) in 47 places
+// After: getPosition(330) in 47 places - every change is visible in git diff
+```
 
-2. **Prevents hidden bugs**: Default parameters hide changes. If you change the default from 0 to 330, all existing calls silently change behavior. Explicit values make the change visible in diffs.
+**Production lesson**: A default timeout changed from 5000ms to 30000ms for "better UX." 200+ call sites silently inherited the new timeout, causing test timeouts and slower user experience. With explicit values, the change would have been visible and reviewed case-by-case.
 
-3. **Easier refactoring**: Finding all usages of a default value is hard ("where is 0 used?"). Finding all explicit `330` values is trivial with search.
+## Explicit Return Type Annotations
 
-4. **Forces intentional choices**: Requiring explicit values makes developers think about what value is appropriate for each call site rather than accepting a generic default.
-
-**❌ Incorrect: missing return type annotation**
+**❌ Incorrect: inferred return type**
 ```ts
 function getUser(id: string) {
   return users.find(u => u.id === id);
 }
-
-const processData = (input: unknown) => {
-  return JSON.parse(input);
-};
 ```
 
-**✅ Correct: explicit return type annotation**
+**✅ Correct: explicit return type**
 ```ts
 function getUser(id: string): User | undefined {
   return users.find(u => u.id === id);
 }
-
-const processData = (input: unknown): Record<string, unknown> => {
-  return JSON.parse(input);
-};
 ```
 
-**Why this matters**:
+**The type widening trap**: `return {}` infers `{}` (accepts any object with any properties) instead of your intended specific type. Explicit types prevent this footgun.
 
-1. **Catches refactoring errors**: If you change function implementation and accidentally change the return type, TypeScript catches it immediately. Without explicit return types, the type silently changes and breaks callers downstream.
+**The silent breaking change**: Without explicit return types, changing implementation can silently change return type:
+```ts
+// Before: returns User | undefined
+function getUser(id: string) {
+  return users.find(u => u.id === id);
+}
 
-2. **Documents intent**: Explicit return type `User | undefined` signals "this function might not find a user." Inferred types might be correct now, but could become `any` after a careless refactor.
+// After refactor: returns User | undefined | null (breaking change!)
+function getUser(id: string) {
+  const user = users.find(u => u.id === id);
+  return user ?? null;  // Accidentally introduced null
+}
+// TypeScript doesn't complain - callers break at runtime
+```
 
-3. **Prevents type widening**: TypeScript's inference can widen types unexpectedly. `return {}` infers `{}` (accepts any object) instead of your intended specific type. Explicit types prevent this footgun.
-
-4. **Better IDE support**: Explicit return types enable better autocomplete and error detection at call sites. IDEs don't have to infer through the entire function body to understand what the function returns.
-
-5. **Faster compilation**: TypeScript doesn't need to analyze function bodies to determine return types, speeding up type checking in large codebases
+With explicit return type `User | undefined`, TypeScript catches the `null` as a type error.

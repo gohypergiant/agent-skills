@@ -17,6 +17,148 @@ Comprehensive coding standards for JavaScript and TypeScript applications, desig
 
 This skill provides expert-level patterns for JavaScript and TypeScript code. Load [AGENTS.md](AGENTS.md) to scan rule summaries and identify relevant optimizations for your task.
 
+## Decision Framework: How to Think About Trade-offs
+
+Before writing or reviewing code, use these decision frameworks to navigate competing concerns. Expert developers don't just follow rules—they make intentional trade-offs.
+
+### 1. Safety vs Performance
+
+**Question**: Does this code handle external data, work with production data, or control resource usage?
+
+- **YES** → **Prioritize safety first**
+  - Bounded iteration (set `MAX_ITERATIONS`, `MAX_QUEUE_SIZE`)
+  - Input validation with schemas (never trust external data)
+  - Explicit error handling (no silent failures)
+  - *Why*: Safety bugs cause outages, data loss, security vulnerabilities. Performance can be optimized later; safety bugs are expensive to fix in production.
+
+- **NO** → **Optimize for readability and maintainability**
+  - Clear naming and simple structure
+  - Avoid premature optimization
+  - *Why*: Internal code is refactored frequently. Readable code is easier to optimize when profiling shows it's necessary.
+
+### 2. Type Strictness vs Pragmatism
+
+**Question**: Am I at a system boundary (API endpoint, user input, third-party library, file I/O)?
+
+- **YES** → **Use strict validation**
+  - Use `unknown` instead of `any`
+  - Validate explicitly with schemas (Zod, io-ts, Valibot)
+  - Handle invalid data with clear error messages
+  - *Why*: System boundaries are trust boundaries. One `any` at a boundary infects 50+ downstream variables with no type checking.
+
+- **NO** → **Trust internal types, use generics for flexibility**
+  - Internal functions can trust their inputs (validated at boundary)
+  - Use generics `<T>` to preserve type information through transformations
+  - *Why*: Over-validating internal code adds noise. Type safety propagates from boundaries through the codebase.
+
+### 3. Abstraction vs Concreteness
+
+**Question**: Does this pattern appear 3+ times with identical structure?
+
+- **NO** → **Keep code concrete**
+  - Inline implementation at each call site
+  - Don't create abstractions for future flexibility
+  - *Why*: Premature abstraction is harder to understand and change than duplicated concrete code. Wait until you have 3+ real cases to understand the actual pattern.
+
+- **YES** → **Apply the "3×3 Rule" before abstracting**
+  - ✅ Extract if: 3+ instances AND each is 3+ lines AND abstraction is simpler than duplication
+  - ❌ Don't extract if: Pattern varies slightly between uses OR abstraction adds complexity
+  - *Why*: Abstraction has a cost—cognitive load, indirection, inflexibility. Only abstract when duplication cost exceeds abstraction cost.
+
+**Example of good abstraction timing**:
+```ts
+// After 1 use: Keep concrete
+const user1 = await fetch('/user/1').then(r => r.json());
+
+// After 2 uses: Still concrete (not 3+ yet)
+const user2 = await fetch('/user/2').then(r => r.json());
+
+// After 3 uses with identical structure: NOW abstract
+async function fetchUser(id: string): Promise<User> {
+  const response = await fetch(`/user/${id}`);
+  return response.json();
+}
+```
+
+### 4. Null Handling Strategy
+
+**Question**: Does the caller need to distinguish "value absent" from "value is zero/empty"?
+
+- **NO** → **Return zero values** ([], {}, '', 0)
+  - Eliminates null checks
+  - Enables method chaining
+  - *Why*: In most cases, "no results" and "empty results" are functionally equivalent. Zero values compose safely.
+
+- **YES** → **Return union with undefined** (`T | undefined`)
+  - Makes absence explicit in type system
+  - Forces caller to handle absence
+  - *Why*: Database lookups, cache misses, and optional configuration need to distinguish "not found" from "empty."
+
+**When to use each**:
+```ts
+// Return zero value: "no results" = "empty results"
+function getActiveUsers(): User[] {
+  return users.filter(u => u.active);  // [] if none active
+}
+
+// Return T | undefined: absence has meaning
+function getUserById(id: string): User | undefined {
+  return users.find(u => u.id === id);  // undefined if not found
+}
+```
+
+### 5. Error Handling Strategy
+
+**Question**: Can this operation fail in ways the caller should handle?
+
+- **YES** → **Make errors explicit**
+  - Use Result types: `{ success: true, data: T } | { success: false, error: Error }`
+  - Or throw typed errors with recovery instructions
+  - *Why*: Forces callers to handle failures. Silent failures and swallowed errors cause silent data corruption.
+
+- **NO** → **Crash with assertion**
+  - Use `assert()` or `throw` for programmer errors
+  - *Why*: Programmer errors (wrong function usage, violated invariants) should crash immediately, not propagate silently.
+
+**When to use each**:
+```ts
+// Expected failure: use Result type
+type ParseResult =
+  | { success: true; data: User }
+  | { success: false; error: string };
+
+function parseUser(input: unknown): ParseResult {
+  // User input can be invalid - expected failure
+}
+
+// Programmer error: crash with assertion
+function getFirst<T>(arr: T[]): T {
+  assert(arr.length > 0, 'getFirst() requires non-empty array');
+  return arr[0];
+}
+```
+
+### 6. When to Break the Rules
+
+Every rule has exceptions. Break rules when:
+
+1. **External API contract requires it**
+   - Example: Third-party library expects `null` return → return `null`
+   - Example: Legacy API requires `enum` → use `enum` for compatibility
+
+2. **Performance profiling proves it's a bottleneck**
+   - Example: Bounded iteration adds 50ms to hot path → profile first, optimize if confirmed
+   - *Why*: Measure before optimizing. Intuition about performance is often wrong.
+
+3. **Type system limitation forces it**
+   - Example: Complex conditional type breaks inference → use `any` with explicit comment and runtime validation
+   - *Why*: Rare cases where TypeScript's type system isn't expressive enough. Document why and add runtime safety.
+
+**When breaking rules, always**:
+- Add a comment explaining why (reference specific constraint)
+- Add runtime validation if removing type safety
+- Link to issue/ticket for future resolution
+
 ## How to Use
 
 This skill uses a **progressive disclosure** structure to minimize context usage:
@@ -62,9 +204,10 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [code-duplication.md](references/code-duplication.md) - Extract common patterns, DRY principle, when to consolidate
 
 **TypeScript:**
-- [any.md](references/any.md) - Avoid any, use unknown or generics
-- [enums.md](references/enums.md) - Use as const objects instead of enum
+- [any.md](references/any.md) - Avoid any, use unknown or generics; propagation trap
+- [enums.md](references/enums.md) - Use as const objects instead of enum; bundle size impact
 - [type-vs-interface.md](references/type-vs-interface.md) - Prefer type over interface
+- [edge-cases.md](references/edge-cases.md) - Non-obvious TypeScript traps and soundness holes
 
 **Safety:**
 - [input-validation.md](references/input-validation.md) - Validate external data with schemas
