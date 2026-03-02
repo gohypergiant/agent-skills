@@ -76,7 +76,7 @@ export function Card({ children, size = 'medium' }) {
 ```css
 @layer components.l1 {
   .card {
-    @apply bg-surface-default outline-1 outline-primary shadow-m p-m;
+    @apply bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m;
   }
 }
 

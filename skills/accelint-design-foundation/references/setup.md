@@ -48,7 +48,7 @@ export default {
 
 @layer components.l1 {
   .button {
-    @apply px-m py-xs bg-interactive-primary;
+    @apply px-m py-xs bg-interactive-bold;
   }
 }
 ```
@@ -60,7 +60,7 @@ export default {
 
 @layer components.l1 {
   .button {
-    @apply px-m py-xs bg-interactive-primary;
+    @apply px-m py-xs bg-interactive-bold;
   }
 }
 ```
@@ -271,7 +271,7 @@ export default {
 
 @layer components.l1 {
   .button {
-    @apply px-m py-xs bg-interactive-primary fg-inverse;
+    @apply px-m py-xs bg-interactive-bold fg-inverse-bold;
   }
 }
 ```
@@ -322,7 +322,7 @@ export default {
 
 @layer components.l1 {
   .button {
-    @apply px-m py-xs bg-interactive-primary fg-inverse;
+    @apply px-m py-xs bg-interactive-bold fg-inverse-bold;
   }
 
   .buttonBrand {

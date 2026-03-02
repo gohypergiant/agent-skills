@@ -155,7 +155,7 @@ data-position="center"   Center position
   }
 
   .custom-button[data-color="primary"] {
-    @apply bg-interactive-primary fg-inverse;
+    @apply bg-interactive-bold fg-inverse-bold;
   }
 }
 ```
@@ -188,7 +188,7 @@ CSS matches all applicable variants:
 <Button
   data-color="primary"
   data-size="large"
-  className="shadow-m"
+  className="shadow-elevation-raised-muted"
 >
   Submit
 </Button>
@@ -217,7 +217,7 @@ Design Toolkit components use React Aria, which provides built-in data attribute
   }
 
   .custom-button[data-pressed] {
-    @apply bg-surface-active;
+    @apply bg-surface-raised;
   }
 }
 ```
@@ -242,7 +242,7 @@ When built-in variants don't cover your needs:
 /* Use in components */
 @layer components.l1 {
   .alert[data-severity="critical"] {
-    @apply bg-status-danger fg-inverse outline-status-danger;
+    @apply bg-critical-muted fg-inverse-bold outline-critical-bold;
   }
 }
 ```

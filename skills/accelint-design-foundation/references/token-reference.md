@@ -36,18 +36,18 @@ Complete catalog of design tokens in `@accelint/design-foundation`.
 Surface and interactive backgrounds:
 
 ```
-bg-surface-default       Primary surface color (page/card background)
-bg-surface-secondary     Secondary surface (nested panels)
-bg-surface-tertiary      Tertiary surface (deepest nesting)
-bg-surface-inverse       Inverted surface (tooltips, high contrast)
-bg-surface-active        Active/selected state background
-bg-surface-hover         Hover state background
-bg-interactive-primary   Primary action background
-bg-interactive-secondary Secondary action background
-bg-status-info           Info message background
-bg-status-success        Success message background
-bg-status-warning        Warning message background
-bg-status-danger         Danger/error message background
+bg-surface-default        Primary surface color (page/card background)
+bg-surface-secondary      Secondary surface (nested panels)
+bg-surface-tertiary       Tertiary surface (deepest nesting)
+bg-surface-inverse        Inverted surface (tooltips, high contrast)
+bg-surface-raised         Raised/elevated surface
+bg-surface-hover          Hover state background
+bg-interactive-bold       Primary action background
+bg-interactive-muted      Secondary action background
+bg-info-muted             Info message background
+bg-normal-muted           Success message background
+bg-advisory-muted         Warning message background
+bg-critical-muted         Danger/error message background
 ```
 
 ### Foreground Tokens (`fg-*`)
@@ -55,48 +55,41 @@ bg-status-danger         Danger/error message background
 Text and content colors:
 
 ```
-fg-primary-bold          Primary text (headlines, important content)
-fg-primary-default       Default text (body, standard content)
-fg-primary-subtle        Subtle text (captions, metadata)
-fg-secondary-bold        Secondary text hierarchy (bold)
-fg-secondary-default     Secondary text hierarchy (default)
-fg-tertiary-default      Tertiary text hierarchy (least emphasis)
-fg-inverse               Inverted text (on dark backgrounds)
-fg-interactive-primary   Primary action text/links
-fg-interactive-secondary Secondary action text
-fg-status-info           Info message text
-fg-status-success        Success message text
-fg-status-warning        Warning message text
-fg-status-danger         Danger/error message text
+fg-primary-bold           Primary text (headlines, body text)
+fg-primary-muted          Subtle text (captions, metadata, secondary content)
+fg-inverse-bold           Inverted text (on dark backgrounds)
+fg-accent-primary-bold    Interactive text/links
+fg-info-bold              Info message text
+fg-normal-bold            Success message text
+fg-advisory-bold          Warning message text
+fg-critical-bold          Danger/error message text
 ```
 
 ### Icon Tokens (`icon-*`)
 
-Icon colors matching foreground hierarchy:
+Icon colors inherit from foreground tokens (same token names):
 
 ```
-icon-primary-bold        Primary icon emphasis
-icon-primary-default     Default icon color
-icon-primary-subtle      Subtle icon color
-icon-secondary-default   Secondary icon hierarchy
-icon-interactive-primary Interactive icon (primary)
-icon-interactive-secondary Interactive icon (secondary)
-icon-inverse             Inverted icon (on dark backgrounds)
+icon-primary-bold         Primary icon emphasis
+icon-primary-muted        Subtle icon color
+icon-inverse-bold         Inverted icon (on dark backgrounds)
+icon-accent-primary-bold  Interactive icon color
+icon-critical-bold        Error/danger icon color
 ```
+
+**Note:** The `fg-*` utility classes automatically set `--icon-color`, so icons inherit text colors.
 
 ### Outline Tokens (`outline-*`)
 
 Outline/border colors:
 
 ```
-outline-primary          Primary outline (borders, dividers)
-outline-secondary        Secondary outline (subtle borders)
-outline-focus            Focus state outline
-outline-interactive      Interactive element outline
-outline-status-info      Info state outline
-outline-status-success   Success state outline
-outline-status-warning   Warning state outline
-outline-status-danger    Danger state outline
+outline-interactive       Interactive outlines (buttons, inputs)
+outline-static            Static outlines (borders, dividers)
+outline-info-bold         Info state outline
+outline-normal-bold       Success state outline
+outline-advisory-bold     Warning state outline
+outline-critical-bold     Danger state outline
 ```
 
 ### Shadow Tokens (`shadow-*`)
@@ -104,11 +97,10 @@ outline-status-danger    Danger state outline
 Elevation shadows:
 
 ```
-shadow-xs                Extra small elevation
-shadow-s                 Small elevation
-shadow-m                 Medium elevation (cards)
-shadow-l                 Large elevation (modals)
-shadow-xl                Extra large elevation (overlays)
+shadow-elevation-raised-muted      Subtle raised elevation (cards)
+shadow-elevation-raised-bold       Prominent raised elevation
+shadow-elevation-overlay-muted     Subtle overlay elevation (popovers)
+shadow-elevation-overlay-bold      Prominent overlay elevation (modals)
 ```
 
 ## Typography Tokens
@@ -116,12 +108,23 @@ shadow-xl                Extra large elevation (overlays)
 ### Font Size Classes
 
 ```
-text-xs                  Extra small (captions, metadata)
-text-s                   Small (secondary content)
-text-m                   Medium (body text) - default
-text-l                   Large (subheadings)
-text-xl                  Extra large (headings)
-text-xxl                 Extra extra large (hero text)
+text-body-xxs             Tiny body text
+text-body-xs              Extra small body text
+text-body-s               Small body text
+text-body-m               Medium body text (default)
+text-body-l               Large body text
+
+text-header-xs            Extra small headers
+text-header-s             Small headers
+text-header-m             Medium headers
+text-header-l             Large headers
+text-header-xl            Extra large headers
+text-header-xxl           Huge headers
+
+text-button-xs            Extra small button text
+text-button-s             Small button text
+text-button-m             Medium button text
+text-button-l             Large button text
 ```
 
 Each size includes coordinated `font-size`, `line-height`, `letter-spacing`, and `font-weight`.
@@ -141,36 +144,36 @@ font-bold                Bold weight (700)
 
 **Card component:**
 ```tsx
-<div className="bg-surface-default outline-1 outline-primary shadow-m">
-  <h2 className="fg-primary-bold text-l">Heading</h2>
-  <p className="fg-primary-default text-m">Body text</p>
-  <span className="fg-primary-subtle text-s">Metadata</span>
+<div className="bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted">
+  <h2 className="fg-primary-bold text-body-l">Heading</h2>
+  <p className="fg-primary-bold text-body-m">Body text</p>
+  <span className="fg-primary-muted text-body-s">Metadata</span>
 </div>
 ```
 
 **Button variants:**
 ```tsx
 // Primary button
-<button className="bg-interactive-primary fg-inverse">
+<button className="bg-interactive-bold fg-inverse-bold">
   Primary Action
 </button>
 
 // Secondary button
-<button className="bg-interactive-secondary fg-interactive-primary">
+<button className="bg-interactive-muted fg-accent-primary-bold">
   Secondary Action
 </button>
 
 // Danger button
-<button className="bg-status-danger fg-inverse">
+<button className="bg-critical-muted fg-inverse-bold">
   Delete
 </button>
 ```
 
 **Status messages:**
 ```tsx
-<div className="bg-status-info outline-1 outline-status-info">
+<div className="bg-info-muted outline-1 outline-info-bold">
   <Icon className="icon-primary-default" />
-  <span className="fg-primary-default">Info message</span>
+  <span className="fg-primary-bold">Info message</span>
 </div>
 ```
 
@@ -202,7 +205,7 @@ All semantic tokens automatically adapt when theme changes:
 Example: "I need text color for a secondary heading"
 → Purpose: text (`fg-*`)
 → Hierarchy: secondary with emphasis (`secondary-bold`)
-→ Result: `fg-secondary-bold`
+→ Result: `fg-primary-muted`
 
 Example: "I need background for a hover state on a surface"
 → Purpose: background (`bg-*`)

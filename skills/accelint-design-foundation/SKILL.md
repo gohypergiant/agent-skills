@@ -20,7 +20,7 @@ Expert knowledge for styling with `@accelint/design-foundation` and `@accelint/d
 - **NEVER bypass CSS layers when styling components** - Use `@layer components.l1`, `@layer components.l2` for cascade hierarchy. Bypassing layers causes specificity wars and makes overrides unpredictable.
 - **NEVER use primitive/domain tokens as first choice** - Strongly prefer semantic tokens (`bg-surface-default`, `fg-primary-bold`) in components. The utility classes (`bg-*`, `fg-*`, `icon-*`, `outline-*`) provide fallback access to `domain-*` and `primitive-*` tokens for rare cases where designs go beyond the design system, but this should be exceptional. Semantic tokens provide theming flexibility and design system consistency.
 - **NEVER use inline Tailwind classes for component styling** - Component styles belong in CSS modules, not inline className props. Inline Tailwind should only be used for minor one-off overrides. Using inline classes for all component styling creates unmaintainable code and loses the benefits of CSS modules (scoping, organization, reusability).
-- **NEVER use multiple @apply directives in a single CSS rule** - Group all Tailwind classes into a single `@apply` statement. Multiple `@apply` directives prevent Tailwind IDE plugins from sorting classes and identifying issues. Write `@apply bg-surface-default outline-1 outline-primary p-m;` not separate `@apply` lines.
+- **NEVER use multiple @apply directives in a single CSS rule** - Group all Tailwind classes into a single `@apply` statement. Multiple `@apply` directives prevent Tailwind IDE plugins from sorting classes and identifying issues. Write `@apply bg-surface-default outline-1 outline-interactive p-m;` not separate `@apply` lines.
 - **NEVER use attribute selectors for variants in CSS modules** - Use `@variant` directive blocks, not attribute selectors like `[data-size="small"]`. Write `@variant size-small { @apply p-s; }` not `.button[data-size="small"] { @apply p-s; }`. The `@variant` directive automatically applies styles when the matching data attribute is present.
 - **NEVER use Tailwind's default theme values** - The design foundation removes and replaces Tailwind defaults. Relying on default shadows, font sizes, or colors will break. Use only the semantic classes provided by the design system.
 - **NEVER omit @reference directive in CSS modules** - Every CSS module file must include `@reference '#globals';` (if custom entrypoint exists) or `@reference '@accelint/design-foundation/styles';` at the top. Without this, semantic tokens and @variant blocks are undefined, causing build errors.
@@ -46,15 +46,15 @@ When choosing a token, follow this decision tree:
 3. **Consider state** - Default, hover, active, disabled?
 4. **Check status** - Info, success, warning, danger?
 
-**Example:** "I need text color for a secondary heading"
+**Example:** "I need text color for a primary heading"
 → Purpose: text (`fg-*`)
-→ Hierarchy: secondary with emphasis (`secondary-bold`)
-→ Result: `fg-secondary-bold`
+→ Hierarchy: primary with emphasis (`primary-bold`)
+→ Result: `fg-primary-bold`
 
-**Example:** "I need background for a hover state on a surface"
+**Example:** "I need background for an interactive button in hover state"
 → Purpose: background (`bg-*`)
-→ State: hover on surface (`surface-hover`)
-→ Result: `bg-surface-hover`
+→ State: interactive hover (`interactive-bold-hover`)
+→ Result: `bg-interactive-bold-hover`
 
 ### Spacing System
 - **Does this spacing value exist in the semantic scale?** Use `xxs/xs/s/m/l/xl/xxl/oversized` scale. If a value isn't in the scale, question whether it's needed or use the closest semantic value.
@@ -211,7 +211,7 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
 @layer components.l1 {
   /* ✅ Single @apply per rule - enables IDE plugin support */
   .card {
-    @apply bg-surface-default outline-1 outline-primary shadow-m p-m;
+    @apply bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m;
   }
 
   .header {
@@ -219,7 +219,7 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
   }
 
   .title {
-    @apply fg-primary-bold text-l;
+    @apply fg-primary-bold text-body-l;
   }
 
   .content {
@@ -227,11 +227,11 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
   }
 
   .email {
-    @apply fg-primary-default text-m;
+    @apply fg-primary-bold text-body-m;
   }
 
   .role {
-    @apply fg-primary-subtle text-s;
+    @apply fg-primary-muted text-body-s;
   }
 
   .actions {
@@ -243,8 +243,8 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
 /*
 .card {
   @apply bg-surface-default;
-  @apply outline-1 outline-primary;
-  @apply shadow-m;
+  @apply outline-1 outline-interactive;
+  @apply shadow-elevation-raised-muted;
   @apply p-m;
 }
 */
@@ -276,8 +276,8 @@ export function UserCard({ name, email, role }) {
 <UserCard className="mb-xl" /> {/* One-off spacing adjustment */}
 
 // ❌ Wrong - all styling inline
-<div className="bg-surface-default outline-1 outline-primary shadow-m p-m">
-  <h3 className="fg-primary-bold text-l">{name}</h3>
+<div className="bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m">
+  <h3 className="fg-primary-bold text-body-l">{name}</h3>
 </div>
 ```
 
@@ -304,20 +304,26 @@ import clsx from 'clsx';
 
 **Background tokens (`bg-*`):**
 - `bg-surface-default` - Primary surface (page/card background)
-- `bg-surface-active` - Active/selected state
-- `bg-interactive-primary` - Primary action background
-- `bg-status-info` - Status color backgrounds
+- `bg-surface-raised` - Raised/elevated surface
+- `bg-interactive-bold` - Primary action background
+- `bg-info-muted` - Info message backgrounds
+- `bg-advisory-muted` - Warning message backgrounds
+- `bg-critical-muted` - Error/danger message backgrounds
+- `bg-normal-muted` - Success message backgrounds
 
 **Foreground tokens (`fg-*`):**
-- `fg-primary-bold` - Primary text (headlines)
-- `fg-primary-default` - Default body text
-- `fg-primary-subtle` - Subtle text (captions)
-- `fg-interactive-primary` - Interactive text/links
+- `fg-primary-bold` - Primary text (headlines, body text)
+- `fg-primary-muted` - Subtle text (captions, secondary content)
+- `fg-inverse-bold` - Text on dark/colored backgrounds
+- `fg-accent-primary-bold` - Interactive text/links
+- `fg-critical-bold` - Error/danger text
 
 **Outline tokens (`outline-*`):**
-- `outline-primary` - Primary outline/border
-- `outline-focus` - Focus state outline
-- `outline-status-*` - Status color outlines
+- `outline-interactive` - Interactive outlines (buttons, inputs)
+- `outline-static` - Static outlines (borders, dividers)
+- `outline-info-bold` - Info state outlines
+- `outline-advisory-bold` - Warning state outlines
+- `outline-critical-bold` - Error/danger state outlines
 
 **Token fallback pattern:**
 ```tsx
@@ -370,7 +376,7 @@ Think semantic meaning, not pixels. `m` means "medium for this context", not a s
 ```css
 /* ✅ Correct - outline doesn't impact layout */
 .card {
-  @apply outline-1 outline-primary;
+  @apply outline-1 outline-interactive;
 }
 
 /* ❌ Wrong - border adds to dimensions */
@@ -399,11 +405,11 @@ Think semantic meaning, not pixels. `m` means "medium for this context", not a s
   /* ✅ Use @variant blocks for conditional styling */
   .button {
     @variant color-info {
-      @apply bg-interactive-primary fg-inverse;
+      @apply bg-interactive-bold fg-inverse-bold;
     }
 
     @variant color-critical {
-      @apply outline-2 outline-status-danger fg-status-danger;
+      @apply outline-2 outline-critical-bold fg-critical-bold;
     }
 
     @variant size-large {
@@ -415,7 +421,7 @@ Think semantic meaning, not pixels. `m` means "medium for this context", not a s
 /* ❌ Wrong - attribute selectors */
 /*
 .button[data-color="primary"] {
-  @apply bg-interactive-primary;
+  @apply bg-interactive-bold;
 }
 */
 ```

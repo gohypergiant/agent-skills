@@ -8,7 +8,7 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 |--------|------------------|-------------------|
 | **Colors** | `bg-gray-100`, `text-blue-500` | `bg-surface-default`, `fg-primary-bold` |
 | **Spacing** | `p-4`, `gap-6`, `m-8` | `p-m`, `gap-l`, `m-xl` |
-| **Borders** | `border-2 border-gray-300` | `outline-2 outline-primary` |
+| **Borders** | `border-2 border-gray-300` | `outline-2 outline-interactive` |
 | **Themes** | `dark:bg-gray-900` | Automatic with semantic tokens |
 | **Variants** | Arbitrary `hover:[&>svg]:opacity-50` | Data attributes `data-color="info"` |
 
@@ -26,16 +26,16 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **After (Design Foundation):**
 ```tsx
-<div className="bg-surface-default fg-primary-bold outline-1 outline-primary">
-  <h2 className="fg-interactive-primary">Heading</h2>
-  <p className="fg-primary-default">Body text</p>
+<div className="bg-surface-default fg-primary-bold outline-1 outline-interactive">
+  <h2 className="fg-accent-primary-bold">Heading</h2>
+  <p className="fg-primary-bold">Body text</p>
 </div>
 ```
 
 **Strategy:**
 1. `bg-white/bg-gray-*` → `bg-surface-*` (default, secondary, tertiary)
 2. `text-gray-*` → `fg-primary-*` (bold, default, subtle)
-3. `text-blue-*` (interactive) → `fg-interactive-primary`
+3. `text-blue-*` (interactive) → `fg-accent-primary-bold`
 4. `border-*` → `outline-*`
 
 ### Step 2: Replace Spacing Classes
@@ -110,11 +110,11 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **After (Design Foundation):**
 ```tsx
-<button className="outline-2 outline-interactive hover:outline-primary">
+<button className="outline-2 outline-interactive hover:outline-interactive">
   Action
 </button>
 
-<input className="outline-1 outline-primary focus:outline-focus" />
+<input className="outline-1 outline-interactive focus:outline-interactive" />
 ```
 
 **Why:** Outlines don't affect element dimensions, making layouts more predictable.
@@ -139,7 +139,7 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **Or with conditional classes:**
 ```tsx
-<Button className={clsx(isActive && 'bg-surface-active')}>
+<Button className={clsx(isActive && 'bg-surface-raised')}>
   <Icon className={clsx(isHovered && 'opacity-50')} />
   Action
 </Button>
@@ -158,7 +158,7 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 **After (Design Foundation):**
 ```tsx
 // Explicitly use design system shadows and colors
-<Card className="shadow-m bg-surface-default">
+<Card className="shadow-elevation-raised-muted bg-surface-default">
   Content
 </Card>
 ```
@@ -182,11 +182,11 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **After:**
 ```tsx
-<button className="bg-interactive-primary fg-inverse px-m py-xs" data-color="primary">
+<button className="bg-interactive-bold fg-inverse-bold px-m py-xs" data-color="primary">
   Primary
 </button>
 
-<button className="outline-2 outline-interactive fg-interactive-primary px-m py-xs" data-color="secondary">
+<button className="outline-2 outline-interactive fg-accent-primary-bold px-m py-xs" data-color="secondary">
   Secondary
 </button>
 ```
@@ -203,9 +203,9 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **After:**
 ```tsx
-<div className="bg-surface-default outline-1 outline-primary p-m shadow-m">
-  <h3 className="text-l font-bold fg-primary-bold">Title</h3>
-  <p className="fg-primary-default">Content</p>
+<div className="bg-surface-default outline-1 outline-interactive p-m shadow-elevation-raised-muted">
+  <h3 className="text-body-l font-bold fg-primary-bold">Title</h3>
+  <p className="fg-primary-bold">Content</p>
 </div>
 ```
 
@@ -222,7 +222,7 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 **After:**
 ```tsx
 <input
-  className="outline-1 outline-primary focus:outline-focus px-s py-xs"
+  className="outline-1 outline-interactive focus:outline-interactive px-s py-xs"
   placeholder="Enter text"
 />
 ```
@@ -241,10 +241,10 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **After:**
 ```tsx
-<div className="bg-status-info outline-l-4 outline-status-info p-m" data-color="info">
+<div className="bg-info-muted outline-l-4 outline-info-bold p-m" data-color="info">
   <div className="flex gap-s">
     <InfoIcon className="icon-primary-default" />
-    <p className="fg-primary-default">Info message</p>
+    <p className="fg-primary-bold">Info message</p>
   </div>
 </div>
 ```
@@ -263,10 +263,10 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **After:**
 ```tsx
-<nav className="bg-surface-default outline-b-1 outline-primary">
+<nav className="bg-surface-default outline-b-1 outline-interactive">
   <div className="flex gap-m px-m py-s">
-    <a className="fg-interactive-primary hover:fg-primary-bold">Home</a>
-    <a className="fg-primary-default hover:fg-primary-bold">About</a>
+    <a className="fg-accent-primary-bold hover:fg-primary-bold">Home</a>
+    <a className="fg-primary-bold hover:fg-primary-bold">About</a>
   </div>
 </nav>
 ```
@@ -282,34 +282,34 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 
 **After:**
 ```tsx
-<h1 className="text-xxl font-bold fg-primary-bold">Heading</h1>
-<p className="text-m fg-primary-default">Body text</p>
-<span className="text-s fg-primary-subtle">Caption</span>
+<h1 className="text-header-xxl font-bold fg-primary-bold">Heading</h1>
+<p className="text-body-m fg-primary-bold">Body text</p>
+<span className="text-body-s fg-primary-muted">Caption</span>
 ```
 
 **Font size mapping:**
-- `text-xs` → `text-xs` (same)
-- `text-sm` → `text-s`
-- `text-base` → `text-m`
-- `text-lg` → `text-l`
-- `text-xl` through `text-4xl` → `text-xl` or `text-xxl`
+- `text-body-xs` → `text-body-xs` (same)
+- `text-sm` → `text-body-s`
+- `text-base` → `text-body-m`
+- `text-lg` → `text-body-l`
+- `text-header-xl` through `text-4xl` → `text-header-xl` or `text-header-xxl`
 
 ## Shadow Migration
 
 **Before:**
 ```tsx
 <div className="shadow">Default</div>
-<div className="shadow-md">Medium</div>
+<div className="shadow-elevation-raised-mutedd">Medium</div>
 <div className="shadow-lg">Large</div>
-<div className="shadow-xl">Extra Large</div>
+<div className="shadow-elevation-overlay-bold">Extra Large</div>
 ```
 
 **After:**
 ```tsx
-<div className="shadow-s">Small</div>
-<div className="shadow-m">Medium</div>
-<div className="shadow-l">Large</div>
-<div className="shadow-xl">Extra Large</div>
+<div className="shadow-elevation-raised-muted">Small</div>
+<div className="shadow-elevation-raised-muted">Medium</div>
+<div className="shadow-elevation-overlay-muted">Large</div>
+<div className="shadow-elevation-overlay-bold">Extra Large</div>
 ```
 
 ## Migration Checklist
@@ -391,5 +391,5 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 <Card className="shadow">Content</Card>
 
 // ✅ Correct - explicit design system shadow
-<Card className="shadow-m">Content</Card>
+<Card className="shadow-elevation-raised-muted">Content</Card>
 ```

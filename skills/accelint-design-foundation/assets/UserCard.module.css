@@ -11,7 +11,7 @@
 /* Base component styles */
 @layer components.l1 {
   .card {
-    @apply bg-surface-default outline-1 outline-primary shadow-m p-m;
+    @apply bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m;
   }
 
   .header {
@@ -19,7 +19,7 @@
   }
 
   .title {
-    @apply fg-primary-bold text-l;
+    @apply fg-primary-bold text-body-l;
   }
 
   .content {
@@ -27,11 +27,11 @@
   }
 
   .email {
-    @apply fg-primary-default text-m;
+    @apply fg-primary-bold text-body-m;
   }
 
   .role {
-    @apply fg-primary-subtle text-s;
+    @apply fg-primary-muted text-body-s;
   }
 
   .actions {
@@ -44,7 +44,7 @@
   }
 
   .badge {
-    @apply px-s py-xxs text-s;
+    @apply px-s py-xxs text-body-s;
   }
 }
 
@@ -64,13 +64,13 @@
   /* Button color variants using @variant blocks */
   .primaryButton {
     @variant color-info {
-      @apply bg-interactive-primary fg-inverse;
+      @apply bg-interactive-bold fg-inverse-bold;
     }
   }
 
   .dangerButton {
     @variant color-critical {
-      @apply outline-2 outline-status-danger fg-status-danger;
+      @apply outline-2 outline-critical-bold fg-critical-bold;
     }
   }
 
@@ -89,15 +89,15 @@
   /* Badge color variants using semantic status tokens */
   .badge {
     @variant color-normal {
-      @apply bg-status-success fg-primary-default;
+      @apply bg-normal-muted fg-primary-bold;
     }
 
     @variant color-critical {
-      @apply bg-status-danger fg-inverse;
+      @apply bg-critical-muted fg-inverse-bold;
     }
 
     @variant color-advisory {
-      @apply bg-status-warning fg-primary-bold;
+      @apply bg-advisory-muted fg-primary-bold;
     }
   }
 }
@@ -127,14 +127,14 @@
  * ❌ Wrong - multiple @apply directives (breaks IDE plugins):
  * .card {
  *   @apply bg-surface-default;
- *   @apply outline-1 outline-primary;
- *   @apply shadow-m;
+ *   @apply outline-1 outline-interactive;
+ *   @apply shadow-elevation-raised-muted;
  *   @apply p-m;
  * }
  *
  * ✅ Correct - single @apply directive:
  * .card {
- *   @apply bg-surface-default outline-1 outline-primary shadow-m p-m;
+ *   @apply bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m;
  * }
  *
  *
@@ -183,7 +183,7 @@
  *
  * ✅ Correct - outlines don't affect size:
  * .card {
- *   @apply outline-1 outline-primary;
+ *   @apply outline-1 outline-interactive;
  * }
  *
  *

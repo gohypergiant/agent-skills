@@ -41,29 +41,29 @@ Semantic tokens that adapt to light/dark themes automatically. Never use raw Tai
 
 **Token categories:**
 ```
-bg-*       Backgrounds (surface-default, surface-active, interactive-primary, status-info)
-fg-*       Text (primary-bold, primary-default, primary-subtle, interactive-primary)
-icon-*     Icons (primary-default, interactive-primary, inverse)
-outline-*  Outlines/borders (primary, focus, interactive, status-*)
-shadow-*   Elevation (xs, s, m, l, xl)
+bg-*       Backgrounds (surface-default, surface-raised, interactive-bold, info-muted, critical-muted)
+fg-*       Text (primary-bold, primary-muted, inverse-bold, accent-primary-bold, critical-bold)
+icon-*     Icons (inherits from fg-*, uses same token names)
+outline-*  Outlines/borders (interactive, static, info-bold, critical-bold, advisory-bold)
+shadow-*   Elevation (elevation-raised-muted, elevation-raised-bold, elevation-overlay-muted)
 ```
 
 **Common patterns:**
 ```tsx
 // Card
-bg-surface-default outline-1 outline-primary shadow-m
+bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted
 
 // Primary button
-bg-interactive-primary fg-inverse
+bg-interactive-bold fg-inverse-bold
 
 // Body text
-fg-primary-default
+fg-primary-bold
 
 // Link
-fg-interactive-primary
+fg-accent-primary-bold
 
 // Alert
-bg-status-info outline-status-info
+bg-info-muted outline-1 outline-info-bold
 ```
 
 [View complete token catalog](references/token-reference.md)
@@ -137,23 +137,33 @@ Lower numbers = lower specificity. Use l1 for base, l2 for variants, l3 for stat
 
 **Typography scale:**
 ```
-text-xs   Captions, metadata
-text-s    Secondary content
-text-m    Body text (default)
-text-l    Subheadings
-text-xl   Headings
-text-xxl  Hero text
+text-body-xxs     Tiny body text
+text-body-xs      Extra small body
+text-body-s       Small body text
+text-body-m       Medium body text (default)
+text-body-l       Large body text
+
+text-header-xs    Extra small headers
+text-header-s     Small headers
+text-header-m     Medium headers
+text-header-l     Large headers
+text-header-xl    Extra large headers
+text-header-xxl   Huge headers
+
+text-button-xs    Extra small button text
+text-button-s     Small button text
+text-button-m     Medium button text
+text-button-l     Large button text
 ```
 
 Each size includes coordinated font-size, line-height, letter-spacing, font-weight.
 
 **Shadow scale:**
 ```
-shadow-xs   Minimal elevation
-shadow-s    Small elevation
-shadow-m    Card elevation
-shadow-l    Modal elevation
-shadow-xl   Overlay elevation
+shadow-elevation-raised-muted     Subtle raised elevation (cards)
+shadow-elevation-raised-bold      Prominent raised elevation
+shadow-elevation-overlay-muted    Subtle overlay elevation (popovers)
+shadow-elevation-overlay-bold     Prominent overlay elevation (modals)
 ```
 
 ---
@@ -166,7 +176,7 @@ shadow-xl   Overlay elevation
 
 ```tsx
 // ✅ Correct - outline doesn't add to size
-<button className="outline-2 outline-primary px-m py-xs">
+<button className="outline-2 outline-interactive px-m py-xs">
   Click
 </button>
 
@@ -226,7 +236,7 @@ Primitives (`--primitive-neutral-50`) are for theme definitions only. Components
 | `text-gray-900` | `fg-primary-bold` |
 | `p-4` | `p-m` |
 | `gap-2` | `gap-xs` |
-| `border-2 border-gray-300` | `outline-2 outline-primary` |
+| `border-2 border-gray-300` | `outline-2 outline-interactive` |
 | `dark:bg-gray-900` | Remove - automatic with tokens |
 
 [View complete migration guide](references/migration-guide.md)

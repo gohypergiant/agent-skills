@@ -125,13 +125,13 @@ import './styles/globals.css'; // Too late
 ```css
 /* ✅ Correct - single @apply */
 .button {
-  @apply bg-surface-default outline-1 outline-primary p-m;
+  @apply bg-surface-default outline-1 outline-interactive p-m;
 }
 
 /* ❌ Wrong - multiple @apply statements */
 .button {
   @apply bg-surface-default;
-  @apply outline-1 outline-primary;
+  @apply outline-1 outline-interactive;
   @apply p-m;
 }
 ```
@@ -149,7 +149,7 @@ import './styles/globals.css'; // Too late
 ```css
 /* ✅ Correct - design foundation tokens */
 .card {
-  @apply bg-surface-default fg-primary-bold shadow-m;
+  @apply bg-surface-default fg-primary-bold shadow-elevation-raised-muted;
 }
 
 /* ❌ Wrong - Tailwind defaults (removed) */
@@ -215,7 +215,7 @@ import './styles/globals.css'; // Too late
 ```css
 /* ✅ Correct - outline doesn't affect size */
 .card {
-  @apply outline-1 outline-primary;
+  @apply outline-1 outline-interactive;
 }
 
 /* ❌ Wrong - border adds to dimensions */
