@@ -4,7 +4,7 @@ description: Use when styling components or elements with @accelint/design-found
 license: Apache-2.0
 metadata:
   author: gohypergiant
-  version: "1.4"
+  version: "1.0"
 ---
 
 # Accelint Design Foundation
