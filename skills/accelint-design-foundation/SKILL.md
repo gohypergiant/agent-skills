@@ -25,6 +25,7 @@ Expert knowledge for styling with `@accelint/design-foundation` and `@accelint/d
 - **NEVER use Tailwind's default theme values** - The design foundation removes and replaces Tailwind defaults. Relying on default shadows, font sizes, or colors will break. Use only the semantic classes provided by the design system.
 - **NEVER omit @reference directive in CSS modules** - Every CSS module file must include `@reference '#globals';` (if custom entrypoint exists) or `@reference '@accelint/design-foundation/styles';` at the top. Without this, semantic tokens and @variant blocks are undefined, causing build errors.
 - **NEVER skip PostCSS configuration** - The `@accelint/postcss-tailwind-css-modules` plugin is required in `postcss.config.mjs`. Without it, named group selectors (like `group-hover/button:`) and @variant selectors fail to resolve in CSS modules.
+- **NEVER import clsx directly from 'clsx' package** - Always import from `@accelint/design-foundation/lib/utils` instead: `import { clsx } from '@accelint/design-foundation/lib/utils';`. The design foundation re-exports clsx with additional type support and design system integration. Importing directly bypasses these enhancements.
 
 ## Before Styling a Component, Ask
 
@@ -278,6 +279,25 @@ export function UserCard({ name, email, role }) {
 <div className="bg-surface-default outline-1 outline-primary shadow-m p-m">
   <h3 className="fg-primary-bold text-l">{name}</h3>
 </div>
+```
+
+**Conditional classes with clsx:**
+
+```tsx
+// ✅ Correct - import clsx from design foundation
+import { clsx } from '@accelint/design-foundation/lib/utils';
+import styles from './Button.module.css';
+
+export function Button({ variant, isActive }) {
+  return (
+    <button className={clsx(styles.button, isActive && styles.active)}>
+      Click me
+    </button>
+  );
+}
+
+// ❌ Wrong - importing directly from clsx package
+import clsx from 'clsx';
 ```
 
 ### Token Categories
