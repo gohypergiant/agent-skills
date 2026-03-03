@@ -206,7 +206,7 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
 
 **Default approach: Component styles in CSS modules with @apply directives.**
 
-**UserCard.module.css:**
+**user-card.module.css:**
 ```css
 @layer components.l1 {
   /* ✅ Single @apply per rule - enables IDE plugin support */
@@ -250,9 +250,9 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
 */
 ```
 
-**UserCard.tsx:**
+**user-card.tsx:**
 ```tsx
-import styles from './UserCard.module.css';
+import styles from './user-card.module.css';
 
 export function UserCard({ name, email, role }) {
   return (

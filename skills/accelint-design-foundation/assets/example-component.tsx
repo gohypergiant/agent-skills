@@ -11,10 +11,10 @@
  * - Inline classes ONLY for one-off overrides
  */
 
-import { clsx } from 'clsx';
-import styles from './UserCard.module.css';
+import { clsx } from '@accelint/design-foundation/lib/utils';
+import styles from './example-component.module.css';
 
-interface UserCardProps {
+type UserCardProps = {
   name: string;
   email: string;
   role: string;
@@ -44,12 +44,10 @@ export function UserCard({
         <h3 className={styles.title}>{name}</h3>
         <StatusBadge status={status} />
       </header>
-
       <div className={styles.content}>
         <p className={styles.email}>{email}</p>
         <p className={styles.role}>{role}</p>
       </div>
-
       {(onEdit || onDelete) && (
         <footer className={styles.actions}>
           {onEdit && (
@@ -62,7 +60,6 @@ export function UserCard({
               Edit
             </button>
           )}
-
           {onDelete && (
             <button
               onClick={onDelete}
@@ -79,30 +76,31 @@ export function UserCard({
   );
 }
 
-interface StatusBadgeProps {
+type StatusBadgeProps = {
   status: 'active' | 'inactive' | 'pending';
 }
 
+// Hoist static maps outside component to avoid re-creation on every render
+const STATUS_COLOR_MAP = {
+  active: 'success',
+  inactive: 'danger',
+  pending: 'warning'
+} as const;
+
+const STATUS_LABEL_MAP = {
+  active: 'Active',
+  inactive: 'Inactive',
+  pending: 'Pending'
+} as const;
+
 function StatusBadge({ status }: StatusBadgeProps) {
-  const colorMap = {
-    active: 'success',
-    inactive: 'danger',
-    pending: 'warning'
-  } as const;
-
-  const labelMap = {
-    active: 'Active',
-    inactive: 'Inactive',
-    pending: 'Pending'
-  };
-
   return (
     <span
       className={styles.badge}
-      data-color={colorMap[status]}
+      data-color={STATUS_COLOR_MAP[status]}
       data-size="small"
     >
-      {labelMap[status]}
+      {STATUS_LABEL_MAP[status]}
     </span>
   );
 }
