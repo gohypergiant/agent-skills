@@ -140,6 +140,7 @@ export const testSchema = z.object({
   steps: z.array(stepSchema).min(1),
 }).superRefine((test, ctx) => {
   let unpairedMouseDown: { index: number; button: string } | null = null;
+  let unpairedKeyDown: { index: number; value: string } | null = null;
   let hasError = false;
 
   for (let index = 0; index < test.steps.length; index++) {
@@ -181,6 +182,43 @@ export const testSchema = z.object({
         // Pair completed, reset tracker
         unpairedMouseDown = null;
       }
+    } else if (step.action === "keyDown") {
+      // If there's already an unpaired keyDown, that's an error
+      if (unpairedKeyDown !== null) {
+        ctx.addIssue({
+          code: "custom",
+          message: `keyDown at step ${index} occurs before completing the previous keyDown at step ${unpairedKeyDown.index}. Each keyDown must be followed by exactly one keyUp before another keyDown.`,
+          path: ["steps", index, "action"],
+        });
+        hasError = true;
+        break;
+      }
+      // Track the modifier key that was pressed
+      unpairedKeyDown = { index, value: step.value };
+    } else if (step.action === "keyUp") {
+      // keyUp without a preceding unpaired keyDown is an error
+      if (unpairedKeyDown === null) {
+        ctx.addIssue({
+          code: "custom",
+          message: `keyUp at step ${index} has no preceding keyDown. keyUp requires a keyDown action earlier in the steps array.`,
+          path: ["steps", index, "action"],
+        });
+        hasError = true;
+        break;
+      } else {
+        // Check that the modifier key matches
+        if (step.value !== unpairedKeyDown.value) {
+          ctx.addIssue({
+            code: "custom",
+            message: `keyUp at step ${index} uses key "${step.value}" but the paired keyDown at step ${unpairedKeyDown.index} used key "${unpairedKeyDown.value}". The modifier key must match between keyDown and keyUp.`,
+            path: ["steps", index, "value"],
+          });
+          hasError = true;
+          break;
+        }
+        // Pair completed, reset tracker
+        unpairedKeyDown = null;
+      }
     }
   }
 
@@ -190,6 +228,15 @@ export const testSchema = z.object({
       code: "custom",
       message: `mouseDown at step ${unpairedMouseDown.index} has no following mouseUp. Each mouseDown must be followed by exactly one mouseUp.`,
       path: ["steps", unpairedMouseDown.index, "action"],
+    });
+  }
+
+  // Check if there's an unpaired keyDown (only if no error yet)
+  if (!hasError && unpairedKeyDown !== null) {
+    ctx.addIssue({
+      code: "custom",
+      message: `keyDown at step ${unpairedKeyDown.index} has no following keyUp. Each keyDown must be followed by exactly one keyUp.`,
+      path: ["steps", unpairedKeyDown.index, "action"],
     });
   }
 }).strict();

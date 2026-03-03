@@ -581,75 +581,329 @@ it.each([
   expect(result.success).toBe(false);
 });
 
-it.each([
-  ["valid modifier key", "Shift"],
-  ["app-specific modifier 'a'", "a"],
-])("accepts keyDown action with %s", (_description, value) => {
-  const input = {
-    suiteName: "KeyDown test",
-    source: { "repo": "some-repo", "path": "path/to/file.md" },
-    tests: [
-      {
-        name: "Test keyDown",
-        startUrl: "https://example.com",
-        steps: [{ action: "keyDown", value }],
-      },
-    ],
-  };
+describe("keyDown/keyUp pairing validation", () => {
+  it("accepts keyUp with preceding keyDown", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Valid keyboard shortcut",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Shift" },
+            { action: "press", value: "g" },
+            { action: "keyUp", value: "Shift" },
+          ],
+        },
+      ],
+    };
 
-  const result = testSuiteSchema.safeParse(input);
-  expect(result.success).toBe(true);
-});
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
 
-it("rejects keyDown action with non-modifier key", () => {
-  const input = {
-    suiteName: "KeyDown test",
-    source: { "repo": "some-repo", "path": "path/to/file.md" },
-    tests: [
-      {
-        name: "Test keyDown",
-        startUrl: "https://example.com",
-        steps: [{ action: "keyDown", value: "Enter" }],
-      },
-    ],
-  };
+  it("accepts multiple sequential keyDown/keyUp pairs", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Multiple complete pairs",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Control" },
+            { action: "keyUp", value: "Control" },
+            { action: "keyDown", value: "Shift" },
+            { action: "keyUp", value: "Shift" },
+          ],
+        },
+      ],
+    };
 
-  const result = testSuiteSchema.safeParse(input);
-  expect(result.success).toBe(false);
-});
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
 
-it("accepts keyUp action with valid modifier key", () => {
-  const input = {
-    suiteName: "KeyUp test",
-    source: { "repo": "some-repo", "path": "path/to/file.md" },
-    tests: [
-      {
-        name: "Test keyUp",
-        startUrl: "https://example.com",
-        steps: [{ action: "keyUp", value: "Control" }],
-      },
-    ],
-  };
+  it("rejects keyUp without preceding keyDown", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid sequence",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "press", value: "g" },
+            { action: "keyUp", value: "Shift" },
+          ],
+        },
+      ],
+    };
 
-  const result = testSuiteSchema.safeParse(input);
-  expect(result.success).toBe(true);
-});
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("keyUp at step 1 has no preceding keyDown");
+    }
+  });
 
-it("rejects keyUp action with non-modifier key", () => {
-  const input = {
-    suiteName: "KeyUp test",
-    source: { "repo": "some-repo", "path": "path/to/file.md" },
-    tests: [
-      {
-        name: "Test keyUp",
-        startUrl: "https://example.com",
-        steps: [{ action: "keyUp", value: "b" }],
-      },
-    ],
-  };
+  it("rejects keyDown without following keyUp", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Unpaired keyDown",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Control" },
+            { action: "press", value: "g" },
+          ],
+        },
+      ],
+    };
 
-  const result = testSuiteSchema.safeParse(input);
-  expect(result.success).toBe(false);
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 0, "action"]);
+      expect(issues[0].message).toContain("keyDown at step 0 has no following keyUp");
+    }
+  });
+
+  it("rejects multiple keyDown without completing first pair (different modifiers)", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Nested keyDown with different modifiers",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Control" },
+            { action: "keyDown", value: "Shift" },
+            { action: "keyUp", value: "Shift" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("keyDown at step 1 occurs before completing the previous keyDown");
+    }
+  });
+
+  it("rejects multiple keyDown without completing first pair (same modifier)", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Nested keyDown with same modifier",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Control" },
+            { action: "keyDown", value: "Control" },
+            { action: "keyUp", value: "Control" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("keyDown at step 1 occurs before completing the previous keyDown");
+    }
+  });
+
+  it("rejects multiple keyUp after one keyDown", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Double keyUp",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Control" },
+            { action: "keyUp", value: "Control" },
+            { action: "keyUp", value: "Control" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 2, "action"]);
+      expect(issues[0].message).toContain("keyUp at step 2 has no preceding keyDown");
+    }
+  });
+
+  it("rejects mismatched modifier key between keyDown and keyUp", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Mismatched keys",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Shift" },
+            { action: "keyUp", value: "Control" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "value"]);
+      expect(issues[0].message).toContain('keyUp at step 1 uses key "Control"');
+      expect(issues[0].message).toContain('keyDown at step 0 used key "Shift"');
+    }
+  });
+
+  it("accepts app-specific modifier 'a' in pair", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "App modifier pair",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "a" },
+            { action: "press", value: "g" },
+            { action: "keyUp", value: "a" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("prevents overlapping keyDown with different modifiers", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Overlapping different modifiers",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Shift" },
+            { action: "keyDown", value: "Control" },
+            { action: "keyUp", value: "Control" },
+            { action: "keyUp", value: "Shift" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("keyDown at step 1 occurs before completing the previous keyDown");
+    }
+  });
+
+  it("validates pairing within each test independently", () => {
+    const input = {
+      suiteName: "Key pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Test 1 - valid",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Control" },
+            { action: "keyUp", value: "Control" },
+          ],
+        },
+        {
+          name: "Test 2 - invalid",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyUp", value: "Shift" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      // Only test 2 should fail, test 1's keyDown doesn't carry over
+      expect(result.error.issues[0].path).toContain(1); // test index 1
+    }
+  });
+
+  it("rejects keyDown with non-modifier key", () => {
+    const input = {
+      suiteName: "Key validation test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid modifier",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Enter" },
+            { action: "keyUp", value: "Enter" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects keyUp with non-modifier key", () => {
+    const input = {
+      suiteName: "Key validation test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid modifier",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "keyDown", value: "Shift" },
+            { action: "keyUp", value: "b" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("Test fixture validations", () => {
