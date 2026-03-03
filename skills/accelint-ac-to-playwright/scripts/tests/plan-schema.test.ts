@@ -198,26 +198,6 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it.each([
-    ["default button", undefined],
-    ["explicit button", "right"],
-  ])("accepts mouseDown with %s", (_description, button) => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Press mouse button",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseDown", ...(button && { button }) }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
-  });
-
   it("rejects mouseDown with invalid button", () => {
     const input = {
       suiteName: "Mouse test",
@@ -226,33 +206,16 @@ describe("Plan schema", () => {
         {
           name: "Invalid button",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseDown", button: "invalid" }],
+          steps: [
+            { action: "mouseDown", button: "invalid" },
+            { action: "mouseUp" },
+          ],
         },
       ],
     };
 
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
-  });
-
-  it.each([
-    ["default button", undefined],
-    ["explicit button", "middle"],
-  ])("accepts mouseUp with %s", (_description, button) => {
-    const input = {
-      suiteName: "Mouse test",
-      source: { "repo": "some-repo", "path": "path/to/file.md" },
-      tests: [
-        {
-          name: "Release mouse button",
-          startUrl: "https://example.com",
-          steps: [{ action: "mouseUp", ...(button && { button }) }],
-        },
-      ],
-    };
-
-    const result = testSuiteSchema.safeParse(input);
-    expect(result.success).toBe(true);
   });
 
   it("rejects mouseUp with invalid button", () => {
@@ -263,7 +226,10 @@ describe("Plan schema", () => {
         {
           name: "Invalid button",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseUp", button: "invalid" }],
+          steps: [
+            { action: "mouseDown" },
+            { action: "mouseUp", button: "invalid" },
+          ],
         },
       ],
     };
@@ -314,6 +280,264 @@ describe("Plan schema", () => {
 
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
+  });
+});
+
+describe("mouseDown/mouseUp pairing validation", () => {
+  it("accepts mouseUp with preceding mouseDown", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Valid drag sequence",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseMove", x: 100, y: 100 },
+            { action: "mouseDown" },
+            { action: "mouseMove", x: 200, y: 200 },
+            { action: "mouseUp" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts multiple sequential mouseDown/mouseUp pairs", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Multiple complete pairs",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown" },
+            { action: "mouseUp" },
+            { action: "mouseDown" },
+            { action: "mouseUp" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects mouseUp without preceding mouseDown", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid sequence",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseMove", x: 100, y: 100 },
+            { action: "mouseUp" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("mouseUp at step 1 has no preceding mouseDown");
+    }
+  });
+
+  it("rejects mouseDown without following mouseUp", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Unpaired mouseDown",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown" },
+            { action: "mouseMove", x: 100, y: 100 },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 0, "action"]);
+      expect(issues[0].message).toContain("mouseDown at step 0 has no following mouseUp");
+    }
+  });
+
+  it("rejects multiple mouseDown without completing first pair", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Nested mouseDown",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown" },
+            { action: "mouseDown" },
+            { action: "mouseUp" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("mouseDown at step 1 occurs before completing the previous mouseDown");
+    }
+  });
+
+  it("rejects multiple mouseUp after one mouseDown", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Double mouseUp",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown" },
+            { action: "mouseUp" },
+            { action: "mouseUp" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 2, "action"]);
+      expect(issues[0].message).toContain("mouseUp at step 2 has no preceding mouseDown");
+    }
+  });
+
+  it("rejects mismatched button between mouseDown and mouseUp", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Mismatched buttons",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown", button: "left" },
+            { action: "mouseUp", button: "right" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "button"]);
+      expect(issues[0].message).toContain('mouseUp at step 1 uses button "right"');
+      expect(issues[0].message).toContain('mouseDown at step 0 used button "left"');
+    }
+  });
+
+  it("accepts matching non-default buttons", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Right button pair",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown", button: "right" },
+            { action: "mouseUp", button: "right" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("prevents overlapping mouseDown with different buttons", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Overlapping different buttons",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown", button: "left" },
+            { action: "mouseDown", button: "right" },
+            { action: "mouseUp", button: "right" },
+            { action: "mouseUp", button: "left" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("mouseDown at step 1 occurs before completing the previous mouseDown");
+    }
+  });
+
+  it("validates pairing within each test independently", () => {
+    const input = {
+      suiteName: "Mouse pairing test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Test 1 - valid",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown" },
+            { action: "mouseUp" },
+          ],
+        },
+        {
+          name: "Test 2 - invalid",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseUp" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      // Only test 2 should fail, test 1's mouseDown doesn't carry over
+      expect(result.error.issues[0].path).toContain(1); // test index 1
+    }
   });
 });
 

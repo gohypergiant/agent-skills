@@ -138,6 +138,60 @@ export const testSchema = z.object({
   startUrl: z.string(),
   tags: z.array(z.string()).min(1).optional(),
   steps: z.array(stepSchema).min(1),
+}).superRefine((test, ctx) => {
+  let unpairedMouseDown: { index: number; button: string } | null = null;
+  let hasError = false;
+
+  for (let index = 0; index < test.steps.length; index++) {
+    const step = test.steps[index];
+    if (step.action === "mouseDown") {
+      // If there's already an unpaired mouseDown, that's an error (regardless of button)
+      if (unpairedMouseDown !== null) {
+        ctx.addIssue({
+          code: "custom",
+          message: `mouseDown at step ${index} occurs before completing the previous mouseDown at step ${unpairedMouseDown.index}. Each mouseDown must be followed by exactly one mouseUp before another mouseDown.`,
+          path: ["steps", index, "action"],
+        });
+        hasError = true;
+        break;
+      }
+      // Track the button that was pressed (schema guarantees button exists via default)
+      unpairedMouseDown = { index, button: step.button };
+    } else if (step.action === "mouseUp") {
+      // mouseUp without a preceding unpaired mouseDown is an error
+      if (unpairedMouseDown === null) {
+        ctx.addIssue({
+          code: "custom",
+          message: `mouseUp at step ${index} has no preceding mouseDown. mouseUp requires a mouseDown action earlier in the steps array.`,
+          path: ["steps", index, "action"],
+        });
+        hasError = true;
+        break;
+      } else {
+        // Check that the button matches (schema guarantees button exists via default)
+        if (step.button !== unpairedMouseDown.button) {
+          ctx.addIssue({
+            code: "custom",
+            message: `mouseUp at step ${index} uses button "${step.button}" but the paired mouseDown at step ${unpairedMouseDown.index} used button "${unpairedMouseDown.button}". The button must match between mouseDown and mouseUp.`,
+            path: ["steps", index, "button"],
+          });
+          hasError = true;
+          break;
+        }
+        // Pair completed, reset tracker
+        unpairedMouseDown = null;
+      }
+    }
+  }
+
+  // After processing all steps, check if there's an unpaired mouseDown (only if no error yet)
+  if (!hasError && unpairedMouseDown !== null) {
+    ctx.addIssue({
+      code: "custom",
+      message: `mouseDown at step ${unpairedMouseDown.index} has no following mouseUp. Each mouseDown must be followed by exactly one mouseUp.`,
+      path: ["steps", unpairedMouseDown.index, "action"],
+    });
+  }
 }).strict();
 
 export const testSuiteSchema = z.object({
