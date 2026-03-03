@@ -119,6 +119,53 @@ describe("Plan schema", () => {
   });
 
   it.each([
+    ["default button", 100, 100, 200, 200, undefined],
+    ["explicit button", 50, 75, 150, 200, "right"],
+    ["middle button", 10, 20, 30, 40, "middle"],
+  ])("accepts drag with %s", (_description, fromX, fromY, toX, toY, button) => {
+    const input = {
+      suiteName: "Drag test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Drag operation",
+          startUrl: "https://example.com",
+          steps: [{ action: "drag", fromX, fromY, toX, toY, ...(button && { button }) }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it.each([
+    ["negative fromX", { fromX: -10, fromY: 100, toX: 200, toY: 200 }],
+    ["negative fromY", { fromX: 100, fromY: -10, toX: 200, toY: 200 }],
+    ["negative toX", { fromX: 100, fromY: 100, toX: -10, toY: 200 }],
+    ["negative toY", { fromX: 100, fromY: 100, toX: 200, toY: -10 }],
+    ["invalid button", { fromX: 100, fromY: 100, toX: 200, toY: 200, button: "invalid" }],
+    ["missing fromX field", { fromY: 100, toX: 200, toY: 200 }],
+    ["non-integer coordinates", { fromX: 100.5, fromY: 100, toX: 200, toY: 200 }],
+    ["non-numeric coordinates", { fromX: "100", fromY: 100, toX: 200, toY: 200 }],
+  ])("rejects drag with %s", (_description, step) => {
+    const input = {
+      suiteName: "Drag test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid drag",
+          startUrl: "https://example.com",
+          steps: [{ action: "drag", ...step }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it.each([
     ["default button", 100, 200, undefined],
     ["explicit button", 50, 75, "right"],
   ])("accepts mouseClick with %s", (_description, x, y, button) => {

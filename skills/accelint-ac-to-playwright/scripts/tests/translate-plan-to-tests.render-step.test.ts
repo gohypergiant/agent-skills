@@ -29,6 +29,39 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { action: "drag", fromX: 100, fromY: 100, toX: 200, toY: 200 },
+      6,
+      [
+        'await page.mouse.move(100, 100);',
+        'await page.mouse.down();',
+        'await page.mouse.move(200, 200);',
+        'await page.mouse.up();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 6, action: "drag" })'
+      ],
+    ],
+    [
+      { action: "drag", fromX: 50, fromY: 75, toX: 150, toY: 200, button: "right" },
+      7,
+      [
+        'await page.mouse.move(50, 75);',
+        'await page.mouse.down({ button: "right" });',
+        'await page.mouse.move(150, 200);',
+        'await page.mouse.up({ button: "right" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 7, action: "drag" })'
+      ],
+    ],
+    [
+      { action: "drag", fromX: 10, fromY: 20, toX: 30, toY: 40, button: "middle" },
+      8,
+      [
+        'await page.mouse.move(10, 20);',
+        'await page.mouse.down({ button: "middle" });',
+        'await page.mouse.move(30, 40);',
+        'await page.mouse.up({ button: "middle" });',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "drag" })'
+      ],
+    ],
+    [
       { action: "expectNotVisible", target: "#modal" },
       1,
       [
