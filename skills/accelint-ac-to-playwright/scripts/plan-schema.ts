@@ -239,6 +239,69 @@ export const testSchema = z.object({
       path: ["steps", unpairedKeyDown.index, "action"],
     });
   }
+
+  // Validate visibility assertion pairing
+  if (!hasError) {
+    const visibilityAssertions: Array<{
+      index: number;
+      action: "expectVisible" | "expectNotVisible";
+      target: string;
+    }> = [];
+
+    // Collect all visibility assertions
+    test.steps.forEach((step, index) => {
+      if (step.action === "expectVisible" || step.action === "expectNotVisible") {
+        visibilityAssertions.push({
+          index,
+          action: step.action,
+          target: step.target,
+        });
+      }
+    });
+
+    // Validate each visibility assertion has a proper pair
+    for (const assertion of visibilityAssertions) {
+      const oppositeAction = assertion.action === "expectVisible"
+        ? "expectNotVisible"
+        : "expectVisible";
+
+      // Check for pair immediately before (at index - 2, with one action at index - 1)
+      const hasPairBefore =
+        assertion.index >= 2 &&
+        visibilityAssertions.some(other =>
+          other.index === assertion.index - 2 &&
+          other.action === oppositeAction &&
+          other.target === assertion.target
+        ) &&
+        // Ensure step at index - 1 is an action (not an assertion)
+        !["expectVisible", "expectNotVisible", "expectText", "expectUrl"].includes(
+          test.steps[assertion.index - 1].action
+        );
+
+      // Check for pair immediately after (at index + 2, with one action at index + 1)
+      const hasPairAfter =
+        assertion.index + 2 < test.steps.length &&
+        visibilityAssertions.some(other =>
+          other.index === assertion.index + 2 &&
+          other.action === oppositeAction &&
+          other.target === assertion.target
+        ) &&
+        // Ensure step at index + 1 is an action (not an assertion)
+        !["expectVisible", "expectNotVisible", "expectText", "expectUrl"].includes(
+          test.steps[assertion.index + 1].action
+        );
+
+      if (!hasPairBefore && !hasPairAfter) {
+        ctx.addIssue({
+          code: "custom",
+          message: `${assertion.action} at step ${assertion.index} for target "${assertion.target}" must be paired with ${oppositeAction} for the same target, with exactly one action between them. Pattern: ${oppositeAction} → action → ${assertion.action} OR ${assertion.action} → action → ${oppositeAction}.`,
+          path: ["steps", assertion.index, "action"],
+        });
+        hasError = true;
+        break;
+      }
+    }
+  }
 }).strict();
 
 export const testSuiteSchema = z.object({

@@ -906,6 +906,271 @@ describe("keyDown/keyUp pairing validation", () => {
   });
 });
 
+describe("visibility pairing validation", () => {
+  it("accepts expectNotVisible → action → expectVisible pattern", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Show element",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "modal.dialog" },
+            { action: "click", target: "button.open" },
+            { action: "expectVisible", target: "modal.dialog" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts expectVisible → action → expectNotVisible pattern", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Hide element",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectVisible", target: "panel.settings" },
+            { action: "press", value: "Escape" },
+            { action: "expectNotVisible", target: "panel.settings" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts multiple independent visibility pairs", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Multiple pairs",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "panel.layers" },
+            { action: "click", target: "button.layers" },
+            { action: "expectVisible", target: "panel.layers" },
+            { action: "expectVisible", target: "panel.properties" },
+            { action: "click", target: "button.properties" },
+            { action: "expectNotVisible", target: "panel.properties" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects unpaired expectVisible", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Unpaired visible",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "click", target: "button.show" },
+            { action: "expectVisible", target: "modal.dialog" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
+      expect(issues[0].message).toContain("expectVisible at step 1");
+      expect(issues[0].message).toContain("must be paired with expectNotVisible");
+    }
+  });
+
+  it("rejects unpaired expectNotVisible", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Unpaired not visible",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "panel.info" },
+            { action: "click", target: "button.hide" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].path).toEqual(["tests", 0, "steps", 0, "action"]);
+      expect(issues[0].message).toContain("expectNotVisible at step 0");
+      expect(issues[0].message).toContain("must be paired with expectVisible");
+    }
+  });
+
+  it("rejects visibility pair with no action between", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "No action between",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "modal.dialog" },
+            { action: "expectVisible", target: "modal.dialog" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      // Either step 0 or 1 will fail (whichever is checked first)
+      expect(issues[0].message).toContain("must be paired");
+    }
+  });
+
+  it("rejects visibility pair with multiple actions between", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Multiple actions between",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "modal.dialog" },
+            { action: "click", target: "button.open" },
+            { action: "fill", target: "input.name", value: "test" },
+            { action: "expectVisible", target: "modal.dialog" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      // Either step 0 or 3 will fail
+      expect(issues[0].message).toContain("must be paired");
+      expect(issues[0].message).toContain("exactly one action between");
+    }
+  });
+
+  it("rejects visibility pair with mismatched targets", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Mismatched targets",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "panel.layers" },
+            { action: "click", target: "button.show" },
+            { action: "expectVisible", target: "panel.properties" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      // One of the assertions will fail to find a matching pair
+      expect(issues[0].message).toContain("must be paired");
+    }
+  });
+
+  it("rejects visibility pair with assertion between instead of action", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Assertion between",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "modal.dialog" },
+            { action: "expectText", target: "header.title", value: "Welcome" },
+            { action: "expectVisible", target: "modal.dialog" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      // Both assertions will fail to find a matching pair since there's an assertion between them
+      expect(issues.length).toBeGreaterThanOrEqual(1);
+      // Check that at least one error is about visibility pairing
+      const hasPairingError = issues.some(issue => issue.message.includes("must be paired"));
+      expect(hasPairingError).toBe(true);
+    }
+  });
+
+  it("validates pairing within each test independently", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Test 1 - valid",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "modal.dialog" },
+            { action: "click", target: "button.open" },
+            { action: "expectVisible", target: "modal.dialog" },
+          ],
+        },
+        {
+          name: "Test 2 - invalid",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectVisible", target: "panel.info" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      // Only test 2 should fail
+      expect(result.error.issues[0].path).toContain(1); // test index 1
+    }
+  });
+});
+
 describe("Test fixture validations", () => {
   it("fixtures/all-actions.json should parse", () => {
     const data = readFixture("all-actions.json");
