@@ -65,13 +65,13 @@ How to convert vanilla Tailwind styling to `@accelint/design-foundation` convent
 ```
 
 **Mapping:**
-- `p-1` → `p-xxs`
-- `p-2` → `p-xs`
-- `p-3` → `p-s`
-- `p-4` → `p-m`
-- `p-6` → `p-l`
-- `p-8` → `p-xl`
-- `p-12` → `p-xxl`
+- `p-0.5` → `p-xxs`
+- `p-1` → `p-xs`
+- `p-2` → `p-s`
+- `p-3` → `p-m`
+- `p-4` → `p-l`
+- `p-6` → `p-xl`
+- `p-10` → `p-xxl`
 
 ### Step 3: Replace Dark Mode Handling
 
