@@ -78,8 +78,24 @@
           "amount": 200
         },
         {
+          "action": "expectNotVisible",
+          "target": "banner.welcome"
+        },
+        {
+          "action": "click",
+          "target": "button.show-welcome"
+        },
+        {
           "action": "expectVisible",
           "target": "banner.welcome"
+        },
+        {
+          "action": "expectVisible",
+          "target": "banner.error"
+        },
+        {
+          "action": "click",
+          "target": "button.hide-error"
         },
         {
           "action": "expectNotVisible",
