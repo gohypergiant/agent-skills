@@ -64,18 +64,22 @@ When writing AC that involve mouse operations, distinguish between element-based
   - Uses x,y coordinates for double-clicking specific positions
   - The agent translates this to a `doubleClick` action
   - Optional: specify button type: "the user double-clicks with the right button at position 300, 400"
-- **Mouse movement** (for positioning before other operations): "the user moves the mouse to position 150, 250"
+- **Mouse movement** (for positioning): "the user moves the mouse to position 150, 250"
   - Positions the cursor at specific x,y coordinates without clicking
   - The agent translates this to a `mouseMove` action
-- **Press and hold** (for drag operations): "the user presses the left mouse button"
+- **Press and hold**: "the user presses the left mouse button"
   - Presses a mouse button at the current cursor position
   - The agent translates this to a `mouseDown` action
   - Always use `mouseMove` first to position the cursor
   - Optional: specify button type: "the user presses the right mouse button"
-- **Release button** (for drag operations): "the user releases the mouse button"
+- **Release button**: "the user releases the mouse button"
   - Releases a held mouse button at the current cursor position
   - The agent translates this to a `mouseUp` action
   - Optional: specify button type: "the user releases the middle mouse button"
+- **Drag operations** (for drawing): "the user drags the mouse from position 100, 100 to position 200, 200"
+  - Combines move → press → move → release into a single action
+  - The agent translates this to a `drag` action with start and end coordinates
+  - Optional: specify button type: "the user drags with the right button from position 100, 100 to position 200, 200"
 - **Scrolling** (for page navigation): "the user scrolls down 200 pixels"
   - Scrolls the page in a specified direction by a pixel amount
   - The agent translates this to a `scroll` action

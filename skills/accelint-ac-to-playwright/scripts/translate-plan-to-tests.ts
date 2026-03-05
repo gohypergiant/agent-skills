@@ -20,6 +20,7 @@ export type PlanFile = {
 export type Step = {
   action: "click"; target: string }
   | { action: "doubleClick"; x: number; y: number; button?: "left" | "right" | "middle" }
+  | { action: "drag"; fromX: number; fromY: number; toX: number; toY: number; button?: "left" | "right" | "middle" }
   | { action: "expectNotVisible"; target: string }
   | { action: "expectText"; target: string; value: string }
   | { action: "expectUrl"; value: string }
@@ -259,6 +260,21 @@ function renderStep(step: Step, stepIndex: number): string {
       return [
         `    try {`,
         `      await page.mouse.dblclick(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "drag": {
+      const hasButton = step.button && step.button !== "left";
+      return [
+        `    try {`,
+        `      await page.mouse.move(${step.fromX}, ${step.fromY});`,
+        `      await page.mouse.down(${hasButton ? `{ button: "${step.button}" }` : ""});`,
+        `      await page.mouse.move(${step.toX}, ${step.toY});`,
+        `      await page.mouse.up(${hasButton ? `{ button: "${step.button}" }` : ""});`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
         `      throw error;`,

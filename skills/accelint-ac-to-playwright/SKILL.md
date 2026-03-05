@@ -4,7 +4,7 @@ description: Convert and validate acceptance criteria for Playwright test automa
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.11"
+  version: "0.12"
 ---
 
 # AC To Playwright
@@ -50,7 +50,7 @@ Assessment mode analyzes AC text only (no artifact generation). Full conversion 
      - Component matches controlled vocabulary (button, link, input, dropdown, checkbox, radio, text, div, component)
      - Intent is present
    - **Actions**:
-     - Verbs are recognized and mappable to Playwright actions (click, fill, select)
+     - Verbs are recognized and mappable to Playwright actions (click, fill, select, drag)
      - No vague verbs (interact, use, hover without x/y coordinates)
      - Fill/select actions have quoted literal values (not "a valid email" or "any value")
    - **Expected Outcomes**:
