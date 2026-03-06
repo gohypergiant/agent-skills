@@ -1,0 +1,201 @@
+/**
+ * user-card.module.css
+ *
+ * Demonstrates correct patterns:
+ * - @layer for specificity control
+ * - Single @apply per rule (enables IDE plugin support)
+ * - @variant blocks for conditional styling (not attribute selectors)
+ * - Semantic tokens that adapt to theme automatically
+ */
+
+/* Base component styles */
+@layer components.l1 {
+  .card {
+    @apply bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m;
+  }
+
+  .header {
+    @apply flex items-center justify-between mb-s;
+  }
+
+  .title {
+    @apply fg-primary-bold text-body-l;
+  }
+
+  .content {
+    @apply space-y-xs mb-m;
+  }
+
+  .email {
+    @apply fg-primary-bold text-body-m;
+  }
+
+  .role {
+    @apply fg-primary-muted text-body-s;
+  }
+
+  .actions {
+    @apply flex gap-s;
+  }
+
+  .primaryButton,
+  .dangerButton {
+    @apply px-m py-xs;
+  }
+
+  .badge {
+    @apply px-s py-xxs text-body-s;
+  }
+}
+
+/* Variant styles - higher layer for proper cascade */
+@layer components.l2 {
+  /* ✅ Correct - @variant blocks for size variants */
+  .card {
+    @variant size-small {
+      @apply p-s;
+    }
+
+    @variant size-large {
+      @apply p-l;
+    }
+  }
+
+  /* Button color variants using @variant blocks */
+  .primaryButton {
+    @variant color-info {
+      @apply bg-interactive-bold fg-inverse-bold;
+    }
+  }
+
+  .dangerButton {
+    @variant color-critical {
+      @apply outline-2 outline-critical-bold fg-critical-bold;
+    }
+  }
+
+  /* Button size variants */
+  .primaryButton,
+  .dangerButton {
+    @variant size-large {
+      @apply px-l py-s;
+    }
+
+    @variant size-small {
+      @apply px-s py-xxs;
+    }
+  }
+
+  /* Badge color variants using semantic status tokens */
+  .badge {
+    @variant color-normal {
+      @apply bg-normal-muted fg-primary-bold;
+    }
+
+    @variant color-critical {
+      @apply bg-critical-muted fg-inverse-bold;
+    }
+
+    @variant color-advisory {
+      @apply bg-advisory-muted fg-primary-bold;
+    }
+  }
+}
+
+/* State styles - highest layer */
+@layer components.l3 {
+  /* React Aria provides data-hovered, data-pressed automatically */
+  .primaryButton,
+  .dangerButton {
+    @variant hover {
+      @apply opacity-90;
+    }
+
+    @variant pressed {
+      @apply opacity-80;
+    }
+
+    @variant disabled {
+      @apply opacity-50 cursor-not-allowed;
+    }
+  }
+}
+
+/**
+ * ANTI-PATTERNS TO AVOID:
+ *
+ * ❌ Wrong - multiple @apply directives (breaks IDE plugins):
+ * .card {
+ *   @apply bg-surface-default;
+ *   @apply outline-1 outline-interactive;
+ *   @apply shadow-elevation-raised-muted;
+ *   @apply p-m;
+ * }
+ *
+ * ✅ Correct - single @apply directive:
+ * .card {
+ *   @apply bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m;
+ * }
+ *
+ *
+ * ❌ Wrong - attribute selectors for variants:
+ * .card[data-size="small"] {
+ *   @apply p-s;
+ * }
+ *
+ * ✅ Correct - @variant blocks:
+ * .card {
+ *   @variant size-small {
+ *     @apply p-s;
+ *   }
+ * }
+ *
+ *
+ * ❌ Wrong - numeric Tailwind spacing:
+ * .card {
+ *   @apply p-4 gap-2;
+ * }
+ *
+ * ✅ Correct - semantic spacing scale:
+ * .card {
+ *   @apply p-m gap-xs;
+ * }
+ *
+ *
+ * ❌ Wrong - manual theme handling:
+ * .card {
+ *   background: var(--light-bg);
+ * }
+ * [data-theme="dark"] .card {
+ *   background: var(--dark-bg);
+ * }
+ *
+ * ✅ Correct - automatic with semantic tokens:
+ * .card {
+ *   @apply bg-surface-default;
+ * }
+ *
+ *
+ * ❌ Wrong - borders add to dimensions:
+ * .card {
+ *   @apply border-2 border-gray-300;
+ * }
+ *
+ * ✅ Correct - outlines don't affect size:
+ * .card {
+ *   @apply outline-1 outline-interactive;
+ * }
+ *
+ *
+ * ❌ Wrong - no layers causes specificity issues:
+ * .card {
+ *   @apply bg-surface-default;
+ * }
+ *
+ * ✅ Correct - use layer hierarchy:
+ * @layer components.l1 {
+ *   .card {
+ *     @apply bg-surface-default;
+ *   }
+ * }
+ */
