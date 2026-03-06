@@ -1,86 +1,60 @@
 # 1.3 Control Flow
 
-## Block Style for Control Flow
+## Block Style for Control Flow - ALWAYS Use `{ }`
 
-Always use block syntax `{ }` for control flow statements, even single-line returns. This prevents subtle bugs when adding code later and maintains visual consistency.
+Always use block syntax `{ }`, even for single-line statements. **Why**: Prevents the silent modification bug.
+
+**The silent modification bug** (caught by block style):
+```ts
+// Inline style - bug is silent
+if (!isValid) return;
+logError(error);  // BUG: Always executes! Looks like it's in the if-block but isn't
+
+// Block style - bug causes compile error
+if (!isValid) {
+  return;
+  logError(error);  // ✅ Unreachable code warning - bug is caught
+}
+```
+
+**Production lesson**: A production bug was introduced when a developer added logging to an inline `if` statement without adding braces. The log statement executed unconditionally, logging sensitive data to the console even when validation passed. Block style would have prevented this—either the developer would have added braces, or the unreachable code warning would have caught the mistake.
 
 **❌ Incorrect: inline style**
 ```ts
-if (!condition1) return /* something1 */;
-if (!condition2) return /* something2 */;
-if (!condition3) return /* something3 */;
+if (!condition1) return;
+if (!condition2) return;
 ```
 
 **✅ Correct: block style**
 ```ts
 if (!condition1) {
-  return /* something1 */;
+  return;
 }
 
 if (!condition2) {
-  return /* something2 */;
-}
-
-if (!condition3) {
-  return /* something3 */;
-}
-
-return /* something4 */;
-```
-
-**Why this matters**:
-
-1. **Prevents bugs during modification**: Adding a second statement to an inline conditional without adding braces silently breaks control flow:
-```ts
-// Dangerous inline style
-if (!isValid) return;
-logError(error);  // Always executes! (This is the bug)
-
-// Safe block style - bug would be obvious
-if (!isValid) {
   return;
-  logError(error);  // Unreachable code warning
 }
 ```
-
-2. **Visual scanability**: Blocks create clear vertical alignment, making the guard clause pattern immediately recognizable. Inline returns blend into the code and are easy to miss.
 
 ## Early Returns for Guard Clauses
 
-Invert conditions and return early rather than nesting. This reduces rightward drift and makes the "happy path" obvious.
+Use early returns to keep code flat. Nested conditionals bury the success path 3+ levels deep.
 
-**❌ Incorrect: nested structure (3+ levels)**
+**❌ Incorrect: nested (success path buried)**
 ```ts
 if (condition1) {
   if (condition2) {
     if (condition3) {
-      result = /* something4 */;
-    } else {
-      result = /* something3 */;
+      return success;  // Success path is 3 levels deep
     }
-  } else {
-    result = /* something2 */;
   }
-} else {
-  result = /* something1 */;
 }
 ```
 
-**✅ Correct: early returns (flat structure)**
+**✅ Correct: early returns (success path prominent)**
 ```ts
-if (!condition1) {
-  return /* something1 */;
-}
-
-if (!condition2) {
-  return /* something2 */;
-}
-
-if (!condition3) {
-  return /* something3 */;
-}
-
-return /* something4 */;
+if (!condition1) return;
+if (!condition2) return;
+if (!condition3) return;
+return success;  // Success path is always the final return
 ```
-
-**Why this matters**: Nested conditionals hide the success path at the deepest level. Early returns make error handling peripheral and the main logic prominent. The final return statement is always the "happy path."
