@@ -4,7 +4,7 @@ description: Comprehensive TypeScript file audit system. Command-only skill (no 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "2.0"
 ---
 
 # Audit All
@@ -58,9 +58,42 @@ This skill creates and maintains an audit process file that tracks progress acro
 3. **Track progress** - Save after each step to survive context limits
 4. **Archive completed** - Move finished files to history file
 
+### Use Automation Scripts (Recommended)
+
+For maximum efficiency, use the provided scripts to automate audit orchestration:
+
+**[scripts/init-audit.sh](scripts/init-audit.sh)** - Initialize complete audit workflow
+```bash
+# Initialize audit with default commands
+./scripts/init-audit.sh src/ > init-result.json
+
+# Initialize with custom verification commands
+./scripts/init-audit.sh src/ "bun test" "bun run build" "bun run lint" > init-result.json
+```
+
+**[scripts/update-audit-status.sh](scripts/update-audit-status.sh)** - Update progress tracking
+```bash
+# Mark entire file as complete (archives to history)
+./scripts/update-audit-status.sh <timestamp> src/file.ts complete
+```
+
+**[scripts/merge-audit.sh](scripts/merge-audit.sh)** - Complete audit and merge back
+```bash
+# Merge audit branch back to original branch
+./scripts/merge-audit.sh <timestamp>
+```
+
+See [scripts/README.md](scripts/README.md) for detailed usage, coverage model, and workflow examples.
+
+Scripts automate ~80% of orchestration overhead (worktree setup, file discovery, progress tracking, merge finalization). **Context savings: ~1,600-2,000 tokens per complete multi-file audit**.
+
 ## Main Audit Workflow
 
 ### Step 1: Initialize the Audit
+
+**Recommended:** Use `scripts/init-audit.sh` to automate worktree creation, file discovery, and tracking file setup (~800-1,000 tokens saved). See [scripts/README.md](scripts/README.md) for usage.
+
+**Manual initialization** (if scripts unavailable):
 
 **Check for existing audit:** Look in `.agents/audit/` directory (in the original repository root) for existing audit-process files.
 
@@ -103,18 +136,7 @@ BLOCKING: All audit work MUST happen in an isolated worktree to prevent conflict
 
 **Create tracking files:**
 
-**MANDATORY - READ ENTIRE FILE**: Before creating any tracking files, you MUST read
-[`assets/audit-process-template.md`](assets/audit-process-template.md) completely
-from start to finish to understand the exact format and structure required.
-**NEVER set any range limits when reading this file.**
-
-Similarly, you MUST read [`assets/audit-history-template.md`](assets/audit-history-template.md)
-to understand the archival format.
-
-**Do NOT load** these templates again after the initial setup - they are only needed
-once at the start of a new audit.
-
-Create timestamped tracking files in the ORIGINAL repository (not in the worktree):
+The `init-audit.sh` script automatically creates and populates tracking files from templates. If running manually without scripts, create timestamped tracking files in the ORIGINAL repository (not in the worktree):
 - Go back to the original repository root: `cd $(git rev-parse --show-toplevel)`
 - Create `.agents/audit/audit-process-${timestamp}.md` (use same timestamp as worktree)
 - Create `.agents/audit/audit-history-${timestamp}.md` (same timestamp)
@@ -251,7 +273,11 @@ If verification passes, skip to documenting results. Otherwise:
 
 ### Step 3: Archive Completed File
 
-When all 9 steps complete for a file:
+**Recommended:** Use `scripts/update-audit-status.sh <timestamp> <filename> complete` to automate archival and progress tracking (~300-400 tokens saved).
+
+**Manual archival** (if scripts unavailable):
+
+When all 8 steps complete for a file:
 
 1. **Move detailed progress to history file**
    - Copy entire "Current File - Detailed Progress" section
@@ -280,6 +306,10 @@ When all 9 steps complete for a file:
    - Ensure all changes pass before merging
 
 2. **Merge worktree back to original branch:**
+
+   **Recommended:** Use `scripts/merge-audit.sh <timestamp>` to automate commit, merge, and cleanup (~500-600 tokens saved).
+
+   **Manual merge** (if scripts unavailable):
    ```bash
    # Extract timestamp from current worktree directory name
    # We're in .agents/worktrees/audit-YYYYMMDD-HHMMSS
@@ -440,29 +470,9 @@ Wait for user response with numbered list before applying any changes.
 
 ## Verification Commands
 
-The audit-process file MUST document exact verification commands. Common patterns:
+The audit-process file MUST document exact verification commands. Always use the EXACT commands from the audit-process file. Never guess or improvise.
 
-**Node.js projects:**
-```bash
-cd <project-root>; npm test
-cd <project-root>; npm run build
-cd <project-root>; npm run lint
-```
-
-**Bun projects:**
-```bash
-cd <project-root>; bun run test
-cd <project-root>; bun run build
-cd <project-root>; bun run lint
-cd <project-root>; bun run bench  # if applicable
-```
-
-**Monorepo packages:**
-```bash
-cd <workspace-root>/packages/<package-name>; npm test
-```
-
-Always use the EXACT commands from the audit-process file. Never guess.
+**For custom or non-standard projects:** If you need verification command examples, load [`references/verification-patterns.md`](references/verification-patterns.md) for common patterns across different project types (Node.js, Bun, monorepos, TypeScript-direct, etc.).
 
 ## Important Notes
 

@@ -31,31 +31,27 @@ Before writing any tests, check if the file actually needs testing:
 
 Files without behavior (constants files, type definitions, GLSL uniform declarations, pure data files) don't need tests. Testing `expect(CONSTANT).toBe(value)` provides no value and wastes CI time.
 
-**1. Check vitest.config.ts for global configuration**
-Verify mock cleanup is configured globally:
-```ts
-// Look for these settings:
-clearMocks: true      // Mock cleanup configured?
-mockReset: true       // Mock reset configured?
-restoreMocks: true    // Mock restore configured?
+**1. Check vitest.config for global mock cleanup**
+Run the config checker script:
+```bash
+./scripts/check-vitest-config.sh
 ```
 
-If not present, recommend adding them. This eliminates the entire class of mock cleanup errors.
+This verifies `clearMocks`, `mockReset`, and `restoreMocks` are configured globally. The script handles config inheritance and merged configurations. If settings are missing, add them to eliminate the entire class of mock cleanup errors.
 
 **2. Discover existing test setup files**
-Check common locations for test setup configuration:
-- `test/setup.{ts,js}` or `testing/setup.{ts,js}`
-- `vitest.setup.{ts,js}` or `src/test/setup.{ts,js}`
-- Check `vitest.config.ts` for configured `setupFiles` and `globalSetup`
+Run the setup file discovery script:
+```bash
+./scripts/find-setup-files.sh
+```
 
-**3. Analyze setup file contents**
-When found, identify:
+This locates setup files and shows configured `setupFiles`/`globalSetup`. Analyze found files to identify:
 - Global mocks (fetch, timers, etc.)
 - Custom matchers (e.g., `@testing-library/jest-dom`)
 - Test utilities and helpers
 - Environment configuration
 
-**4. Only add per-test cleanup for non-mock resources**
+**3. Only add per-test cleanup for non-mock resources**
 If global config handles mocks, DO NOT add manual mock cleanup:
 - ❌ Don't add `vi.clearAllMocks()` (handled by config)
 - ✅ Do clean up listeners, connections, custom state
@@ -76,49 +72,32 @@ Before marking any test file as "complete" or "done", verify type correctness:
 - Incorrect test behavior due to type mismatches
 - False confidence from tests that don't actually test what they claim
 
-**Verification steps:**
-
-1. **Navigate to the package directory (CRITICAL for monorepos):**
-For monorepos or multi-package projects, you MUST `cd` into the specific package directory before running type checking. TypeScript needs to run from where the `tsconfig.json` and `node_modules` are located for that package.
+**Run the type checker script:**
 
 ```bash
-# Example for monorepo:
-cd packages/my-package
-# Then run tsc from here
+./scripts/check-test-types.sh path/to/test.test.ts
 ```
 
-2. **Check test file directly with TypeScript:**
-Use the project's package manager to run TypeScript:
-```bash
-# Detect which package manager to use:
-# - npm: npm exec tsc -- --noEmit path/to/test.test.ts
-# - pnpm: pnpm exec tsc --noEmit path/to/test.test.ts
-# - bun: bunx tsc --noEmit path/to/test.test.ts
-# - yarn: yarn exec tsc --noEmit path/to/test.test.ts
-```
+The script automatically:
+- Detects the package manager (bun, pnpm, yarn, npm) by checking lock files
+- Runs `tsc --noEmit` on the test file
+- Reports type errors with clear output
 
-To detect the package manager, check for:
-- `bun.lockb` or `bun.lock` → use `bunx`
-- `pnpm-lock.yaml` → use `pnpm exec`
-- `yarn.lock` → use `yarn exec`
-- `package-lock.json` → use `npm exec`
+**For monorepos:** `cd` into the specific package directory before running the script. TypeScript needs to run from where the `tsconfig.json` and `node_modules` are located.
 
-2. **Look for common type issues:**
+**Fix all type errors before marking complete (NON-NEGOTIABLE)**
+
+Common type errors to fix:
 - Mock types not matching actual implementation types
 - Test data with missing or incorrect properties
 - Assertion types that don't match expected values
 - Missing type parameters on generic functions
-- Incorrect use of type guards or type assertions
 
-3. **Fix all type errors before marking complete (NON-NEGOTIABLE)**
-This step is MANDATORY, not optional. Type errors in tests are as critical as type errors in production code.
-- Do NOT use `as any` or `@ts-ignore` to bypass type checking
-- Update test data to match actual types
-- Fix mock return types to match implementation
-- Add proper type annotations where TypeScript cannot infer
-- If you encounter type errors, STOP and fix them - do not proceed with "I'll fix types later"
+**Do NOT:**
+- Use `as any` or `@ts-ignore` to bypass type checking
+- Proceed with "I'll fix types later"
 
-**Example type errors to catch:**
+**Example type errors:**
 
 ```typescript
 // ❌ Type error: property 'email' is missing
@@ -135,9 +114,8 @@ const mockGetUser = vi.fn<() => User>().mockReturnValue({ id: 1, name: 'Alice', 
 ```
 
 **Principle: Type-safe tests prevent silent failures**
-Type errors in tests are as critical as type errors in production code. Catch them before marking work complete.
 
-**CRITICAL REMINDER:** This workflow is NOT optional. Running `tsc --noEmit` against test files is a REQUIRED step before marking test work as complete. If you skip this step, you risk shipping broken tests that provide false confidence.
+Type errors in tests are as critical as type errors in production code. The type checker script must pass before marking work complete.
 
 ## Workflow: Test Code Review/Audit
 

@@ -5,7 +5,7 @@ compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Vitest Best Practices
@@ -49,8 +49,55 @@ Apply these expert thinking patterns before implementing tests:
 - **Are there multiple variations of the same behavior?** Use `it.each()` for parameterized tests instead of copying test structure. One assertion per concept keeps tests focused.
 
 ### Performance and Maintenance
-- **Will this test still be valuable in 6 months?** Avoid testing framework internals or trivial operations. Focus on business logic, edge cases, and error handling that actually prevent bugs.
-- **Is this test fast enough to run on every save?** Avoid expensive operations in tests. Use fakes for databases, mock timers for delays, stub external calls. Tests should complete in milliseconds.
+- **Will this test still be valuable in 6 months?** Score the test to decide:
+  - Does it prevent real bugs users experience? (+3)
+  - Does it test business logic vs library behavior? (+2)
+  - Would removing it make refactoring riskier? (+2)
+  - Does it require updates when unrelated code changes? (-2)
+  - Does it test trivial operations or framework internals? (-3)
+
+  **Score ≥5:** Keep it. **Score <5:** Consider removing or simplifying.
+
+- **Is this test fast enough to run on every save?** Target: <50ms per test, <5s for entire suite.
+  - Test takes >100ms? → Check for: real database calls, actual network requests, unmocked timers/delays
+  - Use hierarchy: real implementation (fast) > fake (ms) > stub (ms) > mock (ms) > real DB/API (seconds)
+  - If test needs slow operations, isolate to separate suite with `.slow` marker
+
+## Freedom Calibration
+
+Different aspects of testing require different levels of constraint. Know when to apply rigid rules vs judgment:
+
+### MANDATORY (zero freedom - must be followed exactly)
+
+These are safety-critical requirements where deviation causes bugs or false confidence:
+
+- **TypeScript type checking must pass before marking test files complete** - Test files are typically excluded from the project's `tsconfig.json` (not in `include` paths), so running `tsc` at the root WON'T catch type errors in tests. You MUST run type checking TARGETED at the specific test file using `scripts/check-test-types.sh path/to/test.test.ts`. Type errors in tests cause runtime failures, incorrect test behavior, and false confidence. Never bypass with `as any` or `@ts-ignore`.
+- **Global mock cleanup must be configured** - `clearMocks: true`, `mockReset: true`, `restoreMocks: true` in vitest.config.ts (verify with `scripts/check-vitest-config.sh`). Manual per-test cleanup creates order-dependent failures.
+- **Test descriptions must read as sentences** - `it('should add item to cart')` not `it('Add item to cart')`. The "it" prefix forms a sentence: "it should add item to cart".
+- **No loose assertions** - `toBeTruthy()` and `toBeDefined()` pass for values you never intended. Use `toEqual()`, `toBe()`, `toStrictEqual()` instead.
+- **Each test must be independent** - No shared mutable state, no execution order dependencies. Tests are parallel universes.
+
+### PRINCIPLED (medium freedom - apply judgment within guidelines)
+
+Follow the principle, but adapt to context:
+
+- **Test doubles hierarchy (fakes > stubs > mocks)** - Prefer simpler test doubles, but use judgment. External APIs may need mocks, internal pure functions should use real implementation.
+- **AAA pattern boundaries** - Make them semantically meaningful, not mechanical. Complex setup can be extracted to helpers with clear names.
+- **What to test** - Focus on behavior over implementation. Use the "Before Writing Tests, Ask" frameworks to guide decisions.
+- **Property-based testing opportunities** - When you see encode/decode pairs, validators, normalizers, or pure functions with invariants, consider PBT. But example-based tests are fine for simple cases.
+- **Test organization** - Prefer co-location (test next to implementation), but monorepo structure or team conventions may require adaptation.
+
+### FLEXIBLE (high freedom - use your judgment)
+
+These have multiple valid approaches:
+
+- **Helper function naming and extraction** - Extract when it improves clarity, keep inline when it's simple. No rigid rules.
+- **Setup complexity vs inline setup** - Balance: too much extraction obscures test intent, too much inline creates noise. Optimize for 5-second understanding.
+- **describe block structure** - Flat structure (no nesting) vs 1-level nesting (grouped related tests) are both valid. NEVER exceed 2 levels.
+- **Assertion specificity** - `expect.any(String)` vs exact value depends on whether the exact value matters for the test's purpose.
+- **Test file size** - One large file vs multiple small files - both work if tests are well-organized and independent.
+
+**The principle:** Rigidity increases with consequence. Type errors and loose assertions cause production bugs → mandatory. Helper naming affects only readability → flexible.
 
 ## What This Skill Covers
 
@@ -75,11 +122,23 @@ This skill uses a **progressive disclosure** structure to minimize context usage
 ### 1. Start with the Overview (AGENTS.md)
 Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries and the workflow for discovering existing test configuration.
 
-### 2. Check for Existing Test Configuration
-Before writing tests:
-- First check `vitest.config.ts` for global mock cleanup settings (`clearMocks`, `mockReset`, `restoreMocks`)
-- Then search for setup files (`test/setup.ts`, `vitest.setup.ts`, etc.) and analyze their configuration
-- See the workflow in [AGENTS.md](AGENTS.md#workflow-before-writing-tests)
+### 2. Use Automation Scripts (Recommended)
+For maximum efficiency, use the provided scripts to automate detection, reporting, and validation:
+
+**Before Writing Tests:**
+- **[scripts/check-vitest-config.sh](scripts/check-vitest-config.sh)** - Verify global mock cleanup settings
+- **[scripts/find-setup-files.sh](scripts/find-setup-files.sh)** - Discover existing test setup files
+
+**For Test Audits:**
+- **[scripts/detect-test-anti-patterns.sh](scripts/detect-test-anti-patterns.sh)** - Scan test files for anti-patterns, outputs JSON
+- **[scripts/generate-test-audit-report.sh](scripts/generate-test-audit-report.sh)** - Generate pre-filled audit report from JSON
+
+**After Writing/Fixing Tests:**
+- **[scripts/check-test-types.sh](scripts/check-test-types.sh)** - Verify TypeScript type correctness
+
+See [scripts/README.md](scripts/README.md) for detailed usage and workflow examples.
+
+Scripts automate repetitive validation tasks and handle edge cases (config inheritance, package manager detection). **Context savings: ~2,000 tokens per full audit workflow**.
 
 ### 3. Load Specific Rules as Needed
 Use these explicit triggers to know when to load each reference file:

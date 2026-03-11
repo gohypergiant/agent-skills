@@ -1,10 +1,10 @@
 ---
 name: accelint-ts-performance
-description: "Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling and runtime patterns. Use when (1) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', 'check performance', (2) Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste), (3) Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple, (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Audits ALL code for anti-patterns and reports findings with expected gains. Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
+description: "Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling and runtime patterns. Use when (1) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', 'check performance', (2) Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste), (3) Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple, (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Audits ALL code for anti-patterns and reports findings with expected gains. Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns. Includes automation scripts for detection and reporting."
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "2.0"
 ---
 
 # TypeScript Performance Optimization
@@ -59,21 +59,60 @@ Apply these tests to focus optimization efforts effectively:
 - **Will this optimization persist?** If the code changes frequently, optimization may be discarded soon. Optimize stable code first.
 - **What's the readability cost?** Manual loops are faster but harder to maintain than `.map()`. Balance performance with team velocity.
 
+### Choosing Between Optimization Approaches
+
+When multiple optimization paths exist for the same bottleneck:
+
+**Trade-off Assessment:**
+- **Maintenance burden**: Will this pattern be obvious to other developers in 6 months?
+- **Correctness risk**: How many edge cases does this optimization introduce?
+- **Environment portability**: Does this rely on V8-specific behavior that may change?
+- **Memory cost**: What's the memory/CPU trade-off ratio? Is it sustainable?
+
+**The 10x Rule:**
+- If optimization A gives 10x speedup but adds 20% complexity → Do it
+- If optimization B gives 1.5x speedup but adds 50% complexity → Skip it
+- If both give 10x speedup, choose simpler/safer approach
+
+**When Multiple Patterns Apply (priority order):**
+1. Fix algorithmic complexity first (O(n²) → O(n)) — always highest ROI
+2. Then cache if repeated expensive work exists
+3. Then I/O batching if network/disk bound
+4. Finally micro-optimize only hot paths (>1000 executions/sec)
+
 ## How to Use
 
 This skill uses **progressive disclosure** to minimize context usage:
 
-### 1. Start with the Workflow (SKILL.md)
+### 1. Use Automation Scripts (Recommended)
+For maximum efficiency, use the provided scripts to automate detection and reporting:
+- **[scripts/detect-anti-patterns.sh](scripts/detect-anti-patterns.sh)** - Scans code for performance anti-patterns, outputs JSON
+- **[scripts/generate-audit-report.sh](scripts/generate-audit-report.sh)** - Generates pre-filled audit report from JSON
+- **[scripts/quick-categorize.sh](scripts/quick-categorize.sh)** - Quick lookup for issue categorization
+
+**Example workflow:**
+```bash
+# Detect anti-patterns in a file/directory
+./scripts/detect-anti-patterns.sh src/ > anti-patterns.json
+
+# Generate audit report
+./scripts/generate-audit-report.sh anti-patterns.json "MyComponent" > report.md
+
+# Quick categorize a specific issue
+echo "nested for loops" | ./scripts/quick-categorize.sh
+```
+
+### 2. Start with the Workflow (SKILL.md)
 Follow the 4-phase audit workflow below for systematic performance analysis.
 
-### 2. Reference Performance Rules Overview (AGENTS.md)
+### 3. Reference Performance Rules Overview (AGENTS.md)
 Load [AGENTS.md](AGENTS.md) to scan compressed rule summaries organized by category.
 
-### 3. Load Specific Performance Patterns as Needed
+### 4. Load Specific Performance Patterns as Needed
 When you identify specific performance issues, load corresponding reference files for detailed ❌/✅ examples.
 
-### 4. Use the Report Template (For Explicit Audit Requests)
-When users explicitly request a performance audit, load the template for consistent reporting:
+### 5. Use the Report Template (For Manual Audit Requests)
+When automation scripts aren't available or for custom reporting:
 - [assets/output-report-template.md](assets/output-report-template.md) - Structured template with guidance
 
 ## Performance Optimization Workflow
@@ -103,11 +142,31 @@ When users explicitly request a performance audit, load the template for consist
 
 **CRITICAL: Audit ALL code for performance anti-patterns.** Do not skip code based on assumptions about usage frequency. Utility functions, formatters, parsers, validators, and data transformations are frequently called in loops, rendering pipelines, or real-time systems even if their implementation appears simple.
 
-**When profiling tools are available**, use them to establish baseline measurements:
-- **Browser**: Chrome DevTools Performance tab
-- **Node.js**: `node --prof script.js && node --prof-process isolate-*.log`
+**Automated Detection (Recommended):**
+Use [scripts/detect-anti-patterns.sh](scripts/detect-anti-patterns.sh) to automatically scan for common anti-patterns:
+```bash
+./scripts/detect-anti-patterns.sh <file-or-directory> > anti-patterns.json
+```
 
-**Whether profiling data is available or not**: Perform systematic static code analysis to identify ALL performance anti-patterns:
+This detects:
+- Nested loops (O(n²))
+- Array method chains
+- Array.includes() in loops
+- try/catch in hot paths
+- Unbounded loops
+- Sequential awaits
+- Storage API in loops
+- Spread operators in loops
+- Nested property access in loops
+- Template literals with single variables
+
+**When profiling tools are available**, use them to identify V8-specific optimization failures:
+- **V8 deoptimizations**: Look for "not optimized" markers indicating inline caching failures
+- **Monomorphic/polymorphic call sites**: Type instability preventing V8 optimizations
+- **Hidden class transitions**: Object shape changes causing performance degradation
+- **Flame graphs**: Identify functions consuming >5% runtime for targeted optimization
+
+**Manual analysis**: If scripts aren't available, perform systematic static code analysis to identify ALL performance anti-patterns:
 - O(n²) complexity (nested loops, repeated searches)
 - Excessive allocations (template literals, object spreads, array methods)
 - Template literal allocation when String() would suffice
@@ -117,9 +176,10 @@ When users explicitly request a performance audit, load the template for consist
 
 **Output**: Complete list of ALL identified anti-patterns with their locations and expected performance impact. Do not filter based on "severity" or "priority" - report everything found.
 
-**When generating audit reports** (when skill is invoked directly via `/accelint-ts-performance <path>` or user explicitly requests performance audit), use the structured template:
-1. Load [assets/output-report-template.md](assets/output-report-template.md) for the report structure
-2. Follow the template's guidance for consistent formatting and issue grouping
+**When generating audit reports** (when skill is invoked directly via `/accelint-ts-performance <path>` or user explicitly requests performance audit):
+1. Use [scripts/generate-audit-report.sh](scripts/generate-audit-report.sh) for automated report generation, OR
+2. Load [assets/output-report-template.md](assets/output-report-template.md) for manual report structure
+3. Follow the template's guidance for consistent formatting and issue grouping
 
 ### Phase 2: Analyze and Categorize Issues
 
@@ -165,9 +225,11 @@ Load [references/quick-reference.md](references/quick-reference.md) for detailed
 
 ---
 
-**Step 3: Scan for quick reference during optimization**
+**Step 3: Quick reference for implementing patterns**
 
-Load [AGENTS.md](AGENTS.md) to see compressed rule summaries organized by category. Use as a quick lookup while implementing patterns from the detailed reference files above.
+**LOAD NOW**: Read [AGENTS.md](AGENTS.md) completely to access compressed rule summaries.
+
+Use AGENTS.md as quick lookup while implementing patterns from detailed reference files above. Scan category-organized rules to refresh optimization techniques without reloading full reference files.
 
 **Apply patterns systematically:**
 

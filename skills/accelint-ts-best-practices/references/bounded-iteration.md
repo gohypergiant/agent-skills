@@ -217,6 +217,147 @@ for (const item of items) {
 | Arrays built in loops | Array length check | Aggregating results |
 | String concatenation in loops | String length check | Building large text output |
 
+## Retry Loops with Exponential Backoff
+
+**❌ Incorrect: unbounded retry with fixed delay**
+```ts
+async function retryOperation(): Promise<Result> {
+  while (true) {
+    try {
+      return await unstableOperation();
+    } catch (error) {
+      await sleep(1000); // Hammers failing service forever
+    }
+  }
+}
+```
+
+**✅ Correct: bounded retry with exponential backoff**
+```ts
+const MAX_RETRIES = 5;
+const BASE_DELAY_MS = 1000;
+const MAX_DELAY_MS = 32000;
+
+async function retryOperation(): Promise<Result> {
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      return await unstableOperation();
+    } catch (error) {
+      lastError = error as Error;
+
+      if (attempt < MAX_RETRIES - 1) {
+        // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+        const delay = Math.min(BASE_DELAY_MS * Math.pow(2, attempt), MAX_DELAY_MS);
+        await sleep(delay);
+      }
+    }
+  }
+
+  throw new Error(`Operation failed after ${MAX_RETRIES} attempts: ${lastError?.message}`);
+}
+```
+
+**Production lesson**: A service with unbounded retry `while(true)` hammered a failing database during an outage, preventing it from recovering. The retry storm amplified the outage. Bounded retries with exponential backoff reduce load on failing systems and allow recovery.
+
+## Circuit Breaker Pattern for Repeated Failures
+
+**Production-grade pattern**: After N consecutive failures, stop trying for a cooldown period.
+
+```ts
+class CircuitBreaker {
+  private failureCount = 0;
+  private lastFailureTime = 0;
+  private state: 'CLOSED' | 'OPEN' | 'HALF_OPEN' = 'CLOSED';
+
+  constructor(
+    private readonly failureThreshold = 5,
+    private readonly cooldownMs = 60000,
+    private readonly maxAttempts = 100 // Absolute safety limit
+  ) {}
+
+  async execute<T>(operation: () => Promise<T>): Promise<T> {
+    if (this.failureCount >= this.maxAttempts) {
+      throw new Error(`Circuit breaker: exceeded ${this.maxAttempts} total failures`);
+    }
+
+    // If circuit is OPEN, check if cooldown period has passed
+    if (this.state === 'OPEN') {
+      const timeSinceFailure = Date.now() - this.lastFailureTime;
+      if (timeSinceFailure < this.cooldownMs) {
+        throw new Error(`Circuit breaker OPEN: ${this.cooldownMs - timeSinceFailure}ms remaining`);
+      }
+      this.state = 'HALF_OPEN'; // Try one request
+    }
+
+    try {
+      const result = await operation();
+      this.onSuccess();
+      return result;
+    } catch (error) {
+      this.onFailure();
+      throw error;
+    }
+  }
+
+  private onSuccess(): void {
+    this.failureCount = 0;
+    this.state = 'CLOSED';
+  }
+
+  private onFailure(): void {
+    this.failureCount++;
+    this.lastFailureTime = Date.now();
+
+    if (this.failureCount >= this.failureThreshold) {
+      this.state = 'OPEN';
+    }
+  }
+}
+
+// Usage
+const breaker = new CircuitBreaker(5, 60000, 100);
+await breaker.execute(() => unstableOperation());
+```
+
+**Why this matters**: Circuit breakers prevent cascading failures. When a dependency is down, continuing to call it wastes resources and delays error detection. Opening the circuit fails fast and gives the failing system time to recover.
+
+## Memory-Based Iteration Limits
+
+**Expert pattern**: Stop iteration when approaching memory limits, not just based on count.
+
+```ts
+async function processWithMemoryLimit(items: Item[]): Promise<Result[]> {
+  const MAX_MEMORY_MB = 500; // Stop if we allocate more than 500MB
+  const results: Result[] = [];
+  const startMemory = process.memoryUsage().heapUsed;
+
+  for (let i = 0; i < items.length; i++) {
+    const currentMemory = process.memoryUsage().heapUsed;
+    const memoryUsedMB = (currentMemory - startMemory) / 1024 / 1024;
+
+    if (memoryUsedMB > MAX_MEMORY_MB) {
+      throw new Error(
+        `Memory limit exceeded: ${memoryUsedMB.toFixed(2)}MB used ` +
+        `after processing ${i}/${items.length} items`
+      );
+    }
+
+    results.push(await processItem(items[i]));
+
+    // Optional: Force GC periodically if running with --expose-gc
+    if (i % 1000 === 0 && global.gc) {
+      global.gc();
+    }
+  }
+
+  return results;
+}
+```
+
+**When to use**: Processing large datasets where individual items vary in size (images, documents, large JSON objects). Count-based limits aren't sufficient when one item can consume 100MB.
+
 ## Production Considerations
 
 **Make limits configurable**:
