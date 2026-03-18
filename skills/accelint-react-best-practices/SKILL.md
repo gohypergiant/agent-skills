@@ -1,10 +1,10 @@
 ---
 name: accelint-react-best-practices
-description: React performance optimization and best practices. Use when writing React components, hooks, or JSX; refactoring React code; optimizing re-renders, memoization, or state management; reviewing React code for performance issues; fixing hydration mismatches; or implementing transitions, lazy initialization, or effect dependencies. Covers React 19+ features including useEffectEvent, Activity component, and ref props.
+description: React performance optimization and best practices. Use when writing React components, hooks, or JSX; refactoring React code; optimizing re-renders, memoization, or state management; reviewing React code for performance issues; fixing hydration mismatches; debugging input focus loss or animations restarting; preventing component remounting; or implementing transitions, lazy initialization, or effect dependencies. Covers React 19+ features including useEffectEvent, Activity component, and ref props. Keywords: inline components, nested components, components inside components.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "1.2"
 ---
 
 # React Best Practices
@@ -114,6 +114,7 @@ When you identify a relevant optimization, load the corresponding reference file
 - [avoid-usememo-simple-expressions.md](references/avoid-usememo-simple-expressions.md)
 - [extract-default-parameter-value.md](references/extract-default-parameter-value.md)
 - [interaction-logic-in-event-handlers.md](references/interaction-logic-in-event-handlers.md)
+- [no-inline-components.md](references/no-inline-components.md)
 - [useref-for-transient-values.md](references/useref-for-transient-values.md)
 
 **Rendering Performance:**

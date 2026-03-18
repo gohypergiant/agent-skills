@@ -18,6 +18,7 @@ Use when creating a new React component from scratch:
 - [ ] Deriving state during render instead of effects? → [1.8 Calculate Derived State](calculate-derived-state.md)
 - [ ] Default non-primitive params extracted to constants? → [1.10 Extract Default Parameter](extract-default-parameter-value.md)
 - [ ] Avoiding useMemo for simple expressions? → [1.9 Avoid useMemo Simple Expressions](avoid-usememo-simple-expressions.md)
+- [ ] Components defined at module scope, not inside other components? → [1.13 No Inline Components](no-inline-components.md)
 
 ---
 
@@ -38,6 +39,7 @@ Use when reviewing React code for performance issues:
 - [ ] Long lists causing slow renders? → [2.2 CSS content-visibility](css-content-visibility.md)
 - [ ] SVG animations janky? → [2.1 Animate SVG Wrapper](animate-svg-wrapper.md)
 - [ ] Typing/scrolling feels sluggish? → [1.7 Transitions](transitions-non-urgent-updates.md)
+- [ ] Components defined inside other components? → [1.13 No Inline Components](no-inline-components.md)
 
 ---
 
@@ -102,6 +104,8 @@ Use when a component is re-rendering too frequently:
 - [ ] Callbacks recreated on every render? → [1.5 Functional setState](functional-setstate-updates.md)
 - [ ] Frequently-changing values causing re-renders? → [1.12 useRef for Transient](useref-for-transient-values.md)
 - [ ] Non-urgent updates blocking UI? → [1.7 Transitions](transitions-non-urgent-updates.md)
+- [ ] Input fields losing focus on keystroke? → [1.13 No Inline Components](no-inline-components.md)
+- [ ] Animations restarting unexpectedly? → [1.13 No Inline Components](no-inline-components.md)
 
 ---
 
@@ -141,6 +145,7 @@ Use when doing a quick code review of React components:
 - [ ] Hydration mismatches → [2.5 Prevent Hydration Mismatch](prevent-hydration-mismatch.md)
 - [ ] Infinite re-render loops → [1.3](narrow-effect-dependencies.md), [1.5](functional-setstate-updates.md)
 - [ ] Stale closures in callbacks → [1.5 Functional setState](functional-setstate-updates.md)
+- [ ] Components defined inside other components → [1.13 No Inline Components](no-inline-components.md)
 
 **Medium Priority (Optimize If Time Permits):**
 - [ ] Unnecessary subscriptions → [1.1 Defer State Reads](defer-state-reads.md)
