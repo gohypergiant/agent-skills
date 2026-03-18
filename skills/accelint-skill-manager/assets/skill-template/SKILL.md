@@ -13,7 +13,7 @@ description: Use when users say "[trigger phrase 1]", "[trigger phrase 2]", or w
 #
 license: Apache-2.0
 metadata:
-  author: gohypergiant
+  author: accelint
   version: "1.0"
 ---
 

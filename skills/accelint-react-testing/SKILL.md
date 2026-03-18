@@ -4,7 +4,7 @@ description: Use when writing, reviewing, or refactoring React component tests w
 compatibility: Requires @testing-library/react, works with vitest or jest
 license: Apache-2.0
 metadata:
-  author: gohypergiant
+  author: accelint
   version: "1.0"
 ---
 
