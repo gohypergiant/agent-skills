@@ -1,96 +1,35 @@
 ---
 name: accelint-react-best-practices
-description: React performance optimization and best practices. Use when writing React components, hooks, or JSX; refactoring React code; optimizing re-renders, memoization, or state management; reviewing React code for performance issues; fixing hydration mismatches; debugging input focus loss or animations restarting; preventing component remounting; or implementing transitions, lazy initialization, or effect dependencies. Covers React 19+ features including useEffectEvent, Activity component, and ref props. Keywords: inline components, nested components, components inside components.
+description: React performance optimization and best practices. ALWAYS use this skill when working with any React code - writing components, hooks, JSX; refactoring; optimizing re-renders, memoization, state management; reviewing for performance; fixing hydration mismatches; debugging infinite re-renders, stale closures, input focus loss, animations restarting; preventing remounting; implementing transitions, lazy initialization, effect dependencies. Even simple React tasks benefit from these patterns. Covers React 19+ (useEffectEvent, Activity, ref props). Triggers - useEffect, useState, useMemo, useCallback, memo, inline components, nested components, components inside components, re-render, performance, hydration, SSR, Next.js.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2"
+  version: "1.4"
 ---
 
 # React Best Practices
 
 Comprehensive performance optimization and best practices for React applications, designed for AI agents and LLMs working with React code.
 
-## When to Activate This Skill
+## NEVER Do React
 
-Use this skill when the task involves:
+These are the most critical anti-patterns that cause real production issues. Experts learned these the hard way through debugging sessions and performance investigations.
 
-### Writing React Code
-- Creating new React components or hooks
-- Writing JSX elements or fragments
-- Implementing state management with `useState`, `useReducer`, etc.
-- Setting up effects with `useEffect`, `useLayoutEffect`
-- Creating memoized values or components with `useMemo`, `useCallback`, `memo()`
+**NEVER define components inside components** — creates new component type on every render, causing full remount with state loss and DOM recreation. Results in input fields losing focus on keystroke, animations restarting unexpectedly, and useEffect cleanup/setup running on every parent render.
 
-### Refactoring React Code
-- Optimizing component re-renders
-- Reducing unnecessary state updates
-- Simplifying complex effect dependencies
-- Extracting components for better composition
-- Converting class components to functional components
+**NEVER subscribe to searchParams/localStorage if you only read them in callbacks** — causes component to re-render on every URL change or storage event even when the component doesn't display those values. Read directly in the callback instead: `new URLSearchParams(window.location.search)`.
 
-### Performance Optimization
-- Investigating slow renders or UI jank
-- Reducing bundle size (hoisting static JSX, optimizing SVG)
-- Implementing lazy loading or code splitting
-- Optimizing list rendering (virtualization, content-visibility)
-- Fixing memory leaks in effects or subscriptions
+**NEVER use object/array dependencies in useEffect** — triggers effect on every render since objects are recreated with new references each time. Extract primitive values (id, name) from objects and use those as dependencies instead.
 
-### React-Specific Issues
-- Resolving hydration mismatches in SSR/SSG applications
-- Fixing stale closure bugs in callbacks
-- Debugging infinite re-render loops
-- Preventing unnecessary effect re-runs
-- Managing derived state correctly
+**NEVER sync derived state with useState + useEffect** — leads to extra re-renders, infinite loops, and stale intermediate states. Calculate derived values during render instead: `const fullName = firstName + ' ' + lastName`.
 
-### Code Review
-- Reviewing React code for performance anti-patterns
-- Identifying improper use of hooks
-- Checking for React 19 deprecated patterns (`forwardRef`, default imports)
-- Ensuring proper memoization strategies
+**NEVER use client-only state (localStorage, cookies, device detection) directly in SSR components** — causes hydration mismatches where server HTML doesn't match client render, resulting in React warnings, visual flickering, and broken interactivity. Use synchronous inline `<script>` before React hydrates.
 
-## When NOT to Use This Skill
+**NEVER use forwardRef in React 19+** — deprecated API. Use `ref` as a regular prop instead: `function MyInput({ ref }) { return <input ref={ref} /> }`.
 
-Do not activate for:
-- General JavaScript/TypeScript questions unrelated to React
-- Build configuration (webpack, vite, etc.) unless React-specific
-- CSS styling unless related to React performance (animations, content-visibility)
-- Backend API development
-- Testing setup (use a testing-specific skill if available)
+**NEVER create callbacks/objects/arrays inline as props to memoized components** — breaks memoization since new reference is created each render. Extract to module scope, useMemo, or useCallback: `const config = useMemo(() => ({ theme }), [theme])`.
 
-## Example Trigger Phrases
-
-This skill should activate when users say things like:
-
-**Performance Issues:**
-- "This component is re-rendering too much"
-- "My React app is slow when scrolling"
-- "Optimize this React component for performance"
-- "The input feels laggy when typing"
-- "This page takes forever to load initially"
-
-**Debugging Issues:**
-- "Why is my useEffect running infinitely?"
-- "I'm getting hydration errors in Next.js"
-- "This callback always has stale/old values"
-- "My effect keeps re-subscribing to events"
-
-**Code Review:**
-- "Review this React code for performance issues"
-- "Is this React component following best practices?"
-- "Can you optimize this React hook?"
-- "Check if this component has any performance problems"
-
-**React 19 Migration:**
-- "Update this code to React 19"
-- "Replace forwardRef with the new pattern"
-- "Fix these React 19 deprecation warnings"
-- "Migrate to React 19 best practices"
-
-**Refactoring:**
-- "Refactor this component to be more performant"
-- "Clean up these useEffect dependencies"
-- "Improve the performance of this list rendering"
+**NEVER put user interaction logic in useEffect** — if it's triggered by a button click or form submit, put it directly in the event handler. Effects are for synchronization with external systems, not user-triggered actions.
 
 ## How to Use
 
@@ -165,7 +104,7 @@ The report format provides:
 - Phase 2 summary table for tracking all issues
 
 **When to use the audit template:**
-- Skill invoked directly via `/accelint-ts-best-practices <path>`
+- Skill invoked directly via `/accelint-react-best-practices <path>`
 - User asks to "review code quality" or "audit code" across file(s), invoking skill implicitly
 
 **When NOT to use the report template:**
@@ -201,6 +140,18 @@ The report format provides:
 2. Identify issue: client-only state causing mismatch
 3. Load [prevent-hydration-mismatch.md](references/prevent-hydration-mismatch.md)
 4. Implement synchronous script pattern
+
+## Using Skill Patterns Appropriately
+
+Each reference file demonstrates ONE proven pattern, but React problems often have multiple valid solutions.
+
+**When applying patterns:**
+1. ✅ Present the pattern from the reference file
+2. ✅ Mention alternative approaches when they exist
+3. ✅ Consider user's React version, project complexity, and team preferences
+4. ✅ For simple cases, suggest simpler solutions even if not in references
+
+**Example:** For SSR hydration issues, `prevent-hydration-mismatch.md` shows the synchronous script approach, but a simple "mounted flag" pattern may be more appropriate for basic use cases.
 
 ## Important Notes
 
