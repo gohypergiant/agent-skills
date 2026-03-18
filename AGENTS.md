@@ -21,17 +21,23 @@ Three knowledge types:
 
 Ask: *"Would an expert say 'I learned this the hard way'?"* If yes, it belongs. If Claude already knows it, cut it.
 
+**Example:**
+
+❌ Bad: "To implement authentication, first create a user model with fields for username, email, and password..." [Claude already knows this]
+
+✅ Good: "NEVER store JWT tokens in localStorage — survives XSS attacks where malicious scripts can exfiltrate tokens to attacker servers. Use httpOnly cookies instead, which JavaScript cannot access."
+
 ---
 
 ## Frontmatter Spec (Non-Negotiable)
 
 ```yaml
 name: skill-name          # lowercase + hyphens only, ≤64 chars, matches directory name
-description: "..."        # THE most critical field — 1–1024 chars
-license: Apache-2.0       # optional
+description: "..."        # THE most critical field — 1–1024 chars (see below)
+license: Apache-2.0
 metadata:
-  author: "gohypergiant"  # optional
-  version: "1.0"          # optional
+  author: "accelint"
+  version: "1.0"
 ```
 
 ### Description Requirements
@@ -42,13 +48,17 @@ The `description` must answer three questions:
 2. **WHEN** — When should it be used? (start with "Use when…")
 3. **KEYWORDS** — What search terms trigger it?
 
+**Combat undertriggering:** Claude tends to not use skills when they'd be useful. Make descriptions "pushy" by being explicit about trigger contexts. Instead of just describing functionality, actively claim relevant scenarios. Add phrases like "Make sure to use this skill whenever..." or "This applies to any situation involving..."
+
 ```
 ✅ "Use when users say 'create X', 'build Y', or when working with .ext files
-    for purpose A or B. [WHAT it does]. [Additional trigger keywords]."
+    for purpose A or B. [WHAT it does]. Make sure to use this skill whenever
+    users mention [related concepts], even if they don't explicitly name [key terms].
+    [Additional trigger keywords]."
 ❌ "Helps with various tasks"
 ```
 
-**`name` rules:** lowercase only, hyphens only (no underscores), no consecutive hyphens, ≤64 chars, must match directory name exactly.
+**`name` rules:** lowercase + hyphens only (no underscores, no consecutive hyphens) — ensures consistent CLI invocation and searchability across systems. The ≤64 char limit prevents UI truncation in skill pickers. Must match directory name exactly — mismatches cause load failures since the skill system uses the directory name as the canonical identifier.
 
 ---
 
@@ -70,9 +80,9 @@ skill-name/
 
 Always start from the template — copy and customize:
 
-```
-skills/accelint-skill-manager/assets/skill-template/
-```
+`skills/accelint-skill-manager/assets/skill-template/`
+
+The template includes detailed comments explaining WHY each section matters and HOW to write effective content. Read the comments before deleting them.
 
 ### SKILL.md Sections
 
@@ -80,18 +90,35 @@ skills/accelint-skill-manager/assets/skill-template/
 |---------|---------|-------|
 | `NEVER Do [Domain]` | 5–8 anti-patterns with non-obvious WHY | Half of expert knowledge |
 | `Before [Action], Ask` | Thinking frameworks (3–5 questions) | Teach decision-making, not just steps |
-| `How to Use` | Direct instructions OR progressive disclosure | Never mix both |
+| `How to Use` | Direct instructions OR progressive disclosure | Never mix both — causes confusion about when to load additional context |
 | Main Workflow | Core domain-specific procedure | Chosen format: phased / decision tree / creative |
-| `Freedom Calibration` | Only if skill spans multiple task types | Skip for single-type skills |
+| `Freedom Calibration` | Only if skill spans multiple task types | Skip for single-type skills — adds unnecessary complexity |
 | `Important Notes` | Non-obvious critical considerations only | No obvious reminders |
 
 ### Anti-Pattern Format
 
-```
 NEVER [specific thing] — [concrete reason from experience, not generic warning]
-```
 
-Ask: *"Would an expert say 'I learned this the hard way'?"*
+Each anti-pattern should explain WHY it fails, not just that it does. Compare these:
+
+❌ Weak: "NEVER skip validation — causes errors"
+✅ Strong: "NEVER skip validation of user-provided file paths — leads to directory traversal vulnerabilities where attackers can read arbitrary files outside the intended directory by injecting '../' sequences"
+
+Ask: *"Would an expert say 'I learned this the hard way'?"* If not, explain more or remove it.
+
+### Writing Style
+
+Explain WHY rather than commanding with MUST/NEVER in all caps. When rigid structure is needed, explain the reasoning so Claude understands intent, not just instruction. Use theory of mind — think about how the model will interpret guidance.
+
+**Examples:**
+
+❌ "You MUST use semantic tokens. NEVER use primitive tokens."
+✅ "Prefer semantic tokens (`bg-surface-default`) over primitive tokens (`bg-gray-100`) — semantic tokens adapt to theme changes automatically, while primitive tokens break in dark mode."
+
+❌ "ALWAYS include tests."
+✅ "Include tests for objectively verifiable outputs (file transforms, data extraction). Skills with subjective outputs (writing style, design taste) rely on human judgment instead."
+
+Make guidance general, not narrow. Avoid overfitting to specific examples.
 
 ### AGENTS.md Pattern
 
@@ -124,29 +151,7 @@ Choose the pattern that fits the task type:
 
 ## What to Never Include
 
-- Tutorials explaining concepts Claude already knows
-- "When to use" guidance in the body — that belongs **only** in `description`
-- Generic warnings ("be careful", "handle errors", "test your code")
-- Obvious procedures (open file, edit, save)
-- `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md` for private/internal skills
-
----
-
-## Verification Workflow (MANDATORY)
-
-After creating or significantly modifying a skill, run this 4-step audit loop before considering the work done.
-
-### Step 1 — Initial skill-judge audit
-Run the `skill-judge` skill against the completed skill. Apply all suggested improvements before proceeding.
-
-### Step 2 — accelint-skill-manager audit
-Run `/clear` to reset context, then run the `accelint-skill-manager` skill against the skill. Apply all structural and content suggestions before proceeding.
-
-### Step 3 — Final skill-judge audit
-Run `/clear`, then run `skill-judge` again. Apply remaining suggestions. Target **grade B or higher (≥96/120)**.
-
-### Step 4 — Frontmatter verification checklist
-
-- [ ] `name` is lowercase, no uppercase letters, no consecutive hyphens, ≤64 chars, matches directory name
-- [ ] `description` answers WHAT + WHEN + KEYWORDS, is non-empty, ≤1024 chars
-- [ ] `metadata.version` is bumped (major for substantial changes, minor for small fixes)
+- **Tutorials or explanations** — Claude knows standard concepts. Document only expert-level knowledge.
+- **"When to use" guidance in the body** — belongs only in `description`. Duplication wastes tokens.
+- **Generic warnings** — "be careful", "handle errors", "test your code" add no expert knowledge.
+- **Obvious procedures** — Claude knows how to open, edit, and save files.
