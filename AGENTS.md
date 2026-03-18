@@ -67,6 +67,7 @@ The `description` must answer three questions:
 ```
 skill-name/
 ├── SKILL.md          # Required — frontmatter + expert knowledge
+├── CHANGELOG.md      # Required — version history with rationale
 ├── AGENTS.md         # Optional — quick reference, rules summary, TOC to references/
 ├── README.md         # Optional — humans/distribution only, never for internal skills
 ├── references/       # Optional — detailed ❌/✅ examples, loaded on-demand
@@ -146,6 +147,71 @@ Choose the pattern that fits the task type:
 1. **Metadata (~100 tokens):** `name` + `description` — always loaded, must be compelling
 2. **SKILL.md body (<500 lines ideal):** loaded on activation
 3. **Resources (on-demand):** `references/`, `scripts/`, `assets/` — loaded only when needed
+
+---
+
+## Maintaining Skills
+
+### CHANGELOG.md
+
+When updating skills, maintain a CHANGELOG.md file to track version history and rationale for changes. This helps future maintainers understand why decisions were made.
+
+**Format:** Use "Keep a Changelog" style with semantic versioning
+
+**When to update:** After each skill iteration, improvement, or bug fix
+
+**Structure:**
+```markdown
+# Changelog
+
+## [X.Y.Z] - YYYY-MM-DD
+
+### Added
+- New features or capabilities with rationale
+
+### Changed
+- Modifications to existing functionality with why and how
+
+### Fixed
+- Bug fixes with explanation
+
+### Version
+- Version bump note (e.g., "Bumped from 1.2 → 1.3")
+```
+
+**What to document:**
+- **Added:** New sections, patterns, scripts, references, anti-patterns
+- **Changed:** Structural improvements, rewrites, reorganizations — always include **rationale** (e.g., "Rationale: Activation knowledge belongs ONLY in frontmatter description, not skill body")
+- **Fixed:** Corrections to errors, broken links, incorrect examples
+- **Version:** Explicit version increment note
+
+**Link to evaluation results:** When improvements stem from testing/evals, reference the evaluation that motivated the change (e.g., "Evaluation showed skill could be overly prescriptive...")
+
+**Example entry:**
+```markdown
+## [1.3.0] - 2026-03-18
+
+### Changed
+- **CRITICAL FIX:** Removed 80 lines of activation knowledge from SKILL.md body
+  - Rationale: Activation knowledge belongs ONLY in frontmatter description, not skill body
+
+### Added
+- Created comprehensive evaluation test suite (evals/evals.json)
+  - 8 realistic test prompts covering all major patterns
+  - Rationale: Needed objective benchmarks for iterative improvements
+
+### Version
+- Bumped from 1.2 → 1.3
+```
+
+### Version Control in Frontmatter
+
+Update `metadata.version` in SKILL.md frontmatter with each change:
+- **Major version (1.0 → 2.0):** Substantial rewrites, breaking changes, complete restructuring
+- **Minor version (1.0 → 1.1):** New sections, significant additions, refinements
+- **Patch version (1.0.0 → 1.0.1):** Bug fixes, typo corrections, minor clarifications (optional third digit)
+
+The version in frontmatter must match the latest CHANGELOG entry.
 
 ---
 

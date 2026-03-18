@@ -113,8 +113,14 @@ Contributions are welcome! When contributing to this skill:
 5. Focus on expert-only knowledge - assume Claude knows basics
 6. Test changes with actual use cases
 
+**Maintain CHANGELOG.md:**
+- Use "Keep a Changelog" format with semantic versioning
+- Update after each skill iteration with Added/Changed/Fixed/Version sections
+- Always include rationale (WHY changes were made)
+- Link to evaluation results when changes stem from testing
+- Ensure version matches `metadata.version` in SKILL.md frontmatter
+
 **NEVER create:**
-- CHANGELOG.md - Use git history instead and `metadata.version` in the `SKILL.md` frontmatter
 - CONTRIBUTING.md - Keep contribution guide in README only
 - INSTALLATION.md - Keep installation in README only
 - Other meta-documentation - Skills aren't software projects
