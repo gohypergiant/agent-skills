@@ -4,7 +4,7 @@ description: "Comprehensive security audit and vulnerability detection for JavaS
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "1.1.0"
 ---
 
 # Security Best Practices

@@ -4,7 +4,7 @@ description: Use when styling components or elements with @accelint/design-found
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0"
+  version: "1.0.0"
 ---
 
 # Accelint Design Foundation

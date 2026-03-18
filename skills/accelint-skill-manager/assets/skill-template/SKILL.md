@@ -14,7 +14,7 @@ description: Use when users say "[trigger phrase 1]", "[trigger phrase 2]", or w
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0"
+  version: "1.0.0"
 ---
 
 # Skill Name

@@ -5,7 +5,7 @@ compatibility: Requires @testing-library/react, works with vitest or jest
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0"
+  version: "1.0.0"
 ---
 
 # React Testing Best Practices

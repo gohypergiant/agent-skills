@@ -4,7 +4,7 @@ description: Use when configuring QueryClient, implementing mutations, debugging
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4"
+  version: "1.4.0"
 ---
 
 # TanStack Query Best Practices

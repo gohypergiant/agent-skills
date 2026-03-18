@@ -4,7 +4,7 @@ description: "Systematic JavaScript/TypeScript performance audit and optimizatio
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "1.1.0"
 ---
 
 # TypeScript Performance Optimization

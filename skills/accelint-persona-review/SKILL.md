@@ -3,7 +3,7 @@ name: accelint-persona-review
 description: Evaluate Figma designs from operator persona perspectives through design critique and user experience evaluation. Use when reviewing UX for specific user roles (e.g., air-surveillance-tech, weapons-director), conducting design reviews, or evaluating operator interfaces. Analyzes cognitive load, communication patterns, pain points, and system visibility. Works with Figma MCP (desktop/URL) and Outline docs.
 compatibility: Works best with the outline mcp server and figma mcp server
 metadata:
-  version: "1.2"
+  version: "1.2.0"
 ---
 
 # Persona-Based Design Review

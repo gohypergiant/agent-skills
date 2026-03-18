@@ -4,7 +4,7 @@ description: Next.js performance optimization and best practices. Use when writi
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "1.1.0"
 ---
 
 # Next.js Best Practices

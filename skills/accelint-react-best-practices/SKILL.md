@@ -4,7 +4,7 @@ description: React performance optimization and best practices. ALWAYS use this 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4"
+  version: "1.4.0"
 ---
 
 # React Best Practices

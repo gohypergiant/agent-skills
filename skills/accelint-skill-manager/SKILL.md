@@ -1,10 +1,10 @@
 ---
 name: accelint-skill-manager
-description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", "audit this skill", "review this skill", "check skill quality", "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill", or when creating, refactoring, auditing, or packaging domain expertise into agent skills with specialized knowledge, workflows, or tool integrations.
+description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "audit this skill", "review this skill", "check skill quality", "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill", or when creating, refactoring, or auditing domain expertise into agent skills with specialized knowledge, workflows, or tool integrations.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.1"
+  version: "2.1.1"
 ---
 
 # Skill Manager
@@ -66,6 +66,14 @@ Each workflow step below notes which reference files to load. Only load what you
 
 **Do NOT load all references at once** — load only the ones relevant to your current step.
 
+## Which Workflow Should You Follow?
+
+Choose based on your task:
+
+- **Creating a new skill from scratch** → Follow Skill Creation Workflow (Steps 1-4)
+- **Improving an existing skill** → Jump to Step 4 (Edit the Skill)
+- **Auditing a skill for quality** → Follow Skill Audit Workflow
+
 ## Skill Creation Workflow
 
 To create or refactor a skill, follow the "Skill Creation Workflow" in order, skipping steps only if there is a clear reason why they are not applicable.
@@ -76,8 +84,7 @@ To create or refactor a skill, follow the "Skill Creation Workflow" in order, sk
 - [ ] Step 1: Understanding - Gather concrete examples of skill usage
 - [ ] Step 2: Planning - Identify reusable scripts, references, assets
 - [ ] Step 3: Initializing - Check existing skills, create directory structure
-- [ ] Step 4: Editing - Write agent-focused content with procedural knowledge
-- [ ] Step 5: Documentation - Update CHANGELOG.md and version in frontmatter
+- [ ] Step 4: Editing - Write agent-focused content with procedural knowledge and update CHANGELOG
 ```
 
 Include what rules from this skill are being applied, and why, in your summary.
@@ -93,7 +100,7 @@ Example: Building an image-editor skill, ask:
 - "Usage examples?"
 - "Trigger phrases: 'Remove red-eye', 'Rotate image'—others?"
 
-Avoid overwhelming users. Start with key questions, follow up as needed.
+Ask 2-3 concrete questions first (functionality, examples, trigger phrases), then follow up based on their answers rather than front-loading all questions.
 
 Conclude when there is a clear sense of the functionality the skill should support.
 
@@ -180,33 +187,6 @@ After updating a skill, update or create `CHANGELOG.md` using "Keep a Changelog"
 ```
 
 Document what changed and **why** — the rationale is critical for future maintainers. Link to evaluation results when improvements stem from testing. The CHANGELOG version must match the frontmatter `metadata.version`.
-
-### Step 5: Update Documentation (CHANGELOG and Version)
-
-**OPTIONAL**: Load [references/changelog.md](references/changelog.md) for detailed CHANGELOG maintenance guidance, examples, and anti-patterns.
-
-After editing or updating a skill:
-
-1. **Update frontmatter version** in SKILL.md:
-   - Major (1.0 → 2.0): Substantial rewrites, breaking changes
-   - Minor (1.0 → 1.1): New sections, significant additions
-   - Patch (1.0.0 → 1.0.1): Bug fixes, typo corrections
-
-2. **Update or create CHANGELOG.md** with:
-   - Version number and date `## [X.Y.Z] - YYYY-MM-DD`
-   - **Added:** New features/capabilities
-   - **Changed:** Modifications (always include rationale)
-   - **Fixed:** Bug fixes
-   - **Version:** Explicit bump note
-
-3. **Include rationale:** Explain WHY changes were made, not just WHAT changed
-   - Link to evaluation results when applicable
-   - Reference user feedback or issues that motivated the change
-   - Explain trade-offs or alternatives considered
-
-4. **Verify consistency:** Ensure CHANGELOG version matches frontmatter `metadata.version`
-
-For new skills, create an initial CHANGELOG entry documenting the v1.0 release with an overview of capabilities.
 
 ## Skill Audit Workflow
 
