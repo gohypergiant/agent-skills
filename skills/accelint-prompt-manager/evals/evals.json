@@ -1,0 +1,101 @@
+{
+  "skill_name": "accelint-prompt-manager",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "ok so i have this excel file with sales data from last quarter and my boss wants me to make it look better and maybe add some charts or something? not sure exactly what she wants but it needs to be done by friday. the file is in my downloads folder, probably called 'Q3_sales_final.xlsx' or something like that",
+      "expected_output": "Should detect vagueness ('look better', 'maybe', 'or something'), flag missing constraints (what kind of charts? what metrics matter? who's the audience?), and disambiguate success criteria. Should NOT overwhelm a non-technical user with jargon. Should ask clarifying questions to understand what 'better' means in this context.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Asks clarifying questions",
+          "description": "Should ask about what 'look better' means, what charts are needed, what metrics matter, or who the audience is. Should not just dive into execution."
+        },
+        {
+          "name": "Identifies specific ambiguities",
+          "description": "Should explicitly call out vague terms like 'look better', 'maybe', 'or something' as needing clarification."
+        },
+        {
+          "name": "Avoids technical jargon",
+          "description": "Should use accessible language for non-engineers. Should not use terms like 'API', 'schema', 'data pipeline', 'ETL', etc. without explanation."
+        },
+        {
+          "name": "Does not accept vague request as-is",
+          "description": "Should push back on vagueness and help the user define success criteria. Should not say 'I'll make it look better' without clarification."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "I need to write a blog post about our new product launch. Make it engaging and professional but also approachable. It should highlight the key features and benefits. Around 800 words.",
+      "expected_output": "Should detect missing creative constraints (tone examples? target audience? specific features to emphasize? what to avoid? style references?). Should identify ambiguous terms ('engaging', 'professional', 'approachable' can mean different things). Should add structure and constraints while preserving creative freedom. Should apply appropriate framework (likely RODES for creative + examples).",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Identifies missing creative constraints",
+          "description": "Should ask about tone examples, target audience, brand voice, style references, or what to avoid."
+        },
+        {
+          "name": "Flags ambiguous quality terms",
+          "description": "Should recognize that 'engaging', 'professional', 'approachable' mean different things to different people and ask for clarification or examples."
+        },
+        {
+          "name": "Asks about specific features",
+          "description": "Should inquire which product features to emphasize, what benefits matter most, or what differentiates the product."
+        },
+        {
+          "name": "Provides structure",
+          "description": "Should offer a framework, outline, or structure for the blog post (e.g., intro/features/benefits/CTA), not just accept the request and write."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We're migrating our customer database to a new system and need to make sure all the data gets transferred correctly, update the API endpoints to point to the new database, modify the authentication flow to work with the new setup, update all the documentation, and then test everything before we go live next month. Also need to make sure the old system stays running during the transition in case we need to roll back.",
+      "expected_output": "Should detect high complexity (6+ interdependent tasks, rollback requirements, testing needs, documentation). Should RECOMMEND PLAN MODE before proceeding because this has >5 sequential phases with dependencies. Should explain why plan mode is appropriate (preventing costly rework, coordinating phases, handling rollback strategy). If user declines, should still structure the request with clear phases, dependencies, success criteria, and risk mitigation.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Recommends plan mode",
+          "description": "CRITICAL: Should explicitly recommend using plan mode before proceeding. Should use phrases like 'I recommend entering plan mode' or 'this task would benefit from plan mode'."
+        },
+        {
+          "name": "Identifies complexity",
+          "description": "Should recognize and state that this has >5 sequential phases, multiple interdependencies, rollback requirements, or coordinated changes."
+        },
+        {
+          "name": "Explains plan mode rationale",
+          "description": "Should explain WHY plan mode helps (e.g., prevents costly rework, helps coordinate phases, designs approach before execution)."
+        },
+        {
+          "name": "Structures if declined",
+          "description": "If user declines plan mode (or if continuing anyway), should still break the task into clear phases with dependencies, success criteria, and risk mitigation."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "help me write something good",
+      "expected_output": "Should gracefully handle extreme vagueness. Should ask foundational questions to extract ANY context: What are you trying to write? (email, document, code, blog post?). Who is it for? What's the purpose? Should guide the user through articulating their intent without making them feel bad about the vague request. Should be patient and educational for someone who might not know how to ask for help.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Asks foundational questions",
+          "description": "Should ask basic context questions: What are you trying to write? (email, document, code, blog post?) Who is it for? What's the purpose?"
+        },
+        {
+          "name": "Patient and educational tone",
+          "description": "Should guide the user gently through articulating their intent. Should not be dismissive, frustrated, or condescending about the vague request."
+        },
+        {
+          "name": "Extracts context",
+          "description": "Should help the user think through and articulate what they actually need. Should provide examples or options if the user is stuck."
+        },
+        {
+          "name": "No premature assumptions",
+          "description": "Should not assume what 'something' is (code? document? email? story?) without asking. Should not jump to any specific domain without confirmation."
+        }
+      ]
+    }
+  ]
+}
