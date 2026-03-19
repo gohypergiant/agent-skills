@@ -4,7 +4,7 @@ description: Comprehensive TypeScript/JavaScript coding standards focusing on ty
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1"
+  version: "1.1.0"
 ---
 
 # JavaScript and TypeScript Best Practices

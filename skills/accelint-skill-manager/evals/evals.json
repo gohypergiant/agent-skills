@@ -1,0 +1,61 @@
+{
+  "skill_name": "accelint-skill-manager",
+  "evals": [
+    {
+      "id": 1,
+      "name": "create-api-testing-skill",
+      "prompt": "I want to create a skill for testing REST APIs. Users should be able to say things like 'test the /users endpoint' or 'check if the auth API is working' and it should help them write tests, check response codes, validate JSON schemas, that kind of thing. Can you make this into a skill?",
+      "expected_output": "Follows Skill Creation Workflow: (1) asks clarifying questions about functionality/examples/triggers, (2) identifies reusable scripts or references (e.g., example test templates, common assertions), (3) checks for existing similar skills, (4) creates skill directory with SKILL.md containing NEVER Do section, workflow steps, and proper frontmatter with concrete trigger phrases in description",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "create-pdf-skill-from-workflow",
+      "prompt": "ok so i just had you help me rotate a PDF, extract some pages, and merge them into a new file. that was super useful but I don't want to explain the process every time. can we turn that workflow into a skill so next time I can just say 'rotate page 3 of quarterly-report.pdf' and you know what to do?",
+      "expected_output": "Recognizes request to capture a recent workflow. Asks about the workflow details if not in context, identifies scripts to bundle (pdf rotation, page extraction, merging), creates skill with low freedom level (file operations are fragile), includes exact command patterns in SKILL.md, writes proper description mentioning PDF operations",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "create-complex-dashboard-skill",
+      "prompt": "Create a skill for building internal data dashboards. Users work at a startup and need to quickly spin up dashboards to show metrics from our postgres DB - stuff like user signups over time, revenue charts, funnel analysis. The skill should help them: 1) connect to the DB securely (we use pgAdmin), 2) write SQL queries or help optimize existing ones, 3) generate visualizations with something like plotly or d3, 4) serve it as a simple web app they can share with the team. It should also warn them about common mistakes like exposing credentials or writing slow queries that lock tables.",
+      "expected_output": "Follows Skill Creation Workflow systematically. Identifies multiple reusable components: (1) scripts for DB connection boilerplate, (2) references for SQL optimization patterns and security anti-patterns, (3) assets with dashboard template/boilerplate. Creates structured SKILL.md with strong NEVER Do section (security warnings, query performance), medium freedom level for design choices, includes concrete trigger phrases like 'build a dashboard', 'visualize metrics', 'show user data'",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "refactor-existing-skill",
+      "prompt": "hey can you take a look at skills/mermaid-diagrams/SKILL.md? I think it's gotten too long and has some tutorial stuff that claude probably already knows. can you refactor it to be more concise and focus on just the expert knowledge?",
+      "expected_output": "Recognizes refactoring request. Follows workflow routing: jumps to Step 4 (Edit the Skill). Reads the existing skill, applies Knowledge Delta Test to identify redundant content vs expert knowledge, removes tutorial/basics, preserves anti-patterns and domain-specific guidance. Updates CHANGELOG with rationale, bumps version appropriately (likely minor or patch), maintains all frontmatter fields",
+      "files": ["skills/mermaid-diagrams/SKILL.md"]
+    },
+    {
+      "id": 5,
+      "name": "audit-skill-quality",
+      "prompt": "audit the skill at ~/.claude/skills/custom-codebase-analyzer",
+      "expected_output": "Follows Skill Audit Workflow: (1) Frontmatter Audit - checks name format, description quality (WHAT/WHEN/KEYWORDS), version presence, (2) Structure Audit - verifies NEVER Do, Before Ask, workflow sections, (3) CHANGELOG Audit - checks for CHANGELOG.md, version consistency, rationale presence, (4) Knowledge Delta Test - calculates % redundant vs expert-only content, (5) produces actionable output with prioritized recommendations and improved description example",
+      "files": ["~/.claude/skills/custom-codebase-analyzer/SKILL.md"]
+    },
+    {
+      "id": 6,
+      "name": "audit-with-specific-concerns",
+      "prompt": "I created a skill for SQL query optimization but I'm not sure if the description is good enough - it doesn't seem to be triggering when users ask about slow queries or database performance. Can you review it and suggest improvements?",
+      "expected_output": "Recognizes audit request with specific concern (triggering). Performs Skill Audit Workflow with emphasis on Frontmatter Audit, specifically the description field. Checks if description includes concrete trigger phrases like 'slow queries', 'database performance', 'optimize SQL'. Provides specific improved description following the combat-undertriggering principle (pushy, explicit about trigger contexts)",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "edge-case-too-basic",
+      "prompt": "create a skill for reading files and editing them",
+      "expected_output": "Applies 'Before Creating a Skill, Ask' framework, specifically Knowledge Delta Test. Recognizes this is redundant (Claude already knows how to read/edit files). Pushes back politely: explains that skills should capture expert-level, domain-specific knowledge that takes years to learn. Asks clarifying questions: 'What specific file types or workflows? Is there specialized domain knowledge needed?' Doesn't proceed with skill creation until user provides expert knowledge to capture",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "edge-case-needs-clarification",
+      "prompt": "make me a skill for data stuff",
+      "expected_output": "Recognizes underspecified request. Follows Step 1 (Understanding) of Skill Creation Workflow. Asks 2-3 concrete questions per the skill guidance: 'What kind of data operations? (analysis, transformation, visualization, cleaning, etc.)', 'What are concrete examples of tasks you want the skill to help with?', 'What trigger phrases would users say?'. Does NOT proceed to skill creation without clarity on functionality, examples, and triggers",
+      "files": []
+    }
+  ]
+}

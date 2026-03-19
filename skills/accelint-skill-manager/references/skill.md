@@ -97,4 +97,92 @@ Use skill name only, with explicit requirement markers:
 
 ---
 
+## Frontmatter Metadata
+
+### Required Fields
+
+```yaml
+---
+name: skill-name          # lowercase + hyphens only, ≤64 chars
+description: "..."        # Triggering conditions (1-1024 chars)
+license: Apache-2.0       # License identifier
+metadata:
+  author: "accelint"      # Author/organization
+  version: "1.0"          # Semantic version
+---
+```
+
+### name Field Rules
+- **Format:** lowercase + hyphens only (no underscores, no consecutive hyphens)
+- **Length:** ≤64 chars to prevent UI truncation
+- **Match:** Must exactly match directory name
+  - Mismatch causes load failures (skill system uses directory name as canonical identifier)
+
+**Examples:**
+- ✅ Correct: `react-best-practices`, `pdf-editor`, `big-query-helper`
+- ❌ Incorrect: `React_Best_Practices` (mixed case, underscores), `pdf--editor` (consecutive hyphens)
+
+### description Field
+See "Rich Description Field" section above for comprehensive guidance.
+
+### metadata.version Field
+
+**Purpose:** Track skill evolution and ensure CHANGELOG consistency
+
+**Format:** Semantic versioning `"X.Y"` or `"X.Y.Z"`
+- Major.Minor format: `"1.0"`, `"2.3"`
+- Major.Minor.Patch format: `"1.0.1"`, `"2.3.4"`
+
+**Versioning Guidelines:**
+- **Major (1.0 → 2.0):** Substantial rewrites, breaking changes, complete restructuring
+- **Minor (1.0 → 1.1):** New sections, significant additions, refinements
+- **Patch (1.0.0 → 1.0.1):** Bug fixes, typo corrections, minor clarifications
+
+**Version Consistency:** Must match the latest version in CHANGELOG.md
+
+**Examples:**
+```yaml
+# After major restructure
+metadata:
+  version: "2.0"  # was 1.4, now complete rewrite
+```
+
+```yaml
+# After adding new section
+metadata:
+  version: "1.3"  # was 1.2, added new anti-patterns section
+```
+
+```yaml
+# After bug fix
+metadata:
+  version: "1.2.1"  # was 1.2.0, fixed broken links
+```
+
+### metadata.author Field
+
+**Purpose:** Identify skill creator/maintainer organization
+
+**Format:** Lowercase organization name or author identifier
+
+**Examples:**
+- `"accelint"` - Organization name
+- `"anthropic"` - Company name
+- `"username"` - Individual author
+
+**Consistency:** Use the same author identifier across all skills from your organization
+
+### Optional Fields
+
+```yaml
+compatibility:
+  tools: ["grep", "sed"]           # Required CLI tools
+  skills: ["other-skill-name"]     # Required prerequisite skills
+  platforms: ["linux", "darwin"]   # Supported platforms
+```
+
+Only include `compatibility` when the skill has hard dependencies. Most skills don't need this.
+
+---
+
 Reference: https://agentskills.io/specification#skill-md-format

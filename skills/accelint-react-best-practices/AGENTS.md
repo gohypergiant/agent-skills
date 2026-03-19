@@ -47,6 +47,8 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 - Component state lost when hiding/showing → 2.6 Activity Component
 - Infinite re-render loop → 1.5 Functional setState, 1.3 Narrow Effect Dependencies
 - Large bundle size → 2.4 Optimize SVG Precision, 2.3 Hoist Static JSX
+- Input fields lose focus on every keystroke → 1.13 Don't Define Components Inside Components
+- Animations restart unexpectedly → 1.13 Don't Define Components Inside Components
 
 **React 19 Migration Issues:**
 - "forwardRef is deprecated" → 4.2 No forwardRef
@@ -105,6 +107,10 @@ Run user-triggered side effects (submit, click) in handlers, not state + effect 
 ### 1.12 Use useRef for Transient Values
 Store frequently-changing non-UI values (mouse position, intervals) in refs to avoid re-renders.
 [View detailed examples](references/useref-for-transient-values.md)
+
+### 1.13 Don't Define Components Inside Components
+Define components at module scope, not inside other components to prevent remounting.
+[View detailed examples](references/no-inline-components.md)
 
 ---
 

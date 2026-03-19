@@ -3,8 +3,8 @@ name: accelint-design-foundation
 description: Use when styling components or elements with @accelint/design-foundation or @accelint/design-toolkit packages, or when users say "style this", "add styling", "theme this component", "add colors", "add spacing", "CSS modules", "setup design foundation", "@variant", or when working with .module.css files. Provides opinionated Tailwind conventions including semantic tokens, custom spacing scale, outline-based borders, variant system, and CSS module setup guidance.
 license: Apache-2.0
 metadata:
-  author: gohypergiant
-  version: "1.0"
+  author: accelint
+  version: "1.0.0"
 ---
 
 # Accelint Design Foundation

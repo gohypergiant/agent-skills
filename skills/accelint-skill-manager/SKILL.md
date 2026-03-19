@@ -1,10 +1,10 @@
 ---
 name: accelint-skill-manager
-description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "package this as a skill", "audit this skill", "review this skill", "check skill quality", "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill", or when creating, refactoring, auditing, or packaging domain expertise into agent skills with specialized knowledge, workflows, or tool integrations.
+description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "audit this skill", "review this skill", "check skill quality", "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill", or when creating, refactoring, or auditing domain expertise into agent skills with specialized knowledge, workflows, or tool integrations.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.0"
+  version: "2.1.1"
 ---
 
 # Skill Manager
@@ -62,8 +62,17 @@ Each workflow step below notes which reference files to load. Only load what you
 - Reference file format → [references/references.md](references/references.md)
 - Script conventions → [references/scripts.md](references/scripts.md)
 - Asset guidelines → [references/assets.md](references/assets.md)
+- CHANGELOG maintenance → [references/changelog.md](references/changelog.md)
 
 **Do NOT load all references at once** — load only the ones relevant to your current step.
+
+## Which Workflow Should You Follow?
+
+Choose based on your task:
+
+- **Creating a new skill from scratch** → Follow Skill Creation Workflow (Steps 1-4)
+- **Improving an existing skill** → Jump to Step 4 (Edit the Skill)
+- **Auditing a skill for quality** → Follow Skill Audit Workflow
 
 ## Skill Creation Workflow
 
@@ -75,7 +84,7 @@ To create or refactor a skill, follow the "Skill Creation Workflow" in order, sk
 - [ ] Step 1: Understanding - Gather concrete examples of skill usage
 - [ ] Step 2: Planning - Identify reusable scripts, references, assets
 - [ ] Step 3: Initializing - Check existing skills, create directory structure
-- [ ] Step 4: Editing - Write agent-focused content with procedural knowledge
+- [ ] Step 4: Editing - Write agent-focused content with procedural knowledge and update CHANGELOG
 ```
 
 Include what rules from this skill are being applied, and why, in your summary.
@@ -91,7 +100,7 @@ Example: Building an image-editor skill, ask:
 - "Usage examples?"
 - "Trigger phrases: 'Remove red-eye', 'Rotate image'—others?"
 
-Avoid overwhelming users. Start with key questions, follow up as needed.
+Ask 2-3 concrete questions first (functionality, examples, trigger phrases), then follow up based on their answers rather than front-loading all questions.
 
 Conclude when there is a clear sense of the functionality the skill should support.
 
@@ -151,6 +160,34 @@ If you are updating an existing skill you can use the templates in [assets/skill
 
 When updating an existing skill, ensure that the frontmatter `metadata.version` value is bumped. If the scope of the change is substantial do a major change 1.0 to 2.0, otherwise minor 1.0 to 1.1.
 
+**Version Control:**
+- **Major (1.0 → 2.0):** Substantial rewrites, breaking changes, complete restructuring
+- **Minor (1.0 → 1.1):** New sections, significant additions, refinements
+- **Patch (1.0.0 → 1.0.1):** Bug fixes, typo corrections (optional third digit)
+
+**CHANGELOG Maintenance:**
+After updating a skill, update or create `CHANGELOG.md` using "Keep a Changelog" format:
+
+```markdown
+# Changelog
+
+## [X.Y.Z] - YYYY-MM-DD
+
+### Added
+- New features/capabilities with rationale
+
+### Changed
+- Modifications with why (always include rationale)
+
+### Fixed
+- Bug fixes with explanation
+
+### Version
+- Version bump note
+```
+
+Document what changed and **why** — the rationale is critical for future maintainers. Link to evaluation results when improvements stem from testing. The CHANGELOG version must match the frontmatter `metadata.version`.
+
 ## Skill Audit Workflow
 
 When auditing or reviewing an existing skill (not creating from scratch), follow this structured approach:
@@ -160,15 +197,23 @@ Check each field against requirements:
 - `name`: lowercase, hyphens only, ≤64 chars, matches directory name
 - `description`: starts with "Use when", includes WHAT/WHEN/KEYWORDS, has concrete trigger phrases
 - `license`: present (optional but recommended)
-- `metadata.version`: present and meaningful
+- `metadata.version`: present, meaningful, and matches CHANGELOG.md latest version
 
 ### 2. Structure Audit
 Compare against expected sections: NEVER Do, Before [Action] Ask, How to Use, Main Workflow. Note missing sections.
 
-### 3. Knowledge Delta Test
+### 3. CHANGELOG and Version Audit
+Check CHANGELOG.md presence and quality:
+- **Missing CHANGELOG:** Flag as missing documentation
+- **Version mismatch:** Verify CHANGELOG latest version matches frontmatter `metadata.version`
+- **Missing rationale:** Ensure changes include WHY, not just WHAT
+- **Format compliance:** Check for proper "Keep a Changelog" structure
+- **Empty sections:** Verify Added/Changed/Fixed sections have meaningful content
+
+### 4. Knowledge Delta Test
 For each content block, ask: "Does Claude already know this?" Mark as REDUNDANT or EXPERT-ONLY. Calculate the percentage of redundant content. If >50% redundant, recommend substantial revision.
 
-### 4. Produce Actionable Output
+### 5. Produce Actionable Output
 - Provide specific improvement recommendations ranked by priority
 - Include a concrete improved description (not just criticism)
 - Provide an improved SKILL.md alongside the audit report

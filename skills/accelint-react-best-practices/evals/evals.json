@@ -1,0 +1,53 @@
+{
+  "skill_name": "accelint-react-best-practices",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Hey, I'm having this weird issue where my SearchInput component loses focus every time I type a character. It's driving me crazy - I have to click back into the field after every keystroke. The component is defined inside my SearchBar parent component because I need access to the `theme` prop. Can you figure out what's wrong? Here's the relevant code:\n\nfunction SearchBar({ theme, onSearch }) {\n  const [query, setQuery] = useState('')\n  \n  const SearchInput = () => (\n    <input\n      value={query}\n      onChange={(e) => setQuery(e.target.value)}\n      className={theme === 'dark' ? 'input-dark' : 'input-light'}\n    />\n  )\n  \n  return (\n    <div>\n      <SearchInput />\n      <button onClick={() => onSearch(query)}>Search</button>\n    </div>\n  )\n}",
+      "expected_output": "Should identify inline component definition anti-pattern and refactor SearchInput to module scope with props",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "My useEffect is running infinitely and I can't figure out why. I'm trying to fetch user data when the user object changes. Here's my code:\n\nfunction UserProfile({ userId }) {\n  const [user, setUser] = useState(null)\n  const [loading, setLoading] = useState(false)\n  \n  useEffect(() => {\n    setLoading(true)\n    fetch(`/api/users/${userId}`)\n      .then(r => r.json())\n      .then(data => setUser(data))\n      .finally(() => setLoading(false))\n  }, [user])\n  \n  if (loading) return <div>Loading...</div>\n  return <div>{user?.name}</div>\n}\n\nThe console is spamming fetch requests. What am I doing wrong?",
+      "expected_output": "Should identify effect dependency issue (user changes on every fetch), recommend using userId as dependency instead of user object",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm getting hydration mismatch errors in my Next.js app. I have a theme switcher that reads from localStorage but it keeps showing this warning about server/client mismatch and there's a flash of the wrong theme on page load. Here's my ThemeProvider:\n\nfunction ThemeProvider({ children }) {\n  const [theme, setTheme] = useState(\n    typeof window !== 'undefined' \n      ? localStorage.getItem('theme') || 'light'\n      : 'light'\n  )\n  \n  return (\n    <ThemeContext.Provider value={{ theme, setTheme }}>\n      <div className={theme}>{children}</div>\n    </ThemeContext.Provider>\n  )\n}\n\nHow do I fix the hydration error and the flash?",
+      "expected_output": "Should identify SSR hydration mismatch pattern and recommend synchronous inline script solution to sync state before React hydrates",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "our analytics dashboard is super slow when rendering the chart with 5000+ data points. I'm using react-chartjs and the whole page freezes for like 2 seconds when you switch between different chart views. here's the component:\n\nfunction ChartView({ data, chartType }) {\n  const chartData = {\n    labels: data.map(d => d.date),\n    datasets: [{\n      label: 'Revenue',\n      data: data.map(d => d.revenue),\n      borderColor: '#3b82f6',\n      backgroundColor: 'rgba(59, 130, 246, 0.1)'\n    }]\n  }\n  \n  return (\n    <div>\n      <select onChange={(e) => /* switch chartType */}>\n        <option>Line</option>\n        <option>Bar</option>\n      </select>\n      <Chart type={chartType} data={chartData} />\n    </div>\n  )\n}\n\nany ideas on how to make this faster? the UI feels completely frozen when switching views.",
+      "expected_output": "Should identify inline object creation problem (chartData recreated every render) and recommend useMemo, also suggest useTransition for non-urgent updates during chart type switching",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Review this TodoList component for performance issues. It's part of a task management app and users complain it feels sluggish when they have more than 100 todos. Can you audit it and tell me what optimizations would help?\n\nfunction TodoList({ todos, onToggle, onDelete }) {\n  const [filter, setFilter] = useState('all')\n  \n  const filteredTodos = todos.filter(todo => {\n    if (filter === 'active') return !todo.completed\n    if (filter === 'completed') return todo.completed\n    return true\n  })\n  \n  return (\n    <div>\n      <div>\n        <button onClick={() => setFilter('all')}>All</button>\n        <button onClick={() => setFilter('active')}>Active</button>\n        <button onClick={() => setFilter('completed')}>Completed</button>\n      </div>\n      <ul style={{ height: '600px', overflow: 'auto' }}>\n        {filteredTodos.map(todo => (\n          <li key={todo.id}>\n            <input\n              type=\"checkbox\"\n              checked={todo.completed}\n              onChange={() => onToggle(todo.id)}\n            />\n            <span>{todo.text}</span>\n            <button onClick={() => onDelete(todo.id)}>Delete</button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  )\n}",
+      "expected_output": "Should identify missing CSS content-visibility optimization for long scrollable list, inline event handler creation, and potential for extracting memoized TodoItem component",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "I'm seeing a weird bug where my callback always has stale state. I have a real-time chat app and when a new message comes in via WebSocket, my handleNewMessage callback always uses the old `unreadCount` value, not the latest one. Here's the simplified code:\n\nfunction ChatRoom({ roomId }) {\n  const [messages, setMessages] = useState([])\n  const [unreadCount, setUnreadCount] = useState(0)\n  \n  const handleNewMessage = useCallback((msg) => {\n    setMessages([...messages, msg])\n    if (!document.hasFocus()) {\n      setUnreadCount(unreadCount + 1)  // This always uses the old value!\n    }\n  }, [roomId])\n  \n  useEffect(() => {\n    const ws = new WebSocket(`/ws/${roomId}`)\n    ws.onmessage = (e) => handleNewMessage(JSON.parse(e.data))\n    return () => ws.close()\n  }, [roomId, handleNewMessage])\n  \n  return <div>{/* render messages */}</div>\n}\n\nEven though unreadCount changes, the callback seems frozen with the old value. What's happening?",
+      "expected_output": "Should identify stale closure issue and recommend functional setState update pattern: setUnreadCount(curr => curr + 1) and fixing messages state update similarly",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "need to migrate this component to React 19 - I'm getting deprecation warnings about forwardRef. how do I fix this?\n\nconst TextInput = forwardRef(function TextInput({ label, ...props }, ref) {\n  return (\n    <div>\n      <label>{label}</label>\n      <input ref={ref} {...props} />\n    </div>\n  )\n})\n\nexport default TextInput\n\nAlso seeing warnings about default imports from React. What's the new pattern?",
+      "expected_output": "Should convert forwardRef to ref-as-prop pattern and change default export to named import from 'react'",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "I have this subscription hook that's causing my component to re-subscribe to the WebSocket on every single render. The effect runs constantly and I see disconnect/reconnect spam in the console. Code:\n\nfunction useRealtimeData(userId) {\n  const [data, setData] = useState(null)\n  \n  const handleMessage = (msg) => {\n    setData(msg.data)\n    console.log('Received update for user', userId)\n  }\n  \n  useEffect(() => {\n    const ws = new WebSocket('/api/realtime')\n    ws.onmessage = handleMessage\n    console.log('Connected')\n    \n    return () => {\n      ws.close()\n      console.log('Disconnected')\n    }\n  }, [handleMessage])\n  \n  return data\n}\n\nThe logs show connect/disconnect cycling non-stop. I thought adding handleMessage to dependencies was the right thing to do?",
+      "expected_output": "Should identify unstable callback causing effect re-runs and recommend either useCallback with proper deps, store handler in ref, or useEffectEvent pattern (React 19.2+)",
+      "files": []
+    }
+  ]
+}

@@ -8,3 +8,4 @@
 **/playwright/.cache/
 **/test-results/
 tmp
+__pycache__
