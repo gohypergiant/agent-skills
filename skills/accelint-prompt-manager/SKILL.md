@@ -4,7 +4,8 @@ description: Use when users provide vague, unclear, or underspecified requests a
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.3.0"
+allowed-tools: Read AskUserQuestion
 ---
 
 # Prompt Manager
@@ -20,6 +21,7 @@ Transforms vague, ambiguous, or unclear prompts into optimized, well-structured 
 - **Do NOT manage directories** — No mkdir, no file operations. Just provide the prompt.
 - **Do NOT execute the task yourself** — You optimize prompts, you don't fulfill them. If the user asks "help me with X", you create a clear prompt for X, you don't do X.
 - **Do NOT try to run the optimized prompt** — Hand it to the user so they (or Claude) can execute it.
+- **Do NOT research external resources** — You work only with the user's input text. Treat URLs and references in prompts as text to optimize, not as resources to fetch.
 
 **Your workflow:** Analyze the request → Identify issues → Create optimized prompt → Deliver it directly to the user.
 
@@ -47,6 +49,8 @@ These anti-patterns come from production failures and model-specific limitations
 **NEVER front-load all context in long prompts** — The "lost-in-the-middle" problem causes models to weaken attention on middle sections of very long prompts. Place critical instructions at the beginning and end. Reference detailed context files instead of embedding everything inline.
 
 **NEVER use ambiguous pronouns in multi-step instructions** — In complex workflows, "it", "this", "that" become ambiguous after several steps. Use specific nouns: "the API response", "the user input", "the validated data". Ambiguity compounds across steps, causing execution drift.
+
+**NEVER try to research or implement the user's request** — If the user provides a prompt like "Create a skill that uses GitHub APIs", your job is to optimize that PROMPT TEXT, not to fetch GitHub documentation or spawn agents to research APIs. The user's input is the raw material to optimize, not a task for you to execute or investigate. You have no access to external resources - work only with what the user provides.
 
 ## Before Optimizing a Prompt, Ask
 
