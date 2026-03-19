@@ -4,7 +4,7 @@ description: Use when users provide vague, unclear, or underspecified requests a
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "2.0.0"
 allowed-tools: Read AskUserQuestion
 ---
 
@@ -107,6 +107,21 @@ Use this progress checklist to track optimization:
 - [ ] Phase 3: Framework Selection & Optimization
 - [ ] Phase 4: Validation & Handoff
 ```
+
+### Step 0: Verify Intent (Gate Question)
+
+**Before starting the workflow, confirm the user's intent:**
+
+Ask the user: "I specialize in optimizing prompts to make them clearer and more actionable. Is that what you need, or did you want me to help with the task itself?"
+
+**If user wants prompt optimization:** Proceed with Phase 1.
+
+**If user wants to execute the task (not optimize the prompt):** Politely clarify boundaries: "I only optimize prompts—I don't execute the tasks they describe. Please exit this skill (or make your request directly without triggering `/accelint-prompt-manager`) and I'll help you with the task itself."
+
+**Skip this gate question ONLY when:**
+- User explicitly says "optimize this prompt", "improve my prompt", "fix this prompt", "make this clearer"
+- User provides a prompt wrapped in quotes or code blocks with clear meta-instructions
+- Context makes it obvious they want prompt optimization (e.g., discussing prompt frameworks, asking about CO-STAR/RISEN/RODES)
 
 ### Phase 1: Intake & Assessment
 
@@ -248,10 +263,12 @@ Use this progress checklist to track optimization:
    - For experts: Deliver optimized version with concise optimization notes
    - **CRITICAL:** Output the optimized prompt in your response. Do NOT try to save it to files. Do NOT try to execute it yourself. Just provide it to the user.
 
-5. **Offer to Execute or Iterate:**
-   - "Shall I proceed with this optimized prompt?" (meaning: execute the task using the optimized prompt)
-   - "Would you like me to refine any specific aspect?"
-   - "Do you want to see alternative approaches?"
+5. **Offer to Iterate Only:**
+   - "Would you like me to refine any specific aspect of this prompt?"
+   - "Should I adjust the optimization for a different execution context?"
+   - "Do you want to see alternative approaches to structuring this prompt?"
+
+   **NEVER offer to execute the task.** Your job ends when you deliver the optimized prompt.
 
 **Output:** Validated, executable prompt delivered directly in your response + clear next steps.
 

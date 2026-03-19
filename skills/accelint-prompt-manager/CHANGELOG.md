@@ -5,6 +5,45 @@ All notable changes to the accelint-prompt-manager skill will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-03-19
+
+### BREAKING CHANGE
+- **Removed task execution capability entirely** — Skill now ONLY optimizes prompts, never executes the tasks described in those prompts
+  - Rationale: The skill's core principle is to optimize prompts as text artifacts, not to fulfill the requests those prompts describe. Offering "execute the task instead" as an option violated this boundary and created confusion about the skill's purpose.
+  - User feedback: "Why did you not ask my intent when I triggered the skill with a supplied prompt?" revealed that even with the gate question, offering execution as an option undermined the skill's design.
+
+### Changed
+- **Step 0 (Verify Intent):** Simplified gate question to clarify skill boundaries
+  - Old: Offered 3 options including "Execute the task described in the prompt instead"
+  - New: Asks if user wants prompt optimization or task execution, then clarifies that the skill ONLY does optimization
+  - If user wants task execution: Instructs them to exit the skill and make the request directly
+- **Phase 4, Step 5 (Offer to Execute or Iterate):** Renamed to "Offer to Iterate Only"
+  - Removed: "Shall I proceed with this optimized prompt? (meaning: execute the task using the optimized prompt)"
+  - Added: Explicit warning "NEVER offer to execute the task. Your job ends when you deliver the optimized prompt."
+  - Iteration offers now focus exclusively on refining the prompt itself
+
+### Why This is a Major Version
+This is a breaking behavioral change. Previously, the skill could hand off to task execution (v1.4.0 Step 0, option 2). Now, the skill strictly refuses execution and instructs users to exit. Any workflows or integrations expecting the skill to execute tasks will break.
+
+### Version
+- Bumped from 1.4.0 → 2.0.0 (major version: breaking change to core behavior)
+
+## [1.4.0] - 2026-03-19
+
+### Added
+- **Intent verification gate question (Step 0)** before starting optimization workflow
+  - Rationale: Skill was triggering on requests where user wanted task execution, not prompt optimization. For example, when user says "Make a 'prompt-manager' skill using these GitHub references", they want the skill created, not the prompt optimized.
+  - Gate asks: "Would you like me to: 1) Optimize the prompt, 2) Execute the task, or 3) Something else?"
+  - Includes skip conditions for obvious prompt optimization requests (explicit keywords, quoted prompts, framework discussions)
+  - Improves UX by disambiguating user intent upfront
+
+### Changed
+- Workflow now starts with "Step 0: Verify Intent" before Phase 1
+- Added clear handoff language when user wants task execution instead of optimization
+
+### Version
+- Bumped from 1.3.0 → 1.4.0 (minor version: new UX feature)
+
 ## [1.3.0] - 2026-03-19
 
 ### Added
