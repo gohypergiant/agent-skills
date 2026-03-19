@@ -49,6 +49,8 @@ Even with React Compiler enabled, you still need to manually apply these pattern
 - **1.4 Subscribe to Derived State** - Requires semantic understanding of intent
 - **1.5 Functional setState Updates** - Compiler can't infer functional updates
 - **1.6 Lazy State Initialization** - Requires function wrapper syntax
+- **1.14 Split Combined Hook Computations** - Requires manual code restructuring
+- **1.15 Use useDeferredValue** - Requires explicit API usage
 
 **Effect Optimizations:**
 - **1.3 Narrow Effect Dependencies** - Requires code restructuring
@@ -145,6 +147,8 @@ If you're unsure whether a project uses React Compiler:
 | Functional setState | ❌ No | ✅ Yes |
 | Lazy initialization | ❌ No | ✅ Yes |
 | Narrow dependencies | ❌ No | ✅ Yes |
+| Split combined hooks | ❌ No | ✅ Yes |
+| useDeferredValue | ❌ No | ✅ Yes |
 | Transitions | ❌ No | ✅ Yes |
 | CSS optimizations | ❌ No | ✅ Yes |
 | SSR/Hydration | ❌ No | ✅ Yes |

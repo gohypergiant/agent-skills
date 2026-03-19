@@ -41,7 +41,8 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 - Callback has stale/old values → 1.5 Functional setState Updates, 3.2 useLatest (or useEffectEvent for React 19.2+)
 - Slow initial render → 1.6 Lazy State Initialization, 2.3 Hoist Static JSX, 2.7 Hoist RegExp
 - Scrolling/interaction feels janky → 2.2 CSS content-visibility, 2.1 Animate SVG Wrapper, 1.7 Transitions
-- Typing/input feels sluggish → 1.7 Transitions for Non-Urgent Updates
+- Typing/input feels sluggish → 1.7 Transitions, 1.15 useDeferredValue for Expensive Derived Renders
+- Hook runs expensive computation unnecessarily → 1.14 Split Combined Hook Computations
 - Window resize causes excessive re-renders → 1.4 Subscribe to Derived State
 - Hydration mismatch errors (SSR/SSG) → 2.5 Prevent Hydration Mismatch
 - Component state lost when hiding/showing → 2.6 Activity Component
@@ -111,6 +112,14 @@ Store frequently-changing non-UI values (mouse position, intervals) in refs to a
 ### 1.13 Don't Define Components Inside Components
 Define components at module scope, not inside other components to prevent remounting.
 [View detailed examples](references/no-inline-components.md)
+
+### 1.14 Split Combined Hook Computations
+Separate hooks with independent dependencies to avoid unnecessary recomputation.
+[View detailed examples](references/split-combined-hooks.md)
+
+### 1.15 Use useDeferredValue for Expensive Derived Renders
+Keep user input responsive while deferring expensive computations or renders.
+[View detailed examples](references/use-deferred-value.md)
 
 ---
 

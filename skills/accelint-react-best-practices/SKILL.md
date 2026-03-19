@@ -1,10 +1,10 @@
 ---
 name: accelint-react-best-practices
-description: React performance optimization and best practices. ALWAYS use this skill when working with any React code - writing components, hooks, JSX; refactoring; optimizing re-renders, memoization, state management; reviewing for performance; fixing hydration mismatches; debugging infinite re-renders, stale closures, input focus loss, animations restarting; preventing remounting; implementing transitions, lazy initialization, effect dependencies. Even simple React tasks benefit from these patterns. Covers React 19+ (useEffectEvent, Activity, ref props). Triggers - useEffect, useState, useMemo, useCallback, memo, inline components, nested components, components inside components, re-render, performance, hydration, SSR, Next.js.
+description: React performance optimization and best practices. ALWAYS use this skill when working with any React code - writing components, hooks, JSX; refactoring; optimizing re-renders, memoization, state management; reviewing for performance; fixing hydration mismatches; debugging infinite re-renders, stale closures, input focus loss, animations restarting; preventing remounting; implementing transitions, lazy initialization, effect dependencies. Even simple React tasks benefit from these patterns. Covers React 19+ (useEffectEvent, Activity, ref props). Triggers - useEffect, useState, useMemo, useCallback, memo, inline components, nested components, components inside components, re-render, performance, hydration, SSR, Next.js, useDeferredValue, combined hooks.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # React Best Practices
@@ -55,6 +55,8 @@ When you identify a relevant optimization, load the corresponding reference file
 - [interaction-logic-in-event-handlers.md](references/interaction-logic-in-event-handlers.md)
 - [no-inline-components.md](references/no-inline-components.md)
 - [useref-for-transient-values.md](references/useref-for-transient-values.md)
+- [split-combined-hooks.md](references/split-combined-hooks.md)
+- [use-deferred-value.md](references/use-deferred-value.md)
 
 **Rendering Performance:**
 - [animate-svg-wrapper.md](references/animate-svg-wrapper.md)
