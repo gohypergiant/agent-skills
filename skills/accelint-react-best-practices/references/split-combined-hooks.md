@@ -2,7 +2,7 @@
 
 When a hook contains multiple independent tasks with different dependencies, split them into separate hooks. A combined hook reruns all tasks when any dependency changes, even if some tasks don't use the changed value.
 
-**Incorrect (changing `sortOrder` recomputes filtering):**
+**❌ Incorrect: changing `sortOrder` recomputes filtering**
 
 ```tsx
 const sortedProducts = useMemo(() => {
@@ -14,7 +14,7 @@ const sortedProducts = useMemo(() => {
 }, [products, category, sortOrder])
 ```
 
-**Correct (filtering only recomputes when products or category change):**
+**✅ Correct: filtering only recomputes when products or category change**
 
 ```tsx
 const filteredProducts = useMemo(
@@ -33,7 +33,7 @@ const sortedProducts = useMemo(
 
 This pattern also applies to `useEffect` when combining unrelated side effects:
 
-**Incorrect (both effects run when either dependency changes):**
+**❌ Incorrect: both effects run when either dependency changes**
 
 ```tsx
 useEffect(() => {
@@ -42,7 +42,7 @@ useEffect(() => {
 }, [pathname, pageTitle])
 ```
 
-**Correct (effects run independently):**
+**✅ Correct: effects run independently**
 
 ```tsx
 useEffect(() => {

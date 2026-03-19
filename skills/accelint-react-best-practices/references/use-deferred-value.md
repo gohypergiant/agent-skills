@@ -2,7 +2,7 @@
 
 When user input triggers expensive computations or renders, use `useDeferredValue` to keep the input responsive. The deferred value lags behind, allowing React to prioritize the input update and render the expensive result when idle.
 
-**Incorrect (input feels laggy while filtering):**
+**❌ Incorrect: input feels laggy while filtering**
 
 ```tsx
 function Search({ items }: { items: Item[] }) {
@@ -18,7 +18,7 @@ function Search({ items }: { items: Item[] }) {
 }
 ```
 
-**Correct (input stays snappy, results render when ready):**
+**✅ Correct: input stays snappy, results render when ready**
 
 ```tsx
 function Search({ items }: { items: Item[] }) {
