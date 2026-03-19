@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.5.0] - 2026-03-19
+
+### Added
+- **New re-render optimization references** for advanced hook patterns
+  - `split-combined-hooks.md` - Split hooks with independent dependencies to avoid unnecessary recomputation
+  - `use-deferred-value.md` - Use useDeferredValue to keep input responsive during expensive renders
+  - Rationale: These patterns address common performance issues with combined hooks and expensive derived state
+
+- **Enhanced Quick Diagnostic Guide** in AGENTS.md
+  - Added "Hook runs expensive computation unnecessarily → 1.14 Split Combined Hook Computations"
+  - Added "useDeferredValue" as alternative to "Typing/input feels sluggish"
+
+- **Expanded trigger keywords** in frontmatter description
+  - Added "useDeferredValue, combined hooks" for better skill activation
+
+### Changed
+- Updated SKILL.md re-render optimizations section
+  - Added references to split-combined-hooks.md and use-deferred-value.md
+  - Positioned under existing re-render optimizations, before "Rendering Performance"
+
+- Updated AGENTS.md with new pattern entries
+  - 1.14 Split Combined Hook Computations
+  - 1.15 Use useDeferredValue for Expensive Derived Renders
+
+- Updated compound-patterns.md to integrate new patterns
+  - Example 1 (Search Component): Added useDeferredValue as alternative approach to useTransition with comparison guide
+  - Example 4 (Form Validation): Explicitly called out 1.14 Split Combined Hook pattern, which was already demonstrated but not labeled
+  - Added inline comments clarifying where split-combined-hooks pattern is applied
+
+### Version
+- Bumped from 1.4 → 1.5
+
 ## [1.4.0] - 2026-03-18
 
 ### Added

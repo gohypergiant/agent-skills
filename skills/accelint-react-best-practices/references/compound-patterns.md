@@ -15,6 +15,8 @@ Real-world scenarios often require multiple optimization patterns working togeth
 - [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md) - Stable debounce callback (useEffectEvent for React 19.2+)
 - [1.1 Defer State Reads](defer-state-reads.md) - Read URL params on demand
 
+**Alternative Approach:** [1.15 useDeferredValue](use-deferred-value.md) can replace useTransition for this use case - see note at end of this example.
+
 **❌ Before: Multiple Performance Issues**
 
 ```tsx
@@ -98,6 +100,37 @@ function SearchComponent({ items }: { items: Item[] }) {
   )
 }
 ```
+
+**Alternative with useDeferredValue:**
+
+For this search use case, `useDeferredValue` is a more specialized alternative to `useTransition`:
+
+```tsx
+function SearchComponent({ items }: { items: Item[] }) {
+  const [query, setQuery] = useState('')
+  const deferredQuery = useDeferredValue(query)
+
+  const filtered = useMemo(
+    () => items.filter(item => fuzzyMatch(item, deferredQuery)),
+    [items, deferredQuery]
+  )
+
+  const isStale = query !== deferredQuery
+
+  return (
+    <div>
+      <input value={query} onChange={e => setQuery(e.target.value)} />
+      <div style={{ opacity: isStale ? 0.7 : 1 }}>
+        <ResultsList results={filtered} />
+      </div>
+    </div>
+  )
+}
+```
+
+**When to use which:**
+- `useDeferredValue`: When you have a single expensive computation/render driven by user input
+- `useTransition`: When you have multiple state updates that should be treated as non-urgent
 
 ---
 
@@ -339,6 +372,7 @@ function Dashboard() {
 - [1.5 Functional setState Updates](functional-setstate-updates.md) - Stable form handlers
 - [1.11 Interaction Logic in Handlers](interaction-logic-in-event-handlers.md) - Submit logic in handler
 - [1.3 Narrow Effect Dependencies](narrow-effect-dependencies.md) - Validation effects
+- [1.14 Split Combined Hook Computations](split-combined-hooks.md) - Separate email validation from other form fields
 - [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md) - Async validation (useEffectEvent for React 19.2+)
 - [1.7 Transitions](transitions-non-urgent-updates.md) - Non-blocking validation results
 
@@ -350,6 +384,7 @@ function RegistrationForm() {
   const [errors, setErrors] = useState({})
 
   // ❌ Validates on every formData change (including password changes)
+  // ❌ This is a combined hook - email validation runs when ANY field changes
   useEffect(() => {
     validateEmail(formData.email).then(isValid => {
       setErrors({ ...errors, email: isValid ? null : 'Invalid email' })
@@ -401,7 +436,8 @@ function RegistrationForm() {
   // For React < 19.2, use useLatest hook instead
   const updateFieldStable = useEffectEvent(updateField)
 
-  // ✅ 1.3: Narrow dependency - only email, not whole formData
+  // ✅ 1.3 + 1.14: Split combined hook - only email, not whole formData
+  // Email validation now only runs when email changes, not on username/password changes
   useEffect(() => {
     const validateAsync = async () => {
       const isValid = await validateEmail(formData.email)
