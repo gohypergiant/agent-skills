@@ -294,18 +294,16 @@ This repository uses symlinks to make locally developed skills available during 
 
 ```bash
 # Symlinks are already configured in this repo
-ls -la .agents/skills/  # Shows symlinks to skills/
 ls -la .claude/skills/  # Shows symlinks to skills/
 ```
 
-**Why symlinks?** When creating new skills, Claude can reference and learn from existing skills in `skills/`. The symlinks in `.agents/skills/` and `.claude/skills/` make these skills available to:
+**Why symlinks?** When creating new skills, Claude can reference and learn from existing skills in `skills/`. The symlinks in `.claude/skills/` make these skills available to:
 - Skill creation workflows (e.g., `accelint-skill-manager`)
 - Example code generation that follows established patterns
 - Internal skill evaluation and improvement loops
 
 **Structure:**
 - `skills/` - Source of truth for all locally developed skills
-- `.agents/skills/` - Symlinks to `skills/` for agent skill discovery
 - `.claude/skills/` - Symlinks to `skills/` for Claude Code skill loading
 
 Skills in `.claude/skills/` take precedence over globally installed skills.

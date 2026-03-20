@@ -85,7 +85,6 @@ This repository uses symlinks to make locally developed skills discoverable duri
 ```
 agent-skills/
 ├── skills/           # Source of truth — all locally developed skills
-├── .agents/skills/   # Symlinks to skills/ — for agent skill discovery
 └── .claude/skills/   # Symlinks to skills/ — for Claude Code skill loading
 ```
 
@@ -99,7 +98,6 @@ agent-skills/
 ```bash
 for skill in skills/*; do
   skill_name=$(basename "$skill")
-  ln -sf "../../skills/$skill_name" ".agents/skills/$skill_name"
   ln -sf "../../skills/$skill_name" ".claude/skills/$skill_name"
 done
 ```
