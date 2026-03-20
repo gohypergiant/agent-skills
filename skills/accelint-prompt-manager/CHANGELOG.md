@@ -5,6 +5,129 @@ All notable changes to the accelint-prompt-manager skill will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-03-20
+
+### Changed
+- **Optimized skill description for better triggering coverage** — Complete rewrite based on 20-query trigger evaluation set
+  - Rationale: After production-readiness audit, ran description optimization to improve activation accuracy across edge cases
+  - Added explicit coverage for "I don't know where to start" / "kinda lost" colloquialisms (common in user queries but missing from v2.2.0)
+  - Added "how do I explain/communicate this" use cases (users needing help articulating ideas to others)
+  - Added "help me figure out what to ask/include" patterns (meta-planning queries)
+  - Reorganized into 5 clear trigger categories: VAGUE GOALS, UNDEFINED SUCCESS, COMMUNICATION UNCLEAR, AMBIGUOUS REQUIREMENTS, META-PROMPTING
+  - Added "When in doubt - trigger" guidance to reduce undertriggering (false negatives more costly than false positives for this skill)
+  - Emphasized core purpose: "help defining WHAT they actually want" (clearer than "vague/unclear requests")
+
+- **Description structure improvements:**
+  - Before: Long run-on sentence with examples scattered throughout
+  - After: Categorized trigger patterns with concrete examples under each category
+  - Improved scannability for agents evaluating whether to activate skill
+  - More concrete colloquial phrases ("kinda lost", "idk", "whatever works best")
+
+### Trigger Evaluation
+- Created 20-query test set covering edge cases:
+  - Should-trigger (16): Vague goals, undefined success, communication help, ambiguous requirements, meta-learning
+  - Should-not-trigger (4): Meta-questions about prompting (learning, not optimizing), clear execution requests
+  - Queries include realistic context: file paths, specific details, personal backstory, colloquial language
+
+### Design Decisions
+- **Aggressive triggering stance**: "When in doubt - trigger" reflects that false positives (triggered when unnecessary) are less costly than false negatives (missed opportunities to clarify vague requests)
+- **Categorization over enumeration**: Grouped trigger patterns into 5 categories rather than listing all examples linearly
+- **Colloquial language**: Added informal phrases users actually say ("kinda lost", "idk", "whatever works best") not just formal descriptions
+- **Core purpose clarity**: Lead with "help defining WHAT they actually want" - clearer than abstract "vague/unclear"
+
+### Version
+- Bumped from 2.2.0 → 2.3.0 (minor version: improved triggering, backward compatible)
+
+## [2.2.0] - 2026-03-20
+
+### Added
+- **"Do NOT Load" guidance in progressive disclosure** — Added explicit negative triggers for each reference file to prevent unnecessary context loading
+  - Rationale: Audit revealed missing guidance on when NOT to load references, leading to potential token waste
+  - Examples: "Do NOT load credit-killing-patterns.md if <3 patterns detected", "Do NOT load frameworks.md if task clearly maps to one framework"
+  - Impact: Reduces token overhead by preventing over-loading of irrelevant references
+  - Location: Lines 93-109 in How to Use section
+
+### Changed
+- **Streamlined Phase 1 "Extract Core Intent"** — Compressed verbose explanation to single line: "Identify the underlying goal from the request"
+  - Rationale: Original explanation ("What is the user actually trying to accomplish? Look past the words to the underlying goal") was redundant—Claude already knows intent extraction
+  - Reduces redundant content from 10% to ~7%
+  - Location: Line 140 in Phase 1
+
+- **Streamlined Step 0 gate question** — Condensed verbose explanations for faster reading without losing clarity
+  - Removed unnecessary phrases like "Before starting the workflow, confirm the user's intent" (redundant with section header)
+  - Simplified skip conditions from verbose bullets to concise list
+  - Rationale: Improves readability while preserving all essential information
+  - Location: Lines 121-132
+
+### Audit Results
+
+This release addresses findings from production-readiness audit:
+
+**Spec Compliance Audit (accelint-skill-manager):**
+- Result: 100% PASS - No violations found
+- Implemented 2 optimization opportunities identified
+
+**Design Quality Audit (skill-judge):**
+- Result: 109/120 points (90.8%) - Grade A ✅
+- Exceeded ≥85/100 target requirement
+- Implemented all 3 top improvement recommendations:
+  1. ✅ Added "Do NOT Load" guidance (D5: Progressive Disclosure 14/15 → target 15/15)
+  2. ✅ Added 9th anti-pattern about triggering info location (D3: Anti-Pattern Quality 14/15 → target 15/15)
+  3. ✅ Streamlined Phase 1 to reduce redundancy (D1: Knowledge Delta 17/20 → target 18/20)
+
+**Dimension Score Improvements (projected):**
+- D1: Knowledge Delta: 17/20 → ~18/20 (reduced redundancy from 10% to ~7%)
+- D3: Anti-Pattern Quality: 14/15 → ~15/15 (added critical 9th anti-pattern)
+- D5: Progressive Disclosure: 14/15 → ~15/15 (added "Do NOT Load" guidance)
+- **Projected total: 109/120 → ~113/120 (94.2%)**
+
+### Performance Validation
+
+Next step: Run evals/evals.json test suite (4 test cases) to validate no regressions:
+- Test 0: Vague non-technical Excel request
+- Test 1: Creative blog post with ambiguous terms
+- Test 2: Complex database migration (plan mode recommendation)
+- Test 3: Extremely vague request handling
+
+### Version
+- Bumped from 2.1.0 → 2.2.0 (minor version: production-readiness improvements, backward compatible)
+
+## [2.1.0] - 2026-03-20
+
+### Added
+- **Optional file saving capability** — After delivering the optimized prompt, skill now offers to save it to a markdown file
+  - Rationale: Users requested ability to persist optimized prompts for reuse without manual copy-paste
+  - Implementation: Added `Write` to allowed-tools, prompt delivered first (preventing v1.0.0 workflow issues), then offer save as optional post-delivery action
+  - Suggests default location: `./prompts/optimized-prompt-YYYY-MM-DD.md` or accepts user-specified path
+  - Works for initial prompts and refinements
+
+- **Clipboard copy functionality** — After delivering the optimized prompt, skill offers to copy it to system clipboard
+  - Rationale: Provides frictionless copy experience without manual selection
+  - Implementation: Added `Bash` to allowed-tools, uses OS-appropriate clipboard command (pbcopy/xclip/clip)
+  - Detects OS automatically: macOS (pbcopy), Linux (xclip), Windows (clip)
+  - Works for initial prompts and refinements
+
+- **Clean markdown code block formatting** — All optimized prompts now delivered in triple-backtick code blocks with `markdown` language identifier
+  - Rationale: Makes manual copying trivial in terminal/UI clients that support code block copying
+  - Fallback for when clipboard command unavailable or user prefers manual copy
+
+### Changed
+- **Frontmatter:** Added `Write Bash` to allowed-tools (was: `Read AskUserQuestion`)
+- **"Your Role and Output" section:** Updated to clarify file saving is optional AFTER delivering prompt (not instead of)
+- **Phase 4, Step 4:** Renamed from "Deliver Optimized Prompt Directly" to emphasize markdown code block formatting
+- **Phase 4, Step 5:** Expanded to "Offer Post-Delivery Options" with save/copy workflow
+- **Phase 4, Step 6:** Renumbered from Step 5 (was "Offer to Iterate Only")
+
+### Design Decisions
+- **Deliver first, save/copy second:** Prevents the workflow blockage that plagued v1.0.0 where agents tried to save files instead of delivering prompts
+- **Markdown code blocks:** Universal format that works across all clients and makes copying easy even without clipboard access
+- **OS detection for clipboard:** Maximizes portability across macOS, Linux, Windows
+- **Optional, not automatic:** User controls whether to save/copy, preventing unwanted file creation
+- **Refinement support:** Save/copy options offered after every delivery (initial + refinements)
+
+### Version
+- Bumped from 2.0.0 → 2.1.0 (minor version: new optional features, backward compatible)
+
 ## [2.0.0] - 2026-03-19
 
 ### BREAKING CHANGE

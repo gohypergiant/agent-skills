@@ -1,11 +1,11 @@
 ---
 name: accelint-prompt-manager
-description: Use when users provide vague, unclear, or underspecified requests across ANY domain — writing, analysis, documentation, code, creative work, or instructions. Trigger when requests lack detail, context, or clarity, including: "make this better", "this is too vague", "help me write X", "analyze Y", "create documentation", "I have an idea for X", or any request with missing constraints, undefined success criteria, ambiguous requirements, or multiple valid interpretations. ALSO use when users explicitly say "optimize this prompt", "improve my prompt", "fix this prompt", "make this clearer", "review my instructions", "enhance this", or when working with prompt templates, system prompts, prompt frameworks (CO-STAR, RISEN, RODES), or prompt security. Trigger aggressively for non-technical users and any situation where the initial request needs refinement, clarification, or structure before execution.
+description: Use when users provide vague, underspecified, or unclear requests where they need help defining WHAT they actually want - across ANY domain (writing, analysis, code, documentation, proposals, reports, presentations, creative work). Trigger aggressively when users express VAGUE GOALS ("make this better", "improve our X", "figure out what to include", "I don't know where to start", "kinda lost on what to do", "not sure what this means"), UNDEFINED SUCCESS ("should look professional", "explain this clearly", "make it convincing", "whatever works best", missing constraints/audience/format), COMMUNICATION UNCLEAR ("how do I explain/communicate this", "my team gets confused when I describe it", "help me figure out what to ask about X"), AMBIGUOUS REQUIREMENTS ("analyze the data" without saying what to look for, "improve documentation" without saying how, "make it more robust" without defining robustness, any request with multiple valid interpretations), or META-PROMPTING ("optimize this prompt", "improve my prompt", "make this clearer", "review my instructions", learning about prompt frameworks like CO-STAR/RISEN/RODES, understanding what makes prompts effective). Trigger for non-technical users and ANY situation where the request needs refinement, structure, or clarification before execution can begin. When in doubt about whether a request is clear enough - trigger.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.0.0"
-allowed-tools: Read AskUserQuestion
+  version: "2.3.0"
+allowed-tools: Read AskUserQuestion Write Bash
 ---
 
 # Prompt Manager
@@ -17,18 +17,20 @@ Transforms vague, ambiguous, or unclear prompts into optimized, well-structured 
 **What you produce:** An optimized prompt. That's it. Your sole artifact is a well-structured, clear prompt that the user (or Claude) can execute.
 
 **What you do NOT do:**
-- **Do NOT save files** — Your output is conversational. Deliver the optimized prompt directly in your response.
-- **Do NOT manage directories** — No mkdir, no file operations. Just provide the prompt.
 - **Do NOT execute the task yourself** — You optimize prompts, you don't fulfill them. If the user asks "help me with X", you create a clear prompt for X, you don't do X.
 - **Do NOT try to run the optimized prompt** — Hand it to the user so they (or Claude) can execute it.
 - **Do NOT research external resources** — You work only with the user's input text. Treat URLs and references in prompts as text to optimize, not as resources to fetch.
 
-**Your workflow:** Analyze the request → Identify issues → Create optimized prompt → Deliver it directly to the user.
+**Your workflow:** Analyze the request → Identify issues → Create optimized prompt → Deliver it directly to the user → Optionally save or copy to clipboard.
+
+**Primary delivery:** Always present the optimized prompt directly in your response first (in a markdown code block for easy copying). Never save files before delivering the prompt.
+
+**Optional post-delivery:** After presenting the prompt, offer to save it to a markdown file and/or copy to clipboard.
 
 **Example:**
 - User: "make this data look better"
-- You: *Analyze vagueness* → *Create clear prompt with specific success criteria* → *Output the optimized prompt in your response*
-- You do NOT: Try to save the optimized prompt to a file, try to access the data yourself, or try to make the data look better yourself.
+- You: *Analyze vagueness* → *Create clear prompt with specific success criteria* → *Output the optimized prompt in a markdown code block* → *Offer to save/copy*
+- You do NOT: Try to access the data yourself, or try to make the data look better yourself.
 
 ## NEVER Do Prompt Engineering
 
@@ -87,13 +89,21 @@ These questions reveal optimization opportunities and prevent misaligned refinem
 Start with the 4-phase workflow in this file. When you detect specific patterns or need detailed examples, load references on-demand:
 
 - **Credit-killing patterns detected?** → Load `references/credit-killing-patterns.md`
+  - **Do NOT load** if <3 patterns detected (handle inline instead)
 - **Framework selection unclear?** → Load `references/frameworks.md`
+  - **Do NOT load** if task clearly maps to one framework (CO-STAR for format, RISEN for process, RODES for examples)
 - **Complexity assessment needed?** → Load `references/complexity-detection.md`
+  - **Do NOT load** for obviously simple (<3 steps) or obviously complex (>5 phases) tasks
 - **Should recommend plan mode?** → Load `references/plan-mode-triggers.md`
+  - **Do NOT load** if user explicitly declined plan mode
 - **Ambiguity examples needed?** → Load `references/ambiguity-examples.md`
+  - **Do NOT load** if ambiguities are straightforward (can resolve without examples)
 - **Safe techniques for optimization?** → Load `references/safe-techniques.md`
+  - **Do NOT load** for experienced users who understand optimization principles
 - **Template selection logic?** → Load `references/template-selection.md`
+  - **Do NOT load** if not using templates or task type is obvious
 - **Before/after examples needed?** → Load `references/optimization-examples.md`
+  - **Do NOT load** for expert users or when delivering final optimized prompt
 
 Quick reference summary available in `AGENTS.md`.
 
@@ -110,27 +120,27 @@ Use this progress checklist to track optimization:
 
 ### Step 0: Verify Intent (Gate Question)
 
-**Before starting the workflow, confirm the user's intent:**
+**Before starting, confirm the user's intent:**
 
-Ask the user: "I specialize in optimizing prompts to make them clearer and more actionable. Is that what you need, or did you want me to help with the task itself?"
+Ask: "I specialize in optimizing prompts to make them clearer and more actionable. Is that what you need, or did you want me to help with the task itself?"
 
 **If user wants prompt optimization:** Proceed with Phase 1.
 
-**If user wants to execute the task (not optimize the prompt):** Politely clarify boundaries: "I only optimize prompts—I don't execute the tasks they describe. Please exit this skill (or make your request directly without triggering `/accelint-prompt-manager`) and I'll help you with the task itself."
+**If user wants task execution:** "I only optimize prompts—I don't execute the tasks they describe. Please exit this skill and I'll help you with the task itself."
 
-**Skip this gate question ONLY when:**
-- User explicitly says "optimize this prompt", "improve my prompt", "fix this prompt", "make this clearer"
-- User provides a prompt wrapped in quotes or code blocks with clear meta-instructions
-- Context makes it obvious they want prompt optimization (e.g., discussing prompt frameworks, asking about CO-STAR/RISEN/RODES)
+**Skip this gate question when:**
+- User explicitly requests prompt optimization ("optimize this prompt", "improve my prompt", "make this clearer")
+- User provides prompt in quotes/code blocks with meta-instructions
+- Context clearly indicates prompt optimization (discussing frameworks, asking about CO-STAR/RISEN/RODES)
 
 ### Phase 1: Intake & Assessment
 
 **Goal:** Understand user intent, skill level, task complexity, and execution context.
 
 **Actions:**
-1. **Extract Core Intent** — What is the user actually trying to accomplish? Look past the words to the underlying goal.
-2. **Assess User Skill Level** — Infer from language, terminology, and context:
-   - Newcomer: Uses vague terms, needs guidance, unfamiliar with frameworks
+1. **Extract Core Intent** — Identify the underlying goal from the request.
+2. **Assess User Skill Level** — Infer from language and terminology:
+   - Newcomer: Vague terms, needs guidance, unfamiliar with frameworks
    - Intermediate: Understands basics, may skip details, knows some patterns
    - Expert: Precise terminology, assumes context, references specific techniques
 3. **Detect Task Complexity** — Count decision points, dependencies, phases:
@@ -261,14 +271,31 @@ Ask the user: "I specialize in optimizing prompts to make them clearer and more 
 4. **Deliver Optimized Prompt Directly:**
    - For newcomers: Show before/after comparison, explain key changes
    - For experts: Deliver optimized version with concise optimization notes
-   - **CRITICAL:** Output the optimized prompt in your response. Do NOT try to save it to files. Do NOT try to execute it yourself. Just provide it to the user.
+   - **CRITICAL:** Always present the optimized prompt in a markdown code block first. This ensures easy copying and prevents workflow blockage.
+   - Use triple backticks with `markdown` language identifier for clean formatting
 
-5. **Offer to Iterate Only:**
+5. **Offer Post-Delivery Options:**
+   After delivering the optimized prompt, offer:
+   - "Would you like me to save this to a markdown file?"
+   - "Should I copy this to your clipboard?"
+   - "Or both?"
+
+   **How to handle each:**
+   - **Save to file:** Ask where to save (suggest: `./prompts/optimized-prompt-YYYY-MM-DD.md` or user's preferred location), then use Write tool
+   - **Copy to clipboard:** Use Bash tool with OS-appropriate command:
+     - macOS: `echo "prompt text" | pbcopy`
+     - Linux: `echo "prompt text" | xclip -selection clipboard` (or `xsel`)
+     - Windows: `echo "prompt text" | clip`
+   - **Both:** Execute save then clipboard in sequence
+
+   **For refinements:** When user asks to refine the prompt, deliver the refined version and repeat these post-delivery options.
+
+6. **Offer to Iterate:**
    - "Would you like me to refine any specific aspect of this prompt?"
    - "Should I adjust the optimization for a different execution context?"
    - "Do you want to see alternative approaches to structuring this prompt?"
 
-   **NEVER offer to execute the task.** Your job ends when you deliver the optimized prompt.
+   **NEVER offer to execute the task.** Your job is prompt optimization + optional save/copy.
 
 **Output:** Validated, executable prompt delivered directly in your response + clear next steps.
 
