@@ -77,6 +77,37 @@ skill-name/
 
 ---
 
+## Local Development Setup
+
+This repository uses symlinks to make locally developed skills discoverable during skill creation.
+
+**Repository structure:**
+```
+agent-skills/
+├── skills/           # Source of truth — all locally developed skills
+├── .agents/skills/   # Symlinks to skills/ — for agent skill discovery
+└── .claude/skills/   # Symlinks to skills/ — for Claude Code skill loading
+```
+
+**Why symlinks?** When creating new skills with `accelint-skill-manager` or `skill-creator`, Claude can:
+1. Reference existing skills as examples of proper structure and patterns
+2. Generate code that follows established conventions from other skills
+3. Learn from successful skill implementations in `skills/`
+4. Run evaluation loops that compare new skills against existing ones
+
+**How they work:** Each directory in `skills/` has a corresponding symlink in both `.agents/skills/` and `.claude/skills/`, created with:
+```bash
+for skill in skills/*; do
+  skill_name=$(basename "$skill")
+  ln -sf "../../skills/$skill_name" ".agents/skills/$skill_name"
+  ln -sf "../../skills/$skill_name" ".claude/skills/$skill_name"
+done
+```
+
+Skills loaded from `.claude/skills/` take precedence over globally installed skills, ensuring Claude always uses the latest local versions during development.
+
+---
+
 ## Skill Template
 
 Always start from the template — copy and customize:
