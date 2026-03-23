@@ -288,12 +288,32 @@ npx skills add https://github.com/intellectronica/agent-skills --skill context7
 
 ## Testing
 
-To test a skill locally before publishing:
+### Local Development Setup
 
-1. Copy the skill directory from `skills/` to `.claude/skills/` in your project
-2. Or install globally to `~/.claude/skills/` for cross-project testing
+This repository uses symlinks to make locally developed skills available during skill creation:
+
+```bash
+# Symlinks are already configured in this repo
+ls -la .claude/skills/  # Shows symlinks to skills/
+```
+
+**Why symlinks?** When creating new skills, Claude can reference and learn from existing skills in `skills/`. The symlinks in `.claude/skills/` make these skills available to:
+- Skill creation workflows (e.g., `accelint-skill-manager`)
+- Example code generation that follows established patterns
+- Internal skill evaluation and improvement loops
+
+**Structure:**
+- `skills/` - Source of truth for all locally developed skills
+- `.claude/skills/` - Symlinks to `skills/` for Claude Code skill loading
 
 Skills in `.claude/skills/` take precedence over globally installed skills.
+
+### Testing Skills Elsewhere
+
+To test a skill from this repository in another project:
+
+1. Copy the skill directory from `skills/` to `.claude/skills/` in your target project
+2. Or install globally to `~/.claude/skills/` for cross-project testing
 
 ## Prompt Patterns
 
