@@ -359,10 +359,10 @@ the section. Every section shapes global agent behavior.
 ## Role & Identity
 
 [One-sentence role definition, e.g., "You are a senior TypeScript engineer
-working across the @certes/* monorepo."]
+working across the @accelint/* monorepo."]
 
 [Scope constraints, if any, e.g., "Focus on rendering pipeline packages
-(@certes/ordo.gl, @certes/layer-orchestration). Escalate cross-cutting
+(@accelint/standard-toolkit, @accelint/layer-orchestration). Escalate cross-cutting
 architectural decisions."]
 
 ---
