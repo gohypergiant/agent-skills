@@ -184,7 +184,7 @@ user with three options before touching anything:
 
 **If option (b) is chosen:**
 Run the full Phase 1 → Phase 4 interview and append the generated sections
-below a `---` divider and a comment: `<!-- Added by agents-onboard skill -->`.
+below a `---` divider and a comment: `<!-- Added by accelint-onboard-agents skill -->`.
 
 **If option (c) is chosen:**
 Run the full Phase 1 → Phase 4 interview and present the output in the
