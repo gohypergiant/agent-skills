@@ -4,7 +4,7 @@ description: Interactively onboard a project to OpenSpec by running a structured
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Onboard OpenSpec
@@ -216,7 +216,7 @@ confirm rather than asking again.
 - Export style: named exports, default exports, or mixed?
 - Naming conventions: files, variables, functions, constants?
   *Example: "kebab-case files, camelCase vars, SCREAMING_SNAKE_CASE for
-  enums, PascalCase for types."*
+  constants, PascalCase for types."*
 - Error handling: throw, `Result<T,E>`, error boundaries, something else?
 - Testing structure: `describe/it`, `test/expect`, AAA pattern?
 - Test file location: co-located with source or a separate `__tests__/` tree?
@@ -309,6 +309,10 @@ preferable to omission.
 | Error handling | Grep for `throw`, `Result`, `Either`, `tryCatch`, error boundary components |
 | Test structure | Sample test files — describe/it nesting depth, file location relative to source |
 | Anti-patterns | `eslint` rule overrides marked `off` or `warn`, comments like `// TODO: replace`, `@deprecated` |
+| TypeScript baseline patterns | If `tsconfig.json` exists, automatically include TS/JS baseline patterns (classes, return values, type safety, testing, anti-patterns) |
+| Vitest global mock cleanup | `vitest.config.ts` — check for `clearMocks`, `mockReset`, `restoreMocks` in config |
+| Test file type checking | CI scripts, package.json — check if `tsc --noEmit` runs on `*.test.ts` files |
+| Property-based testing | Check for `fast-check` in dependencies — indicates PBT usage |
 
 **After inference, for each field resolved this way**, note the source in the
 preview with a trailing comment, e.g.:
@@ -393,26 +397,42 @@ context: |
   ## Performance Targets
   - [metric]: [target value and context]
 
+  ### TypeScript/JavaScript Performance (if applicable)
+  - Hot paths:    [functions executed >1000 times per interaction or >100 times/sec]
+  - Frame budget: [for real-time systems: 60fps = 16.67ms, 120fps = 8.33ms]
+  - Constraints:  Bounded iteration (explicit limits on loops/queues), O(n) or better algorithmic complexity
+
   # ═══════════════════════════════════════════════════════════════════════════
   # PATTERNS TO FOLLOW
   # ═══════════════════════════════════════════════════════════════════════════
 
   ## Code Patterns
-  - Exports:      [named / default / mixed — and when each applies]
-  - Naming:       [files, variables, functions, constants, types]
+  - Exports:        [named / default / mixed — and when each applies]
+  - Naming:         [files, variables, functions, constants, types]
   - Error handling: [throw / Result<T,E> / boundaries / other]
-  - Validation:   [approach and library]
-  - Constants:    [enum pattern or constant object pattern]
+  - Validation:     [approach and library]
+  - Constants:      Use `as const` objects, never `enum`
+  - Classes:        Prefer functions over classes unless state management required or extending existing class
+  - Return values:  Return zero values (empty array, empty string, 0) instead of null/undefined
+  - Type safety:    Avoid `any` (use `unknown` or generics); avoid `enum` (use `as const` objects); use `type` over `interface`
+  - Immutability:   Prefer `const`, immutable data structures, pure functions
+  - Documentation:  Comprehensive JSDoc for all exported code (@param, @returns, @template, @example)
 
   ## Architecture Patterns
   - [pattern name]: [brief description of how it's used here]
 
   ## Testing Patterns
-  - Structure:    [describe/it nesting convention]
-  - File location:[co-located / __tests__ / other]
-  - Fixtures:     [factory functions / fixture files / inline data]
-  - Assertions:   [preferred assertion style]
-  - Benchmarks:   [approach if any]
+  - Pattern:        AAA (Arrange, Act, Assert) with clear boundaries
+  - Property-based: (If available) Use `fast-check` for encode/decode pairs, validators, normalizers, pure functions
+  - Test scope:     Never test library internals; never export internals to test them; never mock own pure functions
+  - Structure:      [describe/it nesting convention]
+  - File location:  [co-located / __tests__ / other]
+  - Test doubles:   Hierarchy: real implementation > fakes > stubs > spies > mocks
+  - Fixtures:       [factory functions / fixture files / inline data]
+  - Assertions:     [preferred assertion style]
+  - Nesting:        Max 2 levels of describe blocks — use descriptive test names instead
+  - Verification:   MUST run `tsc --noEmit` on test files before marking complete
+  - Benchmarks:     [approach if any]
 
   # NOTE: Commit message convention, PR workflow, and tool preferences
   # are behavioral — they belong in AGENTS.md, not here.
@@ -421,8 +441,38 @@ context: |
   # PATTERNS TO AVOID
   # ═══════════════════════════════════════════════════════════════════════════
 
+  ## Code Anti-Patterns
+  - Using `any` instead of `unknown` or generics
+  - Using `enum` instead of `as const` objects
+  - Using `interface` when `type` works (prefer type)
+  - Returning `null`/`undefined` instead of zero values (empty arrays, empty strings, 0, false)
+  - Not validating external data with schemas
+  - Deep nesting instead of early returns
+
   - [anti-pattern]: [why it's banned or deprecated]
+
+  ## Performance Anti-Patterns
+  - Chaining array methods (`.filter().map().reduce()`) — use single reduce pass
+  - Using `Array.includes()` for repeated lookups (use `Set.has()` for O(1) lookups)
+  - Recomputing constants inside loops (hoist invariants outside)
+  - Unbounded loops or queues (set explicit limits to prevent runaway resource consumption)
+  - Placing `try/catch` in hot paths (V8 cannot inline, 3-5x slowdown)
+
   - [anti-pattern]: [why it's banned or deprecated]
+
+  ## Testing Anti-Patterns
+  - Testing library internals (e.g., verifying Array.prototype.map works)
+  - Exporting internal functions just to test them
+  - Loose assertions in tests (toBeTruthy, toBeDefined)
+  - Nested describe blocks >2 levels deep
+  - Testing implementation details instead of behavior
+
+  - [anti-pattern]: [why it's banned or deprecated]
+
+  ## Documentation Anti-Patterns
+  - Missing JSDoc on exported functions/types
+  - Documenting HOW instead of WHAT/WHY in JSDoc
+  - Vague comment markers (`// TODO: fix this` instead of `// TODO: Replace with binary search for O(log n)`)
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PER-ARTIFACT RULES

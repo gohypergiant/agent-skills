@@ -4,7 +4,7 @@ description: Interactively onboard a project to agent-driven development by runn
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Onboard Agents
@@ -344,6 +344,9 @@ behavior in unpredictable ways.
 | OpenSpec usage | `openspec/` directory, `openspec/config.yaml`, any `/opsx:*` references in docs |
 | Versioning workflow | `.changeset/`, `CHANGELOG.md`, `standard-version`, `conventional-changelog` |
 | Path aliases (for tool commands) | `tsconfig.json#paths`, `vite.config` — infer preferred import style |
+| TypeScript project detection | `tsconfig.json` presence — enables TS-specific baseline guardrails |
+| Vitest global mock cleanup | `vitest.config.ts` — check for `clearMocks`, `mockReset`, `restoreMocks` flags |
+| Test file type checking | CI workflows, package.json scripts — check if `tsc --noEmit` runs on test files |
 
 **After inference, for each field resolved this way**, note the source in the
 preview with a trailing comment, e.g.:
@@ -442,6 +445,7 @@ Follow Test-Driven Development to ensure the bug is fixed and does not regress:
 - [ ] [check, e.g., `pnpm typecheck`]
 - [ ] [check, e.g., `pnpm lint`]
 - [ ] [check, e.g., `pnpm test`]
+- [ ] *(TypeScript/JavaScript)* Type check test files: `tsc --noEmit <test-file>.test.ts`
 
 ### Commit Messages
 Convention: [e.g., Conventional Commits]
@@ -491,6 +495,10 @@ with placeholder text.
 | Modifying shared utilities | [ask, list affected packages] |
 | Discovering scope creep mid-task | [pause and surface to user] |
 | Two equally valid approaches | [pick one and state choice / ask] |
+| *(TypeScript)* Adding JSDoc to exported code | Always add comprehensive docs |
+| *(TypeScript)* Adding JSDoc to internal code | Use judgment — document non-obvious behavior only |
+| *(TypeScript)* Writing tests for pure functions with invariants | Consider property-based testing with fast-check |
+| *(TypeScript)* Optimizing performance | Profile first, fix algorithmic complexity before micro-optimizations |
 [additional heuristics]
 
 ---
@@ -502,6 +510,17 @@ with placeholder text.
 - **Linting / formatting**: [e.g., `biome` — never `prettier` or `eslint` separately]
 - **Task runner**: [e.g., `pnpm turbo run <task> --filter=<pkg>`]
 - **Version control**: [e.g., `git` via CLI — no GUI wrappers]
+
+### TypeScript/Testing Preferences (if applicable)
+- **Test configuration**: vitest.config.ts with `clearMocks: true`, `mockReset: true`,
+  `restoreMocks: true` for automatic cleanup
+- **Assertions**: Strict assertions (`toEqual`, `toBe`, `toStrictEqual`) — never
+  loose ones (`toBeTruthy`, `toBeDefined`)
+- **Test doubles hierarchy**: Prefer real implementation > fakes > stubs > spies > mocks
+- **Type checking tests**: Run `tsc --noEmit` on `*.test.ts` files before marking complete
+- **Property-based testing**: Use `fast-check` for encode/decode pairs, validators,
+  normalizers, pure functions with invariants
+
 [additional tool preferences]
 
 ---
@@ -518,6 +537,15 @@ with placeholder text.
 - [ ] Never commit or push using git directly — the engineer handles all
       git operations
       *(Exception: worktree context, where commits and merges are permitted)*
+
+### TypeScript/Testing Hard Stops (if applicable)
+- [ ] Never use `any`
+- [ ] Never skip type checking test files (`tsc --noEmit`) before marking complete
+- [ ] Never test library internals (Array methods, React internals, framework code)
+- [ ] Never export internal functions solely to test them
+- [ ] Never mock your own pure functions — mock only external dependencies
+- [ ] Never use loose assertions (`toBeTruthy`, `toBeDefined`) in tests
+
 - [ ] [additional project-specific hard stops]
 
 ### Always Ask First (soft gates)
