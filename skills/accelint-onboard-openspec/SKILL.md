@@ -4,7 +4,7 @@ description: Interactively onboard a project to OpenSpec by running a structured
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Onboard OpenSpec
@@ -341,8 +341,100 @@ is an invisible gap.
 3. After confirmation, write to `openspec/config.yaml` (create directory if
    needed), **stripping the inference source comments** — they are for review
    only, not the final file.
-4. Print a brief summary of what was configured, what was inferred vs answered
+4. **Validate the generated YAML** — after writing, read the file back and verify:
+   - No tabs (YAML requires spaces for indentation)
+   - Values with special characters are properly quoted
+   - No syntax errors (unmatched brackets, quotes, etc.)
+   - The file can be conceptually parsed as valid YAML
+   If validation reveals issues, fix them immediately and rewrite the file.
+5. Print a brief summary of what was configured, what was inferred vs answered
    directly, and which `# TODO` fields still need human input.
+
+---
+
+## YAML Generation Safety Rules
+
+**CRITICAL:** YAML syntax is strict about special characters. Follow these rules when generating config.yaml to avoid syntax errors:
+
+### Quoting Requirements
+
+**Rule:** Values that start with special YAML characters need quoting.
+
+Special characters: `|`, `>`, `"`, `'`, `(`, `)`, `[`, `]`, `{`, `}`, `*`, `&`, `!`, `%`, `@`, `` ` ``
+
+**Examples:**
+```yaml
+# Parentheses at start of value
+❌ description: (internal) auth module     # Syntax error
+✅ description: "(internal) auth module"   # Quoted
+
+# Square brackets (looks like YAML list syntax)
+❌ tag: [PKG:auth]                         # YAML thinks it's a list
+✅ tag: "[PKG:auth]"                       # Quoted string
+
+# Pipe character (YAML thinks it's block scalar)
+❌ pattern: some|other                     # Syntax error
+✅ pattern: "some|other"                   # Quoted
+
+# Colon in value (YAML thinks it's a nested key)
+❌ note: Time: 5pm                         # Syntax error
+✅ note: "Time: 5pm"                       # Quoted
+
+# Value containing quotes - escape with opposite quote type
+✅ command: 'npm run "test:unit"'          # Single quotes protect doubles
+✅ command: "npm run 'test:unit'"          # Double quotes protect singles
+```
+
+### Multi-line String Handling
+
+Use block scalar indicators for multi-line content:
+
+```yaml
+# Literal block (preserves newlines) - preferred for context field
+context: |
+  Line 1
+  Line 2
+  Line 3
+
+# Folded block (folds newlines into spaces) - rarely needed
+description: >
+  This is a long
+  description that
+  flows together.
+```
+
+### Indentation Rules
+
+- **Use spaces only** — never tabs
+- **Consistent indent** — typically 2 spaces per level
+- **Block scalars** — content inside `|` or `>` must be indented relative to the key
+
+### Rules for List Values
+
+```yaml
+# Simple list items - no quotes needed for plain text
+rules:
+  proposal:
+    - Keep proposals under 100 lines
+    - Include scope boundaries
+
+# List items with special chars - quote them
+rules:
+  tasks:
+    - "Tag with [PKG:name] format"        # Quotes protect [ and ]
+    - 'Use "Test:" prefix for validation' # Single quotes protect inner "
+```
+
+### Validation Checklist
+
+After generating the config, mentally verify:
+1. No bare `(`, `)`, `|`, `"`, `'` immediately after colons (unless using `|` or `>` for multiline)
+2. No tab characters anywhere in the file
+3. Consistent 2-space indentation throughout
+4. All list items (`-`) aligned at the same indent level within their parent
+5. Quoted strings use matching quote types
+
+If any of these rules are violated, the YAML will fail to parse.
 
 ---
 
