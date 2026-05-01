@@ -217,6 +217,39 @@ Comprehensive security audit and vulnerability detection following OWASP Top 10:
 
 **Activates when:** Auditing security, checking for vulnerabilities, implementing authentication, adding API endpoints, handling user input, working with secrets or sensitive data, implementing payment features, or conducting pre-deployment security checks.
 
+### accelint-qrspi-propose
+
+QRSPI + OpenSpec planning workflow automation:
+
+- Question generation → Research → Design → Structure phases
+- Pauses for review after design before generating implementation tasks
+- Creates OpenSpec artifacts (proposal.md, design.md, tasks.md)
+- Stops at planning; implementation continues with `/opsx:apply`
+
+**Activates when:** Planning tickets, starting QRSPI workflow, creating spec-driven changes, "plan this with QRSPI", "use QRSPI to plan".
+
+### accelint-onboard-agent
+
+Interactive agent onboarding and AGENTS.md/CLAUDE.md generation:
+
+- Runs structured interview to capture agent behavior preferences
+- Generates project-specific AGENTS.md or CLAUDE.md
+- Covers agent identity, workflow, communication style
+- Defines the behavioral layer of agent instruction stack
+
+**Activates when:** Setting up agent rules, configuring Claude Code, writing AGENTS.md/CLAUDE.md, defining agent behavior, onboarding agents to project.
+
+### accelint-onboard-openspec
+
+Interactive OpenSpec onboarding and config.yaml generation:
+
+- Runs structured interview to capture project structure
+- Generates openspec/config.yaml configured for QRSPI methodology
+- Documents what the project is (structure, components, architecture)
+- Works alongside accelint-onboard-agent for complete setup
+
+**Activates when:** Setting up OpenSpec, generating openspec config, configuring QRSPI, onboarding to OpenSpec.
+
 ### accelint-skill-manager
 
 A meta-skill for creating and managing other skills:
@@ -227,17 +260,6 @@ A meta-skill for creating and managing other skills:
 - SKILL.md and AGENTS.md formatting
 
 **Activates when:** Creating new skills or updating existing ones.
-
-### accelint-command-creator
-
-Guide for creating Claude Code commands:
-
-- Command specification format (YAML front matter + Markdown)
-- Skill discovery and integration
-- Argument definition patterns
-- Workflow and statistics reporting
-
-**Activates when:** Creating new Claude Code commands.
 
 ### accelint-readme-writer
 
@@ -262,14 +284,6 @@ Converts acceptance criteria into JSON test plans and then Playwright `*.spec.ts
 - Test hook naming/structure conventions
 
 **Activates when:** Turning acceptance criteria into Playwright `*.spec.ts` tests.
-
-### Feature Planning Commands
-
-| Command | Description |
-|---------|-------------|
-| `/feature-planning:acceptance` | Define acceptance criteria for a feature. |
-| `/feature-planning:implementation` | Research codebase patterns and create implementation tasks. |
-| `/feature-planning:testing` | Generate test plans based on implementation. |
 
 ## Ecosystem
 
