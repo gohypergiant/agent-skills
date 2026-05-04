@@ -1,10 +1,10 @@
 ---
-name: accelint-qrspi
+name: accelint-qrspi-propose
 description: Automate the QRSPI + OpenSpec planning workflow (Questions → Research → Design → Structure) for spec-driven development. Use this skill when the user wants to plan a ticket, start a QRSPI workflow, create a change with QRSPI, or says "plan this with QRSPI", "use QRSPI to plan", "start QRSPI workflow", "create spec-driven change", or asks about planning a feature/change before implementation. This skill handles ONLY the planning phase — it does NOT implement code. After completion, the user continues with /opsx:apply for implementation.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Accelint QRSPI
@@ -47,12 +47,18 @@ openspec update
 ├─────────────────────────────────────────────────────────────────┤
 │  Questions      Ticket only          Questions       —          │
 │  Research       Questions only       Research doc    —          │
-│  Design         Q+R (NO ticket)      design.md       ✓ REVIEW   │
-│  Specs/Tasks    Q+R+design           specs/*, tasks  ✓ REVIEW   │
+│  Design         Q+R (NO ticket)      proposal.md     —          │
+│                                      design.md       ✓ REVIEW   │
+│                                      [STOP HERE]                │
+│  Specs/Tasks    Q+R+design           specs/*         —          │
+│                                      tasks.md        ✓ REVIEW   │
 │  Done           —                    Exit            —          │
 └─────────────────────────────────────────────────────────────────┘
 
 Note: Ticket is kept OUT of context after Phase 1 to prevent completion bleed.
+
+Critical: Phase 3 generates ONLY proposal.md and design.md, then STOPS for review.
+Phase 5 generates specs/* and tasks.md separately after design approval.
 ```
 
 ## Phase Breakdown
@@ -71,16 +77,16 @@ Before starting, verify OpenSpec has the required workflows enabled.
 4. If any are missing:
    ```
    This skill requires the expanded OpenSpec workflows (explore, new, continue).
-   
+
    Your current workflows: [list what's enabled]
    Missing: [list what's missing]
-   
+
    To enable the expanded workflows, run:
-   
+
    openspec config profile
    # Select "expanded" from the list
    openspec update
-   
+
    Then re-run this skill.
    ```
 5. Exit the skill if required workflows are not enabled
@@ -166,11 +172,13 @@ Before starting, verify OpenSpec has the required workflows enabled.
    Agent Behavior Context:
    [paste relevant sections from CLAUDE.md/AGENTS.md]
 
-   Now create the OpenSpec change and design artifact:
+   Now create the OpenSpec change with proposal and design artifacts:
 
    1. Run /opsx:new to create the change (OpenSpec will prompt for a slug)
-   2. Run /opsx:continue to generate proposal.md
-   3. Run /opsx:continue to generate design.md
+   2. CRITICAL: Capture the change name/slug from the output and use it in all subsequent commands
+   3. Run /opsx:continue <change-name> ONCE to generate proposal.md ONLY
+   4. Run /opsx:continue <change-name> ONCE to generate design.md ONLY
+   5. STOP after design.md - do NOT generate specs or tasks yet
 
    When creating design.md, follow the design rules from config.yaml but use your
    judgment about structure and emphasis based on the specifics of this change.
@@ -185,12 +193,20 @@ Before starting, verify OpenSpec has the required workflows enabled.
    - Use numbered "Decision N" format with: Choice, Rationale, Alternatives, Trade-off
    - Avoid detailed implementation plans, test strategies, or migration steps
 
-   After design.md is generated, report completion and the path to the design file.
+   After design.md is generated (and ONLY proposal.md and design.md exist),
+   report completion, the CHANGE NAME, and the path to the design file. 
+   
+   IMPORTANT: You MUST report the change name explicitly at the end like:
+   "Change name: <slug>"
+   
+   Do NOT continue to generate specs or tasks - that happens in Phase 5 after human review.
    ```
 
 4. Wait for the sub-agent to complete
-5. Verify the design.md file exists at the reported path
-6. Proceed to Phase 4 (mandatory checkpoint)
+5. Extract the change name/slug from the sub-agent output (look for "Change name:" or parse from the file path)
+6. Store the change name — it will be passed to Phase 5
+7. Verify the design.md file exists at the reported path
+8. Proceed to Phase 4 (mandatory checkpoint)
 
 **Output**: Generated `proposal.md` and `design.md` in `openspec/changes/<slug>/`
 
@@ -251,6 +267,8 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
    approved design. You have access to research and design, but NOT the original
    ticket text.
 
+   CHANGE NAME: <change-name-from-phase-3>
+
    Research Questions and Answers:
    [paste questions from Phase 1]
 
@@ -271,36 +289,25 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
 
    Now generate the remaining OpenSpec artifacts:
 
-   1. Run /opsx:continue to generate specs/* (delta specs)
-   2. Run /opsx:continue to generate tasks.md
+   1. Run /opsx:continue <change-name> to generate specs/* (delta specs)
+   2. Run /opsx:continue <change-name> to generate tasks.md
 
    Follow the tasks rules from config.yaml, emphasizing vertical slicing:
-   
+
    VERTICAL SLICING (core QRSPI principle):
-   - Order as vertical slices - each task delivers a testable end-to-end path
-   - Avoid grouping by architectural layer (database/service/API/frontend)
-   - Each task should include an explicit "Test:" line describing verification
-   - Prefer 3-5 major slices; more than 5 suggests scope is too large
-   - Max 2 hours per task; break larger work into subtasks
-   
-   Use judgment about structure - the config.yaml provides guidelines.
 
-   After tasks.md is generated, report completion and the path to the tasks file.
+   Each slice must deliver an end-to-end testable feature path, NOT a horizontal
+   layer. Structure the work so that after completing Slice 1, you have something
+   demonstrable and testable.
+
+   ✓ CORRECT - Vertical (end-to-end feature slices):
+   ```
+   Slice 1: Mock API + working frontend (user can see and click, no real data)
+   Slice 2: Wire real service layer (now pulls actual data)
+   Slice 3: Add database integration (data persists)
    ```
 
-5. Wait for the sub-agent to complete
-6. Verify specs/* and tasks.md exist at the reported paths
-5. Read the generated `tasks.md` file
-6. Analyze the phase structure — check for vertical vs horizontal slicing:
-
-   **Vertical (good)**:
-   ```
-   Phase 1: Mock API + working frontend (end-to-end, no real data)
-   Phase 2: Wire real service layer
-   Phase 3: Add database integration
-   ```
-
-   **Horizontal (problematic)**:
+   ✗ WRONG - Horizontal (architectural layers):
    ```
    Phase 1: All database migrations
    Phase 2: All service layer changes
@@ -308,18 +315,63 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
    Phase 4: All frontend components
    ```
 
-7. Present tasks.md to the user:
+   Requirements for each slice:
+   - Deliverable: A working, testable increment (e.g., "CLI with security removed from public API")
+   - Test: Explicit verification steps showing the slice works end-to-end
+   - Parallelization: Slices should be independent enough to implement concurrently with minimal blocking
+   - Checkpoints: Each subtask has a "Test:" line describing verification
+   - Size: Prefer 3-5 major slices; more than 5 suggests scope is too large
+   - Duration: Max 2 hours per subtask; break larger work into smaller subtasks
+
+   After all slices, include a "## Parallelization Strategy" section that:
+   - Identifies which slices must complete first (dependencies)
+   - States which slices can run in parallel
+   - Explains why parallel slices are independent
+   - Describes final integration steps
+
+   Use judgment about structure - the config.yaml provides guidelines.
+
+   After tasks.md is generated, report completion and the path to the tasks file.
+   ```
+
+5. Wait for the sub-agent to complete
+6. Verify specs/* and tasks.md exist at the reported paths
+7. Read the generated `tasks.md` file
+8. Analyze the slice structure for vertical vs horizontal organization:
+
+   **Indicators of VERTICAL slicing (correct)**:
+   - Each slice has a "Deliverable:" that describes a working, testable feature
+   - Slices cross architectural boundaries (e.g., a slice touches both CLI and implementation)
+   - Each slice ends with something demonstrable to a user or stakeholder
+   - Parallelization is possible with minimal dependencies between slices
+
+   **Indicators of HORIZONTAL slicing (incorrect)**:
+   - Slices are organized by layer: "Database changes", "Service layer", "API routes", "Frontend"
+   - Deliverables are architectural components, not user-facing features
+   - Early slices cannot be tested end-to-end without later slices
+   - Slices have sequential dependencies (must finish layer 1 before layer 2)
+
+9. If horizontal or mixed slicing detected, **automatically convert to vertical slices**:
+
+   - Identify the smallest testable feature path that crosses all layers
+   - Restructure tasks so each slice delivers that end-to-end path
+   - Each slice should have a clear "Deliverable:" describing what works after completion
+   - Ensure each subtask has explicit "Test:" verification steps
+   - Structure for parallelization where possible (independent slices)
+   - Write the converted structure directly to `tasks.md`
+   - Show a diff of the changes to the user with explanation of what was restructured
+
+10. Present tasks.md to the user for final approval:
 
    ```
-   Specs and tasks generated. Phase structure: [vertical/horizontal/mixed]
+   Specs and tasks generated.
 
-   [If horizontal detected:]
-   ⚠️  I detected horizontal slicing (grouped by layer). The QRSPI methodology
-   recommends vertical slices where each phase delivers a testable end-to-end
-   feature increment. Would you like me to restructure this, or proceed as-is?
+   [If auto-converted:]
+   ✓ Converted task structure to vertical slices for better parallelization
+   and incremental delivery. Each phase now delivers an end-to-end testable feature.
 
-   [If vertical:]
-   Task phases follow vertical slicing ✓
+   [If already vertical:]
+   ✓ Task structure follows vertical slicing
 
    Options:
    (a) Approve — planning complete, ready for implementation
@@ -327,7 +379,7 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
    (c) Manual edit — edit tasks.md yourself, then confirm
    ```
 
-8. Handle user input (same flow as Phase 4: approve, request edits, or manual edit)
+11. Handle user input (same flow as Phase 4: approve, request edits, or manual edit)
 
 **Output**: Generated `specs/*` and `tasks.md` in `openspec/changes/<slug>/`
 
@@ -340,6 +392,8 @@ After tasks.md is approved:
    ```
    ✅ QRSPI planning phase complete.
 
+   Change name: <change-name-from-phase-3>
+
    Generated artifacts:
    - openspec/changes/<change-slug>/proposal.md
    - openspec/changes/<change-slug>/design.md
@@ -349,7 +403,7 @@ After tasks.md is approved:
    Next steps:
    1. Review the artifacts one more time if needed
    2. Run `/clear` to start fresh context for implementation
-   3. Run `/opsx:apply` to begin implementation
+   3. Run `/opsx:apply <change-name>` to begin implementation
 
    This allows you to create multiple specs before implementation and
    maintains proper context management.
