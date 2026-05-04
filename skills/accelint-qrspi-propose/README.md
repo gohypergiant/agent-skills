@@ -1,4 +1,4 @@
-# Accelint QRSPI
+# Accelint QRSPI Propose
 
 Automate the planning phase of spec-driven development. This skill walks you through Questions → Research → Design → Structure (QRSPI), with mandatory review checkpoints before code gets written.
 
@@ -154,7 +154,7 @@ Run `/clear` and `/opsx:apply` when you're ready to start building.
 ## Example Usage
 
 ```
-/accelint-qrspi
+/accelint-qrspi-propose
 
 ## Issue #42: Expand array chaining detection
 
