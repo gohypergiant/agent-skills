@@ -509,6 +509,7 @@ context: |
   - Type safety:    Avoid `any` (use `unknown` or generics); avoid `enum` (use `as const` objects); use `type` over `interface`
   - Immutability:   Prefer `const`, immutable data structures, pure functions
   - Documentation:  Comprehensive JSDoc for all exported code (@param, @returns, @template, @example)
+  - Order:          Internal functions, variables and types should be defined before they are used (internal/export types -> internal/export constants -> internal/export functions)
 
   ## Architecture Patterns
   - [pattern name]: [brief description of how it's used here]
