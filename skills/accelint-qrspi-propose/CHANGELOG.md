@@ -1,5 +1,57 @@
 # Changelog
 
+## [1.2.0] - 2026-05-05
+
+### Fixed
+- **CRITICAL: Agents bypassing /opsx commands** — Added explicit CRITICAL/IMPORTANT notes to prevent agents from generating artifacts directly
+  - Issue: Sub-agents were sometimes writing tasks.md, proposal.md, or design.md content themselves instead of delegating to /opsx:continue commands
+  - Impact: When agents generate artifacts directly, they bypass OpenSpec's configured rules and create inconsistent outputs (e.g., tasks.md missing checklist format)
+  - Fix: Added CRITICAL blocks in Phase 3 and Phase 5 prompts stating "DO NOT generate content yourself. The /opsx:continue command handles artifact generation."
+  - Rationale: /opsx commands follow project-specific rules in config.yaml; direct generation ignores these rules
+
+- **CRITICAL: Markdown checklist format enforcement** — Added explicit validation for `- [ ] task` format in tasks.md
+  - Issue: When restructuring tasks.md from horizontal to vertical slicing, agents might lose the markdown checklist format and use numbered lists or plain bullets
+  - Impact: qrspi-apply skill depends on `- [ ] ...` format to track task completion; other formats break the workflow
+  - Fix: Added CRITICAL note in Step 10b requiring markdown checklist format preservation during restructuring
+  - Added anti-pattern: "NEVER use numbered lists or plain bullets in tasks.md"
+
+- **CRITICAL: Agents skipping mandatory checkpoints** — Strengthened enforcement of Phase 4 and Phase 5 checkpoints
+  - Issue: Agents were sometimes not pausing after design.md generation and proceeding directly to specs/tasks, bypassing the design review checkpoint
+  - Impact: Defeats the "brain surgery" moment where design corrections are cheap; skipping review means fixing issues after code is written (expensive)
+  - Fix: Added multiple CRITICAL blocks enforcing stops:
+    - Phase 3 sub-agent prompt: "STOP AFTER GENERATING DESIGN.MD. Your job ends here."
+    - Phase 3 Step 8: "DO NOT continue to Phase 5 yet. You MUST proceed to Phase 4 checkpoint."
+    - Phase 4 header: "You MUST pause here and wait for user input."
+    - Phase 4 end: "DO NOT PROCEED TO PHASE 5 WITHOUT EXPLICIT USER APPROVAL."
+    - Phase 5 Step 12: "DO NOT PROCEED TO PHASE 6 WITHOUT EXPLICIT USER APPROVAL."
+  - Updated workflow diagram with visual ⚠️ checkpoint markers
+  - Added anti-pattern: "NEVER skip the mandatory checkpoints"
+
+- **Parallelization Strategy overcomplicated** — Simplified guidance with concrete template and "DO NOT overcomplicate" warning
+  - Issue: Agents were sometimes generating overly detailed parallelization sections with excessive edge cases
+  - Fix: Added simple template format showing the right level of detail: dependencies, parallel opportunities, recommended order
+  - Added explicit checkpoint (Step 9) to verify Parallelization Strategy exists and follows the simple format
+  - Example template now matches the format from actual working changes
+
+### Added
+- **NEVER Do This section** — Added anti-pattern list reinforcing key principles
+  - NEVER generate artifacts yourself (always use /opsx commands)
+  - NEVER write tasks.md content directly (breaks checklist format)
+  - NEVER overcomplicate Parallelization Strategy (keep it simple)
+  - NEVER continue to specs/tasks without design approval (skips "brain surgery" checkpoint)
+  - NEVER let ticket leak into research/design context (causes solution-first thinking)
+  - Rationale: Explicit anti-patterns help agents avoid common failure modes
+
+### Changed
+- **Phase 5 vertical slicing guidance** — Moved detailed vertical slicing guidance from sub-agent prompt to validation step
+  - Issue: Long guidance in sub-agent prompt wasn't preventing agents from generating artifacts directly, and removing it entirely lost important context for validation
+  - Fix: Added brief CRITICAL notes in sub-agent prompt delegating to /opsx:continue; restored full vertical slicing guidance to Step 8 (validation phase)
+  - Rationale: Validation step needs detailed criteria to restructure horizontal slices; sub-agent prompt just needs to delegate to /opsx:continue
+  - Validation logic (Steps 8-10) now includes comprehensive examples and requirements for restructuring
+
+### Version
+- Bumped from 1.1.0 → 1.2.0
+
 ## [1.1.0] - 2026-05-01
 
 ### Fixed
