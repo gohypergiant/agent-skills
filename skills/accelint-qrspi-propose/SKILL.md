@@ -4,7 +4,7 @@ description: Automate the QRSPI + OpenSpec planning workflow (Questions → Rese
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Accelint QRSPI
@@ -48,10 +48,14 @@ openspec update
 │  Questions      Ticket only          Questions       —          │
 │  Research       Questions only       Research doc    —          │
 │  Design         Q+R (NO ticket)      proposal.md     —          │
-│                                      design.md       ✓ REVIEW   │
+│                                      design.md       —          │
 │                                      [STOP HERE]                │
+│  ⚠️  CHECKPOINT 1: Review design.md - MUST approve to continue  │
+│                                                                  │
 │  Specs/Tasks    Q+R+design           specs/*         —          │
-│                                      tasks.md        ✓ REVIEW   │
+│                                      tasks.md        —          │
+│  ⚠️  CHECKPOINT 2: Review tasks.md - MUST approve to continue   │
+│                                                                  │
 │  Done           —                    Exit            —          │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -59,6 +63,9 @@ Note: Ticket is kept OUT of context after Phase 1 to prevent completion bleed.
 
 Critical: Phase 3 generates ONLY proposal.md and design.md, then STOPS for review.
 Phase 5 generates specs/* and tasks.md separately after design approval.
+
+⚠️  MANDATORY CHECKPOINTS: The agent MUST pause and wait for explicit user approval
+at both checkpoints. Proceeding without approval bypasses QRSPI's core value.
 ```
 
 ## Phase Breakdown
@@ -172,6 +179,10 @@ Before starting, verify OpenSpec has the required workflows enabled.
    Agent Behavior Context:
    [paste relevant sections from CLAUDE.md/AGENTS.md]
 
+   CRITICAL: You MUST use /opsx commands to create and generate artifacts.
+   DO NOT create files or write artifact content yourself. The /opsx commands
+   will handle artifact generation following OpenSpec's configured rules.
+
    Now create the OpenSpec change with proposal and design artifacts:
 
    1. Run /opsx:new to create the change (OpenSpec will prompt for a slug)
@@ -180,18 +191,9 @@ Before starting, verify OpenSpec has the required workflows enabled.
    4. Run /opsx:continue <change-name> ONCE to generate design.md ONLY
    5. STOP after design.md - do NOT generate specs or tasks yet
 
-   When creating design.md, follow the design rules from config.yaml but use your
-   judgment about structure and emphasis based on the specifics of this change.
-   The config.yaml provides guidelines - interpret them intelligently rather than
-   following them mechanically.
-
-   Key QRSPI principles for design.md:
-   - Target ~200 lines, focusing on decisions and trade-offs
-   - This is the "brain surgery" moment - decisions here are cheap to change,
-     decisions after code is written are expensive
-   - Emphasize WHY and WHAT (decisions, trade-offs) not HOW (implementation)
-   - Use numbered "Decision N" format with: Choice, Rationale, Alternatives, Trade-off
-   - Avoid detailed implementation plans, test strategies, or migration steps
+   IMPORTANT: Let /opsx:continue generate proposal.md and design.md using the
+   OpenSpec workflow. DO NOT write these files yourself. The /opsx:continue
+   command handles artifact generation based on config.yaml rules.
 
    After design.md is generated (and ONLY proposal.md and design.md exist),
    report completion, the CHANGE NAME, and the path to the design file. 
@@ -199,14 +201,17 @@ Before starting, verify OpenSpec has the required workflows enabled.
    IMPORTANT: You MUST report the change name explicitly at the end like:
    "Change name: <slug>"
    
-   Do NOT continue to generate specs or tasks - that happens in Phase 5 after human review.
+   CRITICAL: STOP AFTER GENERATING DESIGN.MD. DO NOT CONTINUE TO SPECS OR TASKS.
+   Your job ends here. The parent agent will handle the checkpoint and Phase 5.
+   If you generate specs/* or tasks.md, you will bypass the mandatory design review.
    ```
 
 4. Wait for the sub-agent to complete
 5. Extract the change name/slug from the sub-agent output (look for "Change name:" or parse from the file path)
 6. Store the change name — it will be passed to Phase 5
 7. Verify the design.md file exists at the reported path
-8. Proceed to Phase 4 (mandatory checkpoint)
+8. CRITICAL: DO NOT continue to Phase 5 yet. You MUST proceed to Phase 4 checkpoint.
+9. Proceed to Phase 4 (mandatory checkpoint)
 
 **Output**: Generated `proposal.md` and `design.md` in `openspec/changes/<slug>/`
 
@@ -215,6 +220,10 @@ Before starting, verify OpenSpec has the required workflows enabled.
 **Goal**: Get human approval before proceeding to task breakdown.
 
 This is the "brain surgery" moment from the QRSPI talk — a correction here costs minutes; the same correction after implementation costs a code review cycle.
+
+CRITICAL: You MUST pause here and wait for user input. DO NOT proceed to Phase 5
+without explicit user approval. If you skip this checkpoint, you defeat the entire
+purpose of QRSPI's separation of design from implementation planning.
 
 **Steps**:
 
@@ -247,7 +256,11 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
      - Re-read design.md
      - Proceed to Phase 5
 
-**Do NOT proceed to Phase 5 without explicit user approval.**
+**CRITICAL: DO NOT PROCEED TO PHASE 5 WITHOUT EXPLICIT USER APPROVAL.**
+
+If the user does not explicitly approve (says "looks good", "approve", "continue", etc.),
+DO NOT move forward. This checkpoint is mandatory - skipping it bypasses the core value
+of QRSPI methodology.
 
 ### Phase 5: Specs & Tasks Generation
 
@@ -287,14 +300,30 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
    Agent Behavior Context:
    [paste relevant sections from CLAUDE.md/AGENTS.md]
 
+   CRITICAL: You MUST use /opsx:continue commands to generate artifacts.
+   DO NOT generate specs or tasks.md content yourself. The /opsx:continue command
+   will handle artifact generation following OpenSpec's configured rules.
+
    Now generate the remaining OpenSpec artifacts:
 
    1. Run /opsx:continue <change-name> to generate specs/* (delta specs)
    2. Run /opsx:continue <change-name> to generate tasks.md
 
-   Follow the tasks rules from config.yaml, emphasizing vertical slicing:
+   IMPORTANT: Let /opsx:continue generate tasks.md using the OpenSpec workflow.
+   DO NOT write tasks.md yourself. The /opsx:continue command handles this.
 
-   VERTICAL SLICING (core QRSPI principle):
+   After tasks.md is generated, you will need to validate it follows vertical
+   slicing principles (validation happens in the next step, not here).
+
+   After tasks.md is generated, report completion and the path to the tasks file.
+   ```
+
+5. Wait for the sub-agent to complete
+6. Verify specs/* and tasks.md exist at the reported paths
+7. Read the generated `tasks.md` file
+8. Validate vertical slicing structure:
+
+   **VERTICAL SLICING (required for qrspi-apply)**:
 
    Each slice must deliver an end-to-end testable feature path, NOT a horizontal
    layer. Structure the work so that after completing Slice 1, you have something
@@ -315,30 +344,6 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
    Phase 4: All frontend components
    ```
 
-   Requirements for each slice:
-   - Deliverable: A working, testable increment (e.g., "CLI with security removed from public API")
-   - Test: Explicit verification steps showing the slice works end-to-end
-   - Parallelization: Slices should be independent enough to implement concurrently with minimal blocking
-   - Checkpoints: Each subtask has a "Test:" line describing verification
-   - Size: Prefer 3-5 major slices; more than 5 suggests scope is too large
-   - Duration: Max 2 hours per subtask; break larger work into smaller subtasks
-
-   After all slices, include a "## Parallelization Strategy" section that:
-   - Identifies which slices must complete first (dependencies)
-   - States which slices can run in parallel
-   - Explains why parallel slices are independent
-   - Describes final integration steps
-
-   Use judgment about structure - the config.yaml provides guidelines.
-
-   After tasks.md is generated, report completion and the path to the tasks file.
-   ```
-
-5. Wait for the sub-agent to complete
-6. Verify specs/* and tasks.md exist at the reported paths
-7. Read the generated `tasks.md` file
-8. Analyze the slice structure for vertical vs horizontal organization:
-
    **Indicators of VERTICAL slicing (correct)**:
    - Each slice has a "Deliverable:" that describes a working, testable feature
    - Slices cross architectural boundaries (e.g., a slice touches both CLI and implementation)
@@ -351,17 +356,83 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
    - Early slices cannot be tested end-to-end without later slices
    - Slices have sequential dependencies (must finish layer 1 before layer 2)
 
-9. If horizontal or mixed slicing detected, **automatically convert to vertical slices**:
+   Requirements for each slice:
+   - Deliverable: A working, testable increment (e.g., "CLI with security removed from public API")
+   - Test: Explicit verification steps showing the slice works end-to-end
+   - Parallelization: Slices should be independent enough to implement concurrently with minimal blocking
+   - Checkpoints: Each subtask has a "Test:" line describing verification
+   - Size: Prefer 3-5 major slices; more than 5 suggests scope is too large
+   - Duration: Max 2 hours per subtask; break larger work into smaller subtasks
 
-   - Identify the smallest testable feature path that crosses all layers
-   - Restructure tasks so each slice delivers that end-to-end path
-   - Each slice should have a clear "Deliverable:" describing what works after completion
-   - Ensure each subtask has explicit "Test:" verification steps
-   - Structure for parallelization where possible (independent slices)
-   - Write the converted structure directly to `tasks.md`
-   - Show a diff of the changes to the user with explanation of what was restructured
+9. Check for "## Parallelization Strategy" section:
 
-10. Present tasks.md to the user for final approval:
+   **If missing or incomplete**, add a simple parallelization strategy section following this format:
+
+   ```markdown
+   ## Parallelization Strategy
+
+   ### Dependencies (Must Complete First)
+
+   - **Slice X** must wait until Slices Y-Z complete (reason)
+
+   **Independent tasks (can run in parallel):**
+   - Slice A and Slice B are independent → can implement simultaneously
+   - Slice A and Slice C are independent → can implement simultaneously
+
+   **Sequential dependencies:**
+   - Slice D must complete before Slice E because (reason)
+
+   **Critical path:**
+   Slice X → Slice Y (reason for dependency)
+
+   **Recommended implementation order:**
+   1. Implement Slices A, B, C in parallel (description)
+   2. Implement Slice D (description)
+   3. Implement Slice E (description)
+   ```
+
+   Keep it simple and focused on:
+   - Which slices can run in parallel (and why they're independent)
+   - Which slices must be sequential (and the dependency reason)
+   - Recommended order for implementation
+
+   DO NOT overcomplicate with excessive detail or edge cases.
+
+10. If horizontal or mixed slicing detected, **automatically convert to vertical slices**:
+
+   CRITICAL: The qrspi-apply skill requires vertical slicing. If /opsx:continue
+   generated horizontal slices, you MUST restructure them before presenting to the user.
+
+   **Conversion process**:
+   
+   a) **Identify end-to-end feature paths**: Look for the smallest complete user-facing
+      feature that touches all relevant architectural layers. For example:
+      - Instead of: "Slice 1: All API changes" + "Slice 2: All CLI changes"
+      - Convert to: "Slice 1: CLI help command (CLI + API)" + "Slice 2: CLI list command (CLI + API)"
+   
+   b) **Restructure each slice** with these required elements:
+      - **Deliverable:** - A working, demonstrable feature (not just "API endpoint exists")
+      - **Test:** - Explicit verification showing the end-to-end path works
+      - **Subtasks in markdown checklist format**: Each subtask MUST use `- [ ] instruction` format
+      - Subtasks that cross layers (e.g., "- [ ] Update API handler" + "- [ ] Wire CLI command" + "- [ ] Add help text")
+      
+      CRITICAL: Preserve the markdown checklist format (`- [ ] ...`) for all subtasks.
+      Do NOT use numbered lists (1. 2. 3.) or plain bullets (- without [ ]).
+      The qrspi-apply skill depends on this format to track task completion.
+   
+   c) **Preserve parallelization opportunities**: Structure slices to be independent
+      - Good: "Slice 1: auth flow" and "Slice 2: data export flow" are independent
+      - Bad: "Slice 1: database schema" must complete before "Slice 2: service layer"
+   
+   d) **Update Parallelization Strategy**: Revise the strategy section to reflect the
+      new slice structure (which slices can run in parallel, which have dependencies)
+   
+   e) **Write changes to tasks.md**: Edit the file in place using the Edit tool
+   
+   f) **Show diff to user**: Display what changed and explain why (e.g., "Converted
+      from layer-based to feature-based slices for better parallelization")
+
+11. Present tasks.md to the user for final approval:
 
    ```
    Specs and tasks generated.
@@ -379,7 +450,12 @@ This is the "brain surgery" moment from the QRSPI talk — a correction here cos
    (c) Manual edit — edit tasks.md yourself, then confirm
    ```
 
-11. Handle user input (same flow as Phase 4: approve, request edits, or manual edit)
+12. Handle user input (same flow as Phase 4: approve, request edits, or manual edit)
+
+**CRITICAL: DO NOT PROCEED TO PHASE 6 WITHOUT EXPLICIT USER APPROVAL.**
+
+Wait for the user to explicitly approve the tasks.md structure. If they don't respond
+or the conversation ends, stop here - do not auto-proceed to completion.
 
 **Output**: Generated `specs/*` and `tasks.md` in `openspec/changes/<slug>/`
 
@@ -470,6 +546,22 @@ This skill assumes the project has:
 4. `AGENTS.md` or `CLAUDE.md` defining agent behavior (ideally via `accelint-onboard-agent` skill)
 
 If any of these are missing, guide the user to set them up before running this skill.
+
+## NEVER Do This
+
+**NEVER generate artifacts yourself** — Always use /opsx commands (new, continue) to create proposal.md, design.md, specs/*, and tasks.md. The /opsx workflow handles artifact generation following OpenSpec's configured rules. If you write artifacts directly, you bypass the project's design/spec/task rules and create inconsistent outputs.
+
+**NEVER generate tasks.md from scratch** — Always use /opsx:continue to create the initial tasks.md. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If /opsx:continue generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) following the validation guidance in Phase 5 Step 10. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert to numbered lists or plain bullets.
+
+**NEVER use numbered lists or plain bullets in tasks.md** — All subtasks must use markdown checklist format: `- [ ] instruction`. The qrspi-apply skill tracks completion by checking/unchecking these boxes. If you see numbered lists (1. 2. 3.) or plain bullets (- without [ ]), convert them to `- [ ] ...` format.
+
+**NEVER overcomplicate Parallelization Strategy** — Keep it simple: list which slices can run in parallel, which have sequential dependencies, and recommended implementation order. Don't add excessive detail about every possible edge case or coordination mechanism. The example in this skill shows the right level of detail.
+
+**NEVER continue to specs/tasks without design approval** — Phase 4 checkpoint is mandatory. If you skip the design review and generate tasks immediately, you miss the "brain surgery" moment where corrections are cheap. Fixing design issues after code is written costs review cycles and rework.
+
+**NEVER let the ticket leak into research/design context** — Questions are generated WITH ticket context, but research and design must see ONLY questions + research answers. If the ticket stays in context during research, the agent will propose solutions instead of gathering objective facts about the current codebase.
+
+**NEVER skip the mandatory checkpoints** — Phase 4 (after design.md) and Phase 5 Step 12 (after tasks.md) require explicit user approval before continuing. If you proceed without waiting for user confirmation ("looks good", "approve", "continue"), you bypass the core value of QRSPI: cheap corrections at the design stage. The "brain surgery" moment is when design is reviewed BEFORE specs/tasks are generated. Skipping checkpoints defeats the entire methodology.
 
 ## Example Usage
 
