@@ -70,14 +70,31 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 **Steps**:
 
 1. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
-2. **Check for partial completion** (resumption detection):
+
+2. **Validate checklist format** (CRITICAL for progress tracking):
+   - Check that tasks use markdown checklist format: `- [ ] task` or `- [x] task`
+   - If tasks use numbered lists (1. 2. 3.) or plain bullets (- without [ ]):
+     ```
+     ❌ Invalid tasks.md format
+     
+     This skill requires tasks in markdown checklist format (`- [ ] task`) for
+     progress tracking and resumption detection.
+     
+     Found format: [numbered lists / plain bullets / other]
+     
+     Please regenerate tasks.md using the accelint-qrspi-propose skill or convert
+     manually to checklist format before applying.
+     ```
+   - Exit if format is invalid — do not proceed with invalid task format
+
+3. **Check for partial completion** (resumption detection):
    - Count completed tasks (marked `- [x]`) vs total tasks
    - Parse which slices have all their tasks marked complete
    - If any slices are complete, announce: "Detected partial completion. Resuming from Slice N."
    - Adjust the execution plan to skip completed slices
 
-3. Look for the "Parallelization Strategy" section (usually at the end of the file)
-4. Parse the strategy to build a dependency graph:
+4. Look for the "Parallelization Strategy" section (usually at the end of the file)
+5. Parse the strategy to build a dependency graph:
 
    **Example strategy:**
    ```md
@@ -102,11 +119,11 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
      - Final integration
    ```
 
-4. If no "Parallelization Strategy" section exists:
+6. If no "Parallelization Strategy" section exists:
    - Assume all tasks must run sequentially (safe default)
    - Inform user: "No parallelization strategy found. Running tasks sequentially."
 
-5. Build an execution plan showing:
+7. Build an execution plan showing:
    - Which slices run in which order
    - Which slices can run in parallel (and which are already complete)
    - Total estimated parallelization speedup
@@ -126,6 +143,10 @@ For each level in the dependency graph (starting from level 0):
    - Spawn a single sub-agent with this prompt:
      ```
      /opsx:apply <change-name>
+
+     CRITICAL: You MUST use the /opsx:apply command to implement tasks.
+     DO NOT implement tasks directly yourself. The /opsx:apply workflow will
+     load context and guide implementation.
 
      IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
      
@@ -155,6 +176,10 @@ For each level with multiple independent slices:
    ```
    /opsx:apply <change-name>
 
+   CRITICAL: You MUST use the /opsx:apply command to implement tasks.
+   DO NOT implement tasks directly yourself. The /opsx:apply workflow will
+   load context and guide implementation.
+
    IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
    
    Context: This slice is independent and runs in parallel with Slices X, Y.
@@ -169,7 +194,6 @@ For each level with multiple independent slices:
        * Mark tasks complete as you go: `- [ ]` → `- [x]`
        * Test your changes if tests are specified in the tasks
    - Report completion with summary of changes made
-   - Expect potential merge conflicts when parallel work is integrated
 
    Focus exclusively on Slice N. Leave other slice tasks unchecked.
    Your work is independent and should not block or depend on other slices.
@@ -204,19 +228,6 @@ For each level with multiple independent slices:
    Progress is tracked in tasks.md checkboxes.
    ```
 
-**Handling merge conflicts**:
-
-When parallel slices complete, check for merge conflicts:
-
-```bash
-git status
-```
-
-If conflicts exist:
-- Report to user: "Parallel slices caused merge conflicts in: [list files]"
-- Ask user to resolve conflicts manually or provide guidance
-- Wait for confirmation before proceeding
-
 **Slice targeting approach**: OpenSpec's `/opsx:apply` command does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
 
 1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `/opsx:apply <change-name>`, which:
@@ -242,6 +253,9 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 ### Phase 3: Verify Implementation
 
 **Goal**: Verify that the implementation matches the change artifacts (specs, tasks, design).
+
+CRITICAL: Verification is MANDATORY before declaring a change ready to archive.
+Do NOT skip this phase or mark the change as complete without running verification.
 
 **Steps**:
 
@@ -367,7 +381,6 @@ The skill always runs `openspec validate` before declaring the change "ready to 
 ### Human-in-the-Loop
 
 The skill reports results and asks for guidance when:
-- Merge conflicts occur from parallel execution
 - Validation fails
 - Tasks are unclear or blocked
 - Any error occurs during implementation
@@ -403,13 +416,23 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 - Fall back to sequential execution (implement all tasks yourself)
 - Inform user: "Sub-agents not available. Running tasks sequentially."
 
+## NEVER Do This
+
+**NEVER implement tasks directly** — Always delegate to `/opsx:apply` command via sub-agents. The /opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
+
+**NEVER skip verification** — Phase 3 verification using `/opsx:verify` is mandatory before declaring a change ready to archive. Verification catches incomplete tasks, unimplemented requirements, and design divergences. Skipping verification risks archiving incomplete or incorrect implementations.
+
+**NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
+
+**NEVER skip dependency levels** — If Slice A blocks Slice B, Slice B cannot start until Slice A completes successfully. Do not spawn dependent slices before their blockers finish, even if it would speed up implementation. The dependency graph in the Parallelization Strategy must be respected.
+
 ## Configuration Requirements
 
 This skill assumes:
 1. OpenSpec is installed and initialized
 2. The change exists and has a tasks.md file
 3. Sub-agent support is available (for parallel execution)
-4. Git is initialized (for checking file changes and merge conflicts)
+4. Git is initialized (for checking file changes)
 
 If any are missing, report the issue and guide the user to set them up.
 
