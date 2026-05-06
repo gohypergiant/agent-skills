@@ -10,11 +10,6 @@ This skill converts acceptance criteria into JSON test plans and then Playwright
   - [test-hooks.md](references/test-hooks.md) contains rules for structuring test hooks
   - This [schema](scripts/plan-schema.ts) is used to validate JSON test plans
 - `scripts/` — translators, validators, and CLI entry points.
-- `assets/examples/` (for local development/demo only!):
-  - Acceptance criteria files are stored in [assets/examples/acceptance/](assets/examples/acceptance/).
-  - Test plans are stored in [assets/examples/plans/](assets/examples/plans/).
-  - Playwright tests are created in [assets/examples/tests/](assets/examples/tests/).
-  - Summary files are created in [assets/examples/summaries/](assets/examples/summaries/).
 - `assets/templates/` — template files users can copy as starting points:
   - [playwright.config.ts](assets/templates/playwright.config.ts) — portable Playwright config for running generated specs.
 
