@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.1] - 2026-05-07
+
+### Fixed
+- **CRITICAL: Input validation in Phase 0** — skill now checks if user provided a ticket or idea before proceeding
+  - Issue: When invoked with no arguments/content, skill attempted to use internal examples to generate artifacts
+  - Fix: Added validation step in Phase 0 that checks for user-provided input and exits with helpful prompt if missing
+  - Rationale: Prevents skill from hallucinating requirements or using unrelated example data
+  - User experience: Clear error message explaining what input is needed (ticket ID, feature request, or problem statement)
+
+### Version
+- Bumped from 1.1.0 → 1.1.1
+
 ## [1.1.0] - 2026-05-01
 
 ### Fixed

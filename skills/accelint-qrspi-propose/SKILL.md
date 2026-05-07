@@ -4,7 +4,7 @@ description: Automate the QRSPI + OpenSpec planning workflow (Questions → Rese
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Accelint QRSPI
@@ -65,16 +65,26 @@ Phase 5 generates specs/* and tasks.md separately after design approval.
 
 ### Phase 0: Preflight Checks
 
-Before starting, verify OpenSpec has the required workflows enabled.
-
-**Required workflows**: `explore`, `new`, `continue`
+Before starting, verify the user provided input and OpenSpec has the required workflows enabled.
 
 **Steps**:
 
-1. Tell the user: "Checking OpenSpec configuration..."
-2. Run `openspec config list` and parse the output
-3. Check if the `workflows:` section contains all three required workflows: `explore`, `new`, and `continue`
-4. If any are missing:
+1. **Validate user input**: Check if the user provided a ticket, feature request, or idea in their prompt (either as skill arguments or in their message). If the prompt is empty or contains only the skill invocation with no actual content:
+   ```
+   I need a ticket or feature description to plan. Please provide:
+
+   - A ticket ID and description (e.g., "ATI-123: Add user authentication...")
+   - A feature request ("I want to add dark mode support...")
+   - An idea or problem statement ("Users complain about slow search...")
+
+   Then I'll use QRSPI to break it down into a structured plan.
+   ```
+   Exit the skill and wait for the user to provide input. Do NOT proceed with internal examples or placeholder content.
+
+2. Tell the user: "Checking OpenSpec configuration..."
+3. Run `openspec config list` and parse the output
+4. Check if the `workflows:` section contains all three required workflows: `explore`, `new`, and `continue`
+5. If any are missing:
    ```
    This skill requires the expanded OpenSpec workflows (explore, new, continue).
 
@@ -89,8 +99,8 @@ Before starting, verify OpenSpec has the required workflows enabled.
 
    Then re-run this skill.
    ```
-5. Exit the skill if required workflows are not enabled
-6. If all workflows are present, proceed to Phase 1
+6. Exit the skill if required workflows are not enabled
+7. If validation passes and all workflows are present, proceed to Phase 1
 
 ### Phase 1: Questions (Ticket Context → Questions)
 
@@ -194,11 +204,11 @@ Before starting, verify OpenSpec has the required workflows enabled.
    - Avoid detailed implementation plans, test strategies, or migration steps
 
    After design.md is generated (and ONLY proposal.md and design.md exist),
-   report completion, the CHANGE NAME, and the path to the design file. 
-   
+   report completion, the CHANGE NAME, and the path to the design file.
+
    IMPORTANT: You MUST report the change name explicitly at the end like:
    "Change name: <slug>"
-   
+
    Do NOT continue to generate specs or tasks - that happens in Phase 5 after human review.
    ```
 
