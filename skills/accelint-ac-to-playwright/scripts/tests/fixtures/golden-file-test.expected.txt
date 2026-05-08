@@ -43,7 +43,7 @@ test.describe("Golden file test", {
 
     tracker.setStep(4);
     try {
-      await expect(page).toHaveURL(/dashboard/);
+      await expect(page).toHaveURL(/\/dashboard(?:\/(?:[?#]|$)|[?#]|$)/);
     } catch (error) {
       await attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "expectUrl" });
       throw error;

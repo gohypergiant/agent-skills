@@ -57,7 +57,7 @@ describe("_translateSingleTest", () => {
     const out = _translateSingleTest(testInput);
 
     const first = out.indexOf(`await page.goto("/one");`);
-    const second = out.indexOf(`toHaveURL(/one/);`);
+    const second = out.indexOf(`toHaveURL(/\\/one(?:\\/(?:[?#]|$)|[?#]|$)/);`);
 
     expect(first).toBeGreaterThan(-1);
     expect(second).toBeGreaterThan(-1);
