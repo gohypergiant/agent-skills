@@ -4,7 +4,7 @@ description: Automate the QRSPI + OpenSpec planning workflow (Questions → Rese
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # Accelint QRSPI
@@ -51,11 +51,11 @@ openspec update
 │                                      design.md       —          │
 │                                      [STOP HERE]                │
 │  ⚠️  CHECKPOINT 1: Review design.md - MUST approve to continue  │
-│                                                                  │
+│                                                                 │
 │  Specs/Tasks    Q+R+design           specs/*         —          │
 │                                      tasks.md        —          │
 │  ⚠️  CHECKPOINT 2: Review tasks.md - MUST approve to continue   │
-│                                                                  │
+│                                                                 │
 │  Done           —                    Exit            —          │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -196,11 +196,11 @@ Before starting, verify OpenSpec has the required workflows enabled.
    command handles artifact generation based on config.yaml rules.
 
    After design.md is generated (and ONLY proposal.md and design.md exist),
-   report completion, the CHANGE NAME, and the path to the design file. 
-   
+   report completion, the CHANGE NAME, and the path to the design file.
+
    IMPORTANT: You MUST report the change name explicitly at the end like:
    "Change name: <slug>"
-   
+
    CRITICAL: STOP AFTER GENERATING DESIGN.MD. DO NOT CONTINUE TO SPECS OR TASKS.
    Your job ends here. The parent agent will handle the checkpoint and Phase 5.
    If you generate specs/* or tasks.md, you will bypass the mandatory design review.
@@ -312,8 +312,8 @@ of QRSPI methodology.
    IMPORTANT: Let /opsx:continue generate tasks.md using the OpenSpec workflow.
    DO NOT write tasks.md yourself. The /opsx:continue command handles this.
 
-   After tasks.md is generated, you will need to validate it follows vertical
-   slicing principles (validation happens in the next step, not here).
+   After tasks.md is generated, the parent agent will validate vertical slicing
+   and add a "## Parallelization Strategy" section if needed.
 
    After tasks.md is generated, report completion and the path to the tasks file.
    ```
@@ -364,9 +364,49 @@ of QRSPI methodology.
    - Size: Prefer 3-5 major slices; more than 5 suggests scope is too large
    - Duration: Max 2 hours per subtask; break larger work into smaller subtasks
 
-9. Check for "## Parallelization Strategy" section:
+9. If horizontal or mixed slicing detected, **automatically convert to vertical slices**:
 
-   **If missing or incomplete**, add a simple parallelization strategy section following this format:
+   CRITICAL: The qrspi-apply skill requires vertical slicing. If /opsx:continue
+   generated horizontal slices, you MUST restructure them before presenting to the user.
+
+   **Conversion process**:
+
+   a) **Identify end-to-end feature paths**: Look for the smallest complete user-facing
+      feature that touches all relevant architectural layers. For example:
+      - Instead of: "Slice 1: All API changes" + "Slice 2: All CLI changes"
+      - Convert to: "Slice 1: CLI help command (CLI + API)" + "Slice 2: CLI list command (CLI + API)"
+
+   b) **Restructure each slice** with these required elements:
+      - **Deliverable:** - A working, demonstrable feature (not just "API endpoint exists")
+      - **Test:** - Explicit verification showing the end-to-end path works
+      - **Subtasks in markdown checklist format**: Each subtask MUST use `- [ ] instruction` format
+      - Subtasks that cross layers (e.g., "- [ ] Update API handler" + "- [ ] Wire CLI command" + "- [ ] Add help text")
+
+      CRITICAL: Preserve the markdown checklist format (`- [ ] ...`) for all subtasks.
+      Do NOT use numbered lists (1. 2. 3.) or plain bullets (- without [ ]).
+      The qrspi-apply skill depends on this format to track task completion.
+
+   c) **Preserve parallelization opportunities**: Structure slices to be independent
+      - Good: "Slice 1: auth flow" and "Slice 2: data export flow" are independent
+      - Bad: "Slice 1: database schema" must complete before "Slice 2: service layer"
+
+   d) **Update Parallelization Strategy (if it exists)**: If the tasks.md already has
+      a "## Parallelization Strategy" section, revise it to reflect the new slice
+      structure (which slices can run in parallel, which have dependencies).
+      Note: If the section doesn't exist, the parent agent will add it in step 10.
+
+   e) **Write changes to tasks.md**: Edit the file in place using the Edit tool
+
+   f) **Show diff to user**: Display what changed and explain why (e.g., "Converted
+      from layer-based to feature-based slices for better parallelization")
+
+10. **CRITICAL: Check for and add Parallelization Strategy section**:
+
+   After vertical slicing is validated/corrected, check if tasks.md contains a
+   "## Parallelization Strategy" section.
+
+   **If the section is missing or incomplete**, add it NOW using the Edit tool
+   to append to the end of tasks.md (after all slices):
 
    ```markdown
    ## Parallelization Strategy
@@ -398,39 +438,9 @@ of QRSPI methodology.
 
    DO NOT overcomplicate with excessive detail or edge cases.
 
-10. If horizontal or mixed slicing detected, **automatically convert to vertical slices**:
-
-   CRITICAL: The qrspi-apply skill requires vertical slicing. If /opsx:continue
-   generated horizontal slices, you MUST restructure them before presenting to the user.
-
-   **Conversion process**:
-   
-   a) **Identify end-to-end feature paths**: Look for the smallest complete user-facing
-      feature that touches all relevant architectural layers. For example:
-      - Instead of: "Slice 1: All API changes" + "Slice 2: All CLI changes"
-      - Convert to: "Slice 1: CLI help command (CLI + API)" + "Slice 2: CLI list command (CLI + API)"
-   
-   b) **Restructure each slice** with these required elements:
-      - **Deliverable:** - A working, demonstrable feature (not just "API endpoint exists")
-      - **Test:** - Explicit verification showing the end-to-end path works
-      - **Subtasks in markdown checklist format**: Each subtask MUST use `- [ ] instruction` format
-      - Subtasks that cross layers (e.g., "- [ ] Update API handler" + "- [ ] Wire CLI command" + "- [ ] Add help text")
-      
-      CRITICAL: Preserve the markdown checklist format (`- [ ] ...`) for all subtasks.
-      Do NOT use numbered lists (1. 2. 3.) or plain bullets (- without [ ]).
-      The qrspi-apply skill depends on this format to track task completion.
-   
-   c) **Preserve parallelization opportunities**: Structure slices to be independent
-      - Good: "Slice 1: auth flow" and "Slice 2: data export flow" are independent
-      - Bad: "Slice 1: database schema" must complete before "Slice 2: service layer"
-   
-   d) **Update Parallelization Strategy**: Revise the strategy section to reflect the
-      new slice structure (which slices can run in parallel, which have dependencies)
-   
-   e) **Write changes to tasks.md**: Edit the file in place using the Edit tool
-   
-   f) **Show diff to user**: Display what changed and explain why (e.g., "Converted
-      from layer-based to feature-based slices for better parallelization")
+   **If the section exists but was part of a horizontal-to-vertical conversion**
+   (step 9d), verify it accurately reflects the new vertical slice structure and
+   update if needed.
 
 11. Present tasks.md to the user for final approval:
 
