@@ -193,15 +193,15 @@ Ask only about what discovery couldn't determine. Group related questions into n
 
 ### Phase 3 — Preview and Write
 
-1. **Check for agent behavior doc** — if Agent A found AGENTS.md or CLAUDE.md, prepare a reference block for inclusion at the top of ARCHITECTURE.md (see template note below).
-
-2. **Show a labeled preview** of the complete ARCHITECTURE.md before writing. Mark each field:
+1. **Show a labeled preview** of the complete ARCHITECTURE.md before writing. Mark each field:
    - `# inferred from [file]` — for auto-detected values
    - `<!-- TODO: fill in -->` — for unresolved fields
 
-3. Ask: *"Does this look right? Any sections to correct before I write?"*
+2. Ask: *"Does this look right? Any sections to correct before I write?"*
 
-4. After confirmation, write to ARCHITECTURE.md at the target location (root or package dir), **stripping inference source comments** — they are for review only, not the final file.
+3. After confirmation, write to ARCHITECTURE.md at the target location (root or package dir), **stripping inference source comments** — they are for review only, not the final file.
+
+4. **Update agent behavior doc if present** — if Agent A found AGENTS.md or CLAUDE.md, check whether it references ARCHITECTURE.md. If not, append a reference block to help agents understand the system structure (see instructions below).
 
 5. Print a brief summary: what was inferred, what was answered directly, which `<!-- TODO -->` sections still need human input.
 
@@ -225,14 +225,6 @@ Ask only about what discovery couldn't determine. Group related questions into n
 
 Load `references/template.md` for the full 11-section ARCHITECTURE.md skeleton.
 
-**Agent behavior doc reference:** If AGENTS.md or CLAUDE.md was found (checked in that order), include this block immediately after the opening `# Architecture Overview` heading:
-
-```markdown
-> **Agent Behavior:** See [AGENTS.md](./AGENTS.md) for how AI agents should behave when working in this codebase.
-```
-
-(Use `CLAUDE.md` in the link if only CLAUDE.md was found. Omit the block if neither file exists.)
-
 **Monorepo package docs:** Include the following immediately after the opening heading:
 
 ```markdown
@@ -240,3 +232,22 @@ Load `references/template.md` for the full 11-section ARCHITECTURE.md skeleton.
 ```
 
 Adjust the relative path to point at the actual root ARCHITECTURE.md.
+
+---
+
+## Updating Agent Behavior Documents
+
+ARCHITECTURE.md is a pure technical document about system structure and should not reference agent behavior files. However, agent behavior files (AGENTS.md or CLAUDE.md) should reference ARCHITECTURE.md since understanding system architecture may inform agent behavior.
+
+After writing ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md (check in that order):
+
+1. **Read the agent behavior file** to check whether it already mentions ARCHITECTURE.md
+2. **If no reference exists,** add this block near the top of the file (after any existing title/header, before main content):
+
+```markdown
+## System Architecture
+
+For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
+```
+
+3. **If using CLAUDE.md** and it simply points to AGENTS.md (e.g., `@AGENTS.md`), update AGENTS.md instead — don't modify the pointer file.
