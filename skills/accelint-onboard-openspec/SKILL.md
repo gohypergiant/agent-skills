@@ -4,13 +4,17 @@ description: Interactively onboard a project to OpenSpec by running a structured
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Onboard OpenSpec
 
 Guide the user through a conversational interview to produce a complete,
 project-specific `openspec/config.yaml` configured for the QRSPI methodology.
+
+## NEVER Do When Onboarding OpenSpec
+
+- **NEVER run codebase inference serially when subagents are available** — Phase 3 spawns parallel subagents for different discovery domains. Serial scanning wastes time on codebases with many config files spread across directories. Spawn all 4 discovery agents simultaneously.
 
 ## Companion Skill
 
@@ -280,42 +284,57 @@ examples as a pattern; extend to other stacks as appropriate.
 
 ---
 
-### Phase 3 — Codebase Inference (fill gaps before generating)
+### Phase 3 — Parallel Codebase Inference
 
-After the interview, audit every config field that still has no answer. For each
-gap, attempt to derive the answer directly from the codebase before asking the
-user or leaving the field empty. All config sections are load-bearing — a
-missing field degrades every downstream AI artifact, so inference is always
-preferable to omission.
+After the interview, spawn parallel discovery subagents to fill remaining config
+gaps. All config sections are load-bearing — a missing field degrades every
+downstream AI artifact, so inference is always preferable to omission.
 
-**Inference targets and where to look:**
+Spawn discovery subagents in parallel — don't scan serially. Each agent focuses
+on one inference domain and returns structured findings. Wait for all agents to
+complete, then merge results before Phase 4.
 
-| Gap | Files / signals to inspect |
-|-----|---------------------------|
-| Runtime / Node version | `.nvmrc`, `.node-version`, `package.json#engines`, `Dockerfile` |
-| TypeScript config | `tsconfig.json` (compilerOptions flags, paths aliases) |
-| Package manager | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `bun.lockb` |
-| Monorepo workspaces | `package.json#workspaces`, `pnpm-workspace.yaml`, `turbo.json`, `nx.json` |
-| Build tools | `vite.config.*`, `webpack.config.*`, `tsup.config.*`, `esbuild` scripts in `package.json` |
-| Test framework | `vitest.config.*`, `jest.config.*`, `pytest.ini`, `pyproject.toml#tool.pytest` |
-| Linting / formatting | `.eslintrc*`, `biome.json`, `.prettierrc*`, `ruff.toml` |
-| CI/CD | `.github/workflows/`, `.circleci/`, `Jenkinsfile` |
-| Versioning | `.changeset/`, `CHANGELOG.md`, `commitlint.config.*`, `.releaserc*` |
-| Path aliases | `tsconfig.json#compilerOptions.paths`, `vite.config#resolve.alias` |
-| Architecture organisation | Directory tree of `src/` or workspace roots — infer feature-based vs layer-based |
-| Design patterns | Sample source files — look for factory functions, repository objects, observer hooks |
-| Export style | Sample 3–5 source files; tally named vs default exports |
-| Naming conventions | Sample file names, exported identifiers; describe what you observe |
-| Error handling | Grep for `throw`, `Result`, `Either`, `tryCatch`, error boundary components |
-| Test structure | Sample test files — describe/it nesting depth, file location relative to source |
-| Anti-patterns | `eslint` rule overrides marked `off` or `warn`, comments like `// TODO: replace`, `@deprecated` |
-| TypeScript baseline patterns | If `tsconfig.json` exists, automatically include TS/JS baseline patterns (classes, return values, type safety, testing, anti-patterns) |
-| Vitest global mock cleanup | `vitest.config.ts` — check for `clearMocks`, `mockReset`, `restoreMocks` in config |
-| Test file type checking | CI scripts, package.json — check if `tsc --noEmit` runs on `*.test.ts` files |
-| Property-based testing | Check for `fast-check` in dependencies — indicates PBT usage |
+**Spawn these agents simultaneously:**
 
-**After inference, for each field resolved this way**, note the source in the
-preview with a trailing comment, e.g.:
+**Agent A — Stack & Build Tooling**
+- Runtime / Node version: `.nvmrc`, `.node-version`, `package.json#engines`, `Dockerfile`
+- TypeScript config: `tsconfig.json` (compilerOptions flags, paths aliases)
+- Package manager: `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `bun.lockb`
+- Monorepo workspaces: `package.json#workspaces`, `pnpm-workspace.yaml`, `turbo.json`, `nx.json`
+- Build tools: `vite.config.*`, `webpack.config.*`, `tsup.config.*`, `esbuild` scripts
+- Return: runtime version, TS config flags, package manager, workspace list, build tools
+
+**Agent B — Testing & Code Quality**
+- Test framework: `vitest.config.*`, `jest.config.*`, `pytest.ini`, `pyproject.toml#tool.pytest`
+- Linting / formatting: `.eslintrc*`, `biome.json`, `.prettierrc*`, `ruff.toml`
+- Test structure: Sample test files — describe/it nesting depth, file location relative to source
+- Test file type checking: CI scripts, package.json — check if `tsc --noEmit` runs on `*.test.ts` files
+- Property-based testing: Check for `fast-check` in dependencies
+- Vitest mock cleanup: `vitest.config.ts` — check for `clearMocks`, `mockReset`, `restoreMocks`
+- Return: test framework, code quality tools, test structure patterns, type checking config
+
+**Agent C — Architecture & Code Patterns**
+- Architecture organisation: Directory tree of `src/` or workspace roots — infer feature-based vs layer-based
+- Path aliases: `tsconfig.json#compilerOptions.paths`, `vite.config#resolve.alias`
+- Design patterns: Sample source files — look for factory functions, repository objects, observer hooks
+- Export style: Sample 3–5 source files; tally named vs default exports
+- Naming conventions: Sample file names, exported identifiers; describe what you observe
+- Error handling: Grep for `throw`, `Result`, `Either`, `tryCatch`, error boundary components
+- TypeScript baseline patterns: If `tsconfig.json` exists, flag that TS/JS baseline patterns should be included
+- Return: architecture style, path aliases, design patterns, export conventions, naming patterns, error handling approach
+
+**Agent D — CI/CD & Versioning**
+- CI/CD: `.github/workflows/`, `.circleci/`, `Jenkinsfile`
+- Versioning: `.changeset/`, `CHANGELOG.md`, `commitlint.config.*`, `.releaserc*`
+- Anti-patterns: `eslint` rule overrides marked `off` or `warn`, comments like `// TODO: replace`, `@deprecated`
+- Return: CI/CD platform, versioning approach, documented anti-patterns
+
+**After all agents complete:** merge their findings into a unified inference map.
+Tag each field as `INFERRED [source]` or `UNKNOWN`. Fields tagged `UNKNOWN`
+should be marked as `# TODO: fill in` in the config preview.
+
+**For each field resolved via inference**, note the source in the preview with a
+trailing comment, e.g.:
 
 ```yaml
 - Runtime: Node.js 20 LTS   # inferred from .nvmrc
