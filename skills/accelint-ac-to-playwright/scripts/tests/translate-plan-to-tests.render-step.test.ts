@@ -135,7 +135,7 @@ describe("renderStep", () => {
       { action: "expectUrl", value: "dashboard" },
       1,
       [
-        "await expect(page).toHaveURL(/dashboard/);",
+        "await expect(page).toHaveURL(/\\/dashboard(?:\\/(?:[?#]|$)|[?#]|$)/);",
         'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "expectUrl" })'
       ],
     ],

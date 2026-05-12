@@ -224,12 +224,20 @@ function joinOutDir(outDir: string, filename: string): string {
   return `${trimmed}${separator}${filename}`;
 }
 
-// Converts a string to a regex literal, escaping all special regex characters
+// Converts a string to a regex literal that matches the path portion of a URL
   function toRegexLiteral(pattern: string): string {
-    const escaped = pattern
+    // Normalize: add leading slash if missing
+    const normalized = pattern.startsWith('/') ? pattern : `/${pattern}`;
+
+    // Escape special regex characters
+    const escaped = normalized
       .replace(/[\\^$.*+?()[\]{}|]/g, "\\$&")  // Escape all regex metacharacters
       .replace(/\//g, "\\/");                  // Also escape forward slashes for the literal
-    return `/${escaped}/`;
+
+    // Match the path, optionally followed by trailing slash (but not more path segments), query params, or hash
+    // The pattern ensures /dashboard matches /dashboard, /dashboard/, /dashboard?x, /dashboard#x
+    // but NOT /dashboard/edit or URLs where dashboard appears in query/hash
+    return `/${escaped}(?:\\/(?:[?#]|$)|[?#]|$)/`;
   }
 
 // Outputs tags in the correct format for Playwright
