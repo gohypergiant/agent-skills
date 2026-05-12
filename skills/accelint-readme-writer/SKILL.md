@@ -4,12 +4,21 @@ description: Use when creating or editing a README.md file in any project or pac
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # README Writer
 
 This skill guides the creation and maintenance of comprehensive, human-friendly README documentation by analyzing the codebase and ensuring documentation stays in sync with actual functionality.
+
+## NEVER Do When Writing READMEs
+
+- **NEVER run discovery serially when sub-agents are available** — spawn parallel discovery agents for different aspects (entry points, dependencies, examples, existing docs) to analyze the codebase efficiently. Serial file-by-file scanning wastes time.
+- **NEVER document non-exported internal functions** — only document the public API that's accessible through package entry points. Internal helper functions that aren't re-exported from `index.ts` don't belong in the README.
+- **NEVER fabricate usage examples** — extract real examples from test files, JSDoc blocks, or `examples/` directories. Made-up examples often contain subtle errors that confuse users.
+- **NEVER use the wrong package manager commands** — check for lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`) and use the matching package manager in all commands. Wrong commands break the user's first experience.
+- **NEVER skip comparing code to existing README** — when updating documentation, identify what's missing, what's stale, and what signature changes occurred. Silent drift between code and docs causes user frustration.
+- **NEVER write robotic, AI-sounding text** — use the humanizer skill to remove inflated language, promotional tone, and AI writing patterns. Documentation should sound like a helpful human wrote it.
 
 ## When to Activate This Skill
 
@@ -45,15 +54,39 @@ project-root/           # README here documents entire monorepo
 └── README.md
 ```
 
-### Step 2: Analyze the Codebase
+### Step 2: Parallel Codebase Discovery
 
-Recursively parse code starting from the README's directory:
+**Use parallel sub-agents when available** to discover different aspects of the codebase simultaneously. If sub-agents are not available, perform these discovery tasks inline but in the same systematic order.
 
-1. **Identify entry points**: Look for `index.ts`, `main.ts`, package.json `main`/`exports`
-2. **Map public API**: Find all exported functions, classes, types, constants
-3. **Trace dependencies**: Understand what the package depends on
-4. **Find examples**: Look for `examples/`, test files, or inline usage comments
-5. **Check package.json**: Extract scripts, dependencies, peer dependencies
+Spawn these discovery agents in parallel (if sub-agents available):
+
+**Agent A — Entry Points & Public API**
+- Check `package.json` for `main`, `module`, `types`, `exports` fields
+- Read the main entry point file (e.g., `src/index.ts`)
+- Trace all re-exports to map the complete public API
+- List all exported functions, classes, types, constants with signatures
+- Return: entry point paths, complete export list with types
+
+**Agent B — Dependencies & Configuration**
+- Read `package.json` for dependencies, devDependencies, peerDependencies, scripts
+- Check lockfile type (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`)
+- Look for configuration files: `tsconfig.json`, `.eslintrc*`, `vitest.config.*`, etc.
+- Return: dependency list (separate runtime vs peer), available scripts, package manager, configs found
+
+**Agent C — Examples & Usage Patterns**
+- Search for `examples/` or `__examples__/` directory
+- Read test files (`*.test.ts`, `*.spec.ts`) for usage patterns
+- Extract JSDoc `@example` blocks from source files
+- Look for inline comments showing usage
+- Return: example file paths, extracted usage patterns from tests, JSDoc examples
+
+**Agent D — Documentation Context** *(optional, runs concurrently)*
+- Check for existing README.md
+- Look for CHANGELOG.md, CONTRIBUTING.md, LICENSE
+- Check for TypeDoc/JSDoc configuration
+- Return: existing doc files and their key sections
+
+**After all agents complete:** merge findings and identify documentation gaps (what exists in code but not in README, what's documented but doesn't exist, signature mismatches)
 
 ### Step 3: Compare Against Existing README
 

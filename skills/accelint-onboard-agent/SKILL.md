@@ -4,7 +4,7 @@ description: Interactively onboard a project to agent-driven development by runn
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Onboard Agents
@@ -62,6 +62,16 @@ should the agent behave?", it belongs in `config.yaml`, not here.
 | "Prefer small, focused PRs"       | "`type` over `interface`"         |
 | "You are a senior TS engineer"    | "Domain: geospatial visualization"|
 | "Never force-push to main"        | "Testing: Vitest + @testing-library"|
+
+---
+
+## NEVER Do When Onboarding Agents
+
+- **NEVER run codebase discovery serially** — Phase 3 spawns parallel subagents for different behavioral domains. Serial scanning wastes time on codebases with many config files spread across directories.
+- **NEVER skip discovery before asking questions** — attempt to infer behavioral conventions from the codebase before adding questions to the interview. A question about commit format when `commitlint.config.ts` exists wastes the user's time.
+- **NEVER omit sections from the generated AGENTS.md** — if a section cannot be inferred or answered, mark it with `<!-- TODO: fill in -->` rather than leaving it out. Missing sections silently shape agent behavior in unpredictable ways.
+- **NEVER duplicate root-level instructions in package-level files** — if a monorepo root AGENTS.md exists, package files should reference it and add only what is package-specific. Repeated instructions inflate context on every agent invocation.
+- **NEVER write the final file without showing a preview** — the user must see inferred values with source annotations and confirm before any filesystem write.
 
 ---
 
@@ -321,35 +331,56 @@ appropriate.
 
 ---
 
-### Phase 3 — Codebase Inference (fill gaps before generating)
+### Phase 3 — Parallel Codebase Discovery (fill gaps before generating)
 
 After the interview, audit every AGENTS.md section that still has no answer.
 For each gap, attempt to derive the behavioral intent directly from the
-codebase before asking or leaving a `# TODO`. A behavioral file with explicit
-TODOs is actionable; a file with missing sections silently shapes agent
-behavior in unpredictable ways.
+codebase using parallel subagents before asking or leaving a `# TODO`. A
+behavioral file with explicit TODOs is actionable; a file with missing sections
+silently shapes agent behavior in unpredictable ways.
 
-**Inference targets and where to look:**
+Spawn discovery subagents in parallel — don't scan serially. Each agent focuses
+on one behavioral domain and returns structured findings. Wait for all agents
+to complete, then merge results before Phase 4.
 
-| Gap | Files / signals to inspect |
-|-----|---------------------------|
-| Commit convention | `commitlint.config.*`, recent `git log --oneline`, `.gitmessage`, `.releaserc*` |
-| PR workflow | `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/` (CI gate names) |
-| Pre-commit checks | `.husky/`, `.lefthook.yml`, `package.json#scripts` (lint, typecheck, test) |
-| Test runner preference | `vitest.config.*`, `jest.config.*` — whichever is present |
-| Package manager | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `bun.lockb` |
-| Forced-push protection | `.github/branch-protection*`, README mentions of branch policy |
-| Migration guardrails | Presence of `migrations/`, `prisma/migrations/`, `alembic/` |
-| Secret handling | `.env.example`, `.gitignore` patterns, presence of `dotenv` / vault tooling |
-| OpenSpec usage | `openspec/` directory, `openspec/config.yaml`, any `/opsx:*` references in docs |
-| Versioning workflow | `.changeset/`, `CHANGELOG.md`, `standard-version`, `conventional-changelog` |
-| Path aliases (for tool commands) | `tsconfig.json#paths`, `vite.config` — infer preferred import style |
-| TypeScript project detection | `tsconfig.json` presence — enables TS-specific baseline guardrails |
-| Vitest global mock cleanup | `vitest.config.ts` — check for `clearMocks`, `mockReset`, `restoreMocks` flags |
-| Test file type checking | CI workflows, package.json scripts — check if `tsc --noEmit` runs on test files |
+**Spawn these agents simultaneously:**
 
-**After inference, for each field resolved this way**, note the source in the
-preview with a trailing comment, e.g.:
+**Agent A — Version Control & Commit Conventions**
+- Commit convention: `commitlint.config.*`, recent `git log --oneline`, `.gitmessage`, `.releaserc*`
+- Versioning workflow: `.changeset/`, `CHANGELOG.md`, `standard-version`, `conventional-changelog`
+- Forced-push protection: `.github/branch-protection*`, README mentions of branch policy
+- Return: commit message format with types and examples, versioning commands, branch protection rules
+
+**Agent B — CI/CD & Pre-commit Workflows**
+- PR workflow: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/workflows/` (CI gate names, required checks)
+- Pre-commit checks: `.husky/`, `.lefthook.yml`, `package.json#scripts` (lint, typecheck, test)
+- Return: PR conventions (size, labels, templates), pre-commit checklist with commands, CI required checks
+
+**Agent C — Testing & Code Quality**
+- Test runner: `vitest.config.*`, `jest.config.*`, `pytest.ini`, `pyproject.toml [tool.pytest]`, Playwright, Cypress
+- Package manager: `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `bun.lockb`
+- TypeScript project: `tsconfig.json` presence, path aliases in `tsconfig.json#paths` or `vite.config`
+- Vitest config: `vitest.config.ts` — check for `clearMocks`, `mockReset`, `restoreMocks` flags
+- Test file type checking: CI workflows, `package.json` scripts — check if `tsc --noEmit` runs on test files
+- Return: test framework, package manager, TS-specific guardrails if applicable, vitest cleanup config
+
+**Agent D — Security & Migrations**
+- Migration files: presence of `migrations/`, `prisma/migrations/`, `alembic/`
+- Secret handling: `.env.example`, `.gitignore` patterns, presence of `dotenv` / vault tooling
+- Return: migration guardrails if migrations exist, secret handling practices
+
+**Agent E — OpenSpec & Development Workflow**
+- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `/opsx:*` references in docs or CLAUDE.md
+- Return: OpenSpec usage status, when to invoke spec workflow
+
+**After all agents complete:** merge their findings into a unified discovery map.
+Tag each field as `# inferred from [source]` or leave empty if unknown. Fields
+that remain empty after discovery become explicit `<!-- TODO: fill in -->` markers
+in the generated file.
+
+**Preview with source annotations:**
+
+After merging discovery results, show a preview with trailing comments on inferred values:
 
 ```markdown
 - Always run `pnpm check` before committing   # inferred from .husky/pre-commit
@@ -566,6 +597,7 @@ with placeholder text.
 
 ## Interaction Principles
 
+- **Parallel discovery.** Spawn subagents for Phase 3 simultaneously — don't scan config files one-by-one.
 - **Conversational, not interrogative.** Bundle related questions into a
   single turn. Use natural language, not bullet-dump forms.
 - **Infer and confirm.** "You mentioned Husky — I'll assume the pre-commit
