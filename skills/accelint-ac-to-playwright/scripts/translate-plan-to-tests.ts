@@ -60,6 +60,8 @@ export function translatePlan(
   const lines: string[] = [];
 
   lines.push(`import { expect, test } from "@playwright/test";`);
+  lines.push(`import { setupConsoleTracking } from "./fixtures/console-tracking";`);
+  lines.push(`import { attachFailureArtifacts } from "./fixtures/error-handling";`);
   lines.push(``);
 
   // Set up group
@@ -85,83 +87,7 @@ export function translatePlan(
     lines.push(translateSingleTest(test));
   }
 
-  // Helper to attach diagnostics on failure
   lines.push(`});`);
-  lines.push(``);
-  lines.push(`async function attachFailureArtifacts(args: {`);
-  lines.push(`  page: import("@playwright/test").Page;`);
-  lines.push(`  testInfo: import("@playwright/test").TestInfo;`);
-  lines.push(`  stepIndex: number;`);
-  lines.push(`  action: string;`);
-  lines.push(`  testId?: string;`);
-  lines.push(`}) {`);
-  lines.push(`  const { page, testInfo, stepIndex, action, testId } = args;`);
-  lines.push(`  if (!testInfo) return;`);
-  lines.push(`  const payload = {`);
-  lines.push(`    url: page.url(),`);
-  lines.push(`    stepIndex,`);
-  lines.push(`    action,`);
-  lines.push(`    testId,`);
-  lines.push(`  };`);
-  lines.push(`  await testInfo.attach("step failure", {`);
-  lines.push(`    contentType: "application/json",`);
-  lines.push(`    body: Buffer.from(JSON.stringify(payload, null, 2), "utf8"),`);
-  lines.push(`  });`);
-  lines.push(`  try {`);
-  lines.push(`    const screenshot = await page.screenshot({ fullPage: true });`);
-  lines.push(`    await testInfo.attach("step screenshot", {`);
-  lines.push(`      contentType: "image/png",`);
-  lines.push(`      body: screenshot,`);
-  lines.push(`    });`);
-  lines.push(`  } catch {`);
-  lines.push(`    // ignore screenshot issues`);
-  lines.push(`  }`);
-  lines.push(`  try {`);
-  lines.push(`    const video = page.video?.();`);
-  lines.push(`    if (video) {`);
-  lines.push(`      const path = await video.path();`);
-  lines.push(`      await testInfo.attach("step video", {`);
-  lines.push(`        contentType: "video/webm",`);
-  lines.push(`        path,`);
-  lines.push(`      });`);
-  lines.push(`    }`);
-  lines.push(`  } catch {`);
-  lines.push(`    // ignore video issues`);
-  lines.push(`  }`);
-  lines.push(`}`);
-
-  // Helper to attach console logs (if present)
-  lines.push(``);
-  lines.push(`async function setupConsoleTracking(args: {`);
-  lines.push(`  page: import("@playwright/test").Page;`);
-  lines.push(`  testInfo: import("@playwright/test").TestInfo;`);
-  lines.push(`}) {`);
-  lines.push(`  const { page, testInfo } = args;`);
-  lines.push(`  const consoleMessages: Array<{ type: string; text: string; stepIndex: number; timestamp: string; location: { url: string; lineNumber?: number; columnNumber?: number } }> = [];`);
-  lines.push(`  let currentStep = 0;`);
-  lines.push(``);
-  lines.push(`  page.on('console', msg => {`);
-  lines.push(`    consoleMessages.push({`);
-  lines.push(`      type: msg.type(),`);
-  lines.push(`      text: msg.text(),`);
-  lines.push(`      stepIndex: currentStep,`);
-  lines.push(`      timestamp: new Date().toISOString(),`);
-  lines.push(`      location: msg.location()`);
-  lines.push(`    });`);
-  lines.push(`  });`);
-  lines.push(``);
-  lines.push(`  return {`);
-  lines.push(`    setStep: (step: number) => { currentStep = step; },`);
-  lines.push(`    attachMessages: async () => {`);
-  lines.push(`      if (consoleMessages.length > 0) {`);
-  lines.push(`        await testInfo.attach('console-messages', {`);
-  lines.push(`          contentType: 'application/json',`);
-  lines.push(`          body: Buffer.from(JSON.stringify(consoleMessages, null, 2), 'utf8')`);
-  lines.push(`        });`);
-  lines.push(`      }`);
-  lines.push(`    }`);
-  lines.push(`  };`);
-  lines.push(`}`);
 
   const suiteSlug = slug(planFile.suiteName);
   if (!suiteSlug) {

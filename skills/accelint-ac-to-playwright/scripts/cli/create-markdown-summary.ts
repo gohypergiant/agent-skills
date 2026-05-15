@@ -253,7 +253,7 @@ function renderMarkdown(data: {
   lines.push("");
   lines.push("## Next steps");
   lines.push(
-    "- Copy the generated Playwright spec files into your project repo.",
+    "- Copy the generated Playwright spec files AND the fixtures/ directory into your project repo. The spec files import test utilities from fixtures/ and will fail to compile without it.",
   );
   lines.push(
     "- Ensure the codebase includes the required test hooks (data-testid attributes on the appropriate elements). If there's any ambiguity, review the input AC file alongside the JSON plan to most easily see the intended test flow and targets.",

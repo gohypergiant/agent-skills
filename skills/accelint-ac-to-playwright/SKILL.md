@@ -4,7 +4,7 @@ description: Convert and validate acceptance criteria for Playwright test automa
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.6"
+  version: "1.1.0"
 ---
 
 # AC To Playwright
@@ -84,7 +84,9 @@ Assessment mode analyzes AC text only (no artifact generation). Full conversion 
   -  Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
 5. **Next steps**: 
   - Work on the next input file, if any remain.
-  - After all files are processed, ask the user if they would like a Playwright config template. If yes, copy `skills/accelint-ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
+  - After all files are processed:
+    - Copy `skills/accelint-ac-to-playwright/assets/fixtures/` directory to `<tests-output-dir>/fixtures/`. This directory contains shared test utilities (`error-handling.ts` and `console-tracking.ts`) that generated tests import from.
+    - Ask the user if they would like a Playwright config template. If yes, copy `skills/accelint-ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
 
 ## Recognition Patterns
 Before processing AC, identify these quality signals:
@@ -108,6 +110,14 @@ The above table directs you to ask for clarifications because guessing creates t
 **Input to output mapping**: One AC file → one suite → one plan file (`<plans-dir>/<suite-slug>.json`) → one test file
 - `.md` bullet-style: each `- ` bullet = one test
 - `.feature` Gherkin: each Scenario = one test; each Examples row in Scenario Outline = one test
+
+**Output structure**: After conversion completes, the test output directory will contain:
+- `<suite-slug>.spec.ts` files (one per AC file)
+- `fixtures/` directory with shared utilities:
+  - `fixtures/error-handling.ts` - failure artifact attachment helper
+  - `fixtures/console-tracking.ts` - console message tracking helper
+
+**Important for users**: When copying generated tests to your Playwright project, copy both the `.spec.ts` files AND the `fixtures/` directory. Tests import from these fixtures and will fail to compile without them.
 
 | Input | Suite Name | Test Name | Output Slug |
 |-------|------------|-----------|-------------|

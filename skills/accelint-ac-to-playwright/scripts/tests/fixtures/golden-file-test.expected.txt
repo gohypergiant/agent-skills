@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { setupConsoleTracking } from "./fixtures/console-tracking";
+import { attachFailureArtifacts } from "./fixtures/error-handling";
 
 test.describe("Golden file test", {
   tag: ["@smoke", "@fast"],
@@ -53,76 +55,3 @@ test.describe("Golden file test", {
   });
 
 });
-
-async function attachFailureArtifacts(args: {
-  page: import("@playwright/test").Page;
-  testInfo: import("@playwright/test").TestInfo;
-  stepIndex: number;
-  action: string;
-  testId?: string;
-}) {
-  const { page, testInfo, stepIndex, action, testId } = args;
-  if (!testInfo) return;
-  const payload = {
-    url: page.url(),
-    stepIndex,
-    action,
-    testId,
-  };
-  await testInfo.attach("step failure", {
-    contentType: "application/json",
-    body: Buffer.from(JSON.stringify(payload, null, 2), "utf8"),
-  });
-  try {
-    const screenshot = await page.screenshot({ fullPage: true });
-    await testInfo.attach("step screenshot", {
-      contentType: "image/png",
-      body: screenshot,
-    });
-  } catch {
-    // ignore screenshot issues
-  }
-  try {
-    const video = page.video?.();
-    if (video) {
-      const path = await video.path();
-      await testInfo.attach("step video", {
-        contentType: "video/webm",
-        path,
-      });
-    }
-  } catch {
-    // ignore video issues
-  }
-}
-
-async function setupConsoleTracking(args: {
-  page: import("@playwright/test").Page;
-  testInfo: import("@playwright/test").TestInfo;
-}) {
-  const { page, testInfo } = args;
-  const consoleMessages: Array<{ type: string; text: string; stepIndex: number; timestamp: string; location: { url: string; lineNumber?: number; columnNumber?: number } }> = [];
-  let currentStep = 0;
-
-  page.on('console', msg => {
-    consoleMessages.push({
-      type: msg.type(),
-      text: msg.text(),
-      stepIndex: currentStep,
-      timestamp: new Date().toISOString(),
-      location: msg.location()
-    });
-  });
-
-  return {
-    setStep: (step: number) => { currentStep = step; },
-    attachMessages: async () => {
-      if (consoleMessages.length > 0) {
-        await testInfo.attach('console-messages', {
-          contentType: 'application/json',
-          body: Buffer.from(JSON.stringify(consoleMessages, null, 2), 'utf8')
-        });
-      }
-    }
-  };
-}
