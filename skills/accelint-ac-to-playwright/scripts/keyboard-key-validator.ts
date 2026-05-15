@@ -60,21 +60,35 @@ const unmodifiedCharacters = "abcdefghijklmnopqrstuvwxyz0123456789`-=[]\\;',./";
  * Zod validator for keyboard keys for presses
  * Accepts either:
  * - A single unmodified character (no Shift required on US keyboard)
- * - A valid Playwright key name from the list above
+ * - A valid Playwright key name from the list above (case-insensitive)
  */
-export const pressKeyValidator = z.string().refine(
-  (val): val is string => {
-    // Allow single unmodified characters only
-    if (val.length === 1) {
-      return unmodifiedCharacters.includes(val);
+export const pressKeyValidator = z.string().transform((val, ctx) => {
+  // Single characters must match exactly (case-sensitive)
+  if (val.length === 1) {
+    if (unmodifiedCharacters.includes(val)) {
+      return val;
     }
-    // Allow named Playwright keys
-    return (validPlaywrightKeys as readonly string[]).includes(val);
-  },
-  {
-    message: "Key must be a single unmodified character (a-z, 0-9, or symbols that don't require Shift) or a valid Playwright key name (e.g., Enter, Tab, Escape, Space, ArrowLeft, F1, etc.).",
+    ctx.addIssue({
+      code: "custom",
+      message: "Key must be a single unmodified character (a-z, 0-9, or symbols that don't require Shift) or a valid Playwright key name (e.g., Enter, Tab, Escape, Space, ArrowLeft, F1, etc.).",
+    });
+    return z.NEVER;
   }
-);
+
+  // Named keys: case-insensitive lookup, return canonical casing
+  const lowerInput = val.toLowerCase();
+  const matchedKey = validPlaywrightKeys.find(k => k.toLowerCase() === lowerInput);
+
+  if (matchedKey) {
+    return matchedKey;
+  }
+
+  ctx.addIssue({
+    code: "custom",
+    message: "Key must be a single unmodified character (a-z, 0-9, or symbols that don't require Shift) or a valid Playwright key name (e.g., Enter, Tab, Escape, Space, ArrowLeft, F1, etc.).",
+  });
+  return z.NEVER;
+});
 
 /**
  * Valid modifier keys for the application under test
@@ -84,13 +98,20 @@ export const validModifierKeys = ["Shift", "Control", "a"] as const;
 
 /**
  * Zod validator for modifier keys (keyDown/keyUp actions)
- * Only accepts the specific modifier keys used by the application under test
+ * Only accepts the specific modifier keys used by the application under test (case-insensitive)
  */
-export const modifierKeyValidator = z.string().refine(
-  (val): val is string => {
-    return (validModifierKeys as readonly string[]).includes(val);
-  },
-  {
-    message: 'Key must be one of the valid modifier keys for this application: "Shift", "Control", or "a".',
+export const modifierKeyValidator = z.string().transform((val, ctx) => {
+  // Case-insensitive lookup, return canonical casing
+  const lowerInput = val.toLowerCase();
+  const matchedKey = validModifierKeys.find(k => k.toLowerCase() === lowerInput);
+
+  if (matchedKey) {
+    return matchedKey;
   }
-);
+
+  ctx.addIssue({
+    code: "custom",
+    message: 'Key must be one of the valid modifier keys for this application: "Shift", "Control", or "a".',
+  });
+  return z.NEVER;
+});
