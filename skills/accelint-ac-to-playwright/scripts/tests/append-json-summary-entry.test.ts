@@ -201,7 +201,7 @@ describe("run()", () => {
     const validPlan = JSON.stringify({
       suiteName: "Suite",
       source: { repo: "some-repo", path: "path/to/ac.feature" },
-      tests: [{ name: "Test A", startUrl: "/", steps: [{ action: "click", target: "a" }] }],
+      tests: [{ name: "Test A", startUrl: "/", steps: [{ action: "click", target: "page.button.submit" }] }],
     });
 
     const { runtime, errors } = makeAppendRuntime({
@@ -250,9 +250,9 @@ describe("run()", () => {
           name: "Test A",
           startUrl: "/",
           steps: [
-            { action: "click", target: "login-button" },
+            { action: "click", target: "form.button.login" },
             { action: "expectUrl", value: "/home" },
-            { action: "fill", target: "email-input", value: "a@b.com" },
+            { action: "fill", target: "form.input.email", value: "a@b.com" },
           ],
         },
       ],
@@ -306,8 +306,8 @@ describe("run()", () => {
     expect(parsed.entries[0].outputs.plan).toBe(planPath);
     expect(parsed.entries[0].outputs.test).toBe(testPath);
     expect(parsed.entries[0].tests[0].requiredTestHooks).toEqual([
-      "login-button",
-      "email-input",
+      "form.button.login",
+      "form.input.email",
     ]);
   });
 
@@ -335,7 +335,7 @@ describe("run()", () => {
         {
           name: "Test A",
           startUrl: "/",
-          steps: [{ action: "click", target: "login-button" }],
+          steps: [{ action: "click", target: "form.button.login" }],
         },
       ],
     });

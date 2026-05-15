@@ -12,17 +12,17 @@
         },
         {
           "action": "fill",
-          "target": "username",
+          "target": "form.input.username",
           "value": "someone"
         },
         {
           "action": "fill",
-          "target": "password",
+          "target": "form.input.password",
           "value": "password123"
         },
         {
           "action": "select",
-          "target": "dropdown.role",
+          "target": "form.dropdown.role",
           "value": "admin"
         },
         {
@@ -39,7 +39,7 @@
         },
         {
           "action": "click",
-          "target": "button.login"
+          "target": "form.button.login"
         },
         {
           "action": "doubleClick",
@@ -79,31 +79,31 @@
         },
         {
           "action": "expectNotVisible",
-          "target": "banner.welcome"
+          "target": "page.div.welcome"
         },
         {
           "action": "click",
-          "target": "button.show-welcome"
+          "target": "page.button.show-welcome"
         },
         {
           "action": "expectVisible",
-          "target": "banner.welcome"
+          "target": "page.div.welcome"
         },
         {
           "action": "expectVisible",
-          "target": "banner.error"
+          "target": "page.div.error"
         },
         {
           "action": "click",
-          "target": "button.hide-error"
+          "target": "page.button.hide-error"
         },
         {
           "action": "expectNotVisible",
-          "target": "banner.error"
+          "target": "page.div.error"
         },
         {
           "action": "expectText",
-          "target": "banner.welcome",
+          "target": "page.div.welcome",
           "value": "Welcome!"
         }
       ]

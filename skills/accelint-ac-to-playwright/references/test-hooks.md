@@ -1,8 +1,8 @@
 # Target conventions
 The pattern `<area>.<component>.<intent>` is used for `target` values. 
 
-- area (controlled list): `nav`, `header`, `footer`, `form`, `drawer`, `card`, `toast`, `modal`, `table`, `page`, `area`
-- component (controlled list): `button`, `link`, `input`, `dropdown`, `checkbox`, `radio`, `text`, `div`, `component`
+- area (controlled list): see `target-vocabulary.ts` for the canonical list
+- component (controlled list): see `target-vocabulary.ts` for the canonical list
 - intent: noun, lowercase, multi‑word joined with dashes (no verbs)
 
 Area and component selection rules:

@@ -963,9 +963,9 @@ describe("visibility pairing validation", () => {
           name: "Show element",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "modal.dialog" },
-            { action: "click", target: "button.open" },
-            { action: "expectVisible", target: "modal.dialog" },
+            { action: "expectNotVisible", target: "modal.div.dialog" },
+            { action: "click", target: "modal.button.open" },
+            { action: "expectVisible", target: "modal.div.dialog" },
           ],
         },
       ],
@@ -984,9 +984,9 @@ describe("visibility pairing validation", () => {
           name: "Hide element",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectVisible", target: "panel.settings" },
+            { action: "expectVisible", target: "page.div.settings" },
             { action: "press", value: "Escape" },
-            { action: "expectNotVisible", target: "panel.settings" },
+            { action: "expectNotVisible", target: "page.div.settings" },
           ],
         },
       ],
@@ -1005,12 +1005,12 @@ describe("visibility pairing validation", () => {
           name: "Multiple pairs",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "panel.layers" },
-            { action: "click", target: "button.layers" },
-            { action: "expectVisible", target: "panel.layers" },
-            { action: "expectVisible", target: "panel.properties" },
-            { action: "click", target: "button.properties" },
-            { action: "expectNotVisible", target: "panel.properties" },
+            { action: "expectNotVisible", target: "page.div.layers" },
+            { action: "click", target: "page.button.layers" },
+            { action: "expectVisible", target: "page.div.layers" },
+            { action: "expectVisible", target: "page.div.properties" },
+            { action: "click", target: "page.button.properties" },
+            { action: "expectNotVisible", target: "page.div.properties" },
           ],
         },
       ],
@@ -1029,8 +1029,8 @@ describe("visibility pairing validation", () => {
           name: "Unpaired visible",
           startUrl: "https://example.com",
           steps: [
-            { action: "click", target: "button.show" },
-            { action: "expectVisible", target: "modal.dialog" },
+            { action: "click", target: "page.button.show" },
+            { action: "expectVisible", target: "modal.div.dialog" },
           ],
         },
       ],
@@ -1056,8 +1056,8 @@ describe("visibility pairing validation", () => {
           name: "Unpaired not visible",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "panel.info" },
-            { action: "click", target: "button.hide" },
+            { action: "expectNotVisible", target: "page.div.info" },
+            { action: "click", target: "page.button.hide" },
           ],
         },
       ],
@@ -1083,8 +1083,8 @@ describe("visibility pairing validation", () => {
           name: "No action between",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "modal.dialog" },
-            { action: "expectVisible", target: "modal.dialog" },
+            { action: "expectNotVisible", target: "modal.div.dialog" },
+            { action: "expectVisible", target: "modal.div.dialog" },
           ],
         },
       ],
@@ -1109,10 +1109,10 @@ describe("visibility pairing validation", () => {
           name: "Multiple actions between",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "modal.dialog" },
-            { action: "click", target: "button.open" },
-            { action: "fill", target: "input.name", value: "test" },
-            { action: "expectVisible", target: "modal.dialog" },
+            { action: "expectNotVisible", target: "modal.div.dialog" },
+            { action: "click", target: "modal.button.open" },
+            { action: "fill", target: "form.input.name", value: "test" },
+            { action: "expectVisible", target: "modal.div.dialog" },
           ],
         },
       ],
@@ -1138,9 +1138,9 @@ describe("visibility pairing validation", () => {
           name: "Mismatched targets",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "panel.layers" },
-            { action: "click", target: "button.show" },
-            { action: "expectVisible", target: "panel.properties" },
+            { action: "expectNotVisible", target: "page.div.layers" },
+            { action: "click", target: "page.button.show" },
+            { action: "expectVisible", target: "page.div.properties" },
           ],
         },
       ],
@@ -1165,9 +1165,9 @@ describe("visibility pairing validation", () => {
           name: "Assertion between",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "modal.dialog" },
+            { action: "expectNotVisible", target: "modal.div.dialog" },
             { action: "expectText", target: "header.title", value: "Welcome" },
-            { action: "expectVisible", target: "modal.dialog" },
+            { action: "expectVisible", target: "modal.div.dialog" },
           ],
         },
       ],
@@ -1194,16 +1194,16 @@ describe("visibility pairing validation", () => {
           name: "Test 1 - valid",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectNotVisible", target: "modal.dialog" },
-            { action: "click", target: "button.open" },
-            { action: "expectVisible", target: "modal.dialog" },
+            { action: "expectNotVisible", target: "modal.div.dialog" },
+            { action: "click", target: "modal.button.open" },
+            { action: "expectVisible", target: "modal.div.dialog" },
           ],
         },
         {
           name: "Test 2 - invalid",
           startUrl: "https://example.com",
           steps: [
-            { action: "expectVisible", target: "panel.info" },
+            { action: "expectVisible", target: "page.div.info" },
           ],
         },
       ],
@@ -1495,6 +1495,222 @@ describe("Test-specific tags", () => {
     if (!result.success) {
       expect(result.error.issues[0].message).toContain("Tags must start with '@'");
     }
+  });
+});
+
+describe("Target field validation", () => {
+  it("rejects target with no dots", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "navbuttonsubmit" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("area.component.intent");
+    }
+  });
+
+  it("rejects target with only one dot", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.buttonsubmit" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("area.component.intent");
+    }
+  });
+
+  it("rejects target with three or more dots", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.header.button.submit" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("area.component.intent");
+    }
+  });
+
+  it("rejects target with invalid area keyword", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "invalidarea.button.submit" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("area");
+    }
+  });
+
+  it("rejects target with invalid component keyword", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.invalidcomponent.settings" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("component");
+    }
+  });
+
+  it("rejects target with empty intent", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.button." }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("intent");
+    }
+  });
+
+  it("rejects target with uppercase in intent", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.button.Submit" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("lowercase");
+    }
+  });
+
+  it("rejects target with spaces in intent", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.button.log in" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("dash");
+    }
+  });
+
+  it("rejects target with underscores in intent", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with invalid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.button.log_in" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("dash");
+    }
+  });
+
+  it("accepts valid single-word intent", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with valid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "click", target: "nav.button.submit" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts valid multi-word intent with dashes", () => {
+    const input = {
+      suiteName: "Target test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Test with valid target",
+          startUrl: "https://example.com",
+          steps: [{ action: "fill", target: "form.input.email-address", value: "test@example.com" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
   });
 });
 
