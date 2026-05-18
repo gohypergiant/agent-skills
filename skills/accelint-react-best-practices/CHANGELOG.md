@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.7.0] - 2026-05-18
+
+### Changed
+- **CRITICAL FIX:** Moved React Compiler check to the top of both SKILL.md and AGENTS.md
+  - Rationale: Agents were suggesting manual memoization without first checking if React Compiler is enabled. Compiler awareness was buried in "Important Notes" section (line 160+), causing agents to miss it.
+  - Impact: Agents will now check for React Compiler first before suggesting memo/useMemo/useCallback optimizations
+
+### Added
+- New "Before Optimizing Performance, Ask" section in SKILL.md with 3-step checklist
+  - Does project use React Compiler?
+  - Is this actually a performance problem?
+  - What's the scale?
+- Prominent "⚡ FIRST: Check React Compiler" section at top of AGENTS.md
+
+### Evaluation Results
+- Iteration 1: 100% pass rate (8/8 tests) after fixing permission issues
+- Key strengths: React-specific terminology, modern patterns (useEffectEvent, useDeferredValue), multiple solution approaches
+- Trade-off: 50% more time, 31% more tokens vs baseline, but significantly better explanations and depth
+
+### Version
+- Bumped from 1.6.0 → 1.7.0
+
 ## [1.6.0] - 2026-05-18
 
 ### Added
