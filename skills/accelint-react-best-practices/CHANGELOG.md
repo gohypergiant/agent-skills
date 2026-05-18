@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.8.0] - 2026-05-18
+
+### Changed
+- **Updated output report template** to inline examples from reference files
+  - Rationale: User feedback requested inline examples instead of just links for better self-contained audit reports (useful in GitHub PR reviews and Claude Code audits)
+  - Template now includes: ❌ Anti-pattern Example, ✅ Correct Pattern, and Recommended Fix for This Code sections
+  - Each issue shows typical bad code, typical good code, then applies pattern to user's specific code
+
+### Evaluation Results
+- **Iteration 2: 100% pass rate (8/8 tests, 24/24 assertions) - Grade A**
+- Improvement: +12.5% over iteration-1 (87.5% → 100%)
+- todolist-audit now passes with comprehensive severity categorization
+- All test cases demonstrate strong pattern recognition across React anti-patterns
+- Average time: 38.6s (vs 31.4s in iter-1, increase from more thorough audits)
+- Average tokens: 23,609 (stable, similar to iter-1's 23,268)
+
+### Version
+- Bumped from 1.7.0 → 1.8.0
+
 ## [1.7.0] - 2026-05-18
 
 ### Changed
