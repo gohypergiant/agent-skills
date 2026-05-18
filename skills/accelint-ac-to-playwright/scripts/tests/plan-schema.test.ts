@@ -1333,10 +1333,52 @@ describe("Suite-specific tags", () => {
         },
       ],
     };
-  
+
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
-  });  
+  });
+
+  it("rejects tags without @ prefix", () => {
+    const input = {
+      suiteName: "Basic suite",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tags: ["smoke"],
+      tests: [
+        {
+          name: "Basic test",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectUrl", value: "https://example.com" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("Tags must start with '@'");
+    }
+  });
+
+  it("rejects tags with mixed @ prefix presence", () => {
+    const input = {
+      suiteName: "Basic suite",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tags: ["@smoke", "wip"],
+      tests: [
+        {
+          name: "Basic test",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectUrl", value: "https://example.com" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("Tags must start with '@'");
+    }
+  });
 });
 
 
@@ -1408,10 +1450,52 @@ describe("Test-specific tags", () => {
         },
       ],
     };
-  
+
     const result = testSuiteSchema.safeParse(input);
     expect(result.success).toBe(false);
-  });  
+  });
+
+  it("rejects tags without @ prefix", () => {
+    const input = {
+      suiteName: "Basic suite",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Basic test",
+          startUrl: "https://example.com",
+          tags: ["smoke"],
+          steps: [{ action: "expectUrl", value: "https://example.com" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("Tags must start with '@'");
+    }
+  });
+
+  it("rejects tags with mixed @ prefix presence", () => {
+    const input = {
+      suiteName: "Basic suite",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Basic test",
+          startUrl: "https://example.com",
+          tags: ["@smoke", "wip"],
+          steps: [{ action: "expectUrl", value: "https://example.com" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toContain("Tags must start with '@'");
+    }
+  });
 });
 
 // Helper functions

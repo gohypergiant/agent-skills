@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validator";
 import { mouseButtonValidator, wheelDirectionValidator } from "./mouse-validator";
+import { tagValidator } from "./tag-validator";
 
 /**
  * Step schemas
@@ -146,7 +147,7 @@ export const stepSchema = z.discriminatedUnion("action", [
 export const testSchema = z.object({
   name: z.string(),
   startUrl: z.string(),
-  tags: z.array(z.string()).min(1).optional(),
+  tags: z.array(tagValidator).min(1).optional(),
   steps: z.array(stepSchema).min(1),
 }).superRefine((test, ctx) => {
   let unpairedMouseDown: { index: number; button: string } | null = null;
@@ -316,7 +317,7 @@ export const testSchema = z.object({
 
 export const testSuiteSchema = z.object({
   suiteName: z.string(),
-  tags: z.array(z.string()).min(1).optional(),
+  tags: z.array(tagValidator).min(1).optional(),
   source: z.object({
     repo: z.string(),
     path: z.string(),

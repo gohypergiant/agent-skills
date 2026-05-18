@@ -4,7 +4,7 @@ description: Convert and validate acceptance criteria for Playwright test automa
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.2"
+  version: "1.0.3"
 ---
 
 # AC To Playwright
@@ -191,6 +191,7 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `references
 |------------|---------------------|---------------|--------------|
 | **Schema validation fails** | What field does error message name? | Wrong field order, missing required field, extra field not in schema, incorrect field type | Check schema for exact field names and order; compare your JSON structure to schema requirements |
 | **Target naming invalid** | Does target match `area.component.intent`? | Wrong pattern structure, invalid keywords from controlled lists, missing dots | Review `test-hooks.md` for controlled vocabulary (area: nav/header/footer/etc, component: button/link/input/etc); use fallback keywords (last in each list) if AC term doesn't match |
+| **Tag validation fails** | Does error mention "Tags must start with '@'"? | Tags missing @ prefix in generated JSON | Review AC source: Gherkin tags should include @ (e.g., `@smoke` not `smoke`). If AC has @ but JSON doesn't, check JSON generation logic |
 | **Translation script errors** | Which action/assertion caused failure? | Unsupported action type, malformed target selector, missing required field in step | Verify action is in allowed list (click/fill/select); check target has all three parts; ensure step has target and any required fields (e.g., fill needs value) |
 | **Validation passes but tests fail** | Do test hooks match actual page elements? | Target selectors don't match DOM, wrong start URL, timing issues | Ask user to verify page structure matches expected targets; check if startUrl needs adjustment; consider if dynamic content needs wait conditions |
 | **Multiple validation failures after fixes** | Did first fix break something else? | Making multiple speculative changes, misunderstanding schema requirements | Stop after 2 attempts; report specific schema violations to user; ask if AC has ambiguities or if schema has changed |
