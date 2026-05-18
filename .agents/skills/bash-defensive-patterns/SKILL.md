@@ -531,9 +531,3 @@ check_dependencies
 12. **Test error paths** - Ensure error handling works correctly
 13. **Use `command -v`** - Safer than `which` for checking executables
 14. **Prefer printf over echo** - More predictable across systems
-
-## Resources
-
-- **Bash Strict Mode**: http://redsymbol.net/articles/unofficial-bash-strict-mode/
-- **Google Shell Style Guide**: https://google.github.io/styleguide/shellguide.html
-- **Defensive BASH Programming**: https://www.lifepipe.net/

@@ -11,6 +11,22 @@ Comprehensive performance optimization guide for React applications, designed fo
 
 ---
 
+## ⚡ FIRST: Check React Compiler
+
+**Before suggesting memo/useMemo/useCallback optimizations:**
+
+1. **Check if project uses React Compiler** (search for `babel-plugin-react-compiler` or `react-compiler-webpack-plugin` in package.json/config files)
+2. **If React Compiler enabled:** Skip manual memoization patterns — the compiler handles them automatically. Focus on:
+   - State management patterns (functional setState, lazy initialization)
+   - Effect patterns (narrow dependencies, stable callbacks)
+   - CSS optimizations (content-visibility)
+   - SSR/hydration patterns
+3. **If React Compiler NOT enabled:** Apply all optimizations from this skill
+
+See [react-compiler-guide.md](references/react-compiler-guide.md) for details on what the compiler handles vs what still needs manual optimization.
+
+---
+
 ## How to Use This Guide
 
 **For agents/LLMs:**
@@ -177,6 +193,10 @@ Use module-level Map cache for expensive computations called repeatedly.
 ### 3.4 Initialize App Once, Not Per Mount
 Use module-level guards for app-wide initialization instead of component useEffect.
 [View detailed examples](references/initialize-app-once.md)
+
+### 3.5 Do Not Put Effect Events in Dependency Arrays
+Never include useEffectEvent functions in dependency arrays — depend on reactive values instead.
+[View detailed examples](references/effect-event-deps.md)
 
 ---
 

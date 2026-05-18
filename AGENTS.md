@@ -244,6 +244,46 @@ The version in frontmatter must match the latest CHANGELOG entry.
 
 ---
 
+## Optional: Exhaustive Verification with skill-creator
+
+**⚠️ High-cost, high-rigor verification. Use sparingly for production-critical skills.**
+
+After completing standard audits (skill-judge + accelint-skill-manager), optionally run exhaustive optimization through `skill-creator`:
+
+**Capabilities:**
+- Test-driven iteration: generates realistic test prompts, spawns with-skill + baseline subagents, measures impact
+- Qualitative review: HTML viewer with side-by-side output comparison for human feedback
+- Quantitative benchmarks: pass rates, timing, token usage, assertions with mean ± stddev
+- Analyst observations: surfaces flaky evals, non-discriminating assertions, time/token tradeoffs
+- Improvement loops: iterates based on feedback until pass rates hit target
+- Description optimization: 20-query triggering eval with 5 iterations, selects best by held-out test score
+
+**Cost:**
+- Multiple subagent runs per test case (with-skill + baseline × iterations)
+- Grading requires additional LLM calls or scripted assertions
+- Description optimization: ~300 triggering checks (20 queries × 3 reps × 5 iterations)
+- Typical total: 50-200+ LLM calls depending on complexity and iteration count
+
+**Use when:**
+- Skill has hundreds/thousands of users (triggering accuracy ROI is high)
+- Mission-critical correctness requirements (security, compliance, data integrity)
+- Objectively verifiable outputs where benchmarks provide quality signal
+
+**Skip when:**
+- Internal/experimental skill (<10 users)
+- Subjective outputs (writing style, design) relying on human taste
+- Simple mindset/navigation skills without measurable artifacts
+
+**Invocation:**
+
+```bash
+/skill-creator "Optimize [skill-name]. Run full test suite with benchmarks and iterate until grade A."
+```
+
+Review outputs in HTML viewer, provide feedback through each iteration, approve final version.
+
+---
+
 ## What to Never Include
 
 - **Tutorials or explanations** — Claude knows standard concepts. Document only expert-level knowledge.
