@@ -1733,3 +1733,109 @@ function formatIssues(error: ZodError): string {
     })
     .join("\n");
 }
+
+describe("Default values", () => {
+  it("applies default 'left' button when omitted for mouseDown and mouseUp", () => {
+    const input = {
+      suiteName: "Default button test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Mouse down/up with default button",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseDown" },
+            { action: "mouseUp" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.parse(input);
+    expect(result.tests[0].steps[0]).toEqual({ action: "mouseDown", button: "left" });
+    expect(result.tests[0].steps[1]).toEqual({ action: "mouseUp", button: "left" });
+  });
+
+  it("applies default 'left' button when omitted for doubleClick", () => {
+    const input = {
+      suiteName: "Default button test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Double click with default button",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "doubleClick", x: 100, y: 200 },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.parse(input);
+    expect(result.tests[0].steps[0]).toEqual({ action: "doubleClick", x: 100, y: 200, button: "left" });
+  });
+
+  it("preserves explicit button value when provided", () => {
+    const input = {
+      suiteName: "Explicit button test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Double click with explicit button",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "doubleClick", x: 150, y: 250, button: "right" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.parse(input);
+    expect(result.tests[0].steps[0]).toEqual({ action: "doubleClick", x: 150, y: 250, button: "right" });
+  });
+
+  it("applies default 'left' button when omitted for drag", () => {
+    const input = {
+      suiteName: "Default button test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Drag with default button",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "drag", fromX: 100, fromY: 100, toX: 200, toY: 200 },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.parse(input);
+    expect(result.tests[0].steps[0]).toEqual({
+      action: "drag",
+      fromX: 100,
+      fromY: 100,
+      toX: 200,
+      toY: 200,
+      button: "left"
+    });
+  });
+
+  it("applies default 'left' button when omitted for mouseClick", () => {
+    const input = {
+      suiteName: "Default button test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Mouse click with default button",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "mouseClick", x: 100, y: 200 },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.parse(input);
+    expect(result.tests[0].steps[0]).toEqual({ action: "mouseClick", x: 100, y: 200, button: "left" });
+  });
+});

@@ -13,7 +13,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "doubleClick", x: 100, y: 200 },
+      { action: "doubleClick", x: 100, y: 200, button: "left" },
       4,
       [
         'await page.mouse.dblclick(100, 200);',
@@ -29,7 +29,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "drag", fromX: 100, fromY: 100, toX: 200, toY: 200 },
+      { action: "drag", fromX: 100, fromY: 100, toX: 200, toY: 200, button: "left" },
       6,
       [
         'await page.mouse.move(100, 100);',
@@ -140,7 +140,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseClick", x: 100, y: 200 },
+      { action: "mouseClick", x: 100, y: 200, button: "left" },
       1,
       [
         'await page.mouse.click(100, 200);',
@@ -156,7 +156,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseDown" },
+      { action: "mouseDown", button: "left" },
       3,
       [
         'await page.mouse.down();',
@@ -180,7 +180,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseUp" },
+      { action: "mouseUp", button: "left" },
       6,
       [
         'await page.mouse.up();',

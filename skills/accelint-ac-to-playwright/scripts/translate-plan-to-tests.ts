@@ -1,5 +1,8 @@
 // This script converts a json test plan file to a Playwright test file.
 
+import type { z } from "zod";
+import type { stepSchema, testSchema, testSuiteSchema } from "./plan-schema";
+
 // Types
 
 type GeneratedFile = {
@@ -7,44 +10,9 @@ type GeneratedFile = {
   content: string;
 };
 
-export type PlanFile = {
-  suiteName: string;
-  tags?: string[];
-  source: {
-    repo: string;
-    path: string;
-  };
-  tests: Test[];
-};
-
-export type Step = {
-  action: "click"; target: string }
-  | { action: "doubleClick"; x: number; y: number; button?: "left" | "right" | "middle" }
-  | { action: "drag"; fromX: number; fromY: number; toX: number; toY: number; button?: "left" | "right" | "middle" }
-  | { action: "expectNotVisible"; target: string }
-  | { action: "expectText"; target: string; value: string }
-  | { action: "expectUrl"; value: string }
-  | { action: "expectVisible"; target: string }
-  | { action: "fill"; target: string; value: string }
-  | { action: "goto"; value: string }
-  | { action: "hover"; target: string }
-  | { action: "keyDown"; value: string }
-  | { action: "keyUp"; value: string }
-  | { action: "mouseClick"; x: number; y: number; button?: "left" | "right" | "middle" }
-  | { action: "mouseDown"; button?: "left" | "right" | "middle" }
-  | { action: "mouseMove"; x: number; y: number }
-  | { action: "mouseUp"; button?: "left" | "right" | "middle" }
-  | { action: "press"; value: string }
-  | { action: "reload" }
-  | { action: "scroll"; direction: "up" | "down" | "left" | "right"; amount: number }
-  | { action: "select"; target: string; value: string };
-  
-export type Test = {
-  name: string;
-  startUrl: string;
-  tags?: string[];
-  steps: Step[];
-};
+export type PlanFile = z.infer<typeof testSuiteSchema>;
+export type Step = z.infer<typeof stepSchema>;
+export type Test = z.infer<typeof testSchema>;
 
 // Main functionality
 
