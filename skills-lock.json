@@ -1,11 +1,6 @@
 {
   "version": 1,
   "skills": {
-    "ask-questions-if-underspecified": {
-      "source": "trailofbits/skills",
-      "sourceType": "github",
-      "computedHash": "7178ae6d25b054d311eee5abf947bc988e79d5ea0ae1d349f32d7a490493f525"
-    },
     "bash-defensive-patterns": {
       "source": "wshobson/agents",
       "sourceType": "github",
