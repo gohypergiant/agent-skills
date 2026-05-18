@@ -2,13 +2,14 @@ import { z } from "zod";
 import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validator";
 import { mouseButtonValidator, wheelDirectionValidator } from "./mouse-validator";
 import { tagValidator } from "./tag-validator";
+import { targetValidator } from "./target-validator";
 
 /**
  * Step schemas
  */
 const clickStep = z.object({
   action: z.literal("click"),
-  target: z.string(),
+  target: targetValidator,
 }).strict();
 
 const doubleClickStep = z.object({
@@ -29,12 +30,12 @@ const dragStep = z.object({
 
 const expectNotVisibleStep = z.object({
   action: z.literal("expectNotVisible"),
-  target: z.string(),
+  target: targetValidator,
 }).strict();
 
 const expectTextStep = z.object({
   action: z.literal("expectText"),
-  target: z.string(),
+  target: targetValidator,
   value: z.string(),
 }).strict();
 
@@ -45,12 +46,12 @@ const expectUrlStep = z.object({
 
 const expectVisibleStep = z.object({
   action: z.literal("expectVisible"),
-  target: z.string(),
+  target: targetValidator,
 }).strict();
 
 const fillStep = z.object({
   action: z.literal("fill"),
-  target: z.string(),
+  target: targetValidator,
   value: z.string(),
 }).strict();
 
@@ -61,7 +62,7 @@ const gotoStep = z.object({
 
 const hoverStep = z.object({
   action: z.literal("hover"),
-  target: z.string(),
+  target: targetValidator,
 }).strict();
 
 const keyDownStep = z.object({
@@ -114,7 +115,7 @@ const scrollStep = z.object({
 
 const selectStep = z.object({
   action: z.literal("select"),
-  target: z.string(),
+  target: targetValidator,
   value: z.string(),
 }).strict();
 
