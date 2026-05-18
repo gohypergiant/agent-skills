@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0] - 2026-05-18
+
+### Added
+- **New Advanced Pattern reference: effect-event-deps.md**
+  - Pattern 3.5: Do Not Put Effect Events in Dependency Arrays
+  - Explains why Effect Event functions have unstable identity and must not be in deps arrays
+  - Includes ❌/✅ examples showing incorrect (with handleConnected in deps) vs correct (only reactive values)
+  - React Compiler note confirming manual optimization required
+  - Rationale: Critical guidance for React 19.2+ useEffectEvent adoption — common mistake to treat Effect Events like regular callbacks
+
+### Changed
+- **Updated SKILL.md** to reference new effect-event-deps.md in Advanced Patterns section
+- **Updated AGENTS.md** with 3.5 entry and one-line summary
+- **Formatted effect-event-deps.md** with numbered title (3.5) to match existing reference structure
+
+### Version
+- Bumped from 1.5 → 1.6
+
 ## [1.5.0] - 2026-03-19
 
 ### Added

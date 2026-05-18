@@ -4,7 +4,7 @@ description: React performance optimization and best practices. ALWAYS use this 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.5.0"
+  version: "1.6.0"
 ---
 
 # React Best Practices
@@ -73,6 +73,7 @@ When you identify a relevant optimization, load the corresponding reference file
 - [uselatest-stable-callbacks.md](references/uselatest-stable-callbacks.md)
 - [cache-repeated-function-calls.md](references/cache-repeated-function-calls.md)
 - [initialize-app-once.md](references/initialize-app-once.md)
+- [effect-event-deps.md](references/effect-event-deps.md)
 
 **Misc:**
 - [named-imports.md](references/named-imports.md)

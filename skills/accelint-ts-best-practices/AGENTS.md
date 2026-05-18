@@ -105,6 +105,10 @@ Never use `enum` (generates 5+ lines of runtime code per enum); use `as const` o
 Prefer `type` over `interface`; use `interface` only for declaration merging or class contracts.
 [View detailed examples](references/type-vs-interface.md)
 
+### 2.4 Bundler-Friendly Paths
+Use statically analyzable paths for imports and file-system operations; avoid dynamic path composition that prevents build-time analysis.
+[View detailed examples](references/bundler-paths.md)
+
 ---
 
 ## 3. Safety

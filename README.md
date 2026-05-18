@@ -91,6 +91,46 @@ Run `/clear`, then run `skill-judge` again. Apply remaining suggestions. Target 
 - [ ] `description` answers WHAT + WHEN + KEYWORDS, is non-empty, ≤1024 chars
 - [ ] `metadata.version` is bumped (major for substantial changes, minor for small fixes)
 
+### Optional: Step 5 — Exhaustive skill-creator optimization
+
+**⚠️ High-cost, high-rigor step. Use for production-critical skills only.**
+
+The `skill-creator` skill provides comprehensive optimization through test-driven iteration:
+
+**What it does:**
+- Generates 2-3 realistic test prompts matching real user requests
+- Runs subagents with and without the skill to measure actual impact
+- Creates qualitative outputs (HTML viewer with side-by-side comparison)
+- Runs quantitative benchmarks (pass rates, timing, token usage, assertions)
+- Performs analyst pass to surface patterns (flaky evals, non-discriminating assertions, time/token tradeoffs)
+- Iterates improvements based on human feedback until pass rates reach target
+- Optimizes skill description for triggering accuracy using 20-query eval sets
+
+**Cost considerations:**
+- Multiple subagent runs per test case (with-skill + baseline for each iteration)
+- Benchmark grading requires additional LLM calls or scripted assertions
+- Description optimization runs 5 iterations with 20 queries × 3 repetitions each
+- Typical total: 50-200+ LLM calls depending on test case count and iterations needed
+
+**When to use:**
+- Skills used by hundreds or thousands of users (triggering accuracy matters)
+- Mission-critical skills where correctness is non-negotiable (security, compliance, data integrity)
+- Skills with measurable outputs where benchmarks provide objective quality signals
+
+**When to skip:**
+- Internal/experimental skills with <10 users
+- Skills with subjective outputs (writing style, design taste) where human judgment is primary
+- Simple navigation/mindset skills that don't produce verifiable artifacts
+
+**How to run:**
+
+```bash
+# Start exhaustive optimization loop
+/skill-creator "Optimize [skill-name]. Run full test suite with benchmarks and iterate until grade A."
+```
+
+Follow the skill-creator workflow to review outputs, provide feedback, and approve iterations.
+
 ## What are Agent Skills?
 
 Skills are modular packages that extend agent's capabilities with specialized knowledge. They work like onboarding guides for specific domains, providing:

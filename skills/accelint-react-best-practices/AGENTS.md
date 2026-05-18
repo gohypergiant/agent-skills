@@ -178,6 +178,10 @@ Use module-level Map cache for expensive computations called repeatedly.
 Use module-level guards for app-wide initialization instead of component useEffect.
 [View detailed examples](references/initialize-app-once.md)
 
+### 3.5 Do Not Put Effect Events in Dependency Arrays
+Never include useEffectEvent functions in dependency arrays — depend on reactive values instead.
+[View detailed examples](references/effect-event-deps.md)
+
 ---
 
 ## 4. Misc

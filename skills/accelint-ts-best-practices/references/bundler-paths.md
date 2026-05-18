@@ -1,4 +1,6 @@
-## Prefer Statically Analyzable Paths
+# 2.4 Bundler-Friendly Paths
+
+Prefer statically analyzable paths.
 
 Build tools work best when import and file-system paths are obvious at build time. If you hide the real path inside a variable or compose it too dynamically, the tool either has to include a broad set of possible files, warn that it cannot analyze the import, or widen file tracing to stay safe.
 
@@ -51,7 +53,7 @@ const baseDir =
     : path.join(process.cwd(), 'content/docs')
 ```
 
-In Next.js server code, this matters for output file tracing too. `path.join(process.cwd(), someVar)` can widen the traced file set because Next.js statically analyze `import`, `require`, and `fs` usage.
+In Next.js server code, this matters for output file tracing too. `path.join(process.cwd(), someVar)` can widen the traced file set because Next.js statically analyzes `import`, `require`, and `fs` usage.
 
 Impacts: nextjs, vite, webpack, rollup, esbuild, and more.
 
