@@ -188,8 +188,12 @@ function renderStep(step: Step, stepIndex: number): string {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [
         `    try {`,
-        `      await expect(${locator}).toHaveCount(1);`,
-        `      await expect(${locator}).toBeHidden();`,
+        `      try {`,
+        `        await expect(${locator}).toHaveCount(0);`,
+        `      } catch {`,
+        `        await expect(${locator}).toHaveCount(1);`,
+        `        await expect(${locator}).not.toBeVisible();`,
+        `      }`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
         `      throw error;`,

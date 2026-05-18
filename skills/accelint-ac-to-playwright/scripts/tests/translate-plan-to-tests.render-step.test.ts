@@ -65,8 +65,11 @@ describe("renderStep", () => {
       { action: "expectNotVisible", target: "#modal" },
       1,
       [
+        'try {',
+        'await expect(page.getByTestId("#modal")).toHaveCount(0);',
+        '} catch {',
         'await expect(page.getByTestId("#modal")).toHaveCount(1);',
-        'await expect(page.getByTestId("#modal")).toBeHidden();',
+        'await expect(page.getByTestId("#modal")).not.toBeVisible();',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "expectNotVisible", testId: "#modal" })'
       ],
     ],
