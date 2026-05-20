@@ -69,10 +69,10 @@ describe("parseArgs", () => {
 describe("extractHooks", () => {
   it("dedupes targets in first-seen order", () => {
     const hooks = _extractHooks([
-      { action: "click", target: "alpha" },
-      { action: "expectUrl", value: "/settings" },
-      { action: "fill", target: "beta", value: "x" },
-      { action: "click", target: "alpha" },
+      { type: "action", action: "click", target: "alpha" },
+      { type: "assertion", action: "expectUrl", value: "/settings" },
+      { type: "action", action: "fill", target: "beta", value: "x" },
+      { type: "action", action: "click", target: "alpha" },
     ]);
     expect(hooks).toEqual(["alpha", "beta"]);
   });

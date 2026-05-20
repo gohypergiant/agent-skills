@@ -52,7 +52,7 @@ describe("Plan schema", () => {
         {
           name: "A",
           startUrl: "https://x.com",
-          steps: [{ action: "scroll", value: "down" }],
+          steps: [{ type: "action", action: "scroll", value: "down" }],
         },
       ],
     };
@@ -176,7 +176,7 @@ describe("Plan schema", () => {
         {
           name: "Click test",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x, y, ...(button && { button }) }],
+          steps: [{ type: "action", action: "mouseClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -198,7 +198,7 @@ describe("Plan schema", () => {
         {
           name: "Invalid click",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseClick", x, y, ...(button && { button }) }],
+          steps: [{ type: "action", action: "mouseClick", x, y, ...(button && { button }) }],
         },
       ],
     };
@@ -215,7 +215,7 @@ describe("Plan schema", () => {
         {
           name: "Move mouse",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseMove", x: 150, y: 250 }],
+          steps: [{ type: "action", action: "mouseMove", x: 150, y: 250 }],
         },
       ],
     };
@@ -236,7 +236,7 @@ describe("Plan schema", () => {
         {
           name: "Invalid move",
           startUrl: "https://example.com",
-          steps: [{ action: "mouseMove", x, y }],
+          steps: [{ type: "action", action: "mouseMove", x, y }],
         },
       ],
     };
@@ -254,8 +254,8 @@ describe("Plan schema", () => {
           name: "Invalid button",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown", button: "invalid" },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseDown", button: "invalid" },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -274,8 +274,8 @@ describe("Plan schema", () => {
           name: "Invalid button",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown" },
-            { action: "mouseUp", button: "invalid" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseUp", button: "invalid" },
           ],
         },
       ],
@@ -298,7 +298,7 @@ describe("Plan schema", () => {
         {
           name: "Scroll test",
           startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction, amount }],
+          steps: [{ type: "action", action: "scroll", direction, amount }],
         },
       ],
     };
@@ -320,7 +320,7 @@ describe("Plan schema", () => {
         {
           name: "Invalid scroll",
           startUrl: "https://example.com",
-          steps: [{ action: "scroll", direction, amount }],
+          steps: [{ type: "action", action: "scroll", direction, amount }],
         },
       ],
     };
@@ -340,10 +340,10 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Valid drag sequence",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseMove", x: 100, y: 100 },
-            { action: "mouseDown" },
-            { action: "mouseMove", x: 200, y: 200 },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseMove", x: 100, y: 100 },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseMove", x: 200, y: 200 },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -362,10 +362,10 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Multiple complete pairs",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown" },
-            { action: "mouseUp" },
-            { action: "mouseDown" },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseUp" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -384,8 +384,8 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Invalid sequence",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseMove", x: 100, y: 100 },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseMove", x: 100, y: 100 },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -410,8 +410,8 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Unpaired mouseDown",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown" },
-            { action: "mouseMove", x: 100, y: 100 },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseMove", x: 100, y: 100 },
           ],
         },
       ],
@@ -436,9 +436,9 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Nested mouseDown",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown" },
-            { action: "mouseDown" },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -463,9 +463,9 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Double mouseUp",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown" },
-            { action: "mouseUp" },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseUp" },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -490,8 +490,8 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Mismatched buttons",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown", button: "left" },
-            { action: "mouseUp", button: "right" },
+            { type: "action", action: "mouseDown", button: "left" },
+            { type: "action", action: "mouseUp", button: "right" },
           ],
         },
       ],
@@ -517,8 +517,8 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Right button pair",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown", button: "right" },
-            { action: "mouseUp", button: "right" },
+            { type: "action", action: "mouseDown", button: "right" },
+            { type: "action", action: "mouseUp", button: "right" },
           ],
         },
       ],
@@ -537,10 +537,10 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Overlapping different buttons",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown", button: "left" },
-            { action: "mouseDown", button: "right" },
-            { action: "mouseUp", button: "right" },
-            { action: "mouseUp", button: "left" },
+            { type: "action", action: "mouseDown", button: "left" },
+            { type: "action", action: "mouseDown", button: "right" },
+            { type: "action", action: "mouseUp", button: "right" },
+            { type: "action", action: "mouseUp", button: "left" },
           ],
         },
       ],
@@ -565,15 +565,15 @@ describe("mouseDown/mouseUp pairing validation", () => {
           name: "Test 1 - valid",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown" },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseUp" },
           ],
         },
         {
           name: "Test 2 - invalid",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseUp" },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -599,7 +599,7 @@ it.each([
       {
         name: "Test press",
         startUrl: "https://example.com",
-        steps: [{ action: "press", value }],
+        steps: [{ type: "action", action: "press", value }],
       },
     ],
   };
@@ -619,7 +619,7 @@ it.each([
       {
         name: "Test press",
         startUrl: "https://example.com",
-        steps: [{ action: "press", value }],
+        steps: [{ type: "action", action: "press", value }],
       },
     ],
   };
@@ -638,9 +638,9 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Valid keyboard shortcut",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Shift" },
-            { action: "press", value: "g" },
-            { action: "keyUp", value: "Shift" },
+            { type: "action", action: "keyDown", value: "Shift" },
+            { type: "action", action: "press", value: "g" },
+            { type: "action", action: "keyUp", value: "Shift" },
           ],
         },
       ],
@@ -659,10 +659,10 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Multiple complete pairs",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Control" },
-            { action: "keyUp", value: "Control" },
-            { action: "keyDown", value: "Shift" },
-            { action: "keyUp", value: "Shift" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "keyUp", value: "Control" },
+            { type: "action", action: "keyDown", value: "Shift" },
+            { type: "action", action: "keyUp", value: "Shift" },
           ],
         },
       ],
@@ -681,8 +681,8 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Invalid sequence",
           startUrl: "https://example.com",
           steps: [
-            { action: "press", value: "g" },
-            { action: "keyUp", value: "Shift" },
+            { type: "action", action: "press", value: "g" },
+            { type: "action", action: "keyUp", value: "Shift" },
           ],
         },
       ],
@@ -707,8 +707,8 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Unpaired keyDown",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Control" },
-            { action: "press", value: "g" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "press", value: "g" },
           ],
         },
       ],
@@ -733,9 +733,9 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Nested keyDown with different modifiers",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Control" },
-            { action: "keyDown", value: "Shift" },
-            { action: "keyUp", value: "Shift" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "keyDown", value: "Shift" },
+            { type: "action", action: "keyUp", value: "Shift" },
           ],
         },
       ],
@@ -760,9 +760,9 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Nested keyDown with same modifier",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Control" },
-            { action: "keyDown", value: "Control" },
-            { action: "keyUp", value: "Control" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "keyUp", value: "Control" },
           ],
         },
       ],
@@ -787,9 +787,9 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Double keyUp",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Control" },
-            { action: "keyUp", value: "Control" },
-            { action: "keyUp", value: "Control" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "keyUp", value: "Control" },
+            { type: "action", action: "keyUp", value: "Control" },
           ],
         },
       ],
@@ -814,8 +814,8 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Mismatched keys",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Shift" },
-            { action: "keyUp", value: "Control" },
+            { type: "action", action: "keyDown", value: "Shift" },
+            { type: "action", action: "keyUp", value: "Control" },
           ],
         },
       ],
@@ -841,9 +841,9 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "App modifier pair",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "a" },
-            { action: "press", value: "g" },
-            { action: "keyUp", value: "a" },
+            { type: "action", action: "keyDown", value: "a" },
+            { type: "action", action: "press", value: "g" },
+            { type: "action", action: "keyUp", value: "a" },
           ],
         },
       ],
@@ -862,10 +862,10 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Overlapping different modifiers",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Shift" },
-            { action: "keyDown", value: "Control" },
-            { action: "keyUp", value: "Control" },
-            { action: "keyUp", value: "Shift" },
+            { type: "action", action: "keyDown", value: "Shift" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "keyUp", value: "Control" },
+            { type: "action", action: "keyUp", value: "Shift" },
           ],
         },
       ],
@@ -890,15 +890,15 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Test 1 - valid",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Control" },
-            { action: "keyUp", value: "Control" },
+            { type: "action", action: "keyDown", value: "Control" },
+            { type: "action", action: "keyUp", value: "Control" },
           ],
         },
         {
           name: "Test 2 - invalid",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyUp", value: "Shift" },
+            { type: "action", action: "keyUp", value: "Shift" },
           ],
         },
       ],
@@ -921,8 +921,8 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Invalid modifier",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Enter" },
-            { action: "keyUp", value: "Enter" },
+            { type: "action", action: "keyDown", value: "Enter" },
+            { type: "action", action: "keyUp", value: "Enter" },
           ],
         },
       ],
@@ -941,8 +941,8 @@ describe("keyDown/keyUp pairing validation", () => {
           name: "Invalid modifier",
           startUrl: "https://example.com",
           steps: [
-            { action: "keyDown", value: "Shift" },
-            { action: "keyUp", value: "b" },
+            { type: "action", action: "keyDown", value: "Shift" },
+            { type: "action", action: "keyUp", value: "b" },
           ],
         },
       ],
@@ -985,7 +985,7 @@ describe("visibility pairing validation", () => {
           startUrl: "https://example.com",
           steps: [
             { action: "expectVisible", target: "page.div.settings" },
-            { action: "press", value: "Escape" },
+            { type: "action", action: "press", value: "Escape" },
             { action: "expectNotVisible", target: "page.div.settings" },
           ],
         },
@@ -1798,8 +1798,8 @@ describe("Default values", () => {
           name: "Mouse down/up with default button",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseDown" },
-            { action: "mouseUp" },
+            { type: "action", action: "mouseDown" },
+            { type: "action", action: "mouseUp" },
           ],
         },
       ],
@@ -1884,7 +1884,7 @@ describe("Default values", () => {
           name: "Mouse click with default button",
           startUrl: "https://example.com",
           steps: [
-            { action: "mouseClick", x: 100, y: 200 },
+            { type: "action", action: "mouseClick", x: 100, y: 200 },
           ],
         },
       ],

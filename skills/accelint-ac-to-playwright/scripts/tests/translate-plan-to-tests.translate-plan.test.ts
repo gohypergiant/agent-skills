@@ -18,10 +18,10 @@ describe("translatePlan (golden file)", () => {
           startUrl: "https://example.com",
           tags: ["@wip"],
           steps: [
-            { action: "click", target: "login.form.login" },
-            { action: "fill", target: "login.form.email", value: "a@b.com" },
-            { action: "expectText", target: "login.header.h1", value: "Welcome" },
-            { action: "expectUrl", value: "dashboard" },
+            { type: "action", action: "click", target: "login.form.login" },
+            { type: "action", action: "fill", target: "login.form.email", value: "a@b.com" },
+            { type: "assertion", action: "expectText", target: "login.header.h1", value: "Welcome" },
+            { type: "assertion", action: "expectUrl", value: "dashboard" },
           ],
         },
       ],
@@ -49,7 +49,7 @@ describe("translatePlan - suiteName validation", () => {
         {
           name: "Test name",
           startUrl: "https://example.com",
-          steps: [{ action: "goto", value: "https://example.com" }],
+          steps: [{ type: "action", action: "goto", value: "https://example.com" }],
         },
       ],
     };
@@ -72,7 +72,7 @@ describe("translatePlan - source annotation", () => {
         {
           name: "Test name",
           startUrl: "https://example.com",
-          steps: [{ action: "goto", value: "https://example.com" }],
+          steps: [{ type: "action", action: "goto", value: "https://example.com" }],
         },
       ],
     };
