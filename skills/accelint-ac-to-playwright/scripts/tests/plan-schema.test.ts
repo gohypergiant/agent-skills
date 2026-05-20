@@ -1020,6 +1020,60 @@ describe("visibility pairing validation", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts multiple assertions for different elements with single action", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Multiple elements visibility change",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "modal.div.thing-one" },
+            { action: "expectVisible", target: "modal.div.thing-two" },
+            { action: "expectNotVisible", target: "modal.div.thing-three" },
+            { action: "click", target: "page.button.toggle" },
+            { action: "expectVisible", target: "modal.div.thing-one" },
+            { action: "expectNotVisible", target: "modal.div.thing-two" },
+            { action: "expectVisible", target: "modal.div.thing-three" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects visibility pair with two actions between", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Two actions between visibility checks",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectNotVisible", target: "modal.div.dialog" },
+            { action: "click", target: "page.button.open" },
+            { action: "fill", target: "form.input.name", value: "test" },
+            { action: "expectVisible", target: "modal.div.dialog" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].message).toContain("modal.div.dialog");
+      expect(issues[0].message).toContain("2 action(s)");
+      expect(issues[0].message).toContain("must have exactly 1 action");
+    }
+  });
+
   it("rejects unpaired expectVisible", () => {
     const input = {
       suiteName: "Visibility test",
@@ -1041,9 +1095,9 @@ describe("visibility pairing validation", () => {
     if (!result.success) {
       const issues = result.error.issues;
       expect(issues).toHaveLength(1);
-      expect(issues[0].path).toEqual(["tests", 0, "steps", 1, "action"]);
-      expect(issues[0].message).toContain("expectVisible at step 1");
-      expect(issues[0].message).toContain("must be paired with expectNotVisible");
+      expect(issues[0].message).toContain("modal.div.dialog");
+      expect(issues[0].message).toContain("1 visibility assertion");
+      expect(issues[0].message).toContain("must have exactly 2");
     }
   });
 
@@ -1068,9 +1122,9 @@ describe("visibility pairing validation", () => {
     if (!result.success) {
       const issues = result.error.issues;
       expect(issues).toHaveLength(1);
-      expect(issues[0].path).toEqual(["tests", 0, "steps", 0, "action"]);
-      expect(issues[0].message).toContain("expectNotVisible at step 0");
-      expect(issues[0].message).toContain("must be paired with expectVisible");
+      expect(issues[0].message).toContain("page.div.info");
+      expect(issues[0].message).toContain("1 visibility assertion");
+      expect(issues[0].message).toContain("must have exactly 2");
     }
   });
 
@@ -1095,8 +1149,9 @@ describe("visibility pairing validation", () => {
     if (!result.success) {
       const issues = result.error.issues;
       expect(issues).toHaveLength(1);
-      // Either step 0 or 1 will fail (whichever is checked first)
-      expect(issues[0].message).toContain("must be paired");
+      expect(issues[0].message).toContain("modal.div.dialog");
+      expect(issues[0].message).toContain("0 action(s)");
+      expect(issues[0].message).toContain("must have exactly 1 action");
     }
   });
 
@@ -1123,9 +1178,9 @@ describe("visibility pairing validation", () => {
     if (!result.success) {
       const issues = result.error.issues;
       expect(issues).toHaveLength(1);
-      // Either step 0 or 3 will fail
-      expect(issues[0].message).toContain("must be paired");
-      expect(issues[0].message).toContain("exactly one action between");
+      expect(issues[0].message).toContain("modal.div.dialog");
+      expect(issues[0].message).toContain("2 action(s)");
+      expect(issues[0].message).toContain("must have exactly 1 action");
     }
   });
 
@@ -1151,8 +1206,8 @@ describe("visibility pairing validation", () => {
     if (!result.success) {
       const issues = result.error.issues;
       expect(issues).toHaveLength(1);
-      // One of the assertions will fail to find a matching pair
-      expect(issues[0].message).toContain("must be paired");
+      expect(issues[0].message).toContain("1 visibility assertion");
+      expect(issues[0].message).toContain("must have exactly 2");
     }
   });
 
@@ -1166,7 +1221,7 @@ describe("visibility pairing validation", () => {
           startUrl: "https://example.com",
           steps: [
             { action: "expectNotVisible", target: "modal.div.dialog" },
-            { action: "expectText", target: "header.title", value: "Welcome" },
+            { action: "expectText", target: "page.text.title", value: "Welcome" },
             { action: "expectVisible", target: "modal.div.dialog" },
           ],
         },
@@ -1177,11 +1232,10 @@ describe("visibility pairing validation", () => {
     expect(result.success).toBe(false);
     if (!result.success) {
       const issues = result.error.issues;
-      // Both assertions will fail to find a matching pair since there's an assertion between them
-      expect(issues.length).toBeGreaterThanOrEqual(1);
-      // Check that at least one error is about visibility pairing
-      const hasPairingError = issues.some(issue => issue.message.includes("must be paired"));
-      expect(hasPairingError).toBe(true);
+      expect(issues).toHaveLength(1);
+      expect(issues[0].message).toContain("modal.div.dialog");
+      expect(issues[0].message).toContain("0 action(s)");
+      expect(issues[0].message).toContain("must have exactly 1 action");
     }
   });
 
@@ -1752,8 +1806,8 @@ describe("Default values", () => {
     };
 
     const result = testSuiteSchema.parse(input);
-    expect(result.tests[0].steps[0]).toEqual({ action: "mouseDown", button: "left" });
-    expect(result.tests[0].steps[1]).toEqual({ action: "mouseUp", button: "left" });
+    expect(result.tests[0].steps[0]).toEqual({ type: "action", action: "mouseDown", button: "left" });
+    expect(result.tests[0].steps[1]).toEqual({ type: "action", action: "mouseUp", button: "left" });
   });
 
   it("applies default 'left' button when omitted for doubleClick", () => {
@@ -1772,7 +1826,7 @@ describe("Default values", () => {
     };
 
     const result = testSuiteSchema.parse(input);
-    expect(result.tests[0].steps[0]).toEqual({ action: "doubleClick", x: 100, y: 200, button: "left" });
+    expect(result.tests[0].steps[0]).toEqual({ type: "action", action: "doubleClick", x: 100, y: 200, button: "left" });
   });
 
   it("preserves explicit button value when provided", () => {
@@ -1791,7 +1845,7 @@ describe("Default values", () => {
     };
 
     const result = testSuiteSchema.parse(input);
-    expect(result.tests[0].steps[0]).toEqual({ action: "doubleClick", x: 150, y: 250, button: "right" });
+    expect(result.tests[0].steps[0]).toEqual({ type: "action", action: "doubleClick", x: 150, y: 250, button: "right" });
   });
 
   it("applies default 'left' button when omitted for drag", () => {
@@ -1811,6 +1865,7 @@ describe("Default values", () => {
 
     const result = testSuiteSchema.parse(input);
     expect(result.tests[0].steps[0]).toEqual({
+      type: "action",
       action: "drag",
       fromX: 100,
       fromY: 100,
@@ -1836,6 +1891,6 @@ describe("Default values", () => {
     };
 
     const result = testSuiteSchema.parse(input);
-    expect(result.tests[0].steps[0]).toEqual({ action: "mouseClick", x: 100, y: 200, button: "left" });
+    expect(result.tests[0].steps[0]).toEqual({ type: "action", action: "mouseClick", x: 100, y: 200, button: "left" });
   });
 });
