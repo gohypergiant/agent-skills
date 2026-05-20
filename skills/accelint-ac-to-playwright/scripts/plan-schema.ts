@@ -8,11 +8,13 @@ import { targetValidator } from "./target-validator";
  * Step schemas
  */
 const clickStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("click"),
   target: targetValidator,
 }).strict();
 
 const doubleClickStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("doubleClick"),
   x: z.number().int().min(0),
   y: z.number().int().min(0),
@@ -20,6 +22,7 @@ const doubleClickStep = z.object({
 }).strict();
 
 const dragStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("drag"),
   fromX: z.number().int().min(0),
   fromY: z.number().int().min(0),
@@ -29,53 +32,63 @@ const dragStep = z.object({
 }).strict();
 
 const expectNotVisibleStep = z.object({
+  type: z.literal("assertion").default("assertion"),
   action: z.literal("expectNotVisible"),
   target: targetValidator,
 }).strict();
 
 const expectTextStep = z.object({
+  type: z.literal("assertion").default("assertion"),
   action: z.literal("expectText"),
   target: targetValidator,
   value: z.string(),
 }).strict();
 
 const expectUrlStep = z.object({
+  type: z.literal("assertion").default("assertion"),
   action: z.literal("expectUrl"),
   value: z.string(),
 }).strict();
 
 const expectVisibleStep = z.object({
+  type: z.literal("assertion").default("assertion"),
   action: z.literal("expectVisible"),
   target: targetValidator,
 }).strict();
 
 const fillStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("fill"),
   target: targetValidator,
   value: z.string(),
 }).strict();
 
 const gotoStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("goto"),
   value: z.string(),
 }).strict();
 
 const hoverStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("hover"),
   target: targetValidator,
 }).strict();
 
 const keyDownStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("keyDown"),
   value: modifierKeyValidator,
 }).strict();
 
 const keyUpStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("keyUp"),
   value: modifierKeyValidator,
 }).strict();
 
 const mouseClickStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("mouseClick"),
   x: z.number().int().min(0),
   y: z.number().int().min(0),
@@ -83,37 +96,44 @@ const mouseClickStep = z.object({
 }).strict();
 
 const mouseDownStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("mouseDown"),
   button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
 const mouseMoveStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("mouseMove"),
   x: z.number().int().min(0),
   y: z.number().int().min(0),
 }).strict();
 
 const mouseUpStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("mouseUp"),
   button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
 const pressStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("press"),
   value: pressKeyValidator,
 }).strict();
 
 const reloadStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("reload"),
 }).strict();
 
 const scrollStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("scroll"),
   direction: wheelDirectionValidator,
   amount: z.number().int().positive(),
 }).strict();
 
 const selectStep = z.object({
+  type: z.literal("action").default("action"),
   action: z.literal("select"),
   target: targetValidator,
   value: z.string(),
@@ -254,60 +274,78 @@ export const testSchema = z.object({
 
   // Validate visibility assertion pairing
   if (!hasError) {
-    const visibilityAssertions: Array<{
+    // Helper to check if a step is an action (not an assertion)
+    const isAction = (step: z.infer<typeof stepSchema>): boolean => {
+      return step.type === "action";
+    };
+
+    // Helper to count actions between two indices
+    const countActionsBetween = (startIndex: number, endIndex: number): number => {
+      let count = 0;
+      for (let i = startIndex + 1; i < endIndex; i++) {
+        if (isAction(test.steps[i])) {
+          count++;
+        }
+      }
+      return count;
+    };
+
+    // Group visibility assertions by target
+    const assertionsByTarget = new Map<string, Array<{
       index: number;
       action: "expectVisible" | "expectNotVisible";
-      target: string;
-    }> = [];
+    }>>();
 
-    // Collect all visibility assertions
     test.steps.forEach((step, index) => {
       if (step.action === "expectVisible" || step.action === "expectNotVisible") {
-        visibilityAssertions.push({
-          index,
-          action: step.action,
-          target: step.target,
-        });
+        const targetAssertions = assertionsByTarget.get(step.target);
+        if (targetAssertions) {
+          targetAssertions.push({
+            index,
+            action: step.action,
+          });
+        } else {
+          assertionsByTarget.set(step.target, [{
+            index,
+            action: step.action,
+          }]);
+        }
       }
     });
 
-    // Validate each visibility assertion has a proper pair
-    for (const assertion of visibilityAssertions) {
-      const oppositeAction = assertion.action === "expectVisible"
-        ? "expectNotVisible"
-        : "expectVisible";
-
-      // Check for pair immediately before (at index - 2, with one action at index - 1)
-      const hasPairBefore =
-        assertion.index >= 2 &&
-        visibilityAssertions.some(other =>
-          other.index === assertion.index - 2 &&
-          other.action === oppositeAction &&
-          other.target === assertion.target
-        ) &&
-        // Ensure step at index - 1 is an action (not an assertion)
-        !["expectVisible", "expectNotVisible", "expectText", "expectUrl"].includes(
-          test.steps[assertion.index - 1].action
-        );
-
-      // Check for pair immediately after (at index + 2, with one action at index + 1)
-      const hasPairAfter =
-        assertion.index + 2 < test.steps.length &&
-        visibilityAssertions.some(other =>
-          other.index === assertion.index + 2 &&
-          other.action === oppositeAction &&
-          other.target === assertion.target
-        ) &&
-        // Ensure step at index + 1 is an action (not an assertion)
-        !["expectVisible", "expectNotVisible", "expectText", "expectUrl"].includes(
-          test.steps[assertion.index + 1].action
-        );
-
-      if (!hasPairBefore && !hasPairAfter) {
+    // Validate each target
+    for (const [target, assertions] of assertionsByTarget.entries()) {
+      // Must have exactly 2 assertions
+      if (assertions.length !== 2) {
         ctx.addIssue({
           code: "custom",
-          message: `${assertion.action} at step ${assertion.index} for target "${assertion.target}" must be paired with ${oppositeAction} for the same target, with exactly one action between them. Pattern: ${oppositeAction} → action → ${assertion.action} OR ${assertion.action} → action → ${oppositeAction}.`,
-          path: ["steps", assertion.index, "action"],
+          message: `Target "${target}" has ${assertions.length} visibility assertion(s), but must have exactly 2 (one expectVisible and one expectNotVisible with exactly one action between them).`,
+          path: ["steps"],
+        });
+        hasError = true;
+        break;
+      }
+
+      const [first, second] = assertions;
+
+      // Must be opposite types
+      if (first.action === second.action) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Target "${target}" has two ${first.action} assertions. Visibility assertions must be opposite types (one expectVisible and one expectNotVisible).`,
+          path: ["steps", second.index, "action"],
+        });
+        hasError = true;
+        break;
+      }
+
+      // Must have exactly 1 action between them
+      const actionCount = countActionsBetween(first.index, second.index);
+      if (actionCount !== 1) {
+        ctx.addIssue({
+          code: "custom",
+          message: `Target "${target}" has ${actionCount} action(s) between visibility assertions at steps ${first.index} and ${second.index}, but must have exactly 1 action.`,
+          path: ["steps", second.index, "action"],
         });
         hasError = true;
         break;
@@ -316,6 +354,9 @@ export const testSchema = z.object({
   }
 }).strict();
 
+/**
+ * Exports
+*/
 export const testSuiteSchema = z.object({
   suiteName: z.string(),
   tags: z.array(tagValidator).min(1).optional(),
