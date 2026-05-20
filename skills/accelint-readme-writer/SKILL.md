@@ -16,7 +16,7 @@ This skill guides the creation and maintenance of comprehensive, human-friendly 
 - **NEVER run discovery serially when sub-agents are available** — spawn parallel discovery agents for different aspects (entry points, dependencies, examples, existing docs) to analyze the codebase efficiently. Serial file-by-file scanning wastes time.
 - **NEVER document non-exported internal functions** — only document the public API that's accessible through package entry points. Internal helper functions that aren't re-exported from `index.ts` don't belong in the README.
 - **NEVER fabricate usage examples** — extract real examples from test files, JSDoc blocks, or `examples/` directories. Made-up examples often contain subtle errors that confuse users.
-- **NEVER use the wrong package manager commands** — check for lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`) and use the matching package manager in all commands. Wrong commands break the user's first experience.
+- **NEVER use the wrong package manager commands** — check for lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lock`) and use the matching package manager in all commands. Wrong commands break the user's first experience.
 - **NEVER skip comparing code to existing README** — when updating documentation, identify what's missing, what's stale, and what signature changes occurred. Silent drift between code and docs causes user frustration.
 - **NEVER write robotic, AI-sounding text** — use the humanizer skill to remove inflated language, promotional tone, and AI writing patterns. Documentation should sound like a helpful human wrote it.
 
@@ -69,7 +69,7 @@ Spawn these discovery agents in parallel (if sub-agents available):
 
 **Agent B — Dependencies & Configuration**
 - Read `package.json` for dependencies, devDependencies, peerDependencies, scripts
-- Check lockfile type (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`)
+- Check lockfile type (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lock`)
 - Look for configuration files: `tsconfig.json`, `.eslintrc*`, `vitest.config.*`, etc.
 - Return: dependency list (separate runtime vs peer), available scripts, package manager, configs found
 
@@ -158,7 +158,7 @@ Always use the correct package manager based on lockfiles:
 | `pnpm-lock.yaml` | pnpm | `pnpm install` |
 | `package-lock.json` | npm | `npm install` |
 | `yarn.lock` | yarn | `yarn` |
-| `bun.lockb` | bun | `bun install` |
+| `bun.lock` | bun | `bun install` |
 
 ### Table of Contents
 
