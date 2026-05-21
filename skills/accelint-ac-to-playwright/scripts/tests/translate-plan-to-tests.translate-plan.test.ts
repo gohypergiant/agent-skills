@@ -29,7 +29,8 @@ describe("translatePlan (golden file)", () => {
     
     const result = translatePlan(plan, { outDir: "tests/generated" });
     expect(result.path).toBe("tests/generated/golden-file-test.spec.ts");
-    
+    expect(result.sourceDescription).toBe("some-repo/acceptance/golden-file-test.feature");
+
     const normalize = (s: string) => `${s.replace(/\r\n/g, "\n").trimEnd()}\n`;
     const actual = normalize(result.content);
     const expected = normalize(readFixture("golden-file-test.expected.txt"));
@@ -78,6 +79,7 @@ describe("translatePlan - source annotation", () => {
     };
 
     const result = translatePlan(plan, { outDir: "tests/generated" });
+    expect(result.sourceDescription).toBe("external file: outside.feature");
     expect(result.content).toContain(`annotation: {`);
     expect(result.content).toContain(`type: "source",`);
     expect(result.content).toContain(`description: "external file: outside.feature"`);

@@ -49,7 +49,6 @@ export type CliRuntime = {
   path: PathSubset;
   appendSummaryEntry: (argv: string[]) => number;
   createMarkdownSummary: (argv: string[]) => number;
-  extractSourceDescription: (testContent: string) => string | null;
   now: () => Date;
   log: (...args: unknown[]) => void;
   error: (...args: unknown[]) => void;
@@ -60,7 +59,6 @@ const defaultRuntime: CliRuntime = {
   path,
   appendSummaryEntry,
   createMarkdownSummary,
-  extractSourceDescription,
   now: () => new Date(),
   log: console.log,
   error: console.error,
@@ -189,23 +187,13 @@ export function run(
     runtime.log(`   Wrote:       ${testFile.path}`);
     runtime.log(`   To run, do:  npx playwright test ${testFile.path}`);
 
-    const sourceFromAnnotation = runtime.extractSourceDescription(
-      testFile.content,
-    );
-    if (!sourceFromAnnotation) {
-      runtime.error(
-        "Error: Unable to read source annotation from generated test file.",
-      );
-      return 1;
-    }
-
     const appendCode = runtime.appendSummaryEntry([
       "node",
       "append-json-summary-entry.js",
       "--summary-json",
       summaryJsonPath,
       "--input",
-      sourceFromAnnotation,
+      testFile.sourceDescription,
       "--plan",
       original,
       "--test",
@@ -379,16 +367,6 @@ function formatSummaryFilename(now: Date): string {
   return `${iso.replace("T", "-").replace(/:/g, "-")}-summary.json`;
 }
 
-function extractSourceDescription(testContent: string): string | null {
-  const match = testContent.match(/description:\s*("([^"\\\\]|\\\\.)*")/);
-  if (!match) return null;
-  try {
-    return JSON.parse(match[1]) as string;
-  } catch {
-    return null;
-  }
-}
-
 // Expands a given segment of an input path that has a glob
 function expandSegment(
   basePaths: string[],
@@ -426,6 +404,5 @@ export {
   processInput as _processInput,
   starPatternToRegex as _starPatternToRegex,
   parseArgs as _parseArgs,
-  extractSourceDescription as _extractSourceDescription,
   formatSummaryFilename as _formatSummaryFilename,
 };
