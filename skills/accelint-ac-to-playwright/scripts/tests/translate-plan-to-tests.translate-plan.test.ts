@@ -18,10 +18,10 @@ describe("translatePlan (golden file)", () => {
           startUrl: "https://example.com",
           tags: ["@wip"],
           steps: [
-            { action: "click", target: "login.form.login" },
-            { action: "fill", target: "login.form.email", value: "a@b.com" },
-            { action: "expectText", target: "login.header.h1", value: "Welcome" },
-            { action: "expectUrl", value: "dashboard" },
+            { type: "action", action: "click", target: "login.form.login" },
+            { type: "action", action: "fill", target: "login.form.email", value: "a@b.com" },
+            { type: "assertion", action: "expectText", target: "login.header.h1", value: "Welcome" },
+            { type: "assertion", action: "expectUrl", value: "dashboard" },
           ],
         },
       ],
@@ -29,7 +29,8 @@ describe("translatePlan (golden file)", () => {
     
     const result = translatePlan(plan, { outDir: "tests/generated" });
     expect(result.path).toBe("tests/generated/golden-file-test.spec.ts");
-    
+    expect(result.sourceDescription).toBe("some-repo/acceptance/golden-file-test.feature");
+
     const normalize = (s: string) => `${s.replace(/\r\n/g, "\n").trimEnd()}\n`;
     const actual = normalize(result.content);
     const expected = normalize(readFixture("golden-file-test.expected.txt"));
@@ -49,7 +50,7 @@ describe("translatePlan - suiteName validation", () => {
         {
           name: "Test name",
           startUrl: "https://example.com",
-          steps: [{ action: "goto", value: "https://example.com" }],
+          steps: [{ type: "action", action: "goto", value: "https://example.com" }],
         },
       ],
     };
@@ -72,12 +73,13 @@ describe("translatePlan - source annotation", () => {
         {
           name: "Test name",
           startUrl: "https://example.com",
-          steps: [{ action: "goto", value: "https://example.com" }],
+          steps: [{ type: "action", action: "goto", value: "https://example.com" }],
         },
       ],
     };
 
     const result = translatePlan(plan, { outDir: "tests/generated" });
+    expect(result.sourceDescription).toBe("external file: outside.feature");
     expect(result.content).toContain(`annotation: {`);
     expect(result.content).toContain(`type: "source",`);
     expect(result.content).toContain(`description: "external file: outside.feature"`);

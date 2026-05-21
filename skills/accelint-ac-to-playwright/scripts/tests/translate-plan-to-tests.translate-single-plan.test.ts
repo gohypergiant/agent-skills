@@ -6,7 +6,7 @@ describe("_translateSingleTest", () => {
     const testInput: Test = {
       name: "happy path",
       startUrl: "https://example.com",
-      steps: [{ action: "goto", value: "https://example.com/foo" }],
+      steps: [{ type: "action", action: "goto", value: "https://example.com/foo" }],
     };
 
     const out = _translateSingleTest(testInput);
@@ -22,7 +22,7 @@ describe("_translateSingleTest", () => {
       name: "tagged test",
       startUrl: "/",
       tags: ["@fast"],
-      steps: [{ action: "expectUrl", value: "/" }],
+      steps: [{ type: "assertion", action: "expectUrl", value: "/" }],
     };
   
     const out = _translateSingleTest(testInput);
@@ -36,7 +36,7 @@ describe("_translateSingleTest", () => {
       name: "tagged test",
       startUrl: "/",
       tags: ["@fast", "@smoke"],
-      steps: [{ action: "expectUrl", value: "/" }],
+      steps: [{ type: "assertion", action: "expectUrl", value: "/" }],
     };
   
     const out = _translateSingleTest(testInput);
@@ -49,8 +49,8 @@ describe("_translateSingleTest", () => {
       name: "order matters",
       startUrl: "/",
       steps: [
-        { action: "goto", value: "/one" },
-        { action: "expectUrl", value: "one" },
+        { type: "action", action: "goto", value: "/one" },
+        { type: "assertion", action: "expectUrl", value: "one" },
       ],
     };
 
@@ -70,7 +70,7 @@ describe("_translateSingleTest", () => {
     const testInput: Test = {
       name: "formatting",
       startUrl: "/",
-      steps: [{ action: "expectUrl", value: "x" }],
+      steps: [{ type: "assertion", action: "expectUrl", value: "x" }],
     };
 
     const out = _translateSingleTest(testInput);
