@@ -1,7 +1,7 @@
 import type * as fs from "node:fs";
 import * as path from "node:path";
 import { vi } from "vitest";
-import { _extractSourceDescription, type CliRuntime } from "../cli/generate-tests";
+import type { CliRuntime } from "../cli/generate-tests";
 
 type FakeDirent = { name: string };
 
@@ -82,7 +82,6 @@ export function makeRuntime(overrides?: RuntimeOverrides): RuntimeState {
 
     appendSummaryEntry: vi.fn(() => 0),
     createMarkdownSummary: vi.fn(() => 0),
-    extractSourceDescription: _extractSourceDescription,
     now: () => new Date("2026-01-28T14:03:52Z"),
     log: vi.fn((...args: unknown[]) => logs.push(args.join(" "))),
     error: vi.fn((...args: unknown[]) => errors.push(args.join(" "))),
