@@ -4,7 +4,7 @@ description: Comprehensive TypeScript/JavaScript coding standards focusing on ty
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.1"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -43,6 +43,7 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [any.md](references/any.md) - Avoid any, use unknown or generics
 - [enums.md](references/enums.md) - Use as const objects instead of enum
 - [type-vs-interface.md](references/type-vs-interface.md) - Prefer type over interface
+- [bundler-paths.md](references/bundler-paths.md) - Use statically analyzable import and file-system paths for optimal bundling
 
 **Safety:**
 - [input-validation.md](references/input-validation.md) - Validate external data with schemas

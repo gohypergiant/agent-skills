@@ -1,5 +1,64 @@
 # Changelog
 
+## [1.8.0] - 2026-05-18
+
+### Changed
+- **Updated output report template** to inline examples from reference files
+  - Rationale: User feedback requested inline examples instead of just links for better self-contained audit reports (useful in GitHub PR reviews and Claude Code audits)
+  - Template now includes: ❌ Anti-pattern Example, ✅ Correct Pattern, and Recommended Fix for This Code sections
+  - Each issue shows typical bad code, typical good code, then applies pattern to user's specific code
+
+### Evaluation Results
+- **Iteration 2: 100% pass rate (8/8 tests, 24/24 assertions) - Grade A**
+- Improvement: +12.5% over iteration-1 (87.5% → 100%)
+- todolist-audit now passes with comprehensive severity categorization
+- All test cases demonstrate strong pattern recognition across React anti-patterns
+- Average time: 38.6s (vs 31.4s in iter-1, increase from more thorough audits)
+- Average tokens: 23,609 (stable, similar to iter-1's 23,268)
+
+### Version
+- Bumped from 1.7.0 → 1.8.0
+
+## [1.7.0] - 2026-05-18
+
+### Changed
+- **CRITICAL FIX:** Moved React Compiler check to the top of both SKILL.md and AGENTS.md
+  - Rationale: Agents were suggesting manual memoization without first checking if React Compiler is enabled. Compiler awareness was buried in "Important Notes" section (line 160+), causing agents to miss it.
+  - Impact: Agents will now check for React Compiler first before suggesting memo/useMemo/useCallback optimizations
+
+### Added
+- New "Before Optimizing Performance, Ask" section in SKILL.md with 3-step checklist
+  - Does project use React Compiler?
+  - Is this actually a performance problem?
+  - What's the scale?
+- Prominent "⚡ FIRST: Check React Compiler" section at top of AGENTS.md
+
+### Evaluation Results
+- Iteration 1: 100% pass rate (8/8 tests) after fixing permission issues
+- Key strengths: React-specific terminology, modern patterns (useEffectEvent, useDeferredValue), multiple solution approaches
+- Trade-off: 50% more time, 31% more tokens vs baseline, but significantly better explanations and depth
+
+### Version
+- Bumped from 1.6.0 → 1.7.0
+
+## [1.6.0] - 2026-05-18
+
+### Added
+- **New Advanced Pattern reference: effect-event-deps.md**
+  - Pattern 3.5: Do Not Put Effect Events in Dependency Arrays
+  - Explains why Effect Event functions have unstable identity and must not be in deps arrays
+  - Includes ❌/✅ examples showing incorrect (with handleConnected in deps) vs correct (only reactive values)
+  - React Compiler note confirming manual optimization required
+  - Rationale: Critical guidance for React 19.2+ useEffectEvent adoption — common mistake to treat Effect Events like regular callbacks
+
+### Changed
+- **Updated SKILL.md** to reference new effect-event-deps.md in Advanced Patterns section
+- **Updated AGENTS.md** with 3.5 entry and one-line summary
+- **Formatted effect-event-deps.md** with numbered title (3.5) to match existing reference structure
+
+### Version
+- Bumped from 1.5 → 1.6
+
 ## [1.5.0] - 2026-03-19
 
 ### Added

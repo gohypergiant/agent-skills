@@ -4,7 +4,7 @@ description: React performance optimization and best practices. ALWAYS use this 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.5.0"
+  version: "1.8.0"
 ---
 
 # React Best Practices
@@ -30,6 +30,24 @@ These are the most critical anti-patterns that cause real production issues. Exp
 **NEVER create callbacks/objects/arrays inline as props to memoized components** — breaks memoization since new reference is created each render. Extract to module scope, useMemo, or useCallback: `const config = useMemo(() => ({ theme }), [theme])`.
 
 **NEVER put user interaction logic in useEffect** — if it's triggered by a button click or form submit, put it directly in the event handler. Effects are for synchronization with external systems, not user-triggered actions.
+
+## Before Optimizing Performance, Ask
+
+Before suggesting memo/useMemo/useCallback optimizations, determine if they're needed:
+
+1. **Does this project use React Compiler?**
+   - Search for `babel-plugin-react-compiler` or `react-compiler-webpack-plugin` in package.json/config files
+   - If **yes** → Skip manual memoization (memo, useMemo, useCallback, hoisting static JSX) — the compiler handles these automatically
+   - If **no** → Apply all relevant optimizations from this skill
+   - See [react-compiler-guide.md](references/react-compiler-guide.md) for what the compiler handles
+
+2. **Is this actually a performance problem?**
+   - Has the user measured/profiled and identified a bottleneck?
+   - Or are they asking for a general review/optimization?
+
+3. **What's the scale?**
+   - For lists: How many items? (affects whether to suggest content-visibility vs virtualization)
+   - For re-renders: How often does this component re-render?
 
 ## How to Use
 
@@ -73,6 +91,7 @@ When you identify a relevant optimization, load the corresponding reference file
 - [uselatest-stable-callbacks.md](references/uselatest-stable-callbacks.md)
 - [cache-repeated-function-calls.md](references/cache-repeated-function-calls.md)
 - [initialize-app-once.md](references/initialize-app-once.md)
+- [effect-event-deps.md](references/effect-event-deps.md)
 
 **Misc:**
 - [named-imports.md](references/named-imports.md)

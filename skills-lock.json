@@ -1,29 +1,28 @@
 {
   "version": 1,
   "skills": {
-    "ask-questions-if-underspecified": {
-      "source": "trailofbits/skills",
-      "sourceType": "github",
-      "computedHash": "7178ae6d25b054d311eee5abf947bc988e79d5ea0ae1d349f32d7a490493f525"
-    },
     "bash-defensive-patterns": {
       "source": "wshobson/agents",
       "sourceType": "github",
-      "computedHash": "27306f35e146e1f7c56c7ab30e136d3e9fa2dd86b3816b0efd436c1129105377"
+      "skillPath": "plugins/shell-scripting/skills/bash-defensive-patterns/SKILL.md",
+      "computedHash": "33de6a9e8260a7a5f772c5bf1e389b5207318a17a3a0a13160066c5e76a059d3"
     },
     "humanizer": {
-      "source": "softaworks/agent-toolkit",
+      "source": "blader/humanizer",
       "sourceType": "github",
-      "computedHash": "34a38e6acc60d4529612d41ffe740bca0060d3c5e89e2a0d24ae795f67157fbb"
+      "skillPath": "SKILL.md",
+      "computedHash": "b813857f183da05d08d5a80adac671df94c139f855809bd47ab8b7bb245546a2"
     },
     "skill-creator": {
       "source": "anthropics/skills",
       "sourceType": "github",
-      "computedHash": "b122f4d1e91aa1d83027e050b5b37c3156203ee85458d7b1360bc48167c9e02a"
+      "skillPath": "skills/skill-creator/SKILL.md",
+      "computedHash": "5ea13a6d9f0d4bb694405d79acd00cadec0d21bb138c4dd10fcf3c500cb835c2"
     },
     "skill-judge": {
       "source": "softaworks/agent-toolkit",
       "sourceType": "github",
+      "skillPath": "skills/skill-judge/SKILL.md",
       "computedHash": "ff132ba281d460d3cf7814601e304f24e795a606a8e20e78f1bd103258bc735c"
     }
   }

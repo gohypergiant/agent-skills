@@ -36,8 +36,10 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
    - Severity (Critical, High, Medium, Low)
    - Category (Derived State, Safety, State Management, Hoisting Static JSX, Code Quality, etc...)
    - Impact (potential bugs, maintainability concerns, runtime failures)
-   - Pattern Reference (which references/*.md file)
-   - Recommended Fix with ✅ marker
+   - Pattern Reference (which references/*.md file) + inline examples from that reference
+   - ❌ Anti-pattern Example (from the reference file showing typical bad code)
+   - ✅ Correct Pattern (from the reference file showing typical good code)
+   - Recommended Fix for This Code with ✅ marker (applying the pattern to their specific code)
 
 5. SEVERITY LEVELS:
    - Critical: Could cause infinite re-renders, memory leaks, hydration failures, app crashes
@@ -120,7 +122,19 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 
 **Pattern Reference:** [filename.md]
 
-**Recommended Fix:**
+**❌ Anti-pattern Example:**
+```tsx
+// [Inline example from the reference showing the problem]
+[typical bad code]
+```
+
+**✅ Correct Pattern:**
+```tsx
+// [Inline example from the reference showing the solution]
+[typical good code]
+```
+
+**Recommended Fix for This Code:**
 ```tsx
 // ✅ [Brief description of solution]
 [code snippet showing the fix]
@@ -150,7 +164,19 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 
 **Pattern Reference:** [filename.md]
 
-**Recommended Fix:**
+**❌ Anti-pattern Example:**
+```tsx
+// [Inline example from the reference showing the problem]
+[typical bad code]
+```
+
+**✅ Correct Pattern:**
+```tsx
+// [Inline example from the reference showing the solution]
+[typical good code]
+```
+
+**Recommended Fix for This Code:**
 ```tsx
 // ✅ [Brief description of solution]
 [code snippet]
@@ -188,8 +214,20 @@ Completed systematic audit of [file/module path] following accelint-react-best-p
 
 **Pattern Reference:** [filename.md]
 
-**Recommended Fix:**
-```ts
+**❌ Anti-pattern Example:**
+```tsx
+// [Inline example from the reference showing the problem]
+[typical bad code]
+```
+
+**✅ Correct Pattern:**
+```tsx
+// [Inline example from the reference showing the solution]
+[typical good code]
+```
+
+**Recommended Fix for This Code:**
+```tsx
 // ✅ [Brief description of solution]
 [fixed code snippet]
 ```
