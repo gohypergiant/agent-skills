@@ -4,7 +4,7 @@ import { _renderStep, type Step } from "../translate-plan-to-tests";
 describe("renderStep", () => {
   it.each<[Step, number, string[]]>([
     [
-      { action: "click", target: "#btn" },
+      { type: "action", action: "click", target: "#btn" },
       3,
       [
         'await expect(page.getByTestId("#btn")).toHaveCount(1);',
@@ -13,7 +13,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "doubleClick", x: 100, y: 200, button: "left" },
+      { type: "action", action: "doubleClick", x: 100, y: 200, button: "left" },
       4,
       [
         'await page.mouse.dblclick(100, 200);',
@@ -21,7 +21,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "doubleClick", x: 50, y: 75, button: "right" },
+      { type: "action", action: "doubleClick", x: 50, y: 75, button: "right" },
       5,
       [
         'await page.mouse.dblclick(50, 75, { button: "right" });',
@@ -29,7 +29,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "drag", fromX: 100, fromY: 100, toX: 200, toY: 200, button: "left" },
+      { type: "action", action: "drag", fromX: 100, fromY: 100, toX: 200, toY: 200, button: "left" },
       6,
       [
         'await page.mouse.move(100, 100);',
@@ -40,7 +40,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "drag", fromX: 50, fromY: 75, toX: 150, toY: 200, button: "right" },
+      { type: "action", action: "drag", fromX: 50, fromY: 75, toX: 150, toY: 200, button: "right" },
       7,
       [
         'await page.mouse.move(50, 75);',
@@ -51,7 +51,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "drag", fromX: 10, fromY: 20, toX: 30, toY: 40, button: "middle" },
+      { type: "action", action: "drag", fromX: 10, fromY: 20, toX: 30, toY: 40, button: "middle" },
       8,
       [
         'await page.mouse.move(10, 20);',
@@ -62,7 +62,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "expectNotVisible", target: "#modal" },
+      { type: "assertion", action: "expectNotVisible", target: "#modal" },
       1,
       [
         'try {',
@@ -74,7 +74,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "expectVisible", target: "#modal" },
+      { type: "assertion", action: "expectVisible", target: "#modal" },
       2,
       [
         'await expect(page.getByTestId("#modal")).toHaveCount(1);',
@@ -83,7 +83,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "expectText", target: "#msg", value: "Hello" },
+      { type: "assertion", action: "expectText", target: "#msg", value: "Hello" },
       4,
       [
         'await expect(page.getByTestId("#msg")).toHaveCount(1);',
@@ -92,7 +92,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "fill", target: "#email", value: "a@b.com" },
+      { type: "action", action: "fill", target: "#email", value: "a@b.com" },
       5,
       [
         'await expect(page.getByTestId("#email")).toHaveCount(1);',
@@ -101,7 +101,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "select", target: "#role", value: "admin" },
+      { type: "action", action: "select", target: "#role", value: "admin" },
       6,
       [
         'await expect(page.getByTestId("#role")).toHaveCount(1);',
@@ -110,7 +110,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "goto", value: "https://example.com" },
+      { type: "action", action: "goto", value: "https://example.com" },
       1,
       [
         'await page.goto("https://example.com");',
@@ -118,7 +118,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "hover", target: "#tooltip-trigger" },
+      { type: "action", action: "hover", target: "#tooltip-trigger" },
       3,
       [
         'await expect(page.getByTestId("#tooltip-trigger")).toHaveCount(1);',
@@ -127,7 +127,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "reload" },
+      { type: "action", action: "reload" },
       2,
       [
         'await page.reload();',
@@ -135,7 +135,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "expectUrl", value: "dashboard" },
+      { type: "assertion", action: "expectUrl", value: "dashboard" },
       1,
       [
         "await expect(page).toHaveURL(/\\/dashboard(?:\\/(?:[?#]|$)|[?#]|$)/);",
@@ -143,7 +143,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseClick", x: 100, y: 200, button: "left" },
+      { type: "action", action: "mouseClick", x: 100, y: 200, button: "left" },
       1,
       [
         'await page.mouse.click(100, 200);',
@@ -151,7 +151,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseClick", x: 50, y: 75, button: "right" },
+      { type: "action", action: "mouseClick", x: 50, y: 75, button: "right" },
       2,
       [
         'await page.mouse.click(50, 75, { button: "right" });',
@@ -159,7 +159,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseDown", button: "left" },
+      { type: "action", action: "mouseDown", button: "left" },
       3,
       [
         'await page.mouse.down();',
@@ -167,7 +167,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseDown", button: "middle" },
+      { type: "action", action: "mouseDown", button: "middle" },
       4,
       [
         'await page.mouse.down({ button: "middle" });',
@@ -175,7 +175,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseMove", x: 150, y: 250 },
+      { type: "action", action: "mouseMove", x: 150, y: 250 },
       5,
       [
         'await page.mouse.move(150, 250);',
@@ -183,7 +183,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseUp", button: "left" },
+      { type: "action", action: "mouseUp", button: "left" },
       6,
       [
         'await page.mouse.up();',
@@ -191,7 +191,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "mouseUp", button: "right" },
+      { type: "action", action: "mouseUp", button: "right" },
       7,
       [
         'await page.mouse.up({ button: "right" });',
@@ -199,7 +199,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "scroll", direction: "down", amount: 100 },
+      { type: "action", action: "scroll", direction: "down", amount: 100 },
       8,
       [
         'await page.mouse.wheel(0, 100);',
@@ -207,7 +207,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "scroll", direction: "up", amount: 50 },
+      { type: "action", action: "scroll", direction: "up", amount: 50 },
       9,
       [
         'await page.mouse.wheel(0, -50);',
@@ -215,7 +215,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "scroll", direction: "right", amount: 75 },
+      { type: "action", action: "scroll", direction: "right", amount: 75 },
       10,
       [
         'await page.mouse.wheel(75, 0);',
@@ -223,7 +223,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "scroll", direction: "left", amount: 25 },
+      { type: "action", action: "scroll", direction: "left", amount: 25 },
       11,
       [
         'await page.mouse.wheel(-25, 0);',
@@ -231,7 +231,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "keyDown", value: "Shift" },
+      { type: "action", action: "keyDown", value: "Shift" },
       7,
       [
         'await page.keyboard.down("Shift");',
@@ -239,7 +239,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "press", value: "Enter" },
+      { type: "action", action: "press", value: "Enter" },
       9,
       [
         'await page.keyboard.press("Enter");',
@@ -247,7 +247,7 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { action: "keyUp", value: "Shift" },
+      { type: "action", action: "keyUp", value: "Shift" },
       8,
       [
         'await page.keyboard.up("Shift");',
