@@ -8,6 +8,7 @@ import type { stepSchema, testSchema, testSuiteSchema } from "./plan-schema";
 type GeneratedFile = {
   path: string;
   content: string;
+  sourceDescription: string;
 };
 
 export type PlanFile = z.infer<typeof testSuiteSchema>;
@@ -67,6 +68,7 @@ export function translatePlan(
   return {
     path: joinOutDir(options.outDir, `${suiteSlug}.spec.ts`),
     content: lines.join("\n"),
+    sourceDescription,
   };
 }
 

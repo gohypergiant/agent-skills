@@ -179,26 +179,6 @@ describe("run()", () => {
     expect(errors.join("\n")).toContain("Failed to create markdown summary");
   });
 
-  it("returns 1 when source annotation is missing from generated test", () => {
-    const validPlan = makeValidPlanJson();
-
-    const { runtime, errors } = makeRuntime({
-      fs: {
-        existsSync: () => true,
-        readFileSync: (() => validPlan) as unknown as CliRuntime["fs"]["readFileSync"],
-        mkdirSync: () => undefined,
-        writeFileSync: () => {},
-      },
-      appendSummaryEntry: () => 0,
-    });
-
-    runtime.extractSourceDescription = () => null;
-
-    const code = runWithDefaults(runtime, ["plan.json"]);
-
-    expect(code).toBe(1);
-    expect(errors.join("\n")).toContain("Unable to read source annotation");
-  });
   it("deduplicates inputs", () => {
     const validPlan = makeValidPlanJson();
   
