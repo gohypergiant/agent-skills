@@ -4,7 +4,7 @@ description: Convert and validate acceptance criteria for Playwright test automa
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.4"
+  version: "1.1.5"
 ---
 
 # AC To Playwright
@@ -208,6 +208,7 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `references
 
 ## NEVER Do
 
+- **NEVER use bare string values with selectOption** — Playwright's `selectOption()` matches HTML `value` attributes by default, not visible text. AC writers specify visible option text (e.g., "Premium Plan"), so always use `{ label: "text" }` syntax: `.selectOption({ label: "Premium Plan" })`. Using bare strings (`.selectOption("Premium Plan")`) causes silent mismatches where tests pass locally but fail in production because the value attribute differs from display text.
 - **NEVER generate artifacts in assessment mode** — when the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
 - **NEVER skip controlled vocabulary checks in assessment** — verify that area and component keywords in targets match the lists in `test-hooks.md`. 
 - **NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.
