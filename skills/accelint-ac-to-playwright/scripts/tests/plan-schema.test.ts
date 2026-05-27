@@ -1184,6 +1184,34 @@ describe("visibility pairing validation", () => {
     }
   });
 
+  it("rejects visibility pair with same action types", () => {
+    const input = {
+      suiteName: "Visibility test",
+      source: { repo: "some-repo", path: "path/to/file.md" },
+      tests: [
+        {
+          name: "Same action types",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectVisible", target: "modal.div.dialog" },
+            { action: "click", target: "modal.button.close" },
+            { action: "expectVisible", target: "modal.div.dialog" },
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const issues = result.error.issues;
+      expect(issues).toHaveLength(1);
+      expect(issues[0].message).toContain("modal.div.dialog");
+      expect(issues[0].message).toContain("two expectVisible assertions");
+      expect(issues[0].message).toContain("must be opposite types");
+    }
+  });
+
   it("rejects visibility pair with mismatched targets", () => {
     const input = {
       suiteName: "Visibility test",
