@@ -76,7 +76,7 @@ export function run(
 ): number {
   // Parse args
   const parsed = parseArgs(argv.slice(2));
-  const commonErrors = handleCliCommonErrors({
+  const exitCode = handleCliCommonErrors({
     parsed,
     runtime,
     printUsage,
@@ -85,7 +85,7 @@ export function run(
       summaryMd: "Error: Missing required option: --summary-md <path>",
     },
   });
-  if (commonErrors !== null) return commonErrors;
+  if (exitCode >= 0) return exitCode;
   if (!parsed.summaryJson || !parsed.summaryMd) return 1;
 
   // Grab the summary file
