@@ -18,8 +18,11 @@ import { run as createMarkdownSummary } from "./create-markdown-summary";
 type FsSubset = {
   existsSync: (path: fs.PathLike) => boolean;
   statSync: (path: fs.PathLike) => fs.Stats;
-  // readdirSync has complex overloads - using loose typing here
-  readdirSync: (path: fs.PathLike, options?: any) => any;
+  // Explicitly type the withFileTypes overload used in expandSegment()
+  readdirSync: (
+    path: fs.PathLike,
+    options: { withFileTypes: true }
+  ) => fs.Dirent[];
   readFileSync: (
     path: fs.PathOrFileDescriptor,
     encoding: BufferEncoding,
