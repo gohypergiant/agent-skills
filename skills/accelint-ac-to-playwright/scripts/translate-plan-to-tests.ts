@@ -379,7 +379,7 @@ function renderStep(step: Step, stepIndex: number): string {
       return [
         `    try {`,
         `      await expect(${locator}).toHaveCount(1);`,
-        `      await ${locator}.selectOption(${JSON.stringify(step.value)});`,
+        `      await ${locator}.selectOption({ label: ${JSON.stringify(step.value)} });`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
         `      throw error;`,

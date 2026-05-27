@@ -105,7 +105,7 @@ describe("renderStep", () => {
       6,
       [
         'await expect(page.getByTestId("#role")).toHaveCount(1);',
-        'await page.getByTestId("#role").selectOption("admin");',
+        'await page.getByTestId("#role").selectOption({ label: "admin" });',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 6, action: "select", testId: "#role" })'
       ],
     ],
