@@ -359,7 +359,7 @@ describe("run()", () => {
   it("returns empty listings for unknown directories", () => {
     const state = makeRuntime();
 
-    const result = state.runtime.fs.readdirSync("/repo/unknown");
+    const result = state.runtime.fs.readdirSync("/repo/unknown", { withFileTypes: true });
 
     expect(result).toEqual([]);
   });

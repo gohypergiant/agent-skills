@@ -11,12 +11,18 @@ type ParsedArgs = {
 
 type UsagePrinter = (log: (...args: unknown[]) => void) => void;
 
+/**
+ * Handle common CLI errors (help flag, parse errors, missing required options).
+ * Returns -1 to signal "no errors found, caller should continue".
+ * Returns 0 for help text displayed successfully.
+ * Returns 1 for validation errors.
+ */
 export function handleCliCommonErrors(params: {
   parsed: ParsedArgs;
   runtime: CliRuntime;
   printUsage: UsagePrinter;
   required?: Record<string, string>;
-}): number | null {
+}): number {
   const { parsed, runtime, printUsage, required } = params;
 
   if (parsed.help) {
@@ -41,7 +47,7 @@ export function handleCliCommonErrors(params: {
     }
   }
 
-  return null;
+  return -1;
 }
 
 function failRequired(

@@ -3,7 +3,8 @@ import * as path from "node:path";
 import { vi } from "vitest";
 import type { CliRuntime } from "../cli/generate-tests";
 
-type FakeDirent = { name: string };
+// Minimal Dirent implementation - only includes what production code actually uses
+type FakeDirent = Pick<fs.Dirent, "name">;
 
 type FakeStat = {
   isDirectory: () => boolean;
@@ -60,10 +61,15 @@ export function makeRuntime(overrides?: RuntimeOverrides): RuntimeState {
         return stat as fs.Stats;
       }),
 
-      readdirSync: vi.fn((p) => {
+      readdirSync: vi.fn((p, opts) => {
+        // Production code only uses { withFileTypes: true }. Validate to prevent test bugs.
+        if (!opts || !opts.withFileTypes) {
+          throw new Error(
+            `readdirSync mock called with invalid options. Expected { withFileTypes: true }, got: ${JSON.stringify(opts)}`
+          );
+        }
         const entries = dirListings.get(toPathKey(p)) ?? [];
-        // Return FakeDirent[] which has .name property used by production code
-        return entries;
+        return entries as fs.Dirent[];
       }),
 
       readFileSync: vi.fn<CliRuntime["fs"]["readFileSync"]>(),
@@ -101,7 +107,7 @@ export function makeRuntime(overrides?: RuntimeOverrides): RuntimeState {
 export function addDir(state: RuntimeState, dirPath: string, entries: string[]): string {
   const abs = path.resolve(dirPath);
   state.dirs.add(abs);
-  state.dirListings.set(abs, entries.map((name) => ({ name })));
+  state.dirListings.set(abs, entries.map((name): FakeDirent => ({ name })));
   return abs;
 }
 

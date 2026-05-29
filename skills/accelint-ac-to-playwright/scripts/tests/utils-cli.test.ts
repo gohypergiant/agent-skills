@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { handleCliCommonErrors } from "../utils/cli";
 
 describe("handleCliCommonErrors", () => {
-  it("returns null when there are no help/errors and required is omitted", () => {
+  it("returns -1 when there are no help/errors and required is omitted", () => {
     const log = vi.fn();
     const error = vi.fn();
     const printUsage = vi.fn();
@@ -13,13 +13,13 @@ describe("handleCliCommonErrors", () => {
       printUsage,
     });
 
-    expect(result).toBeNull();
+    expect(result).toBe(-1);
     expect(printUsage).not.toHaveBeenCalled();
     expect(log).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 
-  it("returns null when required keys are present and truthy", () => {
+  it("returns -1 when required keys are present and truthy", () => {
     const log = vi.fn();
     const error = vi.fn();
     const printUsage = vi.fn();
@@ -31,7 +31,7 @@ describe("handleCliCommonErrors", () => {
       required: { summaryJson: "Error: Missing required option: --summary-json <path>" },
     });
 
-    expect(result).toBeNull();
+    expect(result).toBe(-1);
     expect(printUsage).not.toHaveBeenCalled();
     expect(log).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
