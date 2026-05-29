@@ -109,6 +109,20 @@ directory is a package inside a monorepo. If a root-level `AGENTS.md` or
    repeating the content. If the user flags additions or overrides: ask the
    normal turn questions scoped to what's actually missing or different.
 
+**Step 1.5 — Check for Related Documents**
+
+Before detecting local AGENTS.md state, check for related onboarding documents:
+
+1. **Check for openspec/config.yml or openspec/config.yaml**
+   - If exists: Read it to understand the project's stack and patterns
+   - Note its existence for the "Related Documentation" section
+   - Announce: "Found openspec/config.yml — I'll reference it for the separation of concerns boundary."
+
+2. **Check for ARCHITECTURE.md**
+   - If exists: Read it to understand system structure
+   - Note its existence for the "Related Documentation" section
+   - Announce: "Found ARCHITECTURE.md — I'll reference it in the behavioral docs."
+
 **Step 2 — Local file detection**
 
 ```
@@ -403,7 +417,9 @@ rather than omitting the section.
 3. After confirmation, write to `AGENTS.md` at the project root (or
    `CLAUDE.md` if the user is using Claude Code conventions), **stripping
    the inference source comments** — they are for review only, not the
-   final file.
+   final file. **For the Related Documentation section:** only include
+   links to files that actually exist in the repository. Check for each file
+   (openspec/config.yml, ARCHITECTURE.md, README.md) before including its link.
 4. Print a brief summary of what was generated, what was inferred vs.
    answered directly, and which `<!-- TODO -->` sections still need human
    input.
@@ -591,6 +607,18 @@ with placeholder text.
 ### Security Sensitivity
 - [any areas requiring special care, e.g., "treat all environment variable
   names as sensitive — never log them, even in debug output"]
+
+---
+
+## Related Documentation
+
+<!-- Include only files that actually exist in the repository -->
+
+- **openspec/config.yaml** — Project DNA: stack facts, coding patterns, domain concepts  
+  *(Separation of concerns: this file defines WHAT the project is; AGENTS.md defines HOW agents behave)*
+- **ARCHITECTURE.md** — System architecture, deployment overview, component interactions  
+  *(Reference this when behavioral decisions depend on understanding system structure)*
+- **README.md** — Installation, quick start, usage guide for developers
 ```
 
 ---
