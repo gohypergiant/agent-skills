@@ -54,6 +54,33 @@ project-root/           # README here documents entire monorepo
 └── README.md
 ```
 
+### Step 1.5: Check for Related Documentation
+
+Before analyzing the codebase, check if other onboarding documents exist:
+
+1. **Check for openspec/config.yml or openspec/config.yaml**
+   - If exists: Read it to extract:
+     - Package manager (use this instead of lockfile detection)
+     - Tech stack summary
+     - Key libraries and frameworks
+   - Skip redundant codebase scanning for these facts
+
+2. **Check for ARCHITECTURE.md**
+   - If exists: Read it to understand:
+     - System components and their purposes
+     - Deployment model
+     - External integrations
+   - Use for "Architecture & Development Guides" cross-reference section
+
+3. **Check for AGENTS.md or CLAUDE.md**
+   - If exists: Note for "Contributing" section
+   - Reference it for contribution guidelines
+
+**Benefits:**
+- Reduces scanning when other docs exist
+- Ensures consistency (README uses same package manager as config.yml)
+- Creates proper cross-references automatically
+
 ### Step 2: Parallel Codebase Discovery
 
 **Use parallel sub-agents when available** to discover different aspects of the codebase simultaneously. If sub-agents are not available, perform these discovery tasks inline but in the same systematic order.
@@ -102,6 +129,8 @@ If a README exists, identify gaps:
 Follow the [README Structure](references/readme-structure.md) and apply [Writing Principles](references/writing-principles.md).
 
 Use the [README Template](references/readme-template.md) as a starting point for new READMEs.
+
+**For the Architecture & Development Guides section (section 11):** only include it if at least one of the related docs exists (checked in Step 1.5). Within the section, only list files that actually exist — do not include links to missing files. If none of the three docs exist (openspec/config.yml, ARCHITECTURE.md, AGENTS.md/CLAUDE.md), omit this section entirely.
 
 ## README Workflow Decision Tree
 

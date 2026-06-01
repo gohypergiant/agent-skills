@@ -7,6 +7,9 @@ Use this exact structure. Fill every `[placeholder]` with content from codebase 
 ```markdown
 # Architecture Overview
 
+<!-- If openspec/config.yml exists, add this reference after the title: -->
+<!-- > **Tech Stack:** See [openspec/config.yml](./openspec/config.yml) for detailed stack facts, coding patterns, and domain concepts. -->
+
 This document serves as a critical, living reference designed to equip agents and engineers with a rapid and comprehensive understanding of the codebase's architecture. Update this document as the codebase evolves.
 
 ## 1. Project Structure
@@ -25,6 +28,9 @@ This document serves as a critical, living reference designed to equip agents an
      Annotate each entry with its architectural role, not just its name. -->
 
 ## 2. High-Level System Diagram
+
+<!-- If openspec/config.yml exists, add this intro: -->
+<!-- > Complete stack facts and coding patterns are in [openspec/config.yml](./openspec/config.yml). This section provides deployment and runtime context. -->
 
 <!-- Use ASCII art for a simple block diagram showing major components and data flow.
      Keep it at a 10,000-foot view — no schemas, no function signatures. -->
@@ -114,6 +120,9 @@ This document serves as a critical, living reference designed to equip agents an
 **Key Security Tools / Practices:** [e.g., Dependabot, SAST via CodeQL, WAF via Cloudflare]
 
 ## 8. Development & Testing Environment
+
+<!-- If openspec/config.yml exists, add this intro: -->
+<!-- > Testing patterns and standards are defined in [openspec/config.yml](./openspec/config.yml); this section covers local setup and commands. -->
 
 **Local Setup:** [Link to CONTRIBUTING.md, or brief steps: `cp .env.example .env && docker-compose up`]
 

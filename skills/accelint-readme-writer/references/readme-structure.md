@@ -19,7 +19,8 @@ READMEs must follow this section order. Users expect to find information in pred
 8.  Examples
 9.  Further Reading (optional)
 10. License
-11. Contributing (optional)
+11. Architecture & Development Guides (optional)
+12. Contributing (optional)
 ```
 
 ---
@@ -350,7 +351,30 @@ MIT - see [LICENSE](./LICENSE) for details.
 
 ---
 
-## 11. Contributing (Optional)
+## 11. Architecture & Development Guides (Optional)
+
+<!-- Include this section only if any of these files exist: openspec/config.yml, ARCHITECTURE.md, AGENTS.md -->
+
+Links to deeper technical and behavioral documentation that complements the README.
+
+**✅ Correct**
+```markdown
+## Architecture & Development Guides
+
+For deeper technical and behavioral context:
+
+- **[openspec/config.yml](./openspec/config.yml)** — Tech stack, coding patterns, and domain concepts
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** — System architecture, deployment, and data flows
+- **[AGENTS.md](./AGENTS.md)** — How AI agents should behave when working in this codebase
+
+These documents form a layered guidance system: config.yml defines what the project is, ARCHITECTURE.md explains how it's structured and deployed, and AGENTS.md governs how agents collaborate on it.
+```
+
+**Note:** Only include files that actually exist. Check for openspec/config.yml (or config.yaml), ARCHITECTURE.md, and AGENTS.md/CLAUDE.md before adding this section. If none exist, omit this section entirely.
+
+---
+
+## 12. Contributing (Optional)
 
 How to contribute to the project.
 

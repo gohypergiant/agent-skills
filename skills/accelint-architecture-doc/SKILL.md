@@ -80,6 +80,20 @@ Determine whether the current working directory is a monorepo root or a package 
 
 ---
 
+#### Step 1.5 — Check for Related Documents
+
+Before detecting ARCHITECTURE.md state, check for related onboarding documents:
+
+1. **Check for openspec/config.yml or openspec/config.yaml**
+   - If exists: Read it to extract stack facts (runtime, frameworks, libraries, patterns)
+   - Use this info to pre-fill tech stack sections and avoid redundant scanning
+   - Note its existence for cross-referencing in generated doc
+   - Announce: "Found openspec/config.yml — I'll use it as the source of truth for stack facts and coding patterns."
+
+This reduces scanning work and ensures consistency with the project's defined stack.
+
+---
+
 #### Step 2 — File Detection
 
 ```
@@ -199,7 +213,7 @@ Ask only about what discovery couldn't determine. Group related questions into n
 
 2. Ask: *"Does this look right? Any sections to correct before I write?"*
 
-3. After confirmation, write to ARCHITECTURE.md at the target location (root or package dir), **stripping inference source comments** — they are for review only, not the final file.
+3. After confirmation, write to ARCHITECTURE.md at the target location (root or package dir), **stripping inference source comments** — they are for review only, not the final file. **For openspec/config.yml references:** only include them if the file actually exists (checked in Step 1.5). Do not add references to files that don't exist.
 
 4. **Update agent behavior doc if present** — if Agent A found AGENTS.md or CLAUDE.md, check whether it references ARCHITECTURE.md. If not, append a reference block to help agents understand the system structure (see instructions below).
 

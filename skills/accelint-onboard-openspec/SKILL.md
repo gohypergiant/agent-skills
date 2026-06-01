@@ -53,7 +53,23 @@ Before any interview question is asked, check whether `openspec/config.yaml`
 exists and assess its state. Never silently pick a mode — always announce the
 detected mode to the user and confirm before proceeding.
 
-**Detection logic:**
+**Step 1 — Check for Related Documents**
+
+Before detecting config.yaml state, check for related onboarding documents:
+
+1. **Check for ARCHITECTURE.md**
+   - If exists: Read it to understand deployment and infrastructure
+   - Use it to pre-fill answers for Turn 2 (infrastructure/deployment questions)
+   - Note its existence for the "Related Documentation" section
+   - Announce: "Found ARCHITECTURE.md — I'll use it to avoid asking questions
+     about deployment that are already documented."
+
+Note: AGENTS.md and README.md should NOT influence config.yml generation since
+they contain behavioral/usage info, not project DNA.
+
+**Step 2 — Detect Config State**
+
+After checking related documents, assess the config file state:
 
 ```
 Does openspec/config.yaml exist?
@@ -359,7 +375,9 @@ is an invisible gap.
    the file?"*
 3. After confirmation, write to `openspec/config.yaml` (create directory if
    needed), **stripping the inference source comments** — they are for review
-   only, not the final file.
+   only, not the final file. **For the Related Documentation section:** only include
+   links to files that actually exist in the repository. Check for each file
+   (ARCHITECTURE.md, AGENTS.md/CLAUDE.md, README.md) before including its link.
 4. **Validate the generated YAML** — after writing, read the file back and verify:
    - No tabs (YAML requires spaces for indentation)
    - Values with special characters are properly quoted
@@ -646,6 +664,14 @@ rules:
     - Include concrete example data relevant to the domain
     - Document edge cases explicitly
     [user-specific spec rules]
+
+# ═══════════════════════════════════════════════════════════════════════════
+# RELATED DOCUMENTATION
+# ═══════════════════════════════════════════════════════════════════════════
+# Include only files that actually exist in the repository:
+# - ARCHITECTURE.md: System overview, deployment, component interactions, data flows
+# - AGENTS.md: Agent behavior rules, workflow procedures, communication style
+# - README.md: Installation, quick start, usage guide
 ```
 
 ---
