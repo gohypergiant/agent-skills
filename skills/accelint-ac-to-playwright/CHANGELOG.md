@@ -4,6 +4,15 @@ All notable changes to the accelint-ac-to-playwright skill are documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.9] - 2026-06-03
+
+### Added
+- CHANGELOG.md with complete version history from 0.5 through 1.1.8 (#115)
+  - Rationale: Provides transparency into skill evolution and rationale for changes; required per repository conventions
+
+### Version
+- Bumped from 1.1.8 → 1.1.9
+
 ## [1.1.8] - 2026-05-27
 
 ### Fixed
