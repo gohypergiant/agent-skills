@@ -4,26 +4,26 @@ Feature: Comprehensive action and assertion coverage
   Background:
     Given the user is on the test page
 
-  @visibility-changes missing-at-symbol @whoops @smoke
+  @visibility-changes missing-at-symbol @smoke
   Scenario: Multiple visibility state changes
     When the user clicks the toggle-interface button on the page
     Then the settings panel div on the drawer appears
     And the welcome text on the modal appears
     And the tutorial text on the card disappears
 
-  @keyboard-modifier-combo @whoops
+  @keyboard-modifier-combo
   Scenario: Keyboard modifier combination
     When the user presses Shift+e
     Then the text on the header says 'Edit mode activated'
 
-  @keyboard-hold-sequence @whoops
+  @keyboard-hold-sequence
   Scenario: Keyboard hold and release sequence
     When the user holds down the Shift key
     And the user uses the item button on the page
     And the user releases the Shift key
     Then the selection text on the page says 'Multi-select enabled'
 
-  @basic-interactions @whoops @smoke
+  @basic-interactions @smoke
   Scenario: Element-based actions and basic assertions
     When the user clicks the login button on the form
     And the user fills the email input on the form with a valid email address
@@ -33,12 +33,12 @@ Feature: Comprehensive action and assertion coverage
     Then the user is on the success page
     And the user sees success text on the page that says 'Submitted successfully'
 
-  @mouse-drag @whoops
+  @mouse-drag
   Scenario: Mouse drag operation
     When the user drags the mouse from position 100, 100 to position 300, 300
     Then the success text on the notification says 'Zoom area has been set'
 
-  @mouse-click-sequence @whoops
+  @mouse-click-sequence
   Scenario: Mouse position, press, and release sequence
     When the user moves the mouse to position 150, 200
     And the user presses the left mouse button
@@ -46,7 +46,7 @@ Feature: Comprehensive action and assertion coverage
     And the user releases the left mouse button
     Then the point is marked successfully
 
-  @mouse-single-and-double-click @whoops
+  @mouse-single-and-double-click
   Scenario: Coordinate-based double-click
     When the user clicks at position 250, 50
     And the user double-clicks at position 250, 100
