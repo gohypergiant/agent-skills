@@ -55,17 +55,17 @@ Feature: Comprehensive action and assertion coverage
 
   @scrolling
   Scenario: User scrolls on the page
-    When the user scrolls down 200 pixels
+    When the user scrolls down
     And the user scrolls right 75 pixels
     Then the position text on the page says "You scrolled to the southeast"
 
   @page-reload
   Scenario: Page reload action
-    When the user clicks the refresh link in the nav
+    When the user clicks the refresh in the nav
     And the page reloads
     Then the status text in the header says 'Page refreshed'
 
   @hover-action
   Scenario: Hover interaction
     When the user hovers over the info button on the card
-    Then the tooltip text on the card says 'Additional information'
+    Then the card tooltip text says 'Additional information'
