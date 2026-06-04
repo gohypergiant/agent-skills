@@ -20,8 +20,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Rationale: Improves type safety by enforcing explicit typing
 - Replaced null return value with -1 in error cases (#113)
   - Rationale: Makes error states more explicit and easier to handle
-- Applied TypeScript best practices based on feedback from `accelint-ts-best-practices` skill (#113)
-  - Rationale: Ensures consistent code quality and follows established patterns
 
 ### Version
 - Bumped from 1.1.7 → 1.1.8
@@ -48,7 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Updated `selectOption` to use label-based selection instead of value (#110)
-  - Rationale: More intuitive API that matches how users think about dropdown options
+  - Rationale: More intuitive methodology that matches how users think about dropdown options
 
 ### Version
 - Bumped from 1.1.4 → 1.1.5
@@ -57,7 +55,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Improved `sourceDescription` handling (#109)
-  - Rationale: Better error messages and debugging information for test failures
+  - Rationale: Eliminates fragile regex parsing of sourceDescription from generated code; passes data through pipeline directly instead of round-tripping through TypeScript annotations
 
 ### Version
 - Bumped from 1.1.3 → 1.1.4
@@ -66,11 +64,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Enhanced visibility pairing validation (#108)
-  - Rationale: Catches more edge cases where visible/not-visible assertions conflict; previous validation missed scenarios where assertions on same element contradicted
-
-### Fixed
-- Corrected TypeScript compilation errors (#108)
-  - Rationale: Ensures clean builds without type-related warnings
+  - Rationale: Allows multiple elements to change visibility from single action; validator now groups by target and counts only actions between pairs instead of requiring exactly 2 steps apart
 
 ### Version
 - Bumped from 1.1.2 → 1.1.3
@@ -79,7 +73,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - Made `notvisible` assertion properly handle cases where 0 elements are present (#105)
-  - Rationale: Previously failed when element didn't exist in DOM; now correctly passes since non-existent elements are definitionally not visible, aligning with Playwright's `toBeVisible()` behavior where absence equals not visible
+  - Rationale: Previously failed when element didn't exist in DOM; now correctly passes since non-existent elements are obviously not visible, aligning with Playwright's `toBeVisible()` behavior where absence equals not visible
 
 ### Version
 - Bumped from 1.1.1 → 1.1.2
@@ -151,7 +145,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - Removed outdated example files (#91)
-  - Rationale: Examples were no longer representative of current API; prevents confusion from outdated patterns
+  - Rationale: Examples were no longer representative of current functionality; prevents confusion from outdated patterns
 
 ### Version
 - Bumped from 1.0.0 → 1.0.1
@@ -168,8 +162,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.12] - 2026-03-05
 
 ### Added
-- Drag-and-drop composed action (#76)
-  - Rationale: Enables testing of drag-and-drop interactions; common UI pattern that requires coordinated mouseDown → mouseMove → mouseUp
+- Drag composed action (#76)
+  - Rationale: Enables more efficient testing of mouse drag interactions; common UI pattern that requires coordinated mouseDown → mouseMove → mouseUp
 
 ### Version
 - Bumped from 0.11 → 0.12
@@ -184,7 +178,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Enforcement of keyDown/keyUp pairing (#75)
   - Rationale: Key must be released after being pressed
 - Enforcement of expectVisible/expectNotVisible pairing validation (#75)
-  - Rationale: An element cannot simultaneously be visible and not visible
+  - Rationale: An element should be verified to be the opposite visibility before the action that changes its visiblility to prevent false greens
 
 ### Version
 - Bumped from 0.10 → 0.11
@@ -227,10 +221,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - `mouseDown` and `mouseUp` actions
   - `doubleClick` action
   - `scroll` action
-
-### Changed
-- Condensed mouse action tests (#66)
-  - Rationale: Reduced test duplication while maintaining coverage
+  - Rationale: Enables precise coordinate-based interactions and scrolling for scenarios where element-based selectors are insufficient or unavailable
 
 ### Version
 - Bumped from 0.6 → 0.7
@@ -239,12 +230,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - Keyboard actions (#65)
-  - `press` keyboard action
-  - `keyDown` and `keyUp` keyboard actions
-
-### Changed
-- Condensed keyboard action tests (#65)
-  - Rationale: Reduced test duplication while maintaining coverage
+  - `press` action
+  - `keyDown` and `keyUp` actions
+  - Rationale: Enables keyboard modifier combinations (Shift+g, Control+Enter) and single key presses required for complex keyboard-driven workflows
 
 ### Version
 - Bumped from 0.5 → 0.6
@@ -252,7 +240,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.5] - 2026-02-20
 
 ### Added
-- Initial skill creation with accelint prefix (#40)
+- Initial skill creation with GitHub Actions setup (#40)
   - Rationale: Establishes foundational AC-to-Playwright conversion capability
 
 ### Version
