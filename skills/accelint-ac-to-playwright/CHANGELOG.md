@@ -4,7 +4,7 @@ All notable changes to the accelint-ac-to-playwright skill are documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.9] - 2026-06-03
+## [1.1.9] - 2026-06-04
 
 ### Added
 - CHANGELOG.md with complete version history from 0.5 through 1.1.8 (#115)
@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 1.1.8 → 1.1.9
 
-## [1.1.8] - 2026-05-27
+## [1.1.8] - 2026-05-29
 
 ### Fixed
 - Removed `any` type usage in codebase (#113)
@@ -26,7 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 1.1.7 → 1.1.8
 
-## [1.1.7] - 2026-05-27
+## [1.1.7] - 2026-05-29
 
 ### Changed
 - Updated vulnerable dependencies (#112)
@@ -62,7 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 1.1.3 → 1.1.4
 
-## [1.1.3] - 2026-05-20
+## [1.1.3] - 2026-05-26
 
 ### Changed
 - Enhanced visibility pairing validation (#108)
@@ -111,7 +111,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 1.0.5 → 1.0.6
 
-## [1.0.5] - 2026-05-15
+## [1.0.5] - 2026-05-18
 
 ### Added
 - Numpad key support (#99)
@@ -120,7 +120,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 1.0.4 → 1.0.5
 
-## [1.0.4] - 2026-05-14
+## [1.0.4] - 2026-05-18
 
 ### Added
 - Target validation for actions (#98)
@@ -138,7 +138,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 1.0.2 → 1.0.3
 
-## [1.0.2] - 2026-05-11
+## [1.0.2] - 2026-05-12
 
 ### Fixed
 - Improved regex handling in URL expectations (#96)
@@ -147,7 +147,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 1.0.1 → 1.0.2
 
-## [1.0.1] - 2026-05-06
+## [1.0.1] - 2026-05-08
 
 ### Changed
 - Removed outdated example files (#91)
@@ -165,7 +165,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 0.12 → 1.0.0
 
-## [0.12] - 2026-03-03
+## [0.12] - 2026-03-05
 
 ### Added
 - Drag-and-drop composed action (#76)
@@ -174,7 +174,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 0.11 → 0.12
 
-## [0.11] - 2026-03-03
+## [0.11] - 2026-03-05
 
 ### Added
 - Schema validation for paired actions (#75)
@@ -218,7 +218,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 0.7 → 0.8
 
-## [0.7] - 2026-02-23
+## [0.7] - 2026-02-26
 
 ### Added
 - Mouse actions (#66)
@@ -235,7 +235,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 0.6 → 0.7
 
-## [0.6] - 2026-02-23
+## [0.6] - 2026-02-26
 
 ### Added
 - Keyboard actions (#65)
@@ -249,7 +249,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Version
 - Bumped from 0.5 → 0.6
 
-## [0.5] - 2026-02-23
+## [0.5] - 2026-02-20
 
 ### Added
 - Initial skill creation with accelint prefix (#40)
