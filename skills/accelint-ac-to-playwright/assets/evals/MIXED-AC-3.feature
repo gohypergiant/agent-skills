@@ -18,3 +18,14 @@ Feature: Comprehensive action and assertion coverage
     And the user presses the 'p' key
     And the user releases the left mouse button
     Then the point is marked successfully
+
+  @form-date-input @tc019
+  Scenario: Form date input
+    When the user fills the date input on the form with yesterday's date
+    And the user clicks the Submit button on the form
+    Then the confirmation text on the page says 'Date saved'
+
+  @visibility-toggle @tc020
+  Scenario: Element becomes visible after action
+    When the user clicks the toggle button on the page
+    Then the localization text in the header is there
