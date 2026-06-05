@@ -4,14 +4,14 @@ Feature: Comprehensive action and assertion coverage
   Background:
     Given the user is on the test page
 
-  @keyboard-hold-sequence
+  @keyboard-hold-sequence @tc003
   Scenario: Keyboard hold and release sequence
     When the user holds down the Shift key
     And the user uses the item button on the page
     And the user releases the Shift key
     Then the selection text on the page says 'Multi-select enabled'
 
-  @mouse-click-sequence
+  @mouse-click-sequence @tc006
   Scenario: Mouse position, press, and release sequence
     When the user moves the mouse to position 150, 200
     And the user presses the left mouse button

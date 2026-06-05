@@ -4,7 +4,7 @@ Feature: Comprehensive action and assertion coverage
   Background:
     Given the user is on the test page
 
-  @basic-interactions @smoke
+  @basic-interactions @smoke @tc004
   Scenario: Element-based actions and basic assertions
     When the user clicks the login button on the form
     And the user fills the email input on the form with a valid email address
