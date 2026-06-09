@@ -10,7 +10,10 @@ Usage:
   scaffold_eval.py --framework deepeval --target skills/accelint-foo \\
       --set SKILL_NAME=accelint-foo --set MODE=conversion
 
-Frameworks: deepeval | deterministic-vitest | deterministic-pytest | human-review
+Frameworks: deepeval | deterministic-vitest | deterministic-pytest | human-review | rag
+
+`rag` scaffolds into a tool repo (a RAG pipeline), not a skill — use
+`--set TARGET_NAME=<tool>` and point `--target` at the tool repo.
 
 Substitution:
   --set KEY=VALUE   replaces every __KEY__ token. Unset tokens are LEFT INTACT
@@ -26,7 +29,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-FRAMEWORKS = {"deepeval", "deterministic-vitest", "deterministic-pytest", "human-review"}
+FRAMEWORKS = {"deepeval", "deterministic-vitest", "deterministic-pytest", "human-review", "rag"}
 # Placeholder must start with a letter so literal fill-in blanks (e.g. a row of
 # underscores in a review checklist) are NOT mistaken for substitution tokens.
 _TOKEN = re.compile(r"__([A-Z][A-Z0-9_]*)__")
