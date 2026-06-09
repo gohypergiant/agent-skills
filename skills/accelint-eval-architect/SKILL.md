@@ -1,10 +1,10 @@
 ---
 name: accelint-eval-architect
-description: Use when users say "add an eval to this skill", "evaluate this skill/agent", "how should I test this skill's output", "set up DeepEval/Promptfoo/Inspect", "is my eval any good", "audit my eval harness", or when deciding whether and how to measure an LLM skill's output quality. Assesses a target skill, recommends DeepEval, Promptfoo, Inspect AI, a deterministic harness, or human-review-only — then scaffolds the integration. Also audits existing eval harnesses for stale fixtures, toothless metrics, and uncalibrated thresholds. Make sure to use this whenever someone wants to measure, test, regression-check, or benchmark what a skill or agent produces.
+description: Use when users say "add an eval to this skill", "evaluate this skill/agent", "evaluate this tool/repo/pipeline", "how should I test this RAG bot / retrieval / parser", "set up DeepEval/Ragas/Promptfoo/Inspect", "is my eval any good", "audit my eval harness", or when deciding whether and how to measure the output of an LLM skill OR a standalone tool repo (e.g. a RAG/retrieval pipeline that turns documents into chatbot answers). Assesses the target, recommends DeepEval, Ragas, Promptfoo, Inspect AI, a deterministic harness, or human-review-only — then scaffolds the integration. Also audits existing eval harnesses for stale fixtures, toothless metrics, and uncalibrated thresholds. Make sure to use this whenever someone wants to measure, test, regression-check, or benchmark what a skill, agent, tool, or RAG pipeline produces.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Eval Architect
@@ -52,19 +52,30 @@ This skill uses **progressive disclosure**. Detect the mode first, then load onl
 - **AUDIT** — run against a skill that already has an `evals/` dir; surface decay. Triggered by "is my eval good" / "audit my eval", or whenever the target already has `evals/`.
 
 ### Reference map (load on demand)
-- Reading + classifying a target skill → [references/assessment.md](references/assessment.md)
+- Reading + classifying a target **skill** → [references/assessment.md](references/assessment.md)
+- Reading + classifying a target **tool repo / pipeline** → [references/tool-repo-assessment.md](references/tool-repo-assessment.md)
 - Choosing a framework → [references/framework-matrix.md](references/framework-matrix.md)
 - Designing the test matrix + metrics → [references/test-design.md](references/test-design.md)
+- Decomposing a pipeline into stages + per-stage metrics → [references/pipeline-decomposition.md](references/pipeline-decomposition.md)
+- Building/curating a RAG gold set → [references/gold-set.md](references/gold-set.md)
 - Setting thresholds from a baseline → [references/calibration.md](references/calibration.md)
 - Auditing an existing eval → [references/audit.md](references/audit.md)
-- Framework specifics → [references/frameworks/deepeval.md](references/frameworks/deepeval.md), [deterministic-vitest.md](references/frameworks/deterministic-vitest.md), [deterministic-pytest.md](references/frameworks/deterministic-pytest.md), [human-review.md](references/frameworks/human-review.md)
+- Framework specifics → [references/frameworks/deepeval.md](references/frameworks/deepeval.md), [ragas.md](references/frameworks/ragas.md), [deterministic-vitest.md](references/frameworks/deterministic-vitest.md), [deterministic-pytest.md](references/frameworks/deterministic-pytest.md), [human-review.md](references/frameworks/human-review.md)
 
 **Do NOT load all references at once.** Each step below names what it needs.
 
 ## Workflow
 
-### Mode 0 — Detect
+### Mode 0 — Detect target type, then mode
 
+**Target type** (decides which assessment path):
+```
+path has SKILL.md at root                         → target_type = skill
+path is a repo, no SKILL.md, has a package manifest → target_type = tool-repo
+ambiguous                                          → ASK; never guess
+```
+
+**Mode:**
 ```
 target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
 "audit" / "is my eval good" / evals/ exists → AUDIT
@@ -73,18 +84,21 @@ target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
 
 ### ASSESS
 
-1. **Read the target skill.** Load [references/assessment.md](references/assessment.md). Read its `SKILL.md` (frontmatter + body, especially output-format sections and the `NEVER` list — those *are* the failure modes), `references/`, `scripts/` (a validator CLI = free deterministic gates), `assets/`, and toolchain file. If anything required is unreadable, **ask the user — never invent facts about a skill you did not read.**
-2. **Produce the eval profile** (JSON schema in `assessment.md`). Populate `unread_or_uncertain`; if non-empty, resolve before recommending.
-3. **Run the verifiability gate** (in `framework-matrix.md`): taste-based → human-review-only, stop; trivially verifiable → deterministic-only; partially/judgment → continue.
-4. **Recommend a framework.** Load [references/framework-matrix.md](references/framework-matrix.md). State the recommendation, the one-sentence reason it beats the runner-up, and a token-cost estimate.
-5. **Design the test matrix.** Load [references/test-design.md](references/test-design.md). Derive persona×scenario *or* state it doesn't apply and use flat fixtures. Propose metrics grouped by dimension, each with a regression-test sketch.
+1. **Read the target.**
+   - `target_type = skill` → load [references/assessment.md](references/assessment.md): read `SKILL.md`, `references/`, `scripts/`, `assets/`, toolchain.
+   - `target_type = tool-repo` → load [references/tool-repo-assessment.md](references/tool-repo-assessment.md): read README + manifest + entry points, **then interview the developer** for pipeline stages, how each is invoked, the eval boundary, and whether a gold set exists. You cannot reverse-engineer a pipeline from files alone — confirm stages + invocation with the developer.
+   - If anything required is unreadable or unconfirmed, **ask — never invent facts about a target you did not read.**
+2. **Produce the eval profile** (skill schema in `assessment.md`; tool-repo schema in `tool-repo-assessment.md`). Populate `unread_or_uncertain`; resolve before recommending.
+3. **Run the verifiability gate** (in `framework-matrix.md`). For a pipeline, run it **per stage** (see [references/pipeline-decomposition.md](references/pipeline-decomposition.md)): ingestion + retrieval are usually deterministic; only answer-generation is a judge slice.
+4. **Recommend a framework.** Load [references/framework-matrix.md](references/framework-matrix.md). State the recommendation, the one-sentence reason it beats the runner-up, and a token-cost estimate. For RAG, recommend the answer-layer framework (Ragas vs DeepEval) **per case**, not by default.
+5. **Design the test matrix.** Load [references/test-design.md](references/test-design.md) (skill) or [references/pipeline-decomposition.md](references/pipeline-decomposition.md) (pipeline). Propose metrics grouped by dimension/stage, each with a regression-test sketch. For RAG, flag that the **gold set is the prerequisite** ([references/gold-set.md](references/gold-set.md)).
 6. **Present the recommendation summary** (format in `framework-matrix.md`). **Stop. Wait for approval, redirect, or decline.**
 
 ### SCAFFOLD (only on approval)
 
-7. **Copy the framework starter** from `assets/templates/<framework>/` into the target's `evals/`. Use `scripts/scaffold_eval.py` for the mechanical copy + placeholder substitution.
-8. **Generate the walking skeleton**: one pristine fixture, one deterministic metric, one passing test, one planted-broken regression test that proves the metric fails. Nothing more.
-9. **Generate goldens from the live schema/validator** if one exists — never hand-typed.
+7. **Copy the framework starter** from `assets/templates/<framework>/` into the target's `evals/`. Use `scripts/scaffold_eval.py` for the mechanical copy + placeholder substitution. For a RAG pipeline the starter is `assets/templates/rag/` (deterministic ingest + retrieve metrics PLUS a gated answer-layer metric).
+8. **Generate the walking skeleton**: the minimum that proves the pipeline can be measured — for a skill, one fixture + one metric + pass + regression; for RAG, a small curated gold set + `section_coverage` (ingest) + `recall@k` (retrieve) with regression tests + one gated answer metric. Nothing more.
+9. **Generate goldens from the live schema/validator** if one exists — never hand-typed. For RAG there is no schema; bootstrap the gold set with `scripts/bootstrap_goldset.py`, then **require human curation** ([references/gold-set.md](references/gold-set.md)) — an un-curated gold set graded by an auto-generated judge is circular.
 10. **Set all judge thresholds to record-only**; wire the runner into the target's build (`npm` script or `pyproject`); write `README.md` + `DESIGN.md` stubs (DESIGN.md ships with a pre-filled "Known follow-ups").
 11. **Run the don't-lose-it check**: confirm source is git-tracked, `results/`/`.venv/`/`__pycache__/` ignored, and tell the developer to **commit before the first run**.
 12. **Hand off with calibration instructions** ([references/calibration.md](references/calibration.md)): run N baselines, then set thresholds from the distribution.
@@ -98,4 +112,6 @@ target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
 - **Two LLM roles.** Every judge-based eval has an **SUT** (the model being graded) and a **Judge** (the model grading it) — often the same alias, conceptually distinct. Keep them separate in every recommendation and every scaffolded harness; conflating them is the #1 source of developer confusion.
 - **Verifiability before everything.** The single most common mistake is using a judge where a parser would do. The matrix enforces deterministic-first; honor it.
 - **The honest "no" is a feature.** "Don't build an automated eval — here's the human-review checklist" and "deterministic-only, skip the judge" are first-class outcomes, not failures of the skill.
-- **v1 scope:** scaffolds DeepEval, deterministic-vitest, deterministic-pytest, and human-review-checklist. Promptfoo and Inspect AI are *recommended when they fit* but handed off rather than scaffolded — say so explicitly when recommending them.
+- **Tool-repo comprehension is interactive, not magic.** The skill cannot reverse-engineer an arbitrary pipeline; it reads what it can and interviews the developer for stages + invocation. Refuse to recommend until both are confirmed.
+- **RAG gold sets must be human-curated.** Bootstrap drafts are a starting point, never trusted output — and never let the gold set and the judge come from the same unreviewed pass.
+- **Scope:** scaffolds DeepEval, Ragas (RAG answer layer), deterministic-vitest, deterministic-pytest, deterministic-retrieval (ingest+retrieve), and human-review-checklist. Promptfoo and Inspect AI are *recommended when they fit* but handed off. Tool-repo support targets **RAG / retrieval pipelines**; other tool types are recommended-and-handed-off, not yet scaffolded.
