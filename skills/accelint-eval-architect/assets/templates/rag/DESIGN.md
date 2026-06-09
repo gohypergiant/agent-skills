@@ -14,12 +14,16 @@
 |---|---|---|---|
 | ingest | section_coverage | deterministic | dropped corpus sections |
 | retrieve | recall@k | deterministic | supporting passage not in top-k |
+| generate | refusal_on_unknown | deterministic | invented answers on unanswerable questions |
 | generate | faithfulness | Ragas (live) | answer not grounded in retrieved context |
+| (drift) | test_corpus_drift | deterministic | corpus changed under the gold set (skips until `corpus_path` is set) |
 
 ## Gold set
 Human-curated (`goldset/goldset.yaml`, `verified: true` per entry). `corpus_hash`
-detects drift. Includes adversarial unanswerable questions for the refusal check.
-Conftest refuses to run if any entry is unverified.
+is content-based (`corpus_hash.py`, mirrors `bootstrap_goldset.py`) and is
+checked by `test_corpus_drift` once `corpus_path` is set. Includes adversarial
+unanswerable questions consumed by `refusal_on_unknown`. Conftest refuses to run
+if any entry is unverified.
 
 ## Thresholds
 Deterministic metrics gate at 1.0 (correct). `faithfulness` is RECORD-ONLY (0.0)
@@ -32,8 +36,8 @@ pipeline or judge. Wire `runner.py` to go live and regenerate `captured/`.
 
 ## Known follow-ups
 - [ ] Wire `runner.py` (ingest/retrieve/generate adapters) and regenerate `captured/`.
+- [ ] Set `corpus_path` in `goldset/goldset.yaml` to arm the corpus-drift check.
 - [ ] Expand the gold set beyond the smoke tier; keep it human-verified.
 - [ ] Add precision@k / MRR / nDCG (retrieve) and answer_correctness (e2e) as needed.
-- [ ] Add a `refusal_on_unknown` metric using the adversarial gold entries.
 - [ ] Calibrate the faithfulness threshold from a baseline.
 - [ ] Confirm all eval source is git-tracked in this repo.

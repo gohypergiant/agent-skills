@@ -13,15 +13,23 @@ uv run pytest -m live     # add the Ragas faithfulness metric (costs money, need
 ## Stages measured (gate runs per stage)
 - **ingest** — `section_coverage`: every expected section made it into the index.
 - **retrieve** — `recall@k`: the supporting passage is in the top-k for each answerable question.
-- **generate** — `faithfulness` (Ragas, gated): the answer is grounded in the retrieved context.
+- **generate** — `refusal_on_unknown` (deterministic, offline): on unanswerable
+  questions the bot must refuse, not invent — scored against the adversarial
+  gold entries via a closed refusal-marker list. Plus `faithfulness` (Ragas,
+  gated): the answer is grounded in the retrieved context.
+- **drift tripwire** — `test_corpus_drift` recomputes a content hash of the
+  corpus and compares it to the gold set's `corpus_hash`. It SKIPS until you set
+  `corpus_path` in `goldset/goldset.yaml`; arm it as soon as the corpus is
+  reachable from the eval.
 
 Each deterministic metric ships a `*_regression.py` proving it can fail.
 
 ## Layout
 - `goldset/goldset.yaml` — curated Q/A/passage triples + adversarial unanswerable. **Human-verified.**
-- `captured/` — sample ingest + retrieval output → offline test input.
+- `captured/` — sample ingest, retrieval, and answer output → offline test input.
 - `fixtures/source_manifest.yaml` — expected corpus sections (for section_coverage).
-- `metrics/` — `section_coverage.py`, `recall_at_k.py`, `faithfulness_ragas.py`
+- `metrics/` — `section_coverage.py`, `recall_at_k.py`, `refusal_on_unknown.py`, `faithfulness_ragas.py`
+- `corpus_hash.py` — content-hash helper (mirrors `bootstrap_goldset.py`).
 - `runner.py` — **you wire this**: how to invoke ingest / retrieve / generate on your pipeline.
 - `tests/` — pass + `*_regression.py` (deterministic) + a gated faithfulness test.
 

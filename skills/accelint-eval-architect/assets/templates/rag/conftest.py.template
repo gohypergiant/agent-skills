@@ -46,6 +46,16 @@ def captured_retrieval() -> dict[str, list[str]]:
 
 
 @pytest.fixture(scope="session")
+def captured_answers() -> dict[str, str]:
+    out: dict[str, str] = {}
+    for line in (_HERE / "captured" / "answers.jsonl").read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            row = json.loads(line)
+            out[row["id"]] = row["answer"]
+    return out
+
+
+@pytest.fixture(scope="session")
 def expected_sections() -> set[str]:
     data = yaml.safe_load((_HERE / "fixtures" / "source_manifest.yaml").read_text(encoding="utf-8"))
     return set(data["sections"])

@@ -1,0 +1,30 @@
+"""Corpus-drift tripwire: the gold set is only valid for the corpus it was
+curated against. Skips until `corpus_path` is set in goldset.yaml."""
+
+from pathlib import Path
+
+import pytest
+
+from corpus_hash import compute_corpus_hash
+
+_EVALS_DIR = Path(__file__).parent.parent
+
+
+def test_corpus_matches_goldset_hash(goldset):
+    corpus_path = goldset.get("corpus_path")
+    if not corpus_path:
+        pytest.skip("corpus_path not configured in goldset.yaml — drift check skipped")
+
+    corpus_dir = Path(corpus_path)
+    if not corpus_dir.is_absolute():
+        corpus_dir = (_EVALS_DIR / corpus_dir).resolve()
+    if not corpus_dir.is_dir():
+        pytest.skip(f"corpus_path does not exist here ({corpus_dir}) — drift check skipped")
+
+    current = compute_corpus_hash(corpus_dir)
+    recorded = goldset.get("corpus_hash")
+    assert current == recorded, (
+        f"Corpus drift detected: current hash {current} != gold-set hash {recorded}. "
+        "The corpus changed since the gold set was curated — re-verify every "
+        "supporting_passages reference, then update corpus_hash in goldset.yaml."
+    )
