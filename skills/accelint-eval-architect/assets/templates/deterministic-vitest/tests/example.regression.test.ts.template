@@ -1,0 +1,16 @@
+// Regression case: PROVES the metric has teeth.
+// Feed deliberately wrong output and assert the metric drops below threshold AND
+// the reason names the defect. A metric with no failing case measures nothing.
+import { describe, expect, test } from "vitest";
+import { exampleRecall } from "../metrics/example_metric";
+
+describe("__SKILL_NAME__ example recall — regression (must fail)", () => {
+  test("a missed planted item -> score < 1 and reason names it", () => {
+    const planted = new Set(["item-a", "item-b", "item-c"]);
+    const reported = new Set(["item-a"]); // under-detects on purpose
+    const r = exampleRecall(reported, planted);
+    expect(r.passed).toBe(false);
+    expect(r.score).toBeLessThan(1);
+    expect(r.reason).toMatch(/item-b|item-c/);
+  });
+});

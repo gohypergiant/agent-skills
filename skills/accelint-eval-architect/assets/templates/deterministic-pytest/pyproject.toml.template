@@ -1,0 +1,13 @@
+[project]
+name = "__SKILL_NAME__-evals"
+version = "1.0.0"
+description = "Deterministic eval harness for __SKILL_NAME__ (internal-only)"
+requires-python = ">=3.11"
+dependencies = [
+    "pytest==8.3.4",
+    "pyyaml==6.0.2",
+]
+
+[tool.pytest.ini_options]
+addopts = ["-ra", "--tb=short", "-p", "no:cacheprovider"]
+# When/if a judge layer is added, also add:  "-m", "not live"

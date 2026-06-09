@@ -1,0 +1,15 @@
+"""Regression test: PROVES the structural metric has teeth (deterministic, free)."""
+
+from deepeval.test_case import LLMTestCase
+
+from metrics.example_structural_metric import ExampleStructuralMetric
+
+
+def test_structural_catches_missing_key():
+    # Planted-broken: JSON missing a required key.
+    broken = '{"not_the_required_key": 1}'
+    metric = ExampleStructuralMetric(threshold=1.0)
+    score = metric.measure(LLMTestCase(input="x", actual_output=broken))
+    assert score == 0.0
+    assert not metric.is_successful()
+    assert "missing" in metric.reason.lower()

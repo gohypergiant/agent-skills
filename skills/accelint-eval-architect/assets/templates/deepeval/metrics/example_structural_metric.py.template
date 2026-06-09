@@ -1,0 +1,46 @@
+"""Example DETERMINISTIC metric for __SKILL_NAME__ — no judge, runs free.
+
+This is the metric that should run by default. Reach for the GEval metric only
+for the part this cannot score.
+"""
+
+from typing import Optional
+
+from deepeval.metrics import BaseMetric
+from deepeval.test_case import LLMTestCase
+
+from metrics._json_extraction import PlanExtractionError, extract_json
+
+
+class ExampleStructuralMetric(BaseMetric):
+    """Example: output must parse as JSON and contain required top-level keys."""
+
+    REQUIRED_KEYS = ("__REQUIRED_KEY__",)
+
+    def __init__(self, threshold: float = 1.0):
+        self.threshold = threshold
+        self.score = 0.0
+        self.success = False
+        self.reason: Optional[str] = None
+
+    def measure(self, test_case: LLMTestCase) -> float:
+        try:
+            data = extract_json(test_case.actual_output)
+        except PlanExtractionError as e:
+            self.score, self.success, self.reason = 0.0, False, f"No JSON found: {e}"
+            return self.score
+        missing = [k for k in self.REQUIRED_KEYS if k not in data]
+        self.score = 1.0 if not missing else 0.0
+        self.success = self.score >= self.threshold
+        self.reason = "All required keys present" if not missing else f"Missing keys: {missing}"
+        return self.score
+
+    async def a_measure(self, test_case: LLMTestCase) -> float:
+        return self.measure(test_case)
+
+    def is_successful(self) -> bool:
+        return self.success
+
+    @property
+    def __name__(self):
+        return "Example Structural"

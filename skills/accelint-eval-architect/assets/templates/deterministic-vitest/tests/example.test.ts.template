@@ -1,0 +1,15 @@
+// Pass case: a clean run scores at threshold.
+// This is the "does the metric accept good output" half. The teeth live in
+// example.regression.test.ts.
+import { describe, expect, test } from "vitest";
+import { exampleRecall } from "../metrics/example_metric";
+
+describe("__SKILL_NAME__ example recall — pass case", () => {
+  test("all planted items caught -> score 1", () => {
+    const planted = new Set(["item-a", "item-b", "item-c"]);
+    const reported = new Set(["item-a", "item-b", "item-c"]); // perfect detection
+    const r = exampleRecall(reported, planted);
+    expect(r.passed).toBe(true);
+    expect(r.score).toBe(1);
+  });
+});

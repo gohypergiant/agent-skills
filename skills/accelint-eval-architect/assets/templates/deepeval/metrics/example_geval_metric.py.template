@@ -1,0 +1,41 @@
+"""Example GEval (LLM-judged) metric for __SKILL_NAME__.
+
+Use a judge ONLY for the slice a parser cannot score. Note the two non-obvious
+requirements (see references/frameworks/deepeval.md): measure/a_measure must
+forward *args/**kwargs (DeepEval 4.x), and any declared EXPECTED_OUTPUT needs a
+placeholder when absent.
+"""
+
+from deepeval.metrics import GEval
+from deepeval.test_case import LLMTestCase, LLMTestCaseParams
+
+
+class ExampleQualityMetric(GEval):
+    def __init__(self, judge_model, threshold: float = 0.8):
+        criteria = """
+You are evaluating __WHAT_THE_JUDGE_EVALUATES__.
+
+Score 0 (poor) to 1 (excellent).
+
+GROUNDING RULE: if you cannot quote the exact substring of the input that
+supports a deduction, do not make that deduction. This is the single most
+important rule for avoiding false negatives.
+"""
+        super().__init__(
+            name="Example Quality",
+            criteria=criteria,
+            evaluation_steps=[
+                "Read the actual_output against the criteria.",
+                "Quote the exact input substring supporting each judgment.",
+                "Assign a score from 0 to 1.",
+            ],
+            evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+            model=judge_model,
+            threshold=threshold,
+        )
+
+    def measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
+        return super().measure(test_case, *args, **kwargs)
+
+    async def a_measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
+        return await super().a_measure(test_case, *args, **kwargs)
