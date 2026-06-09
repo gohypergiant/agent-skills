@@ -1,0 +1,19 @@
+[project]
+name = "__TARGET_NAME__-evals"
+version = "1.0.0"
+description = "RAG eval harness for __TARGET_NAME__ (internal-only)"
+requires-python = ">=3.11"
+dependencies = [
+    "pytest==8.3.4",
+    "pyyaml==6.0.2",
+    "python-dotenv>=1.0.1",
+    # Judge layer (only needed for `-m live`):
+    "ragas>=0.2",
+    "datasets>=2.0",
+    "litellm==1.55.0",
+]
+
+[tool.pytest.ini_options]
+# Deterministic ingest + retrieve run by default; the Ragas faithfulness metric
+# is opt-in via `-m live`.
+addopts = ["-ra", "--tb=short", "-p", "no:cacheprovider", "-m", "not live"]

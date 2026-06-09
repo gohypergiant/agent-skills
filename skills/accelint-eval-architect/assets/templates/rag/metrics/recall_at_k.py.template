@@ -1,0 +1,42 @@
+"""Retrieve metric: recall@k against the gold set.
+
+For each ANSWERABLE gold question, did a supporting passage appear in the top-k
+retrieved chunks? Deterministic set-membership — no judge. Unanswerable questions
+are excluded here (they're scored by refusal_on_unknown at the generate stage).
+"""
+
+from typing import Optional
+
+
+class RecallAtKMetric:
+    def __init__(self, k: int = 5, threshold: float = 1.0):
+        self.k = k
+        self.threshold = threshold
+        self.score = 0.0
+        self.success = False
+        self.reason: Optional[str] = None
+
+    def measure(self, retrieved_by_q: dict[str, list[str]], gold_entries: list[dict]) -> float:
+        answerable = [e for e in gold_entries if e.get("answerable")]
+        misses: list[str] = []
+        for e in answerable:
+            support = {p["chunk_id"] for p in e.get("supporting_passages", [])}
+            topk = set(retrieved_by_q.get(e["id"], [])[: self.k])
+            if not (support & topk):
+                misses.append(e["id"])
+        hits = len(answerable) - len(misses)
+        self.score = 1.0 if not answerable else hits / len(answerable)
+        self.success = self.score >= self.threshold
+        self.reason = (
+            f"recall@{self.k}: missed {len(misses)}/{len(answerable)} → {', '.join(misses)}"
+            if misses
+            else f"recall@{self.k}: all {len(answerable)} answerable questions hit"
+        )
+        return self.score
+
+    def is_successful(self) -> bool:
+        return self.success
+
+    @property
+    def __name__(self):
+        return "Recall@k"

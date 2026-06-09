@@ -1,0 +1,38 @@
+"""SUT-invocation adapters for __TARGET_NAME__. YOU WIRE THESE.
+
+The deterministic tests use captured/ output and do NOT call this module, so the
+skeleton runs green before you implement anything here. Implement these to (a)
+regenerate captured/ from a live pipeline and (b) run the gated faithfulness test
+against real answers.
+
+Each stage maps to however your pipeline is invoked — CLI, function, HTTP, or a
+query API (see references/tool-repo-assessment.md for the invocation kinds).
+"""
+
+from typing import TypedDict
+
+
+class Generation(TypedDict):
+    answer: str
+    contexts: list[str]
+
+
+def ingest(corpus_dir: str) -> list[str]:
+    """Run the pipeline's ingest stage; return the list of indexed section ids."""
+    raise NotImplementedError(
+        "Wire ingest: e.g. subprocess the parse CLI, then read back the index's section list."
+    )
+
+
+def retrieve(question: str, k: int) -> list[str]:
+    """Return the top-k retrieved chunk ids for a question (ranked)."""
+    raise NotImplementedError(
+        "Wire retrieve: e.g. import the pipeline's retrieve() or POST to its query endpoint."
+    )
+
+
+def generate(question: str) -> Generation:
+    """Return the bot's answer plus the contexts it retrieved to produce it."""
+    raise NotImplementedError(
+        "Wire generate: e.g. POST to /chat and return {answer, contexts}."
+    )

@@ -1,0 +1,25 @@
+# Curated gold set for __TARGET_NAME__. HUMAN-VERIFIED entries only.
+# corpus_hash detects drift: if the corpus changes, supporting_passages may rot.
+corpus_hash: "demo-corpus-v1"
+entries:
+  - id: q1
+    question: "What is the maximum payload mass for the X-9 platform?"
+    answer: "1,200 kg."
+    supporting_passages:
+      - {chunk_id: "x9-spec#c318", doc: "x9-spec.pdf", page: 42}
+    answerable: true
+    verified: true
+  - id: q2
+    question: "What is the X-9 cruise altitude?"
+    answer: "12,000 m."
+    supporting_passages:
+      - {chunk_id: "x9-spec#c204", doc: "x9-spec.pdf", page: 27}
+    answerable: true
+    verified: true
+  # Adversarial: NOT in the corpus → the bot must refuse, not invent.
+  - id: q_adv1
+    question: "What is the warranty period for the X-9 platform?"
+    answer: null
+    supporting_passages: []
+    answerable: false
+    verified: true

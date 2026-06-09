@@ -1,0 +1,57 @@
+"""Pytest config + fixtures for the __TARGET_NAME__ RAG eval.
+
+Deterministic tests load curated gold set + captured pipeline output, so they run
+green offline. The faithfulness test is marked `live` and skipped by default.
+"""
+
+import json
+from pathlib import Path
+
+import pytest
+import yaml
+
+_HERE = Path(__file__).parent
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "live: hits the judge LLM / live pipeline (costs money, skipped by default)")
+
+
+@pytest.fixture(scope="session")
+def goldset() -> dict:
+    data = yaml.safe_load((_HERE / "goldset" / "goldset.yaml").read_text(encoding="utf-8"))
+    unverified = [e["id"] for e in data.get("entries", []) if not e.get("verified")]
+    if unverified:
+        pytest.exit(
+            f"\n[ERROR] Gold set has unverified entries: {unverified}\n"
+            "Curate them (verified: true) before running — an un-curated gold set is untrustworthy.",
+            returncode=1,
+        )
+    return data
+
+
+@pytest.fixture(scope="session")
+def gold_entries(goldset) -> list[dict]:
+    return goldset["entries"]
+
+
+@pytest.fixture(scope="session")
+def captured_retrieval() -> dict[str, list[str]]:
+    out: dict[str, list[str]] = {}
+    for line in (_HERE / "captured" / "retrieval.jsonl").read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            row = json.loads(line)
+            out[row["id"]] = row["retrieved"]
+    return out
+
+
+@pytest.fixture(scope="session")
+def expected_sections() -> set[str]:
+    data = yaml.safe_load((_HERE / "fixtures" / "source_manifest.yaml").read_text(encoding="utf-8"))
+    return set(data["sections"])
+
+
+@pytest.fixture(scope="session")
+def indexed_sections() -> set[str]:
+    text = (_HERE / "captured" / "indexed_sections.txt").read_text(encoding="utf-8")
+    return {ln.strip() for ln in text.splitlines() if ln.strip()}

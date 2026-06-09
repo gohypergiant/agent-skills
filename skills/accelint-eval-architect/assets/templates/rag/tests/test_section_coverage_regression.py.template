@@ -1,0 +1,13 @@
+"""Ingest regression: PROVES teeth — a dropped section fails section_coverage."""
+
+from metrics.section_coverage import SectionCoverageMetric
+
+
+def test_dropped_section_fails(expected_sections):
+    indexed = set(expected_sections)
+    indexed.discard("payload")  # ingest silently dropped a section
+    metric = SectionCoverageMetric(threshold=1.0)
+    score = metric.measure(indexed, expected_sections)
+    assert not metric.is_successful()
+    assert score < 1.0
+    assert "payload" in metric.reason.lower()

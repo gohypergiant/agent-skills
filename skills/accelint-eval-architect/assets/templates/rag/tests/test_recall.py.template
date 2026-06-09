@@ -1,0 +1,10 @@
+"""Retrieve pass case: recall@k = 1 on captured output (offline, deterministic)."""
+
+from metrics.recall_at_k import RecallAtKMetric
+
+
+def test_recall_at_k(captured_retrieval, gold_entries):
+    metric = RecallAtKMetric(k=5, threshold=1.0)
+    score = metric.measure(captured_retrieval, gold_entries)
+    assert metric.is_successful(), metric.reason
+    assert score == 1.0
