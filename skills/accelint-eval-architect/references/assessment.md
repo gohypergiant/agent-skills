@@ -1,5 +1,8 @@
 # Assessment — reading and classifying a target skill
 
+> This file covers `target_type = skill`. For a standalone tool repo (e.g. a RAG
+> pipeline), use [tool-repo-assessment.md](tool-repo-assessment.md) instead.
+
 Goal: turn a target skill into an **eval profile** — the structured facts that
 drive the framework recommendation. Read first, classify second, recommend
 third. Never recommend from the skill's name or description alone.

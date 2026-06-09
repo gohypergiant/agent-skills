@@ -4,6 +4,11 @@ Consumes `determinism`, `output_shape`, and `toolchain` from the eval profile.
 Verifiability decides *whether* to use a judge; toolchain decides *which*
 deterministic harness; the judge framework is a secondary pick.
 
+> **Pipeline targets (tool-repo):** run this gate **per stage**, not once. A RAG
+> pipeline resolves to ingest+retrieve → deterministic, generate → judge slice.
+> See [pipeline-decomposition.md](pipeline-decomposition.md). Ragas is
+> **scaffoldable** for the answer layer (jump to "Tool-repo / RAG" below).
+
 ## Decision order (this ordering IS the cost discipline)
 
 ```
@@ -26,7 +31,7 @@ deterministic harness; the judge framework is a secondary pick.
    - repo already has a DeepEval harness AND Python-tolerant → DeepEval (house consistency)
    - primary goal is A/B comparing PROMPT or MODEL variants fast → Promptfoo  [recommend, hand off]
    - output is multi-turn and/or uses tools (agentic capability) → Inspect AI [recommend, hand off]
-   - output is retrieval-grounded (RAG: faithfulness, context recall) → Ragas [recommend, hand off]
+   - output is retrieval-grounded (RAG: faithfulness, context recall) → Ragas [SCAFFOLDABLE — see "Tool-repo / RAG"]
    - production runtime monitoring, not pre-merge regression → Trulens / Phoenix [recommend, hand off]
 ```
 
@@ -51,9 +56,9 @@ step 1 or 2 and never need a judge.
 - **For:** designed for capability evals — multi-turn, tool use, agentic flows; strong for skills that hold conversations or call tools.
 - **Against:** heavier mental model than the repo needs for single-shot skills; Python.
 
-### Ragas — **recommend, hand off**
-- **For:** purpose-built RAG metrics (faithfulness, context recall/precision).
-- **Against:** RAG-specific; none of the current repo skills are retrieval-grounded, so it is almost never the answer here.
+### Ragas — **scaffolded in v1.1 (RAG answer layer)**
+- **For:** purpose-built RAG metrics (faithfulness, context recall/precision, answer relevancy/correctness) out of the box; the natural answer-layer for a retrieval pipeline.
+- **Against:** RAG-specific — only relevant for a `tool-repo` with `pipeline_kind: rag`, never for a skill target. For the deterministic ingest/retrieve stages, do NOT use Ragas; use the deterministic-retrieval harness.
 
 ### OpenAI Evals — **rarely the pick**
 - **For:** spec-driven, minimalist.
@@ -119,3 +124,35 @@ Next: reply "scaffold it" to generate the walking skeleton, or redirect.
 ```
 
 Stop after presenting. Do not scaffold without approval.
+
+## Tool-repo / RAG
+
+For a RAG / retrieval pipeline, the recommendation is almost always a **hybrid**,
+because the verifiability gate runs per stage:
+
+- **ingest + retrieve → deterministic-retrieval harness** (no judge). IR metrics
+  (recall@k, precision@k, MRR, nDCG) are set-membership against the gold set;
+  `section_coverage` is a parse check. Scaffolded via `assets/templates/rag/`.
+- **generate → judge slice.** Recommend the answer-layer framework **per case**:
+  - **Ragas** — canned RAG metrics (faithfulness, context recall/precision,
+    answer relevancy/correctness) out of the box. Default for a straight RAG bot.
+  - **DeepEval** — when the answer rubric is bespoke, or to reuse a house DeepEval
+    harness. GEval can express RAG criteria, just not turnkey.
+  See [frameworks/ragas.md](frameworks/ragas.md).
+
+Standard recommendation for a docs-parser → chatbot:
+> **Hybrid: deterministic-retrieval (ingest + retrieve) + Ragas answer layer (gated).**
+> Why deterministic for retrieval over a judge: recall@k against the gold set is
+> exact and free; a judge there only adds drift. Why Ragas over DeepEval for the
+> answer layer: turnkey faithfulness + context-recall for a pure RAG bot (pick
+> DeepEval instead if the answer rubric is custom).
+
+**Cost (RAG):** deterministic ingest+retrieve = $0; gated answer layer ≈ 3 judge
+calls/question (faithfulness + relevancy + correctness) → a 10-Q smoke run
+≈ $0.50–1.50, scaling linearly with the gold set. Keep the judge gated; default
+to the smoke tier.
+
+**Headline metrics for a docs bot:** recall@k (can it find the passage),
+faithfulness (is the answer grounded), refusal_on_unknown (does it decline when
+the answer isn't in the corpus). The gold set is the prerequisite — see
+[gold-set.md](gold-set.md).
