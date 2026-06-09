@@ -36,6 +36,10 @@ backlog. Check every one.
 - **#6 rubric vs correct behavior:** read each judge criteria block; ask "does correct behavior on the hardest scenario actually satisfy this rubric?" The reference impl's `plan_adherence` penalized a correct halt — that class of bug.
 - **#7 untracked source:** `git status --porcelain evals/` — any untracked `.py`/`.ts` source (not results) is the orphan risk.
 
+**Mechanical subset:** checks #2, #3, #7, #8 need no judgment — run
+`scripts/audit_checks.py <evals-dir>` to execute them consistently (exit 1 on
+any HIGH finding). The judgment checks (#1, #5, #6) remain agent work.
+
 ## Output
 Rank findings high → low. For each: the check, the evidence (the diff, the
 missing test, the dangling path), and a proposed fix. Offer to apply fixes one at

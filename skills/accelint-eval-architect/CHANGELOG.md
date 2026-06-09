@@ -4,6 +4,57 @@ All notable changes to the `accelint-eval-architect` skill are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), semantic versioning.
 
+## [1.2.0] - 2026-06-09
+
+### Added
+- **First test suite for the skill's own automation** (`scripts/tests/`, 23
+  tests) — closes the skill's own "every metric needs a regression test" gap
+  for `scaffold_eval.py`, `bootstrap_goldset.py`, and the two new ops scripts.
+  Includes a lockstep test proving the bootstrap corpus hash and the RAG
+  template's `corpus_hash.py` agree.
+- `scaffold_eval.py --layer` — add-only layering into an existing eval (never
+  overwrites; reports conflicts to merge manually) and `--dest` for a separated
+  layer dir. Unblocks the hybrid path, which was the most common recommendation
+  but unscaffoldable incrementally.
+- Required-placeholder fail-fast per framework (`REQUIRED_KEYS`) — a forgotten
+  `--set` key now errors before any file is written.
+- `bootstrap_goldset.py`: content-based corpus hash (same-size edits now
+  detected), PDF corpora via optional pypdf (with actionable guidance when
+  missing), and `corpus_path` recorded in the draft for the drift test.
+- RAG template: `test_corpus_drift` (armed by `corpus_path` in goldset.yaml;
+  skips until set), `refusal_on_unknown` deterministic metric + captured
+  answers + regression test — the adversarial gold entries are no longer
+  shipped-but-unused.
+- `scripts/suggest_thresholds.py` — calibrated-threshold suggestions from
+  `results/run-*.json` (mean−2σ judge-style, min−margin deterministic-style),
+  with low-confidence flagging.
+- `scripts/audit_checks.py` — mechanical audit checks (#2 regression-per-metric,
+  #3 sentinel thresholds, #7 untracked source, #8 gitignore coverage); exit 1
+  on HIGH findings.
+- **EXTEND mode** — procedure for adding metrics to an existing eval (the gap
+  between SCAFFOLD's refuse-non-empty and AUDIT's read-only).
+
+### Changed
+- CRLF normalized to LF on template copy + skill `.gitattributes` — prevents
+  Windows-mount checkouts leaking CRLF into scaffolded target repos.
+- Detector carve-out on the walking-skeleton rule: detector/review skills ship
+  recall + false-positive-resistance as an inseparable pair.
+- `framework-matrix.md` notes the deepeval template IS the hybrid starter for
+  Python skill targets; `calibration.md`/`audit.md` reference the new scripts.
+- Template version pins documented as a maintenance item (Important Notes).
+
+### Rationale
+- **Self-dogfooding**: the meta-skill demanded regression tests of every metric
+  while its own load-bearing scripts had none.
+- **Hybrid was recommended constantly but couldn't be scaffolded** onto an
+  existing harness; `--layer` closes the gap honestly (skip + report, never
+  auto-merge).
+- **The drift tripwire was documented but unimplemented**, and the old
+  name+size hash missed same-size content edits.
+
+### Version
+- Bumped from 1.1 → 1.2.
+
 ## [1.1.0] - 2026-06-09
 
 ### Added

@@ -27,6 +27,10 @@ set immediately. Everything scored on a `[0,1]` quality scale starts record-only
      normal judge variance doesn't flip the gate.
    - deterministic quality ratios (stable): the **minimum observed** on known-good
      input, minus a small margin.
+`scripts/suggest_thresholds.py --results <evals>/results` automates steps 3-4:
+it prints per-metric distributions with both suggestion styles and flags
+low-confidence metrics. The human still commits the numbers.
+
 5. **Present the suggestion with its evidence** — "scores were 0.88/0.91/0.86
    across 3 runs; suggest threshold 0.80 (mean − 2σ)". The developer commits or
    overrides.

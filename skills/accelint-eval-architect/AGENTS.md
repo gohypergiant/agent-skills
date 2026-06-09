@@ -11,6 +11,7 @@ references only when the workflow step in `SKILL.md` names them.
 - **ASSESS** — read/interview the target → eval profile → verifiability gate (per stage for pipelines) → framework recommendation. Read-only.
 - **SCAFFOLD** — copy a framework starter, generate the walking skeleton, wire the build, hand off calibration.
 - **AUDIT** — run the decay checklist against an existing `evals/` dir.
+- **EXTEND** — add metrics/fixtures to an existing eval; `scaffold_eval.py --layer` pulls in another template's non-conflicting files.
 
 ## Reference table of contents
 | Reference | Load when | Holds |
@@ -39,9 +40,16 @@ references only when the workflow step in `SKILL.md` names them.
 - Commit eval source before the first run.
 - Match harness toolchain to the target (vitest for Node, pytest for Python).
 - Taste-based output → human-review checklist, not an LLM judge.
+- Detectors ship recall + false-positive-resistance as a pair — either alone rewards degenerate behavior.
 - Pipeline targets: run the verifiability gate per stage (ingest/retrieve are usually deterministic; only generate needs a judge).
 - RAG gold sets are human-curated; never trust a bootstrap draft as-is.
 - Tool-repo comprehension is interactive; confirm stages + invocation before recommending.
+
+## Scripts
+- `scripts/scaffold_eval.py` — copy a template; `--layer` add-only into an existing eval (reports conflicts); `--dest` alternate dirname; fails fast on missing required placeholders.
+- `scripts/bootstrap_goldset.py` — draft a RAG gold set (content-based corpus hash; PDFs via optional pypdf; mandatory human curation).
+- `scripts/suggest_thresholds.py` — suggest calibrated thresholds from `results/run-*.json` with evidence.
+- `scripts/audit_checks.py` — mechanical audit checks (#2/#3/#7/#8); pairs with references/audit.md.
 
 ## Scope
 Scaffolds: DeepEval, Ragas (RAG answer layer), deterministic-vitest, deterministic-pytest, deterministic-retrieval (ingest+retrieve), human-review.

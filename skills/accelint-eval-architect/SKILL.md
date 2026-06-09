@@ -4,7 +4,7 @@ description: Use when users say "add an eval to this skill", "evaluate this skil
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Eval Architect
@@ -16,7 +16,7 @@ Decides whether and how to add automated evaluation to another skill, recommends
 - **NEVER reach for an LLM judge before ruling out deterministic verification** — judge calls cost money per run, drift across model versions, and introduce false positives. A parser/compiler/schema/test-run check is cheaper, stable, and exact. The decision order in [references/framework-matrix.md](references/framework-matrix.md) makes a judge *unreachable* until determinism is proven insufficient.
 - **NEVER hand-author golden/expected artifacts** — they silently rot when the target's schema changes. (Real bug: `ac-to-playwright`'s `PERFECT-AC.plan.json` used stale field names and failed a metric for months.) Generate goldens from the live schema/validator at scaffold time.
 - **NEVER pick thresholds blind** — a threshold chosen without a baseline run manufactures a meaningless green checkmark. Scaffold thresholds as record-only, measure a baseline, then set numbers from the observed distribution. See [references/calibration.md](references/calibration.md).
-- **NEVER scaffold the maximalist metric suite on day one** — an unmaintained comprehensive eval is worth less than a maintained walking skeleton. Ship one fixture, one metric, one passing test, one regression test; document the extension path.
+- **NEVER scaffold the maximalist metric suite on day one** — an unmaintained comprehensive eval is worth less than a maintained walking skeleton. Ship one fixture, one metric, one passing test, one regression test; document the extension path. Exception: detector/review skills ship recall AND false-positive-resistance as an inseparable pair — either alone rewards degenerate behavior (flag everything, or flag nothing).
 - **NEVER ship a metric without a regression test that proves it can fail** — a metric that always passes is decoration. Every metric gets a planted-broken input that drives it below threshold.
 - **NEVER force a persona×scenario grid onto a single-mode skill** — when there is one user and one mode, flat fixtures across an input-quality gradient are clearer. Derive the taxonomy from the skill; don't impose it. See [references/test-design.md](references/test-design.md).
 - **NEVER leave eval source untracked** — `results/`, `.venv/`, `__pycache__/` are gitignored, so it is easy to orphan the *source* files alongside them (this happened to the reference impl and required bytecode recovery). Commit eval source before the first run.
@@ -50,6 +50,7 @@ This skill uses **progressive disclosure**. Detect the mode first, then load onl
 - **ASSESS** — read a target skill, classify it, recommend a framework (or none). Read-only. Triggered by "should I eval X", "which framework", or as the first phase of adding an eval.
 - **SCAFFOLD** — build the walking-skeleton eval for the approved framework. Triggered by "scaffold it" / "do the integration" after ASSESS.
 - **AUDIT** — run against a skill that already has an `evals/` dir; surface decay. Triggered by "is my eval good" / "audit my eval", or whenever the target already has `evals/`.
+- **EXTEND** — add metrics/fixtures to an existing eval. Triggered by "add a metric to my eval" / "extend my eval" when `evals/` already exists.
 
 ### Reference map (load on demand)
 - Reading + classifying a target **skill** → [references/assessment.md](references/assessment.md)
@@ -79,6 +80,7 @@ ambiguous                                          → ASK; never guess
 ```
 target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
 "audit" / "is my eval good" / evals/ exists → AUDIT
+"add a metric" / "extend" + evals/ exists   → EXTEND
 "should I eval X" / "which framework"       → ASSESS only
 ```
 
@@ -107,6 +109,13 @@ target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
 
 13. Load [references/audit.md](references/audit.md). Inventory the existing harness, run the decay checklist (stale goldens vs schema, metrics that can't fail, sentinel thresholds, renamed-fixture drift, scenarios missing metrics, judge rubrics penalizing correct behavior, untracked source). Emit findings ranked by severity. **Do not auto-fix without approval.**
 
+### EXTEND
+
+14. **Design the new metric** per [references/test-design.md](references/test-design.md) (or [references/pipeline-decomposition.md](references/pipeline-decomposition.md) for pipelines). The regression-test rule applies to every added metric, same as at scaffold time.
+15. **To pull in another template's files** (e.g. adding a judge layer to a deterministic harness), use `scripts/scaffold_eval.py --layer` — it copies only files that don't already exist and reports collisions to merge manually (typically conftest fixtures). `--dest evals-judge` places a fully separated layer instead.
+16. **Re-run the existing suite green first** — extending a broken eval buries the regression you're about to care about.
+17. **Recalibrate if the extension adds judge metrics** ([references/calibration.md](references/calibration.md)); new judge metrics start record-only like always.
+
 ## Important Notes
 
 - **Two LLM roles.** Every judge-based eval has an **SUT** (the model being graded) and a **Judge** (the model grading it) — often the same alias, conceptually distinct. Keep them separate in every recommendation and every scaffolded harness; conflating them is the #1 source of developer confusion.
@@ -114,4 +123,5 @@ target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
 - **The honest "no" is a feature.** "Don't build an automated eval — here's the human-review checklist" and "deterministic-only, skip the judge" are first-class outcomes, not failures of the skill.
 - **Tool-repo comprehension is interactive, not magic.** The skill cannot reverse-engineer an arbitrary pipeline; it reads what it can and interviews the developer for stages + invocation. Refuse to recommend until both are confirmed.
 - **RAG gold sets must be human-curated.** Bootstrap drafts are a starting point, never trusted output — and never let the gold set and the judge come from the same unreviewed pass.
+- **Template pins drift.** Templates pin framework versions (litellm, deepeval, ragas) that will rot; sanity-check pins against the target's environment when scaffolding and update template pins on framework upgrades.
 - **Scope:** scaffolds DeepEval, Ragas (RAG answer layer), deterministic-vitest, deterministic-pytest, deterministic-retrieval (ingest+retrieve), and human-review-checklist. Promptfoo and Inspect AI are *recommended when they fit* but handed off. Tool-repo support targets **RAG / retrieval pipelines**; other tool types are recommended-and-handed-off, not yet scaffolded.

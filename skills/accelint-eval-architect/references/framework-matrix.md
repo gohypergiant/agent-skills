@@ -140,6 +140,11 @@ because the verifiability gate runs per stage:
     harness. GEval can express RAG criteria, just not turnkey.
   See [frameworks/ragas.md](frameworks/ragas.md).
 
+**Hybrid for Python skill targets:** the deepeval template already IS the hybrid
+starter — its deterministic BaseMetric runs by default and GEval is gated behind
+`-m live`. To add a judge layer to an existing deterministic harness later, use
+`scaffold_eval.py --layer` (EXTEND mode) rather than re-scaffolding.
+
 Standard recommendation for a docs-parser → chatbot:
 > **Hybrid: deterministic-retrieval (ingest + retrieve) + Ragas answer layer (gated).**
 > Why deterministic for retrieval over a judge: recall@k against the gold set is
