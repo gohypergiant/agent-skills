@@ -36,19 +36,83 @@ _BANNER = (
     "# A human must confirm each answer AND its supporting_passages against the\n"
     "# real corpus, then set verified: true. The harness refuses unverified entries.\n"
     "# Never trust a gold set graded by the same model family that generated it.\n"
+    "# corpus_path may be edited to a path relative to the eval dir.\n"
 )
 
 
-def corpus_hash(files: list[Path]) -> str:
+def corpus_hash(corpus_dir: Path) -> str:
+    """Content-based corpus hash — the drift tripwire.
+
+    Algorithm (mirrored EXACTLY by the rag template's ``corpus_hash.py``; the
+    two must stay in lockstep): sha256, updated per file in order sorted by
+    POSIX relative path from the corpus root, with
+    ``relpath.encode() + b"\\0" + file_bytes``, final ``hexdigest()[:16]``.
+
+    Hashing raw content (not name+size) means a same-size content edit still
+    changes the hash. PDFs are hashed by raw bytes like every other file.
+    """
     h = hashlib.sha256()
-    for f in sorted(files):
-        h.update(f.name.encode())
-        h.update(str(f.stat().st_size).encode())
+    files = sorted(
+        (p for p in corpus_dir.rglob("*") if p.is_file()),
+        key=lambda p: p.relative_to(corpus_dir).as_posix(),
+    )
+    for f in files:
+        rel = f.relative_to(corpus_dir).as_posix()
+        h.update(rel.encode())
+        h.update(b"\0")
+        h.update(f.read_bytes())
     return h.hexdigest()[:16]
 
 
+def _read_pdf_text(path: Path) -> str:
+    """Extract text from a PDF via pypdf, tolerating per-page failures."""
+    from pypdf import PdfReader  # lazy: optional dependency
+
+    parts: list[str] = []
+    for page in PdfReader(str(path)).pages:
+        try:
+            parts.append(page.extract_text() or "")
+        except Exception:  # noqa: BLE001 - skip unreadable pages, keep going
+            continue
+    return "\n".join(parts)
+
+
 def collect_files(corpus: Path) -> list[Path]:
-    return [p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in _TEXT_EXT]
+    """Return readable corpus files: text formats always; PDFs when pypdf is available.
+
+    PDFs are the realistic spec-doc corpus. If PDFs are present but pypdf is
+    not installed: warn-and-skip when text files exist alongside them; hard-exit
+    with install/pre-extract guidance when PDFs are all there is.
+    """
+    text_files = [p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in _TEXT_EXT]
+    pdf_files = [p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf"]
+
+    if not pdf_files:
+        return text_files
+
+    try:
+        import pypdf  # noqa: F401 - availability probe only
+        return sorted(text_files + pdf_files)
+    except ImportError:
+        if text_files:
+            print(
+                f"[warn] {len(pdf_files)} PDF file(s) skipped — pypdf not installed "
+                f"(uv pip install pypdf to include them).",
+                file=sys.stderr,
+            )
+            return text_files
+        sys.exit(
+            f"Corpus under {corpus} is PDF-only and pypdf is not installed.\n"
+            f"Either install it (uv pip install pypdf) or pre-extract the PDFs "
+            f"to .txt/.md and point --corpus at the extracted text."
+        )
+
+
+def _read_snippet(path: Path, limit: int = 4000) -> str:
+    """Read the draft-source snippet for a file (text directly; PDFs via pypdf)."""
+    if path.suffix.lower() == ".pdf":
+        return _read_pdf_text(path)[:limit]
+    return path.read_text(encoding="utf-8", errors="replace")[:limit]
 
 
 def stratified_sample(files: list[Path], n: int) -> list[Path]:
@@ -93,7 +157,7 @@ def _draft_with_llm(snippet: str, source: str) -> dict | None:
 def build_entries(sample: list[Path], use_llm: bool) -> list[dict]:
     entries: list[dict] = []
     for i, f in enumerate(sample, 1):
-        snippet = f.read_text(encoding="utf-8", errors="replace")[:4000]
+        snippet = _read_snippet(f)
         draft = _draft_with_llm(snippet, f.name) if use_llm else None
         entries.append({
             "id": f"q{i}",
@@ -132,13 +196,20 @@ def main() -> int:
         sys.exit(f"Corpus dir not found: {args.corpus}")
     files = collect_files(args.corpus)
     if not files:
-        sys.exit(f"No text files ({', '.join(sorted(_TEXT_EXT))}) under {args.corpus}")
+        sys.exit(
+            f"No readable files ({', '.join(sorted(_TEXT_EXT))}, .pdf with pypdf) "
+            f"under {args.corpus}"
+        )
 
     sample = stratified_sample(files, args.n)
     entries = build_entries(sample, use_llm=not args.no_llm)
     entries += build_adversarial(args.adversarial)
 
-    doc = {"corpus_hash": corpus_hash(files), "entries": entries}
+    doc = {
+        "corpus_hash": corpus_hash(args.corpus),
+        "corpus_path": str(args.corpus.resolve()),
+        "entries": entries,
+    }
     args.out.write_text(_BANNER + yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
 
     verified = sum(1 for e in entries if e["verified"])
