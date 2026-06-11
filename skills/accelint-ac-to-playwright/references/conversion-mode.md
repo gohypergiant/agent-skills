@@ -56,24 +56,6 @@ Would you like help understanding any of the issues, or should I re-assess after
 
 **Why this matters:** The workflow says "STOP" when assessment fails, but LLMs interpret this as "end my response" rather than "explain to the user why I'm stopping." This template ensures users understand the blocker and know what to do next.
 
-## Recognition Patterns
-
-Before processing AC, identify these quality signals:
-
-**Good AC** (can process directly):
-| Check | Question | If NO → Action |
-|-------|----------|----------------|
-| **Targets** | Does every action specify area.component.intent? | Ask user to clarify which specific element |
-| **Values** | Are all fill/select values quoted literals? | Ask user for exact values to use |
-| **Outcomes** | Are expectations measurable (specific text/element/state)? | Ask user what exactly to verify |
-
-**Bad patterns** (ask the user questions):
-- "interact with" (and other similar language) → too vague, agent can't map to Playwright action
-- Dropdown: "select the first option" → fails, needs exact text
-- Always quote exact literals: `'test@example.com'` not "a valid email"
-
-The above table directs you to ask for clarifications because guessing creates tests that fail unpredictably.
-
 ## Naming Transformations
 
 **Input to output mapping**: One AC file → one suite → one plan file (`<plans-dir>/<suite-slug>.json`) → one test file

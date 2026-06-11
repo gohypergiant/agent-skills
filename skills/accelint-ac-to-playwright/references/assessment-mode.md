@@ -27,6 +27,26 @@
      - Explicitly stated (not implied or inferred)
      - Measurable (specific text content, element, or state)
      - Visibility changes use trigger words (appears, shows, hides, visible, see)
+
+## Recognition Patterns
+
+Before reporting results, identify these quality signals to guide your response:
+
+**Good AC** (report as conversion-ready if no blocking issues):
+| Check | Question | If NO → Flag as Issue |
+|-------|----------|----------------------|
+| **Targets** | Does every action specify area.component.intent? | Missing or incomplete target specification |
+| **Values** | Are all fill/select values quoted literals? | Unquoted or generic values (flag with example) |
+| **Outcomes** | Are expectations measurable (specific text/element/state)? | Vague or implied outcome (ask what to verify) |
+
+**Bad patterns that require clarification:**
+- "interact with" → too vague, can't map to Playwright action (click/fill/select needed)
+- "select the first option" → needs exact option text as quoted literal
+- "a valid email" → needs concrete value like `'test@example.com'`
+- "the button" → needs specific intent (e.g., "Submit button on login form")
+
+**Why this matters:** These patterns help calibrate response quality. When multiple bad patterns appear, use interactive clarification mode (BAD AC strategy from Response Calibration section) rather than enumerating dozens of similar issues.
+
 3. **Report results**:
    - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
    - If no issues: Report "✓ AC are conversion-ready" with validated checklist
