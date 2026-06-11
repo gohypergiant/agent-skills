@@ -1,0 +1,48 @@
+# Ground-truth planted issues for MIXED-AC-2.feature.
+# Theme: keyboard/mouse action semantics (coordinate vs element, valid
+# modifiers, valid verbs). Each issue is a defensible violation of
+# references/acceptance-criteria.md ("Mouse actions" / "Keyboard actions").
+# Only rule-citable violations are enumerated.
+# borderline (excluded, for human REVIEW):
+#   - line 30 "the user scrolls down" omits a pixel amount; the reference only
+#     shows scroll examples WITH amounts but never states the amount is
+#     mandatory, so this is left out to avoid a false positive.
+expected_issues:
+  - line: 9
+    scenario: "User clicks at a specific position"
+    issue: "Bare 'the user clicks' has neither a target (element click) nor 'at position x, y' (coordinate click); the action is unresolvable."
+    rule: "acceptance-criteria.md Mouse actions; element clicks need a target, coordinate clicks need 'at position x, y'"
+    must_contain: ["clicks", "position", "target"]
+    fix_suggestion: "Either 'the user clicks at position 150, 200' (coordinate) or 'the user clicks the submit button on the form' (element)."
+  - line: 14
+    scenario: "User drags to draw a line"
+    issue: "Drag is missing its start coordinate — drag must be 'from position X to position Y', but only a 'to' position is given."
+    rule: "acceptance-criteria.md Mouse actions; drag requires both start and end coordinates ('from ... to ...')"
+    must_contain: ["drags", "from position", "to position"]
+    fix_suggestion: "Use 'the user drags the mouse from position 100, 100 to position 200, 200'."
+  - line: 19
+    scenario: "User double-clicks at coordinates"
+    issue: "Double-click is defined only as a coordinate-based action ('double-clicks at position x, y'); an element double-click on a target is not a supported mapping."
+    rule: "acceptance-criteria.md Mouse actions; double-click is coordinate-based ('the user double-clicks at position x, y')"
+    must_contain: ["double-clicks", "position", "coordinate"]
+    fix_suggestion: "Use 'the user double-clicks at position 150, 200' (or click the submit button with a single click if an element action is intended)."
+  - line: 36
+    scenario: "User presses an Alt combo"
+    issue: "'Alt' is not a valid keyboard modifier — the valid modifiers are Shift, Control, a."
+    rule: "acceptance-criteria.md Keyboard actions; valid modifiers are Shift, Control, a"
+    must_contain: ["Alt", "modifier", "Shift"]
+    fix_suggestion: "Use a valid modifier, e.g. 'the user presses Control+s' or 'the user presses Shift+s'."
+  - line: 41
+    scenario: "User presses a Shift combo"
+    issue: "Modifier combinations are joined with '+', not '-'; 'Shift-g' uses the wrong separator and will not be parsed as a combo."
+    rule: "acceptance-criteria.md Keyboard actions; modifier combinations use the form 'Shift+g' / 'Control+Enter'"
+    must_contain: ["Shift-g", "Shift+g", "modifier combination"]
+    fix_suggestion: "Use 'the user presses Shift+g'."
+  - line: 46
+    scenario: "User presses a single key"
+    issue: "'types' is not a valid action verb for key presses; keyboard input uses 'presses'."
+    rule: "acceptance-criteria.md Keyboard actions; single key press uses 'the user presses Enter' / 'the user presses the g key'"
+    must_contain: ["types", "presses", "key"]
+    fix_suggestion: "Use 'the user presses Enter'."
+expected_issue_count: 6
+fixture_name: "MIXED-AC-2.feature"

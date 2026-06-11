@@ -1,0 +1,33 @@
+# Ground-truth planted issues for MIXED-AC-4.feature.
+# Theme: ambiguity + step ordering (non-exact input/select values, a context
+# step inside the When sequence, an undefined coordinate hover). Each issue is
+# a defensible violation of references/acceptance-criteria.md.
+# borderline (excluded, for human REVIEW):
+#   - none.
+expected_issues:
+  - line: 10
+    scenario: "Element-based actions and basic assertions"
+    issue: "Fill value is not exact — 'a valid email address' is a description, not a literal value; fills must include exact values."
+    rule: "acceptance-criteria.md Avoid ambiguity; input values must be exact (e.g. \"with 'test@example.com'\")"
+    must_contain: ["a valid email address", "exact", "input value"]
+    fix_suggestion: "Provide a literal value, e.g. 'the user fills the email input on the form with 'test@example.com''."
+  - line: 19
+    scenario: "User hovers to reveal tooltip"
+    issue: "Hover is not one of the defined coordinate-based actions (click/double-click/move/drag/scroll); 'hovers over position 300, 50' has no supported coordinate mapping — hover targets an element via test hooks."
+    rule: "acceptance-criteria.md Mouse actions; coordinate actions are an enumerated set (click/double-click/move/drag/scroll) that does not include hover"
+    must_contain: ["hovers", "position", "coordinate"]
+    fix_suggestion: "Hover an element via its target, e.g. 'the user hovers over the help icon on the form'."
+  - line: 27
+    scenario: "User subscribes and then views their subscription page"
+    issue: "'the user is on the subscriptions page' is an initial-context (Given-style) state step, but it sits inside the When action sequence (between the click on line 26 and the Then on line 28), breaking Given→When→Then ordering."
+    rule: "acceptance-criteria.md Pattern + Gherkin ordering; Given steps come first, then When, then Then — context cannot appear mid-When"
+    must_contain: ["subscriptions page", "ordering", "Given"]
+    fix_suggestion: "Move the navigation context to a Given at the start, or assert it as a Then outcome ('the user is on the subscriptions page' as a Then)."
+  - line: 32
+    scenario: "User selects from dropdown"
+    issue: "Select option value 'Standard Plan' is unquoted; dropdown selections must specify the visible option text as a quoted literal."
+    rule: "acceptance-criteria.md Avoid ambiguity; select the quoted visible option text (e.g. \"selects 'Premium Plan'\")"
+    must_contain: ["Standard Plan", "quoted", "option text"]
+    fix_suggestion: "Quote the option, e.g. 'the user selects 'Standard Plan' from the subscription dropdown on the form'."
+expected_issue_count: 4
+fixture_name: "MIXED-AC-4.feature"
