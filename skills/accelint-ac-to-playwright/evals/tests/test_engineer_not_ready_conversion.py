@@ -49,6 +49,7 @@ def test_engineer_not_ready_conversion_plan_adherence(judge, bad_ac_path, sut, r
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Plan adherence failed: {metric.reason}"
@@ -73,6 +74,7 @@ def test_engineer_not_ready_conversion_blatant_errors(judge, bad_ac_path, sut, r
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Blatant errors detected: {metric.reason}"
@@ -101,6 +103,7 @@ def test_engineer_not_ready_conversion_assumptions(judge, bad_ac_path, sut, reco
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Assumptions failed: {metric.reason}"
@@ -124,6 +127,7 @@ def test_engineer_not_ready_conversion_permission_compliance(bad_ac_path, sut, r
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Permission compliance failed: {metric.reason}"
@@ -150,6 +154,7 @@ def test_engineer_not_ready_conversion_clarification_needed(bad_ac_path, sut, re
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Clarification-needed check failed: {metric.reason}"

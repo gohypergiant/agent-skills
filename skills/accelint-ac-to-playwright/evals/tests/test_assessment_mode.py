@@ -28,8 +28,8 @@ def bad_ac_path(fixtures_dir):
 
 @pytest.fixture
 def mixed_ac_expected_issues(expected_dir):
-    """Load expected issues for MIXED-AC."""
-    return expected_dir / "MIXED-AC.assessment.yaml"
+    """Load expected issues for MIXED-AC-1 (per-slice manifest rename)."""
+    return expected_dir / "MIXED-AC-1.assessment.yaml"
 
 
 @pytest.fixture
@@ -56,6 +56,7 @@ def test_mixed_ac_assessment_task_completion(judge, mixed_ac_path, sut, record_m
         scenario="mixed-assess",
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Task completion failed: {metric.reason}"
@@ -85,6 +86,7 @@ def test_mixed_ac_assessment_goal_accuracy(judge, mixed_ac_path, sut, record_met
         scenario="mixed-assess",
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Goal accuracy failed: {metric.reason}"
@@ -115,6 +117,7 @@ def test_mixed_ac_assessment_quality(
         scenario="mixed-assess",
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Assessment quality failed: {metric.reason}"
@@ -139,6 +142,7 @@ def test_bad_ac_assessment_task_completion(judge, bad_ac_path, sut, record_metri
         scenario="bad-assess",
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Task completion failed: {metric.reason}"
@@ -169,6 +173,7 @@ def test_bad_ac_assessment_quality(
         scenario="bad-assess",
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Assessment quality failed: {metric.reason}"

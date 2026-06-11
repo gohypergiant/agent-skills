@@ -44,6 +44,7 @@ def test_pm_perfect_assessment_task_completion(judge, perfect_ac_path, sut, reco
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Task completion failed: {metric.reason}"
@@ -68,6 +69,7 @@ def test_pm_perfect_assessment_blatant_errors(judge, perfect_ac_path, sut, recor
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Blatant errors detected: {metric.reason}"
@@ -91,6 +93,7 @@ def test_pm_perfect_assessment_clarification_needed(perfect_ac_path, sut, record
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Clarification-needed check failed: {metric.reason}"
@@ -113,6 +116,7 @@ def test_pm_perfect_assessment_step_efficiency(perfect_ac_path, sut, record_metr
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Step efficiency failed: {metric.reason}"
@@ -136,6 +140,7 @@ def test_pm_perfect_assessment_plan_adherence(judge, perfect_ac_path, sut, recor
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Plan adherence failed: {metric.reason}"
@@ -159,6 +164,7 @@ def test_pm_perfect_assessment_permission_compliance(perfect_ac_path, sut, recor
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Permission compliance failed: {metric.reason}"

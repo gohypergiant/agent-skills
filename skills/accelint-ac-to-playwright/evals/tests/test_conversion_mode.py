@@ -62,6 +62,7 @@ def test_perfect_ac_conversion_structural(perfect_ac_path, sut, record_metric):
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), (
@@ -91,6 +92,7 @@ def test_perfect_ac_conversion_target_coverage(
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Target coverage failed: {metric.reason}"
@@ -114,6 +116,7 @@ def test_perfect_ac_conversion_no_hallucinations(perfect_ac_path, sut, record_me
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Hallucinations detected: {metric.reason}"
@@ -138,6 +141,7 @@ def test_perfect_ac_conversion_task_completion(judge, perfect_ac_path, sut, reco
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Task completion failed: {metric.reason}"
@@ -173,6 +177,7 @@ def test_perfect_ac_conversion_goal_accuracy(
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Goal accuracy failed: {metric.reason}"
@@ -199,6 +204,7 @@ def test_perfect_ac_conversion_semantic_quality(judge, perfect_ac_path, sut, rec
         scenario=_SCENARIO,
         reason=metric.reason,
         passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
     )
 
     assert metric.is_successful(), f"Semantic quality failed: {metric.reason}"
