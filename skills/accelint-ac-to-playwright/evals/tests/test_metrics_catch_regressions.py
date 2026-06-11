@@ -1,4 +1,4 @@
-"""Regression tests proving each metric can fail.
+"""Regression tests proving each metric can fail and PlanComparisonMetric works.
 
 These tests use deliberately broken inputs to verify that each metric
 has teeth and can detect failures.
@@ -17,6 +17,7 @@ import pytest
 from deepeval.test_case import LLMTestCase
 
 from metrics.hallucinated_assertions import HallucinatedAssertionsMetric
+from metrics.plan_comparison import PlanComparisonMetric
 from metrics.plan_structural import PlanStructuralMetric
 from metrics.target_coverage import TargetCoverageMetric
 
@@ -416,3 +417,128 @@ Feature: Checkout
         "metric has no teeth for the dropped-scenario case."
     )
     print(f"goal_accuracy dropped-scenario score: {score:.2f} (reason: {metric.reason})")
+
+
+# ---------------------------------------------------------------------------
+# PlanComparisonMetric regression tests (deterministic, no live marker)
+# ---------------------------------------------------------------------------
+
+
+def test_plan_comparison_catches_divergence(tmp_path):
+    """PlanComparisonMetric must score 0 when actual differs from golden.
+
+    Golden: 2-test plan.
+    Actual: same plan but test[0] step[0].action changed and test[1] has one
+            fewer step.  Metric must report both the action diff and the
+            step-count diff in the reason.
+    """
+    golden = {
+        "suiteName": "Regression Suite",
+        "tests": [
+            {
+                "name": "test one",
+                "startUrl": "/a",
+                "steps": [
+                    {"type": "action", "action": "click", "target": "form.button.submit"},
+                    {"type": "assertion", "action": "expectUrl", "value": "/success"},
+                ],
+            },
+            {
+                "name": "test two",
+                "startUrl": "/b",
+                "steps": [
+                    {"type": "action", "action": "fill", "target": "form.input.email", "value": "a@b.com"},
+                    {"type": "action", "action": "click", "target": "form.button.send"},
+                    {"type": "assertion", "action": "expectText", "target": "page.text.msg", "value": "Sent"},
+                ],
+            },
+        ],
+    }
+
+    # Write golden to tmp_path
+    golden_path = tmp_path / "golden.json"
+    golden_path.write_text(json.dumps(golden), encoding="utf-8")
+
+    # Variant: test[0].steps[0].action changed from "click" → "fill";
+    #          test[1] has only 2 steps instead of 3 (one dropped).
+    actual = {
+        "suiteName": "Regression Suite",
+        "tests": [
+            {
+                "name": "test one",
+                "startUrl": "/a",
+                "steps": [
+                    {"type": "action", "action": "fill", "target": "form.button.submit"},  # changed
+                    {"type": "assertion", "action": "expectUrl", "value": "/success"},
+                ],
+            },
+            {
+                "name": "test two",
+                "startUrl": "/b",
+                "steps": [
+                    {"type": "action", "action": "fill", "target": "form.input.email", "value": "a@b.com"},
+                    {"type": "action", "action": "click", "target": "form.button.send"},
+                    # dropped: expectText step
+                ],
+            },
+        ],
+    }
+
+    actual_output = f"```json\n{json.dumps(actual)}\n```"
+
+    metric = PlanComparisonMetric(golden_plan_path=golden_path, threshold=1.0)
+    test_case = LLMTestCase(input="dummy", actual_output=actual_output)
+    score = metric.measure(test_case)
+
+    assert score == 0.0, f"Expected score 0, got {score}"
+    assert not metric.is_successful(), "Metric should not be successful"
+    reason_lc = metric.reason.lower()
+    # Reason must mention a dotted-path action diff
+    assert "action" in reason_lc, f"Expected 'action' in reason: {metric.reason}"
+    # Reason must mention a step-count diff (list lengths differ for test[1])
+    assert "3" in metric.reason and "2" in metric.reason, (
+        f"Expected step count mismatch (3 vs 2) in reason: {metric.reason}"
+    )
+
+
+def test_plan_comparison_ignores_source_and_key_order(tmp_path):
+    """PlanComparisonMetric must score 1.0 when content matches despite key order + source."""
+    golden = {
+        "suiteName": "Key Order Suite",
+        "source": {"repo": "original-repo", "path": "/original/path.feature"},
+        "tests": [
+            {
+                "name": "only test",
+                "startUrl": "/z",
+                "steps": [
+                    {"type": "action", "action": "click", "target": "form.button.go"},
+                ],
+            }
+        ],
+    }
+    golden_path = tmp_path / "golden_order.json"
+    golden_path.write_text(json.dumps(golden), encoding="utf-8")
+
+    # Actual: keys shuffled in different order, different source object
+    actual = {
+        "tests": [
+            {
+                "steps": [
+                    {"target": "form.button.go", "action": "click", "type": "action"},
+                ],
+                "startUrl": "/z",
+                "name": "only test",
+            }
+        ],
+        "source": {"repo": "eval-repo", "path": "/eval/path.feature"},
+        "suiteName": "Key Order Suite",
+    }
+
+    actual_output = f"```json\n{json.dumps(actual)}\n```"
+
+    metric = PlanComparisonMetric(golden_plan_path=golden_path, threshold=1.0)
+    test_case = LLMTestCase(input="dummy", actual_output=actual_output)
+    score = metric.measure(test_case)
+
+    assert score == 1.0, f"Expected score 1.0 (key order + source ignored), got {score}: {metric.reason}"
+    assert metric.is_successful()

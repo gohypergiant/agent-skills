@@ -14,10 +14,21 @@ from metrics.task_completion import TaskCompletionMetric
 _PERSONA = "pm"
 
 
-@pytest.fixture
-def mixed_ac_path(fixtures_dir):
-    """Return path to MIXED-AC-1.feature (one slice of the split mixed fixtures)."""
-    return fixtures_dir / "MIXED-AC-1.feature"
+@pytest.fixture(params=[1, 2, 3, 4, 5])
+def mixed_ac_slice(request, fixtures_dir, expected_dir):
+    """Return (feature_path, manifest_path) for each MIXED-AC slice.
+
+    If a manifest file is not yet authored (another agent is adding slices
+    2-5 concurrently) the test is skipped rather than errored.
+    """
+    n = request.param
+    feature_path = fixtures_dir / f"MIXED-AC-{n}.feature"
+    manifest_path = expected_dir / f"MIXED-AC-{n}.assessment.yaml"
+
+    if not feature_path.exists():
+        pytest.skip(f"manifest not yet authored: {feature_path.name}")
+
+    return (feature_path, manifest_path)
 
 
 @pytest.fixture
@@ -27,20 +38,15 @@ def bad_ac_path(fixtures_dir):
 
 
 @pytest.fixture
-def mixed_ac_expected_issues(expected_dir):
-    """Load expected issues for MIXED-AC-1 (per-slice manifest rename)."""
-    return expected_dir / "MIXED-AC-1.assessment.yaml"
-
-
-@pytest.fixture
 def bad_ac_expected_issues(expected_dir):
     """Load expected issues for BAD-AC."""
     return expected_dir / "BAD-AC.assessment.yaml"
 
 
 @pytest.mark.live
-def test_mixed_ac_assessment_task_completion(judge, mixed_ac_path, sut, record_metric):
+def test_mixed_ac_assessment_task_completion(judge, mixed_ac_slice, sut, record_metric):
     """Test task completion on MIXED-AC assessment (GEval - costs money)."""
+    mixed_ac_path, _ = mixed_ac_slice
     result = sut(mixed_ac_path, "assessment")
     test_case = LLMTestCase(input=str(mixed_ac_path), actual_output=result["output"])
 
@@ -64,8 +70,9 @@ def test_mixed_ac_assessment_task_completion(judge, mixed_ac_path, sut, record_m
 
 
 @pytest.mark.live
-def test_mixed_ac_assessment_goal_accuracy(judge, mixed_ac_path, sut, record_metric):
+def test_mixed_ac_assessment_goal_accuracy(judge, mixed_ac_slice, sut, record_metric):
     """Test goal accuracy on MIXED-AC assessment (GEval - costs money)."""
+    mixed_ac_path, _ = mixed_ac_slice
     result = sut(mixed_ac_path, "assessment")
     test_case = LLMTestCase(input=str(mixed_ac_path), actual_output=result["output"])
 
@@ -95,9 +102,14 @@ def test_mixed_ac_assessment_goal_accuracy(judge, mixed_ac_path, sut, record_met
 
 @pytest.mark.live
 def test_mixed_ac_assessment_quality(
-    judge, mixed_ac_path, mixed_ac_expected_issues, sut, record_metric
+    judge, mixed_ac_slice, sut, record_metric
 ):
     """Test assessment quality on MIXED-AC (GEval - costs money)."""
+    mixed_ac_path, mixed_ac_expected_issues = mixed_ac_slice
+
+    if not mixed_ac_expected_issues.exists():
+        pytest.skip(f"manifest not yet authored: {mixed_ac_expected_issues.name}")
+
     result = sut(mixed_ac_path, "assessment")
     test_case = LLMTestCase(input=str(mixed_ac_path), actual_output=result["output"])
 

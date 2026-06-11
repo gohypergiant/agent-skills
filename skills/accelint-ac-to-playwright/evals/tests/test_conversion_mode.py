@@ -8,6 +8,8 @@ from deepeval.test_case import LLMTestCase
 
 from metrics.goal_accuracy import GoalAccuracyMetric
 from metrics.hallucinated_assertions import HallucinatedAssertionsMetric
+from metrics.json_completeness import JsonCompletenessMetric
+from metrics.plan_comparison import PlanComparisonMetric
 from metrics.plan_semantic import PlanSemanticMetric
 from metrics.plan_structural import PlanStructuralMetric
 from metrics.target_coverage import TargetCoverageMetric
@@ -43,6 +45,56 @@ def perfect_ac_expected(expected_dir):
         "plan": expected_plan,
         "assertions": expected_assertions,
     }
+
+
+def test_perfect_ac_conversion_plan_comparison(perfect_ac_path, expected_dir, sut, record_metric):
+    """HARD GATE: deterministic structural equality against the CLI-validated golden plan."""
+    result = sut(perfect_ac_path, "conversion")
+    test_case = LLMTestCase(input=str(perfect_ac_path), actual_output=result["output"])
+
+    golden_path = expected_dir / "PERFECT-AC.plan.json"
+    metric = PlanComparisonMetric(golden_plan_path=golden_path, threshold=1.0)
+    score = metric.measure(test_case)
+
+    record_metric(
+        name="plan_comparison",
+        score=score,
+        threshold=metric.threshold,
+        dimension="correctness",
+        persona=_PERSONA,
+        scenario=_SCENARIO,
+        reason=metric.reason,
+        passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
+    )
+
+    assert metric.is_successful(), (
+        f"Plan comparison gate failed: {metric.reason}\n"
+        f"Full output length: {len(result['output'])} chars"
+    )
+
+
+def test_perfect_ac_conversion_json_completeness(perfect_ac_path, sut, record_metric):
+    """HARD GATE: every AC scenario + step must appear in the plan."""
+    result = sut(perfect_ac_path, "conversion")
+    test_case = LLMTestCase(input=str(perfect_ac_path), actual_output=result["output"])
+
+    metric = JsonCompletenessMetric(ac_source_path=perfect_ac_path, threshold=1.0)
+    score = metric.measure(test_case)
+
+    record_metric(
+        name="json_completeness",
+        score=score,
+        threshold=metric.threshold,
+        dimension="completeness",
+        persona=_PERSONA,
+        scenario=_SCENARIO,
+        reason=metric.reason,
+        passed=metric.is_successful(),
+        criteria=getattr(metric, "criteria", None),
+    )
+
+    assert metric.is_successful(), f"JSON completeness failed: {metric.reason}"
 
 
 def test_perfect_ac_conversion_structural(perfect_ac_path, sut, record_metric):
@@ -180,8 +232,8 @@ def test_perfect_ac_conversion_goal_accuracy(
         criteria=getattr(metric, "criteria", None),
     )
 
-    assert metric.is_successful(), f"Goal accuracy failed: {metric.reason}"
-    assert score >= 0.8, f"Expected >= 80% accuracy, got {score:.2%}"
+    # advisory: plan_comparison is the gate (Tanya #8); judge score recorded for trend only
+    assert 0.0 <= score <= 1.0, f"Score out of range: {score}"
 
 
 @pytest.mark.live
@@ -207,5 +259,5 @@ def test_perfect_ac_conversion_semantic_quality(judge, perfect_ac_path, sut, rec
         criteria=getattr(metric, "criteria", None),
     )
 
-    assert metric.is_successful(), f"Semantic quality failed: {metric.reason}"
-    assert score >= 0.8, f"Expected >= 80% quality, got {score:.2%}"
+    # advisory: plan_comparison is the gate (Tanya #8); judge score recorded for trend only
+    assert 0.0 <= score <= 1.0, f"Score out of range: {score}"
