@@ -1,0 +1,159 @@
+# Assessment Mode
+
+**When to load this file:** Load when the user asks to review/evaluate/assess AC readiness, check if AC are ready for automation, or validate AC quality for Playwright. Do NOT load for full conversion requests (generate/convert/turn AC into tests).
+
+## Assessment Workflow
+
+0. **Detect intent**: User asks to review/evaluate/assess/check AC readiness.
+1. **Prepare for the task**:
+  - Read `references/acceptance-criteria.md` and `references/test-hooks.md`.
+  - Work one input file at a time.
+2. **Analyze AC text** against all conversion requirements:
+   - **Structure & Format**:
+     - Bullet format: proper `- ` markers for each AC
+     - Gherkin format: valid Feature/Scenario/Examples/Given/When/Then/tags structure
+     - Step ordering: all Givens → all Whens → all Thens (no mixing within a scenario)
+   - **Targets** (semantic validation):
+     - Every action specifies a target
+     - Target meets the area/component/intent pattern (all three parts present)
+     - Area matches controlled vocabulary from `test-hooks.md` (nav, header, footer, form, drawer, card, toast, modal, table, page, area)
+     - Component matches controlled vocabulary (button, link, input, dropdown, checkbox, radio, text, div, component)
+     - Intent is present
+   - **Actions**:
+     - Verbs are recognized and mappable to Playwright actions (click, fill, select, drag)
+     - No vague verbs (interact, use, hover without x/y coordinates)
+     - Fill/select actions have quoted literal values (not "a valid email" or "any value")
+   - **Expected Outcomes**:
+     - Explicitly stated (not implied or inferred)
+     - Measurable (specific text content, element, or state)
+     - Visibility changes use trigger words (appears, shows, hides, visible, see)
+3. **Report results**:
+   - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
+   - If no issues: Report "✓ AC are conversion-ready" with validated checklist
+   - Do NOT generate any files (no JSON plans, no test files)
+   - Report results for all input files - do not stop Assessment mode after a single failure to ensure all issues are surfaced to the user at once.
+
+## Response Calibration: Quality-Driven Assessment
+
+**Zero-defect principle:** Even ONE issue that prevents automatic conversion = "❌ AC are not conversion-ready"
+
+Before reporting, classify the AC quality level to determine the appropriate response strategy:
+
+| Quality Level | Signals | Response Strategy |
+|--------------|---------|-------------------|
+| **PERFECT** | All targets clear (area.component.intent), all verbs recognized, all values quoted literals, all outcomes explicit and measurable | Report "✓ AC are conversion-ready" with validated checklist |
+| **MIXED** | 1-10 fixable issues, structure mostly intact, intent mostly clear, majority of AC follows patterns correctly | Report "❌ AC are not conversion-ready" with enumerated issue list - include line/scenario references, problem descriptions, and specific fixes for each issue |
+| **BAD** | >10 issues, pervasive vagueness, missing fundamentals (targets/verbs/values/outcomes throughout), would require wholesale rewrite | Switch to interactive clarification mode - ask targeted questions to help user improve AC quality rather than overwhelming them with a 30+ item list |
+
+**Why this matters:**
+- **MIXED AC** benefit from detailed enumeration - user can systematically address each specific issue
+- **BAD AC** need collaborative refinement - extensive issue lists overwhelm and don't provide actionable guidance; targeted questions guide improvement more effectively
+- Distinguishing between these prevents both false negatives (reporting MIXED as ready) and unhelpful responses (listing 30+ issues for BAD AC)
+
+## Severity Threshold: When to Fail Assessment
+
+**Rule:** If you find ANY issue that prevents automatic conversion, report "❌ AC are not conversion-ready"
+
+**What counts as a blocking issue:**
+- ANY vague verb that can't be mapped to Playwright actions (interact, use, hover without coordinates)
+- ANY unquoted fill/select value ("a valid email" instead of 'test@example.com')
+- ANY target missing area/component/intent pattern or using invalid keywords
+- ANY outcome that isn't measurable (implied, assumed, or vague expectations)
+- ANY controlled vocabulary mismatch (area/component not in test-hooks.md)
+- ANY incorrect keyboard modifier format (Shift+e instead of separate keyDown/press/keyUp sequence)
+- ANY unrecognized action verb (drags without coordinates, invalid verbs)
+- ANY structural violation (standalone reload step, step ordering issues)
+
+**Do NOT ignore "minor" issues:**
+- Incorrect keyboard format BLOCKS conversion
+- Unrecognized verb BLOCKS conversion  
+- Standalone page reload step BLOCKS conversion
+- Missing @ prefix on tags BLOCKS conversion
+
+**When in doubt, enumerate the issue:** False positives (flagging valid AC) are better than false negatives (missing real issues that cause conversion failures downstream).
+
+## Assessment Output Format
+
+### When validation fails
+
+Report issues in this structure:
+
+```
+❌ AC are not conversion-ready. Issues found:
+
+File: [filename]
+1. [Line/Scenario reference]: [Specific issue]
+   - Problem: [What's wrong]
+   - Example: [Quote from AC]
+   - Fix: [What needs to change]
+
+File: [filename]
+2. [Next issue...]
+```
+
+Example output:
+```
+❌ AC are not conversion-ready. Issues found:
+
+File: form-actions.feature
+1. Scenario "User submits form": Unknown action verb
+   - Problem: "hovers" is not a recognized Playwright action
+   - Example: "the user hovers over the tooltip"
+   - Fix: Use a supported action (click, fill, select) or clarify the intent
+
+File: login-flow.feature
+2. Scenario "User logs in": Missing target intent
+   - Problem: Test hook selector incomplete (button.form instead of button.form.submit)
+   - Example: "clicks the button on the form"
+   - Fix: Specify intent: "clicks the Submit button on the form"
+```
+
+### When assessment passes
+
+```
+✓ AC are conversion-ready
+
+Validated ([X] AC in [Y] files):
+- Structure: Proper format (bullets or Gherkin) with correct step ordering
+- Targets: All meet the area/component/intent pattern with controlled vocabulary
+- Actions: All verbs recognized (click/fill/select) with input values where required
+- Expected outcomes: All explicitly stated and measurable
+- Vocabulary: All areas/components match test-hooks.md keywords
+
+These AC can be converted without modification.
+
+Files analyzed:
+[filename 1]
+[filename 2]
+...
+```
+
+### Interactive clarification mode (BAD AC)
+
+When AC have >10 issues or pervasive vagueness, ask targeted questions instead of enumerating every issue:
+
+```
+These AC need refinement before conversion. I have some questions to help clarify:
+
+**Targets:**
+1. [Scenario reference]: The AC mentions "the button" - which specific button? (e.g., Submit button on the login form, Cancel button on the modal)
+2. [Scenario reference]: "floating card component" - what area is this in? (nav, header, form, modal, page, etc.)
+
+**Actions:**
+3. [Scenario reference]: "opens" - how does this happen? (user clicks something, user fills a field that triggers it, page loads and it appears automatically)
+
+**Values:**
+4. [Scenario reference]: The AC uses a variable reference "trajectory.start_latitude" - what's the exact literal value to use for this test? (e.g., '37.7749')
+
+**Expected Outcomes:**
+5. [Scenario reference]: "position will shift" - what specific measurable change should we verify? (element moves to specific coordinates, element becomes visible, text content changes to specific value)
+
+Once you clarify these, I can assess whether the AC are conversion-ready.
+```
+
+## NEVER Do
+
+- **NEVER generate artifacts in assessment mode** — when the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
+- **NEVER skip controlled vocabulary checks in assessment** — verify that area and component keywords in targets match the lists in `test-hooks.md`.
+- **NEVER report AC as conversion-ready when issues exist** — even one blocking issue means "❌ AC are not conversion-ready". False positives (over-flagging) are better than false negatives (missing issues).
+- **NEVER assume targets or values** — if AC says "click the button" without identifying which button, flag it as a missing target issue rather than assuming. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
