@@ -9,9 +9,7 @@ metadata:
 
 # AC To Playwright
 
-**MANDATORY - READ ENTIRE FILE**: Before processing ANY acceptance criteria, you MUST read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) (~175 lines) completely from start to finish. **NEVER set any range limits when reading this file.** It is the authoritative source for AC writing rules and mappings.
-
-**Note on test-hooks.md**: Load `references/test-hooks.md` when converting AC → JSON plans or when running Assessment mode — it contains the controlled vocabulary for area/component/intent target naming patterns. **Do NOT load** when converting plans → tests (translation script handles this automatically).
+**MANDATORY - READ ENTIRE FILE**: Before processing ANY acceptance criteria, you MUST read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) completely from start to finish. It is the authoritative source for AC writing rules and mappings.
 
 ## Intent Detection
 
@@ -63,17 +61,29 @@ Assessment mode analyzes AC text only (no artifact generation). Full conversion 
 
 **For complete workflow, naming rules, and output specifications:** Load `references/conversion-mode.md`
 
+## Context Management
 
+**Load selectively to avoid context bloat:**
 
+- **Assessment-only task** → load `assessment-mode.md`, skip `conversion-mode.md`
+- **Conversion task** → load `conversion-mode.md`, skip `assessment-mode.md` (it references assessment workflow internally)
+- **Both modes** → always load `acceptance-criteria.md` and `test-hooks.md`
+- **Never load both mode files simultaneously** — they have overlapping content
 
+**Note on test-hooks.md:** Load when converting AC → JSON plans or running assessment mode (contains controlled vocabulary for area/component/intent target patterns). Do NOT load when converting plans → tests (translation script handles this automatically).
 
 ## Resources
-- `scripts/plan-schema.ts` — schema and validation logic to consult when generating plans.
-- `scripts/cli/validate-plan.ts` — validator script for JSON plans (run via `npx validate-plan` after build).
-- `scripts/translate-plan-to-tests.ts` — converts a validated plan to a Playwright spec.
-- `scripts/cli/generate-tests.ts` — CLI wrapper for reading, validating, and writing spec files.
 
+**Reference map only - load contextually as directed by mode files:**
 
+- `references/acceptance-criteria.md` — AC writing rules and mappings (load for both modes)
+- `references/test-hooks.md` — controlled vocabulary for target patterns (load for both modes)
+- `references/assessment-mode.md` — detailed assessment workflow and response calibration
+- `references/conversion-mode.md` — complete conversion pipeline and specifications
+- `scripts/plan-schema.ts` — schema and validation logic (loaded by conversion mode when needed)
+- `scripts/cli/validate-plan.ts` — validator script (loaded by conversion mode when needed)
+- `scripts/translate-plan-to-tests.ts` — plan-to-test translator (loaded by conversion mode when needed)
+- `scripts/cli/generate-tests.ts` — CLI wrapper (loaded by conversion mode when needed)
 
 ## Core Anti-Patterns
 
