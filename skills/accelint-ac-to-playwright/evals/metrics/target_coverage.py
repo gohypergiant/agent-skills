@@ -52,26 +52,23 @@ class TargetCoverageMetric(BaseMetric):
             self.reason = f"Could not extract JSON plan from response: {e}"
             return self.score
 
-        # Extract all targets from plan
+        # Extract all targets from plan.
+        # Current schema: steps have type="action"|"assertion" + action="click"|...
+        # Legacy schema:  steps have type="click"|"expectText"|... (no action key)
+        # Both schemas place the target selector in a "target" field, so we only
+        # need to deduplicate the assertion-detection branch; the unconditional
+        # `"target" in step` check below handles all cases regardless of schema.
         produced_targets = set()
 
         tests = plan_data.get("tests", [])
         for test in tests:
             steps = test.get("steps", [])
             for step in steps:
-                # Actions have targets
+                # All step kinds (actions and assertions) may carry a target.
+                # Collect every target unconditionally — no need to filter by
+                # step kind because the coverage check is purely about presence.
                 if "target" in step:
                     produced_targets.add(step["target"])
-
-                # Assertions also have targets
-                if step.get("type") in [
-                    "expectText",
-                    "expectVisible",
-                    "expectNotVisible",
-                    "expectUrl",
-                ]:
-                    if "target" in step:
-                        produced_targets.add(step["target"])
 
         # Calculate coverage
         found_targets = self.must_have_targets & produced_targets

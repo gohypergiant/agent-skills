@@ -117,16 +117,20 @@ class HallucinatedAssertionsMetric(BaseMetric):
         for test_idx, test in enumerate(tests):
             steps = test.get("steps", [])
             for step_idx, step in enumerate(steps):
-                step_type = step.get("type")
+                # Current schema: type="assertion", action="expectText"|...
+                # Legacy schema:  type="expectText"|... (no separate action key)
+                # Derive the step kind by preferring the action field (current
+                # schema) and falling back to the type field (legacy).
+                step_kind = step.get("action") or step.get("type")
 
-                if step_type in [
+                if step_kind in [
                     "expectText",
                     "expectVisible",
                     "expectNotVisible",
                     "expectUrl",
                 ]:
                     assertions.append({
-                        "type": step_type,
+                        "type": step_kind,
                         "test_idx": test_idx,
                         "step_idx": step_idx,
                         "step": step,
@@ -145,7 +149,9 @@ class HallucinatedAssertionsMetric(BaseMetric):
             step = assertion["step"]
 
             if step_type == "expectText":
-                literal = step.get("text", "") or step.get("value", "")
+                # Current schema stores the expected text in "value";
+                # legacy schema used "text".  Accept whichever is present.
+                literal = step.get("value", "") or step.get("text", "")
                 if not self._is_grounded_expect_text(literal, self.ac_lines):
                     hallucinations.append({
                         "test_idx": assertion["test_idx"],

@@ -85,6 +85,7 @@ class ScorecardCollector:
         persona: str,
         scenario: str,
         reason: str | None = None,
+        criteria: str | None = None,
     ) -> None:
         self.metrics.append(
             {
@@ -97,6 +98,9 @@ class ScorecardCollector:
                 "persona": persona,
                 "scenario": scenario,
                 "reason": _normalise_reason(reason),
+                # criteria is persisted in the JSON artifact for audit trails
+                # but NOT rendered in the terminal scorecard to keep it readable.
+                "criteria": criteria,
             }
         )
 

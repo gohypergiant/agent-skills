@@ -42,25 +42,33 @@ in the prescribed order for the accelint-ac-to-playwright skill.
 
 The required ordered procedure for Conversion mode is:
 
-  1. Intent detection - the agent recognizes the user wants a full conversion
+  1. Intent detection — the agent recognizes the user wants a full conversion
      (vs. an assessment-only review).
-  2. Run Assessment mode first - the agent inspects the AC for issues BEFORE
+  2. Run Assessment mode first — the agent inspects the AC for issues BEFORE
      attempting any JSON plan generation. The reply should show evidence of
      this assessment pass (a readiness verdict, an issues list, or an explicit
      "AC are conversion-ready" statement).
-  3. Build a JSON plan ONLY IF assessment passed - if assessment surfaced
-     blocking issues, the workflow stops and no plan is produced.
-  4. Output the JSON plan inside a fenced ```json``` code block at the end of
-     the reply.
+  3. BRANCH on assessment result:
+       a. If assessment surfaced BLOCKING ISSUES → the correct behavior is to
+          STOP and produce NO JSON plan. A halt-and-report response is FULL
+          adherence to the workflow (score 1.0). Do NOT penalize the absence
+          of a plan in this case.
+       b. If assessment PASSED (AC are conversion-ready) → the agent must build
+          a JSON plan and output it inside a fenced ```json``` code block at the
+          end of the reply. Penalize a missing plan/fenced block ONLY when
+          assessment passed.
 
 Penalize the response when it:
   - Skips the assessment pass and jumps straight to a JSON plan.
   - Invents steps that are not part of the prescribed workflow.
   - Reorders the prescribed steps (e.g., emits the plan before assessing).
-  - Omits the fenced ```json``` block when a plan was produced.
+  - Omits the fenced ```json``` block when assessment PASSED (blocking issues
+    were NOT found).
+  - Emits a JSON plan despite the assessment surfacing blocking issues.
 
-Reward the response when every prescribed step appears, in order, with no
-fabricated extras.
+Reward the response when the branch is correctly followed:
+  - Assessment failed → agent halted and explained why (no plan emitted).
+  - Assessment passed → agent produced a fenced ```json``` plan.
 
 Score 0 (no adherence) to 1 (perfect adherence).
 """
@@ -68,9 +76,11 @@ Score 0 (no adherence) to 1 (perfect adherence).
             evaluation_steps = [
                 "Identify which workflow steps from the Conversion procedure are present in the actual_output.",
                 "Check that the agent ran (or shows clear evidence of running) the assessment pass BEFORE emitting any JSON plan.",
-                "Verify the steps appear in the prescribed order (intent -> assessment -> plan -> fenced JSON output).",
+                "Determine the assessment result: did the agent find blocking issues, or did assessment pass?",
+                "If assessment surfaced blocking issues: verify the agent STOPPED and produced NO JSON plan — this is correct behavior (score high). If the agent incorrectly emitted a plan despite blocking issues, penalize.",
+                "If assessment passed: verify the agent produced a JSON plan inside a fenced ```json``` block — penalize a missing plan/block in this case.",
                 "Check whether the agent invented any steps not in the prescribed procedure or skipped any required steps.",
-                "Assign a score from 0 (workflow ignored or steps badly out of order) to 1 (every prescribed step present, in order, no fabricated steps).",
+                "Assign a score from 0 (workflow ignored or steps badly out of order) to 1 (correct branch followed end-to-end, no fabricated steps).",
             ]
 
         else:  # assessment mode

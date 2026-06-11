@@ -11,6 +11,12 @@ from typing import Literal
 from litellm import completion
 from litellm_judge import ConfigurationError
 
+# SUT output persistence directory — relative to this file.
+# Rationale: without persisted SUT output, judge-vs-skill-vs-rubric disputes
+# require paid re-runs. Each invocation writes one .md file here so any run
+# can be replayed, diffed, or inspected offline.
+_SUT_OUTPUT_DIR = Path(__file__).parent / "results" / "sut"
+
 
 class SUTError(Exception):
     """Raised when SUT invocation fails."""
@@ -221,6 +227,39 @@ def invoke_sut(
     except Exception as e:
         raise SUTError(f"SUT invocation failed: {e}")
 
+    # Build timestamp once so filename and metadata share the same value.
+    run_ts = datetime.now(timezone.utc)
+    run_ts_iso = run_ts.isoformat()
+    # Compact UTC timestamp for filenames: drop colons / plusses / microseconds
+    # e.g. "20260611T153042Z"
+    ts_compact = run_ts.strftime("%Y%m%dT%H%M%SZ")
+    fixture_stem = fixture_path.stem
+
+    # Persist SUT output to disk before building the metadata dict so we can
+    # include the relative path in the returned metadata.
+    _SUT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    sut_filename = f"{ts_compact}-{fixture_stem}-{mode}.md"
+    sut_output_path = _SUT_OUTPUT_DIR / sut_filename
+
+    sut_meta_block = {
+        "model": model_id,
+        "mode": mode,
+        "fixture": str(fixture_path.name),
+        "timestamp": run_ts_iso,
+        "tokens": token_usage,
+        "latency_seconds": round(latency_seconds, 3),
+    }
+    sut_output_path.write_text(
+        "```json\n"
+        + json.dumps(sut_meta_block, indent=2)
+        + "\n```\n\n"
+        + output,
+        encoding="utf-8",
+    )
+
+    # Relative path from the evals/ root for portability in JSON artifacts.
+    sut_rel_path = str(sut_output_path.relative_to(Path(__file__).parent))
+
     # Build metadata
     metadata = {
         "sut_provider": provider,
@@ -229,9 +268,10 @@ def invoke_sut(
         "temperature": temperature,
         "max_tokens": max_tokens,
         "fixture": str(fixture_path.name),
-        "run_timestamp": datetime.now(timezone.utc).isoformat(),
+        "run_timestamp": run_ts_iso,
         "token_usage": token_usage,
         "latency_seconds": round(latency_seconds, 3),
+        "sut_output_path": sut_rel_path,
         **hashes,
     }
 

@@ -204,6 +204,7 @@ def record_metric(request) -> Callable[..., None]:
         scenario: str,
         reason: str | None = None,
         passed: bool | None = None,
+        criteria: str | None = None,
     ) -> None:
         if passed is None:
             passed = float(score) >= float(threshold)
@@ -217,6 +218,7 @@ def record_metric(request) -> Callable[..., None]:
             persona=persona,
             scenario=scenario,
             reason=reason,
+            criteria=criteria,
         )
 
     return _record
