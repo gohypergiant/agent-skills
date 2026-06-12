@@ -20,10 +20,12 @@
        - Format as array: `[{"line": 5, "target": "form.button.submit"}, {"line": 8, "target": "toast.text.success"}]`
      - Spawn subagent with `references/validate-targets.md` to validate target format and controlled vocabulary
      - Subagent returns `{valid: [...], invalid: [...]}` - report any invalid targets as blocking issues
-   - **Actions**:
-     - Verbs are recognized and mappable to Playwright actions (click, fill, select, drag)
-     - No vague verbs (interact, use, hover without x/y coordinates)
-     - Fill/select actions have quoted literal values (not "a valid email" or "any value")
+   - **When Steps (Actions)**:
+     - Extract all When steps with line numbers, actions, targets, values, and coordinates
+     - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "...", "coordinates": {...}}]`
+     - Spawn subagent with `references/validate-actions.md` to validate actions, required parameters, and values
+     - Subagent returns validation results with line numbers for any violations
+     - Subagent returns validation results with line numbers for any violations
    - **Expected Outcomes**:
      - Explicitly stated (not implied or inferred)
      - Measurable (specific text content, element, or state)
@@ -83,12 +85,11 @@ Before reporting, classify the AC quality level to determine the appropriate res
 - ANY controlled vocabulary mismatch (area/component not in test-hooks.md)
 - ANY incorrect keyboard modifier format (Shift+e instead of separate keyDown/press/keyUp sequence)
 - ANY unrecognized action verb (drags without coordinates, invalid verbs)
-- ANY structural violation (standalone reload step, step ordering issues)
+- ANY structural violation (step ordering issues)
 
 **Do NOT ignore "minor" issues:**
 - Incorrect keyboard format BLOCKS conversion
 - Unrecognized verb BLOCKS conversion  
-- Standalone page reload step BLOCKS conversion
 - Missing @ prefix on tags BLOCKS conversion
 
 **When in doubt, enumerate the issue:** False positives (flagging valid AC) are better than false negatives (missing real issues that cause conversion failures downstream).
