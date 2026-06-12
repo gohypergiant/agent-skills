@@ -93,3 +93,39 @@ def test_crlf_normalized_to_lf(tmp_path, monkeypatch):
     out_bytes = (target / "evals" / "file.py").read_bytes()
     assert b"\r" not in out_bytes, "CRLF must not leak into scaffolded files"
     assert b"name = 'demo'" in out_bytes
+
+def test_git_check_outside_repo_warns_not_ok(tmp_path, capsys):
+    # tmp_path is not a git repo: a false "OK" here once masked unprotected source.
+    _scaffold_rag(tmp_path)
+    out = capsys.readouterr().out
+    assert "OK — no untracked source" not in out
+    assert "NOT protected" in out
+
+
+def test_git_check_flags_env_example_but_not_env(tmp_path, capsys):
+    import shutil
+    import subprocess
+    if shutil.which("git") is None:
+        pytest.skip("git unavailable")
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    target = tmp_path
+    dest = target / "evals"
+    dest.mkdir()
+    # Track one file so git reports per-file untracked paths instead of
+    # collapsing the whole directory to "evals/".
+    (dest / "README.md").write_text("tracked\n", encoding="utf-8")
+    subprocess.run(["git", "-C", str(target), "add", "evals/README.md"], check=True)
+    subprocess.run(
+        ["git", "-C", str(target), "-c", "user.name=t", "-c", "user.email=t@t",
+         "commit", "-qm", "x"],
+        check=True,
+    )
+    (dest / ".env.example").write_text("KEY=\n", encoding="utf-8")
+    (dest / ".env").write_text("KEY=secret\n", encoding="utf-8")
+    scaffold_eval._git_check(target, dest)
+    out = capsys.readouterr().out
+    assert ".env.example" in out, ".env.example is source — it must be flagged untracked"
+    lines_flagging_env = [
+        ln for ln in out.splitlines() if ln.strip().endswith("/.env") or ln.strip() == ".env"
+    ]
+    assert not lines_flagging_env, "a real .env (secrets) must stay excluded"

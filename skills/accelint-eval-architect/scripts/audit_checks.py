@@ -21,7 +21,11 @@ import sys
 from pathlib import Path
 
 _IGNORED_SEGMENTS = ("results/", ".venv/", "__pycache__/", ".pytest_cache/", "node_modules/")
-_SENTINEL_RE = re.compile(r"threshold\s*=\s*0\.0\b|record[-_]only", re.IGNORECASE)
+# Matches 0.0 with any number of trailing zeros (0.0, 0.00, …) and annotated
+# defaults like `threshold: float = 0.0` / `threshold: number = 0.0`.
+_SENTINEL_RE = re.compile(
+    r"threshold\s*(?::\s*[\w.\[\]]+\s*)?=\s*0\.0+\b|record[-_]only", re.IGNORECASE
+)
 
 
 def _finding(severity: str, check: str, evidence: str, fix: str) -> dict:
@@ -37,7 +41,7 @@ def check_regression_per_metric(evals_dir: Path) -> list[dict]:
         return findings
     regression_text = "".join(
         p.read_text(encoding="utf-8", errors="replace")
-        for p in tests_dir.glob("*regression*")
+        for p in tests_dir.rglob("*regression*")  # rglob: regression tests may sit in subdirs
         if p.is_file()
     ) if tests_dir.is_dir() else ""
     for metric in sorted(metrics_dir.iterdir()):
@@ -115,7 +119,16 @@ def check_gitignore(evals_dir: Path) -> list[dict]:
                          "Add one covering results/, __pycache__/, .venv/ (or node_modules/).")]
     text = gi.read_text(encoding="utf-8", errors="replace")
     findings: list[dict] = []
-    missing = [p for p in ("results/", "__pycache__/") if p not in text]
+    missing = [p for p in ("results/",) if p not in text]
+    # __pycache__/ only applies to Python harnesses — demanding it of a Node
+    # (vitest) eval is a false positive. Probe metrics/ and tests/ rather than
+    # the whole tree so vendored .py files (node_modules, .venv) don't count.
+    is_python = any(
+        (evals_dir / d).is_dir() and any((evals_dir / d).rglob("*.py"))
+        for d in ("metrics", "tests")
+    )
+    if is_python and "__pycache__/" not in text:
+        missing.append("__pycache__/")
     if not any(p in text for p in (".venv/", "node_modules/")):
         missing.append(".venv/ or node_modules/")
     for p in missing:

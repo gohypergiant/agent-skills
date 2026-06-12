@@ -12,22 +12,19 @@ from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
 class ExampleQualityMetric(GEval):
     def __init__(self, judge_model, threshold: float = 0.8):
-        criteria = """
-You are evaluating __WHAT_THE_JUDGE_EVALUATES__.
-
-Score 0 (poor) to 1 (excellent).
-
-GROUNDING RULE: if you cannot quote the exact substring of the input that
-supports a deduction, do not make that deduction. This is the single most
-important rule for avoiding false negatives.
-"""
+        # GEval takes criteria OR evaluation_steps, never both (criteria exists
+        # to auto-generate steps via an extra judge call). Explicit steps are
+        # cheaper and deterministic, so the rubric lives entirely in the steps —
+        # including the grounding rule, the single most important guard against
+        # judge false negatives.
         super().__init__(
             name="Example Quality",
-            criteria=criteria,
             evaluation_steps=[
-                "Read the actual_output against the criteria.",
+                "You are evaluating __WHAT_THE_JUDGE_EVALUATES__.",
+                "GROUNDING RULE: if you cannot quote the exact substring of the "
+                "input that supports a deduction, do not make that deduction.",
                 "Quote the exact input substring supporting each judgment.",
-                "Assign a score from 0 to 1.",
+                "Assign a score from 0 (poor) to 1 (excellent).",
             ],
             evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
             model=judge_model,

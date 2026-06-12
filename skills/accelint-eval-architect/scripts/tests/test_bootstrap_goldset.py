@@ -100,3 +100,35 @@ def test_pdf_only_corpus_without_pypdf(tmp_path, monkeypatch):
     with pytest.raises(SystemExit) as exc:
         _run_main(["--corpus", str(corpus), "--out", str(out), "--no-llm"], monkeypatch)
     assert "pypdf" in str(exc.value)
+
+def test_out_refuses_overwrite_without_force(tmp_path, monkeypatch):
+    corpus = _make_corpus(tmp_path)
+    out = tmp_path / "goldset.draft.yaml"
+    out.write_text("curated: do-not-clobber\n", encoding="utf-8")
+    with pytest.raises(SystemExit) as exc:
+        _run_main(["--corpus", str(corpus), "--out", str(out), "--no-llm"], monkeypatch)
+    assert "--force" in str(exc.value)
+    assert out.read_text(encoding="utf-8") == "curated: do-not-clobber\n"
+
+    rc = _run_main(
+        ["--corpus", str(corpus), "--out", str(out), "--no-llm", "--force"], monkeypatch
+    )
+    assert rc == 0
+    assert "REQUIRES HUMAN CURATION" in out.read_text(encoding="utf-8")
+
+
+def test_out_creates_parent_dirs(tmp_path, monkeypatch):
+    corpus = _make_corpus(tmp_path)
+    out = tmp_path / "nested" / "dir" / "goldset.draft.yaml"
+    rc = _run_main(["--corpus", str(corpus), "--out", str(out), "--no-llm"], monkeypatch)
+    assert rc == 0
+    assert out.exists()
+
+
+def test_collect_files_sorted(tmp_path):
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    for name in ("zeta.md", "alpha.md", "mid.txt"):
+        (corpus / name).write_text("x\n", encoding="utf-8")
+    files = bootstrap_goldset.collect_files(corpus)
+    assert files == sorted(files), "file order must be deterministic for reproducible sampling"

@@ -1,7 +1,9 @@
 # Curated gold set for __TARGET_NAME__. HUMAN-VERIFIED entries only.
 # corpus_hash detects drift: if the corpus changes, supporting_passages may rot.
 # It is content-based (see corpus_hash.py — mirrors bootstrap_goldset.py).
-corpus_hash: "demo-corpus-v1"
+# PLACEHOLDER — not a real hash. When arming the drift test, compute the real
+# 16-hex value with:  python corpus_hash.py <corpus_dir>
+corpus_hash: "PLACEHOLDER-RUN-corpus_hash.py"
 # Set corpus_path (absolute, or relative to this evals/ dir) to arm the
 # corpus-drift test (tests/test_corpus_drift.py). The demo leaves it unset,
 # so the drift test skips.

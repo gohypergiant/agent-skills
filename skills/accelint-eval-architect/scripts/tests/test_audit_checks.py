@@ -83,3 +83,36 @@ def test_clean_dir_exits_zero(tmp_path, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert rc == 0
     assert "No mechanical findings" in out
+
+def test_sentinel_catches_trailing_zeros_and_annotated_defaults(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "metrics" / "m1.py").write_text("t = Metric(threshold=0.00)\n", encoding="utf-8")
+    (d / "metrics" / "m2.py").write_text(
+        "def __init__(self, threshold: float = 0.0):\n    pass\n", encoding="utf-8"
+    )
+    findings = audit_checks.check_sentinel_thresholds(d)
+    evidence = " ".join(f["evidence"] for f in findings)
+    assert "m1.py" in evidence, "0.00 must be caught, not just 0.0"
+    assert "m2.py" in evidence, "annotated default `threshold: float = 0.0` must be caught"
+
+
+def test_gitignore_node_harness_not_asked_for_pycache(tmp_path):
+    d = tmp_path / "evals"
+    (d / "metrics").mkdir(parents=True)
+    (d / "tests").mkdir()
+    (d / "metrics" / "metric.ts").write_text("export const m = 1\n", encoding="utf-8")
+    (d / ".gitignore").write_text("results/\nnode_modules/\n", encoding="utf-8")
+    assert audit_checks.check_gitignore(d) == [], \
+        "a Node-only harness must not be asked to ignore __pycache__/"
+
+
+def test_regression_tests_found_in_subdirs(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "metrics" / "nested_metric.py").write_text("class Nested: ...\n", encoding="utf-8")
+    sub = d / "tests" / "retrieval"
+    sub.mkdir()
+    sub.joinpath("test_nested_regression.py").write_text(
+        "from metrics.nested_metric import Nested\n", encoding="utf-8"
+    )
+    assert audit_checks.check_regression_per_metric(d) == [], \
+        "regression tests in tests/ subdirectories must count"

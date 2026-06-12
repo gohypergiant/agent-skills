@@ -9,7 +9,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     # Judge layer (only needed for `-m live`):
     "ragas>=0.2",
-    "datasets>=2.0",
+    "langchain-openai>=0.2",  # LangchainLLMWrapper judge wiring (ragas.md)
     "litellm==1.55.0",
 ]
 

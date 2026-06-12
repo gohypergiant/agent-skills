@@ -4,6 +4,14 @@ GATED — uses a judge LLM via Ragas. Lazily imports ragas so the deterministic
 (offline) test run never needs it installed. Swap to a DeepEval GEval metric here
 if your answer rubric is bespoke (see references/frameworks/ragas.md).
 
+Uses the Ragas 0.2+ API (SingleTurnSample / class metrics / retrieved_contexts);
+the 0.1 API ("contexts" column, lowercase metric singletons) fails under the
+ragas>=0.2 pin in pyproject.toml.
+
+`judge_model` must be a Ragas-compatible LLM (e.g. a LangchainLLMWrapper around
+your proxy-backed chat model — wiring snippet in references/frameworks/ragas.md).
+Faithfulness needs no embeddings; only metrics like answer_relevancy do.
+
 Threshold ships RECORD-ONLY (0.0): faithfulness is judge-scored and noisy —
 calibrate from a baseline before gating on it (references/calibration.md).
 """
@@ -12,10 +20,9 @@ from typing import Optional
 
 
 class FaithfulnessMetric:
-    def __init__(self, judge_model=None, embeddings=None, threshold: float = 0.0):
+    def __init__(self, judge_model, threshold: float = 0.0):
         # threshold 0.0 = record-only until calibrated
         self.judge_model = judge_model
-        self.embeddings = embeddings
         self.threshold = threshold
         self.score = 0.0
         self.success = False
@@ -23,22 +30,16 @@ class FaithfulnessMetric:
 
     def measure(self, question: str, answer: str, retrieved_contexts: list[str]) -> float:
         # Lazy import: keeps `uv run pytest` (deterministic) free of a ragas dep.
-        from ragas import evaluate
-        from ragas.metrics import faithfulness
-        from datasets import Dataset
+        from ragas import SingleTurnSample
+        from ragas.metrics import Faithfulness
 
-        ds = Dataset.from_dict({
-            "question": [question],
-            "answer": [answer],
-            "contexts": [retrieved_contexts],
-        })
-        result = evaluate(
-            ds,
-            metrics=[faithfulness],
-            llm=self.judge_model,         # wire your proxy-backed judge (see ragas.md)
-            embeddings=self.embeddings,
+        sample = SingleTurnSample(
+            user_input=question,
+            response=answer,
+            retrieved_contexts=retrieved_contexts,
         )
-        self.score = float(result["faithfulness"])
+        scorer = Faithfulness(llm=self.judge_model)
+        self.score = float(scorer.single_turn_score(sample))
         self.success = self.score >= self.threshold
         self.reason = f"faithfulness={self.score:.2f} (record-only until calibrated)"
         return self.score

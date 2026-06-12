@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "run_started_at": "2026-06-08T21:53:39.969987+00:00",
+  "run_completed_at": "2026-06-08T21:58:31.596964+00:00",
+  "duration_seconds": 291.63,
+  "judge_model_alias": "bedrock-claude-4-5-sonnet",
+  "sut_provider": "litellm",
+  "sut_model_id": "bedrock-claude-4-5-sonnet",
+  "prompt_hash": "22e164d670431d7b",
+  "skill_md_hash": "32b67dc61761637b",
+  "references_hash": "bbdb242d5a187881",
+  "metrics": [
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_mixed_ac_assessment_task_completion",
+      "name": "task_completion",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "mixed-assess",
+      "reason": "The agent produced a complete assessment report with the expected format. It provides a clear pass statement ('AC are conversion-ready') followed by a structured validation summary covering all key aspects (Structure, Targets, Actions, Expected outcomes, Vocabulary). The report includes specific details about what was validated (4 AC in 1 file) and confirms all criteria are met. No refusal, confusion, or mode misunderstanding is present. The output is complete and fully addresses the assessment task."
+    },
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_mixed_ac_assessment_goal_accuracy",
+      "name": "goal_accuracy",
+      "score": 0.0,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "mixed-assess",
+      "reason": "The agent reported no issues and validated all AC as conversion-ready. However, multiple real issues exist in the retrieval context: Scenario tc001 uses an invalid keyboard modifier format 'Shift+e' (should be 'shift' and 'e' separately per Gherkin conventions), tc005 uses 'drags the mouse from position X, Y to position X, Y' which is not a recognized action verb pattern in standard test automation vocabulary, tc008 has 'the page reloads' as a standalone step which should be part of the action rather than a separate step, and tc010 uses 'hovers over' which while valid needs the component 'info button' to be verified against test-hooks.md. The agent failed to detect any of these structural and action vocabulary issues, resulting in zero true positives and multiple false negatives."
+    },
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_bad_ac_assessment_task_completion",
+      "name": "task_completion",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "bad-assess",
+      "reason": "The agent produced a comprehensive assessment report identifying 35 specific issues across multiple feature files. The report follows the expected format with a clear failure statement, organized by file and scenario, and provides detailed problem descriptions with concrete fix suggestions for each issue. It includes a summary categorizing issues by type (missing target specifications, missing action verbs, not measurable outcomes, etc.) and identifies common patterns requiring fixes. The output is complete, well-structured, and demonstrates full understanding of the conversion-readiness evaluation task without any refusal, confusion, or mode misunderstanding."
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_task_completion",
+      "name": "task_completion",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "The agent successfully produced valid JSON output representing a complete test plan structure. The output includes all required fields: suiteName, tags, source, and a tests array with 10 test scenarios. Each test contains properly structured steps with type, action, target (where applicable), and value fields. The JSON follows the expected schema with actions (click, fill, select, press, drag, mouseMove, etc.) and assertions (expectVisible, expectNotVisible, expectText, expectUrl). The agent also provided helpful validation commentary before the JSON, confirming the acceptance criteria were properly formatted. This is a fully completed conversion with no refusals, confusion, or requests for additional information."
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_semantic_quality",
+      "name": "semantic_quality",
+      "score": 0.4,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "pitfalls",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "The plan has critical structural issues. The AC contains 10 scenarios but the plan incorrectly implements the first scenario 'Multiple visibility state changes' - the AC shows a single toggle action that causes three simultaneous state changes (settings panel appears, welcome text appears, tutorial text disappears), but the plan splits this into three separate toggle actions with interleaved assertions. This fundamentally misrepresents the test logic. Additionally, the plan adds initial expectNotVisible assertions not present in the AC source. The 'Keyboard modifier combination' scenario is incorrectly implemented using separate keyDown/press/keyUp actions instead of a single press action with 'Shift+e' value. Other scenarios like element-based actions, mouse operations, scrolling, and hover are correctly mapped with proper action types, targets, and assertions that trace back to AC source lines."
+    },
+    {
+      "nodeid": "tests/test_engineer_not_ready_conversion.py::test_engineer_not_ready_conversion_plan_adherence",
+      "name": "plan_adherence",
+      "score": 0.5,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "pitfalls",
+      "persona": "engineer",
+      "scenario": "bad-convert",
+      "reason": "The actual output demonstrates a thorough assessment pass that identifies specific conversion blockers across multiple acceptance criteria files. The agent clearly ran the assessment before any plan or JSON output (no plan or JSON is present in the output). However, the workflow is incomplete: it shows intent (implicit in starting the assessment) and assessment phases, but stops there without proceeding to the plan phase or emitting fenced JSON output as prescribed in the Conversion procedure. The assessment itself is detailed and follows the guidelines from acceptance-criteria.md, identifying issues like missing actionable steps, vague targets, non-verifiable outcomes, and backend concerns. Since the workflow shows only 2 of 4 required phases (intent and assessment present, plan and JSON output missing) and stops mid-procedure, this represents partial adherence to the prescribed workflow."
+    },
+    {
+      "nodeid": "tests/test_engineer_not_ready_conversion.py::test_engineer_not_ready_conversion_blatant_errors",
+      "name": "blatant_errors",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "engineer",
+      "scenario": "bad-convert",
+      "reason": "The output is well-structured with clear markdown formatting, properly closed code fences, and consistent organization. It systematically identifies 19 distinct issues across three AC files, each with problem description, example, and fix recommendation. The assessment follows a logical flow: introduction, methodology explanation, detailed findings organized by file and scenario, and a summary. No structural malformations, truncated content, mid-sentence cut-offs, or contradictory statements are present. The document maintains internal consistency throughout, with each issue numbered sequentially and categorized appropriately."
+    },
+    {
+      "nodeid": "tests/test_engineer_not_ready_conversion.py::test_engineer_not_ready_conversion_assumptions",
+      "name": "assumptions",
+      "score": 0.2,
+      "threshold": 0.7,
+      "passed": false,
+      "dimension": "pitfalls",
+      "persona": "engineer",
+      "scenario": "bad-convert",
+      "reason": "The agent correctly identifies that these AC contain numerous ambiguities and conversion blockers, but fails to surface them as questions or labeled assumptions. Instead, it provides a comprehensive critique listing 19 specific issues across all three features. While this demonstrates thorough analysis, the evaluation requires the agent to *flag ambiguities and ask for clarification* rather than silently assess them. Key ambiguities like 'floating card component' lacking target specification, 'opens' being a vague verb, 'position will shift' having no measurable outcome, and variable references like 'trajectory.start_latitude' instead of literals are all identified but not surfaced as clarification requests. The agent invented interpretations (e.g., suggesting fixes like 'specify exact targets') rather than asking the user to resolve the ambiguities. This represents a complete assessment rather than the interactive clarification-seeking behavior required."
+    },
+    {
+      "nodeid": "tests/test_pm_perfect_assessment.py::test_pm_perfect_assessment_task_completion",
+      "name": "task_completion",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "perfect-assess",
+      "reason": "The agent produced a complete assessment report with the expected format. It clearly indicates the ACs are conversion-ready (a pass statement) and provides a detailed validation summary covering structure, targets, actions, expected outcomes, vocabulary, and special validations. The report lists the specific file analyzed and confirms all 10 scenarios passed validation without issues. No refusal, confusion, or mode misunderstanding is present. The output is fully complete and properly formatted."
+    },
+    {
+      "nodeid": "tests/test_pm_perfect_assessment.py::test_pm_perfect_assessment_blatant_errors",
+      "name": "blatant_errors",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "perfect-assess",
+      "reason": "The output is well-formed with proper markdown structure, complete sentences, and no truncation. All code fences are closed, bullet points are properly formatted, and the document flows logically from summary to detailed validation points to file listing. No structural malformations, contradictions, or mid-sentence cut-offs are present. The content is internally consistent throughout."
+    },
+    {
+      "nodeid": "tests/test_pm_perfect_assessment.py::test_pm_perfect_assessment_plan_adherence",
+      "name": "plan_adherence",
+      "score": 0.3,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "pitfalls",
+      "persona": "pm",
+      "scenario": "perfect-assess",
+      "reason": "The actual output shows a validation report with results and conclusions, indicating the agent completed the assessment and produced a final deliverable. However, it does not show the prescribed workflow steps (intent understanding, reference rule retrieval, analysis execution, report generation) being executed in sequence. The output appears to be only the final report without demonstrating the intermediate assessment steps or their ordering. No JSON plan or spec file content is present, confirming assessment mode was maintained, but the workflow procedure itself is not visible."
+    }
+  ],
+  "invocations": [
+    {
+      "mode": "assessment",
+      "fixture": "MIXED-AC-1.feature",
+      "latency_seconds": 18.342,
+      "prompt_tokens": 11763,
+      "completion_tokens": 131,
+      "total_tokens": 11894
+    },
+    {
+      "mode": "assessment",
+      "fixture": "MIXED-AC-1.feature",
+      "latency_seconds": 4.904,
+      "prompt_tokens": 11763,
+      "completion_tokens": 131,
+      "total_tokens": 11894
+    },
+    {
+      "mode": "assessment",
+      "fixture": "MIXED-AC-1.feature",
+      "latency_seconds": 5.503,
+      "prompt_tokens": 11763,
+      "completion_tokens": 131,
+      "total_tokens": 11894
+    },
+    {
+      "mode": "assessment",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 30.756,
+      "prompt_tokens": 12340,
+      "completion_tokens": 2989,
+      "total_tokens": 15329
+    },
+    {
+      "mode": "assessment",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 31.942,
+      "prompt_tokens": 12340,
+      "completion_tokens": 3126,
+      "total_tokens": 15466
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 18.082,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2378,
+      "total_tokens": 14782
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 18.894,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2378,
+      "total_tokens": 14782
+    },
+    {
+      "mode": "conversion",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 22.313,
+      "prompt_tokens": 12515,
+      "completion_tokens": 1693,
+      "total_tokens": 14208
+    },
+    {
+      "mode": "conversion",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 22.359,
+      "prompt_tokens": 12515,
+      "completion_tokens": 1693,
+      "total_tokens": 14208
+    },
+    {
+      "mode": "conversion",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 22.134,
+      "prompt_tokens": 12515,
+      "completion_tokens": 1693,
+      "total_tokens": 14208
+    },
+    {
+      "mode": "assessment",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 7.582,
+      "prompt_tokens": 12229,
+      "completion_tokens": 250,
+      "total_tokens": 12479
+    },
+    {
+      "mode": "assessment",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 6.548,
+      "prompt_tokens": 12229,
+      "completion_tokens": 250,
+      "total_tokens": 12479
+    },
+    {
+      "mode": "assessment",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 6.698,
+      "prompt_tokens": 12229,
+      "completion_tokens": 250,
+      "total_tokens": 12479
+    }
+  ],
+  "efficiency": {
+    "sut_invocations": 13,
+    "latency_p50": 18.342,
+    "latency_p95": 31.2304,
+    "latency_max": 31.942,
+    "total_prompt_tokens": 159009,
+    "total_completion_tokens": 17093,
+    "total_tokens": 176102,
+    "mean_tokens_by_mode": {
+      "assessment": 12989.2,
+      "conversion": 14437.6
+    }
+  },
+  "summary": {
+    "total": 11,
+    "passed": 6,
+    "failed": 5,
+    "below_threshold": [
+      "assumptions",
+      "goal_accuracy",
+      "plan_adherence",
+      "semantic_quality"
+    ]
+  }
+}

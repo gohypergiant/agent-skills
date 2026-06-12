@@ -4,6 +4,58 @@ All notable changes to the `accelint-eval-architect` skill are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), semantic versioning.
 
+## [1.2.1] - 2026-06-12
+
+Bug-fix release for the findings of the 2026-06-12 four-agent audit (critical +
+mechanical defects only; structural improvements land in 1.3.0).
+
+### Fixed
+- **deepeval structural metric template imported a nonexistent module**
+  (`from metrics._json_extraction import …` — `metrics/` has no `__init__.py`,
+  so every scaffold raised ModuleNotFoundError on first run). Now imports from
+  the evals root, which conftest puts on sys.path.
+- **RAG faithfulness template used the Ragas 0.1 API under a `ragas>=0.2` pin**
+  (`"contexts"` column, lowercase `faithfulness` singleton, scalar result
+  access). Rewritten for 0.2+: `SingleTurnSample` / class metric /
+  `single_turn_score`; judge wiring snippet (LangchainLLMWrapper) added to
+  `references/frameworks/ragas.md`; rag pyproject swaps `datasets` for
+  `langchain-openai` in the live layer.
+- **GEval template passed both `criteria` and `evaluation_steps`** — they are
+  mutually exclusive in DeepEval. Kept explicit `evaluation_steps` (cheaper:
+  skips the step-generation judge call) with the grounding rule folded in.
+- **deepeval conftest demanded judge + SUT env on every run** via
+  `pytest_configure`, so regression-only/deterministic runs failed without a
+  judge — contradicting the README's "deterministic runs free" contract.
+  Validation moved into the `judge` / `sut` fixtures that actually need it.
+- **`scaffold_eval._git_check` printed a false "OK" outside a git repo**
+  (nonzero `git status` exit was ignored) and its substring `.env` filter
+  silently excluded `.env.example` — which is source — from the don't-lose-it
+  warning. Now checks the return code and matches `.env` by exact filename.
+- **`audit_checks.py`**: regression tests in `tests/` subdirectories were
+  invisible (`glob` → `rglob`); the sentinel regex missed `0.00` and annotated
+  defaults (`threshold: float = 0.0`); `__pycache__/` was demanded of Node-only
+  harnesses (now Python-conditional).
+- **`bootstrap_goldset.py`**: text-only corpora produced filesystem-order
+  (non-reproducible) sampling — now sorted; `--out` silently overwrote an
+  existing (possibly human-curated) draft — now refuses without `--force`;
+  missing `--out` parent directories now created.
+- **RAG demo `corpus_hash: "demo-corpus-v1"` guaranteed a confusing day-one
+  drift failure** once `corpus_path` was armed. The placeholder is now
+  self-describing, the drift test detects placeholders and prints the exact
+  command to record the real hash, and `corpus_hash.py` gained a CLI
+  (`python corpus_hash.py <corpus_dir>`).
+- **`recall_at_k` default threshold was 1.0**, contradicting the record-only
+  calibration guidance — now 0.0 with the demo test gating explicitly.
+- **pyyaml/pytest were undeclared test dependencies** of the skill's own
+  scripts — declared in `scripts/tests/requirements.txt`.
+
+### Added
+- Regression tests for every fix above (23 → 31 tests), per the skill's own
+  "every metric needs a regression test that proves it can fail" rule.
+
+### Version
+- Bumped from 1.2.0 → 1.2.1.
+
 ## [1.2.0] - 2026-06-09
 
 ### Added

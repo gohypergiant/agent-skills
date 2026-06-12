@@ -23,11 +23,29 @@ Default to Ragas for a pure RAG bot; pick DeepEval when the answer rubric is bes
 - **answer_correctness** — answer vs the gold `answer`. Needs curated answers.
 
 ## Gotchas
-- **Ragas needs a judge LLM and an embeddings model.** Both must point at your
-  proxy. Set them explicitly — do not let Ragas default to an OpenAI key. Wrap
-  your LiteLLM/Bedrock model and pass it as the Ragas LLM + embeddings, the same
-  way the DeepEval judge is wired (see frameworks/deepeval.md for the `openai/`
-  prefix trick if your proxy is Bedrock-fronted).
+- **The 0.1 and 0.2+ APIs are incompatible — write for 0.2+.** 0.1 code
+  (`Dataset` with a `"contexts"` column, lowercase metric singletons like
+  `faithfulness`, scalar `result["faithfulness"]`) raises or mis-keys under
+  0.2+. The 0.2+ shape: `SingleTurnSample(user_input=…, response=…,
+  retrieved_contexts=…)`, class metrics (`Faithfulness(llm=…)`), and
+  `scorer.single_turn_score(sample)` for a per-sample scalar.
+- **Ragas needs a judge LLM (and, for some metrics, embeddings) that point at
+  your proxy.** Set them explicitly — do not let Ragas default to an OpenAI key.
+  Faithfulness needs only the LLM; answer_relevancy also needs embeddings.
+  Wiring for a LiteLLM/Bedrock-fronted proxy:
+  ```python
+  from langchain_openai import ChatOpenAI
+  from ragas.llms import LangchainLLMWrapper
+
+  judge = LangchainLLMWrapper(ChatOpenAI(
+      model=os.environ["JUDGE_MODEL_ALIAS"],
+      base_url=os.environ["LITELLM_BASE_URL"],
+      api_key=os.environ["LITELLM_API_KEY"],
+      temperature=0.0,
+  ))
+  ```
+  (Same `openai/`-compatible proxy idea as the DeepEval judge — see
+  frameworks/deepeval.md for the Bedrock-fronted prefix trick.)
 - **Faithfulness is the judge slice; gate it.** Mark Ragas tests `live` and keep
   them out of the default run so deterministic retrieval metrics stay free.
 - **Two roles still apply.** The SUT is your pipeline (it produces the answer +

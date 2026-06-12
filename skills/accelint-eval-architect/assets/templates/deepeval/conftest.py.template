@@ -33,17 +33,17 @@ def _get_collector() -> ScorecardCollector:
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "live: hits the judge LLM (costs money, skipped by default)")
-    try:
-        build_judge()
-    except ConfigurationError as e:
-        pytest.exit(f"\n[ERROR] Judge configuration failed:\n{e}\n", returncode=1)
-    if not os.getenv("SUT_MODEL_ID"):
-        pytest.exit("\n[ERROR] SUT_MODEL_ID not set. See .env.example.\n", returncode=1)
 
 
+# Env validation lives in the fixtures, not pytest_configure: a regression-only
+# or deterministic run (the default `uv run pytest`) needs neither judge env nor
+# SUT env, and must not be blocked by their absence.
 @pytest.fixture(scope="session")
 def judge():
-    return build_judge()
+    try:
+        return build_judge()
+    except ConfigurationError as e:
+        pytest.fail(f"Judge configuration failed (needed for -m live): {e}")
 
 
 @pytest.fixture(scope="session")
@@ -55,6 +55,8 @@ def fixtures_dir() -> Path:
 def sut() -> Callable[..., dict]:
     """Invoke the SUT and record telemetry. Implement invoke_sut in runner.py:
     a single-shot litellm.completion() that inlines the skill's system prompt."""
+    if not os.getenv("SUT_MODEL_ID"):
+        pytest.fail("SUT_MODEL_ID not set (needed by tests that invoke the SUT). See .env.example.")
     from runner import invoke_sut
     collector = _get_collector()
 

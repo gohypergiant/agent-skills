@@ -1,6 +1,7 @@
 """Corpus-drift tripwire: the gold set is only valid for the corpus it was
 curated against. Skips until `corpus_path` is set in goldset.yaml."""
 
+import re
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,7 @@ import pytest
 from corpus_hash import compute_corpus_hash
 
 _EVALS_DIR = Path(__file__).parent.parent
+_HASH_RE = re.compile(r"^[0-9a-f]{16}$")
 
 
 def test_corpus_matches_goldset_hash(goldset):
@@ -23,6 +25,12 @@ def test_corpus_matches_goldset_hash(goldset):
 
     current = compute_corpus_hash(corpus_dir)
     recorded = goldset.get("corpus_hash")
+    if not (recorded and _HASH_RE.match(str(recorded))):
+        pytest.fail(
+            f"corpus_hash in goldset.yaml is still a placeholder ({recorded!r}). "
+            f"Record the real hash of the curated corpus:  python corpus_hash.py "
+            f"{corpus_dir}  → {current}"
+        )
     assert current == recorded, (
         f"Corpus drift detected: current hash {current} != gold-set hash {recorded}. "
         "The corpus changed since the gold set was curated — re-verify every "

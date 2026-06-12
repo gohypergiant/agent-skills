@@ -9,7 +9,11 @@ from typing import Optional
 
 
 class RecallAtKMetric:
-    def __init__(self, k: int = 5, threshold: float = 1.0):
+    # Default threshold is RECORD-ONLY (0.0): real corpora rarely hit recall 1.0
+    # on day one. Run a baseline, then gate at min−margin per
+    # references/calibration.md. (The demo test passes threshold=1.0 explicitly
+    # because its captured fixture is known-perfect.)
+    def __init__(self, k: int = 5, threshold: float = 0.0):
         self.k = k
         self.threshold = threshold
         self.score = 0.0

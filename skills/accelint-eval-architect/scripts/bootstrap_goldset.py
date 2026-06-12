@@ -12,9 +12,11 @@ verify each answer and its supporting passage before it counts.
 
 Usage:
   bootstrap_goldset.py --corpus ./docs --out goldset.draft.yaml \\
-      --n 12 --adversarial 3 [--no-llm]
+      --n 12 --adversarial 3 [--no-llm] [--force]
 
   --no-llm   skip LLM drafting; emit blank, human-fillable entry stubs.
+  --force    overwrite an existing --out file (refused by default — the draft
+             may already hold human curation).
   Without --no-llm, requires litellm + LITELLM_BASE_URL / LITELLM_API_KEY /
   JUDGE_MODEL_ALIAS in the environment.
 """
@@ -84,8 +86,10 @@ def collect_files(corpus: Path) -> list[Path]:
     not installed: warn-and-skip when text files exist alongside them; hard-exit
     with install/pre-extract guidance when PDFs are all there is.
     """
-    text_files = [p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in _TEXT_EXT]
-    pdf_files = [p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf"]
+    # Sorted everywhere: rglob order is filesystem-dependent, and an unsorted
+    # list makes the stratified sample non-reproducible across machines.
+    text_files = sorted(p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() in _TEXT_EXT)
+    pdf_files = sorted(p for p in corpus.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf")
 
     if not pdf_files:
         return text_files
@@ -190,10 +194,14 @@ def main() -> int:
     ap.add_argument("--n", type=int, default=12, help="answerable draft questions")
     ap.add_argument("--adversarial", type=int, default=3, help="unanswerable draft questions")
     ap.add_argument("--no-llm", action="store_true", help="emit blank stubs instead of LLM drafts")
+    ap.add_argument("--force", action="store_true", help="overwrite an existing --out file")
     args = ap.parse_args()
 
     if not args.corpus.is_dir():
         sys.exit(f"Corpus dir not found: {args.corpus}")
+    if args.out.exists() and not args.force:
+        # A draft may already contain hours of human curation — never clobber it.
+        sys.exit(f"Refusing to overwrite {args.out} (it may hold curated entries) — pass --force.")
     files = collect_files(args.corpus)
     if not files:
         sys.exit(
@@ -210,6 +218,7 @@ def main() -> int:
         "corpus_path": str(args.corpus.resolve()),
         "entries": entries,
     }
+    args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(_BANNER + yaml.safe_dump(doc, sort_keys=False), encoding="utf-8")
 
     verified = sum(1 for e in entries if e["verified"])

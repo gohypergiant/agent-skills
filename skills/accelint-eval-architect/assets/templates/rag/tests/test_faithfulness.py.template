@@ -1,7 +1,7 @@
 """Generate metric (GATED): faithfulness via Ragas. Skipped unless `-m live`.
 
-Requires a wired runner.generate() and a proxy-backed judge + embeddings (see
-references/frameworks/ragas.md). Record-only until calibrated.
+Requires a wired runner.generate() and a Ragas-compatible proxy-backed judge
+(wiring snippet in references/frameworks/ragas.md). Record-only until calibrated.
 """
 
 import pytest
@@ -12,8 +12,8 @@ def test_faithfulness_on_answerable(gold_entries):
     from metrics.faithfulness_ragas import FaithfulnessMetric
     import runner  # your wired adapters
 
-    # TODO: build your proxy-backed judge + embeddings and pass them in.
-    metric = FaithfulnessMetric(judge_model=None, embeddings=None, threshold=0.0)
+    # TODO: build your proxy-backed judge (LangchainLLMWrapper) and pass it in.
+    metric = FaithfulnessMetric(judge_model=None, threshold=0.0)
 
     answerable = [e for e in gold_entries if e.get("answerable")]
     for e in answerable:

@@ -163,9 +163,21 @@ def _git_check(target: Path, dest: Path) -> None:
     except (FileNotFoundError, subprocess.TimeoutExpired):
         print("\n[!] Could not run git status — confirm eval source is tracked manually.")
         return
+    if out.returncode != 0:
+        # e.g. target is not a git repo — a silent "OK" here would be a lie.
+        print(
+            "\n[!] git status failed (target not a git repo?) — eval source is "
+            "NOT protected. Initialize a repo / confirm tracking manually:\n"
+            f"    {out.stderr.strip()[:200]}"
+        )
+        return
     untracked = [ln[3:] for ln in out.stdout.splitlines() if ln.startswith("??")]
-    src_untracked = [f for f in untracked if not any(
-        seg in f for seg in ("results/", ".venv/", "__pycache__/", ".pytest_cache/", ".env"))]
+    # Exact-name match for .env: a substring test would also skip .env.example,
+    # which IS source and must be committed.
+    src_untracked = [f for f in untracked if not (
+        Path(f).name == ".env"
+        or any(seg in f for seg in ("results/", ".venv/", "__pycache__/", ".pytest_cache/"))
+    )]
     print("\nDON'T-LOSE-IT CHECK")
     if src_untracked:
         print("  Untracked eval SOURCE — commit before the first run:")

@@ -4,7 +4,7 @@ description: Use when users say "add an eval to this skill", "evaluate this skil
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # Eval Architect

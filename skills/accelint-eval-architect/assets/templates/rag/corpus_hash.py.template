@@ -28,3 +28,11 @@ def compute_corpus_hash(corpus_dir: Path) -> str:
         h.update(b"\0")
         h.update(f.read_bytes())
     return h.hexdigest()[:16]
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) != 2 or not Path(sys.argv[1]).is_dir():
+        raise SystemExit("usage: corpus_hash.py <corpus_dir>")
+    print(compute_corpus_hash(Path(sys.argv[1])))
