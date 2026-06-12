@@ -1,10 +1,10 @@
 ---
 name: accelint-eval-architect
-description: Use when users say "add an eval to this skill", "evaluate this skill/agent", "evaluate this tool/repo/pipeline", "how should I test this RAG bot / retrieval / parser", "set up DeepEval/Ragas/Promptfoo/Inspect", "is my eval any good", "audit my eval harness", or when deciding whether and how to measure the output of an LLM skill OR a standalone tool repo (e.g. a RAG/retrieval pipeline that turns documents into chatbot answers). Assesses the target, recommends DeepEval, Ragas, Promptfoo, Inspect AI, a deterministic harness, or human-review-only — then scaffolds the integration. Also audits existing eval harnesses for stale fixtures, toothless metrics, and uncalibrated thresholds. Make sure to use this whenever someone wants to measure, test, regression-check, or benchmark what a skill, agent, tool, or RAG pipeline produces.
+description: Use when users say "add an eval to this skill", "evaluate this skill/agent", "evaluate this tool/repo/pipeline", "how should I test this RAG bot / retrieval / parser", "set up DeepEval/Ragas", "should I use Promptfoo/Inspect", "is my eval any good", "audit my eval harness" — or when they describe symptoms like "my bot is hallucinating", "answers got worse after a prompt/model change", "this regressed and nothing caught it", or want CI/regression checks for prompts or LLM output. Assesses the target (an LLM skill OR a standalone tool repo, e.g. a RAG/retrieval pipeline), recommends DeepEval, Ragas, a deterministic harness, or human-review-only and scaffolds it; Promptfoo and Inspect AI are recommended with hand-off guidance when they fit (not scaffolded). Also audits existing eval harnesses for stale fixtures, toothless metrics, and uncalibrated thresholds. Make sure to use this whenever someone wants to measure, test, regression-check, or benchmark what a skill, agent, tool, or RAG pipeline produces.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.1"
+  version: "1.3.0"
 ---
 
 # Eval Architect
@@ -47,10 +47,12 @@ Decides whether and how to add automated evaluation to another skill, recommends
 This skill uses **progressive disclosure**. Detect the mode first, then load only the references each step names.
 
 ### Modes
-- **ASSESS** — read a target skill, classify it, recommend a framework (or none). Read-only. Triggered by "should I eval X", "which framework", or as the first phase of adding an eval.
-- **SCAFFOLD** — build the walking-skeleton eval for the approved framework. Triggered by "scaffold it" / "do the integration" after ASSESS.
-- **AUDIT** — run against a skill that already has an `evals/` dir; surface decay. Triggered by "is my eval good" / "audit my eval", or whenever the target already has `evals/`.
-- **EXTEND** — add metrics/fixtures to an existing eval. Triggered by "add a metric to my eval" / "extend my eval" when `evals/` already exists.
+The routing rules (which phrases and repo states select which mode) live in
+Mode 0 below — one place, not two.
+- **ASSESS** — read a target, classify it, recommend a framework (or none). Read-only.
+- **SCAFFOLD** — build the walking-skeleton eval for the approved framework, after ASSESS.
+- **AUDIT** — run the decay checklist against a target that already has an `evals/` dir.
+- **EXTEND** — add metrics/fixtures to an existing eval.
 
 ### Reference map (load on demand)
 - Reading + classifying a target **skill** → [references/assessment.md](references/assessment.md)
@@ -78,7 +80,8 @@ ambiguous                                          → ASK; never guess
 
 **Mode:**
 ```
-target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
+target has no evals/ + "add eval" intent    → ASSESS, then offer SCAFFOLD
+"scaffold it" / approval after an ASSESS    → SCAFFOLD
 "audit" / "is my eval good" / evals/ exists → AUDIT
 "add a metric" / "extend" + evals/ exists   → EXTEND
 "should I eval X" / "which framework"       → ASSESS only
@@ -123,5 +126,5 @@ target has no evals/ + "add eval" intent  → ASSESS, then offer SCAFFOLD
 - **The honest "no" is a feature.** "Don't build an automated eval — here's the human-review checklist" and "deterministic-only, skip the judge" are first-class outcomes, not failures of the skill.
 - **Tool-repo comprehension is interactive, not magic.** The skill cannot reverse-engineer an arbitrary pipeline; it reads what it can and interviews the developer for stages + invocation. Refuse to recommend until both are confirmed.
 - **RAG gold sets must be human-curated.** Bootstrap drafts are a starting point, never trusted output — and never let the gold set and the judge come from the same unreviewed pass.
-- **Template pins drift.** Templates pin framework versions (litellm, deepeval, ragas) that will rot; sanity-check pins against the target's environment when scaffolding and update template pins on framework upgrades.
-- **Scope:** scaffolds DeepEval, Ragas (RAG answer layer), deterministic-vitest, deterministic-pytest, deterministic-retrieval (ingest+retrieve), and human-review-checklist. Promptfoo and Inspect AI are *recommended when they fit* but handed off. Tool-repo support targets **RAG / retrieval pipelines**; other tool types are recommended-and-handed-off, not yet scaffolded.
+- **Template version floors drift too.** Templates use floors (`deepeval>=4`, `ragas>=0.2`, `litellm>=1.55`), not hard pins — but a floor goes stale when a framework ships a breaking major. Sanity-check against the target's environment when scaffolding; tell the developer to commit the lockfile for reproducibility.
+- **Scope:** scaffolds DeepEval, deterministic-vitest, deterministic-pytest, human-review-checklist, and `rag` (the deterministic ingest+retrieve layer AND the gated Ragas answer layer in one template — there is no separate "deterministic-retrieval" scaffold key). Promptfoo and Inspect AI are *recommended when they fit* but handed off. Tool-repo support targets **RAG / retrieval pipelines**; other tool types are recommended-and-handed-off, not yet scaffolded.

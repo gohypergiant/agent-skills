@@ -58,7 +58,7 @@ step 1 or 2 and never need a judge.
 
 ### Ragas — **scaffolded in v1.1 (RAG answer layer)**
 - **For:** purpose-built RAG metrics (faithfulness, context recall/precision, answer relevancy/correctness) out of the box; the natural answer-layer for a retrieval pipeline.
-- **Against:** RAG-specific — only relevant for a `tool-repo` with `pipeline_kind: rag`, never for a skill target. For the deterministic ingest/retrieve stages, do NOT use Ragas; use the deterministic-retrieval harness.
+- **Against:** RAG-specific — only relevant for a `tool-repo` with `pipeline_kind: rag`, never for a skill target. For the deterministic ingest/retrieve stages, do NOT use Ragas; the `rag` template's deterministic layer covers them.
 
 ### OpenAI Evals — **rarely the pick**
 - **For:** spec-driven, minimalist.
@@ -130,9 +130,10 @@ Stop after presenting. Do not scaffold without approval.
 For a RAG / retrieval pipeline, the recommendation is almost always a **hybrid**,
 because the verifiability gate runs per stage:
 
-- **ingest + retrieve → deterministic-retrieval harness** (no judge). IR metrics
+- **ingest + retrieve → deterministic retrieval layer** (no judge). IR metrics
   (recall@k, precision@k, MRR, nDCG) are set-membership against the gold set;
-  `section_coverage` is a parse check. Scaffolded via `assets/templates/rag/`.
+  `section_coverage` is a parse check. Part of the `rag` template
+  (`scaffold_eval.py --framework rag`) — not a separate scaffold key.
 - **generate → judge slice.** Recommend the answer-layer framework **per case**:
   - **Ragas** — canned RAG metrics (faithfulness, context recall/precision,
     answer relevancy/correctness) out of the box. Default for a straight RAG bot.
@@ -146,7 +147,7 @@ starter — its deterministic BaseMetric runs by default and GEval is gated behi
 `scaffold_eval.py --layer` (EXTEND mode) rather than re-scaffolding.
 
 Standard recommendation for a docs-parser → chatbot:
-> **Hybrid: deterministic-retrieval (ingest + retrieve) + Ragas answer layer (gated).**
+> **Hybrid: deterministic retrieval layer (ingest + retrieve) + Ragas answer layer (gated) — both in the `rag` template.**
 > Why deterministic for retrieval over a judge: recall@k against the gold set is
 > exact and free; a judge there only adds drift. Why Ragas over DeepEval for the
 > answer layer: turnkey faithfulness + context-recall for a pure RAG bot (pick

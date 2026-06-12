@@ -22,31 +22,22 @@ dependency just for the eval.
 ├── metrics/             # one .py per metric; BaseMetric-style: set score/success/reason
 ├── tests/               # test_*.py (pass) + test_*_regression.py (teeth)
 ├── pyproject.toml       # deps + [tool.pytest.ini_options]
-└── README.md
+├── README.md
+└── DESIGN.md            # why deterministic-only + pre-filled Known follow-ups
 ```
 
 ## Shelling to an existing validator (the highest-value deterministic gate)
 If the skill already validates its own output via a CLI, the eval should call
 that CLI rather than reimplement the schema — one source of truth, no drift.
-
-```python
-import subprocess, json, tempfile, pathlib
-
-def measure(actual_output: str) -> dict:
-    data = extract_json(actual_output)            # tolerant extractor, not raw json.loads
-    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
-        json.dump(data, f); tmp = pathlib.Path(f.name)
-    try:
-        r = subprocess.run(["node", "dist/cli/validate.js", str(tmp)],
-                           cwd=skill_root, capture_output=True, text=True, timeout=10)
-        return {"score": 1.0 if r.returncode == 0 else 0.0,
-                "reason": "valid" if r.returncode == 0 else r.stderr}
-    finally:
-        tmp.unlink(missing_ok=True)
-```
-Note the validator's *built* path (`dist/...`), not the source `.ts` — the eval
-runs against what the build produces. Resolve this at scaffold time and write it
-into the conftest startup check so a missing build fails fast with a clear message.
+The non-obvious parts:
+- **Call the validator's *built* path** (`dist/cli/validate.js`), not the
+  source `.ts` — the eval grades what the build produces. Resolve the path at
+  scaffold time and put it in a conftest startup check so a missing build fails
+  fast with a clear message, not as N cryptic test errors.
+- **Extract JSON tolerantly** (fenced-block-aware extractor), never raw
+  `json.loads` on the SUT output — models wrap JSON in markdown fences.
+- **Set a subprocess timeout** (~10s) so one hung validator call doesn't hang
+  the whole suite.
 
 ## pyproject defaults
 ```toml

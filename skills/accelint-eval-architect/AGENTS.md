@@ -52,6 +52,6 @@ references only when the workflow step in `SKILL.md` names them.
 - `scripts/audit_checks.py` — mechanical audit checks (#2/#3/#7/#8); pairs with references/audit.md.
 
 ## Scope
-Scaffolds: DeepEval, Ragas (RAG answer layer), deterministic-vitest, deterministic-pytest, deterministic-retrieval (ingest+retrieve), human-review.
+Scaffolds: DeepEval, deterministic-vitest, deterministic-pytest, human-review, `rag` (deterministic ingest+retrieve layer + gated Ragas answer layer in one template; no separate "deterministic-retrieval" key).
 Tool-repo support: RAG / retrieval pipelines.
 Recommends-but-hands-off (no scaffold yet): Promptfoo, Inspect AI, non-RAG tool types.

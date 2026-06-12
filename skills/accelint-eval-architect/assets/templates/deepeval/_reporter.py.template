@@ -15,7 +15,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-DIMENSION_ORDER = ("correctness", "efficiency", "pitfalls")
+# Preferred display order; dimensions not listed here still render (appended
+# alphabetically) — recording a new dimension must never silently hide it.
+DIMENSION_ORDER = ("correctness", "pitfalls")
 _W = 92
 _BAR = "=" * _W
 _DIV = "-" * _W
@@ -57,7 +59,8 @@ def render(report: dict[str, Any]) -> str:
     by_dim: dict[str, list] = defaultdict(list)
     for m in report["metrics"]:
         by_dim[m["dimension"]].append(m)
-    for dim in DIMENSION_ORDER:
+    ordered = list(DIMENSION_ORDER) + sorted(d for d in by_dim if d not in DIMENSION_ORDER)
+    for dim in ordered:
         rows = by_dim.get(dim)
         if not rows:
             continue

@@ -4,6 +4,51 @@ All notable changes to the `accelint-eval-architect` skill are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), semantic versioning.
 
+## [1.3.0] - 2026-06-12
+
+Structural improvements from the 2026-06-12 audit (the bug fixes landed in 1.2.1).
+
+### Changed
+- **Description rewritten for honesty + symptom triggering.** It claimed "set
+  up Promptfoo/Inspect" while the skill only recommends-and-hands-off those —
+  now stated accurately. Added symptom-language triggers ("my bot is
+  hallucinating", "answers got worse after a prompt/model change", "CI for
+  prompts") because users describe pain, not framework names.
+  - Rationale: undertriggering combat must not come at the cost of claiming
+    capabilities the skill doesn't have.
+- **Mode-routing phrases live in ONE place.** The Modes list duplicated the
+  "Triggered by …" phrases that Mode 0's routing table owns; the list is now
+  one-liners and Mode 0 gained the missing SCAFFOLD row.
+- **"deterministic-retrieval" no longer reads as a scaffold key.** SKILL.md,
+  AGENTS.md, and framework-matrix.md named it alongside real scaffold keys, but
+  it is the deterministic layer *inside* the `rag` template
+  (`--framework rag`) — all three now say so explicitly.
+- **Template dependency floors instead of hard pins** (`litellm>=1.55`,
+  `pytest>=8.3`, `pyyaml>=6.0`). Hard pins shipped stale; reproducibility
+  guidance is now "commit the lockfile". Important Notes updated to match.
+- **Reporter renders every dimension.** `_reporter.py` only rendered
+  `DIMENSION_ORDER` dims, silently hiding metrics recorded under any other
+  name; unknown dimensions now append after the preferred order, and the
+  never-used `efficiency` slot is dropped.
+- **Deterministic framework refs trimmed of generic code** (~45 lines):
+  the vitest recall-metric and regression-test code blocks and the pytest
+  subprocess block compressed to their expert-only rules (empty-planted-set
+  scores 1.0, reasons must name misses, call the *built* validator path,
+  tolerant JSON extraction, subprocess timeout) — Claude can write the
+  surrounding code; only the rules are knowledge.
+- **Smoke/full tier sizes defined once** in gold-set.md;
+  pipeline-decomposition.md now points there instead of restating numbers.
+
+### Added
+- **DESIGN.md stubs in the deterministic-pytest, deterministic-vitest, and
+  human-review templates** — SCAFFOLD step 10 promises a DESIGN.md with
+  pre-filled "Known follow-ups" in every scaffold, but only deepeval and rag
+  shipped one. Each states the why-no-judge rationale and the `--layer`
+  extension path; layouts in the framework refs updated.
+
+### Version
+- Bumped from 1.2.1 → 1.3.0.
+
 ## [1.2.1] - 2026-06-12
 
 Bug-fix release for the findings of the 2026-06-12 four-agent audit (critical +

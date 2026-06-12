@@ -18,7 +18,8 @@ it.
 ├── expected/            # goldens GENERATED from the skill's schema, not hand-typed
 ├── metrics/             # one .ts per metric; pure functions: (output, expected) -> {score, reason}
 ├── tests/               # *.test.ts (pass cases) + *.regression.test.ts (teeth)
-└── README.md
+├── README.md
+└── DESIGN.md            # why deterministic-only + pre-filled Known follow-ups
 ```
 Add to the target `package.json`:
 ```json
@@ -26,28 +27,14 @@ Add to the target `package.json`:
 ```
 
 ## Metric shape — pure function, structured result
-A metric is a pure function returning a score and a human reason. Keep scoring
-out of the test so the same metric can be reused across fixtures.
-
-```ts
-export interface MetricResult { score: number; passed: boolean; reason: string; }
-
-export function violationRecall(
-  reported: ReadonlySet<string>,
-  planted: ReadonlySet<string>,
-): MetricResult {
-  const caught = [...planted].filter((v) => reported.has(v));
-  const missed = [...planted].filter((v) => !reported.has(v));
-  const score = planted.size === 0 ? 1 : caught.length / planted.size;
-  return {
-    score,
-    passed: score >= 1,
-    reason: missed.length
-      ? `Missed ${missed.length}/${planted.size}: ${missed.join(", ")}`
-      : `All ${planted.size} planted violations caught`,
-  };
-}
-```
+A metric is a pure function `(output, expected) → { score, passed, reason }`.
+Keep scoring out of the test so the same metric reuses across fixtures. Two
+rules that get missed:
+- **An empty planted set scores 1.0, not 0/0** — a clean fixture must be able
+  to pass the recall metric, or precision fixtures break it.
+- **The reason must NAME the missed/false items** (`Missed 2/3: no-enum,
+  no-null`), not just report a number — a bare score turns every regression
+  into a debugging session.
 
 ## Precision AND recall — you need both fixtures
 A detection skill (code review, lint-style) needs two fixture classes:
@@ -60,17 +47,8 @@ one that flags nothing. Ship both from day one.
 ## Regression test = the teeth
 Every metric gets a `*.regression.test.ts` that feeds a *deliberately wrong* SUT
 output (or a stub under-detector) and asserts the metric drops below threshold
-AND the reason names the defect. A metric with only a passing test is decoration.
-
-```ts
-test("recall metric fails when a planted violation is missed", () => {
-  const planted = new Set(["no-any", "no-enum", "no-null"]);
-  const reportedByBuggyStub = new Set(["no-any"]); // misses two
-  const r = violationRecall(reportedByBuggyStub, planted);
-  expect(r.passed).toBe(false);
-  expect(r.reason).toMatch(/no-enum|no-null/);
-});
-```
+AND that the reason names the planted defect (`expect(r.reason).toMatch(/no-enum/)`).
+A metric with only a passing test is decoration.
 
 ## Goldens: generate, never hand-write
 If the skill has a schema or validator, generate `expected/` from it at scaffold

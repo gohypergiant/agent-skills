@@ -48,8 +48,9 @@ Minimum that proves the pipeline is measurable — not the whole matrix:
 
 ## Cost discipline
 Generate/e2e metrics bill the judge and the pipeline per question. Provide
-**sampling tiers** — a smoke set (~10 Q) for every run, the full gold set on
-demand — and gate the judge (`-m live` / equivalent). Estimate cost per tier.
+**sampling tiers** (smoke vs full — sizes defined once in
+[gold-set.md](gold-set.md)) and gate the judge (`-m live` / equivalent).
+Estimate cost per tier.
 
 ## Headline metrics for a docs-bot
 For "answer accurately from the docs, don't hallucinate": **recall@k**
