@@ -8,7 +8,7 @@
 1. **Prepare for the task**:
   - Read `references/acceptance-criteria.md` and `references/test-hooks.md`.
   - Work one input file at a time.
-2. **Analyze AC text** against all conversion requirements:
+2. **Analyze AC text** against all conversion requirements (all validation checks can be run in parallel via subagents):
    - **Structure & Format**:
      - For .md files: spawn subagent with `references/validate-bullet-format.md`
      - For .feature files: spawn subagent with `references/validate-gherkin-structure.md`
@@ -20,6 +20,11 @@
        - Format as array: `[{"line": 5, "target": "form.button.submit"}, {"line": 8, "target": "toast.text.success"}]`
      - Spawn subagent with `references/validate-targets.md` to validate target format and controlled vocabulary
      - Subagent returns `{valid: [...], invalid: [...]}` - report any invalid targets as blocking issues
+   - **Given Steps (Preconditions)**:
+     - Extract all Given steps with line numbers, verbs, targets, and values
+     - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
+     - Spawn subagent with `references/validate-preconditions.md` to validate context setup patterns
+     - Subagent returns validation results with line numbers for any violations
    - **When Steps (Actions)**:
      - Extract all When steps with line numbers, actions, targets, values, and coordinates
      - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "...", "coordinates": {...}}]`
