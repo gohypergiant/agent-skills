@@ -25,11 +25,11 @@
      - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "...", "coordinates": {...}}]`
      - Spawn subagent with `references/validate-actions.md` to validate actions, required parameters, and values
      - Subagent returns validation results with line numbers for any violations
+   - **Then Steps (Assertions)**:
+     - Extract all Then steps with line numbers, verbs, targets, and values
+     - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
+     - Spawn subagent with `references/validate-assertions.md` to validate explicitness and measurability
      - Subagent returns validation results with line numbers for any violations
-   - **Expected Outcomes**:
-     - Explicitly stated (not implied or inferred)
-     - Measurable (specific text content, element, or state)
-     - Visibility changes use trigger words (appears, shows, hides, visible, see)
 
 ## Recognition Patterns
 
