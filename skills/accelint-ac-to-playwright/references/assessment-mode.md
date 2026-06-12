@@ -15,10 +15,11 @@
      - Step ordering: all Givens → all Whens → all Thens (no mixing within a scenario)
    - **Targets** (semantic validation):
      - Every action specifies a target
-     - Target meets the area/component/intent pattern (all three parts present)
-     - Area matches controlled vocabulary from `test-hooks.md` (nav, header, footer, form, drawer, card, toast, modal, table, page, area)
-     - Component matches controlled vocabulary (button, link, input, dropdown, checkbox, radio, text, div, component)
-     - Intent is present
+     - Extract all targets from AC text using the pattern documented in `acceptance-criteria.md` (lines 110-129): `<intent> <component> on the <area>` → `area.component.intent`
+       - Example: "Submit button on the form" → `{"line": 5, "target": "form.button.submit"}`
+       - Format as array: `[{"line": 5, "target": "form.button.submit"}, {"line": 8, "target": "toast.text.success"}]`
+     - Spawn subagent with `references/validate-targets.md` to validate target format and controlled vocabulary
+     - Subagent returns `{valid: [...], invalid: [...]}` - report any invalid targets as blocking issues
    - **Actions**:
      - Verbs are recognized and mappable to Playwright actions (click, fill, select, drag)
      - No vague verbs (interact, use, hover without x/y coordinates)
@@ -174,6 +175,5 @@ Once you clarify these, I can assess whether the AC are conversion-ready.
 ## NEVER Do
 
 - **NEVER generate artifacts in assessment mode** — when the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
-- **NEVER skip controlled vocabulary checks in assessment** — verify that area and component keywords in targets match the lists in `test-hooks.md`.
 - **NEVER report AC as conversion-ready when issues exist** — even one blocking issue means "❌ AC are not conversion-ready". False positives (over-flagging) are better than false negatives (missing issues).
 - **NEVER assume targets or values** — if AC says "click the button" without identifying which button, flag it as a missing target issue rather than assuming. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
