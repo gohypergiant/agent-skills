@@ -4,6 +4,72 @@ All notable changes to the `accelint-eval-architect` skill are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), semantic versioning.
 
+## [1.3.1] - 2026-06-12
+
+Fixes from the post-1.3.0 verification re-audit (four fresh-eyes agents; one
+empirically exercised the deepeval template against real DeepEval 4.0.5,
+another ran the rag scaffold end-to-end offline).
+
+### Fixed
+- **GEval template restated a 0–1 score scale in `evaluation_steps`** — GEval's
+  own prompt asks the judge for an integer 0–10 and normalizes by /10, so a
+  literal judge emitted 0/1 → normalized 0.0/0.1 and the 0.8 threshold was
+  unreachable: every live run failed spuriously. Scale sentence removed; the
+  trap is documented in `references/frameworks/deepeval.md`.
+- **`scaffold_eval` don't-lose-it check printed a false "OK" for RELATIVE
+  `--target` paths** (pathspec `target/evals` + `cwd=target` made git look for
+  `target/target/evals` — no match, empty output, "OK" over untracked source).
+  Both paths now resolved before the git call.
+- **`references/frameworks/deepeval.md` still instructed the pre-1.2.1 buggy
+  layout** ("ship it in `metrics/_json_extraction.py`") — following the doc
+  reintroduced the ModuleNotFoundError the template fixed. Now says evals root.
+- **`audit_checks.py` could still lie four ways**: substring stem matching let
+  `recall.py` ride free on a test referencing only `recall_at_k` (now
+  word-boundary); metrics in subdirectories were never checked (now rglob);
+  `tests/regression/*.py` layouts didn't count (now dir-name aware); object
+  literal/dict thresholds (`{ threshold: 0.0 }`, `"threshold": 0.0`) escaped
+  the sentinel regex (now matched). Path-segment (not substring) exclusions so
+  `tests/test_results/` is no longer hidden.
+- **A fresh rag scaffold failed its own audit** (faithfulness had no regression
+  test — the gate at record-only literally could not fail). Added an offline
+  stubbed-judge regression test proving the gate fails at a non-zero threshold;
+  scaffold now self-audits clean (0 HIGH).
+- **rag template never loaded `.env`** despite README's `cp .env.example .env`
+  and a declared python-dotenv dep — conftest now calls `load_dotenv()`
+  (guarded import); the ragas.md wiring snippet gained its missing `import os`.
+- **`LiteLLMModel(api_base=…)` is a deprecated alias in deepeval 4.x** (warns
+  on every judge build, slated for removal) → `base_url=` in the judge template
+  and the reference snippet.
+- **deterministic-pytest pyproject was missed in the 1.3.0 floors conversion**
+  (still `pytest==8.3.4`/`pyyaml==6.0.2`) — converted.
+- **Misleading "free"/`-m live` claims**: deepeval README/conftest now say the
+  default run makes no JUDGE calls but SUT-invoking tests still need SUT env
+  and bill SUT tokens; both READMEs document that `-m live` runs ONLY the
+  judge tests and `-m ""` runs everything.
+- **Armed drift tripwire could silently disarm**: a `corpus_path` that stopped
+  resolving (typo/moved dir) degraded to skip-forever; with a real hash
+  recorded it now fails loudly.
+- Smaller: `--dest` escaping the target rejected; `--out` pointing at a
+  directory exits cleanly (was a traceback); empty gold set (`--n 0
+  --adversarial 0`) warns; `suggest_thresholds` skips non-dict metric entries
+  and excludes booleans from score distributions (True read as 1.00); refusal
+  markers gained "don't know"/"do not know"; dead deps removed (pyyaml from
+  deepeval, litellm from rag); README gitignore list and `.env.example`
+  key-sharing note aligned with reality; gold-set.md shape example now shows
+  `verified`/`corpus_path`/16-hex hash; pipeline-decomposition walking-skeleton
+  list matches the actual template; "an verified" typo.
+
+### Added
+- `tests/test_faithfulness_regression.py.template` (rag) — offline stubbed-judge
+  gate regression.
+- `README.md` stub for the human-review template (step 10 promises one in every
+  scaffold) and the `--layer` extension path in its DESIGN.md.
+- Regression tests for every script fix above (31 → 37 tests).
+- deepeval.md: "Never restate a score scale in `evaluation_steps`" gotcha.
+
+### Version
+- Bumped from 1.3.0 → 1.3.1.
+
 ## [1.3.0] - 2026-06-12
 
 Structural improvements from the 2026-06-12 audit (the bug fixes landed in 1.2.1).

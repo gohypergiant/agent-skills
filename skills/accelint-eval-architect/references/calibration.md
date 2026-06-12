@@ -23,8 +23,9 @@ set immediately. Everything scored on a `[0,1]` quality scale starts record-only
 3. **Read `results/run-*.json`** and, per metric, collect the score distribution
    across runs × fixtures.
 4. **Suggest a threshold** from the distribution — do not auto-commit it:
-   - judge metrics (noisy): `mean − 2·stddev`, floored at a sane minimum, so
-     normal judge variance doesn't flip the gate.
+   - judge metrics (noisy): `mean − 2·stddev`, floored at 0 (what
+     `suggest_thresholds.py` implements; raise the floor by hand if 0 is
+     meaninglessly low), so normal judge variance doesn't flip the gate.
    - deterministic quality ratios (stable): the **minimum observed** on known-good
      input, minus a small margin.
 `scripts/suggest_thresholds.py --results <evals>/results` automates steps 3-4:

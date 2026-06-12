@@ -19,12 +19,15 @@ class ExampleQualityMetric(GEval):
         # judge false negatives.
         super().__init__(
             name="Example Quality",
+            # Never restate a score scale in the steps: GEval's own prompt
+            # instructs the judge to return 0-10 and normalizes by /10, so a
+            # step saying "score 0 to 1" makes a literal judge emit 0/1 →
+            # normalized 0.0/0.1, and the threshold becomes unreachable.
             evaluation_steps=[
                 "You are evaluating __WHAT_THE_JUDGE_EVALUATES__.",
                 "GROUNDING RULE: if you cannot quote the exact substring of the "
                 "input that supports a deduction, do not make that deduction.",
                 "Quote the exact input substring supporting each judgment.",
-                "Assign a score from 0 (poor) to 1 (excellent).",
             ],
             evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
             model=judge_model,

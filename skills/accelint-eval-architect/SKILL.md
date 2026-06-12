@@ -4,7 +4,7 @@ description: Use when users say "add an eval to this skill", "evaluate this skil
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # Eval Architect
@@ -48,7 +48,7 @@ This skill uses **progressive disclosure**. Detect the mode first, then load onl
 
 ### Modes
 The routing rules (which phrases and repo states select which mode) live in
-Mode 0 below — one place, not two.
+Mode 0 below.
 - **ASSESS** — read a target, classify it, recommend a framework (or none). Read-only.
 - **SCAFFOLD** — build the walking-skeleton eval for the approved framework, after ASSESS.
 - **AUDIT** — run the decay checklist against a target that already has an `evals/` dir.

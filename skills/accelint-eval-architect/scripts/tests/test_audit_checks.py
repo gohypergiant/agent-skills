@@ -116,3 +116,47 @@ def test_regression_tests_found_in_subdirs(tmp_path):
     )
     assert audit_checks.check_regression_per_metric(d) == [], \
         "regression tests in tests/ subdirectories must count"
+
+def test_substring_stem_does_not_satisfy_regression_check(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    # recall.py must NOT ride free on a test that only references recall_at_k.
+    (d / "metrics" / "recall.py").write_text("class Recall: ...\n", encoding="utf-8")
+    (d / "metrics" / "recall_at_k.py").write_text("class RecallAtK: ...\n", encoding="utf-8")
+    (d / "tests" / "test_ratk_regression.py").write_text(
+        "from metrics.recall_at_k import RecallAtK\n", encoding="utf-8"
+    )
+    findings = audit_checks.check_regression_per_metric(d)
+    assert len(findings) == 1
+    assert "recall.py" in findings[0]["evidence"]
+
+
+def test_metrics_in_subdirs_are_checked(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    sub = d / "metrics" / "retrieval"
+    sub.mkdir()
+    (sub / "ndcg.py").write_text("class NDCG: ...\n", encoding="utf-8")
+    findings = audit_checks.check_regression_per_metric(d)
+    assert len(findings) == 1
+    assert "ndcg" in findings[0]["evidence"]
+
+
+def test_regression_dir_layout_counts(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "metrics" / "cov.py").write_text("class Cov: ...\n", encoding="utf-8")
+    sub = d / "tests" / "regression"
+    sub.mkdir()
+    (sub / "test_cov.py").write_text("from metrics.cov import Cov\n", encoding="utf-8")
+    assert audit_checks.check_regression_per_metric(d) == [], \
+        "tests/regression/*.py must count as regression coverage"
+
+
+def test_sentinel_catches_object_literal_and_dict_thresholds(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "metrics" / "opts.ts").write_text(
+        "const m = makeMetric({ threshold: 0.0 })\n", encoding="utf-8"
+    )
+    (d / "metrics" / "cfg.py").write_text('CONFIG = {"threshold": 0.0}\n', encoding="utf-8")
+    findings = audit_checks.check_sentinel_thresholds(d)
+    evidence = " ".join(f["evidence"] for f in findings)
+    assert "opts.ts" in evidence, "object-literal threshold: 0.0 must be caught"
+    assert "cfg.py" in evidence, 'dict "threshold": 0.0 must be caught'

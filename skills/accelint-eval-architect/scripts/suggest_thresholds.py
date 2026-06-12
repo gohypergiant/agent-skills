@@ -47,9 +47,13 @@ def collect_scores(runs: list[dict], only_metric: str | None) -> dict[str, dict]
     by_name: dict[str, dict] = defaultdict(lambda: {"scores": [], "run_ids": set()})
     for run_idx, run in enumerate(runs):
         for m in run["metrics"]:
+            if not isinstance(m, dict):
+                continue
             name = m.get("name")
             score = m.get("score")
-            if name is None or not isinstance(score, (int, float)):
+            # bool is excluded explicitly: isinstance(True, int) is True, and a
+            # passed-flag leaking in as 1.00 silently skews the distribution.
+            if name is None or isinstance(score, bool) or not isinstance(score, (int, float)):
                 continue
             if only_metric and name != only_metric:
                 continue

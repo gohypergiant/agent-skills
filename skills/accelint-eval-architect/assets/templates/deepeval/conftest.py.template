@@ -35,9 +35,11 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "live: hits the judge LLM (costs money, skipped by default)")
 
 
-# Env validation lives in the fixtures, not pytest_configure: a regression-only
-# or deterministic run (the default `uv run pytest`) needs neither judge env nor
-# SUT env, and must not be blocked by their absence.
+# Env validation lives in the fixtures, not pytest_configure: each test is
+# blocked only by the env it actually uses. Regression tests need no env at
+# all; deterministic tests that invoke the SUT need only SUT env (and still
+# bill SUT tokens — "free" means no JUDGE calls); judge env is required only
+# under `-m live`.
 @pytest.fixture(scope="session")
 def judge():
     try:
@@ -53,16 +55,15 @@ def fixtures_dir() -> Path:
 
 @pytest.fixture
 def sut() -> Callable[..., dict]:
-    """Invoke the SUT and record telemetry. Implement invoke_sut in runner.py:
-    a single-shot litellm.completion() that inlines the skill's system prompt."""
+    """Invoke the SUT. Implement invoke_sut in runner.py: a single-shot
+    litellm.completion() that inlines the skill's system prompt. The result's
+    `metadata` (latency/tokens) is the test's to record via record_metric."""
     if not os.getenv("SUT_MODEL_ID"):
         pytest.fail("SUT_MODEL_ID not set (needed by tests that invoke the SUT). See .env.example.")
     from runner import invoke_sut
-    collector = _get_collector()
 
     def _run(fixture_path: Path, mode: str, **kw: Any) -> dict:
-        result = invoke_sut(fixture_path=fixture_path, mode=mode, **kw)
-        return result
+        return invoke_sut(fixture_path=fixture_path, mode=mode, **kw)
 
     return _run
 

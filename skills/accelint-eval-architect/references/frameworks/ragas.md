@@ -32,8 +32,11 @@ Default to Ragas for a pure RAG bot; pick DeepEval when the answer rubric is bes
 - **Ragas needs a judge LLM (and, for some metrics, embeddings) that point at
   your proxy.** Set them explicitly — do not let Ragas default to an OpenAI key.
   Faithfulness needs only the LLM; answer_relevancy also needs embeddings.
-  Wiring for a LiteLLM/Bedrock-fronted proxy:
+  Wiring for a LiteLLM/Bedrock-fronted proxy (env vars come from `.env` —
+  the template's conftest calls `load_dotenv()`):
   ```python
+  import os
+
   from langchain_openai import ChatOpenAI
   from ragas.llms import LangchainLLMWrapper
 

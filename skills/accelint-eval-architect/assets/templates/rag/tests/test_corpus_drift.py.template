@@ -21,6 +21,14 @@ def test_corpus_matches_goldset_hash(goldset):
     if not corpus_dir.is_absolute():
         corpus_dir = (_EVALS_DIR / corpus_dir).resolve()
     if not corpus_dir.is_dir():
+        # Once a real hash is recorded the tripwire is ARMED: a corpus_path that
+        # stops resolving (typo, moved dir) must fail loudly — a silent skip
+        # would disarm drift detection forever.
+        if _HASH_RE.match(str(goldset.get("corpus_hash") or "")):
+            pytest.fail(
+                f"corpus_path is set but does not exist here ({corpus_dir}) — fix the "
+                "path or unset it; skipping would silently disarm the drift tripwire."
+            )
         pytest.skip(f"corpus_path does not exist here ({corpus_dir}) — drift check skipped")
 
     current = compute_corpus_hash(corpus_dir)

@@ -8,7 +8,8 @@ without faking it.
 ## Shape
 ```yaml
 # goldset.yaml — each entry is a question with its supporting evidence.
-corpus_hash: "<sha256 of the corpus at curation time>"   # detects drift
+corpus_hash: "9f2c4a7e1b3d5f60"       # truncated sha256 (16 hex) from corpus_hash.py — detects drift
+corpus_path: "../docs"                 # arms the drift test (relative to evals/ or absolute)
 entries:
   - id: q1
     question: "What is the maximum payload mass for the X-9 platform?"
@@ -16,11 +17,13 @@ entries:
     supporting_passages:               # chunk IDs or (doc, page) the answer comes from
       - {doc: "x9-spec.pdf", page: 42, chunk_id: "x9-spec#c318"}
     answerable: true
+    verified: true                     # human-confirmed; the harness refuses unverified entries
   - id: q_adv1
     question: "What is the warranty period for the X-9 platform?"
     answer: null
     supporting_passages: []
     answerable: false                  # adversarial: NOT in the corpus → bot must refuse
+    verified: true
 ```
 
 ## Bootstrap, then curate (the hard rule)
@@ -32,7 +35,7 @@ point, never trusted output.**
   unreviewed LLM pass, you are grading the model against itself — the scores are
   meaningless. A human must verify each triple's answer and supporting passage
   before it counts.
-- The bootstrap output ships with a mandatory curation banner and an
+- The bootstrap output ships with a mandatory curation banner and a
   `verified: false` flag per entry; the harness should refuse (or loudly warn)
   on unverified entries.
 

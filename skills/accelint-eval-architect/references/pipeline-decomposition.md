@@ -39,10 +39,15 @@ e2e       question → final answer        (correctness + latency/cost)
 
 ## Walking skeleton (what SCAFFOLD emits for RAG)
 Minimum that proves the pipeline is measurable — not the whole matrix:
-- a small **curated** gold set (~10 Q/A/passage triples + ~2 adversarial unanswerable),
+- a small **curated** gold set with adversarial unanswerable entries (demo
+  entries to replace; grow it via `bootstrap_goldset.py` — sizes in
+  [gold-set.md](gold-set.md)),
 - `section_coverage` (ingest) + regression (drop a section → fails),
 - `recall@k` (retrieve) + regression (a stub retriever that misses → recall < 1),
-- one **gated** answer metric (faithfulness), threshold record-only,
+- `refusal_on_unknown` (generate, deterministic) + regression — the adversarial
+  entries are consumed from day one,
+- one **gated** answer metric (faithfulness), threshold record-only, with an
+  offline stubbed-judge regression proving the gate can fail,
 - a pluggable SUT-invocation adapter the developer wires,
 - offline-green: the deterministic metrics score a **captured** retrieval output against the gold set, so the skeleton runs with no live pipeline or judge.
 

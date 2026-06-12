@@ -12,6 +12,19 @@ import yaml
 
 _HERE = Path(__file__).parent
 
+# Load .env so the live (judge) path can read LITELLM_*/JUDGE_* vars — without
+# this, `cp .env.example .env` does nothing and the wiring snippet's os.environ
+# lookups KeyError. Guarded import: the deterministic path stays runnable with
+# only pytest + pyyaml (python-dotenv is in pyproject and arrives via uv sync).
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
+env_file = _HERE / ".env"
+if load_dotenv and env_file.exists():
+    load_dotenv(env_file)
+
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "live: hits the judge LLM / live pipeline (costs money, skipped by default)")

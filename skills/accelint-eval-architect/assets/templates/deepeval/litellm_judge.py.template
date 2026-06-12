@@ -37,5 +37,7 @@ def build_judge() -> LiteLLMModel:
     # The `openai/` prefix makes LiteLLM treat the custom proxy as
     # OpenAI-compatible. Without it, LiteLLMModel.get_model_name() raises
     # BadRequestError for non-standard aliases during GEval.__init__.
-    _judge = LiteLLMModel(model=f"openai/{alias}", api_base=base_url, api_key=api_key)
+    # `base_url=` (not the deprecated `api_base=` alias, which warns on every
+    # judge build and is slated for removal in deepeval).
+    _judge = LiteLLMModel(model=f"openai/{alias}", base_url=base_url, api_key=api_key)
     return _judge

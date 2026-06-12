@@ -199,6 +199,8 @@ def main() -> int:
 
     if not args.corpus.is_dir():
         sys.exit(f"Corpus dir not found: {args.corpus}")
+    if args.out.is_dir():
+        sys.exit(f"--out is a directory, expected a file path: {args.out}")
     if args.out.exists() and not args.force:
         # A draft may already contain hours of human curation — never clobber it.
         sys.exit(f"Refusing to overwrite {args.out} (it may hold curated entries) — pass --force.")
@@ -212,6 +214,9 @@ def main() -> int:
     sample = stratified_sample(files, args.n)
     entries = build_entries(sample, use_llm=not args.no_llm)
     entries += build_adversarial(args.adversarial)
+    if not entries:
+        print("[warn] --n 0 --adversarial 0 produced an EMPTY gold set — nothing to curate.",
+              file=sys.stderr)
 
     doc = {
         "corpus_hash": corpus_hash(args.corpus),

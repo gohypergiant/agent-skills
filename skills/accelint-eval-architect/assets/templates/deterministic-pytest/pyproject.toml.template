@@ -3,9 +3,10 @@ name = "__SKILL_NAME__-evals"
 version = "1.0.0"
 description = "Deterministic eval harness for __SKILL_NAME__ (internal-only)"
 requires-python = ">=3.11"
+# Floors, not hard pins: hard pins rot. Commit the uv.lock for reproducibility.
 dependencies = [
-    "pytest==8.3.4",
-    "pyyaml==6.0.2",
+    "pytest>=8.3",
+    "pyyaml>=6.0",
 ]
 
 [tool.pytest.ini_options]

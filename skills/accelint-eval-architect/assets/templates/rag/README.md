@@ -7,7 +7,8 @@ the Ragas answer-layer metric is gated behind `-m live`.
 ```bash
 cd evals && uv sync && cp .env.example .env   # fill in your judge + embeddings keys
 uv run pytest             # deterministic ingest + retrieve only (free, offline)
-uv run pytest -m live     # add the Ragas faithfulness metric (costs money, needs the pipeline)
+uv run pytest -m live     # ONLY the Ragas faithfulness test (deselects the rest; costs money, needs the pipeline)
+uv run pytest -m ""       # everything, deterministic + live
 ```
 
 ## Stages measured (gate runs per stage)
@@ -22,7 +23,8 @@ uv run pytest -m live     # add the Ragas faithfulness metric (costs money, need
   `corpus_path` in `goldset/goldset.yaml`; arm it as soon as the corpus is
   reachable from the eval.
 
-Each deterministic metric ships a `*_regression.py` proving it can fail.
+Every metric ships a `*_regression.py` proving it can fail — the faithfulness
+gate's regression runs offline against a stubbed judge.
 
 ## Layout
 - `goldset/goldset.yaml` — curated Q/A/passage triples + adversarial unanswerable. **Human-verified.**

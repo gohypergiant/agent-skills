@@ -96,6 +96,8 @@ def scaffold(
         )
 
     dest = target / dest_name
+    if not dest.resolve().is_relative_to(target.resolve()):
+        sys.exit(f"--dest must resolve inside the target, got: {dest_name}")
     if dest.exists() and any(dest.iterdir()) and not layer:
         sys.exit(
             f"Refusing to overwrite non-empty {dest} — remove it, scaffold "
@@ -155,9 +157,14 @@ def scaffold(
 
 def _git_check(target: Path, dest: Path) -> None:
     """The don't-lose-it check: warn if eval source is untracked."""
+    # Resolve both: with a RELATIVE --target, a relative pathspec combined with
+    # cwd=target made git look for <target>/<target>/evals — no match, empty
+    # output, and a false "OK" over genuinely untracked source.
+    target = target.resolve()
+    dest = dest.resolve()
     try:
         out = subprocess.run(
-            ["git", "status", "--porcelain", str(dest)],
+            ["git", "status", "--porcelain", "--", str(dest)],
             cwd=target, capture_output=True, text=True, timeout=10,
         )
     except (FileNotFoundError, subprocess.TimeoutExpired):
@@ -172,11 +179,13 @@ def _git_check(target: Path, dest: Path) -> None:
         )
         return
     untracked = [ln[3:] for ln in out.stdout.splitlines() if ln.startswith("??")]
-    # Exact-name match for .env: a substring test would also skip .env.example,
-    # which IS source and must be committed.
+    # Exact-name match for .env (a substring test would also skip .env.example,
+    # which IS source) and exact path-segment match for ignorable dirs (a
+    # substring test would hide e.g. tests/test_results/foo.py).
     src_untracked = [f for f in untracked if not (
         Path(f).name == ".env"
-        or any(seg in f for seg in ("results/", ".venv/", "__pycache__/", ".pytest_cache/"))
+        or any(seg in Path(f).parts
+               for seg in ("results", ".venv", "__pycache__", ".pytest_cache"))
     )]
     print("\nDON'T-LOSE-IT CHECK")
     if src_untracked:

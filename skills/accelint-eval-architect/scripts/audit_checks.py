@@ -20,16 +20,32 @@ import subprocess
 import sys
 from pathlib import Path
 
-_IGNORED_SEGMENTS = ("results/", ".venv/", "__pycache__/", ".pytest_cache/", "node_modules/")
-# Matches 0.0 with any number of trailing zeros (0.0, 0.00, …) and annotated
-# defaults like `threshold: float = 0.0` / `threshold: number = 0.0`.
+# Exact path segments (matched against Path.parts), not substrings — a
+# substring test hid real source like tests/test_results/foo.py.
+_IGNORED_SEGMENTS = ("results", ".venv", "__pycache__", ".pytest_cache", "node_modules")
+# Matches 0.0 with any number of trailing zeros (0.0, 0.00, …), annotated
+# defaults (`threshold: float = 0.0` / `threshold: number = 0.0`), and
+# dict/object-literal forms (`{ threshold: 0.0 }` / `"threshold": 0.0`).
 _SENTINEL_RE = re.compile(
-    r"threshold\s*(?::\s*[\w.\[\]]+\s*)?=\s*0\.0+\b|record[-_]only", re.IGNORECASE
+    r"threshold\s*(?::\s*[\w.\[\]]+\s*)?=\s*0\.0+\b"
+    r"|[\"']?threshold[\"']?\s*:\s*0\.0+\b"
+    r"|record[-_]only",
+    re.IGNORECASE,
 )
 
 
 def _finding(severity: str, check: str, evidence: str, fix: str) -> dict:
     return {"severity": severity, "check": check, "evidence": evidence, "fix": fix}
+
+
+def _regression_files(tests_dir: Path):
+    """Regression tests live as *regression* filenames OR under a regression/ dir."""
+    for p in tests_dir.rglob("*"):
+        if not p.is_file():
+            continue
+        rel_parts = p.relative_to(tests_dir).parts
+        if "regression" in p.name or any("regression" in part for part in rel_parts[:-1]):
+            yield p
 
 
 def check_regression_per_metric(evals_dir: Path) -> list[dict]:
@@ -40,17 +56,18 @@ def check_regression_per_metric(evals_dir: Path) -> list[dict]:
     if not metrics_dir.is_dir():
         return findings
     regression_text = "".join(
-        p.read_text(encoding="utf-8", errors="replace")
-        for p in tests_dir.rglob("*regression*")  # rglob: regression tests may sit in subdirs
-        if p.is_file()
+        p.read_text(encoding="utf-8", errors="replace") for p in _regression_files(tests_dir)
     ) if tests_dir.is_dir() else ""
-    for metric in sorted(metrics_dir.iterdir()):
+    # rglob: metrics organized in subdirs (metrics/retrieval/ndcg.py) count too.
+    for metric in sorted(p for p in metrics_dir.rglob("*") if p.is_file()):
         if metric.suffix not in (".py", ".ts") or metric.name.startswith("_"):
             continue
-        if metric.stem not in regression_text:
+        # Word-boundary match: a bare substring test lets `recall.py` ride free
+        # on a test that only references `recall_at_k`.
+        if not re.search(rf"\b{re.escape(metric.stem)}\b", regression_text):
             findings.append(_finding(
                 "HIGH", "regression-per-metric",
-                f"metrics/{metric.name} is not referenced by any tests/*regression* file",
+                f"{metric.relative_to(evals_dir)} is not referenced by any regression test",
                 f"Add a planted-broken regression test that drives {metric.stem} below threshold.",
             ))
     return findings
@@ -99,13 +116,13 @@ def check_untracked_source(evals_dir: Path) -> list[dict]:
         if not line.startswith("??"):
             continue
         path = line[3:].strip()
-        if path.endswith(".env") or any(seg in path for seg in _IGNORED_SEGMENTS):
+        if Path(path).name == ".env" or any(seg in Path(path).parts for seg in _IGNORED_SEGMENTS):
             continue
         findings.append(_finding(
             "HIGH", "untracked-source",
             f"untracked: {path}",
             "git add + commit before the next run — orphaned eval source has "
-            "required bytecode recovery before.",
+            "previously required bytecode recovery.",
         ))
     return findings
 

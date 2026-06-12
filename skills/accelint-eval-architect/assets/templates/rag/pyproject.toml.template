@@ -11,7 +11,8 @@ dependencies = [
     # Judge layer (only needed for `-m live`):
     "ragas>=0.2",
     "langchain-openai>=0.2",  # LangchainLLMWrapper judge wiring (ragas.md)
-    "litellm>=1.55",
+    # litellm is NOT needed here: the judge talks to a remote LiteLLM proxy via
+    # langchain-openai. Add it only if your runner.py adapters import it.
 ]
 
 [tool.pytest.ini_options]

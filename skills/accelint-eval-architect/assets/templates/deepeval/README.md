@@ -1,11 +1,14 @@
 # Evals — __SKILL_NAME__ (DeepEval, hybrid)
 
-Deterministic metrics run free by default; LLM-judge metrics are opt-in.
+The default run skips all judge metrics. Regression tests are fully offline;
+deterministic tests that invoke the SUT need SUT env and bill SUT tokens
+(no JUDGE tokens).
 
 ```bash
 cd evals && uv sync && cp .env.example .env   # fill in your key
-uv run pytest             # deterministic only (free)
-uv run pytest -m live     # include judge metrics (costs money)
+uv run pytest             # deterministic only (no judge calls)
+uv run pytest -m live     # ONLY the judge metrics (deselects the rest)
+uv run pytest -m ""       # everything, deterministic + judge
 ```
 
 ## Layout
@@ -26,5 +29,5 @@ Judge thresholds ship record-only. Run 3+ baselines against known-good fixtures,
 then set thresholds from the distribution. See the eval-architect calibration ref.
 
 ## Don't lose this
-Source is git-tracked; only `results/`, `.venv/`, `__pycache__/`, `.env` are
-ignored. Commit before the first run.
+Source is git-tracked; only `results/`, `.venv/`, `__pycache__/`,
+`.pytest_cache/`, `.deepeval/`, `.env` are ignored. Commit before the first run.

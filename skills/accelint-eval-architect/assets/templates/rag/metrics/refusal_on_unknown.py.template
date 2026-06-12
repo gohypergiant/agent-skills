@@ -13,6 +13,8 @@ from typing import Optional
 # open-ended "did it refuse?" heuristics drift; a closed list stays auditable.
 REFUSAL_MARKERS: tuple[str, ...] = (
     "not in the documentation",
+    "don't know",
+    "do not know",
     "couldn't find",
     "could not find",
     "cannot find",

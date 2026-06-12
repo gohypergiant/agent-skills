@@ -26,9 +26,13 @@ unanswerable questions consumed by `refusal_on_unknown`. Conftest refuses to run
 if any entry is unverified.
 
 ## Thresholds
-Deterministic metrics gate at 1.0 (correct). `faithfulness` is RECORD-ONLY (0.0)
-until calibrated — run the baseline loop, then set from the distribution. Valid
-only for the SUT+judge model pair; recalibrate after a model upgrade.
+The demo tests gate at 1.0 explicitly (their captured fixtures are
+known-perfect). The metric DEFAULTS are record-only (0.0) — `RecallAtKMetric()`
+with no threshold cannot fail by design; pass a calibrated threshold once you
+have a baseline. `faithfulness` stays RECORD-ONLY until calibrated — run the
+baseline loop, then set from the distribution. Valid only for the SUT+judge
+model pair; recalibrate after a model upgrade. (The faithfulness regression
+test proves the gate fails at a non-zero threshold via a stubbed judge.)
 
 ## Offline-first
 Deterministic tests score `captured/` output, so the skeleton runs green with no

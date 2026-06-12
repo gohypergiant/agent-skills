@@ -16,13 +16,21 @@ OpenAI-compatible. The proxy strips the prefix and routes to the real model.
 ```python
 LiteLLMModel(
     model=f"openai/{model_alias}",   # NOT just model_alias
-    api_base=base_url,
+    base_url=base_url,               # NOT api_base= — deprecated alias, warns + slated for removal
     api_key=api_key,
 )
 ```
 
 Passing `custom_llm_provider="openai"` as a kwarg does NOT fix it — the failure
 is in `get_model_name()`, which ignores kwargs.
+
+## Never restate a score scale in `evaluation_steps`
+
+GEval's own prompt instructs the judge to return an integer 0–10 and
+normalizes by /10. A step that says "score 0 (poor) to 1 (excellent)" makes a
+literal judge emit 0 or 1 → normalized 0.0 or 0.1, and any threshold ≥ 0.2
+becomes unreachable — every live run fails spuriously. Describe *what* to
+judge in the steps; leave the scale to GEval.
 
 ## GEval subclasses must forward `*args, **kwargs` (DeepEval 4.x)
 
@@ -73,8 +81,10 @@ stdout polish.
 
 If the SUT emits a prose assessment then a ```json fenced block, a metric that
 does `json.loads(actual_output)` fails. Use a tolerant extractor (last fenced
-block → raw JSON → largest balanced `{...}`). Ship it once in
-`metrics/_json_extraction.py` and call it from every JSON-parsing metric.
+block → raw JSON → largest balanced `{...}`). Ship it once as
+`_json_extraction.py` at the evals ROOT — `metrics/` has no `__init__.py`, so
+`from metrics._json_extraction import …` raises ModuleNotFoundError; the root
+is on sys.path via conftest, so `from _json_extraction import …` resolves.
 
 ## Two model roles, one adapter pattern
 

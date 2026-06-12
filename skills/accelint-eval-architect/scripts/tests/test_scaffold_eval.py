@@ -129,3 +129,28 @@ def test_git_check_flags_env_example_but_not_env(tmp_path, capsys):
         ln for ln in out.splitlines() if ln.strip().endswith("/.env") or ln.strip() == ".env"
     ]
     assert not lines_flagging_env, "a real .env (secrets) must stay excluded"
+
+def test_git_check_works_with_relative_target(tmp_path, monkeypatch, capsys):
+    # A relative --target once made git resolve the pathspec to
+    # <target>/<target>/evals → empty output → false "OK".
+    import shutil
+    import subprocess
+    if shutil.which("git") is None:
+        pytest.skip("git unavailable")
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    (tmp_path / "target").mkdir()
+    monkeypatch.chdir(tmp_path)
+    scaffold_eval.scaffold("rag", Path("target"), {"TARGET_NAME": "demo"})
+    out = capsys.readouterr().out
+    assert "OK — no untracked source" not in out
+    assert "Untracked eval SOURCE" in out
+
+
+def test_dest_escaping_target_is_rejected(tmp_path):
+    target = tmp_path / "target"
+    target.mkdir()
+    with pytest.raises(SystemExit) as exc:
+        scaffold_eval.scaffold("rag", target, {"TARGET_NAME": "demo"},
+                               dest_name="../escaped")
+    assert "inside the target" in str(exc.value)
+    assert not (tmp_path / "escaped").exists()
