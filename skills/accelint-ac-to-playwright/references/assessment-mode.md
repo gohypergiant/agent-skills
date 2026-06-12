@@ -10,9 +10,9 @@
   - Work one input file at a time.
 2. **Analyze AC text** against all conversion requirements:
    - **Structure & Format**:
-     - Bullet format: proper `- ` markers for each AC
-     - Gherkin format: valid Feature/Scenario/Examples/Given/When/Then/tags structure
-     - Step ordering: all Givens → all Whens → all Thens (no mixing within a scenario)
+     - For .md files: spawn subagent with `references/validate-bullet-format.md`
+     - For .feature files: spawn subagent with `references/validate-gherkin-structure.md`
+     - Subagents return validation results with line numbers for any violations
    - **Targets** (semantic validation):
      - Every action specifies a target
      - Extract all targets from AC text using the pattern documented in `acceptance-criteria.md` (lines 110-129): `<intent> <component> on the <area>` → `area.component.intent`
