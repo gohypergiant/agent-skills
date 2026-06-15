@@ -288,3 +288,78 @@ def test_build_system_prompt_returns_all_hash_keys():
     # Hashes should be non-empty strings
     for key, val in hashes.items():
         assert isinstance(val, str) and len(val) > 0, f"{key} is empty"
+
+
+def _make_v2_skill(tmp_path):
+    """Build a minimal v2-style skill tree (orchestrator + mode files +
+    validator references) to exercise progressive-disclosure inlining."""
+    root = tmp_path / "skill"
+    refs = root / "references"
+    scripts = root / "scripts"
+    refs.mkdir(parents=True)
+    scripts.mkdir()
+    (root / "SKILL.md").write_text(
+        "# AC To Playwright\nOrchestrator. Spawn a subagent with "
+        "references/validate-gherkin-structure.md.\n",
+        encoding="utf-8",
+    )
+    (refs / "acceptance-criteria.md").write_text("AC rules here.\n", encoding="utf-8")
+    (refs / "test-hooks.md").write_text("vocab here.\n", encoding="utf-8")
+    (refs / "assessment-mode.md").write_text("ASSESS WORKFLOW BODY\n", encoding="utf-8")
+    (refs / "conversion-mode.md").write_text("CONVERT WORKFLOW BODY\n", encoding="utf-8")
+    (refs / "validate-gherkin-structure.md").write_text("GHERKIN VALIDATOR RULES\n", encoding="utf-8")
+    (refs / "validate-targets.md").write_text("TARGET VALIDATOR RULES\n", encoding="utf-8")
+    (scripts / "plan-schema.ts").write_text("export const planSchema = {};\n", encoding="utf-8")
+    return root
+
+
+def test_build_system_prompt_inlines_v2_validators_and_eval_note(tmp_path):
+    """v2 progressive-disclosure files must be inlined and the subagent
+    instruction collapsed into an explicit no-tools eval note."""
+    from runner import build_system_prompt
+
+    root = _make_v2_skill(tmp_path)
+    prompt, hashes = build_system_prompt("assessment", skill_root=root)
+
+    # Validators that the single-shot SUT cannot spawn must be inlined.
+    assert "GHERKIN VALIDATOR RULES" in prompt
+    assert "TARGET VALIDATOR RULES" in prompt
+    assert "ASSESS WORKFLOW BODY" in prompt
+    # The eval-context note that defuses the subagent instruction must be present.
+    assert "cannot spawn subagents" in prompt.lower()
+    assert "validate-gherkin-structure.md" in hashes["inlined_refs"]
+
+
+def test_build_system_prompt_mode_scoping(tmp_path):
+    """Assessment must NOT inline conversion-only material (schema /
+    conversion-mode); conversion inlines both mode files + the schema."""
+    from runner import build_system_prompt
+
+    root = _make_v2_skill(tmp_path)
+    assess, _ = build_system_prompt("assessment", skill_root=root)
+    convert, _ = build_system_prompt("conversion", skill_root=root)
+
+    assert "CONVERT WORKFLOW BODY" not in assess
+    assert "planSchema" not in assess  # schema not needed to assess
+    assert "CONVERT WORKFLOW BODY" in convert
+    assert "ASSESS WORKFLOW BODY" in convert  # conversion runs assessment first
+    assert "planSchema" in convert
+
+
+def test_build_system_prompt_resilient_to_monolith(tmp_path):
+    """When v2 mode/validator files are absent (v1 monolith), inlining must
+    skip them silently rather than raising — so the eval survives the merge."""
+    from runner import build_system_prompt
+
+    root = tmp_path / "skill"
+    (root / "references").mkdir(parents=True)
+    (root / "scripts").mkdir()
+    (root / "SKILL.md").write_text("# Monolith with everything inline\n", encoding="utf-8")
+    (root / "references" / "acceptance-criteria.md").write_text("AC.\n", encoding="utf-8")
+    (root / "references" / "test-hooks.md").write_text("hooks.\n", encoding="utf-8")
+    (root / "scripts" / "plan-schema.ts").write_text("export const s = {};\n", encoding="utf-8")
+
+    prompt, hashes = build_system_prompt("conversion", skill_root=root)
+    assert "Monolith with everything inline" in prompt
+    assert "assessment-mode.md" not in hashes["inlined_refs"]  # absent → skipped
+    assert "cannot spawn subagents" in prompt.lower()  # note still added

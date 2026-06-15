@@ -337,6 +337,36 @@ The SKILL.md conversion workflow is *correct* for production (multi-turn agentic
 
 (B) was chosen because it keeps the harness simple and isolates the "is the model trying to do things it doesn't have permission to do" check as its own metric.
 
+### Why the runner inlines the skill's progressive-disclosure tree and collapses subagents
+The v2 SKILL.md (PR #120) is a thin orchestrator: at runtime it loads mode files
+(`assessment-mode.md` / `conversion-mode.md`) and validator references
+(`validate-*.md`) on demand, and spawns a *subagent* per validator. The eval
+invokes the skill as a single `litellm.completion()` call with no tools — it can
+neither load files nor spawn subagents. Under v2, then, the entire validation
+layer would silently no-op and the eval would score a degraded path, not the skill.
+
+`build_system_prompt(mode)` resolves this by pre-flattening the disclosure: it
+inlines SKILL.md plus every reference the skill would have loaded *for that mode*
+(the mode file, all `validate-*.md`, and — conversion only — the Zod schema), then
+appends an "eval execution context" note telling the model to apply the inlined
+validator rules directly instead of spawning subagents it has no tool for.
+Subagents are a context/parallelism optimization, not a capability the report
+depends on — the validation *logic* lives in the reference files — so inlining is
+faithful: one context produces the same report the six subagents would have.
+
+Mode-scoped (assessment never inlines the schema or `conversion-mode.md`) so the
+prompt matches what the skill would actually load. Existence-guarded and globbed,
+so it works on both the v1 monolith (mode/validator files absent → skipped) and
+the v2 split (present → inlined) — the eval survives the #120 merge unchanged.
+This is the "ask for directories" override above, generalized from one
+instruction to the whole disclosure tree.
+
+Limitation: this exercises the skill's validation *knowledge and output*, not the
+live subagent *orchestration* (does the real model spawn, parse, and aggregate the
+six validators correctly?). That mechanism is better tested by running the skill in
+Claude Code than in a single-shot litellm eval; option (A) — an agentic,
+tool-enabled runner — remains the future path if orchestration itself needs coverage.
+
 ### Why every metric reason is preserved fully in the JSON artifact
 The metric `reason` field is the actionable output — it's what tells a human *why* a test failed. Truncating it in the JSON breaks downstream regression diffs (you can't tell if the same root cause is recurring). The scorecard renders reasons inline with word-wrap; the JSON keeps them whitespace-normalised but full-length.
 

@@ -35,54 +35,95 @@ def _hash_content(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
 
 
-def build_system_prompt() -> tuple[str, dict]:
-    """Build the system prompt by concatenating SKILL.md + references.
+def build_system_prompt(
+    mode: Literal["conversion", "assessment"] = "conversion",
+    skill_root: Path | None = None,
+) -> tuple[str, dict]:
+    """Assemble the SUT system prompt by inlining the skill's full
+    progressive-disclosure tree for ``mode``.
 
-    Returns:
-        Tuple of (system_prompt_text, hashes_dict)
-        hashes_dict contains skill_md_hash and references_hash for change tracking
+    The eval invokes the skill as a SINGLE completion with no tool or subagent
+    access. The v2 skill (PR #120) is a thin orchestrator that would, at
+    runtime, load mode files + validator references on demand and spawn
+    validation *subagents*. A single-shot SUT can do neither. So we pre-resolve
+    the disclosure here: every reference the skill would have loaded for ``mode``
+    is inlined, and an eval-context note tells the model to apply the inlined
+    validator rules directly instead of spawning subagents it has no tool for.
+
+    Resilient to BOTH layouts: the monolithic v1 SKILL.md (mode files /
+    validators simply absent → skipped) and the v2 split (present → inlined),
+    so the eval keeps testing the skill faithfully across the #120 merge.
+
+    Returns ``(system_prompt, hashes)``; ``hashes`` keeps all-string values for
+    change tracking, plus ``inlined_refs`` recording which references were
+    actually present and folded in.
     """
-    skill_root = Path(__file__).parent.parent
-    skill_md_path = skill_root / "SKILL.md"
-    ac_ref_path = skill_root / "references" / "acceptance-criteria.md"
-    hooks_ref_path = skill_root / "references" / "test-hooks.md"
-    plan_schema_path = skill_root / "scripts" / "plan-schema.ts"
+    skill_root = skill_root or Path(__file__).parent.parent
+    references = skill_root / "references"
 
-    skill_md = _read_file(skill_md_path)
-    ac_ref = _read_file(ac_ref_path)
-    hooks_ref = _read_file(hooks_ref_path)
-    # The skill normally tells the agent to consult plan-schema.ts from disk.
-    # The eval harness has no file-reading tools, so inline it here so the
-    # model knows the current field names (suiteName, name, action, value, ...).
-    plan_schema = _read_file(plan_schema_path)
+    skill_md = _read_file(skill_root / "SKILL.md")
 
-    system_prompt = f"""{skill_md}
+    # Ordered (title, path, fence) specs, scoped to the mode so an assessment
+    # run doesn't drag in conversion-only material (and vice versa) — keeping
+    # the prompt faithful to what the skill would actually have loaded.
+    ref_specs: list[tuple[str, Path, str | None]] = [
+        ("acceptance-criteria.md", references / "acceptance-criteria.md", None),
+        ("test-hooks.md", references / "test-hooks.md", None),
+    ]
+    if mode == "assessment":
+        ref_specs.append(("assessment-mode.md", references / "assessment-mode.md", None))
+    else:
+        # Conversion runs assessment first, so it legitimately needs both.
+        ref_specs.append(("conversion-mode.md", references / "conversion-mode.md", None))
+        ref_specs.append(("assessment-mode.md", references / "assessment-mode.md", None))
 
----
+    # v2 validator references (absent in the v1 monolith). Sorted for a stable
+    # prompt hash; globbed so new validators are picked up without code changes.
+    if references.is_dir():
+        for vpath in sorted(references.glob("validate-*.md")):
+            ref_specs.append((vpath.name, vpath, None))
 
-# Reference: acceptance-criteria.md
+    # Conversion must emit a schema-conformant plan; assessment never emits one,
+    # so it doesn't need the schema (and inlining it would just burn tokens).
+    if mode == "conversion":
+        ref_specs.append(("scripts/plan-schema.ts", skill_root / "scripts" / "plan-schema.ts", "ts"))
 
-{ac_ref}
+    blocks: list[str] = [skill_md]
+    inlined_refs: list[str] = []
+    ref_concat = ""
+    for title, path, fence in ref_specs:
+        if not path.exists():
+            continue
+        content = _read_file(path)
+        inlined_refs.append(title)
+        ref_concat += content
+        body = f"```{fence}\n{content}\n```" if fence else content
+        blocks.append(f"---\n\n# Reference: {title}\n\n{body}")
 
----
+    # Collapse the skill's subagent orchestration into the single-shot harness.
+    # Without this, the model follows the v2 instructions to "spawn a subagent
+    # with references/validate-*.md" — which it cannot do here — and the whole
+    # validation layer silently no-ops. Everything those subagents would read is
+    # inlined above; tell the model to apply it directly.
+    blocks.append(
+        "---\n\n# Eval execution context (read carefully)\n\n"
+        "You are running inside an automated evaluation harness as a SINGLE "
+        "completion. You have NO tools: you cannot spawn subagents, read files, "
+        "or run scripts. Where the skill above says to 'spawn a subagent with "
+        "references/validate-*.md', 'load' a reference, or 'run' a validator "
+        "script, note that every such reference has already been INLINED above. "
+        "Apply those validation rules DIRECTLY and inline, then produce the same "
+        "final report you would have produced after the subagents returned. Do "
+        "not describe spawning subagents; just do the validation and report."
+    )
 
-# Reference: test-hooks.md
-
-{hooks_ref}
-
----
-
-# Reference: scripts/plan-schema.ts (authoritative Zod schema)
-
-```ts
-{plan_schema}
-```
-"""
+    system_prompt = "\n\n".join(blocks)
 
     hashes = {
         "skill_md_hash": _hash_content(skill_md),
-        "references_hash": _hash_content(ac_ref + hooks_ref + plan_schema),
+        "references_hash": _hash_content(ref_concat),
         "prompt_hash": _hash_content(system_prompt),
+        "inlined_refs": ", ".join(inlined_refs),
     }
 
     return system_prompt, hashes
@@ -143,8 +184,9 @@ def invoke_sut(
             f"Unsupported SUT_PROVIDER: {provider}. Supported: litellm, anthropic"
         )
 
-    # Build system prompt
-    system_prompt, hashes = build_system_prompt()
+    # Build system prompt — mode-scoped so the inlined disclosure matches what
+    # the skill would actually load for this mode.
+    system_prompt, hashes = build_system_prompt(mode)
 
     # Read fixture
     if not fixture_path.exists():
