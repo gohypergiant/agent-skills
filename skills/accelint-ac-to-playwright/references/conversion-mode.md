@@ -14,7 +14,7 @@
   -  Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
   -  Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
 3. **JSON test plan**:
-  - Build a JSON test plan that conforms to `references/plan-schema.ts`.
+  - Build a JSON test plan that conforms to `scripts/plan-schema.ts`.
   - Validate the test plan and report results.
   - If validation failed, **stop**. Do not write the plan. Skip the rest of these steps for the current input file and move on to the next input file.
   - If validation passed, write the plan to the user-specified output directory: `<plans-output-dir>/<suite-slug>.json`.
@@ -135,7 +135,7 @@ Appends ` (user1/pass1)` and ` (user2/pass2)` respectively.
 
 ## Validation and Retry Protocol
 
-Use `npx validate-plan path/to/plan.json` to validate a plan against `references/plan-schema.ts` (after build).
+Use `npx validate-plan path/to/plan.json` to validate a plan against `scripts/plan-schema.ts` (after build).
 
 **Maximum attempts**: 2 total (initial + 1 correction)
 
