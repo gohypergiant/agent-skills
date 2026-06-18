@@ -23,7 +23,7 @@ Trigger phrases: "create AGENTS.md", "set up agent rules", "configure claude cod
 
 **Phase 0: File state detection**
 
-Checks if AGENTS.md exists and picks a mode. In monorepos, also looks for a root-level AGENTS.md to avoid duplicating global instructions.
+First checks if this is a monorepo package — if a root-level AGENTS.md exists above the current directory, reads it to avoid duplicating global instructions. Then checks for related onboarding documents (openspec/config.yml, ARCHITECTURE.md, AGENTS.md/CLAUDE.md) to understand what already exists. Finally assesses the local AGENTS.md state and picks the right mode (Create, Import, or Refresh).
 
 **Phase 1: Discovery interview**
 
@@ -54,7 +54,7 @@ Shows you the complete file with source comments on inferred values:
 - Use Conventional Commits (`feat:`, `fix:`)  # inferred from commitlint.config.ts
 ```
 
-After you confirm, it writes the file without the source comments.
+After you confirm, it writes the file without the source comments. The generated file includes a Related Documentation section that cross-references other onboarding docs found in Phase 0 (openspec/config.yml, ARCHITECTURE.md, README.md) — only files that actually exist are included.
 
 ## AGENTS.md structure
 
@@ -171,6 +171,11 @@ Example: `feat(layer): add WebGPU fallback for Safari`
 - [ ] Never force-push to any branch       # inferred from branch protection
 - [ ] Never commit secrets or credentials
 - [ ] Never use `any` in TypeScript
+
+## Related Documentation
+- **openspec/config.yaml** — Project DNA: stack facts, coding patterns, domain concepts
+- **ARCHITECTURE.md** — System architecture, deployment overview, component interactions
+- **README.md** — Installation, quick start, usage guide for developers
 ```
 
 ## Version history
