@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Accelint QRSPI Apply
@@ -39,6 +39,7 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 │  Dependencies   Identify blocking tasks       Execution plan    │
 │  Execute        Run slices (parallel/serial)  Implemented code  │
 │  Verify         Run opsx:verify               Verification rpt  │
+│  Update Docs    Sync living documents         Updated docs      │
 │  Report         Show results + next steps     Archive or fix    │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -294,7 +295,112 @@ Do NOT skip this phase or mark the change as complete without running verificati
 
 **Output**: Verification report from `opsx:verify`
 
-### Phase 4: Report and Next Steps
+### Phase 4: Update Living Documents
+
+**Goal**: After successful verification, update project documentation to reflect the implemented changes.
+
+CRITICAL: This phase runs ONLY if verification passed (no CRITICAL issues). If verification failed, skip to Phase 5 reporting.
+
+**Why this matters**: OpenSpec changes represent significant architectural decisions and feature additions. Living documents (ARCHITECTURE.md, AGENTS.md, README.md, openspec config) provide human-readable context about the system's current state. Keeping them synchronized prevents documentation drift and ensures the next engineer (or Claude) has accurate context.
+
+**Steps**:
+
+1. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
+2. Determine the repo/package root (may be current directory or a parent)
+3. For each living document, check if it exists and if an Accelint skill is available to update it:
+
+   **a) Update OpenSpec config** (`<repo-root>/openspec/config.yaml`):
+   - Check if `accelint-onboard-openspec` skill is installed:
+     ```bash
+     # Check available skills for the openspec onboarding skill
+     # If found, use it; if not, update manually
+     ```
+   - If skill is available:
+     ```
+     /accelint-onboard-openspec Given this change, we need to make sure that the config is current and up to date
+     ```
+   - If skill is NOT available, read `openspec/config.yaml` and update manually focusing on **project DNA (WHAT the project is)**:
+     - **Tech Stack section**: Add new dependencies, frameworks, or libraries introduced by this change with versions
+     - **Domain Concepts section**: Add new entities or domain terms if this change introduces them
+     - **Code Patterns section**: Update if this change establishes new patterns (exports, error handling, validation approaches)
+     - **Architecture Patterns section**: Add new design patterns if introduced (factory, repository, observer, etc.)
+     - **Patterns to Avoid section**: Add any anti-patterns this change deprecates or makes explicit
+     - **Per-artifact rules** (`rules:` section): Update if this change affects proposal/design/tasks/spec requirements
+     - **DO NOT** add agent behavior (commit conventions, workflow steps, tool preferences belong in AGENTS.md)
+   
+   **b) Update ARCHITECTURE.md** (`<repo-root>/ARCHITECTURE.md`) — IF it exists:
+   - Check if `accelint-architecture-doc` skill is installed
+   - If skill is available:
+     ```
+     /accelint-architecture-doc Given this change, we need to make sure that the ARCHITECTURE.md is current and up to date
+     ```
+   - If skill is NOT available, read `ARCHITECTURE.md` and update manually focusing on **system structure (HOW components relate)**:
+     - **Section 1 (Project Structure)**: Update directory tree if new top-level directories or significant reorganization occurred
+     - **Section 2 (High-Level System Diagram)**: Update ASCII diagram if component relationships changed or new services were added
+     - **Section 3 (Core Components)**: Add new components, services, or packages introduced by this change with their architectural roles
+     - **Section 4 (Data Stores)**: Add new databases, caches, or data stores if introduced
+     - **Section 5 (External Integrations)**: Add new third-party services or APIs this change integrates with
+     - **Section 6 (Deployment & Infrastructure)**: Update if deployment model changed or new infrastructure was added
+     - **Section 8 (Technology Stack)**: Update if this change introduced new runtime dependencies or frameworks
+     - **DO NOT** add coding patterns, testing conventions, or agent behavior (those belong in config.yaml or AGENTS.md)
+   
+   **c) Update AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
+   - Check if `accelint-onboard-agent` skill is installed
+   - If skill is available:
+     ```
+     /accelint-onboard-agent Given this change, we need to make sure that the AGENTS.md is current and up to date
+     ```
+   - If skill is NOT available, read `AGENTS.md` and update manually focusing on **agent behavior (HOW agents should act)**:
+     - **Workflow Procedures section**: Update if this change introduces new workflow steps (e.g., new pre-commit checks, new PR requirements)
+     - **Decision Heuristics section**: Add new decision rules if this change creates situations requiring agent judgment
+     - **Tool Preferences section**: Update if new tools were introduced or tool usage changed (e.g., new test runner, new linter)
+     - **Guardrails section**: Add new "never do" or "always ask first" rules if this change creates new risk areas
+     - **Pre-Commit Checklist**: Add new validation commands if required before commit
+     - **Commit Messages section**: Update if commit convention changed
+     - **DO NOT** add tech stack facts, domain concepts, or coding patterns (those belong in config.yaml)
+   
+   **d) Update README.md** (`<repo-root>/README.md`) — IF it exists:
+   - Check if `accelint-readme-writer` skill is installed
+   - If skill is available:
+     ```
+     /accelint-readme-writer Given this change, we need to make sure that the README.md is current and up to date
+     ```
+   - If skill is NOT available, read `README.md` and update manually focusing on **user-facing documentation**:
+     - **Installation section**: Update commands if new dependencies or setup steps were added
+     - **Features section**: Add bullet points for new user-facing features introduced by this change
+     - **Quick Start section**: Update if the basic usage pattern changed
+     - **Usage / API Reference section**: Update code examples if public API signatures changed or new exports were added
+     - **Configuration section**: Add new configuration options if introduced
+     - **Examples section**: Add new usage examples for new functionality
+     - **DO NOT** document internal implementation details, architectural decisions, or non-exported functions
+
+4. After updating documents, run `git status` to show which docs were modified
+5. Present summary:
+   ```
+   📝 Living documents updated
+   
+   Updated documents:
+   - openspec/config.yaml [via accelint-onboard-openspec / manually]
+   - ARCHITECTURE.md [via accelint-architecture-doc / manually]
+   - AGENTS.md [via accelint-onboard-agent / manually]  
+   - README.md [via accelint-readme-writer / manually]
+   
+   These changes ensure documentation stays synchronized with implementation.
+   ```
+
+**Skill availability detection**: To check if an Accelint skill is installed, use one of:
+- Check if skill appears in the available skills list in the system reminder
+- Attempt to invoke the skill and catch errors if it doesn't exist
+- Use Glob to search `.claude/skills/` for the skill name
+
+**When to skip this phase**:
+- Verification failed (CRITICAL issues) → skip to Phase 5 reporting with failure status
+- Change is trivial (typo fixes, comment updates) → use judgment on whether docs need updating
+- No living documents exist → skip gracefully with message "No living documents found to update"
+
+**Output**: Summary of updated documents and methods used (skill vs manual)
+
+### Phase 5: Report and Next Steps
 
 **Goal**: Summarize the implementation session and guide user on next steps.
 

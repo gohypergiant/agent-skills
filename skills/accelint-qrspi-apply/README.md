@@ -58,7 +58,7 @@ openspec update
 
 ## How It Works
 
-### The Four-Phase Workflow
+### The Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -68,6 +68,7 @@ openspec update
 │  Dependencies   Identify blocking tasks       Execution plan    │
 │  Execute        Run slices (parallel/serial)  Implemented code  │
 │  Verify         Run opsx:verify               Verification rpt  │
+│  Update Docs    Sync living documents         Updated docs      │
 │  Report         Show results + next steps     Archive or fix    │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -131,7 +132,22 @@ This prevents sub-agents from stepping on each other's work while maintaining fu
 4. If CRITICAL issues exist, blocks archival and offers fix options
 5. If only warnings/suggestions, approves for archive
 
-### Phase 4: Report and Next Steps
+### Phase 4: Update Living Documents
+
+**Runs ONLY if verification passed** (no CRITICAL issues):
+
+Updates project documentation to reflect implemented changes:
+
+- **openspec/config.yaml**: Updates via `accelint-onboard-openspec` or manually (project DNA: tech stack, domain concepts, code patterns)
+- **ARCHITECTURE.md**: Updates via `accelint-architecture-doc` or manually (system structure: components, deployment, infrastructure)
+- **AGENTS.md**: Updates via `accelint-onboard-agent` or manually (agent behavior: workflows, tools, guardrails)
+- **README.md**: Updates via `accelint-readme-writer` or manually (user documentation: installation, features, usage)
+
+The skill detects which Accelint skills are available and uses them when possible, falling back to manual updates with boundary-respecting instructions for each document type.
+
+**Why this matters**: OpenSpec changes represent significant architectural decisions. Living documents provide human-readable context about the system's current state. Keeping them synchronized prevents documentation drift and ensures the next engineer (or Claude) has accurate context.
+
+### Phase 5: Report and Next Steps
 
 Presents completion report:
 
@@ -225,6 +241,12 @@ Starting Level 1: Slices 2 and 3 in parallel
 Running validation...
 ✅ Validation passed
 
+Updating living documents...
+📝 Living documents updated
+- openspec/config.yaml [via accelint-onboard-openspec]
+- ARCHITECTURE.md [via accelint-architecture-doc]
+- README.md [via accelint-readme-writer]
+
 ✅ Implementation complete
 
 Ready to archive! Run: `/opsx:archive remove-security-ruleset`
@@ -258,6 +280,9 @@ Skill: Attempting to fix validation errors...
 Re-running validation...
 ✅ Validation passed
 
+Updating living documents...
+📝 Living documents updated
+
 Ready to archive!
 ```
 
@@ -281,6 +306,9 @@ Starting Level 1: Slices 3 and 4 in parallel
 
 Running validation...
 ✅ Validation passed
+
+Updating living documents...
+📝 Living documents updated
 
 Ready to archive!
 ```
@@ -330,8 +358,10 @@ Trust the resumption detection. If you clear context mid-implementation, re-invo
 ## Related Skills
 
 - `accelint-qrspi-propose` - Create QRSPI-planned changes with parallelization strategies (phase 1, prerequisite for this skill)
-- `accelint-onboard-openspec` - Set up OpenSpec configuration for your project
-- `accelint-onboard-agent` - Create AGENTS.md with behavior rules
+- `accelint-onboard-openspec` - Set up OpenSpec configuration (used in Phase 4 doc updates)
+- `accelint-onboard-agent` - Create AGENTS.md with behavior rules (used in Phase 4 doc updates)
+- `accelint-architecture-doc` - Update ARCHITECTURE.md documentation (used in Phase 4 doc updates)
+- `accelint-readme-writer` - Update README.md documentation (used in Phase 4 doc updates)
 
 ## OpenSpec Commands
 
