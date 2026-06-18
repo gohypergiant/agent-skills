@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.1.0] - 2026-06-18
+
+### Added
+- **Phase 4: Update Living Documents** — After successful verification, automatically updates project documentation to reflect implemented changes
+  - Updates openspec/config.yaml (project DNA: stack, patterns, domain concepts)
+  - Updates ARCHITECTURE.md if present (system structure: components, deployment, infrastructure)
+  - Updates AGENTS.md if present (agent behavior: workflow, tools, guardrails)
+  - Updates README.md if present (user documentation: installation, features, usage)
+- Skill availability detection to intelligently use Accelint skills when available or fall back to manual updates
+- Boundary-respecting manual update instructions for each document type:
+  - OpenSpec config: project DNA (what the project is) — tech stack, domain concepts, code patterns, per-artifact rules
+  - ARCHITECTURE.md: system structure (how components relate) — architecture layers, system diagrams, components, data stores
+  - AGENTS.md: agent behavior (how agents act) — workflows, decision heuristics, tool preferences, guardrails
+  - README.md: user documentation (public API) — installation, features, usage examples, configuration
+
+### Changed
+- Workflow Overview diagram updated to include "Update Docs" phase between Verify and Report
+- Phase 4 renamed to Phase 5 (Report and Next Steps remains the final phase)
+- Documentation update phase only runs if verification passed (no CRITICAL issues)
+
+### Rationale
+- **Why update docs post-verification**: OpenSpec changes represent significant architectural decisions and feature additions. Living documents provide human-readable context about the system's current state. Updating them post-implementation prevents documentation drift and ensures the next engineer (or Claude) has accurate context.
+- **Why skill-first with manual fallback**: Using dedicated Accelint skills ensures consistency and leverages specialized knowledge. Manual fallback instructions respect each document's scope boundaries, preventing cross-contamination (e.g., not adding agent behavior to config.yaml).
+- **Why boundary-specific instructions**: Each document serves a distinct purpose in the agent instruction stack. Manual updates must respect these boundaries to maintain separation of concerns (project DNA vs system structure vs agent behavior vs user docs).
+
+### Version
+- Bumped from 1.0.0 → 1.1.0
+
 ## [1.0.0] - 2026-05-04
 
 ### Added

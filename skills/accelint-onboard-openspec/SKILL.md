@@ -536,17 +536,19 @@ context: |
   # ═══════════════════════════════════════════════════════════════════════════
 
   ## Code Patterns
-  - Exports:        [named / default / mixed — and when each applies]
-  - Naming:         [files, variables, functions, constants, types]
-  - Error handling: [throw / Result<T,E> / boundaries / other]
-  - Validation:     [approach and library]
-  - Constants:      Use `as const` objects, never `enum`
-  - Classes:        Prefer functions over classes unless state management required or extending existing class
-  - Return values:  Return zero values (empty array, empty string, 0) instead of null/undefined
-  - Type safety:    Avoid `any` (use `unknown` or generics); avoid `enum` (use `as const` objects); use `type` over `interface`
-  - Immutability:   Prefer `const`, immutable data structures, pure functions
-  - Documentation:  Comprehensive JSDoc for all exported code (@param, @returns, @template, @example)
-  - Order:          Internal functions, variables and types should be defined before they are used (internal/export types -> internal/export constants -> internal/export functions)
+  - Exports:         [named / default / mixed — and when each applies]
+  - Naming:          [files, variables, functions, constants, types]
+  - Error handling:  [throw / Result<T,E> / boundaries / other]
+  - Validation:      [approach and library]
+  - Constants:       Use `as const` objects, never `enum`
+  - Classes:         Prefer functions over classes unless state management required or extending existing class
+  - Return values:   Return zero values (empty array, empty string, 0) instead of null/undefined
+  - Type safety:     Avoid `any` (use `unknown` or generics); avoid `enum` (use `as const` objects); use `type` over `interface`
+  - Immutability:    Prefer `const`, immutable data structures, pure functions
+  - Documentation:   Comprehensive JSDoc for all exported code (@param, @returns, @template, @example)
+  - Order:           Internal functions, variables and types should be defined before they are used (internal/export types -> internal/export constants -> internal/export functions)
+  - Parameter order: Data-last ordering — place the data being operated on as the final parameter. Enables partial application and composition.
+  - Composition:     Use curried functions when the same first parameter(s) recur across call sites.
 
   ## Architecture Patterns
   - [pattern name]: [brief description of how it's used here]

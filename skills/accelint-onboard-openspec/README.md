@@ -40,6 +40,18 @@ You need Claude Code with agent spawning for parallel inference. A git repositor
 
 The entire process takes 5-10 minutes depending on project complexity and interview depth.
 
+## Related documentation checks
+
+Before running the interview, the skill checks for existing onboarding documents:
+
+- **ARCHITECTURE.md** - Used to pre-fill infrastructure/deployment questions, avoiding redundant questions
+- **AGENTS.md / CLAUDE.md** - Noted for cross-reference in "Related Documentation" section
+- **README.md** - Noted for cross-reference in "Related Documentation" section
+
+When ARCHITECTURE.md exists, the skill announces: "Found ARCHITECTURE.md — I'll use it to avoid asking questions about deployment that are already documented."
+
+This ensures consistency across documentation and reduces interview time.
+
 ## Configuration modes
 
 The skill has three modes based on file state:
@@ -183,6 +195,24 @@ rules:
 
 Every section matters. Missing fields degrade the AI artifacts that use this config. Unresolved fields get marked `# TODO: fill in` rather than omitted.
 
+The complete template structure is defined in the skill and includes:
+
+- **Stack Facts** - Project identity, tech stack, architecture patterns, domain concepts, performance targets
+- **Patterns to Follow** - Code patterns, architecture patterns, testing patterns with AAA structure
+- **Patterns to Avoid** - Code anti-patterns, performance anti-patterns, testing anti-patterns, documentation anti-patterns
+- **Per-Artifact Rules** - Checkpoints for proposals, designs, tasks, and specifications
+- **Related Documentation** - Links to ARCHITECTURE.md, AGENTS.md/CLAUDE.md, README.md (only if files exist)
+
+### Interaction principles
+
+The interview follows conversational design:
+
+- **Bundle questions** - Group related questions into natural turns, not bullet-dump forms
+- **Infer and confirm** - "You mentioned Vitest — I'll assume testing-library for React; correct?" beats asking from scratch
+- **Examples reduce ambiguity** - When asking about conventions, provide examples for pattern-matching
+- **Preview before writing** - Show full config with confirmation before touching filesystem
+- **Infer before asking, ask before omitting** - Attempt codebase inference for all fields; mark unresolved as `# TODO:` rather than dropping sections
+
 ## YAML safety features
 
 The skill enforces YAML generation rules:
@@ -220,19 +250,57 @@ Before writing, the skill checks:
 
 After writing, it reads the file back to verify it's valid YAML.
 
+## YAML generation safety
+
+The skill enforces strict YAML syntax rules to prevent parse errors.
+
+### Quoting requirements
+
+Values starting with special characters need quotes:
+
+| Special Character | Example | Solution |
+|------------------|---------|----------|
+| `(`, `)` | `(internal) auth` | `"(internal) auth"` |
+| `[`, `]` | `[PKG:auth]` | `"[PKG:auth]"` |
+| `|` | `some|other` | `"some|other"` |
+| `:` in value | `Time: 5pm` | `"Time: 5pm"` |
+| `"`, `'` | `npm run "test"` | `'npm run "test"'` |
+
+### Block scalars
+
+Multi-line content uses literal block indicators:
+
+```yaml
+context: |
+  Line 1
+  Line 2
+  Line 3
+```
+
+### Validation checklist
+
+After generating config, the skill verifies:
+- No tab characters (YAML requires spaces)
+- Matching quote pairs
+- Consistent 2-space indentation
+- Aligned list items
+- Quoted special characters
+
+It reads the file back after writing to catch any parse errors.
+
 ## Smart defaults
 
 The skill suggests stack-specific conventions. Next.js + TypeScript + Tailwind gets questions about App Router vs Pages Router, Server Component boundaries, and `"use client"` directive placement. React + Vitest assumes `userEvent` over `fireEvent` and role-based queries. Python + FastAPI asks about Pydantic v1 vs v2 and dependency injection. Node.js + Prisma asks about transaction patterns and soft-delete conventions.
 
 This reduces open-ended questions.
 
-## Companion skill: `accelint-onboard-agent`
+## Companion skill: `accelint-onboard-agents`
 
-This skill produces the project DNA layer (structural facts). Its companion `accelint-onboard-agent` produces the behavior layer (`AGENTS.md` / `CLAUDE.md`) covering how the agent acts, communicates, and makes decisions.
+This skill produces the project DNA layer (structural facts). Its companion `accelint-onboard-agents` produces the behavior layer (`AGENTS.md` / `CLAUDE.md`) covering how the agent acts, communicates, and makes decisions.
 
 If you volunteer behavioral content during the OpenSpec interview (commit conventions, workflow steps, tool preferences), the skill will redirect you:
 
-> "That's behavioral - it belongs in AGENTS.md. I'll note it here for reference, but the `accelint-onboard-agent` skill is where to capture it."
+> "That's behavioral - it belongs in AGENTS.md. I'll note it here for reference, but the `accelint-onboard-agents` skill is where to capture it."
 
 The two skills don't overlap.
 
@@ -309,6 +377,6 @@ Apache-2.0
 
 ## Related skills
 
-- `accelint-onboard-agent` - Generate behavioral configuration (`AGENTS.md` / `CLAUDE.md`)
+- `accelint-onboard-agents` - Generate behavioral configuration (`AGENTS.md` / `CLAUDE.md`)
 - `accelint-readme-writer` - Generate README documentation
-- `accelint-architecture-doc` - Create architecture.md with parallel discovery (pattern reference for this skill)
+- `accelint-architecture-doc` - Create ARCHITECTURE.md with parallel discovery (pattern reference for this skill)

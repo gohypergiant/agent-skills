@@ -61,7 +61,8 @@ The skill operates in three phases:
 Before scanning anything, the skill checks:
 
 1. **Monorepo detection** - figures out if you're at the repo root or inside a package, then adjusts scope
-2. **File state** - checks if ARCHITECTURE.md exists and whether it follows the standard template
+2. **Related documents** - looks for openspec/config.yml to extract stack facts and avoid redundant scanning
+3. **File state** - checks if ARCHITECTURE.md exists and whether it follows the standard template
 
 Based on what it finds, it picks one of three modes:
 
@@ -257,13 +258,17 @@ For each detected change, the skill asks questions to understand the context ins
 
 ### Agent Behavior Doc Integration
 
-If the skill finds `AGENTS.md` or `CLAUDE.md` during discovery, it adds a reference block at the top of ARCHITECTURE.md:
+After writing ARCHITECTURE.md, if the skill found `AGENTS.md` or `CLAUDE.md` during discovery, it updates the agent behavior file to reference ARCHITECTURE.md. This ensures agents know where to look for system architecture details.
+
+The skill adds this block to the agent behavior file:
 
 ```markdown
-> **Agent Behavior:** See [AGENTS.md](./AGENTS.md) for how AI agents should behave when working in this codebase.
+## System Architecture
+
+For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
 ```
 
-This connects architectural context with behavioral instructions.
+This creates a one-way reference: agent behavior docs point to architecture docs (not the reverse), since understanding system architecture informs agent behavior.
 
 ### Inference Source Annotations
 
