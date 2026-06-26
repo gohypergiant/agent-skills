@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Accelint QRSPI Apply
@@ -39,9 +39,8 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 │  Dependencies   Identify blocking tasks       Execution plan    │
 │  Load Context   Read config.yaml context      Project context   │
 │  Execute        Run slices (parallel/serial)  Implemented code  │
-│  Verify         Run opsx:verify               Verification rpt  │
 │  Update Docs    Sync living documents         Updated docs      │
-│  Report         Show results + next steps     Archive or fix    │
+│  Verify         Run opsx:verify               Verification rpt  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -334,12 +333,175 @@ For each level with multiple independent slices:
 
 The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove CLI Surface", "## Slice 2: Remove Implementation"), making it straightforward for sub-agents to identify their scope.
 
-### Phase 4: Verify Implementation
+### Phase 4: Update Living Documents
+
+**Goal**: Update project documentation to reflect the implemented changes before running verification.
+
+**Why this matters**: OpenSpec changes represent significant architectural decisions and feature additions. Living documents (ARCHITECTURE.md, AGENTS.md, openspec/config.yaml) provide context for agents working in the codebase, while README.md serves human users. Keeping them synchronized prevents documentation drift and ensures future agents and developers have accurate, up-to-date context about the system's current state.
+
+**IMPORTANT**: Run this phase BEFORE verification so the verification step can check documentation completeness.
+
+**Steps**:
+
+1. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
+2. Determine the repo/package root (may be current directory or a parent)
+3. **Process ALL living documents** in this order (do not stop after the first one):
+   - OpenSpec config (`openspec/config.yaml`)
+   - ARCHITECTURE.md (if exists)
+   - AGENTS.md (if exists)
+   - README.md (if exists)
+
+   For each document in the list above, follow these steps:
+
+   **Step 3a: Check if update is needed first**
+   - Read the change artifacts to understand what was implemented:
+     * `openspec/changes/<change-name>/proposal.md`
+     * `openspec/changes/<change-name>/design.md`
+   - Assess whether this change introduces content that would affect the document
+   - If the change is trivial (typos, comments) or doesn't touch the document's scope, skip to the next document
+
+   **Step 3b: Update the document if needed**
+
+   **For OpenSpec config** (`<repo-root>/openspec/config.yaml`):
+   - Check if `accelint-onboard-openspec` skill is installed
+   - If skill is available:
+     ```
+     /accelint-onboard-openspec
+     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the openspec/config.yaml is current and up to date.
+     ```
+     The skill will read the proposal and design from the change directory to understand what was implemented and update the config accordingly.
+
+   - If skill is NOT available, read the change artifacts:
+     - `openspec/changes/<change-name>/proposal.md`
+     - `openspec/changes/<change-name>/design.md`
+
+     Then read `openspec/config.yaml` and update manually focusing on **project DNA (WHAT the project is)**:
+     - **Tech Stack section**: Add new dependencies, frameworks, or libraries introduced by this change with versions
+     - **Domain Concepts section**: Add new entities or domain terms if this change introduces them
+     - **Code Patterns section**: Update if this change establishes new patterns (exports, error handling, validation approaches)
+     - **Architecture Patterns section**: Add new design patterns if introduced (factory, repository, observer, etc.)
+     - **Patterns to Avoid section**: Add any anti-patterns this change deprecates or makes explicit
+     - **Per-artifact rules** (`rules:` section): Update if this change affects proposal/design/tasks/spec requirements
+     - **DO NOT** add agent behavior (commit conventions, workflow steps, tool preferences belong in AGENTS.md)
+
+   **For ARCHITECTURE.md** (`<repo-root>/ARCHITECTURE.md`) — IF it exists:
+   - Check if `accelint-architecture-doc` skill is installed
+   - If skill is available:
+     ```
+     /accelint-architecture-doc
+     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the ARCHITECTURE.md is current and up to date.
+     ```
+     The skill will read the proposal and design from the change directory to understand what was implemented and update ARCHITECTURE.md accordingly.
+
+   - If skill is NOT available, read the change artifacts:
+     - `openspec/changes/<change-name>/proposal.md`
+     - `openspec/changes/<change-name>/design.md`
+
+     Then read `ARCHITECTURE.md` and update manually focusing on **system structure (HOW components relate)**:
+     - **Section 1 (Project Structure)**: Update directory tree if new top-level directories or significant reorganization occurred
+     - **Section 2 (High-Level System Diagram)**: Update ASCII diagram if component relationships changed or new services were added
+     - **Section 3 (Core Components)**: Add new components, services, or packages introduced by this change with their architectural roles
+     - **Section 4 (Data Stores)**: Add new databases, caches, or data stores if introduced
+     - **Section 5 (External Integrations)**: Add new third-party services or APIs this change integrates with
+     - **Section 6 (Deployment & Infrastructure)**: Update if deployment model changed or new infrastructure was added
+     - **Section 8 (Technology Stack)**: Update if this change introduced new runtime dependencies or frameworks
+     - **DO NOT** add coding patterns, testing conventions, or agent behavior (those belong in config.yaml or AGENTS.md)
+
+   **For AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
+   - Check if `accelint-onboard-agent` skill is installed
+   - If skill is available:
+     ```
+     /accelint-onboard-agent
+     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the AGENTS.md is current and up to date.
+     ```
+     The skill will read the proposal and design from the change directory to understand what was implemented and update AGENTS.md accordingly.
+
+   - If skill is NOT available, read the change artifacts:
+     - `openspec/changes/<change-name>/proposal.md`
+     - `openspec/changes/<change-name>/design.md`
+
+     Then read `AGENTS.md` and update manually focusing on **agent behavior (HOW agents should act)**:
+     - **Workflow Procedures section**: Update if this change introduces new workflow steps (e.g., new pre-commit checks, new PR requirements)
+     - **Decision Heuristics section**: Add new decision rules if this change creates situations requiring agent judgment
+     - **Tool Preferences section**: Update if new tools were introduced or tool usage changed (e.g., new test runner, new linter)
+     - **Guardrails section**: Add new "never do" or "always ask first" rules if this change creates new risk areas
+     - **Pre-Commit Checklist**: Add new validation commands if required before commit
+     - **Commit Messages section**: Update if commit convention changed
+     - **DO NOT** add tech stack facts, domain concepts, or coding patterns (those belong in config.yaml)
+
+   **For README.md** (`<repo-root>/README.md`) — IF it exists:
+   - Check if `accelint-readme-writer` skill is installed
+   - If skill is available:
+     ```
+     /accelint-readme-writer
+     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the README.md is current and up to date.
+     ```
+     The skill will read the proposal and design from the change directory to understand what was implemented and update README.md accordingly.
+
+   - If skill is NOT available, read the change artifacts:
+     - `openspec/changes/<change-name>/proposal.md`
+     - `openspec/changes/<change-name>/design.md`
+
+     Then read `README.md` and update manually focusing on **user-facing documentation**:
+     - **Installation section**: Update commands if new dependencies or setup steps were added
+     - **Features section**: Add bullet points for new user-facing features introduced by this change
+     - **Quick Start section**: Update if the basic usage pattern changed
+     - **Usage / API Reference section**: Update code examples if public API signatures changed or new exports were added
+     - **Configuration section**: Add new configuration options if introduced
+     - **Examples section**: Add new usage examples for new functionality
+     - **DO NOT** document internal implementation details, architectural decisions, or non-exported functions
+
+**Skill availability detection**: To check if an Accelint skill is installed, use one of:
+- Check if skill appears in the available skills list in the system reminder
+- Attempt to invoke the skill and catch errors if it doesn't exist
+- Use Glob to search `.claude/skills/` or `~/.claude/skills/` for the skill name
+
+**When to skip updates for a specific document**:
+- Change is trivial (typo fixes, comment updates) and doesn't affect that document's scope
+- Document doesn't exist
+- Change content doesn't introduce anything requiring updates to that document
+
+**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to Phase 5 (Verify Implementation).
+
+4. After checking all 4 documents, run `git status` to show which docs were modified
+
+5. Present summary (then immediately continue to Phase 5):
+
+   - If no updates were needed:
+     ```
+     📝 Living documents checked — no updates needed for this change
+
+     Checked documents:
+     - openspec/config.yaml [no changes needed]
+     - ARCHITECTURE.md [no changes needed]
+     - AGENTS.md [no changes needed]
+     - README.md [no changes needed]
+
+     Proceeding to Phase 5: Verify Implementation...
+     ```
+
+   - If updates were made:
+     ```
+     📝 Living documents updated
+
+     Updated documents:
+     - openspec/config.yaml [via accelint-onboard-openspec / manually / skipped]
+     - ARCHITECTURE.md [via accelint-architecture-doc / manually / skipped]
+     - AGENTS.md [via accelint-onboard-agent / manually / skipped]
+     - README.md [via accelint-readme-writer / manually / skipped]
+
+     These changes ensure documentation stays synchronized with implementation.
+
+     Proceeding to Phase 5: Verify Implementation...
+     ```
+
+**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, then **MANDATORY automatic transition to Phase 5 without waiting for user input**
+
+### Phase 5: Verify Implementation
 
 **Goal**: Verify that the implementation matches the change artifacts (specs, tasks, design).
 
-CRITICAL: Verification is MANDATORY before declaring a change ready to archive.
-Do NOT skip this phase or mark the change as complete without running verification.
+**CRITICAL**: This is the FINAL phase. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this phase.
 
 **Steps**:
 
@@ -352,236 +514,22 @@ Do NOT skip this phase or mark the change as complete without running verificati
    - Check task completion (all checkboxes marked)
    - Verify spec coverage (requirements implemented)
    - Validate design adherence (decisions followed)
-   - Generate a verification report with CRITICAL/WARNING/SUGGESTION issues
+   - Check that living documents were updated appropriately
+   - Generate a comprehensive verification report with CRITICAL/WARNING/SUGGESTION issues
+   - Include next steps (archive if passed, fix issues if failed)
 
 3. Present the verification report to the user
 
-4. Determine next steps based on verification results:
+4. The verification report IS the completion report. It includes:
+   - Overall status (passed/failed)
+   - Issue breakdown by severity
+   - List of changed files
+   - Next steps based on status
+   - Archive guidance if ready
 
-   **If CRITICAL issues exist:**
-   ```
-   ⚠️ Critical issues found. Cannot proceed to documentation updates.
+5. Exit the skill after presenting the verification report. The report already tells the user what to do next.
 
-   [verification report from opsx:verify]
-
-   Options:
-   1. Fix issues manually and re-verify
-   2. I can attempt to fix issues automatically
-   ```
-
-   If the user chooses option 1 or 2, fix the issues, re-run verification, and continue. If verification still fails or user declines to fix, **skip directly to Phase 6 (Report)** with failure status.
-
-   **If no CRITICAL issues (passed or warnings only):**
-   ```
-   ✅ Verification passed
-
-   [verification report from opsx:verify]
-   ```
-
-   **Immediately proceed to Phase 5 (Update Living Documents)**. Do NOT wait for user input or stop here.
-
-**Output**: Verification report from `opsx:verify`, then automatic transition to Phase 5 or Phase 6
-
-### Phase 5: Update Living Documents
-
-**Goal**: After successful verification, update project documentation to reflect the implemented changes.
-
-**CRITICAL: This phase runs AUTOMATICALLY after Phase 4 if verification passed.** Do NOT stop after Phase 4 — immediately proceed to this phase without waiting for user input.
-
-**When this phase runs**:
-- ✅ Verification passed (no CRITICAL issues) → **Run this phase NOW**
-- ❌ Verification failed (CRITICAL issues) → Skip directly to Phase 6 with failure report
-
-**Why this matters**: OpenSpec changes represent significant architectural decisions and feature additions. Living documents (ARCHITECTURE.md, AGENTS.md, README.md, openspec config) provide human-readable context about the system's current state. Keeping them synchronized prevents documentation drift and ensures the next engineer (or Claude) has accurate context.
-
-**Implementation**: This phase MUST be executed in a sub-agent to maintain context separation and allow efficient parallel processing of documentation updates.
-
-**Steps**:
-
-1. Spawn a sub-agent with the following prompt:
-   ```
-   Update living documents for OpenSpec change: <change-name>
-
-   CRITICAL: Read the change artifacts to understand what was implemented:
-   - openspec/changes/<change-name>/proposal.md
-   - openspec/changes/<change-name>/design.md
-   - openspec/changes/<change-name>/specs/**/*.md
-   - openspec/changes/<change-name>/tasks.md
-
-   Based on the change content, update living documents sequentially:
-
-   1. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
-   2. Determine the repo/package root (may be current directory or a parent)
-   3. For each living document, check if it exists and if an Accelint skill is available to update it:
-
-      **a) Update OpenSpec config** (`<repo-root>/openspec/config.yaml`):
-      - Check if `accelint-onboard-openspec` skill is installed
-      - If skill is available:
-        ```
-        /accelint-onboard-openspec Given this change, we need to make sure that the config is current and up to date
-        ```
-      - If skill is NOT available, read `openspec/config.yaml` and update manually focusing on **project DNA (WHAT the project is)**:
-        - **Tech Stack section**: Add new dependencies, frameworks, or libraries introduced by this change with versions
-        - **Domain Concepts section**: Add new entities or domain terms if this change introduces them
-        - **Code Patterns section**: Update if this change establishes new patterns (exports, error handling, validation approaches)
-        - **Architecture Patterns section**: Add new design patterns if introduced (factory, repository, observer, etc.)
-        - **Patterns to Avoid section**: Add any anti-patterns this change deprecates or makes explicit
-        - **Per-artifact rules** (`rules:` section): Update if this change affects proposal/design/tasks/spec requirements
-        - **DO NOT** add agent behavior (commit conventions, workflow steps, tool preferences belong in AGENTS.md)
-
-      **b) Update ARCHITECTURE.md** (`<repo-root>/ARCHITECTURE.md`) — IF it exists:
-      - Check if `accelint-architecture-doc` skill is installed
-      - If skill is available:
-        ```
-        /accelint-architecture-doc Given this change, we need to make sure that the ARCHITECTURE.md is current and up to date
-        ```
-      - If skill is NOT available, read `ARCHITECTURE.md` and update manually focusing on **system structure (HOW components relate)**:
-        - **Section 1 (Project Structure)**: Update directory tree if new top-level directories or significant reorganization occurred
-        - **Section 2 (High-Level System Diagram)**: Update ASCII diagram if component relationships changed or new services were added
-        - **Section 3 (Core Components)**: Add new components, services, or packages introduced by this change with their architectural roles
-        - **Section 4 (Data Stores)**: Add new databases, caches, or data stores if introduced
-        - **Section 5 (External Integrations)**: Add new third-party services or APIs this change integrates with
-        - **Section 6 (Deployment & Infrastructure)**: Update if deployment model changed or new infrastructure was added
-        - **Section 8 (Technology Stack)**: Update if this change introduced new runtime dependencies or frameworks
-        - **DO NOT** add coding patterns, testing conventions, or agent behavior (those belong in config.yaml or AGENTS.md)
-
-      **c) Update AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
-      - Check if `accelint-onboard-agent` skill is installed
-      - If skill is available:
-        ```
-        /accelint-onboard-agent Given this change, we need to make sure that the AGENTS.md is current and up to date
-        ```
-      - If skill is NOT available, read `AGENTS.md` and update manually focusing on **agent behavior (HOW agents should act)**:
-        - **Workflow Procedures section**: Update if this change introduces new workflow steps (e.g., new pre-commit checks, new PR requirements)
-        - **Decision Heuristics section**: Add new decision rules if this change creates situations requiring agent judgment
-        - **Tool Preferences section**: Update if new tools were introduced or tool usage changed (e.g., new test runner, new linter)
-        - **Guardrails section**: Add new "never do" or "always ask first" rules if this change creates new risk areas
-        - **Pre-Commit Checklist**: Add new validation commands if required before commit
-        - **Commit Messages section**: Update if commit convention changed
-        - **DO NOT** add tech stack facts, domain concepts, or coding patterns (those belong in config.yaml)
-
-      **d) Update README.md** (`<repo-root>/README.md`) — IF it exists:
-      - Check if `accelint-readme-writer` skill is installed
-      - If skill is available:
-        ```
-        /accelint-readme-writer Given this change, we need to make sure that the README.md is current and up to date
-        ```
-      - If skill is NOT available, read `README.md` and update manually focusing on **user-facing documentation**:
-        - **Installation section**: Update commands if new dependencies or setup steps were added
-        - **Features section**: Add bullet points for new user-facing features introduced by this change
-        - **Quick Start section**: Update if the basic usage pattern changed
-        - **Usage / API Reference section**: Update code examples if public API signatures changed or new exports were added
-        - **Configuration section**: Add new configuration options if introduced
-        - **Examples section**: Add new usage examples for new functionality
-        - **DO NOT** document internal implementation details, architectural decisions, or non-exported functions
-
-   4. After updating documents, run `git status` to show which docs were modified
-   5. Report back:
-      - If NO updates were needed: "No living document updates required for this change"
-      - If updates were made: List which documents were updated and how (skill vs manual)
-
-   **Skill availability detection**: To check if an Accelint skill is installed, use one of:
-   - Check if skill appears in the available skills list in the system reminder
-   - Attempt to invoke the skill and catch errors if it doesn't exist
-   - Use Glob to search `.claude/skills/` for the skill name
-
-   **When to skip updates for a specific document**:
-   - Change is trivial (typo fixes, comment updates) and doesn't affect that document's scope
-   - Document doesn't exist
-   - Change content doesn't introduce anything requiring updates to that document
-
-   Process all documents sequentially, one after another, without pausing between them unless updates are actually needed and user input is required.
-   ```
-
-2. Wait for the sub-agent to complete
-
-3. Review the sub-agent's report and present summary:
-
-   - If no updates were needed:
-     ```
-     📝 No living document updates required for this change
-     ```
-
-   - If updates were made:
-     ```
-     📝 Living documents updated
-
-     Updated documents:
-     - openspec/config.yaml [via accelint-onboard-openspec / manually]
-     - ARCHITECTURE.md [via accelint-architecture-doc / manually]
-     - AGENTS.md [via accelint-onboard-agent / manually]
-     - README.md [via accelint-readme-writer / manually]
-
-     These changes ensure documentation stays synchronized with implementation.
-     ```
-
-4. **Immediately proceed to Phase 6 (Report and Next Steps)**. Do NOT wait for user input or stop here.
-
-**When to skip this phase entirely**:
-- Verification failed (CRITICAL issues) → already skipped to Phase 6 from Phase 4
-
-**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, then automatic transition to Phase 6
-
-### Phase 6: Report and Next Steps
-
-**Goal**: Summarize the implementation session and guide user on next steps.
-
-**CRITICAL: This is the FINAL phase.** After Phase 5 completes (or if Phase 4 failed), automatically proceed to this phase without stopping.
-
-**Steps**:
-
-1. Read the final tasks.md to count completed vs total tasks
-2. Run `git status` to show changed files
-3. Present completion report:
-
-   **If verification passed (no CRITICAL issues):**
-   ```
-   ✅ Implementation complete
-
-   **Change:** <change-name>
-   **Tasks:** N/N complete
-   **Verification:** ✅ Passed (see report above for any warnings/suggestions)
-   **Files changed:** M
-
-   ### Summary
-   - Slice 1: [brief description of changes]
-   - Slice 2: [brief description of changes]
-   - Slice 3: [brief description of changes]
-
-   ### Changed files
-   [output from git status --short]
-
-   ### Next steps
-   1. Review the changes: `git diff`
-   2. Run tests: [project-specific test command]
-   3. Archive this change: `/opsx:archive <change-name>`
-
-   Ready to archive!
-   ```
-
-   **If verification failed (CRITICAL issues):**
-   ```
-   ⚠️ Implementation complete with critical issues
-
-   **Change:** <change-name>
-   **Tasks:** N/N complete
-   **Verification:** ❌ Failed (see report above)
-   **Files changed:** M
-
-   ### Critical Issues
-   [CRITICAL issues from verification report]
-
-   ### Next steps
-   1. Fix critical issues
-   2. Re-run verification: `/opsx:verify <change-name>`
-   3. Or re-invoke this skill to retry
-
-   Not ready to archive until critical issues are resolved.
-   ```
-
-4. Exit the skill — do NOT automatically archive
-
-**Output**: Completion report with status and next steps
+**Output**: Comprehensive verification report with status, issues, changed files, and next steps
 
 ## Key Principles
 
@@ -604,9 +552,9 @@ The skill automatically detects parallelization opportunities from the "Parallel
 
 If no parallelization strategy is found, the skill runs tasks sequentially. This ensures correctness even for changes that weren't planned with parallelization in mind.
 
-### Validation Before Archive
+### Verification Before Archive
 
-The skill always runs `openspec validate` before declaring the change "ready to archive". This catches incomplete tasks, broken references, or schema violations before the user archives.
+The skill always runs `/opsx:verify` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
 
 ### Human-in-the-Loop
 
@@ -650,11 +598,13 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 **NEVER implement tasks directly** — Always delegate to `/opsx:apply` command via sub-agents. The /opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
 
-**NEVER skip verification** — Phase 3 verification using `/opsx:verify` is mandatory before declaring a change ready to archive. Verification catches incomplete tasks, unimplemented requirements, and design divergences. Skipping verification risks archiving incomplete or incorrect implementations.
+**NEVER skip verification** — Phase 5 verification using `/opsx:verify` is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
 
 **NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
 
 **NEVER skip dependency levels** — If Slice A blocks Slice B, Slice B cannot start until Slice A completes successfully. Do not spawn dependent slices before their blockers finish, even if it would speed up implementation. The dependency graph in the Parallelization Strategy must be respected.
+
+**NEVER skip living document updates** — Phase 4 updates living documents (ARCHITECTURE.md, AGENTS.md, README.md, config.yaml) to keep documentation synchronized with implementation. This phase runs BEFORE verification so the verification step can check documentation completeness. Do not skip to verification without updating living documents first.
 
 ## Configuration Requirements
 
@@ -690,20 +640,31 @@ Starting Level 1: Slices 2 and 3 in parallel
 ✓ Slice 2 complete (4 tasks, ~6 minutes)
 ✓ Slice 3 complete (4 tasks, ~7 minutes)
 
-Running validation...
-✅ Validation passed
+Updating living documents...
+📝 Living documents updated
+- README.md [via accelint-readme-writer]
+- ARCHITECTURE.md [via accelint-architecture-doc]
 
-✅ Implementation complete
+Running verification...
+✅ Verification passed
+
+**Verification Report**
 
 **Change:** remove-security-ruleset
 **Tasks:** 12/12 complete
-**Validation:** ✅ Passed
 **Files changed:** 67
 
-Ready to archive! Run: `/opsx:archive remove-security-ruleset`
+All requirements implemented. No critical issues found.
+
+### Next Steps
+1. Review the changes: `git diff`
+2. Run tests: `pnpm test`
+3. Archive this change: `/opsx:archive remove-security-ruleset`
+
+Ready to archive!
 ```
 
-**Scenario 2: Validation failure**
+**Scenario 2: Verification failure**
 
 ```
 User: Apply the auth-refactor change
@@ -712,29 +673,26 @@ Skill: Applying change: auth-refactor
 
 [implementation proceeds...]
 
-Running validation...
-❌ Validation failed
+Updating living documents...
+📝 Living documents updated
+- ARCHITECTURE.md [via accelint-architecture-doc]
 
-Errors:
+Running verification...
+❌ Verification failed
+
+**Verification Report**
+
+**Change:** auth-refactor
+**Critical Issues:**
 - Task 3.2 in tasks.md is incomplete (checkbox not marked)
 - Spec file specs/auth-service.md references non-existent file: src/old-auth.ts
 
-Options:
-1. Fix issues manually and re-validate
-2. I can attempt to fix issues automatically
-3. Skip validation and proceed (not recommended)
+**Next Steps:**
+1. Fix critical issues
+2. Re-run verification: `/opsx:verify auth-refactor`
+3. Or re-invoke this skill to retry
 
-User: Fix them automatically
-
-Skill: Attempting to fix validation errors...
-
-- Marking task 3.2 as complete in tasks.md
-- Updating spec reference from src/old-auth.ts → src/auth-service.ts
-
-Re-running validation...
-✅ Validation passed
-
-Ready to archive!
+Not ready to archive until critical issues are resolved.
 ```
 
 **Scenario 3: No parallelization (safe fallback)**
@@ -755,8 +713,15 @@ Working on task 2/3: Add examples section
 Working on task 3/3: Update changelog
 ✓ Complete
 
-Running validation...
-✅ Validation passed
+Updating living documents...
+📝 Living documents updated
+- README.md [via accelint-readme-writer]
 
+Running verification...
+✅ Verification passed
+
+**Verification Report**
+
+**Change:** update-readme
 All tasks complete. Ready to archive!
 ```

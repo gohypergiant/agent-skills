@@ -1,5 +1,58 @@
 # Changelog
 
+## [1.3.0] - 2026-06-25
+
+### Changed
+- **Reordered workflow phases** — Living document updates now run BEFORE verification instead of after
+  - **Phase 4: Update Living Documents** (moved up from Phase 5)
+  - **Phase 5: Verify Implementation** (moved down from Phase 4) — now the final phase
+  - **Removed Phase 6: Report and Next Steps** — verification report now serves as final output
+  - Rationale: Running documentation updates before verification allows verification to check documentation completeness
+- **Simplified living document update execution** — Removed sub-agent wrapper for documentation updates
+  - Skills (`accelint-onboard-openspec`, `accelint-architecture-doc`, `accelint-onboard-agent`, `accelint-readme-writer`) now invoked directly in main flow
+  - Removed explicit reading of change artifacts before skill invocation
+  - Skills now receive change path in invocation: `We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the [document] is current and up to date.`
+  - Skills read proposal/design themselves during exploration phase
+  - Avoids subagent nesting limitation (Claude only allows single nesting, but these skills spawn their own subagents)
+- **Updated "Why this matters" explanation** in Phase 4 to clarify that ARCHITECTURE.md, AGENTS.md, and config.yaml are primarily for agent context (not just human documentation)
+- **Document update process now includes efficiency check** — Before updating each living document, the skill now reads proposal.md and design.md to assess whether the change affects that document's scope
+  - Rationale: Skipping updates for trivial changes (typos, comments) or changes that don't touch a document's scope reduces token usage
+  - Each document gets checked via "Step 3a: Check if update is needed first" before "Step 3b: Update the document if needed" is performed
+
+### Fixed
+- **Living document skills can now properly explore** — Removing the sub-agent wrapper allows the documentation update skills to spawn their own subagents for exploration without hitting Claude's single-nesting limitation
+- **Verification report is now the final output** — No redundant reporting after verification since `/opsx:verify` already provides comprehensive results with next steps
+- **Living document phase now processes ALL documents sequentially** — Fixed issue where Phase 4 stopped after checking only the first living document (openspec/config.yaml)
+  - **Root cause**: Instructions said "for each living document" but didn't provide explicit enumeration ensuring all 4 documents get processed
+  - **Impact**: ARCHITECTURE.md, AGENTS.md, and README.md were never checked or updated, causing documentation drift
+  - **Solution**:
+    - Added explicit list of all 4 documents at start of Phase 4: config, ARCHITECTURE, AGENTS, README
+    - Restructured document update instructions with clear "Step 3a: Check if update is needed first" and "Step 3b: Update the document if needed"
+    - Added cursory check before each document update to assess if changes are needed based on proposal/design
+    - Emphasized "Process ALL living documents" and "do not stop after the first one"
+- **Verification now runs automatically after living documents** — Fixed issue where Phase 5 (Verify) never ran after Phase 4 (Update Living Docs)
+  - **Root cause**: Phase 4 presented a summary and stopped without explicit transition to Phase 5
+  - **Impact**: Verification was skipped, meaning incomplete tasks and broken references went undetected before archive
+  - **Solution**:
+    - Added "MANDATORY automatic transition to Phase 5 without waiting for user input" to Phase 4 output specification
+    - Updated Phase 4 summary templates to include "Proceeding to Phase 5: Verify Implementation..." at the end
+    - Emphasized "Immediately proceed to Phase 5" in output instructions
+    - Made it clear that Phase 4 → Phase 5 transition is automatic, not user-triggered
+
+### Rationale
+- **Why move docs before verification**: Verification can check that documentation was updated to reflect changes, making documentation completeness part of the verification criteria
+- **Why remove sub-agent wrapper**: Each documentation skill (`accelint-architecture-doc`, etc.) needs to spawn its own subagents for exploration. Wrapping them in another subagent would exceed Claude's single-nesting limit, preventing proper exploration
+- **Why skills read specs themselves**: Documentation skills are designed to be exploratory and self-sufficient. By providing only the change path, we let them determine what to read and how deeply to explore, which works better than pre-loading context
+- **Why verification is the final phase**: The `/opsx:verify` command already outputs a comprehensive report including status, issues, file changes, and next steps. Creating a separate Phase 6 report was redundant
+- **Why clarify document purposes**: Understanding that ARCHITECTURE.md, AGENTS.md, and config.yaml primarily serve agent context (not human documentation) helps explain why keeping them synchronized is critical for future agent work
+- **Why explicit document list**: Claude needs clear enumeration to process all items in a sequence. "For each document" without listing them can lead to stopping after the first one
+- **Why check-before-update**: Reading proposal/design to determine if updates are needed is cheaper than always running documentation skills or manual updates. Changes that don't affect a document's scope can be skipped entirely
+- **Why automatic transitions**: Phase 4 and Phase 5 are not user decision points — they're mandatory workflow steps. Stopping and waiting for user input breaks the end-to-end workflow contract
+- **Why emphasize "ALL documents"**: Prevents the skill from treating the first document as representative of the whole phase and exiting early
+
+### Version
+- Bumped from 1.2.0 → 1.3.0
+
 ## [1.2.0] - 2026-06-24
 
 ### Added
