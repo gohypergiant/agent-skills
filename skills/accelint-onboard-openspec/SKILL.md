@@ -637,6 +637,7 @@ rules:
     # Technical depth:
     - Use ASCII diagrams for data flows, state machines, architecture
     - Call out performance implications where relevant
+    - Any new abstraction, interface, or dependency introduced must have its "Alternatives Considered" entry explicitly rule out stdlib, an existing project utility (per config.yaml), and an installed dependency.
     [user-specific design rules]
 
     # Constraints:

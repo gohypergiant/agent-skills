@@ -538,10 +538,12 @@ with placeholder text.
 | Uncertain about scope | [ask / proceed with stated assumption] |
 | Deleting files | [always ask first] |
 | Changing public API | [always ask first] |
-| Adding a new dependency | [ask, state rationale] |
-| Modifying shared utilities | [ask, list affected packages] |
 | Discovering scope creep mid-task | [pause and surface to user] |
 | Two equally valid approaches | [pick one and state choice / ask] |
+| Adding a new dependency | Check stdlib, native platform features, and already-installed deps first; if none cover it, ask and state rationale |
+| Modifying shared utilities | Check this repo's shared-utility location (config.yaml → Architecture Patterns → Shared code) before writing something new; if extending, ask and list affected packages |
+| Introducing a new abstraction (interface, factory, config) for one use case | Don't — implement directly; add the abstraction once a second concrete use case exists |
+| Taking a shortcut with a known ceiling (naive scan, global lock, hardcoded limit) | Take it, mark it with `// NOTE:` naming the ceiling and the upgrade trigger — use the existing comment convention, not a new tag |
 | *(TypeScript)* Adding JSDoc to exported code | Always add comprehensive docs |
 | *(TypeScript)* Adding JSDoc to internal code | Use judgment — document non-obvious behavior only |
 | *(TypeScript)* Writing tests for pure functions with invariants | Consider property-based testing with fast-check |
@@ -575,6 +577,9 @@ with placeholder text.
 ## Guardrails
 
 ### Never (hard stops — no exceptions)
+- [ ] Never simplify away trust-boundary input validation, error handling that
+      prevents data loss, security checks, or accessibility basics — the
+      minimalism heuristics above never override this
 - [ ] Never force-push to any branch
 - [ ] Never commit secrets, tokens, or credentials
 - [ ] Never break backward compatibility without explicit approval
@@ -614,9 +619,9 @@ with placeholder text.
 
 <!-- Include only files that actually exist in the repository -->
 
-- **openspec/config.yaml** — Project DNA: stack facts, coding patterns, domain concepts  
+- **openspec/config.yaml** — Project DNA: stack facts, coding patterns, domain concepts
   *(Separation of concerns: this file defines WHAT the project is; AGENTS.md defines HOW agents behave)*
-- **ARCHITECTURE.md** — System architecture, deployment overview, component interactions  
+- **ARCHITECTURE.md** — System architecture, deployment overview, component interactions
   *(Reference this when behavioral decisions depend on understanding system structure)*
 - **README.md** — Installation, quick start, usage guide for developers
 ```
