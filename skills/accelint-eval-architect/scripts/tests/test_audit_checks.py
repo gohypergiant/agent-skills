@@ -358,3 +358,90 @@ def test_stale_rubric_placeholder_literal_fires_unverifiable_medium(tmp_path):
     assert len(findings) == 1
     assert findings[0]["severity"] == "MEDIUM"
     assert "metrics/quality.py" in findings[0]["evidence"]
+
+
+def test_geval_both_kwargs_high_finding(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "metrics" / "judge_metric.py").write_text(
+        'class M(GEval):\n'
+        '    def __init__(self, judge):\n'
+        '        super().__init__(name="M", criteria="c",\n'
+        '                         evaluation_steps=["s"], model=judge)\n',
+        encoding="utf-8"
+    )
+    findings = audit_checks.check_geval_criteria_and_steps(d)
+    assert len(findings) == 1
+    assert findings[0]["severity"] == "HIGH"
+    assert "judge_metric.py" in findings[0]["evidence"]
+
+
+def test_geval_steps_only_no_finding(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "metrics" / "judge_metric.py").write_text(
+        'class M(GEval):\n'
+        '    def __init__(self, judge):\n'
+        '        super().__init__(name="M", evaluation_steps=["s"], model=judge)\n',
+        encoding="utf-8"
+    )
+    assert audit_checks.check_geval_criteria_and_steps(d) == []
+
+
+def test_scale_restated_medium_finding(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "metrics" / "m1.py").write_text(
+        'STEPS = ["Assign a score from 0 (poor) to 1 (excellent)."]\n', encoding="utf-8"
+    )
+    # Split across implicit string concatenation — must still be caught.
+    (d / "metrics" / "m2.py").write_text(
+        'STEPS = ["Assign a score from 0 (poor) "\n         "to 1 (excellent)."]\n',
+        encoding="utf-8"
+    )
+    # 0-10 scale is GEval's own convention — must NOT be flagged.
+    (d / "metrics" / "m3.py").write_text(
+        'STEPS = ["Assign a score from 0 to 10."]\n', encoding="utf-8"
+    )
+    findings = audit_checks.check_scale_restated_in_steps(d)
+    files = " ".join(f["evidence"] for f in findings)
+    assert "m1.py" in files
+    assert "m2.py" in files, "scale split across concatenated strings must be caught"
+    assert "m3.py" not in files, "0-10 (GEval's own scale) must not be flagged"
+    assert all(f["severity"] == "MEDIUM" for f in findings)
+
+
+def test_dangling_fixture_path_medium_finding(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    (d / "conftest.py").write_text(
+        'FIXTURES = ["MISSING-AC.feature", "present.yaml"]\n'
+        'GLOB = "results/run-*.json"\n',
+        encoding="utf-8"
+    )
+    (d / "present.yaml").write_text("x: 1\n", encoding="utf-8")
+    findings = audit_checks.check_dangling_fixture_paths(d)
+    assert len(findings) == 1
+    assert findings[0]["severity"] == "MEDIUM"
+    assert "MISSING-AC.feature" in findings[0]["evidence"]
+
+
+def test_fixture_path_resolving_anywhere_in_target_no_finding(tmp_path):
+    d = _make_eval_dir(tmp_path)
+    # Fixture lives OUTSIDE evals/, elsewhere in the target — still resolves.
+    assets = tmp_path / "assets" / "evals"
+    assets.mkdir(parents=True)
+    (assets / "PERFECT-AC.feature").write_text("Feature: x\n", encoding="utf-8")
+    (d / "conftest.py").write_text(
+        'FIXTURES = ["PERFECT-AC.feature"]\nREL = "assets/evals/PERFECT-AC.feature"\n',
+        encoding="utf-8"
+    )
+    assert audit_checks.check_dangling_fixture_paths(d) == []
+
+
+def test_tmp_path_created_fixture_not_flagged(tmp_path):
+    """Literals joined onto tmp_path are created at runtime — not dangling."""
+    d = _make_eval_dir(tmp_path)
+    (d / "tests" / "test_x_regression.py").write_text(
+        'def test_x(tmp_path):\n'
+        '    ac_path = tmp_path / "runtime-only.feature"\n'
+        '    ac_path.write_text("Feature: x")\n',
+        encoding="utf-8"
+    )
+    assert audit_checks.check_dangling_fixture_paths(d) == []

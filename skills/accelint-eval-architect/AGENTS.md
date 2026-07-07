@@ -49,7 +49,7 @@ references only when the workflow step in `SKILL.md` names them.
 - `scripts/scaffold_eval.py` — copy a template; `--layer` add-only into an existing eval (reports conflicts); `--dest` alternate dirname; fails fast on missing required placeholders.
 - `scripts/bootstrap_goldset.py` — draft a RAG gold set (content-based corpus hash; PDFs via optional pypdf; mandatory human curation; refuses to overwrite an existing draft without `--force`).
 - `scripts/suggest_thresholds.py` — suggest calibrated thresholds from `results/run-*.json` with evidence.
-- `scripts/audit_checks.py` — mechanical audit checks (#2/#3/#7/#8); pairs with references/audit.md.
+- `scripts/audit_checks.py` — mechanical audit checks (#2/#3/#4-partial/#7/#8/#11/#12/#13/#14); pairs with references/audit.md.
 
 ## Scope
 Scaffolds: DeepEval, deterministic-vitest, deterministic-pytest, human-review, `rag` (deterministic ingest+retrieve layer + gated Ragas answer layer in one template; no separate "deterministic-retrieval" key).

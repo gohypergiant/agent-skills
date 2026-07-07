@@ -2,10 +2,12 @@
 """Mechanical subset of the eval-decay audit (references/audit.md).
 
 Runs the checks that need no judgment — #2 regression-per-metric, #3 sentinel
-thresholds, #7 untracked source, #8 gitignore coverage, #11 stale calibration
-(model), #12 stale calibration (rubric) — so every audit applies them identically.
-The judgment checks (#1 stale goldens, #5 scenario coverage, #6 rubric-vs-correct-behavior)
-remain agent work.
+thresholds, #4 dangling fixture paths (partial), #7 untracked source, #8
+gitignore coverage, #11 stale calibration (model), #12 stale calibration
+(rubric), #13 GEval criteria+evaluation_steps both passed, #14 score scale
+restated in evaluation steps — so every audit applies them identically. The
+judgment checks (#1 stale goldens, #5 scenario coverage,
+#6 rubric-vs-correct-behavior) remain agent work.
 
 Usage:
   audit_checks.py <evals_dir>
@@ -285,6 +287,141 @@ def check_stale_calibration_rubric(evals_dir: Path) -> list[dict]:
     return findings
 
 
+def check_geval_criteria_and_steps(evals_dir: Path) -> list[dict]:
+    """#13: GEval takes criteria OR evaluation_steps, never both.
+
+    Passing both is version-dependent behavior: some DeepEval versions raise at
+    construction, others silently ignore one — so which rubric actually judges
+    is undefined. Found in the wild on all 7 judge metrics of the reference impl.
+    """
+    import ast
+
+    findings: list[dict] = []
+    metrics_dir = evals_dir / "metrics"
+    if not metrics_dir.is_dir():
+        return findings
+    for metric_file in sorted(metrics_dir.rglob("*.py")):
+        try:
+            tree = ast.parse(metric_file.read_text(encoding="utf-8", errors="replace"))
+        except SyntaxError:
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            kwargs = {k.arg for k in node.keywords if k.arg}
+            if {"criteria", "evaluation_steps"} <= kwargs:
+                findings.append(_finding(
+                    "HIGH", "geval-both-kwargs",
+                    f"{metric_file.relative_to(evals_dir)}:{node.lineno}: call passes "
+                    "BOTH criteria and evaluation_steps",
+                    "Keep evaluation_steps only (fold the criteria's rubric into the "
+                    "steps) — they are mutually exclusive in GEval, and which one "
+                    "judges is version-dependent.",
+                ))
+    return findings
+
+
+# Matches a rubric step restating a 0-to-1 scale ("score from 0 (poor) to 1
+# (excellent)"). GEval's own prompt asks the judge for an integer 0-10 and
+# normalizes by /10 — a literal judge obeying "0 to 1" emits 0/1, normalized to
+# 0.0/0.1, and any threshold >= 0.2 becomes unreachable. `to 1\b` does not
+# match "to 10".
+_SCALE_RE = re.compile(r"[Ss]core\s+(?:of\s+|from\s+)?0\b.{0,80}?\bto\s+1\b")
+
+
+def check_scale_restated_in_steps(evals_dir: Path) -> list[dict]:
+    """#14: evaluation steps must not restate a score scale."""
+    findings: list[dict] = []
+    metrics_dir = evals_dir / "metrics"
+    if not metrics_dir.is_dir():
+        return findings
+    for metric_file in sorted(metrics_dir.rglob("*.py")):
+        lines = metric_file.read_text(encoding="utf-8", errors="replace").splitlines()
+        for i, line in enumerate(lines, 1):
+            # Adjacent-line join: implicit string concatenation splits step
+            # text across physical lines, hiding the pattern from a line scan.
+            window = " ".join(l.strip().strip('"').strip("'") for l in lines[i - 1:i + 1])
+            if _SCALE_RE.search(line) or (_SCALE_RE.search(window) and "score" in line.lower()):
+                findings.append(_finding(
+                    "MEDIUM", "scale-restated-in-steps",
+                    f"{metric_file.relative_to(evals_dir)}:{i}: {line.strip()[:90]}",
+                    "Remove the scale sentence — GEval's own prompt owns the 0-10 "
+                    "scale and normalizes by /10; restating '0 to 1' makes a "
+                    "literal judge's threshold unreachable.",
+                ))
+    return findings
+
+
+_FIXTURE_EXTS = (".feature", ".yaml", ".yml", ".jsonl", ".json", ".csv", ".golden", ".txt")
+
+
+def check_dangling_fixture_paths(evals_dir: Path) -> list[dict]:
+    """#4 (mechanical subset): fixture-file string literals must resolve.
+
+    Extracts string literals with data-file extensions from conftest + tests
+    (AST, so comments don't count) and checks each resolves somewhere in the
+    eval dir or the target root. The reference impl's harness was dead for a
+    month because its .feature fixtures resolved nowhere and nothing checked.
+    Globs, absolute paths, URLs, and results/ artifacts are skipped.
+    """
+    import ast
+
+    findings: list[dict] = []
+    scan: list[Path] = []
+    conftest = evals_dir / "conftest.py"
+    if conftest.is_file():
+        scan.append(conftest)
+    tests_dir = evals_dir / "tests"
+    if tests_dir.is_dir():
+        scan.extend(sorted(tests_dir.rglob("*.py")))
+
+    target_root = evals_dir.parent
+    seen: set[str] = set()
+    for src_file in scan:
+        try:
+            tree = ast.parse(src_file.read_text(encoding="utf-8", errors="replace"))
+        except SyntaxError:
+            continue
+        # Literals joined onto tmp_path (tmp_path / "x.feature") are CREATED at
+        # runtime by the test — checking them on disk is a false positive.
+        runtime_created: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+                names = {n.id for n in ast.walk(node.left) if isinstance(n, ast.Name)}
+                if "tmp_path" in names and isinstance(node.right, ast.Constant) \
+                        and isinstance(node.right.value, str):
+                    runtime_created.add(node.right.value.strip())
+        for node in ast.walk(tree):
+            if not (isinstance(node, ast.Constant) and isinstance(node.value, str)):
+                continue
+            lit = node.value.strip()
+            if lit in runtime_created:
+                continue
+            if not lit.lower().endswith(_FIXTURE_EXTS):
+                continue
+            if ("*" in lit or "://" in lit or lit.startswith("/") or "\n" in lit
+                    or lit in seen or "results/" in lit or lit.startswith("run-")):
+                continue
+            seen.add(lit)
+            if "/" in lit:
+                resolved = (evals_dir / lit).exists() or (target_root / lit).exists()
+            else:
+                # Bare filename: search the whole target (skipping junk dirs).
+                resolved = any(
+                    p.name == lit and not any(seg in p.parts for seg in _IGNORED_SEGMENTS)
+                    for p in target_root.rglob(lit)
+                )
+            if not resolved:
+                findings.append(_finding(
+                    "MEDIUM", "dangling-fixture-path",
+                    f"{src_file.relative_to(evals_dir)}:{node.lineno}: references "
+                    f"\"{lit}\" which resolves nowhere under {target_root.name}/",
+                    "Restore or commit the fixture (fixtures are eval SOURCE), or "
+                    "fix the path — a dangling fixture kills the harness at startup.",
+                ))
+    return findings
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -299,10 +436,13 @@ def main() -> int:
     findings = (
         check_regression_per_metric(evals_dir)
         + check_sentinel_thresholds(evals_dir)
+        + check_dangling_fixture_paths(evals_dir)
         + check_untracked_source(evals_dir)
         + check_gitignore(evals_dir)
         + check_stale_calibration_model(evals_dir)
         + check_stale_calibration_rubric(evals_dir)
+        + check_geval_criteria_and_steps(evals_dir)
+        + check_scale_restated_in_steps(evals_dir)
     )
 
     counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}

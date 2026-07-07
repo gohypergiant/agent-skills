@@ -28,6 +28,8 @@ backlog. Check every one.
 | 10 | Cost-gating present (judge metrics opt-in) | medium | every run bills the judge; CI cost creeps |
 | 11 | Thresholds valid for current model aliases | **high** | thresholds calibrated against old judge/SUT models; silent model upgrade invalidates them |
 | 12 | Thresholds valid for current rubric | **high** | rubric edit changed the measurement; old threshold is meaningless |
+| 13 | GEval gets `evaluation_steps` OR `criteria`, never both | **high** | which rubric actually judges is version-dependent; some DeepEval versions raise, others silently drop one (found on all 7 judge metrics of the reference impl) |
+| 14 | No score scale restated in evaluation steps | **medium** | GEval normalizes an internal 0–10 scale by /10; a step saying "score 0 to 1" makes a literal judge's threshold unreachable |
 
 ## How to detect each (concrete)
 
@@ -43,9 +45,12 @@ backlog. Check every one.
 - **#11 stale model aliases:** compare recorded `judge_model_alias`/`sut_model_id` from latest `results/run-*.json` against current env (`JUDGE_MODEL_ALIAS`/`SUT_MODEL_ID`). Mismatch while any threshold is non-record-only → HIGH.
 - **#12 stale rubric hash:** metric files with judge rubrics declare `RUBRIC_HASH = sha256(evaluation_steps)[:16]`; results artifacts record it per metric. Recompute from current metric file and diff against latest run → mismatch = HIGH.
 
-**Mechanical subset:** checks #2, #3, #7, #8, #11, #12 need no judgment — run
-`scripts/audit_checks.py <evals-dir>` to execute them consistently (exit 1 on
-any HIGH finding). The judgment checks (#1, #5, #6) remain agent work.
+**Mechanical subset:** checks #2, #3, #7, #8, #11, #12, #13, #14 — plus the
+detectable part of #4 (fixture-file string literals in conftest/tests that
+resolve nowhere) — need no judgment: run `scripts/audit_checks.py <evals-dir>`
+to execute them consistently (exit 1 on any HIGH finding). The judgment checks
+(#1, #5, #6, and #4's path-join cases the literal scan can't see) remain agent
+work.
 
 ## Output
 Rank findings high → low. For each: the check, the evidence (the diff, the

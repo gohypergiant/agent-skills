@@ -4,6 +4,40 @@ All notable changes to the `accelint-eval-architect` skill are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), semantic versioning.
 
+## [1.5.0] - 2026-07-07
+
+First real-target dogfood: AUDIT mode was run against the reference impl
+(`accelint-ac-to-playwright/evals/`). The workflow found everything that
+mattered — but the three most damaging findings (fixtures that were never
+committed and are now lost; all 7 GEval metrics passing both `criteria` and
+`evaluation_steps`; 6 rubrics restating a 0-to-1 scale) came from the
+judgment half of the audit. All three are mechanizable; now they are.
+
+### Added
+- **Check #13 (`geval-both-kwargs`, HIGH):** AST scan of `metrics/*.py` for
+  calls passing BOTH `criteria` and `evaluation_steps` — mutually exclusive
+  in GEval; which rubric judges is version-dependent.
+- **Check #14 (`scale-restated-in-steps`, MEDIUM):** rubric steps restating a
+  0-to-1 score scale (GEval normalizes 0–10 by /10, so a literal judge's
+  threshold becomes unreachable). Catches the pattern across implicit string
+  concatenation; does not flag GEval's own 0–10 convention.
+- **Check #4 mechanical subset (`dangling-fixture-path`, MEDIUM):**
+  fixture-file string literals in conftest/tests (AST-extracted, so comments
+  don't count) that resolve nowhere under the target — the failure that
+  silently killed the reference harness for a month. Globs, URLs, absolute
+  paths, and `results/` artifacts are skipped; path-join construction remains
+  agent work.
+- Tests for all three (48 → 53); decay-checklist rows 13/14 and the expanded
+  mechanical-subset note in `references/audit.md`; AGENTS.md scripts line.
+
+### Rationale
+- The audit's most expensive finding classes should not depend on the
+  auditing agent re-deriving them by hand each time — that is exactly what
+  `audit_checks.py` exists to prevent.
+
+### Version
+- Bumped from 1.4.1 → 1.5.0.
+
 ## [1.4.1] - 2026-07-07
 
 Verification release: v1.4.0 shipped with its suite red (its commit message
