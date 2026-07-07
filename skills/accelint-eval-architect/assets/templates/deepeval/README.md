@@ -28,6 +28,12 @@ distinct even when the alias matches. See references/frameworks/deepeval.md.
 Judge thresholds ship record-only. Run 3+ baselines against known-good fixtures,
 then set thresholds from the distribution. See the eval-architect calibration ref.
 
+## Rubric tripwire (a fresh scaffold fails one test — by design)
+`test_rubric_hash_literal_matches_steps` fails until you fill the GEval rubric
+and compute `RUBRIC_HASH` (the failure message prints the one-liner). The
+literal is what lets the audit detect rubric edits that invalidate thresholds;
+a rubric edit requires recalibration exactly like a model change.
+
 ## Don't lose this
 Source is git-tracked; only `results/`, `.venv/`, `__pycache__/`,
 `.pytest_cache/`, `.deepeval/`, `.env` are ignored. Commit before the first run.

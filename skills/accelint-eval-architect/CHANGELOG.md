@@ -4,6 +4,62 @@ All notable changes to the `accelint-eval-architect` skill are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), semantic versioning.
 
+## [1.4.1] - 2026-07-07
+
+Verification release: v1.4.0 shipped with its suite red (its commit message
+admits pytest was skipped) and, as an executed end-to-end check proved, the
+tripwire's primary scenario — rubric edited, literal forgotten — passed
+silently because the promised self-check test was never shipped.
+
+### Fixed
+- **Suite was red at v1.4.0**: `test_stale_rubric_hash_mismatch_high_finding`
+  used the non-hex fixture literal `xyz987fedcba6543`, which the extractor
+  regex (`[a-f0-9]{16}`) can never match — the HIGH branch was untested and
+  the test failed. Fixture now uses valid hex (`9876fedcba054321`).
+- **"Recorded but unverifiable" branch was missing from check #12**: an
+  artifact recording a `rubric_hash` whose source file has no valid literal
+  (missing file, computed expression, malformed or placeholder literal)
+  produced ZERO findings — the tripwire died silently in exactly the case it
+  exists for. Now fires MEDIUM. The old
+  `test_computed_rubric_hash_pattern_fails` asserted the zero-findings
+  behavior (the bug enshrined as a test) and is replaced by
+  `test_computed_rubric_hash_fires_unverifiable_medium`.
+- **The self-check test v1.4.0 claimed to ship did not exist** (the GEval
+  template comment named `test_example_regression.py` as containing it; grep
+  across both template test dirs found nothing). End-to-end proof of the
+  consequence: mutate one rubric word, leave the literal → audit silent, no
+  test fails. Now shipped in both templates:
+  - deepeval: `test_rubric_hash_literal_matches_steps` — literal must equal
+    sha256[:16] of `_EVALUATION_STEPS` and must not be the placeholder. Fails
+    on a fresh scaffold by design (same philosophy as the gold-set
+    `verified: false` refusal); the failure message prints the compute
+    one-liner. Verified: fails on placeholder → passes with computed literal →
+    fails again after a one-word rubric edit.
+  - rag: `test_rubric_hash_literal_matches_ragas_version` — Ragas owns the
+    faithfulness rubric, so the literal fingerprints the INSTALLED ragas
+    version (an upgrade IS a rubric edit). Skips while ragas is absent (the
+    default offline suite, where the metric can't run anyway).
+- **`RUBRIC_HASH` was entirely absent from the rag faithfulness metric** while
+  the rag conftest docstring told users to record an undefined name — literal
+  added, docstring import fixed.
+- **Placeholder loophole in check #12**: `"0000000000000000"` is valid hex, so
+  a run artifact recording the placeholder "matched" it silently. The audit
+  now treats the placeholder as unverifiable → MEDIUM.
+- **Fresh deepeval scaffold failed its own audit** (HIGH regression-per-metric:
+  `example_geval_metric.py` referenced by no regression test). The new
+  self-check lives in `test_example_regression.py` and references the metric —
+  a fresh scaffold now audits 0 HIGH (verified).
+
+### Verified (executed, not structural)
+- Skill suite: 48 passed (was 1 failed / 44 passed at v1.4.0).
+- End-to-end on a real scaffold: aligned state → 0 stale-calibration findings;
+  literal-vs-artifact mismatch → #12 HIGH naming both hashes; judge-alias
+  change → #11 HIGH naming both aliases; rubric-word mutation → self-check
+  fails (previously silent).
+
+### Version
+- Bumped from 1.4.0 → 1.4.1.
+
 ## [1.4.0] - 2026-07-07
 
 ### Added

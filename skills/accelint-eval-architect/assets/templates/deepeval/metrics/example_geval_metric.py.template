@@ -9,10 +9,11 @@ placeholder when absent.
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
-# Rubric hash: sha256[:16] of the evaluation_steps text, for recalibration
+# Rubric hash: sha256[:16] of the evaluation_steps text, for the recalibration
 # tripwire (audit_checks.py #12). Any edit to the rubric invalidates thresholds.
-# IMPORTANT: Update this literal manually after rubric changes, then run tests
-# to verify correctness (test_example_regression.py includes a self-check).
+# Must be a LITERAL (the audit greps it); the self-check in
+# tests/test_example_regression.py fails until it matches the steps. Compute:
+#   python3 -c "import hashlib; from metrics.example_geval_metric import _EVALUATION_STEPS as s; print(hashlib.sha256('\n'.join(s).encode()).hexdigest()[:16])"
 RUBRIC_HASH = "0000000000000000"  # PLACEHOLDER - compute and replace
 
 _EVALUATION_STEPS = [

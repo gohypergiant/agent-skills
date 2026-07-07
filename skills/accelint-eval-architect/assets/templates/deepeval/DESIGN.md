@@ -23,6 +23,7 @@ any model upgrade. (`results/run-*.json` records both aliases.)
 
 ## Known follow-ups
 <!-- Pre-filled so this never ships "done". Update as you extend. -->
+- [ ] Fill `_EVALUATION_STEPS` and compute `RUBRIC_HASH` (the self-check test fails until then).
 - [ ] Calibrate thresholds from a baseline (currently record-only).
 - [ ] Add flawed + broken fixtures (only the pristine fixture exists in the skeleton).
 - [ ] Generate `expected/` goldens from the skill's schema, not by hand.

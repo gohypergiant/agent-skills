@@ -102,6 +102,7 @@ def record_metric() -> Callable[..., None]:
         record_metric(name="recall@5", score=0.85, threshold=0.80,
                       dimension="retrieval")
         # For judge metrics, also pass rubric_hash and rubric_source:
+        from metrics.faithfulness_ragas import RUBRIC_HASH
         record_metric(name="faithfulness", score=0.9, threshold=0.0,
                       dimension="generation", rubric_hash=RUBRIC_HASH,
                       rubric_source="metrics/faithfulness_ragas.py")

@@ -18,6 +18,16 @@ calibrate from a baseline before gating on it (references/calibration.md).
 
 from typing import Optional
 
+# Recalibration tripwire (audit check #12). The judged rubric here is NOT local
+# text — it is Ragas's internal faithfulness prompts, which change via package
+# upgrades. RUBRIC_HASH therefore fingerprints the INSTALLED ragas version:
+# sha256(version).hexdigest()[:16]. Compute after `uv sync`:
+#   python3 -c "import hashlib, importlib.metadata as md; print(hashlib.sha256(md.version('ragas').encode()).hexdigest()[:16])"
+# The self-check in tests/test_faithfulness_regression.py enforces the literal;
+# record it via record_metric(..., rubric_hash=RUBRIC_HASH,
+# rubric_source="metrics/faithfulness_ragas.py") so the audit can compare.
+RUBRIC_HASH = "0000000000000000"  # PLACEHOLDER - compute and replace
+
 
 class FaithfulnessMetric:
     def __init__(self, judge_model, threshold: float = 0.0):

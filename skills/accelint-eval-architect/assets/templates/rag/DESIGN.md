@@ -44,4 +44,5 @@ pipeline or judge. Wire `runner.py` to go live and regenerate `captured/`.
 - [ ] Expand the gold set beyond the smoke tier; keep it human-verified.
 - [ ] Add precision@k / MRR / nDCG (retrieve) and answer_correctness (e2e) as needed.
 - [ ] Calibrate the faithfulness threshold from a baseline.
+- [ ] Compute `RUBRIC_HASH` in `metrics/faithfulness_ragas.py` after `uv sync` (fingerprints the installed ragas version; self-check skips until ragas is installed).
 - [ ] Confirm all eval source is git-tracked in this repo.

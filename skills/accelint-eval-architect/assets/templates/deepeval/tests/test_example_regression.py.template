@@ -1,5 +1,7 @@
 """Regression test: PROVES the structural metric has teeth (deterministic, free)."""
 
+import hashlib
+
 from deepeval.test_case import LLMTestCase
 
 from metrics.example_structural_metric import ExampleStructuralMetric
@@ -13,3 +15,32 @@ def test_structural_catches_missing_key():
     assert score == 0.0
     assert not metric.is_successful()
     assert "missing" in metric.reason.lower()
+
+
+def test_rubric_hash_literal_matches_steps():
+    """Self-check binding RUBRIC_HASH to the actual rubric text.
+
+    This is what makes the recalibration tripwire (audit check #12) live: the
+    audit greps the LITERAL, so an edited rubric with a forgotten literal would
+    otherwise pass silently. Failing here on a fresh scaffold is by design —
+    same philosophy as the gold-set verified:false refusal.
+    """
+    from metrics.example_geval_metric import _EVALUATION_STEPS, RUBRIC_HASH
+
+    compute_cmd = (
+        "python3 -c \"import hashlib; from metrics.example_geval_metric import "
+        "_EVALUATION_STEPS as s; "
+        "print(hashlib.sha256('\\n'.join(s).encode()).hexdigest()[:16])\""
+    )
+    assert RUBRIC_HASH != "0000000000000000", (
+        "RUBRIC_HASH is still the scaffold placeholder. Fill in your rubric "
+        f"(_EVALUATION_STEPS), then compute the literal:\n  {compute_cmd}"
+    )
+    actual = hashlib.sha256("\n".join(_EVALUATION_STEPS).encode()).hexdigest()[:16]
+    assert RUBRIC_HASH == actual, (
+        f"RUBRIC_HASH literal ({RUBRIC_HASH}) does not match the rubric text "
+        f"({actual}) — the rubric was edited without updating the literal. "
+        f"Update it:\n  {compute_cmd}\n"
+        "Then RECALIBRATE: a rubric edit invalidates thresholds like a model "
+        "change does (references/calibration.md)."
+    )

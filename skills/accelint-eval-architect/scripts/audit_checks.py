@@ -233,6 +233,7 @@ def check_stale_calibration_rubric(evals_dir: Path) -> list[dict]:
         return findings  # no judge metrics recorded hashes; nothing to check
 
     # Read current metric files and compute their rubric hashes
+    verified_sources: set[str] = set()
     for metric_file in metrics_dir.rglob("*.py"):
         if metric_file.name.startswith("_"):
             continue
@@ -247,11 +248,16 @@ def check_stale_calibration_rubric(evals_dir: Path) -> list[dict]:
             continue  # not a judge metric or hash not declared
 
         current_hash = match.group(1)
+        if current_hash == "0000000000000000":
+            # Scaffold placeholder is valid hex — without this carve-out an
+            # artifact recording the placeholder would "match" and pass silently.
+            continue  # falls through to the unverifiable MEDIUM below if recorded
 
         # Use relative path as rubric_source key for exact join
         rubric_source = str(metric_file.relative_to(evals_dir))
 
         if rubric_source in recorded_by_source:
+            verified_sources.add(rubric_source)
             metric_name, recorded_hash = recorded_by_source[rubric_source]
             if recorded_hash != current_hash:
                 findings.append(_finding(
@@ -260,6 +266,21 @@ def check_stale_calibration_rubric(evals_dir: Path) -> list[dict]:
                     f"Rubric edit in {rubric_source} invalidates thresholds. "
                     "Re-run the baseline loop and recalibrate.",
                 ))
+
+    # Recorded-but-unverifiable: the artifact claims a rubric_hash for a source
+    # that has no valid 16-hex RUBRIC_HASH literal (missing file, computed
+    # expression, malformed literal, or the scaffold placeholder). Without this
+    # branch the tripwire dies silently in exactly the case it exists for.
+    for rubric_source in sorted(set(recorded_by_source) - verified_sources):
+        metric_name, recorded_hash = recorded_by_source[rubric_source]
+        findings.append(_finding(
+            "MEDIUM", "stale-calibration (rubric)",
+            f"Metric {metric_name}: run artifact records rubric_hash {recorded_hash} "
+            f"for {rubric_source}, but no verifiable RUBRIC_HASH literal found there",
+            f"Declare RUBRIC_HASH as a computed 16-hex string LITERAL in {rubric_source} "
+            "(paired with its self-check test) — a computed-at-runtime, missing, or "
+            "placeholder literal makes rubric drift undetectable.",
+        ))
 
     return findings
 
