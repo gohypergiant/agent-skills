@@ -35,11 +35,16 @@ cp .env.example .env
 ```bash
 # From the skill root directory
 
-# Run deterministic tests only (skips expensive GEval metrics — default, free)
+# Default: deterministic tests only — no JUDGE tokens. Regression tests and
+# rubric self-checks run with zero env; tests that invoke the SUT need SUT env
+# (and bill SUT tokens) and fail at setup with instructions when it's absent.
 npm run eval
 
-# Run only the GEval (judge-driven) tests (costs money)
+# ONLY the GEval (judge-driven) tests — deselects the rest (costs money)
 npm run eval -- -m live
+
+# Everything, deterministic + judge
+npm run eval -- -m ""
 
 # Run a specific test file
 npm run eval -- tests/test_conversion_mode.py
@@ -125,8 +130,8 @@ Each metric is tagged with one of three **spec dimensions** — that's how the s
 
 ### Deterministic vs GEval
 
-- **Deterministic metrics** are fast, stable, and free. They run in the default `npm run eval` invocation.
-- **GEval metrics** call the judge LLM. They're skipped by default; opt in with `-- -m live`. Each judge call costs real $$.
+- **Deterministic metrics** are fast, stable, and make no judge calls. They run in the default `npm run eval` invocation (those that invoke the SUT still bill SUT tokens; the offline regression tests and rubric self-checks are fully free).
+- **GEval metrics** call the judge LLM. They're skipped by default; `-- -m live` runs ONLY them. Each judge call costs real $$. Every judge metric records its `rubric_hash` so a rubric edit after calibration is detectable (eval-architect audit check #12).
 
 ---
 

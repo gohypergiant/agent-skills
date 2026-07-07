@@ -36,8 +36,14 @@ def _get_collector() -> ScorecardCollector:
 
 
 def pytest_configure(config):
-    """Pytest startup hook - validate configuration before running tests."""
-    # Register custom markers
+    """Register custom markers.
+
+    Env validation deliberately does NOT live here: each requirement is
+    checked by the fixture that actually needs it (judge env in ``judge``,
+    SUT env + CLI build in ``sut``, fixture files in ``fixtures_dir``), so
+    the free offline runs — regression tests, rubric self-checks — need no
+    judge credentials, no SUT credentials, and no built CLI.
+    """
     config.addinivalue_line(
         "markers",
         "live: marks tests that hit the LLM (cost money, skipped by default)",
@@ -47,41 +53,39 @@ def pytest_configure(config):
         "sample: side-by-side sample-output runs (no assertions; just feed the scorecard)",
     )
 
-    # Validate judge configuration
+
+@pytest.fixture(scope="session")
+def judge():
+    """Return the configured judge instance (session-scoped, built once)."""
     try:
         judge = build_judge()
-        print(f"\n[OK] Judge configured: {os.getenv('JUDGE_MODEL_ALIAS')}")
     except ConfigurationError as e:
-        pytest.exit(
-            f"\n[ERROR] Judge configuration failed:\n{e}\n\n"
-            f"See evals/.env.example for required environment variables.",
-            returncode=1,
+        pytest.fail(
+            f"Judge configuration failed (needed for -m live):\n{e}\n"
+            "See evals/.env.example for required environment variables."
         )
+    print(f"\n[OK] Judge configured: {os.getenv('JUDGE_MODEL_ALIAS')}")
+    return judge
 
-    # Validate SUT configuration
+
+@pytest.fixture(scope="session")
+def _sut_preflight():
+    """Validate SUT env + the built validate-plan CLI, once per session.
+
+    Only tests that invoke the SUT (via the ``sut`` fixture) pay this check.
+    """
     sut_provider = os.getenv("SUT_PROVIDER")
     sut_model = os.getenv("SUT_MODEL_ID")
-
     if not sut_provider or not sut_model:
-        pytest.exit(
-            "\n[ERROR] SUT configuration missing.\n"
-            "Required: SUT_PROVIDER, SUT_MODEL_ID\n"
-            "See evals/.env.example for configuration template.",
-            returncode=1,
+        pytest.fail(
+            "SUT configuration missing (needed by tests that invoke the SUT).\n"
+            "Required: SUT_PROVIDER, SUT_MODEL_ID — see evals/.env.example."
         )
 
-    print(f"[OK] SUT configured: {sut_provider}/{sut_model}")
-
-    # Validate validate-plan CLI is available
     skill_root = Path(__file__).parent.parent
     test_plan = skill_root / "scripts" / "tests" / "fixtures" / "all-actions.json"
-
     if not test_plan.exists():
-        pytest.exit(
-            f"\n[ERROR] Test plan file not found: {test_plan}\n"
-            "This is required to validate the CLI.",
-            returncode=1,
-        )
+        pytest.fail(f"Test plan file not found: {test_plan} (required to validate the CLI)")
 
     try:
         cli_check = subprocess.run(
@@ -90,50 +94,16 @@ def pytest_configure(config):
             capture_output=True,
             timeout=5,
         )
-
         if cli_check.returncode != 0:
-            pytest.exit(
-                "\n[ERROR] validate-plan CLI not found or not working.\n"
-                "Did you run 'npm run build' from the skill root?\n"
-                f"Skill root: {skill_root}\n"
-                f"CLI stderr: {cli_check.stderr.decode()}\n"
-                f"CLI stdout: {cli_check.stdout.decode()}",
-                returncode=1,
+            pytest.fail(
+                "validate-plan CLI not found or not working. Did you run "
+                f"'npm run build' from the skill root ({skill_root})?\n"
+                f"CLI stderr: {cli_check.stderr.decode()}"
             )
-
-        print("[OK] validate-plan CLI available")
     except FileNotFoundError:
-        pytest.exit(
-            "\n[ERROR] Node.js not found in PATH.\n"
-            "Please install Node.js or ensure it's in your PATH.",
-            returncode=1,
-        )
+        pytest.fail("Node.js not found in PATH (required for the validate-plan CLI).")
 
-    # Validate fixture files exist.
-    # MIXED-AC was split into MIXED-AC-{1..5}.feature in a recent commit; we
-    # canonically point at MIXED-AC-1.feature here. Tests can opt to iterate
-    # the other slices if they want broader coverage.
-    fixtures = ["PERFECT-AC.feature", "MIXED-AC-1.feature", "BAD-AC.feature"]
-    fixtures_dir = skill_root / "assets" / "evals"
-
-    for fixture in fixtures:
-        fixture_path = fixtures_dir / fixture
-        if not fixture_path.exists():
-            pytest.exit(
-                f"\n[ERROR] Fixture not found: {fixture_path}\n"
-                f"Expected in: {fixtures_dir}",
-                returncode=1,
-            )
-
-    print(f"[OK] Fixtures available: {', '.join(fixtures)}")
-
-    print("\n[OK] All configuration checks passed\n")
-
-
-@pytest.fixture(scope="session")
-def judge():
-    """Return the configured judge instance (session-scoped, built once)."""
-    return build_judge()
+    print(f"\n[OK] SUT configured: {sut_provider}/{sut_model}; validate-plan CLI available")
 
 
 @pytest.fixture(scope="session")
@@ -144,8 +114,19 @@ def skill_root():
 
 @pytest.fixture(scope="session")
 def fixtures_dir(skill_root):
-    """Return the fixtures directory path."""
-    return skill_root / "assets" / "evals"
+    """Return the fixtures directory path, verifying the fixtures exist.
+
+    MIXED-AC was split into MIXED-AC-{1..5}.feature in a recent commit; we
+    canonically point at MIXED-AC-1.feature. These files are eval SOURCE —
+    the harness was dead for a month when they existed only on one machine;
+    keep them git-tracked.
+    """
+    fixtures = ["PERFECT-AC.feature", "MIXED-AC-1.feature", "BAD-AC.feature"]
+    d = skill_root / "assets" / "evals"
+    missing = [f for f in fixtures if not (d / f).exists()]
+    if missing:
+        pytest.fail(f"Fixture(s) not found in {d}: {', '.join(missing)}")
+    return d
 
 
 @pytest.fixture(scope="session")
@@ -160,7 +141,7 @@ def expected_dir(skill_root):
 
 
 @pytest.fixture
-def sut(request) -> Callable[..., dict]:
+def sut(request, _sut_preflight) -> Callable[..., dict]:
     """Invoke the SUT and auto-record latency + tokens into the scorecard.
 
     Drop-in replacement for ``invoke_sut`` for tests that want their run-time
@@ -204,6 +185,8 @@ def record_metric(request) -> Callable[..., None]:
         scenario: str,
         reason: str | None = None,
         passed: bool | None = None,
+        rubric_hash: str | None = None,
+        rubric_source: str | None = None,
     ) -> None:
         if passed is None:
             passed = float(score) >= float(threshold)
@@ -217,6 +200,8 @@ def record_metric(request) -> Callable[..., None]:
             persona=persona,
             scenario=scenario,
             reason=reason,
+            rubric_hash=rubric_hash,
+            rubric_source=rubric_source,
         )
 
     return _record

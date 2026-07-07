@@ -85,20 +85,27 @@ class ScorecardCollector:
         persona: str,
         scenario: str,
         reason: str | None = None,
+        rubric_hash: str | None = None,
+        rubric_source: str | None = None,
     ) -> None:
-        self.metrics.append(
-            {
-                "nodeid": nodeid,
-                "name": name,
-                "score": float(score),
-                "threshold": float(threshold),
-                "passed": bool(passed),
-                "dimension": dimension,
-                "persona": persona,
-                "scenario": scenario,
-                "reason": _normalise_reason(reason),
-            }
-        )
+        metric_data = {
+            "nodeid": nodeid,
+            "name": name,
+            "score": float(score),
+            "threshold": float(threshold),
+            "passed": bool(passed),
+            "dimension": dimension,
+            "persona": persona,
+            "scenario": scenario,
+            "reason": _normalise_reason(reason),
+        }
+        # Only judge metrics carry a rubric; deterministic metrics omit both.
+        # Consumed by the eval-architect audit's stale-rubric check (#12).
+        if rubric_hash is not None:
+            metric_data["rubric_hash"] = rubric_hash
+        if rubric_source is not None:
+            metric_data["rubric_source"] = rubric_source
+        self.metrics.append(metric_data)
 
     def record_invocation(
         self,
@@ -163,7 +170,7 @@ class ScorecardCollector:
         }
 
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "run_started_at": self.run_started_at.isoformat(),
             "run_completed_at": completed_at.isoformat(),
             "duration_seconds": round(duration_seconds, 2),

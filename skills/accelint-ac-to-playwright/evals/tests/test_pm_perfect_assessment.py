@@ -37,6 +37,8 @@ def test_pm_perfect_assessment_task_completion(judge, perfect_ac_path, sut, reco
 
     record_metric(
         name="task_completion",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -61,6 +63,8 @@ def test_pm_perfect_assessment_blatant_errors(judge, perfect_ac_path, sut, recor
 
     record_metric(
         name="blatant_errors",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -129,6 +133,8 @@ def test_pm_perfect_assessment_plan_adherence(judge, perfect_ac_path, sut, recor
 
     record_metric(
         name="plan_adherence",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="pitfalls",

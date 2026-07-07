@@ -326,3 +326,50 @@ The metric `reason` field is the actionable output — it's what tells a human *
 
 ### Why we use a session-scoped collector + terminal_summary hook instead of writing per-test
 pytest hooks like `pytest_runtest_logreport` would let each test write its own JSON entry. Aggregating at session-end via `pytest_terminal_summary` makes the rollup (latency p50/p95, persona/scenario PASS rollup, "below_threshold" summary) trivial and atomic. A crash mid-run produces no partial artifact — which is preferable to a half-written file that looks complete.
+
+---
+
+## Change log
+
+### 2026-07-07 — audit-driven repair (eval-architect AUDIT mode)
+
+An eval-architect audit found the harness dead and several latent bugs. All
+fixed in this pass:
+
+- **Fixtures reconstructed and committed.** `PERFECT-AC.feature`,
+  `MIXED-AC-1.feature`, `BAD-AC.feature` and the `expected/` artifacts were
+  never committed — they existed only on the original author's machine, so the
+  harness could not run at all. Reconstructed from the recorded conversion
+  output (`comprehensive-action-and-assertion-coverage.json`, which preserved
+  suite/test names, steps, and all 19 assertion targets), the constraints
+  encoded in the tests (10 scenarios in PERFECT-AC; 7 known MIXED-AC issues
+  with 4 pinned line numbers; 8 severe BAD-AC errors), and the AC format rules
+  in `references/acceptance-criteria.md`. `expected/PERFECT-AC.plan.json` is
+  regenerated against the CURRENT Zod schema (`name`/`action`/`value` fields;
+  paired-visibility rule) — the recorded June plan predated both changes.
+- **GEval metrics: `criteria` removed everywhere.** All 7 judge metrics passed
+  both `criteria` and `evaluation_steps` (mutually exclusive; which one judges
+  is version-dependent). The full rubric now lives in `evaluation_steps` only.
+- **Score-scale restatements removed from steps.** GEval's own prompt asks the
+  judge for 0–10 and normalizes by /10; steps saying "score 0 to 1" made
+  thresholds unreachable for a literal judge.
+- **Rubric tripwire armed.** Every judge metric declares module-level
+  `RUBRIC_STEPS` + a `RUBRIC_HASH` literal (sha256[:16] of the joined steps),
+  class-level copies for record sites, and `tests/test_rubric_hashes.py`
+  enforces literal ↔ text. The reporter stamps `schema_version: 2` and records
+  per-metric `rubric_hash`/`rubric_source`, enabling the eval-architect
+  audit's stale-rubric check (#12).
+- **Env gating moved out of `pytest_configure`.** Judge env is validated in
+  the `judge` fixture, SUT env + built CLI in the `sut` fixture's preflight,
+  fixture files in `fixtures_dir` — the default offline run (regression tests,
+  rubric self-checks) needs no credentials and no build. `.env.example` (long
+  referenced by error messages, never committed) now exists.
+- **Toothless metrics fixed.** `task_completion` and `goal_accuracy` gained
+  live-marked can-fail regression tests (refusal / misrepresented plan).
+- **`results/` untracked and gitignored** (16 stale artifacts removed from
+  git; schema v1 besides). `npm run eval` wired in `package.json`.
+
+**Recalibration required:** the rubric restructure (criteria→steps) changes
+what the judge reads, so historical thresholds (0.7–0.9) are formally stale.
+Next `-m live` baseline run should confirm or adjust them; the new
+`rubric_hash` recording makes any future drift detectable.

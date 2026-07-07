@@ -1,0 +1,26 @@
+# Expected issues for MIXED-AC-1.feature — consumed by AssessmentQualityMetric.
+# Line numbers reference MIXED-AC-1.feature exactly; regenerate if the fixture
+# changes (the eval-architect audit's stale-golden check applies here).
+fixture: MIXED-AC-1.feature
+expected_issues:
+  - line: 7
+    issue: "Tag 'missing-at-symbol' is missing the @ prefix, so it is not a valid tag"
+    fix: "Add the @ prefix: @missing-at-symbol"
+  - line: 22
+    issue: "Vague action verb 'uses' cannot be mapped to a Playwright action"
+    fix: "Use a specific action verb such as 'selects a value from' or 'clicks'"
+  - line: 29
+    issue: "Input value 'a valid email address' is a description, not a quoted literal"
+    fix: "Provide the exact value, e.g. 'test@example.com'"
+  - line: 34
+    issue: "Scenario 'User reviews active sessions' has no Then step — no expected outcome to assert"
+    fix: "Add a Then step stating the verifiable outcome"
+  - line: 41
+    issue: "Vague target 'the upgrade option' — 'option' is not a component keyword and no area is given"
+    fix: "Use the '<intent> <component> on the <area>' pattern, e.g. 'the upgrade button on the card'"
+  - line: 47
+    issue: "Outcome 'the page looks correct' is not verifiable — no target or expected text"
+    fix: "State exactly what appears and where, e.g. quoted text in a named component"
+  - line: 54
+    issue: "Orphaned When step after the Then steps — step ordering violation"
+    fix: "Move the When before the Then steps or split it into a new scenario"

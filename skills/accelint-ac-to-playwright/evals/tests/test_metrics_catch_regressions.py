@@ -235,3 +235,59 @@ Summary: 4 issues found (but 7 were expected!)
     # LLM judge should penalize this heavily
     assert score < 0.7  # Below threshold
     print(f"Assessment quality score: {score:.2f} (reason: {metric.reason})")
+
+
+@pytest.mark.live
+def test_task_completion_can_fail(judge):
+    """Task-completion metric must fail on a refusal (GEval - costs money).
+
+    Closes the audit finding: task_completion had no regression test proving
+    it can fail — a metric that always passes measures nothing.
+    """
+    from metrics.task_completion import TaskCompletionMetric
+
+    refusal = (
+        "I'm sorry, but I can't convert these acceptance criteria into a test "
+        "plan. Could you clarify what you want me to do?"
+    )
+    metric = TaskCompletionMetric(judge_model=judge, mode="conversion", threshold=0.9)
+    score = metric.measure(LLMTestCase(input="dummy", actual_output=refusal))
+
+    assert score < 0.9, f"Refusal must score below threshold, got {score:.2f}"
+    assert not metric.is_successful()
+    print(f"Task completion (refusal) score: {score:.2f} (reason: {metric.reason})")
+
+
+@pytest.mark.live
+def test_goal_accuracy_can_fail(judge, fixtures_dir):
+    """Goal-accuracy metric must fail on a plan that misrepresents the AC.
+
+    Closes the audit finding: goal_accuracy had no regression test proving it
+    can fail. The planted plan drops 9 of 10 scenarios and invents one.
+    """
+    from metrics.goal_accuracy import GoalAccuracyMetric
+
+    ac_path = fixtures_dir / "PERFECT-AC.feature"
+    misrepresented_plan = json.dumps({
+        "suiteName": "Wrong Suite",
+        "tests": [
+            {
+                "name": "invented scenario not present in the AC",
+                "startUrl": "/wrong",
+                "steps": [
+                    {"action": "click", "target": "footer.button.imaginary"},
+                    {"action": "expectText", "target": "footer.text.made-up",
+                     "value": "This text appears nowhere in the AC"},
+                ],
+            }
+        ],
+    }, indent=2)
+
+    metric = GoalAccuracyMetric(
+        judge_model=judge, mode="conversion", ac_source_path=ac_path, threshold=0.8
+    )
+    score = metric.measure(LLMTestCase(input="dummy", actual_output=misrepresented_plan))
+
+    assert score < 0.8, f"Misrepresented plan must score below threshold, got {score:.2f}"
+    assert not metric.is_successful()
+    print(f"Goal accuracy (misrepresented) score: {score:.2f} (reason: {metric.reason})")

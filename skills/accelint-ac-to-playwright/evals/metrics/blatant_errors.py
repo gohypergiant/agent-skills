@@ -11,10 +11,33 @@ It's intentionally narrow — we're not asking the judge to assess *correctness*
 structurally malformed.
 """
 
-from typing import Optional
-
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
+
+# Rubric lives entirely in evaluation_steps (GEval: steps OR criteria, never
+# both). No score scale in the steps — GEval's own prompt owns the 0-10 scale.
+RUBRIC_STEPS = [
+    "You are looking ONLY for BLATANT errors: internal contradictions, factual "
+    "self-references that don't match, structural malformations, or claims "
+    "that contradict another claim within the same output. You are NOT judging "
+    "correctness against the source AC, nor overall quality — a clean, "
+    "internally consistent output (even if wrong against the source) is perfect.",
+    "Read the actual_output end-to-end without comparing it to any reference.",
+    "Look for self-contradictions, e.g.: a report that says '✓ AC are "
+    "conversion-ready' and then lists issues; '0 issues found' followed by "
+    "enumerated problems; a summary claiming '5 tests' when only 3 appear; the "
+    "same tag at both suite and test level; references to scenarios, fixtures, "
+    "or files that the source it claims to work from does not contain.",
+    "Look for structural malformations: unclosed code fences, broken markdown, "
+    "truncated JSON, mid-sentence cut-offs.",
+    "Penalize each distinct blatant error proportionally; an output with no "
+    "blatant errors is perfect.",
+]
+
+# Recalibration tripwire (eval-architect audit check #12): sha256[:16] of
+# "\n".join(RUBRIC_STEPS). Enforced by tests/test_rubric_hashes.py; a rubric
+# edit requires updating this literal AND recalibrating the threshold.
+RUBRIC_HASH = "48f22135c9e9e20b"
 
 
 class BlatantErrorsMetric(GEval):
@@ -23,6 +46,11 @@ class BlatantErrorsMetric(GEval):
     Score 1.0 means no blatant errors. Each contradiction, factual
     self-reference error, or structural malformation costs proportional score.
     """
+
+    # Class-level copies so record_metric call sites can pass
+    # rubric_hash=metric.RUBRIC_HASH without extra imports.
+    RUBRIC_HASH = RUBRIC_HASH
+    RUBRIC_SOURCE = "metrics/blatant_errors.py"
 
     def __init__(
         self,
@@ -35,58 +63,16 @@ class BlatantErrorsMetric(GEval):
             judge_model: The configured LiteLLM judge instance
             threshold: Minimum score to pass (0.9 = at most one minor blip)
         """
-        criteria = """
-You are evaluating whether the agent's output contains any BLATANT errors —
-internal contradictions, factual self-references that don't match, structural
-malformations, or claims that contradict another claim within the same output.
-
-You are NOT evaluating whether the output is correct against the source AC,
-nor whether the output is high quality. You are ONLY looking for outputs that
-contradict THEMSELVES or are obviously malformed on their face.
-
-Examples of blatant errors:
-- Report says "✓ AC are conversion-ready" and then lists issues to fix
-- Report says "0 issues found" and then enumerates problems
-- JSON plan claims "5 tests" in a header/summary but only includes 3
-- Same tag listed at both the suite level and a test level (SKILL.md forbids
-  tag duplication across levels)
-- Output references scenarios, fixtures, or files that don't exist in the
-  source it claims to be working from (i.e. the agent invented a name)
-- Garbled formatting: incomplete markdown headings, unclosed code blocks,
-  truncated JSON, mid-sentence cut-offs
-
-A clean, internally consistent output (even if it's wrong against the source)
-should score 1.0. Penalise each distinct blatant error proportionally.
-"""
-
-        evaluation_steps = [
-            "Read the actual_output end-to-end without comparing it to any reference.",
-            "Look for structural malformations: unclosed code fences, broken "
-            "markdown, truncated JSON, mid-sentence cut-offs, duplicate tags across "
-            "suite and test levels.",
-            "Assign 1.0 if the output is internally consistent and well-formed; "
-            "subtract proportional credit for each distinct contradiction or "
-            "structural error.",
-        ]
-
         super().__init__(
             name="Blatant Errors",
-            criteria=criteria,
-            evaluation_steps=evaluation_steps,
+            evaluation_steps=RUBRIC_STEPS,
             evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
             model=judge_model,
             threshold=threshold,
         )
 
     def measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
-        """Measure blatant-error rate.
-
-        Args:
-            test_case: Contains actual_output (the SUT response to evaluate).
-
-        Returns:
-            Score from 0 (many errors) to 1 (clean output).
-        """
+        """Measure blatant-error rate."""
         return super().measure(test_case, *args, **kwargs)
 
     async def a_measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:

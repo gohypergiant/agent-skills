@@ -3,6 +3,64 @@
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
+# Rubric lives entirely in evaluation_steps (GEval: steps OR criteria, never
+# both). No score scale in the steps — GEval's own prompt owns the 0-10 scale.
+
+_CONVERSION_STEPS = [
+    "You are evaluating whether the agent followed the SKILL.md Conversion "
+    "Workflow in the prescribed order: (1) intent detection — recognize the "
+    "user wants a full conversion, not an assessment-only review; (2) run "
+    "Assessment mode FIRST — inspect the AC for issues before any plan "
+    "generation, with visible evidence (a readiness verdict, an issues list, "
+    "or an explicit 'AC are conversion-ready' statement); (3) build a JSON "
+    "plan ONLY IF assessment passed — on blocking issues the workflow stops "
+    "and no plan is produced (a correct halt is full adherence, not a "
+    "failure); (4) output the plan inside a fenced ```json``` block at the "
+    "end of the reply.",
+    "Identify which workflow steps from the Conversion procedure are present "
+    "in the actual_output.",
+    "Check that the agent ran (or shows clear evidence of running) the "
+    "assessment pass BEFORE emitting any JSON plan.",
+    "Verify the steps appear in the prescribed order (intent -> assessment -> "
+    "plan -> fenced JSON output).",
+    "Penalize: skipping the assessment pass, inventing steps outside the "
+    "procedure, reordering steps, or omitting the fenced ```json``` block "
+    "when a plan was produced. Reward: every prescribed step present, in "
+    "order, with no fabricated extras.",
+]
+
+_ASSESSMENT_STEPS = [
+    "You are evaluating whether the agent followed the SKILL.md Assessment "
+    "Workflow in the prescribed order: (1) intent detection — recognize the "
+    "user wants an assessment/readiness review, NOT a full conversion; "
+    "(2) read references — evidence of consulting the AC rules "
+    "(acceptance-criteria.md and the test-hooks controlled vocabulary); "
+    "applying the rules counts as implicit evidence; (3) analyze the AC "
+    "against the rules (structure & format, target pattern, vocabulary, "
+    "action verbs, fill values, explicit outcomes); (4) report findings "
+    "WITHOUT writing any files — a prose readiness report with line/scenario "
+    "references or a 'conversion-ready' verdict; no JSON plan, no spec file "
+    "content.",
+    "Identify which workflow steps from the Assessment procedure are present "
+    "in the actual_output.",
+    "Confirm the agent stayed in assessment mode and did NOT emit a JSON plan "
+    "or spec file content.",
+    "Verify the steps appear in the prescribed order (intent -> reference "
+    "rules -> analyze -> report).",
+    "Penalize: skipping analysis and jumping to a verdict, inventing steps, "
+    "reordering steps in a way that breaks the workflow's logic, or producing "
+    "conversion artifacts. Reward: every prescribed step evident, in order, "
+    "with no fabricated extras.",
+]
+
+# All rubric text of this module, in declared order — hashed by RUBRIC_HASH.
+RUBRIC_STEPS = _CONVERSION_STEPS + _ASSESSMENT_STEPS
+
+# Recalibration tripwire (eval-architect audit check #12): sha256[:16] of
+# "\n".join(RUBRIC_STEPS). Enforced by tests/test_rubric_hashes.py; a rubric
+# edit requires updating this literal AND recalibrating the threshold.
+RUBRIC_HASH = "6e019a98a6114ca9"
+
 
 class PlanAdherenceMetric(GEval):
     """Evaluates whether the SUT followed the SKILL.md workflow steps in order.
@@ -20,6 +78,11 @@ class PlanAdherenceMetric(GEval):
         a JSON plan -> output it in a fenced ```json``` block.
     """
 
+    # Class-level copies so record_metric call sites can pass
+    # rubric_hash=metric.RUBRIC_HASH without extra imports.
+    RUBRIC_HASH = RUBRIC_HASH
+    RUBRIC_SOURCE = "metrics/plan_adherence.py"
+
     def __init__(
         self,
         judge_model,
@@ -35,87 +98,11 @@ class PlanAdherenceMetric(GEval):
         """
         self.mode = mode
 
-        if mode == "conversion":
-            criteria = """
-You are evaluating whether the agent followed the SKILL.md Conversion Workflow
-in the prescribed order for the accelint-ac-to-playwright skill.
-
-The required ordered procedure for Conversion mode is:
-
-  1. Intent detection - the agent recognizes the user wants a full conversion
-     (vs. an assessment-only review).
-  2. Run Assessment mode first - the agent inspects the AC for issues BEFORE
-     attempting any JSON plan generation. The reply should show evidence of
-     this assessment pass (a readiness verdict, an issues list, or an explicit
-     "AC are conversion-ready" statement).
-  3. Build a JSON plan ONLY IF assessment passed - if assessment surfaced
-     blocking issues, the workflow stops and no plan is produced.
-  4. Output the JSON plan inside a fenced ```json``` code block at the end of
-     the reply.
-
-Penalize the response when it:
-  - Skips the assessment pass and jumps straight to a JSON plan.
-  - Invents steps that are not part of the prescribed workflow.
-  - Reorders the prescribed steps (e.g., emits the plan before assessing).
-  - Omits the fenced ```json``` block when a plan was produced.
-
-Reward the response when every prescribed step appears, in order, with no
-fabricated extras.
-
-Score 0 (no adherence) to 1 (perfect adherence).
-"""
-
-            evaluation_steps = [
-                "Identify which workflow steps from the Conversion procedure are present in the actual_output.",
-                "Check that the agent ran (or shows clear evidence of running) the assessment pass BEFORE emitting any JSON plan.",
-                "Verify the steps appear in the prescribed order (intent -> assessment -> plan -> fenced JSON output).",
-                "Check whether the agent invented any steps not in the prescribed procedure or skipped any required steps.",
-                "Assign a score from 0 (workflow ignored or steps badly out of order) to 1 (every prescribed step present, in order, no fabricated steps).",
-            ]
-
-        else:  # assessment mode
-            criteria = """
-You are evaluating whether the agent followed the SKILL.md Assessment Workflow
-in the prescribed order for the accelint-ac-to-playwright skill.
-
-The required ordered procedure for Assessment mode is:
-
-  1. Intent detection - the agent recognizes the user wants an assessment /
-     readiness review (NOT a full conversion).
-  2. Read references - the agent shows it has consulted the AC rules
-     (acceptance-criteria.md and the test-hooks controlled vocabulary). This
-     can be implicit: applying the rules counts as evidence.
-  3. Analyze the AC against the rules (structure & format, target pattern,
-     vocabulary, action verbs, fill values, explicit outcomes).
-  4. Report findings WITHOUT writing any files - the reply should be a prose
-     readiness report (issues list with line/scenario references, or a
-     "conversion-ready" verdict). No JSON plan, no spec file content.
-
-Penalize the response when it:
-  - Skips analysis and jumps straight to a verdict.
-  - Invents steps not in the prescribed procedure.
-  - Reorders the steps in a way that breaks the workflow's logic.
-  - Generates a JSON test plan or a spec file (assessment mode must not
-    produce conversion artifacts).
-
-Reward the response when every prescribed step is evident, in order, with no
-fabricated extras.
-
-Score 0 (no adherence) to 1 (perfect adherence).
-"""
-
-            evaluation_steps = [
-                "Identify which workflow steps from the Assessment procedure are present in the actual_output.",
-                "Confirm the agent stayed in assessment mode and did NOT emit a JSON plan or spec file content.",
-                "Verify the steps appear in the prescribed order (intent -> reference rules -> analyze -> report).",
-                "Check whether the agent invented any steps not in the prescribed procedure or skipped any required steps.",
-                "Assign a score from 0 (workflow ignored or wrong mode artifacts produced) to 1 (every prescribed step present, in order, no fabricated steps).",
-            ]
-
         super().__init__(
             name="Plan Adherence",
-            criteria=criteria,
-            evaluation_steps=evaluation_steps,
+            evaluation_steps=(
+                _CONVERSION_STEPS if mode == "conversion" else _ASSESSMENT_STEPS
+            ),
             evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
             model=judge_model,
             threshold=threshold,

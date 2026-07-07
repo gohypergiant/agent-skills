@@ -49,6 +49,8 @@ def test_mixed_ac_assessment_task_completion(judge, mixed_ac_path, sut, record_m
 
     record_metric(
         name="task_completion",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -78,6 +80,8 @@ def test_mixed_ac_assessment_goal_accuracy(judge, mixed_ac_path, sut, record_met
 
     record_metric(
         name="goal_accuracy",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -108,6 +112,8 @@ def test_mixed_ac_assessment_quality(
 
     record_metric(
         name="assessment_quality",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -132,6 +138,8 @@ def test_bad_ac_assessment_task_completion(judge, bad_ac_path, sut, record_metri
 
     record_metric(
         name="task_completion",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -162,6 +170,8 @@ def test_bad_ac_assessment_quality(
 
     record_metric(
         name="assessment_quality",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",

@@ -131,6 +131,8 @@ def test_perfect_ac_conversion_task_completion(judge, perfect_ac_path, sut, reco
 
     record_metric(
         name="task_completion",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -166,6 +168,8 @@ def test_perfect_ac_conversion_goal_accuracy(
 
     record_metric(
         name="goal_accuracy",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -192,6 +196,8 @@ def test_perfect_ac_conversion_semantic_quality(judge, perfect_ac_path, sut, rec
 
     record_metric(
         name="semantic_quality",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="pitfalls",

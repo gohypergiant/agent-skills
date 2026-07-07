@@ -1,10 +1,54 @@
 """Goal accuracy metric - measures how accurately the agent achieved the intended goal."""
 
 from pathlib import Path
-from typing import Optional
 
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
+
+# Rubric lives entirely in evaluation_steps (GEval: steps OR criteria, never
+# both). No score scale in the steps — GEval's own prompt owns the 0-10 scale.
+
+_CONVERSION_STEPS = [
+    "You are evaluating how ACCURATELY the agent converted acceptance criteria "
+    "(AC, in retrieval_context) into a JSON test plan. Accuracy is HIGH when "
+    "every AC scenario maps to a plan test, every AC step maps to a plan "
+    "action, and targets/values/assertions match the AC source. Accuracy is "
+    "LOW when scenarios are dropped or added, steps are missing or reordered, "
+    "targets don't match the AC text (wrong area/component/intent), values "
+    "are invented instead of quoted from the AC, or assertions are hallucinated.",
+    "Compare the number of scenarios in AC vs tests in plan",
+    "For each test, verify steps match the AC scenario",
+    "Check targets against AC text for accuracy",
+    "Verify fill/select values are quoted from AC, not invented",
+    "Check assertions are grounded in AC expectations",
+    "Identify any dropped, added, or misrepresented content",
+]
+
+_ASSESSMENT_STEPS = [
+    "You are evaluating how ACCURATELY the agent identified issues in the "
+    "acceptance criteria (AC, in retrieval_context). Real problems include: "
+    "structural issues (invalid Gherkin, wrong step ordering), target pattern "
+    "violations (missing area/component/intent), action clarity issues (vague "
+    "verbs, missing values), and assertion issues (no visibility triggers, "
+    "vague outcomes). Accuracy is HIGH when all real issues are detected with "
+    "no false positives, descriptions are specific and correct, and line "
+    "references are accurate.",
+    "Identify the real issues in the AC (structural, targets, actions, assertions)",
+    "Check if the agent's report detected all real issues",
+    "Check for false positives (flagged non-issues)",
+    "Verify issue descriptions are specific and correct",
+    "Verify line/scenario references are accurate",
+    "Weigh missed real issues and false positives against the total number of "
+    "real issues when judging accuracy",
+]
+
+# All rubric text of this module, in declared order — hashed by RUBRIC_HASH.
+RUBRIC_STEPS = _CONVERSION_STEPS + _ASSESSMENT_STEPS
+
+# Recalibration tripwire (eval-architect audit check #12): sha256[:16] of
+# "\n".join(RUBRIC_STEPS). Enforced by tests/test_rubric_hashes.py; a rubric
+# edit requires updating this literal AND recalibrating the threshold.
+RUBRIC_HASH = "14a6990dcbe57235"
 
 
 class GoalAccuracyMetric(GEval):
@@ -15,6 +59,11 @@ class GoalAccuracyMetric(GEval):
 
     For assessment mode: Did the agent accurately identify the real issues in the AC?
     """
+
+    # Class-level copies so record_metric call sites can pass
+    # rubric_hash=metric.RUBRIC_HASH without extra imports.
+    RUBRIC_HASH = RUBRIC_HASH
+    RUBRIC_SOURCE = "metrics/goal_accuracy.py"
 
     def __init__(
         self,
@@ -38,84 +87,11 @@ class GoalAccuracyMetric(GEval):
 
         self.ac_source = ac_source_path.read_text(encoding="utf-8")
 
-        if mode == "conversion":
-            criteria = """
-You are evaluating how ACCURATELY the agent converted acceptance criteria (AC)
-into a JSON test plan.
-
-The goal is to create a plan that:
-1. Captures all scenarios from the AC (no dropped scenarios)
-2. Represents each scenario's steps accurately (no missing or extra steps)
-3. Uses correct targets that match the AC text
-4. Uses correct values (quoted literals from AC, not invented)
-5. Includes appropriate assertions based on AC expectations
-
-Accuracy is HIGH when:
-- Every AC scenario maps to a plan test
-- Every AC step maps to a plan action
-- Targets, values, and assertions match the AC source
-- No inventions or hallucinations
-
-Accuracy is LOW when:
-- Scenarios are dropped or added
-- Steps are missing, added, or reordered incorrectly
-- Targets don't match AC text (wrong area/component/intent)
-- Values are invented instead of quoted from AC
-- Assertions are hallucinated
-
-Score from 0 (completely inaccurate) to 1 (perfectly accurate).
-"""
-
-            evaluation_steps = [
-                "Compare the number of scenarios in AC vs tests in plan",
-                "For each test, verify steps match the AC scenario",
-                "Check targets against AC text for accuracy",
-                "Verify fill/select values are quoted from AC, not invented",
-                "Check assertions are grounded in AC expectations",
-                "Identify any dropped, added, or misrepresented content",
-                "Assign a score based on accuracy (0 = many errors, 1 = nearly perfect)",
-            ]
-
-        else:  # assessment mode
-            criteria = """
-You are evaluating how ACCURATELY the agent identified issues in the acceptance
-criteria (AC).
-
-The goal is to find real problems:
-1. Structural issues (invalid Gherkin, wrong step ordering)
-2. Target pattern violations (missing area/component/intent)
-3. Action clarity issues (vague verbs, missing values)
-4. Assertion issues (no visibility triggers, vague outcomes)
-
-Accuracy is HIGH when:
-- All real issues are detected (no false negatives)
-- No non-issues are flagged (no false positives)
-- Issue descriptions are specific and correct
-- Line references are accurate
-
-Accuracy is LOW when:
-- Real issues are missed
-- Non-issues are flagged as problems
-- Issue descriptions are vague or incorrect
-- Line references are wrong
-
-Score from 0 (completely inaccurate) to 1 (perfectly accurate).
-"""
-
-            evaluation_steps = [
-                "Identify the real issues in the AC (structural, targets, actions, assertions)",
-                "Check if the agent's report detected all real issues",
-                "Check for false positives (flagged non-issues)",
-                "Verify issue descriptions are specific and correct",
-                "Verify line/scenario references are accurate",
-                "Calculate accuracy: (true_positives - false_positives) / total_real_issues",
-                "Assign a score from 0 to 1 based on detection accuracy",
-            ]
-
         super().__init__(
             name="Goal Accuracy",
-            criteria=criteria,
-            evaluation_steps=evaluation_steps,
+            evaluation_steps=(
+                _CONVERSION_STEPS if mode == "conversion" else _ASSESSMENT_STEPS
+            ),
             evaluation_params=[
                 LLMTestCaseParams.ACTUAL_OUTPUT,
                 LLMTestCaseParams.EXPECTED_OUTPUT,
@@ -126,14 +102,7 @@ Score from 0 (completely inaccurate) to 1 (perfectly accurate).
         )
 
     def measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
-        """Measure goal accuracy.
-
-        Args:
-            test_case: Contains actual_output, retrieval_context (AC source)
-
-        Returns:
-            Score from 0 to 1
-        """
+        """Measure goal accuracy."""
         self._ensure_required_fields(test_case)
         return super().measure(test_case, *args, **kwargs)
 

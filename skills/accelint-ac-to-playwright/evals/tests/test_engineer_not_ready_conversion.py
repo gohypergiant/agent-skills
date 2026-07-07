@@ -42,6 +42,8 @@ def test_engineer_not_ready_conversion_plan_adherence(judge, bad_ac_path, sut, r
 
     record_metric(
         name="plan_adherence",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="pitfalls",
@@ -66,6 +68,8 @@ def test_engineer_not_ready_conversion_blatant_errors(judge, bad_ac_path, sut, r
 
     record_metric(
         name="blatant_errors",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="completeness",
@@ -94,6 +98,8 @@ def test_engineer_not_ready_conversion_assumptions(judge, bad_ac_path, sut, reco
 
     record_metric(
         name="assumptions",
+        rubric_hash=metric.RUBRIC_HASH,
+        rubric_source=metric.RUBRIC_SOURCE,
         score=score,
         threshold=metric.threshold,
         dimension="pitfalls",

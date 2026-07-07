@@ -1,10 +1,35 @@
 """Assumptions metric - did the SUT flag ambiguities instead of silently inventing values?"""
 
 from pathlib import Path
-from typing import Optional
 
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
+
+# Rubric lives entirely in evaluation_steps (GEval: steps OR criteria, never
+# both). No score scale in the steps — GEval's own prompt owns the 0-10 scale.
+RUBRIC_STEPS = [
+    "You are evaluating how the agent handled AMBIGUITIES in the source "
+    "acceptance criteria (AC). The AC text is supplied in retrieval_context. "
+    "Ambiguities include: unquoted fill/select values ('a valid email', 'any "
+    "password', 'the first option'), vague action verbs ('interact with', "
+    "'uses', 'handles'), missing target intent ('clicks the button' with no "
+    "identification of which button), and missing or implied expected outcomes.",
+    "Read retrieval_context (the source AC) and enumerate any ambiguities: "
+    "unquoted fill values, vague verbs, missing target intent, missing explicit outcomes.",
+    "If no ambiguities exist, the agent had nothing to flag — score perfect and stop.",
+    "For each ambiguity, inspect actual_output: did the agent flag it, "
+    "ask for clarification, or surface a labeled assumption?",
+    "GOOD: the agent flagged the ambiguous item AND either asked for "
+    "clarification or made a reasonable assumption clearly labeled as one "
+    "(e.g. \"Assumption: using 'test@example.com' as a placeholder — please "
+    "confirm\"). BAD: the agent silently invented a concrete value with no "
+    "acknowledgement that the AC was vague. Penalize each silent invention.",
+]
+
+# Recalibration tripwire (eval-architect audit check #12): sha256[:16] of
+# "\n".join(RUBRIC_STEPS). Enforced by tests/test_rubric_hashes.py; a rubric
+# edit requires updating this literal AND recalibrating the threshold.
+RUBRIC_HASH = "c6e54bea9fb67104"
 
 
 class AssumptionsMetric(GEval):
@@ -25,6 +50,11 @@ class AssumptionsMetric(GEval):
       - Neutral: AC contained no ambiguities; metric should score 1.0.
     """
 
+    # Class-level copies so record_metric call sites can pass
+    # rubric_hash=metric.RUBRIC_HASH without extra imports.
+    RUBRIC_HASH = RUBRIC_HASH
+    RUBRIC_SOURCE = "metrics/assumptions.py"
+
     def __init__(
         self,
         judge_model,
@@ -43,53 +73,9 @@ class AssumptionsMetric(GEval):
 
         self.ac_source = ac_source_path.read_text(encoding="utf-8")
 
-        criteria = """
-You are evaluating how the agent handled AMBIGUITIES in the source acceptance
-criteria (AC). The AC text is supplied in retrieval_context.
-
-Ambiguities include (non-exhaustive):
-  - Unquoted fill / select values such as "a valid email", "any password",
-    "some text", "the first option" - the AC does not commit to a literal.
-  - Vague action verbs such as "interact with", "uses", "handles" that do not
-    map cleanly to a Playwright action.
-  - Missing target intent (e.g., "clicks the button" with no identification
-    of which button).
-  - Missing or implied expected outcomes (the AC says the user "submits" but
-    never states what should be visible / which URL to land on).
-
-Rubric:
-  - GOOD (high score): The agent flagged the ambiguous item AND either
-    (a) asked the user for clarification, or (b) made a reasonable assumption
-    AND clearly labeled it as an assumption (e.g., "Assumption: using
-    'test@example.com' as a placeholder for 'a valid email' - please confirm").
-  - BAD (low score): The agent silently invented a concrete value (e.g., wrote
-    'test@example.com' or chose a specific dropdown option) without any
-    acknowledgement that the AC was vague.
-  - NEUTRAL (score 1.0): The AC in retrieval_context contained no ambiguities;
-    the agent had nothing to flag.
-
-Inspect the AC text first to enumerate ambiguities. Then inspect the agent's
-output for each ambiguity in turn: was it flagged / questioned / labeled, or
-silently filled in?
-
-Score 0 (silent invention across the board) to 1 (every ambiguity surfaced,
-or no ambiguities existed).
-"""
-
-        evaluation_steps = [
-            "Read retrieval_context (the source AC) and enumerate any ambiguities: "
-            "unquoted fill values, vague verbs, missing target intent, missing explicit outcomes.",
-            "If no ambiguities exist, score 1.0 and stop.",
-            "For each ambiguity, inspect actual_output: did the agent flag it, "
-            "ask for clarification, or surface a labeled assumption?",
-            "Assign a score from 0 (every ambiguity silently invented) to "
-            "1 (every ambiguity surfaced, or none existed).",
-        ]
-
         super().__init__(
             name="Assumptions",
-            criteria=criteria,
-            evaluation_steps=evaluation_steps,
+            evaluation_steps=RUBRIC_STEPS,
             evaluation_params=[
                 LLMTestCaseParams.ACTUAL_OUTPUT,
                 LLMTestCaseParams.RETRIEVAL_CONTEXT,
@@ -101,17 +87,15 @@ or no ambiguities existed).
 
     def measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
         """Measure assumption-handling quality."""
-        if not test_case.retrieval_context:
-            test_case.retrieval_context = [self.ac_source]
-        if not test_case.expected_output:
-            test_case.expected_output = (
-                "No reference output provided - judge should evaluate solely "
-                "against the AC source in retrieval_context."
-            )
+        self._ensure_required_fields(test_case)
         return super().measure(test_case, *args, **kwargs)
 
     async def a_measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
         """Async version."""
+        self._ensure_required_fields(test_case)
+        return await super().a_measure(test_case, *args, **kwargs)
+
+    def _ensure_required_fields(self, test_case: LLMTestCase) -> None:
         if not test_case.retrieval_context:
             test_case.retrieval_context = [self.ac_source]
         if not test_case.expected_output:
@@ -119,4 +103,3 @@ or no ambiguities existed).
                 "No reference output provided - judge should evaluate solely "
                 "against the AC source in retrieval_context."
             )
-        return await super().a_measure(test_case, *args, **kwargs)
