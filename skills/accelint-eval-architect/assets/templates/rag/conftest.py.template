@@ -2,15 +2,29 @@
 
 Deterministic tests load curated gold set + captured pipeline output, so they run
 green offline. The faithfulness test is marked `live` and skipped by default.
+
+The reporter is always-on: tests that record metrics via record_metric will
+produce a results/run-*.json artifact for calibration and audit checks.
 """
 
 import json
 from pathlib import Path
+from typing import Any, Callable
 
 import pytest
 import yaml
 
+from _reporter import ScorecardCollector, render, write_artifact
+
 _HERE = Path(__file__).parent
+_collector: ScorecardCollector | None = None
+
+
+def _get_collector() -> ScorecardCollector:
+    global _collector
+    if _collector is None:
+        _collector = ScorecardCollector()
+    return _collector
 
 # Load .env so the live (judge) path can read LITELLM_*/JUDGE_* vars — without
 # this, `cp .env.example .env` does nothing and the wiring snippet's os.environ
@@ -78,3 +92,38 @@ def expected_sections() -> set[str]:
 def indexed_sections() -> set[str]:
     text = (_HERE / "captured" / "indexed_sections.txt").read_text(encoding="utf-8")
     return {ln.strip() for ln in text.splitlines() if ln.strip()}
+
+
+@pytest.fixture
+def record_metric() -> Callable[..., None]:
+    """Record a metric score for the scorecard and results artifact.
+
+    Usage in tests:
+        record_metric(name="recall@5", score=0.85, threshold=0.80,
+                      dimension="retrieval")
+        # For judge metrics, also pass rubric_hash and rubric_source:
+        record_metric(name="faithfulness", score=0.9, threshold=0.0,
+                      dimension="generation", rubric_hash=RUBRIC_HASH,
+                      rubric_source="metrics/faithfulness_ragas.py")
+    """
+    collector = _get_collector()
+
+    def _record(*, name, score, threshold, dimension, reason=None, passed=None, rubric_hash=None, rubric_source=None):
+        collector.record(name=name, score=score, threshold=threshold,
+                         dimension=dimension, reason=reason, passed=passed,
+                         rubric_hash=rubric_hash, rubric_source=rubric_source)
+
+    return _record
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    """Print scorecard and write results artifact if any metrics were recorded."""
+    if _collector is None:
+        return
+    report = _collector.report()
+    tr = terminalreporter
+    tr.write_line("")
+    for line in render(report).splitlines():
+        tr.write_line(line)
+    path = write_artifact(report, _HERE / "results")
+    tr.write_line(f"\nWrote {path.relative_to(_HERE)}")

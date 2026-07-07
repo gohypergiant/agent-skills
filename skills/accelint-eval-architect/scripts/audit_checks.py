@@ -2,9 +2,10 @@
 """Mechanical subset of the eval-decay audit (references/audit.md).
 
 Runs the checks that need no judgment — #2 regression-per-metric, #3 sentinel
-thresholds, #7 untracked source, #8 gitignore coverage — so every audit applies
-them identically. The judgment checks (#1 stale goldens, #5 scenario coverage,
-#6 rubric-vs-correct-behavior) remain agent work.
+thresholds, #7 untracked source, #8 gitignore coverage, #11 stale calibration
+(model), #12 stale calibration (rubric) — so every audit applies them identically.
+The judgment checks (#1 stale goldens, #5 scenario coverage, #6 rubric-vs-correct-behavior)
+remain agent work.
 
 Usage:
   audit_checks.py <evals_dir>
@@ -15,10 +16,14 @@ Exit codes: 1 if any HIGH finding, else 0.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import os
 import re
 import subprocess
 import sys
 from pathlib import Path
+
+from _results import get_latest_run
 
 # Exact path segments (matched against Path.parts), not substrings — a
 # substring test hid real source like tests/test_results/foo.py.
@@ -27,7 +32,7 @@ _IGNORED_SEGMENTS = ("results", ".venv", "__pycache__", ".pytest_cache", "node_m
 # defaults (`threshold: float = 0.0` / `threshold: number = 0.0`), and
 # dict/object-literal forms (`{ threshold: 0.0 }` / `"threshold": 0.0`).
 _SENTINEL_RE = re.compile(
-    r"threshold\s*(?::\s*[\w.\[\]]+\s*)?=\s*0\.0+\b"
+    r"threshold\s*(?::\ s*[\w.\[\]]+\s*)?=\s*0\.0+\b"
     r"|[\"']?threshold[\"']?\s*:\s*0\.0+\b"
     r"|record[-_]only",
     re.IGNORECASE,
@@ -157,6 +162,108 @@ def check_gitignore(evals_dir: Path) -> list[dict]:
     return findings
 
 
+def check_stale_calibration_model(evals_dir: Path) -> list[dict]:
+    """#11: thresholds calibrated against old model aliases are invalid."""
+    findings: list[dict] = []
+    results_dir = evals_dir / "results"
+    if not results_dir.is_dir():
+        return findings  # no runs yet; nothing to check
+
+    latest = get_latest_run(results_dir)
+    if not latest:
+        return findings  # no parseable runs
+
+    # Gate 1: Check for any non-record-only threshold (threshold > 0.0)
+    has_live_threshold = any(
+        isinstance(m, dict) and isinstance(m.get("threshold"), (int, float)) and m["threshold"] > 0.0
+        for m in latest.get("metrics", [])
+    )
+
+    if not has_live_threshold:
+        return findings  # all record-only; no tripwire needed yet
+
+    # Gate 2: Check if env vars are set
+    current_judge = os.getenv("JUDGE_MODEL_ALIAS")
+    current_sut = os.getenv("SUT_MODEL_ID")
+
+    if not current_judge or not current_sut:
+        return [_finding(
+            "LOW", "stale-calibration (model)",
+            "JUDGE_MODEL_ALIAS or SUT_MODEL_ID not set in env; cannot verify model consistency",
+            "Set both env vars to enable the recalibration tripwire (audit check #11).",
+        )]
+
+    # Gate 3: Compare recorded vs current models
+    recorded_judge = latest.get("judge_model_alias", "<unknown>")
+    recorded_sut = latest.get("sut_model_id", "<unknown>")
+
+    if recorded_judge != current_judge or recorded_sut != current_sut:
+        findings.append(_finding(
+            "HIGH", "stale-calibration (model)",
+            f"Thresholds calibrated against judge={recorded_judge} / sut={recorded_sut}, "
+            f"but env now points to judge={current_judge} / sut={current_sut}",
+            "Re-run the baseline loop (suggest_thresholds.py) and recalibrate. "
+            "Thresholds are valid only for the model pair they were measured against.",
+        ))
+
+    return findings
+
+
+def check_stale_calibration_rubric(evals_dir: Path) -> list[dict]:
+    """#12: rubric edits invalidate thresholds like model changes do."""
+    findings: list[dict] = []
+    results_dir = evals_dir / "results"
+    metrics_dir = evals_dir / "metrics"
+
+    if not results_dir.is_dir() or not metrics_dir.is_dir():
+        return findings
+
+    latest = get_latest_run(results_dir)
+    if not latest:
+        return findings
+
+    # Build map of recorded rubric hashes: rubric_source -> (metric_name, hash)
+    recorded_by_source: dict[str, tuple[str, str]] = {}
+    for m in latest.get("metrics", []):
+        if isinstance(m, dict) and "rubric_hash" in m and "rubric_source" in m:
+            # Use rubric_source as join key for exact matching
+            recorded_by_source[m["rubric_source"]] = (m["name"], m["rubric_hash"])
+
+    if not recorded_by_source:
+        return findings  # no judge metrics recorded hashes; nothing to check
+
+    # Read current metric files and compute their rubric hashes
+    for metric_file in metrics_dir.rglob("*.py"):
+        if metric_file.name.startswith("_"):
+            continue
+        try:
+            content = metric_file.read_text(encoding="utf-8")
+        except OSError:
+            continue
+
+        # Extract RUBRIC_HASH constant if present
+        match = re.search(r'RUBRIC_HASH\s*=\s*["\']([a-f0-9]{16})["\']', content)
+        if not match:
+            continue  # not a judge metric or hash not declared
+
+        current_hash = match.group(1)
+
+        # Use relative path as rubric_source key for exact join
+        rubric_source = str(metric_file.relative_to(evals_dir))
+
+        if rubric_source in recorded_by_source:
+            metric_name, recorded_hash = recorded_by_source[rubric_source]
+            if recorded_hash != current_hash:
+                findings.append(_finding(
+                    "HIGH", "stale-calibration (rubric)",
+                    f"Metric {metric_name}: rubric hash changed from {recorded_hash} to {current_hash}",
+                    f"Rubric edit in {rubric_source} invalidates thresholds. "
+                    "Re-run the baseline loop and recalibrate.",
+                ))
+
+    return findings
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -173,6 +280,8 @@ def main() -> int:
         + check_sentinel_thresholds(evals_dir)
         + check_untracked_source(evals_dir)
         + check_gitignore(evals_dir)
+        + check_stale_calibration_model(evals_dir)
+        + check_stale_calibration_rubric(evals_dir)
     )
 
     counts = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}

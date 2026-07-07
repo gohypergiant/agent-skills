@@ -1,8 +1,12 @@
-"""Compact scorecard reporter for __SKILL_NAME__.
+"""Scorecard reporter for __TARGET_NAME__ RAG eval.
 
-Trimmed from the accelint-ac-to-playwright reporter: per-dimension PASS/FAIL
-tables + a JSON artifact. For the full version (persona rollup, latency
-percentiles) see that skill's evals/_reporter.py.
+Ported from the deepeval _reporter.py.template to provide run artifacts
+(results/run-*.json) for RAG harnesses. Uses the same ScorecardCollector +
+field contract so scripts/_results.py can load both deepeval and RAG artifacts
+identically.
+
+Integration: imported by conftest.py; tests use record_metric fixture to log
+scores; pytest_terminal_summary flushes the scorecard and writes the artifact.
 """
 
 from __future__ import annotations
@@ -17,7 +21,7 @@ from typing import Any
 
 # Preferred display order; dimensions not listed here still render (appended
 # alphabetically) — recording a new dimension must never silently hide it.
-DIMENSION_ORDER = ("correctness", "pitfalls")
+DIMENSION_ORDER = ("ingest", "retrieval", "generation", "refusal")
 _W = 92
 _BAR = "=" * _W
 _DIV = "-" * _W
@@ -59,7 +63,7 @@ class ScorecardCollector:
 
 
 def render(report: dict[str, Any]) -> str:
-    out = [_BAR, "EVAL SCORECARD — __SKILL_NAME__", _BAR,
+    out = [_BAR, "EVAL SCORECARD — __TARGET_NAME__", _BAR,
            f"Run    {report['run_started_at']}",
            f"SUT    {report['sut_model_id']}    Judge {report['judge_model_alias']}", ""]
     by_dim: dict[str, list] = defaultdict(list)

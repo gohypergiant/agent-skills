@@ -26,6 +26,8 @@ backlog. Check every one.
 | 8 | `results/`, `.venv/`, `__pycache__/` ARE gitignored | low | run artifacts and venvs committed as noise |
 | 9 | Runner wired into the build (`npm`/`pyproject` script) | low | "how do I run this" undocumented; bit-rots |
 | 10 | Cost-gating present (judge metrics opt-in) | medium | every run bills the judge; CI cost creeps |
+| 11 | Thresholds valid for current model aliases | **high** | thresholds calibrated against old judge/SUT models; silent model upgrade invalidates them |
+| 12 | Thresholds valid for current rubric | **high** | rubric edit changed the measurement; old threshold is meaningless |
 
 ## How to detect each (concrete)
 
@@ -36,7 +38,12 @@ backlog. Check every one.
 - **#6 rubric vs correct behavior:** read each judge criteria block; ask "does correct behavior on the hardest scenario actually satisfy this rubric?" The reference impl's `plan_adherence` penalized a correct halt — that class of bug.
 - **#7 untracked source:** `git status --porcelain evals/` — any untracked `.py`/`.ts` source (not results) is the orphan risk.
 
-**Mechanical subset:** checks #2, #3, #7, #8 need no judgment — run
+## Detection notes (continued)
+
+- **#11 stale model aliases:** compare recorded `judge_model_alias`/`sut_model_id` from latest `results/run-*.json` against current env (`JUDGE_MODEL_ALIAS`/`SUT_MODEL_ID`). Mismatch while any threshold is non-record-only → HIGH.
+- **#12 stale rubric hash:** metric files with judge rubrics declare `RUBRIC_HASH = sha256(evaluation_steps)[:16]`; results artifacts record it per metric. Recompute from current metric file and diff against latest run → mismatch = HIGH.
+
+**Mechanical subset:** checks #2, #3, #7, #8, #11, #12 need no judgment — run
 `scripts/audit_checks.py <evals-dir>` to execute them consistently (exit 1 on
 any HIGH finding). The judgment checks (#1, #5, #6) remain agent work.
 

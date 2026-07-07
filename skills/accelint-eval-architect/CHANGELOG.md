@@ -4,6 +4,41 @@ All notable changes to the `accelint-eval-architect` skill are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), semantic versioning.
 
+## [1.4.0] - 2026-07-07
+
+### Added
+- **Recalibration tripwire (audit checks #11 and #12)** — `audit_checks.py` now
+  detects stale thresholds from silent model upgrades or rubric edits. Check #11
+  compares recorded `judge_model_alias`/`sut_model_id` against current env; check
+  #12 compares rubric hashes (sha256[:16] of `evaluation_steps`, stored as RUBRIC_HASH
+  literal with self-check test). Mismatch with any committed threshold → HIGH finding.
+  Closes the most common silent production failure (thresholds calibrated against old
+  models remain green while measuring nothing).
+- **Shared `scripts/_results.py` loader with schema versioning** — extracts and
+  reuses `load_runs()` from `suggest_thresholds.py`, extending it to handle
+  `schema_version` (v1 implicit, v2 adds rubric_hash/rubric_source tracking). Readers
+  treat missing `schema_version` as v1; newer schemas tolerated with a warning.
+- **RAG reporter** (`assets/templates/rag/_reporter.py.template`) — ports the
+  deepeval `ScorecardCollector` pattern into the RAG template so RAG harnesses
+  produce `results/run-*.json` artifacts for calibration and audit checks. Field
+  contract matches deepeval reporter (schema_version: 2).
+- **RUBRIC_HASH tracking** — GEval metric templates now include RUBRIC_HASH as a
+  literal constant (placeholder "0000000000000000") with self-check regression test.
+  Reporters accept optional `rubric_hash` and `rubric_source` params for judge metrics;
+  `audit_checks.py` #12 uses exact join on rubric_source to detect hash mismatches.
+
+### Changed
+- **Schema version 2** — `_reporter.py.template` artifacts now stamp `schema_version: 2`.
+  Adds per-metric `rubric_hash` and `rubric_source` fields for judge metrics (deterministic
+  metrics omit both). Backward compatible: v1 readers ignore new fields, v2 readers
+  default-to-v1 for old artifacts.
+- `suggest_thresholds.py` now imports `load_runs()` from `_results.py` (DRY).
+
+### References
+- `references/calibration.md` — updated "Re-calibrate on model change" section to include
+  rubric edit warning and tripwire documentation.
+- `references/audit.md` — added checks #11 and #12 to decay checklist table with detection notes.
+
 ## [1.3.1] - 2026-06-12
 
 Fixes from the post-1.3.0 verification re-audit (four fresh-eyes agents; one

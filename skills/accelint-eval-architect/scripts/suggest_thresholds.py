@@ -19,27 +19,12 @@ Exit codes: 0 ok; 2 when the results dir has no parseable run files.
 from __future__ import annotations
 
 import argparse
-import json
 import statistics
 import sys
 from collections import defaultdict
 from pathlib import Path
 
-
-def load_runs(results_dir: Path) -> list[dict]:
-    """Load all parseable run-*.json artifacts; warn-and-skip malformed ones."""
-    runs: list[dict] = []
-    for path in sorted(results_dir.glob("run-*.json")):
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as e:
-            print(f"[warn] skipping malformed {path.name}: {e}", file=sys.stderr)
-            continue
-        if isinstance(data, dict) and isinstance(data.get("metrics"), list):
-            runs.append(data)
-        else:
-            print(f"[warn] skipping {path.name}: no metrics list", file=sys.stderr)
-    return runs
+from _results import load_runs
 
 
 def collect_scores(runs: list[dict], only_metric: str | None) -> dict[str, dict]:

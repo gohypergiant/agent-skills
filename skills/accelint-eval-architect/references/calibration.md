@@ -36,14 +36,21 @@ low-confidence metrics. The human still commits the numbers.
    across 3 runs; suggest threshold 0.80 (mean − 2σ)". The developer commits or
    overrides.
 
-## Re-calibrate on model change
+## Re-calibrate on model change or rubric edit
 
 Judge scores drift when the judge model version changes; SUT scores drift when
-the SUT model changes. The scaffolded `DESIGN.md` carries a banner: **re-run the
-baseline loop after any model upgrade.** Thresholds are valid only for the
-model pair they were measured against — record both model aliases in the results
-artifact (the reference impl stores `judge_model_alias` + `sut_model_id` for
-exactly this).
+the SUT model changes. **Rubric edits** (changing a GEval `evaluation_steps` block)
+invalidate thresholds exactly like a model change — a new rubric is a different
+measurement instrument.
+
+The scaffolded `DESIGN.md` carries a banner: **re-run the baseline loop after any
+model upgrade or rubric edit.** Thresholds are valid only for the model pair AND
+rubric they were measured against.
+
+**Recalibration tripwire:** audit checks #11 (stale model aliases) and #12 (stale
+rubric hash) compare recorded `judge_model_alias`/`sut_model_id`/`rubric_hash` from
+the latest run against current env and metric files. A mismatch with any committed
+threshold → HIGH finding. The checks are mechanical and part of `audit_checks.py`.
 
 ## What NOT to do
 

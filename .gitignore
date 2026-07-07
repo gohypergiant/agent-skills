@@ -9,3 +9,4 @@
 **/test-results/
 tmp
 __pycache__
+.claude/

@@ -160,3 +160,145 @@ def test_sentinel_catches_object_literal_and_dict_thresholds(tmp_path):
     evidence = " ".join(f["evidence"] for f in findings)
     assert "opts.ts" in evidence, "object-literal threshold: 0.0 must be caught"
     assert "cfg.py" in evidence, 'dict "threshold": 0.0 must be caught'
+
+
+def test_stale_model_alias_matching_no_finding(tmp_path, monkeypatch):
+    """When current env matches recorded aliases, no finding."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":1,"judge_model_alias":"gpt-4","sut_model_id":"claude-sonnet-4",'
+        '"metrics":[{"name":"quality","score":0.9,"threshold":0.8}]}',
+        encoding="utf-8"
+    )
+    monkeypatch.setenv("JUDGE_MODEL_ALIAS", "gpt-4")
+    monkeypatch.setenv("SUT_MODEL_ID", "claude-sonnet-4")
+    findings = audit_checks.check_stale_calibration_model(d)
+    assert findings == [], "matching aliases should produce no finding"
+
+
+def test_stale_model_alias_mismatch_high_finding(tmp_path, monkeypatch):
+    """When env differs from recorded, HIGH finding."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":1,"judge_model_alias":"gpt-4","sut_model_id":"claude-sonnet-4",'
+        '"metrics":[{"name":"quality","score":0.9,"threshold":0.8}]}',
+        encoding="utf-8"
+    )
+    monkeypatch.setenv("JUDGE_MODEL_ALIAS", "gpt-4o")
+    monkeypatch.setenv("SUT_MODEL_ID", "claude-opus-4")
+    findings = audit_checks.check_stale_calibration_model(d)
+    assert len(findings) == 1
+    assert findings[0]["severity"] == "HIGH"
+    assert "gpt-4" in findings[0]["evidence"]
+    assert "gpt-4o" in findings[0]["evidence"]
+
+
+def test_stale_model_alias_record_only_no_finding(tmp_path, monkeypatch):
+    """When all thresholds are record-only (0.0), no tripwire needed."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":1,"judge_model_alias":"gpt-4","sut_model_id":"claude-sonnet-4",'
+        '"metrics":[{"name":"quality","score":0.9,"threshold":0.0}]}',
+        encoding="utf-8"
+    )
+    monkeypatch.setenv("JUDGE_MODEL_ALIAS", "gpt-4o")
+    monkeypatch.setenv("SUT_MODEL_ID", "claude-opus-4")
+    findings = audit_checks.check_stale_calibration_model(d)
+    assert findings == [], "record-only thresholds don't trigger tripwire"
+
+
+def test_stale_model_alias_env_unset_low_finding(tmp_path, monkeypatch):
+    """When env vars unset, LOW informational."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":1,"judge_model_alias":"gpt-4","sut_model_id":"claude-sonnet-4",'
+        '"metrics":[{"name":"quality","score":0.9,"threshold":0.8}]}',
+        encoding="utf-8"
+    )
+    monkeypatch.delenv("JUDGE_MODEL_ALIAS", raising=False)
+    monkeypatch.delenv("SUT_MODEL_ID", raising=False)
+    findings = audit_checks.check_stale_calibration_model(d)
+    assert len(findings) == 1
+    assert findings[0]["severity"] == "LOW"
+
+
+def test_stale_rubric_no_recorded_hash_no_finding(tmp_path):
+    """When no rubric hashes are recorded, no finding."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":1,"metrics":[{"name":"quality","threshold":0.8}]}',
+        encoding="utf-8"
+    )
+    (d / "metrics" / "quality.py").write_text(
+        'RUBRIC_HASH = "abc123def4567890"\n', encoding="utf-8"
+    )
+    findings = audit_checks.check_stale_calibration_rubric(d)
+    assert findings == [], "no recorded rubric_hash should produce no finding"
+
+
+def test_stale_rubric_hash_matching_no_finding(tmp_path):
+    """When current rubric hash matches recorded, no finding."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":2,"metrics":[{"name":"quality","rubric_hash":"abc123def4567890","rubric_source":"metrics/quality.py"}]}',
+        encoding="utf-8"
+    )
+    (d / "metrics" / "quality.py").write_text(
+        'RUBRIC_HASH = "abc123def4567890"\n', encoding="utf-8"
+    )
+    findings = audit_checks.check_stale_calibration_rubric(d)
+    assert findings == [], "matching rubric hash should produce no finding"
+
+
+def test_stale_rubric_hash_mismatch_high_finding(tmp_path):
+    """When rubric hash changes, HIGH finding."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":2,"metrics":[{"name":"quality","rubric_hash":"abc123def4567890","rubric_source":"metrics/quality.py"}]}',
+        encoding="utf-8"
+    )
+    (d / "metrics" / "quality.py").write_text(
+        'RUBRIC_HASH = "xyz987fedcba6543"\n', encoding="utf-8"
+    )
+    findings = audit_checks.check_stale_calibration_rubric(d)
+    assert len(findings) == 1
+    assert findings[0]["severity"] == "HIGH"
+    assert "abc123def4567890" in findings[0]["evidence"]
+    assert "xyz987fedcba6543" in findings[0]["evidence"]
+
+
+def test_computed_rubric_hash_pattern_fails(tmp_path):
+    """Regression: computed RUBRIC_HASH pattern should fail hash extraction (not valid literal)."""
+    d = _make_eval_dir(tmp_path)
+    results = d / "results"
+    results.mkdir()
+    (results / "run-20260707T120000.json").write_text(
+        '{"schema_version":2,"metrics":[{"name":"bad_metric","rubric_hash":"abc123def4567890","rubric_source":"metrics/bad_metric.py"}]}',
+        encoding="utf-8"
+    )
+    # Write metric with computed hash (Bug #2 pattern that should be rejected)
+    (d / "metrics" / "bad_metric.py").write_text(
+        '''import hashlib
+_STEPS = ["step 1", "step 2"]
+RUBRIC_HASH = hashlib.sha256("\\n".join(_STEPS).encode()).hexdigest()[:16]
+''',
+        encoding="utf-8"
+    )
+    findings = audit_checks.check_stale_calibration_rubric(d)
+    # The regex should NOT match the computed pattern, so it won't find the metric's hash
+    # This means no finding will be generated (which is correct - we can't verify a computed hash)
+    assert findings == [], "computed hash pattern should not match regex, no verification possible"
