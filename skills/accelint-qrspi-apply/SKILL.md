@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Accelint QRSPI Apply
@@ -365,11 +365,19 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For OpenSpec config** (`<repo-root>/openspec/config.yaml`):
    - Check if `accelint-onboard-openspec` skill is installed
    - If skill is available:
+     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     2. For each decision, rephrase as a plain factual statement (not an instruction)
+     3. Invoke the skill with findings:
      ```
      /accelint-onboard-openspec
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the openspec/config.yaml is current and up to date.
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact, e.g., "config.yaml's Anti-Patterns section says to avoid polling, but this change chose polling for stated reasons"]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update the config accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -387,11 +395,19 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For ARCHITECTURE.md** (`<repo-root>/ARCHITECTURE.md`) — IF it exists:
    - Check if `accelint-architecture-doc` skill is installed
    - If skill is available:
+     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     2. For each decision, rephrase as a plain factual statement (not an instruction)
+     3. Invoke the skill with findings:
      ```
      /accelint-architecture-doc
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the ARCHITECTURE.md is current and up to date.
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update ARCHITECTURE.md accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -410,11 +426,19 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
    - Check if `accelint-onboard-agent` skill is installed
    - If skill is available:
+     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     2. For each decision, rephrase as a plain factual statement (not an instruction)
+     3. Invoke the skill with findings:
      ```
      /accelint-onboard-agent
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the AGENTS.md is current and up to date.
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update AGENTS.md accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -432,11 +456,19 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For README.md** (`<repo-root>/README.md`) — IF it exists:
    - Check if `accelint-readme-writer` skill is installed
    - If skill is available:
+     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     2. For each decision, rephrase as a plain factual statement (not an instruction)
+     3. Invoke the skill with findings:
      ```
      /accelint-readme-writer
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the README.md is current and up to date.
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update README.md accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -659,7 +691,7 @@ All requirements implemented. No critical issues found.
 ### Next Steps
 1. Review the changes: `git diff`
 2. Run tests: `pnpm test`
-3. Archive this change: `/opsx:archive remove-security-ruleset`
+3. Archive this change: `/accelint-qrspi-archive remove-security-ruleset`
 
 Ready to archive!
 ```

@@ -4,7 +4,7 @@ description: Generate or update an ARCHITECTURE.md living document for any codeb
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Architecture Doc
@@ -112,8 +112,9 @@ Does ARCHITECTURE.md exist at the target location?
           │    System Diagram, ## 3. Core Components, ## 4. Data Stores,
           │    ## 6. Deployment & Infrastructure)
           │     → MODE 2: Refresh
-          │       Drift detection + targeted questions for changed or
-          │       missing sections only.
+          │       Extract external findings from invoking prompt (if any) +
+          │       drift detection + merge findings + targeted questions for
+          │       changed or missing sections only.
           │
           └── Has real content but does NOT follow the template?
                 → MODE 3: Restructure (offer proactively — see below)
@@ -130,6 +131,25 @@ Does ARCHITECTURE.md exist at the target location?
 > **(c) Dry run** — I'll show exactly what the restructured doc would look like with no filesystem changes. Use this to evaluate fit before committing."
 
 If **(a)** is chosen: carry all existing content forward into the appropriate template sections. Flag any content that doesn't map cleanly — present it to the user and ask where it belongs rather than silently dropping it.
+
+**MODE 2: Refresh** — When the file follows the template structure, run an abbreviated process:
+
+1. **Extract external findings** — check if the invoking prompt includes a `findings:` list:
+   - Parse the prompt for a `findings:` section (a bulleted list of factual statements)
+   - Each finding is phrased as something already known to be true, never as an instruction
+   - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
+   - Store these findings for merging in step 3
+
+2. **Drift detection** — scan the codebase for changes since the file was last updated (see signals table in Phase 1)
+
+3. **Merge and announce all findings** before asking anything:
+   - Combine external findings (from step 1) with drift findings (from step 2)
+   - Present the merged list to the user:
+     > "I found [N] external findings and [M] sections that may have drifted.
+     > I'll only ask about those — the rest looks current."
+   - If external findings exist, note their source (e.g., "from completed OpenSpec change")
+
+4. After the targeted interview, show a diff-style preview (changed sections only) before writing
 
 ---
 

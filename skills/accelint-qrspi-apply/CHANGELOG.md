@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.4.0] - 2026-07-08
+
+### Changed
+- **Living document update invocations now pass change decisions as findings** — All documentation skill invocations (accelint-onboard-openspec, accelint-architecture-doc, accelint-onboard-agent, accelint-readme-writer) now extract decisions from design.md frontmatter and pass them as `findings:` list
+  - Step 3a of each living document update now includes:
+    1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+    2. For each decision, rephrase as a plain factual statement (not an instruction)
+    3. Invoke the skill with findings in the prompt
+  - Example finding: "config.yaml's Anti-Patterns section says to avoid polling, but this change chose polling for stated reasons"
+  - Skills merge these findings with their own codebase scans before presenting to the human
+  - Rationale: Documentation skills need to know what decisions were made during the change to properly update project DNA, architecture, agent behavior, and user docs. Without this context, skills would only detect file-level drift and miss semantic decisions that haven't fully manifested in the codebase yet.
+  - Impact: Each documentation update now has richer context about *why* changes were made, not just *what* changed
+
+### Added
+- **Fallback documentation update instructions for missing skills** — When a documentation skill is not installed, the manual update instructions now include reading design.md frontmatter for decisions
+  - Ensures consistency whether using skills or manual updates
+  - Prevents documentation updates from missing change rationale when skills aren't available
+
+### Version
+- Bumped from 1.3.0 → 1.4.0
+
 ## [1.3.0] - 2026-06-25
 
 ### Changed
