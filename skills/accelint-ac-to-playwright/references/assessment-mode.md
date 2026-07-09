@@ -8,6 +8,10 @@
 1. **Prepare for the task**:
   - Read `references/acceptance-criteria.md` and `references/test-hooks.md`.
   - Work one input file at a time.
+  - Verify filename is valid:
+    - Contains at least one letter or number
+    - Extension is exactly `.feature` or `.md`
+    - Reject if filename is empty, has no extension, or has invalid extension
 2. **Analyze AC text** against all conversion requirements (all validation checks can be run in parallel via subagents):
    - **Structure & Format**:
      - For .md files: spawn subagent with `references/validate-bullet-format.md`

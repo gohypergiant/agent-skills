@@ -24,9 +24,14 @@ Validate that Gherkin .feature files follow proper structure and formatting rule
 ```
 ❌ Gherkin structure violations:
   - Line 1: Missing Feature declaration (must have exactly one Feature: line)
+  - File: No scenarios found (must have at least one Scenario or Scenario Outline)
   - Line 15: Background appears after first Scenario (must appear before all scenarios)
   - Line 22: Background contains When step (only Given steps allowed)
   - Line 45: Scenario Outline has no Examples table
+  - Line 50: Examples table missing column headers
+  - Line 52: Examples table has no data rows
+  - Line 55: Placeholder '<invalid>' in Scenario Outline doesn't match any Examples column
+  - Line 60: Examples rows are identical (cannot generate unique test names)
   - Line 67: Loose Examples table (must follow Scenario Outline)
   - Line 78: When step before Given (wrong order: must be Given → When → Then)
   - Line 92: Tag missing @ prefix (tags must start with @)
@@ -44,10 +49,18 @@ Validate that Gherkin .feature files follow proper structure and formatting rule
 - Can only contain `Given` steps (no `When` or `Then` allowed)
 
 ### Scenarios
+- **At least one** Scenario or Scenario Outline must be present (file cannot have only Feature declaration)
 - `Scenario:` and `Scenario Outline:` can appear multiple times
 - Each Scenario Outline **must** have at least one `Examples:` block immediately following it
 - No loose `Examples:` tables outside of Scenario Outlines
 
+### Examples Tables
+- Each Examples table must have:
+  - At least one column header
+  - At least one data row
+  - All placeholders in Scenario Outline steps must match column headers
+  - All data rows must have unique values (at least one column differs per row)
+  
 ### Step Ordering
 - Within any Scenario, Scenario Outline, or Background:
   - All `Given` steps come first
@@ -146,4 +159,51 @@ Scenario: Bad ordering
 ```gherkin
 smoke  ❌ Missing @ prefix
 Feature: Test feature
+```
+
+8. **No scenarios in file:**
+```gherkin
+Feature: Empty feature
+  ❌ Must have at least one Scenario or Scenario Outline
+```
+
+9. **Examples table placeholder mismatch:**
+```gherkin
+Scenario Outline: Test with <username>
+  Given user '<username>' logs in
+  Then '<message>' appears
+
+  Examples:
+    | username | result |  ❌ Placeholder '<message>' doesn't match column 'result'
+    | user1    | success|
+```
+
+10. **Examples table missing headers:**
+```gherkin
+Scenario Outline: Test with <value>
+  Then something with '<value>'
+
+  Examples:
+    | test1 |  ❌ Missing column header row
+    | test2 |
+```
+
+11. **Examples table with no data rows:**
+```gherkin
+Scenario Outline: Test with <value>
+  Then something with '<value>'
+
+  Examples:
+    | value |  ❌ No data rows
+```
+
+12. **Identical Examples rows:**
+```gherkin
+Scenario Outline: Test with <username>
+  Given user '<username>' logs in
+
+  Examples:
+    | username |
+    | user1    |
+    | user1    |  ❌ Duplicate row - cannot generate unique test names
 ```

@@ -62,6 +62,8 @@ Would you like help understanding any of the issues, or should I re-assess after
 - `.md` bullet-style: each `- ` bullet = one test
 - `.feature` Gherkin: each Scenario = one test; each Examples row in Scenario Outline = one test
 
+**Spawn subagent**: Use `references/generate-names.md` to derive suite name, test names, and output slug from AC file after assessment passes.
+
 **Output structure**: After conversion completes, the test output directory will contain:
 - `<suite-slug>.spec.ts` files (one per AC file)
 - `fixtures/` directory with shared utilities:
@@ -69,22 +71,6 @@ Would you like help understanding any of the issues, or should I re-assess after
   - `fixtures/console-tracking.ts` - console message tracking helper
 
 **Important for users**: When copying generated tests to your Playwright project, copy both the `.spec.ts` files AND the `fixtures/` directory. Tests import from these fixtures and will fail to compile without them.
-
-| Input | Suite Name | Test Name | Output Slug |
-|-------|------------|-----------|-------------|
-| `.feature` | `Feature:` text → lowercase → capitalize first | Scenario text (lowercase, ~64 char limit) + ` (params)` for Scenario Outlines | suite name → lowercase, spaces to dashes |
-| `.md` | filename → lowercase → dashes to spaces → capitalize first | Summarize bullet intent (present tense, lowercase, ~64 char) | suite name → lowercase, spaces to dashes |
-
-**Scenario Outline parameters**: Use shortest left-to-right column combo that uniquely identifies each row, joined with `/`.
-
-Example:
-```
-Examples:
-  | username | password | message       |
-  | user1    | pass1    | Welcome user1 |
-  | user2    | pass2    | Welcome user2 |
-```
-Appends ` (user1/pass1)` and ` (user2/pass2)` respectively.
 
 ## Tags (Gherkin only)
 
