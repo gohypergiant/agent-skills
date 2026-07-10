@@ -123,18 +123,22 @@ Would you like help understanding any of the issues, or should I re-assess after
 
 Use `npx validate-plan path/to/plan.json` to validate a plan against `scripts/plan-schema.ts` (after build).
 
-**Maximum attempts**: 2 total (initial + 1 correction)
+**Maximum attempts**: 3 total
 
-1. **Attempt 1**: Generate JSON → validate
-  - Pass → proceed to write file
-  - Fail → go to Attempt 2
-
-2. **Attempt 2**: Read validation error → fix ONE specific issue → re-validate
-  - Pass → proceed to write file
-  - Fail → STOP, report error to user
+1. Generate JSON → validate
+  - Pass → write file
+  - Fail → spawn subagent:
+    - Load `references/diagnose-schema-errors.md` and follow its prompt template
+    - Apply the suggested fix → validate again
+      - Pass → write file
+      - Fail → spawn subagent:
+        - Load `references/diagnose-schema-errors.md` and follow its prompt template
+        - Apply the suggested fix → validate again
+          - Pass → write file
+          - Fail → STOP, report error to user
 
 **NEVER**:
-- Make multiple changes at once (fix one thing, validate, repeat)
+- Make multiple changes at once (always fix ONE thing at a time)
 - Retry by rephrasing same JSON differently
 - Guess at schema requirements if error is unclear
 
@@ -142,10 +146,9 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `scripts/pl
 
 | Error Type | Diagnostic Question | Common Causes | Fix Strategy |
 |------------|---------------------|---------------|--------------|
-| **Schema validation fails** | What field does error message name? | Wrong field order, missing required field, extra field not in schema, incorrect field type | Check schema for exact field names and order; compare your JSON structure to schema requirements |
 | **Translation script errors** | Which action/assertion caused failure? | Unsupported action type, malformed target selector, missing required field in step | Verify action is in allowed list (click/fill/select); check target has all three parts; ensure step has target and any required fields (e.g., fill needs value) |
 | **Validation passes but tests fail** | Do test hooks match actual page elements? | Target selectors don't match DOM, wrong start URL, timing issues | Ask user to verify page structure matches expected targets; check if startUrl needs adjustment; consider if dynamic content needs wait conditions |
-| **Multiple validation failures after fixes** | Did first fix break something else? | Making multiple speculative changes, misunderstanding schema requirements | Stop after 2 attempts; report specific schema violations to user; ask if AC has ambiguities or if schema has changed |
+| **Multiple validation failures after fixes** | Did a suggested fix break something else? | Making multiple speculative changes, misunderstanding schema requirements | Stop after 3 attempts; report specific schema violations to user; ask if AC has ambiguities or if schema has changed |
 
 ## NEVER Do
 
