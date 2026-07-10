@@ -21,7 +21,7 @@
 4. **Translate the plan to tests**:
   - Once the plan file is written, translate the plan with `scripts/translate-plan-to-tests.ts`.
   - Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
-  -  Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
+  - Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
 5. **Next steps**: 
   - Work on the next input file, if any remain.
   - After all files are processed:
@@ -142,13 +142,9 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `scripts/pl
 - Retry by rephrasing same JSON differently
 - Guess at schema requirements if error is unclear
 
-## Error Recovery
+## Translation Error Recovery
 
-| Error Type | Diagnostic Question | Common Causes | Fix Strategy |
-|------------|---------------------|---------------|--------------|
-| **Translation script errors** | Which action/assertion caused failure? | Unsupported action type, malformed target selector, missing required field in step | Verify action is in allowed list (click/fill/select); check target has all three parts; ensure step has target and any required fields (e.g., fill needs value) |
-| **Validation passes but tests fail** | Do test hooks match actual page elements? | Target selectors don't match DOM, wrong start URL, timing issues | Ask user to verify page structure matches expected targets; check if startUrl needs adjustment; consider if dynamic content needs wait conditions |
-| **Multiple validation failures after fixes** | Did a suggested fix break something else? | Making multiple speculative changes, misunderstanding schema requirements | Stop after 3 attempts; report specific schema violations to user; ask if AC has ambiguities or if schema has changed |
+When `generate-tests.ts` fails to translate JSON plan to Playwright test code, spawn subagent with `references/diagnose-translation-errors.md` to diagnose the error and suggest a fix.
 
 ## NEVER Do
 
