@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Accelint QRSPI Apply
@@ -33,8 +33,9 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Phase          Action                        Output            │
+│  Stage          Action                        Output            │
 ├─────────────────────────────────────────────────────────────────┤
+│  Preflight      Select and validate change    Ready to proceed  │
 │  Parse          Extract parallelization       Dependency graph  │
 │  Dependencies   Identify blocking tasks       Execution plan    │
 │  Load Context   Read config.yaml context      Project context   │
@@ -44,11 +45,9 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Phase Breakdown
+## Implementation Steps
 
-### Phase 0: Preflight and Change Selection
-
-**Steps**:
+### Preflight and Change Selection
 
 1. If a change name is provided in the skill arguments, use it
 2. Otherwise, try to infer from conversation context (recent mentions of change names)
@@ -64,15 +63,13 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
    ```
    If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `/opsx:continue` to generate tasks before applying."
 
-### Phase 1: Parse Tasks and Parallelization Strategy
+### Parse Tasks and Parallelization Strategy
 
 **Goal**: Extract task structure and identify parallel vs sequential execution opportunities. Detect if work has already started and resume from the correct level.
 
-**Steps**:
+6. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
 
-1. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
-
-2. **Validate checklist format** (CRITICAL for progress tracking):
+7. **Validate checklist format** (CRITICAL for progress tracking):
    - Check that tasks use markdown checklist format: `- [ ] task` or `- [x] task`
    - If tasks use numbered lists (1. 2. 3.) or plain bullets (- without [ ]):
      ```
@@ -88,14 +85,15 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
      ```
    - Exit if format is invalid — do not proceed with invalid task format
 
-3. **Check for partial completion** (resumption detection):
+8. **Check for partial completion** (resumption detection):
    - Count completed tasks (marked `- [x]`) vs total tasks
    - Parse which slices have all their tasks marked complete
    - If any slices are complete, announce: "Detected partial completion. Resuming from Slice N."
    - Adjust the execution plan to skip completed slices
 
-4. Look for the "Parallelization Strategy" section (usually at the end of the file)
-5. Parse the strategy to build a dependency graph:
+9. Look for the "Parallelization Strategy" section (usually at the end of the file)
+
+10. Parse the strategy to build a dependency graph:
 
    **Example strategy:**
    ```md
@@ -120,11 +118,11 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
      - Final integration
    ```
 
-6. If no "Parallelization Strategy" section exists:
+11. If no "Parallelization Strategy" section exists:
    - Assume all tasks must run sequentially (safe default)
    - Inform user: "No parallelization strategy found. Running tasks sequentially."
 
-7. Build an execution plan showing:
+12. Build an execution plan showing:
    - Which slices run in which order
    - Which slices can run in parallel (and which are already complete)
    - Total estimated parallelization speedup
@@ -132,34 +130,32 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 
 **Output**: Dependency graph, execution plan, and resumption point if applicable
 
-### Phase 2: Load Project Context
+### Load Project Context
 
 **Goal**: Load project context from `openspec/config.yaml` to inject into sub-agent prompts. This compensates for OpenSpec CLI's limitation where the `apply` command doesn't automatically load project context (unlike artifact creation commands).
 
 **Background**: OpenSpec's `openspec instructions apply` command does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). This means sub-agents implementing tasks don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. We work around this limitation by manually loading and injecting the context.
 
-**Steps**:
-
-1. Check if `openspec/config.yaml` exists:
+13. Check if `openspec/config.yaml` exists:
    ```bash
    test -f openspec/config.yaml && echo "exists" || echo "missing"
    ```
 
-2. If the file exists, read it:
+14. If the file exists, read it:
    ```bash
    cat openspec/config.yaml
    ```
 
-3. Parse and extract the `context` section (YAML block under `context: |`):
+15. Parse and extract the `context` section (YAML block under `context: |`):
    - The context starts after the line `context: |`
    - The context continues until the next top-level YAML key (e.g., `rules:`, `schema:`)
    - Lines in the context block are indented (usually 2 spaces)
    - Preserve all whitespace and newlines in the context block
    - You MUST inform the user that you found and loaded the config.
 
-4. Store the extracted context for injection into sub-agent prompts in Phase 3
+16. Store the extracted context for injection into sub-agent prompts in the next steps
 
-5. If no `context` field exists or the file is missing:
+17. If no `context` field exists or the file is missing:
    - Set context to empty string
    - Proceed without context injection (sub-agents will rely on OpenSpec's default behavior)
    - You MUST inform the user that you could NOT find and load the config.
@@ -194,7 +190,7 @@ rules:
 
 **Output**: Extracted project context string (may be empty if not present)
 
-### Phase 3: Execute Tasks (Sequential + Parallel)
+### Execute Tasks (Sequential + Parallel)
 
 **Goal**: Implement tasks following the dependency graph, spawning parallel sub-agents where possible.
 
@@ -202,8 +198,8 @@ rules:
 
 For each level in the dependency graph (starting from level 0):
 
-1. If the level has only one slice:
-   - Spawn a single sub-agent with this prompt (inject project context from Phase 2):
+18. If the level has only one slice:
+   - Spawn a single sub-agent with this prompt (inject project context loaded in step 16):
      ```
      <project_context>
      <!-- Background constraints for your implementation. Do NOT copy into code. -->
@@ -237,15 +233,15 @@ For each level in the dependency graph (starting from level 0):
      Focus exclusively on Slice N. Leave other slice tasks unchecked.
      ```
 
-     Note: If no project context was loaded in Phase 2, omit the `<project_context>` block entirely
+     Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-2. Wait for completion before proceeding to the next level
+19. Wait for completion before proceeding to the next level
 
 **Parallel execution** (when multiple slices are independent):
 
 For each level with multiple independent slices:
 
-1. Spawn all sub-agents in parallel in a single turn (one per slice, inject project context from Phase 2):
+20. Spawn all sub-agents in parallel in a single turn (one per slice, inject project context from earlier steps):
    ```
    <project_context>
    <!-- Background constraints for your implementation. Do NOT copy into code. -->
@@ -280,10 +276,11 @@ For each level with multiple independent slices:
    Your work is independent and should not block or depend on other slices.
    ```
 
-   Note: If no project context was loaded in Phase 2, omit the `<project_context>` block entirely
+   Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-2. Track completion as each sub-agent finishes
-3. When all slices in the level are done, **pause and offer context management**:
+21. Track completion as each sub-agent finishes
+
+22. **Context management decision point** - When all slices in the level are done, pause and offer context management:
    ```
    ✅ Level N complete
 
@@ -299,13 +296,13 @@ For each level with multiple independent slices:
    (c) Pause here — you can resume later with this skill
    ```
 
-4. If user chooses (b), instruct them:
+23. If user chooses (b), instruct them:
    ```
    Run `/clear` to reset context, then re-invoke this skill.
    I'll detect that Level N is complete and resume from Level N+1.
    ```
 
-5. If user chooses (c), exit and remind them how to resume:
+24. If user chooses (c), exit and remind them how to resume:
    ```
    Paused at Level N+1. To resume, re-invoke this skill.
    Progress is tracked in tasks.md checkboxes.
@@ -333,19 +330,19 @@ For each level with multiple independent slices:
 
 The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove CLI Surface", "## Slice 2: Remove Implementation"), making it straightforward for sub-agents to identify their scope.
 
-### Phase 4: Update Living Documents
+### Update Living Documents
 
 **Goal**: Update project documentation to reflect the implemented changes before running verification.
 
 **Why this matters**: OpenSpec changes represent significant architectural decisions and feature additions. Living documents (ARCHITECTURE.md, AGENTS.md, openspec/config.yaml) provide context for agents working in the codebase, while README.md serves human users. Keeping them synchronized prevents documentation drift and ensures future agents and developers have accurate, up-to-date context about the system's current state.
 
-**IMPORTANT**: Run this phase BEFORE verification so the verification step can check documentation completeness.
+**IMPORTANT**: Run this step BEFORE verification so the verification step can check documentation completeness.
 
-**Steps**:
+25. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
 
-1. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
-2. Determine the repo/package root (may be current directory or a parent)
-3. **Process ALL living documents** in this order (do not stop after the first one):
+26. Determine the repo/package root (may be current directory or a parent)
+
+27. **Process ALL living documents** in this order (do not stop after the first one):
    - OpenSpec config (`openspec/config.yaml`)
    - ARCHITECTURE.md (if exists)
    - AGENTS.md (if exists)
@@ -493,11 +490,11 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 - Document doesn't exist
 - Change content doesn't introduce anything requiring updates to that document
 
-**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to Phase 5 (Verify Implementation).
+**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to the next step (Verify Implementation).
 
-4. After checking all 4 documents, run `git status` to show which docs were modified
+28. After checking all 4 documents, run `git status` to show which docs were modified
 
-5. Present summary (then immediately continue to Phase 5):
+29. Present summary (then immediately continue to verification):
 
    - If no updates were needed:
      ```
@@ -509,7 +506,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - AGENTS.md [no changes needed]
      - README.md [no changes needed]
 
-     Proceeding to Phase 5: Verify Implementation...
+     Proceeding to verification...
      ```
 
    - If updates were made:
@@ -524,25 +521,23 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
      These changes ensure documentation stays synchronized with implementation.
 
-     Proceeding to Phase 5: Verify Implementation...
+     Proceeding to verification...
      ```
 
-**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, then **MANDATORY automatic transition to Phase 5 without waiting for user input**
+**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, then **MANDATORY automatic transition to verification without waiting for user input**
 
-### Phase 5: Verify Implementation
+### Verify Implementation
 
 **Goal**: Verify that the implementation matches the change artifacts (specs, tasks, design).
 
-**CRITICAL**: This is the FINAL phase. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this phase.
+**CRITICAL**: This is the FINAL step. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this step.
 
-**Steps**:
-
-1. Call the verify command:
+30. Call the verify command:
    ```
    /opsx:verify <change-name>
    ```
 
-2. The verify command will:
+31. The verify command will:
    - Check task completion (all checkboxes marked)
    - Verify spec coverage (requirements implemented)
    - Validate design adherence (decisions followed)
@@ -550,16 +545,16 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    - Generate a comprehensive verification report with CRITICAL/WARNING/SUGGESTION issues
    - Include next steps (archive if passed, fix issues if failed)
 
-3. Present the verification report to the user
+32. Present the verification report to the user
 
-4. The verification report IS the completion report. It includes:
+33. The verification report IS the completion report. It includes:
    - Overall status (passed/failed)
    - Issue breakdown by severity
    - List of changed files
    - Next steps based on status
    - Archive guidance if ready
 
-5. Exit the skill after presenting the verification report. The report already tells the user what to do next.
+34. Exit the skill after presenting the verification report. The report already tells the user what to do next.
 
 **Output**: Comprehensive verification report with status, issues, changed files, and next steps
 
@@ -569,8 +564,8 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
 The skill supports pause/clear/resume workflow at dependency level boundaries:
 
-- **Pause points**: After each level completes, the skill offers to continue or let the user clear context
-- **Resumption detection**: When re-invoked, the skill reads tasks.md checkboxes to detect completed slices and resumes from the next incomplete level
+- **Pause points**: After each dependency level completes, the skill offers to continue or let the user clear context (Step 22)
+- **Resumption detection**: When re-invoked, the skill reads tasks.md checkboxes to detect completed slices and resumes from the next incomplete level (Step 8)
 - **Progress tracking**: Task completion is tracked in tasks.md via checkboxes, making progress durable across context clears
 - **Rationale**: Sub-agents can accumulate significant context. Between dependency levels, the orchestrating agent can clear context while preserving work progress via task checkboxes.
 
@@ -628,15 +623,17 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 ## NEVER Do This
 
+**NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 25-29) complete successfully, immediately proceed to verification (Step 30). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 22). Do not treat completion of living document updates as a signal to stop and wait — it's a signal to continue to verification.
+
 **NEVER implement tasks directly** — Always delegate to `/opsx:apply` command via sub-agents. The /opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
 
-**NEVER skip verification** — Phase 5 verification using `/opsx:verify` is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
+**NEVER skip verification** — Verification using `/opsx:verify` (Step 30) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
 
 **NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
 
 **NEVER skip dependency levels** — If Slice A blocks Slice B, Slice B cannot start until Slice A completes successfully. Do not spawn dependent slices before their blockers finish, even if it would speed up implementation. The dependency graph in the Parallelization Strategy must be respected.
 
-**NEVER skip living document updates** — Phase 4 updates living documents (ARCHITECTURE.md, AGENTS.md, README.md, config.yaml) to keep documentation synchronized with implementation. This phase runs BEFORE verification so the verification step can check documentation completeness. Do not skip to verification without updating living documents first.
+**NEVER skip living document updates** — Living document updates (Steps 25-29) keep ARCHITECTURE.md, AGENTS.md, README.md, and config.yaml synchronized with implementation. These steps run BEFORE verification so the verification step can check documentation completeness. Do not skip to verification without updating living documents first.
 
 ## Configuration Requirements
 

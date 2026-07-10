@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0] - 2026-07-10
+
+### Changed
+- **Remove phase boundaries to prevent premature stopping:** Refactored from phase-based structure to continuous numbered steps
+  - Rationale: Phase headers like "### Phase 0: Preflight Checks", "### Phase 1: Questions", "### Phase 2: Research" create natural stopping points where agents might pause and check with the user mid-workflow, breaking the intended continuous execution flow
+  - Changed structure from:
+    - "### Phase 0: Preflight Checks" / "### Phase 1: Questions" / "### Phase 2: Research" / etc.
+    - To: Single "Implementation Steps" section with instruction "Execute these steps in order without stopping between them" followed by continuous numbered steps (1-N)
+  - Updated workflow diagram: "Phase" column → "Stage" column (higher-level groupings like "Questions", "Research", "Design")
+  - Updated all cross-references throughout (e.g., "Phase 1" → "Questions stage", "Phase 4" → step numbers)
+  - Removed all `**Steps:**` sub-headers that created additional stopping points within phases
+  - Integrated checkpoint instructions directly into the step sequence with clear conditions (e.g., "Step 26: STOP and wait for explicit user approval")
+  - Why: Agents tend to treat phase headers and "Steps:" sub-headers as checkpoint boundaries even when not intended. Continuous numbered steps with explicit STOP instructions only at mandatory checkpoints signal where the workflow should pause vs. continue atomically
+
+### Version
+- Bumped from 1.3.0 → 1.4.0
+
 ## [1.3.0] - 2026-07-08
 
 ### Added
