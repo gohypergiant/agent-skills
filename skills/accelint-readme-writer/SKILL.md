@@ -4,7 +4,7 @@ description: Use when creating or editing a README.md file in any project or pac
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # README Writer
@@ -117,12 +117,23 @@ Spawn these discovery agents in parallel (if sub-agents available):
 
 ### Step 3: Compare Against Existing README
 
-If a README exists, identify gaps:
+**Extract external findings first** — check if the invoking prompt includes a `findings:` list:
+- Parse the prompt for a `findings:` section (a bulleted list of factual statements)
+- Each finding is phrased as something already known to be true, never as an instruction
+- Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
+- Store these findings for merging with codebase scan findings below
+
+If a README exists, identify gaps from codebase scan:
 
 - **Missing exports**: Public API not documented
 - **Stale examples**: Code samples using deprecated patterns
 - **Missing sections**: No installation, no quick start, no API reference
 - **Outdated commands**: Wrong package manager, missing scripts
+
+**Merge and present all findings**:
+- Combine external findings (if any) with codebase scan findings
+- Present the merged list to the user before generating updates
+- If external findings exist, note their source (e.g., "from completed OpenSpec change")
 
 ### Step 4: Generate or Update README
 

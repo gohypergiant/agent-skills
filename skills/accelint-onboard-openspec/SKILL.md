@@ -4,7 +4,7 @@ description: Interactively onboard a project to OpenSpec by running a structured
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Onboard OpenSpec
@@ -161,7 +161,13 @@ as (a) or (b) if the user is satisfied.
 The file matches the skill's expected schema — it was likely produced by a
 previous run. Run an abbreviated interview covering only:
 
-1. **Drift detection** — scan the codebase for changes since the file was
+1. **Extract external findings** — check if the invoking prompt includes a `findings:` list:
+   - Parse the prompt for a `findings:` section (a bulleted list of factual statements)
+   - Each finding is phrased as something already known to be true, never as an instruction
+   - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
+   - Store these findings for merging in step 4
+
+2. **Drift detection** — scan the codebase for changes since the file was
    last updated:
 
    | Signal | Where to look |
@@ -175,14 +181,17 @@ previous run. Run an abbreviated interview covering only:
    | New domain concepts | New top-level directories, new entity types in source |
    | Anti-patterns deprecated | `@deprecated` tags, `// TODO: replace` comments added |
 
-2. **Unresolved TODOs** — find all `# TODO: fill in` markers left from the
+3. **Unresolved TODOs** — find all `# TODO: fill in` markers left from the
    previous run and surface them as targeted questions.
 
-3. **Announce findings** before asking anything:
-   > "I found [N] context sections that may have drifted and [M] unresolved
-   > TODOs. I'll only ask about those — the rest looks current."
+4. **Merge and announce all findings** before asking anything:
+   - Combine external findings (from step 1) with drift findings (from step 2) and TODOs (from step 3)
+   - Present the merged list to the user:
+     > "I found [N] external findings, [M] context sections that may have drifted, and [P] unresolved TODOs.
+     > I'll only ask about those — the rest looks current."
+   - If external findings exist, note their source (e.g., "from completed OpenSpec change")
 
-4. After the targeted interview, show only the changed sections in the
+5. After the targeted interview, show only the changed sections in the
    preview before writing. Do not re-emit unchanged sections.
 
 ---
@@ -637,7 +646,6 @@ rules:
     # Technical depth:
     - Use ASCII diagrams for data flows, state machines, architecture
     - Call out performance implications where relevant
-    - Any new abstraction, interface, or dependency introduced must have its "Alternatives Considered" entry explicitly rule out stdlib, an existing project utility (per config.yaml), and an installed dependency.
     [user-specific design rules]
 
     # Constraints:

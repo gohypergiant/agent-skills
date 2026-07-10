@@ -4,7 +4,7 @@ description: Interactively onboard a project to agent-driven development by runn
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Onboard Agents
@@ -222,7 +222,13 @@ as (a) or (b) if the user is satisfied.
 The file matches the skill's expected shape — it was likely produced by a
 previous run. Run an abbreviated interview covering only:
 
-1. **Drift detection** — scan the codebase for changes since the file was
+1. **Extract external findings** — check if the invoking prompt includes a `findings:` list:
+   - Parse the prompt for a `findings:` section (a bulleted list of factual statements)
+   - Each finding is phrased as something already known to be true, never as an instruction
+   - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
+   - Store these findings for merging in step 4
+
+2. **Drift detection** — scan the codebase for changes since the file was
    last updated:
 
    | Signal | Where to look |
@@ -235,14 +241,17 @@ previous run. Run an abbreviated interview covering only:
    | OpenSpec added/removed | `openspec/` directory presence |
    | New protected branches | `.github/branch-protection*`, README |
 
-2. **Unresolved TODOs** — find all `<!-- TODO: fill in -->` markers left
+3. **Unresolved TODOs** — find all `<!-- TODO: fill in -->` markers left
    from the previous run and surface them as targeted questions.
 
-3. **Announce findings** before asking anything:
-   > "I found [N] sections that may have drifted and [M] unresolved TODOs.
-   > I'll only ask about those — the rest looks current."
+4. **Merge and announce all findings** before asking anything:
+   - Combine external findings (from step 1) with drift findings (from step 2) and TODOs (from step 3)
+   - Present the merged list to the user:
+     > "I found [N] external findings, [M] sections that may have drifted, and [P] unresolved TODOs.
+     > I'll only ask about those — the rest looks current."
+   - If external findings exist, note their source (e.g., "from completed OpenSpec change")
 
-4. After the targeted interview, show a diff-style preview (changed sections
+5. After the targeted interview, show a diff-style preview (changed sections
    only) before writing. Do not re-emit sections that have not changed.
 
 ---
@@ -538,12 +547,10 @@ with placeholder text.
 | Uncertain about scope | [ask / proceed with stated assumption] |
 | Deleting files | [always ask first] |
 | Changing public API | [always ask first] |
+| Adding a new dependency | [ask, state rationale] |
+| Modifying shared utilities | [ask, list affected packages] |
 | Discovering scope creep mid-task | [pause and surface to user] |
 | Two equally valid approaches | [pick one and state choice / ask] |
-| Adding a new dependency | Check stdlib, native platform features, and already-installed deps first; if none cover it, ask and state rationale |
-| Modifying shared utilities | Check this repo's shared-utility location (config.yaml → Architecture Patterns → Shared code) before writing something new; if extending, ask and list affected packages |
-| Introducing a new abstraction (interface, factory, config) for one use case | Don't — implement directly; add the abstraction once a second concrete use case exists |
-| Taking a shortcut with a known ceiling (naive scan, global lock, hardcoded limit) | Take it, mark it with `// NOTE:` naming the ceiling and the upgrade trigger — use the existing comment convention, not a new tag |
 | *(TypeScript)* Adding JSDoc to exported code | Always add comprehensive docs |
 | *(TypeScript)* Adding JSDoc to internal code | Use judgment — document non-obvious behavior only |
 | *(TypeScript)* Writing tests for pure functions with invariants | Consider property-based testing with fast-check |
@@ -577,9 +584,6 @@ with placeholder text.
 ## Guardrails
 
 ### Never (hard stops — no exceptions)
-- [ ] Never simplify away trust-boundary input validation, error handling that
-      prevents data loss, security checks, or accessibility basics — the
-      minimalism heuristics above never override this
 - [ ] Never force-push to any branch
 - [ ] Never commit secrets, tokens, or credentials
 - [ ] Never break backward compatibility without explicit approval

@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.3.0] - 2026-07-08
+
+### Added
+- **Frontmatter capture for specs_touched and decisions** — Phase 4 now captures structured metadata in design.md YAML frontmatter after user approval
+  - Runs only after design.md is approved (checkpoint 1a) or manual edits are confirmed (checkpoint 1c), never before
+  - Captures `specs_touched`: capability names declared in design.md/proposal.md as affected or introduced
+  - Captures `decisions`: design.md's decision content restructured as list of `{id, choice, rationale, alternatives}` entries
+  - Written to design.md YAML frontmatter (or merged if frontmatter block already exists)
+  - Rationale: `accelint-qrspi-archive` needs this structured metadata for cross-capability linking. Capturing it at approval time (not earlier) ensures it reflects the final approved design, not a draft that might be edited during the checkpoint.
+  - If `specs_touched` or decisions can't be confidently read from approved design.md/proposal.md, asks user to add them rather than guessing
+  - Does not block Phase 5 — changes can proceed to specs/tasks without this frontmatter, though archive workflow will need to derive it later
+
+### Changed
+- **Phase 4 checkpoint expanded to 5 steps** — added frontmatter capture as step 4, before proceeding to Phase 5
+  - Previous flow: approve → proceed to Phase 5
+  - New flow: approve → capture frontmatter → proceed to Phase 5
+  - Rationale: Frontmatter capture happens after approval but before continuing, ensuring design.md is complete for downstream workflows
+- **Phase 2: Research now includes existing specs** — research sub-agent now scans `openspec/specs/INDEX.md` for relevant capabilities and reads their specs
+  - Sub-agent observes what current specs say alongside what the codebase does
+  - Includes spec requirements and scenarios directly in research findings, not just references
+  - Rationale: Research should be objective about *both* current implementation *and* current specs of record. Without reading specs, research would miss documented requirements that haven't been implemented yet or have drifted.
+- **Workflow diagram updated** — added frontmatter capture notation at Checkpoint 1: "(frontmatter capture: specs_touched/decisions -> design.md)"
+- **Updated NEVER Do section** — added two new anti-patterns:
+  - NEVER capture specs_touched/decisions frontmatter before design.md is in its final, approved state
+  - NEVER guess specs_touched or decisions when they can't be confidently read from approved design.md/proposal.md
+- **Error Handling section expanded** — added guidance for missing specs_touched/decisions in approved design.md
+
+### Fixed
+- **Frontmatter capture timing** — design.md frontmatter is now only captured *after* user approval/confirmation, not during draft/edit cycles
+  - Issue: Capturing frontmatter speculatively before approval could write metadata against content the user is about to change
+  - Fix: Step 4 of Phase 4 explicitly runs only after approval (1a) or confirmed edits (1c)
+  - Impact: `accelint-qrspi-archive` now receives frontmatter that's guaranteed to reflect the final approved design
+
+### Version
+- Bumped from 1.2.1 → 1.3.0
+
 ## [1.2.1] - 2026-05-07
 
 ### Fixed
