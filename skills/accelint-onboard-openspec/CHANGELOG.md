@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.0] - 2026-07-10
+
+### Added
+- **Leaf function purity guidance** — added explicit coding standard for leaf functions (bottom of call stack)
+  - Guidance: "Leaf functions (bottom of call stack) should be pure — same inputs produce same outputs, no side effects. Centralize state manipulation in parent/orchestrator functions."
+  - Added to TypeScript best practices section in default `config.yaml` template
+  - Rationale: Pushes side effects and state management to higher-level orchestration code, making leaf functions easier to test, reason about, and reuse. Pure leaf functions are deterministic and safe to parallelize.
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
 ## [1.4.0] - 2026-07-08
 
 ### Added

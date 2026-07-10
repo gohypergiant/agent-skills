@@ -4,7 +4,7 @@ description: Automate the QRSPI + OpenSpec planning workflow (Questions → Rese
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Accelint QRSPI
@@ -43,7 +43,7 @@ openspec update
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Phase          Context              Output          Checkpoint │
+│  Stage          Context              Output          Checkpoint │
 ├─────────────────────────────────────────────────────────────────┤
 │  Questions      Ticket only          Questions       —          │
 │  Research       Questions only       Research doc    —          │
@@ -60,27 +60,25 @@ openspec update
 │  Done           —                    Exit            —          │
 └─────────────────────────────────────────────────────────────────┘
 
-Note: Ticket is kept OUT of context after Phase 1 to prevent completion bleed.
+Note: Ticket is kept OUT of context after Questions stage to prevent completion bleed.
 
-Critical: Phase 3 generates ONLY proposal.md and design.md, then STOPS for review.
-Phase 5 generates specs/* and tasks.md separately after design approval.
+Critical: Design stage (steps 17-25) generates ONLY proposal.md and design.md, then
+STOPS for review at step 26. Specs/Tasks stage (steps 32-42) generates specs/* and
+tasks.md separately after design approval.
 
-Frontmatter capture happens after Checkpoint 1 approval, not before — design.md
-is only in its final form once the user has approved it or confirmed a manual
-edit, so capturing specs_touched/decisions any earlier risks writing frontmatter
-against content the user is about to change.
+Frontmatter capture happens at step 30 after Checkpoint 1 approval, not before —
+design.md is only in its final form once the user has approved it or confirmed a
+manual edit, so capturing specs_touched/decisions any earlier risks writing
+frontmatter against content the user is about to change.
 
 ⚠️  MANDATORY CHECKPOINTS: The agent MUST pause and wait for explicit user approval
-at both checkpoints. Proceeding without approval bypasses QRSPI's core value.
+at both checkpoints (step 26 and step 43). Proceeding without approval bypasses
+QRSPI's core value.
 ```
 
-## Phase Breakdown
+## Implementation Steps
 
-### Phase 0: Preflight Checks
-
-Before starting, verify the user provided input and OpenSpec has the required workflows enabled.
-
-**Steps**:
+Execute these steps in order without stopping between them:
 
 1. **Validate user input**: Check if the user provided a ticket, feature request, or idea in their prompt (either as skill arguments or in their message). If the prompt is empty or contains only the skill invocation with no actual content:
    ```
@@ -95,8 +93,11 @@ Before starting, verify the user provided input and OpenSpec has the required wo
    Exit the skill and wait for the user to provide input. Do NOT proceed with internal examples or placeholder content.
 
 2. Tell the user: "Checking OpenSpec configuration..."
+
 3. Run `openspec config list` and parse the output
+
 4. Check if the `workflows:` section contains all three required workflows: `explore`, `new`, and `continue`
+
 5. If any are missing:
    ```
    This skill requires the expanded OpenSpec workflows (explore, new, continue).
@@ -112,19 +113,16 @@ Before starting, verify the user provided input and OpenSpec has the required wo
 
    Then re-run this skill.
    ```
+
 6. Exit the skill if required workflows are not enabled
-7. If validation passes and all workflows are present, proceed to Phase 1
 
-### Phase 1: Questions (Ticket Context → Questions)
+7. If validation passes and all workflows are present, continue to step 8
 
-**Goal**: Generate research questions from the ticket, without proposing solutions.
+8. **Generate research questions** (Context isolation: agent sees ONLY the ticket, not prior codebase knowledge or research. This prevents solution-first thinking)
 
-**Context isolation**: The agent generating questions should see ONLY the ticket, not prior codebase knowledge or research. This prevents solution-first thinking.
+9. Accept the ticket description from the user (passed as the skill argument or prompted if missing)
 
-**Steps**:
-
-1. Accept the ticket description from the user (passed as the skill argument or prompted if missing)
-2. Spawn a sub-agent with this exact prompt:
+10. Spawn a sub-agent with this exact prompt:
 
    ```
    /opsx:explore
@@ -137,45 +135,33 @@ Before starting, verify the user provided input and OpenSpec has the required wo
    to know before building this. Do not propose any solutions. Questions only.
    ```
 
-3. Wait for the sub-agent to complete and return the questions
-4. Extract and store the questions — they will be passed to the next phase
+11. Wait for the sub-agent to complete and return the questions
 
-**Output**: A structured list of research questions (no answers yet)
+12. Extract and store the questions — they will be passed to the next step
 
-### Phase 2: Research (Questions Only → Research Doc)
+13. **Answer research questions** (Context isolation: The agent answering questions should see ONLY the questions, not the original ticket. This is the core QRSPI insight — research is objective, ticket-agnostic)
 
-**Goal**: Answer the questions with objective facts from the codebase AND existing specs, without the ticket bleeding into research.
-
-**Context isolation**: The agent answering questions should see ONLY the questions, not the original ticket. This is the core QRSPI insight — research is objective, ticket-agnostic.
-
-**Steps**:
-
-1. Spawn a NEW sub-agent (fresh context) with this exact prompt:
+14. Spawn a NEW sub-agent (fresh context) with this exact prompt:
 
    ```
    /opsx:explore
 
-   [paste ONLY the research questions from Phase 1]
+   [paste ONLY the research questions from step 12]
 
    Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
    ```
 
-2. Wait for the sub-agent to complete and return the research document
-3. Store the research answers — they will inform the design phase
+15. Wait for the sub-agent to complete and return the research document
 
-**Output**: A research document with objective answers to all questions, including relevant current spec content
+16. Store the research answers — they will inform the design step
 
-### Phase 3: Design Scaffolding
+17. **Generate design scaffolding** (Context isolation: The ticket should NOT be in context during artifact generation to prevent "completion bleed". Spawn a sub-agent with only questions + research)
 
-**Goal**: Create the OpenSpec change and generate proposal.md and design.md artifacts.
+18. Read `openspec/config.yaml` to extract the `rules.design` section
 
-**Context isolation**: The ticket should NOT be in context during artifact generation to prevent "completion bleed". Spawn a sub-agent with only questions + research.
+19. Read `CLAUDE.md` or `AGENTS.md` to extract agent behavior context
 
-**Steps**:
-
-1. Read `openspec/config.yaml` to extract the `rules.design` section
-2. Read `CLAUDE.md` or `AGENTS.md` to extract agent behavior context
-3. Spawn a sub-agent with this exact prompt:
+20. Spawn a sub-agent with this exact prompt:
 
    ```
    You are generating OpenSpec artifacts based on QRSPI research. You have access
@@ -183,10 +169,10 @@ Before starting, verify the user provided input and OpenSpec has the required wo
    prevents solution bias.
 
    Research Questions and Answers:
-   [paste questions from Phase 1]
+   [paste questions from step 12]
 
    Research Findings:
-   [paste research doc from Phase 2]
+   [paste research doc from step 16]
 
    OpenSpec Design Rules (from config.yaml):
    [paste the rules.design section verbatim]
@@ -217,33 +203,25 @@ Before starting, verify the user provided input and OpenSpec has the required wo
    "Change name: <slug>"
 
    CRITICAL: STOP AFTER GENERATING DESIGN.MD. DO NOT CONTINUE TO SPECS OR TASKS.
-   Your job ends here. The parent agent will handle the checkpoint and Phase 5.
+   Your job ends here. The parent agent will handle the checkpoint and further steps.
    If you generate specs/* or tasks.md, you will bypass the mandatory design review.
    ```
 
-4. Wait for the sub-agent to complete
-5. Extract the change name/slug from the sub-agent output (look for "Change name:" or parse from the file path)
-6. Store the change name — it will be passed to Phase 5
-7. Verify the design.md file exists at the reported path
-8. CRITICAL: DO NOT continue to Phase 5 yet. You MUST proceed to Phase 4 checkpoint.
-9. Proceed to Phase 4 (mandatory checkpoint)
+21. Wait for the sub-agent to complete
 
-**Output**: Generated `proposal.md` and `design.md` in `openspec/changes/<slug>/`
+22. Extract the change name/slug from the sub-agent output (look for "Change name:" or parse from the file path)
 
-### Phase 4: Design Review Checkpoint ⚠️ MANDATORY
+23. Store the change name — it will be passed to later steps
 
-**Goal**: Get human approval before proceeding to task breakdown.
+24. Verify the design.md file exists at the reported path
 
-This is the "brain surgery" moment from the QRSPI talk — a correction here costs minutes; the same correction after implementation costs a code review cycle.
+25. CRITICAL: DO NOT continue yet. You MUST proceed to the design review checkpoint next.
 
-CRITICAL: You MUST pause here and wait for user input. DO NOT proceed to Phase 5
-without explicit user approval. If you skip this checkpoint, you defeat the entire
-purpose of QRSPI's separation of design from implementation planning.
+26. ⚠️ **MANDATORY CHECKPOINT: Design Review** (This is the "brain surgery" moment from the QRSPI talk — a correction here costs minutes; the same correction after implementation costs a code review cycle. You MUST pause here and wait for user input. DO NOT proceed without explicit user approval)
 
-**Steps**:
+27. Read the generated `design.md` file
 
-1. Read the generated `design.md` file
-2. Present it to the user with this framing:
+28. Present it to the user with this framing:
 
    ```
    Design artifact generated. Please review for:
@@ -259,8 +237,8 @@ purpose of QRSPI's separation of design from implementation planning.
    (c) Manual edit — edit the file yourself, then tell me when ready
    ```
 
-3. Wait for user input:
-   - **(a) Approve**: Proceed to step 4 below
+29. Wait for user input:
+   - **(a) Approve**: Proceed to step 30 below
    - **(b) Request edits**:
      - User describes changes
      - Make edits to design.md in place
@@ -269,17 +247,17 @@ purpose of QRSPI's separation of design from implementation planning.
    - **(c) Manual edit**:
      - Wait for user confirmation that edits are complete
      - Re-read design.md
-     - Proceed to step 4 below
+     - Proceed to step 30 below
 
-4. **Capture specs_touched/decisions frontmatter.** Once the user has approved (a) or confirmed their manual edits are complete (c), design.md is in its final form for this planning pass — capture its `specs_touched` and `decisions` as structured YAML frontmatter now, not any earlier, so an edit made during this same checkpoint can't leave the frontmatter stale against content that changed after it was written.
+30. **Capture specs_touched/decisions frontmatter.** Once the user has approved (a) or confirmed their manual edits are complete (c), design.md is in its final form for this planning pass — capture its `specs_touched` and `decisions` as structured YAML frontmatter now, not any earlier, so an edit made during this same checkpoint can't leave the frontmatter stale against content that changed after it was written.
 
-   - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (Phase 5 generates those), so there's nothing else to derive it from.
+   - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (specs/tasks generation happens in steps 32-42), so there's nothing else to derive it from.
    - **`decisions`**: design.md's own decision content — the choices, rationale, and alternatives the design phase already worked through — restructured into a list of `{id, choice, rationale, alternatives}` entries. This is structuring content that's already there, not writing new design content.
    - Write both into design.md's YAML frontmatter:
 
      ```yaml
      ---
-     change: <change-name-from-phase-3>
+     change: <change-name-from-step-23>
      specs_touched: [capability-a, capability-b]
      decisions:
        - id: D1
@@ -289,45 +267,36 @@ purpose of QRSPI's separation of design from implementation planning.
      ---
      ```
 
+   **CRITICAL: Use inline array syntax for specs_touched** — Write `specs_touched: [cap-a, cap-b]` NOT multi-line YAML with hyphens. This keeps frontmatter format consistent with other fields that use inline arrays.
+
    - If design.md already starts with a frontmatter block (e.g. OpenSpec's own metadata), merge into it rather than writing a second block.
    - If `specs_touched` or a clear decisions list can't be confidently read out of the approved design.md/proposal.md, don't guess at either — tell the user what's missing and ask them to add it to design.md directly. A design doc without a clear decisions trail is worth flagging on its own terms, and `accelint-qrspi-archive` needs this frontmatter later to do its cross-capability linking.
    - This frontmatter is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, not part of the design content `/opsx:continue` generates — writing it here doesn't fall under the "never generate artifacts yourself" rule (see NEVER Do This). Nothing in proposal.md's or design.md's actual content gets created or altered by this step; only the frontmatter block does.
 
-5. Proceed to Phase 5.
+31. CRITICAL: If the user does not explicitly approve (says "looks good", "approve", "continue", etc.), DO NOT move forward. This checkpoint is mandatory - skipping it bypasses the core value of QRSPI methodology.
 
-**Output**: An approved `design.md` with `specs_touched`/`decisions` captured in its YAML frontmatter, ready for `accelint-qrspi-archive` to read at archive time.
+32. **Generate specs and tasks** (Context isolation: Continue to keep ticket out of context. Spawn a sub-agent with questions + research + approved design.md)
 
-**CRITICAL: DO NOT PROCEED TO PHASE 5 WITHOUT EXPLICIT USER APPROVAL.**
+33. Read the (possibly user-edited) design.md file from step 30
 
-If the user does not explicitly approve (says "looks good", "approve", "continue", etc.),
-DO NOT move forward. This checkpoint is mandatory - skipping it bypasses the core value
-of QRSPI methodology.
+34. Read `openspec/config.yaml` to extract the `rules.spec` and `rules.tasks` sections
 
-### Phase 5: Specs & Tasks Generation
+35. Read `CLAUDE.md` or `AGENTS.md` for agent behavior context
 
-**Goal**: Generate delta specs and task breakdown with vertical slicing.
-
-**Context isolation**: Continue to keep ticket out of context. Spawn a sub-agent with questions + research + approved design.md.
-
-**Steps**:
-
-1. Read the (possibly user-edited) design.md file from Phase 4
-2. Read `openspec/config.yaml` to extract the `rules.spec` and `rules.tasks` sections
-3. Read `CLAUDE.md` or `AGENTS.md` for agent behavior context
-4. Spawn a sub-agent with this exact prompt:
+36. Spawn a sub-agent with this exact prompt:
 
    ```
    You are generating OpenSpec specs and tasks based on QRSPI research and an
    approved design. You have access to research and design, but NOT the original
    ticket text.
 
-   CHANGE NAME: <change-name-from-phase-3>
+   CHANGE NAME: <change-name-from-step-23>
 
    Research Questions and Answers:
-   [paste questions from Phase 1]
+   [paste questions from step 12]
 
    Research Findings:
-   [paste research doc from Phase 2]
+   [paste research doc from step 16]
 
    Approved Design:
    [paste design.md content]
@@ -359,10 +328,13 @@ of QRSPI methodology.
    After tasks.md is generated, report completion and the path to the tasks file.
    ```
 
-5. Wait for the sub-agent to complete
-6. Verify specs/* and tasks.md exist at the reported paths
-7. Read the generated `tasks.md` file
-8. Validate vertical slicing structure:
+37. Wait for the sub-agent to complete
+
+38. Verify specs/* and tasks.md exist at the reported paths
+
+39. Read the generated `tasks.md` file
+
+40. Validate vertical slicing structure:
 
    **VERTICAL SLICING (required for qrspi-apply)**:
 
@@ -379,10 +351,10 @@ of QRSPI methodology.
 
    ✗ WRONG - Horizontal (architectural layers):
    ```
-   Phase 1: All database migrations
-   Phase 2: All service layer changes
-   Phase 3: All API endpoints
-   Phase 4: All frontend components
+   Slice 1: All database migrations
+   Slice 2: All service layer changes
+   Slice 3: All API endpoints
+   Slice 4: All frontend components
    ```
 
    **Indicators of VERTICAL slicing (correct)**:
@@ -405,7 +377,7 @@ of QRSPI methodology.
    - Size: Prefer 3-5 major slices; more than 5 suggests scope is too large
    - Duration: Max 2 hours per subtask; break larger work into smaller subtasks
 
-9. If horizontal or mixed slicing detected, **automatically convert to vertical slices**:
+41. If horizontal or mixed slicing detected, **automatically convert to vertical slices**:
 
    CRITICAL: The qrspi-apply skill requires vertical slicing. If /opsx:continue
    generated horizontal slices, you MUST restructure them before presenting to the user.
@@ -434,14 +406,14 @@ of QRSPI methodology.
    d) **Update Parallelization Strategy (if it exists)**: If the tasks.md already has
       a "## Parallelization Strategy" section, revise it to reflect the new slice
       structure (which slices can run in parallel, which have dependencies).
-      Note: If the section doesn't exist, the parent agent will add it in step 10.
+      Note: If the section doesn't exist, it will be added in step 42.
 
    e) **Write changes to tasks.md**: Edit the file in place using the Edit tool
 
    f) **Show diff to user**: Display what changed and explain why (e.g., "Converted
       from layer-based to feature-based slices for better parallelization")
 
-10. **CRITICAL: Check for and add Parallelization Strategy section**:
+42. **CRITICAL: Check for and add Parallelization Strategy section**:
 
    After vertical slicing is validated/corrected, check if tasks.md contains a
    "## Parallelization Strategy" section.
@@ -480,10 +452,10 @@ of QRSPI methodology.
    DO NOT overcomplicate with excessive detail or edge cases.
 
    **If the section exists but was part of a horizontal-to-vertical conversion**
-   (step 9d), verify it accurately reflects the new vertical slice structure and
+   (step 41d), verify it accurately reflects the new vertical slice structure and
    update if needed.
 
-11. Present tasks.md to the user for final approval:
+43. ⚠️ **MANDATORY CHECKPOINT: Tasks Review** - Present tasks.md to the user for final approval:
 
    ```
    Specs and tasks generated.
@@ -501,25 +473,16 @@ of QRSPI methodology.
    (c) Manual edit — edit tasks.md yourself, then confirm
    ```
 
-12. Handle user input (same flow as Phase 4: approve, request edits, or manual edit)
+44. Handle user input (same flow as step 29: approve, request edits, or manual edit)
 
-**CRITICAL: DO NOT PROCEED TO PHASE 6 WITHOUT EXPLICIT USER APPROVAL.**
+45. CRITICAL: Wait for the user to explicitly approve the tasks.md structure. If they don't respond or the conversation ends, stop here - do not auto-proceed to completion.
 
-Wait for the user to explicitly approve the tasks.md structure. If they don't respond
-or the conversation ends, stop here - do not auto-proceed to completion.
-
-**Output**: Generated `specs/*` and `tasks.md` in `openspec/changes/<slug>/`
-
-### Phase 6: Completion
-
-After tasks.md is approved:
-
-1. Announce completion:
+46. **Completion** - After tasks.md is approved, announce completion:
 
    ```
    ✅ QRSPI planning phase complete.
 
-   Change name: <change-name-from-phase-3>
+   Change name: <change-name-from-step-23>
 
    Generated artifacts:
    - openspec/changes/<change-slug>/proposal.md
@@ -536,7 +499,7 @@ After tasks.md is approved:
    maintains proper context management.
    ```
 
-2. Exit the skill — do NOT automatically invoke `/accelint-qrspi-apply`
+47. Exit the skill — do NOT automatically invoke `/accelint-qrspi-apply`
 
 ## Key Principles
 
@@ -560,7 +523,7 @@ These are the highest-leverage moments for corrections — before any code is wr
 
 ### Vertical Slicing Enforcement
 
-The skill should actively check for and discourage horizontal (layer-by-layer) slicing. Each phase should deliver a testable end-to-end slice.
+The skill should actively check for and discourage horizontal (layer-by-layer) slicing. Each slice should deliver a testable end-to-end slice.
 
 ### No Automatic Implementation
 
@@ -575,17 +538,17 @@ The skill stops after planning. The user explicitly runs `/accelint-qrspi-apply`
 **If OpenSpec commands fail**:
 - Surface the error to the user
 - Ask if they want to retry or abort
-- Do not continue to next phase on failure
+- Do not continue to next step on failure
 
 **If sub-agent fails**:
 - Show the error from the sub-agent
-- Ask user if they want to retry that phase or provide manual input
+- Ask user if they want to retry that step or provide manual input
 - Allow manual fallback (user provides questions/research directly)
 
-**If `specs_touched` or `decisions` can't be confidently read out of approved design.md/proposal.md (Phase 4 step 4)**:
+**If `specs_touched` or `decisions` can't be confidently read out of approved design.md/proposal.md (step 30)**:
 - Do not guess. Show the user what's missing (e.g. "no capability declarations found" or "no decisions with a stated rationale")
-- Ask them to add it to design.md directly, then re-run step 4
-- Do not block Phase 5 on this — a change can proceed to specs/tasks without this frontmatter, it just means `accelint-qrspi-archive` will need to derive it later from proposal.md and the by-then-existing delta specs instead of reading it straight from frontmatter
+- Ask them to add it to design.md directly, then re-run step 30
+- Do not block later steps on this — a change can proceed to specs/tasks without this frontmatter, it just means `accelint-qrspi-archive` will need to derive it later from proposal.md and the by-then-existing delta specs instead of reading it straight from frontmatter
 
 **If design.md or tasks.md is missing after generation**:
 - Check if the file exists at expected path
@@ -605,23 +568,23 @@ If any of these are missing, guide the user to set them up before running this s
 
 ## NEVER Do This
 
-**NEVER generate artifacts yourself** — Always use /opsx commands (new, continue) to create proposal.md, design.md, specs/*, and tasks.md. The /opsx workflow handles artifact generation following OpenSpec's configured rules. If you write artifacts directly, you bypass the project's design/spec/task rules and create inconsistent outputs. The one narrow exception is Phase 4 step 4's `specs_touched`/`decisions` frontmatter block: that's cross-skill bookkeeping metadata for `accelint-qrspi-archive`, derived from content `/opsx:continue` already generated and the user already approved — not new design content. Even there, only the YAML frontmatter block is written; the design.md body is never touched by this step.
+**NEVER generate artifacts yourself** — Always use /opsx commands (new, continue) to create proposal.md, design.md, specs/*, and tasks.md. The /opsx workflow handles artifact generation following OpenSpec's configured rules. If you write artifacts directly, you bypass the project's design/spec/task rules and create inconsistent outputs. The one narrow exception is step 30's `specs_touched`/`decisions` frontmatter block: that's cross-skill bookkeeping metadata for `accelint-qrspi-archive`, derived from content `/opsx:continue` already generated and the user already approved — not new design content. Even there, only the YAML frontmatter block is written; the design.md body is never touched by this step.
 
-**NEVER generate tasks.md from scratch** — Always use /opsx:continue to create the initial tasks.md. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If /opsx:continue generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) following the validation guidance in Phase 5 Step 10. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert to numbered lists or plain bullets.
+**NEVER generate tasks.md from scratch** — Always use /opsx:continue to create the initial tasks.md. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If /opsx:continue generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) following the validation guidance in step 41. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert to numbered lists or plain bullets.
 
 **NEVER use numbered lists or plain bullets in tasks.md** — All subtasks must use markdown checklist format: `- [ ] instruction`. The qrspi-apply skill tracks completion by checking/unchecking these boxes. If you see numbered lists (1. 2. 3.) or plain bullets (- without [ ]), convert them to `- [ ] ...` format.
 
 **NEVER overcomplicate Parallelization Strategy** — Keep it simple: list which slices can run in parallel, which have sequential dependencies, and recommended implementation order. Don't add excessive detail about every possible edge case or coordination mechanism. The example in this skill shows the right level of detail.
 
-**NEVER continue to specs/tasks without design approval** — Phase 4 checkpoint is mandatory. If you skip the design review and generate tasks immediately, you miss the "brain surgery" moment where corrections are cheap. Fixing design issues after code is written costs review cycles and rework.
+**NEVER continue to specs/tasks without design approval** — Step 26 checkpoint is mandatory. If you skip the design review and generate tasks immediately, you miss the "brain surgery" moment where corrections are cheap. Fixing design issues after code is written costs review cycles and rework.
 
-**NEVER capture specs_touched/decisions frontmatter before design.md is in its final, approved state** — Phase 4 step 4 runs only after (a) approval or (c) confirmed manual edits, never during a (b) request-edits loop or speculatively ahead of approval. Capturing it against a draft that's still being revised is exactly the kind of stale metadata `accelint-qrspi-archive` depends on this skill not producing.
+**NEVER capture specs_touched/decisions frontmatter before design.md is in its final, approved state** — Step 30 runs only after (a) approval or (c) confirmed manual edits, never during a (b) request-edits loop or speculatively ahead of approval. Capturing it against a draft that's still being revised is exactly the kind of stale metadata `accelint-qrspi-archive` depends on this skill not producing.
 
 **NEVER guess specs_touched or decisions when they can't be confidently read out of the approved design.md/proposal.md** — ask the user to add what's missing to design.md directly instead. A silently invented capability list is worse than a visible gap, since `accelint-qrspi-archive` will trust this frontmatter as the author's explicit statement of scope.
 
 **NEVER let the ticket leak into research/design context** — Questions are generated WITH ticket context, but research and design must see ONLY questions + research answers. If the ticket stays in context during research, the agent will propose solutions instead of gathering objective facts about the current codebase.
 
-**NEVER skip the mandatory checkpoints** — Phase 4 (after design.md) and Phase 5 Step 12 (after tasks.md) require explicit user approval before continuing. If you proceed without waiting for user confirmation ("looks good", "approve", "continue"), you bypass the core value of QRSPI: cheap corrections at the design stage. The "brain surgery" moment is when design is reviewed BEFORE specs/tasks are generated. Skipping checkpoints defeats the entire methodology.
+**NEVER skip the mandatory checkpoints** — Step 26 (after design.md) and Step 43 (after tasks.md) require explicit user approval before continuing. If you proceed without waiting for user confirmation ("looks good", "approve", "continue"), you bypass the core value of QRSPI: cheap corrections at the design stage. The "brain surgery" moment is when design is reviewed BEFORE specs/tasks are generated. Skipping checkpoints defeats the entire methodology.
 
 ## Example Usage
 

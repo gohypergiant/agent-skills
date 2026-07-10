@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.5.0] - 2026-07-10
+
+### Changed
+- **Remove phase boundaries to prevent premature stopping:** Refactored from phase-based structure to continuous numbered steps
+  - Rationale: Phase headers like "### Phase 0: Preflight and Change Selection", "### Phase 1: Parse Tasks and Parallelization Strategy" create natural stopping points where agents might pause and check with the user mid-workflow, breaking the intended continuous execution flow
+  - Changed structure from:
+    - "### Phase 0: Preflight", "### Phase 1: Parse", "### Phase 2: Load Context", etc.
+    - To: Single "Implementation Steps" section with continuous numbering (steps 1-N) and instruction "Execute these steps in order without stopping between them unless an error occurs"
+  - Updated workflow diagram: "Phase" column → "Stage" column (higher-level groupings like "Preflight", "Parse", "Execute")
+  - Updated all cross-references throughout the skill
+  - Removed all `**Steps:**` sub-headers that created additional stopping points within phases
+  - Why: Agents tend to treat phase headers and "Steps:" sub-headers as checkpoint boundaries even when not intended. Continuous numbered steps signal that the workflow should execute atomically unless an error occurs
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
 ## [1.4.0] - 2026-07-08
 
 ### Changed

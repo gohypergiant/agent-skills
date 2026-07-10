@@ -4,7 +4,7 @@ description: Interactively onboard a project to OpenSpec by running a structured
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Onboard OpenSpec
@@ -551,7 +551,8 @@ context: |
   - Validation:      [approach and library]
   - Constants:       Use `as const` objects, never `enum`
   - Classes:         Prefer functions over classes unless state management required or extending existing class
-  - Return values:   Return zero values (empty array, empty string, 0) instead of null/undefined
+  - Return values:   Return zero values (empty array, empty string, 0, false) instead of null/undefined
+  - Leaf functions:  Leaf functions (bottom of call stack) should be pure — same inputs produce same outputs, no side effects. Centralize state manipulation in parent/orchestrator functions.
   - Type safety:     Avoid `any` (use `unknown` or generics); avoid `enum` (use `as const` objects); use `type` over `interface`
   - Immutability:    Prefer `const`, immutable data structures, pure functions
   - Documentation:   Comprehensive JSDoc for all exported code (@param, @returns, @template, @example)
