@@ -1,0 +1,12 @@
+"""Pass case: a clean run scores at threshold. Teeth live in the regression file."""
+
+from metrics.example_metric import ExampleRecallMetric
+
+
+def test_example_recall_pass():
+    planted = {"item-a", "item-b", "item-c"}
+    reported = {"item-a", "item-b", "item-c"}  # perfect detection
+    metric = ExampleRecallMetric(threshold=1.0)
+    score = metric.measure(reported, planted)
+    assert metric.is_successful()
+    assert score == 1.0

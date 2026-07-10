@@ -1,0 +1,32 @@
+"""Example deterministic metric for __SKILL_NAME__.
+
+Set score (0..1), success (bool), and a human-readable reason. No LLM call.
+Replace with a real metric derived from the skill's output shape — see
+references/test-design.md for the output-shape -> metric mapping.
+"""
+
+from typing import Optional
+
+
+class ExampleRecallMetric:
+    """Of the defects PLANTED in a fixture, how many did the skill report?"""
+
+    def __init__(self, threshold: float = 1.0):
+        self.threshold = threshold
+        self.score = 0.0
+        self.success = False
+        self.reason: Optional[str] = None
+
+    def measure(self, reported: set[str], planted: set[str]) -> float:
+        missed = planted - reported
+        self.score = 1.0 if not planted else (len(planted) - len(missed)) / len(planted)
+        self.success = self.score >= self.threshold
+        self.reason = (
+            f"Missed {len(missed)}/{len(planted)} planted: {', '.join(sorted(missed))}"
+            if missed
+            else f"All {len(planted)} planted items caught"
+        )
+        return self.score
+
+    def is_successful(self) -> bool:
+        return self.success

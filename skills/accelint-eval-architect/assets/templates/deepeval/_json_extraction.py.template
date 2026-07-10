@@ -1,0 +1,65 @@
+"""Tolerant JSON extraction for SUT output that wraps JSON in a fenced block.
+
+A metric doing raw json.loads(actual_output) fails when the SUT emits prose then
+a ```json block. Strategy: last fenced block -> raw JSON -> largest balanced {..}.
+"""
+
+import json
+import re
+from typing import Any
+
+_FENCED = re.compile(r"```(?:json)?\s*(\{.*?\}|\[.*?\])\s*```", re.DOTALL | re.IGNORECASE)
+
+
+class PlanExtractionError(ValueError):
+    pass
+
+
+def extract_json(text: str) -> Any:
+    if not text or not text.strip():
+        raise PlanExtractionError("Response is empty.")
+    for candidate in reversed(_FENCED.findall(text)):
+        try:
+            return json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+    try:
+        return json.loads(text.strip())
+    except json.JSONDecodeError:
+        pass
+    obj = _largest_balanced_object(text.strip())
+    if obj is not None:
+        try:
+            return json.loads(obj)
+        except json.JSONDecodeError as exc:
+            raise PlanExtractionError(f"Found an object block but could not parse it: {exc}")
+    raise PlanExtractionError("No JSON object found in response.")
+
+
+def _largest_balanced_object(text: str) -> str | None:
+    best_start = best_end = -1
+    best = 0
+    depth = 0
+    start = -1
+    in_str = escape = False
+    for i, ch in enumerate(text):
+        if in_str:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == "{":
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == "}" and depth > 0:
+            depth -= 1
+            if depth == 0 and start >= 0 and i - start + 1 > best:
+                best, best_start, best_end = i - start + 1, start, i + 1
+                start = -1
+    return text[best_start:best_end] if best_start >= 0 else None

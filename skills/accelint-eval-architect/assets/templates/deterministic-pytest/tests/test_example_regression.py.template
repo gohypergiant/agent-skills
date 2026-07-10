@@ -1,0 +1,19 @@
+"""Regression case: PROVES the metric has teeth.
+
+Feed deliberately wrong output; assert below-threshold AND that the reason names
+the defect. Note the case-insensitivity trap: match on the lowercased reason so a
+capitalized defect name doesn't slip the assertion.
+"""
+
+from metrics.example_metric import ExampleRecallMetric
+
+
+def test_example_recall_regression():
+    planted = {"item-a", "item-b", "item-c"}
+    reported = {"item-a"}  # under-detects on purpose
+    metric = ExampleRecallMetric(threshold=1.0)
+    score = metric.measure(reported, planted)
+    assert not metric.is_successful()
+    assert score < 1.0
+    reason_lc = metric.reason.lower()
+    assert "item-b" in reason_lc or "item-c" in reason_lc

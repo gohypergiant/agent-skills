@@ -1,0 +1,44 @@
+[project]
+name = "accelint-ac-to-playwright-evals"
+version = "1.0.0"
+description = "LLM evaluation harness for ac-to-playwright skill (internal-only)"
+requires-python = ">=3.11"
+dependencies = [
+    "deepeval>=4.0.0",
+    "litellm==1.55.0",
+    "pytest==8.3.4",
+    "pyyaml==6.0.2",
+    "python-dotenv>=1.0.1",
+]
+
+[tool.pytest.ini_options]
+# `-ra` makes pytest print a short summary line for non-passing tests at the bottom.
+# Tracebacks suppressed (`--tb=no`) because the scorecard's "Failure details"
+# block already carries the full untruncated judge reason for each failed metric.
+addopts = [
+    "-ra",
+    "--tb=no",
+    "--no-header",
+    "-p",
+    "no:cacheprovider",
+    # Default to deterministic (free) tests. README documents that
+    # `npm run eval -- -m live` opts in to the GEval tests that hit the judge.
+    "-m",
+    "not live",
+]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore:.*LLMTestCaseParams.*is deprecated.*:DeprecationWarning",
+    "ignore:.*PydanticSerializationUnexpectedValue.*:UserWarning",
+    "ignore:.*open_text is deprecated.*:DeprecationWarning",
+    "ignore:.*class-based `config` is deprecated.*:DeprecationWarning",
+    "ignore::DeprecationWarning:deepeval",
+    "ignore::DeprecationWarning:litellm",
+    "ignore::DeprecationWarning:pydantic",
+    "ignore::DeprecationWarning:importlib",
+    "ignore::UserWarning:pydantic",
+    "ignore::PendingDeprecationWarning",
+]
+log_cli = false
+log_cli_level = "WARNING"

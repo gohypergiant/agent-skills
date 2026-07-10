@@ -1,0 +1,130 @@
+"""Pytest config + fixtures for the __TARGET_NAME__ RAG eval.
+
+Deterministic tests load curated gold set + captured pipeline output, so they run
+green offline. The faithfulness test is marked `live` and skipped by default.
+
+The reporter is always-on: tests that record metrics via record_metric will
+produce a results/run-*.json artifact for calibration and audit checks.
+"""
+
+import json
+from pathlib import Path
+from typing import Any, Callable
+
+import pytest
+import yaml
+
+from _reporter import ScorecardCollector, render, write_artifact
+
+_HERE = Path(__file__).parent
+_collector: ScorecardCollector | None = None
+
+
+def _get_collector() -> ScorecardCollector:
+    global _collector
+    if _collector is None:
+        _collector = ScorecardCollector()
+    return _collector
+
+# Load .env so the live (judge) path can read LITELLM_*/JUDGE_* vars — without
+# this, `cp .env.example .env` does nothing and the wiring snippet's os.environ
+# lookups KeyError. Guarded import: the deterministic path stays runnable with
+# only pytest + pyyaml (python-dotenv is in pyproject and arrives via uv sync).
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
+env_file = _HERE / ".env"
+if load_dotenv and env_file.exists():
+    load_dotenv(env_file)
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "live: hits the judge LLM / live pipeline (costs money, skipped by default)")
+
+
+@pytest.fixture(scope="session")
+def goldset() -> dict:
+    data = yaml.safe_load((_HERE / "goldset" / "goldset.yaml").read_text(encoding="utf-8"))
+    unverified = [e["id"] for e in data.get("entries", []) if not e.get("verified")]
+    if unverified:
+        pytest.exit(
+            f"\n[ERROR] Gold set has unverified entries: {unverified}\n"
+            "Curate them (verified: true) before running — an un-curated gold set is untrustworthy.",
+            returncode=1,
+        )
+    return data
+
+
+@pytest.fixture(scope="session")
+def gold_entries(goldset) -> list[dict]:
+    return goldset["entries"]
+
+
+@pytest.fixture(scope="session")
+def captured_retrieval() -> dict[str, list[str]]:
+    out: dict[str, list[str]] = {}
+    for line in (_HERE / "captured" / "retrieval.jsonl").read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            row = json.loads(line)
+            out[row["id"]] = row["retrieved"]
+    return out
+
+
+@pytest.fixture(scope="session")
+def captured_answers() -> dict[str, str]:
+    out: dict[str, str] = {}
+    for line in (_HERE / "captured" / "answers.jsonl").read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            row = json.loads(line)
+            out[row["id"]] = row["answer"]
+    return out
+
+
+@pytest.fixture(scope="session")
+def expected_sections() -> set[str]:
+    data = yaml.safe_load((_HERE / "fixtures" / "source_manifest.yaml").read_text(encoding="utf-8"))
+    return set(data["sections"])
+
+
+@pytest.fixture(scope="session")
+def indexed_sections() -> set[str]:
+    text = (_HERE / "captured" / "indexed_sections.txt").read_text(encoding="utf-8")
+    return {ln.strip() for ln in text.splitlines() if ln.strip()}
+
+
+@pytest.fixture
+def record_metric() -> Callable[..., None]:
+    """Record a metric score for the scorecard and results artifact.
+
+    Usage in tests:
+        record_metric(name="recall@5", score=0.85, threshold=0.80,
+                      dimension="retrieval")
+        # For judge metrics, also pass rubric_hash and rubric_source:
+        from metrics.faithfulness_ragas import RUBRIC_HASH
+        record_metric(name="faithfulness", score=0.9, threshold=0.0,
+                      dimension="generation", rubric_hash=RUBRIC_HASH,
+                      rubric_source="metrics/faithfulness_ragas.py")
+    """
+    collector = _get_collector()
+
+    def _record(*, name, score, threshold, dimension, reason=None, passed=None, rubric_hash=None, rubric_source=None):
+        collector.record(name=name, score=score, threshold=threshold,
+                         dimension=dimension, reason=reason, passed=passed,
+                         rubric_hash=rubric_hash, rubric_source=rubric_source)
+
+    return _record
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    """Print scorecard and write results artifact if any metrics were recorded."""
+    if _collector is None:
+        return
+    report = _collector.report()
+    tr = terminalreporter
+    tr.write_line("")
+    for line in render(report).splitlines():
+        tr.write_line(line)
+    path = write_artifact(report, _HERE / "results")
+    tr.write_line(f"\nWrote {path.relative_to(_HERE)}")
