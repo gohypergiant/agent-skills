@@ -54,6 +54,7 @@ Given steps should NOT contain actions:
 - ❌ Invalid: "Given the user clicks the login button" (this is an action, belongs in When)
 - ❌ Invalid: "Given the user fills the email field" (action, not context)
 - ❌ Invalid: "Given the user logs in" (describes behavior, not state - use "logged-in user" or move to When)
+- ❌ Invalid: "Given the page reloads" (reload is an action, belongs in When)
 
 ### Starting Page Pattern
 

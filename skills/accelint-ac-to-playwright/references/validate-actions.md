@@ -73,7 +73,7 @@ Note: The orchestrator (assessment mode) is responsible for extracting actions f
   - Requires direction: up, down, left, right
   - Requires pixel amount
   - Example: "scrolls down 200 pixels"
-- `reloads` — page reload (maps to `reload` action, only valid in Given steps for context setup)
+- `reloads` — page reload (maps to `reload` action, only valid in When steps as a user action)
 
 ### Vague/Unrecognized Verbs (reject these)
 
@@ -161,12 +161,7 @@ When the user hovers  ❌ Need target: "hovers over the tooltip text on the card
 When the user taps the button  ❌ Use "clicks" instead
 ```
 
-7. **Reload in action step:**
-```gherkin
-When the user reloads the page  ❌ Reload only allowed in Given steps
-```
-
-8. **Generic fill value:**
+7. **Generic fill value:**
 ```gherkin
 When the user enters test data  ❌ Must specify exact value with "fills ... with 'value'"
 ```

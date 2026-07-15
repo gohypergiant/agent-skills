@@ -115,7 +115,12 @@ Then the form is submitted  ❌ What does the user see? Need: "success text that
 Then the table updates  ❌ Need trigger word: "the table shows up" or "new data appears in the table"
 ```
 
-3. **No specific text:**
+3. **Action in Then (should be When):**
+```gherkin
+Then the page reloads  ❌ Reload is an action, belongs in When steps
+```
+
+4. **No specific text:**
 ```gherkin
 Then a success message appears  ❌ Need specific text: "success text that says 'Submitted' appears"
 ```
