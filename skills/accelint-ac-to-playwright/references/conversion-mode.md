@@ -13,15 +13,17 @@
   - Read `references/acceptance-criteria.md`.
   -  Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
   -  Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
-3. **JSON test plan**:
-  - Build a JSON test plan that conforms to `scripts/plan-schema.ts`.
-  - Validate the test plan and report results.
-  - If validation failed, **stop**. Do not write the plan. Skip the rest of these steps for the current input file and move on to the next input file.
-  - If validation passed, write the plan to the user-specified output directory: `<plans-output-dir>/<suite-slug>.json`.
-4. **Translate the plan to tests**:
-  - Once the plan file is written, translate the plan with `scripts/translate-plan-to-tests.ts`.
-  - Write the test suite file to the user-specified output directory: `<tests-output-dir>/<suite-slug>.spec.ts`.
-  - Append a summary entry to the batch JSON file in the user-specified summary directory (one batch file per run).
+3. **Generate and write JSON test plan file**:
+  - Construct the complete JSON test plan object following `scripts/plan-schema.ts` structure
+  - Use the Write tool to create the file at `<plans-output-dir>/<suite-slug>.json` with the JSON content
+  - Run validation: `cd /Users/tanya.fortunaGHM7GPQV67/Coding/agent-skills/skills/accelint-ac-to-playwright && npx validate-plan <plans-output-dir>/<suite-slug>.json`
+  - If validation fails, read the error, fix the JSON, and use the Write tool to overwrite the file with corrected content
+  - Maximum 3 validation attempts - if still failing after 2 attempts, stop and report the validation errors to the user
+4. **Execute translation and write test file**:
+  - Run: `cd /Users/tanya.fortunaGHM7GPQV67/Coding/agent-skills/skills/accelint-ac-to-playwright && npx translate-plan <plans-output-dir>/<suite-slug>.json`
+  - Capture the generated TypeScript test code from the script output
+  - Use the Write tool to create the file at `<tests-output-dir>/<suite-slug>.spec.ts` with the test code
+  - Verify the file was written successfully by using the Read tool to check its contents
 5. **Next steps**: 
   - Work on the next input file, if any remain.
   - After all files are processed:

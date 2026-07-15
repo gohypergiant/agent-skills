@@ -59,6 +59,28 @@ Assessment mode analyzes AC text only (no artifact generation). Full conversion 
 - Validates JSON plans before writing
 - Translates plans to Playwright tests
 
+**When spawning a subagent for conversion mode, use this exact prompt format:**
+```
+THIS IS AN EXECUTION TASK, NOT A PLANNING TASK. Do not create any plan documents.
+
+Convert [AC file path] to Playwright tests using the accelint-ac-to-playwright skill.
+
+Output directories:
+- Plans: [path]
+- Tests: [path]
+- Summaries: [path]
+
+You must:
+1. Run assessment
+2. Build the JSON test plan object
+3. Use the Write tool to create the .json file
+4. Run validation
+5. Run translation script
+6. Use the Write tool to create the .spec.ts file
+
+Actually write these files. Do not just describe what should be written.
+```
+
 **For complete workflow, naming rules, and output specifications:** Load `references/conversion-mode.md`
 
 ## Context Management
