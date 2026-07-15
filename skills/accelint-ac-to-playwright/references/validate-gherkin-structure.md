@@ -37,6 +37,21 @@ Validate that Gherkin .feature files follow proper structure and formatting rule
   - Line 92: Tag missing @ prefix (tags must start with @)
 ```
 
+## Validation Checklist
+
+Validate the following in order:
+
+1. **Feature declaration**: Exactly one `Feature:` line exists and appears before Background/Scenarios
+2. **Background block** (if present):
+   - Only one Background exists
+   - Appears before first Scenario/Scenario Outline
+   - **CRITICAL**: Every step in Background must be a `Given` step. If you find `When` or `Then` in Background, report as violation with line number
+3. **Scenarios**: At least one Scenario or Scenario Outline exists
+4. **Scenario Outline + Examples**: Each Scenario Outline has Examples table with matching placeholders
+5. **Step ordering**: Within each block, verify Given → When → Then order
+6. **Compound steps**: Each step contains only one action/assertion (no commas combining multiple steps)
+7. **Tags**: All tags start with `@`
+
 ## Validation Rules
 
 ### Feature Declaration
@@ -67,6 +82,7 @@ Validate that Gherkin .feature files follow proper structure and formatting rule
   - Then all `When` steps
   - Then all `Then` steps
 - `And` and `But` inherit the type of the previous step and don't change ordering
+- **Compound steps**: Each step must contain only ONE action or assertion. Steps that combine multiple actions or mix actions with assertions (e.g., "When the user clicks X, the text says Y") are structural violations
 
 ### Tags
 - All tags **must** start with `@`

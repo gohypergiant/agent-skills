@@ -61,6 +61,10 @@ These require simple text edits where the underlying intent is already clear:
 - Example: `selects Premium Plan` → needs quotes
 - Fix: Add quotes: `selects 'Premium Plan'`
 
+**Format issues** — Simple syntax fixes:
+- Missing @ prefix on tags
+- Missing Feature declaration
+
 ### Major Issues (Require Discussion)
 
 These indicate unclear requirements needing back-and-forth clarification with the user:
@@ -74,8 +78,15 @@ These indicate unclear requirements needing back-and-forth clarification with th
 **Missing targets entirely** — No mention of what element is being acted upon
 - Example: "the user clicks" → clicks what?
 
-**Structural violations** — Step ordering issues, missing step types
-- Example: Action in Given step, precondition in When step
+**Structural violations** — Step ordering issues, wrong step types, compound steps, incomplete test structures. These prevent conversion and require discussion to understand intent.
+- Examples: 
+  - Action in Given step, precondition in When step
+  - Background with When or Then steps (only Given allowed)
+  - Compound steps combining action and assertion in one line (e.g., "When the user clicks X, the text says Y")
+  - First step in a scenario starts with And/But instead of Given/When/Then (missing context - what is the And continuing from?)
+  - Scenario Outline missing Examples table (can't generate parameterized tests)
+  - Examples table column names don't match Scenario Outline placeholders (breaks parameterization)
+  - Orphaned When step without Then assertion (unclear what outcome to verify)
 
 3. **Report results**:
    - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
