@@ -65,8 +65,8 @@ These require simple text edits where the underlying intent is already clear:
 
 These indicate unclear requirements needing back-and-forth clarification with the user:
 
-**Vague/unrecognized verbs** — Can't map to Playwright actions
-- Examples: "interacts with", "uses", "taps", "enters", "submits", "hovers" (without element target)
+**Vague/unrecognized verbs** — Can't map to Playwright actions. If the verb is not in the schema (clicks, fills, selects, presses, hovers, scrolls, drags, reloads, etc.), it must be rejected as a major issue requiring discussion. We cannot assume it's a simple substitution - the user may be describing an entirely new action type.
+- Examples: "interacts with", "uses", "taps", "enters", "submits", "types" (for key presses), "hovers" (without element target)
 
 **Unmeasurable outcomes** — Assertions don't specify what to verify
 - Examples: "the page updates", "the system responds", "position will shift"
