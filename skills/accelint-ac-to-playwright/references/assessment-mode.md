@@ -117,7 +117,36 @@ Even minor issues like incomplete targets or missing quotes prevent automatic co
 
 ## Assessment Output Format
 
-### When validation fails
+### When validation fails (BAD - major issues present)
+
+When AC contain one or more major issues, provide a summary and offer the choice:
+
+```
+❌ AC are not conversion-ready
+
+The file has [N] major issues that need discussion:
+1. [Brief description of major issue type and line number]
+2. [Next major issue...]
+
+Would you like to:
+- **(a)** Get a full list of all questions to review and answer at your own pace, or
+- **(b)** Work through them interactively one question at a time?
+```
+
+Example output:
+```
+❌ AC are not conversion-ready
+
+The file has 2 major issues that need discussion:
+1. Line 15 - Vague verb "uses" (not in schema)
+2. Line 23 - Unmeasurable outcome "the page updates"
+
+Would you like to:
+- **(a)** Get a full list of all questions to review and answer at your own pace, or
+- **(b)** Work through them interactively one question at a time?
+```
+
+### When validation fails (MIXED - minor issues only)
 
 Report issues in this structure:
 
