@@ -107,7 +107,12 @@ Would you like help understanding any of the issues, or should I re-assess after
     - The `press` action only accepts single unmodified keys and should never receive combination syntax like `Shift+g`
 - Assertions: 
   - If navigation is triggered, add `expectUrl` using the Start URL mapping.
-  - For visibility changes (e.g., visible/appears/shows/hides and similar wording), add `expectNotVisible` immediately before the action and `expectVisible` immediately after (or vice versa as appropriate).
+  - For visibility changes (e.g., visible/appears/shows/hides and similar wording), EVERY target mentioned with a visibility change MUST have BOTH visibility assertions:
+    - For "appears/shows/visible": add `expectNotVisible` for that target immediately before the action that causes the change, then `expectVisible` for that same target immediately after
+    - For "disappears/hides": add `expectVisible` for that target immediately before the action that causes the change, then `expectNotVisible` for that same target immediately after
+    - When multiple targets change visibility from the same action, add ALL the "before" assertions first, then the action, then ALL the "after" assertions
+    - Example: "button appears and text disappears" → `expectNotVisible button`, `expectVisible text`, `[action]`, `expectVisible button`, `expectNotVisible text`
+    - The schema enforces that each target with ANY visibility assertion must have EXACTLY 2 visibility assertions (one before, one after) with exactly one action between them
   - Only add `expectText` / `expectVisible` / `expectNotVisible` when the AC explicitly names text or visibility.
   - Do not invent assertions. NEVER infer unstated information.  Required fields that MUST be explicit (not inferred):
     - target: Must include area + component + intent
