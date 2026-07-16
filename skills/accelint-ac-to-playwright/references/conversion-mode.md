@@ -11,6 +11,7 @@
 2. **Prepare for the task**:
   - Require the user to explicitly provide output directories for plans, tests, and summaries before writing any files.
   - Read `references/acceptance-criteria.md`.
+  - Read `references/test-hooks.md` (contains controlled vocabulary for area.component.intent target pattern).
   -  Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
   -  Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
 3. **Generate and write JSON test plan file**:
@@ -155,6 +156,7 @@ When `generate-tests.ts` fails to translate JSON plan to Playwright test code, s
 
 ## NEVER Do
 
+- **NEVER generate targets without loading test-hooks.md first** — test-hooks.md defines the controlled vocabulary for the area.component.intent pattern and valid area/component keywords. Skipping it causes reversed target patterns (intent.component.area instead of area.component.intent) and invalid keyword usage that fails validation.
 - **NEVER use bare string values with selectOption** — Playwright's `selectOption()` matches HTML `value` attributes by default, not visible text. AC writers specify visible option text (e.g., "Premium Plan"), so always use `{ label: "text" }` syntax: `.selectOption({ label: "Premium Plan" })`. Using bare strings (`.selectOption("Premium Plan")`) causes silent mismatches where tests pass locally but fail in production because the value attribute differs from display text.
 - **NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.
 - **NEVER use `doubleClick` for element interactions** — `doubleClick` is only for coordinate-based double-clicks (x,y positions). For double-clicking elements, use the element-based `click` action twice in sequence. Only use `doubleClick` when AC explicitly specifies coordinates.
