@@ -9,7 +9,9 @@ metadata:
 
 # AC To Playwright
 
-**MANDATORY - READ ENTIRE FILE**: Before processing ANY acceptance criteria, you MUST read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) completely from start to finish. It is the authoritative source for AC writing rules and mappings.
+**MANDATORY - READ BEFORE STARTING**:
+- ALWAYS read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) completely from start to finish (no range limits). It is the authoritative source for AC writing rules and mappings.
+- For **conversion tasks**: ALSO read [`references/conversion-mode.md`](references/conversion-mode.md) BEFORE generating any JSON plans. It contains critical schema specifications (field names, types, action structures) required for valid plan generation.
 
 ## Intent Detection
 
@@ -51,9 +53,14 @@ Assessment mode analyzes AC text only (no artifact generation). Full conversion 
 
 **When triggered:** User asks to convert/generate/turn AC into tests.
 
+**MANDATORY**: Load `references/conversion-mode.md` BEFORE generating JSON plans. This file contains:
+- Schema specifications (correct field names like `name` not `testName`, required fields per action type)
+- Action structure rules (which actions take coordinates, which don't; value formats for selectOption)
+- Validation protocol and error recovery steps
+
 **Key behaviors:**
 - Always runs assessment first - stops if any AC fail assessment
-- Use the stopping protocol template (in the linked reference below) to provide clear communication to the user
+- Use the stopping protocol template (in conversion-mode.md) to provide clear communication to the user
 - Requires explicit output directories before writing files
 - Works one file at a time (no parallelization)
 - Validates JSON plans before writing
@@ -81,14 +88,14 @@ You must:
 Actually write these files. Do not just describe what should be written.
 ```
 
-**For complete workflow, naming rules, and output specifications:** Load `references/conversion-mode.md`
+**Critical**: The above prompt template is for spawning subagents. When YOU are the main agent handling conversion, you must load `references/conversion-mode.md` directly - do not skip this step.
 
 ## Context Management
 
 **Load selectively to avoid context bloat:**
 
 - **Assessment-only task** → load `assessment-mode.md`, skip `conversion-mode.md`
-- **Conversion task** → load `conversion-mode.md`, skip `assessment-mode.md` (it references assessment workflow internally)
+- **Conversion task** → MUST load `conversion-mode.md` BEFORE generating JSON (contains schema rules), skip `assessment-mode.md` (it references assessment workflow internally)
 - **Both modes** → always load `acceptance-criteria.md` and `test-hooks.md`
 - **Never load both mode files simultaneously** — they have overlapping content
 
@@ -112,5 +119,7 @@ Actually write these files. Do not just describe what should be written.
 These critical rules apply across both modes. Complete anti-pattern lists are in the mode-specific reference files.
 
 - **NEVER read `acceptance-criteria.md` with range limits** — if you need to read this file, always read it completely from start to finish.
+
+- **NEVER generate JSON plans without loading `conversion-mode.md` first** — this file contains the schema specifications you need to generate valid plans. Skipping it causes field name errors (`testName` vs `name`), incorrect action structures (adding coordinates to actions that don't accept them), and validation failures.
 
 - **NEVER take shortcuts** — agents have gone off the rails when trying to define their own shortcuts. When triggered, always run the full workflow as specified in the mode files.
