@@ -33,8 +33,8 @@ Generate suite names, test names, and output slugs from AC source files by apply
 
 | Input | Suite Name | Test Name | Output Slug |
 |-------|------------|-----------|-------------|
-| `.feature` | `Feature:` text → lowercase → capitalize first (~100 char limit) | Scenario text (lowercase, ~100 char limit) + ` (params)` for Scenario Outlines | suite name → lowercase, spaces to dashes |
-| `.md` | filename → lowercase → dashes to spaces → capitalize first (~100 char limit) | Summarize bullet intent (present tense, lowercase, ~100 char) | suite name → lowercase, spaces to dashes |
+| `.feature` | `Feature:` text (exact, trim whitespace) → lowercase → capitalize first (~100 char limit). Use the result verbatim even if it's `---`, empty, or contains only symbols. | Scenario text (lowercase, ~100 char limit) + ` (params)` for Scenario Outlines | suite name → lowercase, spaces to dashes |
+| `.md` | filename (exact, without extension) → lowercase → dashes to spaces → capitalize first (~100 char limit) | Summarize bullet intent (present tense, lowercase, ~100 char) | suite name → lowercase, spaces to dashes |
 
 **Scenario Outline parameters**: Use shortest left-to-right column combo that uniquely identifies each row, joined with `/`.
 

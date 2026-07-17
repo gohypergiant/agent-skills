@@ -73,9 +73,11 @@ THIS IS AN EXECUTION TASK, NOT A PLANNING TASK. Do not create any plan documents
 Convert [AC file path] to Playwright tests using the accelint-ac-to-playwright skill.
 
 Output directories:
-- Plans: [path]
-- Tests: [path]
-- Summaries: [path]
+- Plans: [exact path user provided]
+- Tests: [exact path user provided]
+- Summaries: [exact path user provided]
+
+CRITICAL: Use the exact directory paths the user specified. Do not invent subdirectories that the user did not provide. If the user gave one path for all outputs, use that same path for all three fields above.
 
 You must:
 1. Run assessment
@@ -117,6 +119,10 @@ Actually write these files. Do not just describe what should be written.
 ## Core Anti-Patterns
 
 These critical rules apply across both modes. Complete anti-pattern lists are in the mode-specific reference files.
+
+- **NEVER invent or modify suite names** — use the Feature text or filename exactly as written, applying only the transformations in Naming Transformations (lowercase → capitalize first). Even if the source text is `---`, a placeholder, or seems incomplete, use it verbatim. If the translation script later rejects it for validation reasons, report that error to the user - do not work around it by inventing a descriptive name.
+
+- **NEVER invent or modify output directories** — use the exact directory paths the user provides. Do not append subdirectories to what the user provided. If the user provides one path for all outputs, use that exact same path for all file types.
 
 - **NEVER read `acceptance-criteria.md` with range limits** — if you need to read this file, always read it completely from start to finish.
 
