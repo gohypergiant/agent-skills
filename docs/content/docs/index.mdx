@@ -1,13 +1,138 @@
 ---
 title: Overview
-description: Overview description
+description: Agent Skills provide expert-level, domain-specific knowledge to AI coding assistants through a lightweight, open format
 ---
 
-TODO
+Agent Skills are a lightweight, open format for extending AI agent capabilities with specialized knowledge and workflows.
 
-## Example Cards
+At its core, a skill is a directory containing a `SKILL.md` file with:
+- **Metadata** (name, description) that helps agents discover when the skill is relevant
+- **Instructions** that tell agents how to perform specific tasks
+- **Optional resources** (scripts, references, templates, assets)
+
+```
+my-skill/
+├── SKILL.md          # Required: metadata + instructions
+├── scripts/          # Optional: executable code
+├── references/       # Optional: detailed documentation
+├── assets/           # Optional: templates, resources
+└── ...               # Any additional files
+```
+
+## Why Agent Skills?
+
+Agents are increasingly capable but often lack the context needed for real work. Skills solve this by packaging:
+
+**Domain expertise** — Specialized knowledge from legal review to data pipelines to design systems
+
+**Repeatable workflows** — Multi-step tasks as consistent, auditable procedures
+
+**Team conventions** — Organizational patterns, testing standards, commit formats
+
+**Cross-product reuse** — Build once, use across any skills-compatible agent
+
+## How Skills Work
+
+Skills work through **progressive disclosure** in three stages:
+
+**1. Discovery (at startup)**
+Agents load only the `name` and `description` from each skill's frontmatter—just enough to know when a skill might be relevant. This keeps the context footprint small.
+
+**2. Activation (when relevant)**
+When your task matches a skill's description, the agent loads the full `SKILL.md` instructions into context.
+
+**3. Execution (as needed)**
+The agent follows the loaded instructions and may execute bundled scripts or load additional reference files on demand.
+
+This design lets agents maintain awareness of many skills while keeping context windows focused on active work.
+
+## Progressive Disclosure Structure
+
+Skills use a three-stage loading system to minimize context usage:
+
+**Stage 1: Discovery (~100 tokens per skill)**
+- Only `name` and `description` loaded at startup
+- Agents scan these to identify potentially relevant skills
+- Low memory footprint enables hundreds of skills
+
+**Stage 2: Activation (&lt;5000 tokens recommended)**
+- Full `SKILL.md` body loads when skill is triggered
+- Contains core instructions, workflows, and anti-patterns
+- Keep under 500 lines for optimal performance
+
+**Stage 3: Execution (on-demand)**
+- Scripts, references, and assets load only when needed
+- Agent executes code or reads detailed documentation
+- Specific files requested by instructions
+
+## Our Skill Collection
+
+This documentation covers 23+ specialized agent skills across several categories:
+
+### Code Quality & Safety
+Defensive programming, type safety, performance optimization, and security auditing
+- [TypeScript Best Practices](/docs/ts-best-practices) - Type safety and code correctness
+- [TypeScript Performance](/docs/ts-performance) - V8 profiling and optimization
+- [TypeScript Documentation](/docs/ts-documentation) - JSDoc and code comments
+- [Security Best Practices](/docs/security-best-practices) - OWASP Top 10 auditing
+- [TypeScript Audit All](/docs/ts-audit-all) - Comprehensive multi-skill audit system
+
+### Testing
+Test creation, validation, and automation patterns
+- [TypeScript Testing](/docs/ts-testing) - Vitest patterns and property-based testing
+- [React Testing](/docs/react-testing) - Testing Library best practices
+- [AC to Playwright](/docs/ac-to-playwright) - Convert acceptance criteria to tests
+
+### Frontend/React
+React, Next.js, and frontend framework optimization
+- [React Best Practices](/docs/react-best-practices) - Performance and modern patterns
+- [TanStack Query](/docs/tanstack-query-best-practices) - Query patterns for Next.js
+- [Next.js Best Practices](/docs/nextjs-best-practices) - App Router optimization
+- [Design Foundation](/docs/design-foundation) - Tailwind styling conventions
+
+### Documentation
+README generation, architecture docs, and code documentation
+- [README Writer](/docs/readme-writer) - Comprehensive README generation
+- [Architecture Doc](/docs/architecture-doc) - Generate ARCHITECTURE.md
+- [TypeScript Documentation](/docs/ts-documentation) - JSDoc and comments
+
+### Project Onboarding
+Set up agent behavior, project configuration, and architectural docs
+- [Onboard Agent](/docs/onboard-agent) - Create AGENTS.md (agent behavior)
+- [Onboard OpenSpec](/docs/onboard-openspec) - Create config.yaml (project DNA)
+- [Architecture Doc](/docs/architecture-doc) - Generate ARCHITECTURE.md
+
+### QRSPI/OpenSpec Workflow
+Spec-driven development with questions, research, design, and structured implementation
+- [QRSPI Propose](/docs/qrspi-propose) - Planning (Questions → Research → Design → Structure)
+- [QRSPI Apply](/docs/qrspi-apply) - Implementation with parallelization
+- [QRSPI Archive](/docs/qrspi-archive) - Archive changes with cross-linking
+- [Archive Synthesis](/docs/archive-synthesis) - Lint archives for drift
+
+### Specialized
+Prompt optimization, design review, and skill creation
+- [Prompt Manager](/docs/prompt-manager) - Transform vague prompts into optimized ones
+- [Persona Review](/docs/persona-review) - Evaluate Figma designs from user perspectives
+- [Skill Manager](/docs/skill-manager) - Create and audit agent skills
+
+## Next Steps
 
 <Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
+  <Card title="Getting Started" href="/docs/getting-started">
+    Install skills and learn how to use them in your projects
+  </Card>
+  <Card title="Agent Skills Specification" href="https://agentskills.io/specification">
+    Learn about the open Agent Skills format
+  </Card>
 </Cards>
+
+## Learn More
+
+**About Agent Skills:**
+- [Agent Skills Overview](https://agentskills.io/home) - Official format documentation
+- [Specification](https://agentskills.io/specification) - Complete format spec
+- [Best Practices](https://agentskills.io/skill-creation/best-practices) - Creating effective skills
+
+**Community:**
+- [Skills Registry](https://skills.sh) - Browse and discover skills
+- [GitHub Repository](https://github.com/gohypergiant/agent-skills) - Source code and issues

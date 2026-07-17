@@ -1,6 +1,283 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Comprehensive TypeScript file audit system that systematically applies multiple audit skills (testing, best practices, performance, documentation) with progress tracking, interactive change approval, and isolated worktree execution to enable safe parallel audits.
+source: skills/accelint-ts-audit-all/SKILL.md
+source_sha: 7f11370aea0a75621c478917098c65c7b02e0ee0
+doc_sha: ddf6224474cd0ed3743657aa4ca89b68b65d9d9e
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+This is a command-only skill with no natural language triggers. Invoke explicitly with a file or directory path:
+
+```bash
+# Audit a single file
+/accelint-ts-audit-all src/utils/parser.ts
+
+# Audit an entire directory
+/accelint-ts-audit-all src/components/
+
+# Audit from current context (use with caution on large directories)
+/accelint-ts-audit-all
+```
+
+Once activated, the skill:
+
+1. **Creates an isolated worktree** - All audit work happens in `.agents/worktrees/audit-{timestamp}` to prevent conflicts with parallel audits
+2. **Builds a TODO list** - Scans for TypeScript files, excluding tests and benchmarks
+3. **Tracks progress across sessions** - Maintains audit-process and audit-history files in `.agents/audit/` (gitignored)
+4. **Runs four audit skills** - Systematically applies ts-testing, ts-best-practices, ts-performance, and ts-documentation to each file
+5. **Requires interactive approval** - Uses a two-phase pattern: shows all issues in an emoji severity table, displays detailed before/after code, then asks for numbered list acceptance
+6. **Verifies changes** - Runs exact test/build/lint commands after each phase
+7. **Merges back** - When complete, commits all changes and merges the worktree back to your original branch
+
+## When to Use
+
+Use this skill when:
+
+- You want to systematically improve code quality across multiple files
+- You need comprehensive audits for testing, best practices, performance, and documentation
+- You're working on a large codebase and need progress tracking across sessions
+- You want to run multiple audits in parallel without git conflicts (isolated worktrees)
+- You need interactive control over which changes to apply
+
+**Do NOT use** for:
+
+- Single-aspect audits (use individual skills: ts-testing, ts-best-practices, ts-performance, ts-documentation)
+- Quick one-off fixes
+- Test files themselves (they're excluded from audit scope)
+
+## Audit Process
+
+The skill follows a rigorous 8-step process for each file:
+
+### Phase 1: Initial Test Coverage
+
+**Step 1-2: Test Analysis → Interactive Changes**
+
+- Runs `accelint-ts-testing` to establish test coverage baseline
+- Shows all testing issues in emoji severity table (🛑 Critical → ✅ Info)
+- Displays detailed before/after code for each issue
+- User approves changes via numbered list
+- **BLOCKING:** If property-based tests added, runs test suite 100 times to verify stability (random failures common with PBT)
+
+### Phase 2: Code Quality &amp; Performance
+
+**Step 3-4: Parallel Analysis → Interactive Changes**
+
+- Runs `accelint-ts-best-practices` AND `accelint-ts-performance` in parallel (prevents contradictory suggestions)
+- Merges overlapping recommendations where possible
+- Shows combined issues in emoji severity table
+- User approves changes via numbered list
+- Adds `// PERF:` comments only where they provide genuine insight
+
+### Phase 3: Verification
+
+**Step 5-6: Run Tests → Fix Failures (if needed)**
+
+- Runs exact verification commands from audit-process file (never improvises)
+- If tests fail, shows issues in emoji severity table and applies fixes interactively
+- **BLOCKING:** Must achieve passing tests before continuing
+
+### Phase 4: Documentation
+
+**Step 7-8: Documentation Pass → Interactive Changes**
+
+- Runs `accelint-ts-documentation` for JSDoc and comments
+- Shows issues in emoji severity table
+- User approves changes via numbered list
+- Runs final verification to ensure docs didn't break anything
+
+## Progress Tracking
+
+The skill maintains two tracking files in `.agents/audit/`:
+
+**audit-process-{timestamp}.md** - Current state
+
+- Lists all files (Pending/In Progress/Completed)
+- Tracks detailed progress for current file
+- Documents exact verification commands
+- Provides resume instructions for next session
+
+**audit-history-{timestamp}.md** - Completed work
+
+- Archives detailed findings from finished files
+- Includes summary statistics per file
+- Read-only reference for understanding past decisions
+
+Status markers:
+
+- `[ ]` Pending - Not started
+- `[x]` Completed - All 8 steps done, moved to history
+- ✅ Step complete
+- 🔄 Step in progress
+- ⏸️ Step pending
+
+## Interactive Change Approval
+
+The skill uses a mandatory two-phase approval pattern:
+
+### Phase 1: Overview Table
+
+```markdown
+## Found Issues Summary (5 total)
+
+| # | Severity | Type | Lines | Description |
+|---|----------|------|-------|-------------|
+| 1 | 🛑 Critical | Type Safety | 45-47 | Missing null check on user object |
+| 2 | ⚠️ High | Performance | 89 | N+1 query in loop - use batch fetch |
+| 3 | ⚡ Medium | Performance | 120-125 | Filter+map → single pass with reduce |
+| 4 | 🔵 Low | Best Practice | 78 | Use const assertion for readonly array |
+| 5 | ✅ Info | Documentation | 12 | Missing JSDoc return type |
+```
+
+**Severity Legend:**
+
+- 🛑 **Critical** - Runtime errors, security vulnerabilities, data loss
+- ⚠️ **High** - Type errors, significant performance issues, API breaking changes
+- ⚡ **Medium** - Moderate performance gains, maintainability improvements
+- 🔵 **Low** - Minor optimizations, style improvements
+- ✅ **Info** - Documentation, comments, non-functional improvements
+
+### Phase 2: Detailed Changes
+
+After the table, shows complete before/after code for each issue:
+
+```markdown
+### Issue #1: Missing null check (🛑 Critical - Type Safety)
+**Lines:** 45-47
+**Problem:** Function doesn't handle null user case
+**Impact:** Runtime TypeError when user is null
+
+❌ **Before:**
+```typescript
+function getUsername(user: User | null) {
+  return user.name; // TS error + runtime crash
+}
+```
+
+✅ **After:**
+```typescript
+function getUsername(user: User | null) {
+  return user?.name ?? 'Anonymous';
+}
+```
+
+**Expected Benefit:** Prevents runtime TypeError, fixes TS compilation error
+```
+
+Then asks: **Apply which issues?** Enter numbers (e.g., "1, 2, 5" or "all" or "skip")
+
+## Examples
+
+### Example: Auditing a Single File
+
+```bash
+/accelint-ts-audit-all src/lib/validator.ts
+```
+
+The skill will:
+
+1. Create worktree in `.agents/worktrees/audit-20260717-143022/`
+2. Create tracking files `audit-process-20260717-143022.md` and `audit-history-20260717-143022.md`
+3. Run testing audit, show issues table, get approval
+4. Run best-practices + performance audits in parallel, show merged issues, get approval
+5. Run verification commands
+6. Run documentation audit, show issues, get approval
+7. Commit changes and merge back to original branch
+8. Clean up worktree
+
+### Example: Auditing a Directory
+
+```bash
+/accelint-ts-audit-all src/utils/
+```
+
+The skill builds a TODO list of all `.ts` files (excluding `.test.ts`, `.spec.ts`, `.bench.ts`), then audits each file sequentially with progress tracking. If context runs out mid-audit, resume instructions are saved to continue in the next session.
+
+### Example: Resuming a Previous Audit
+
+If an audit was interrupted:
+
+```bash
+# Check for existing audits
+ls .agents/audit/
+
+# The skill automatically detects the existing audit-process file
+# and picks up where it left off based on "Resume Instructions" section
+/accelint-ts-audit-all src/utils/
+```
+
+The skill reads the audit-process file, verifies the worktree still exists, and continues from the documented resume point.
+
+## Common Pitfalls
+
+> **Good to know:** This skill creates isolated worktrees to enable parallel audits. If you run multiple audits simultaneously, each gets its own worktree in `.agents/worktrees/audit-{timestamp}/`. The tracking files in `.agents/audit/` should be gitignored.
+
+> **Good to know:** Property-based tests (using fast-check) often fail randomly on first run. The skill automatically runs the test suite 100 times after adding PBT and won't proceed until 100 consecutive passes are achieved. This is a blocking requirement to catch flaky tests early.
+
+> **Good to know:** Best-practices and performance audits run in parallel because they can suggest contradictory changes. The skill merges overlapping suggestions where possible and presents both options when they conflict.
+
+> **Good to know:** The skill uses EXACT verification commands from the audit-process file. It never improvises with `npm test` or `bun test` unless those commands are explicitly documented in the "Verification Commands" section.
+
+> **Good to know:** Add `.agents/audit/` to your `.gitignore` - these tracking files are workflow artifacts, not source code.
+
+## Verification Commands
+
+The skill documents exact test/build/lint commands in the audit-process file during initialization. Common patterns:
+
+**Node.js projects:**
+
+```bash
+cd <project-root>; npm test
+cd <project-root>; npm run build
+cd <project-root>; npm run lint
+```
+
+**Bun projects:**
+
+```bash
+cd <project-root>; bun run test
+cd <project-root>; bun run build
+cd <project-root>; bun run lint
+```
+
+**Monorepo packages:**
+
+```bash
+cd <workspace-root>/packages/<package-name>; npm test
+```
+
+The skill asks for these commands during initialization and uses them verbatim throughout the audit.
+
+## Completion and Merge
+
+When all files are audited:
+
+1. **Final verification** - Runs full test suite in worktree
+2. **Commit changes** - Creates commit with detailed message
+3. **Merge back** - Merges audit branch to original branch with `--no-ff`
+4. **Clean up** - Removes worktree and optionally deletes audit branch
+5. **Update tracking** - Marks audit as complete with merge commit hash
+
+Merge commit message format:
+
+```
+refactor: complete TypeScript audit
+
+- Improved test coverage across all files
+- Applied type safety and best practice improvements
+- Optimized performance where beneficial
+- Enhanced documentation
+
+Co-Authored-By: {current_model}
+```
+
+## Related
+
+- [ts-testing](/accelint-ts-testing) - Test coverage and quality audit (Phase 1)
+- [ts-best-practices](/accelint-ts-best-practices) - Type safety and coding standards (Phase 2)
+- [ts-performance](/accelint-ts-performance) - Performance optimization (Phase 2)
+- [ts-documentation](/accelint-ts-documentation) - JSDoc and comment quality (Phase 4)

@@ -1,6 +1,192 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Comprehensive vitest testing guidance for TypeScript projects covering test organization, AAA pattern, assertions, test doubles, async testing, property-based testing, and performance optimization.
+source: skills/accelint-ts-testing/SKILL.md
+source_sha: dd440be67db17eea8ed9592f954d7c4b7d83aca0
+doc_sha: 51655a9d04874c6c03b738f670922574fe244f30
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-ts-testing` command with a file or directory path
+- Saying "write tests", "review test code", "audit tests", or "check test quality"
+- Mentioning "vitest", "test doubles", "mocks", "property-based testing", or "fast-check"
+- Working with `*.test.ts` or `*.test.tsx` files
+
+```bash
+# Audit a single test file
+/accelint-ts-testing src/utils/parser.test.ts
+
+# Review all tests in a directory
+/accelint-ts-testing src/components/
+
+# Quick question about test patterns
+"How do I test async functions in vitest?"
+```
+
+Once activated, the skill provides expert guidance on vitest testing patterns including test organization, AAA pattern structure, strict assertions, test doubles hierarchy (fakes > stubs > spies > mocks), async testing with promises and timers, performance optimization, and property-based testing with fast-check.
+
+## When to Use
+
+Use this skill when:
+- Writing new tests with AAA pattern, parameterized tests, or async/await
+- Reviewing test code for anti-patterns like loose assertions (`toBeTruthy`), over-mocking, or nested describe blocks
+- Optimizing slow test suites or configuring global mock cleanup
+- Implementing property-based testing with fast-check for encode/decode pairs, roundtrip properties, validators, normalizers, or idempotence checks
+- Working with vitest configuration, coverage, watch mode, or setup files
+- Testing defensive programming scenarios with type-invalid inputs
+
+Trigger keywords: vitest, `*.test.ts`, describe, it, expect, vi.mock, fast-check, fc.property, roundtrip, idempotence, toBeTruthy, toBeDefined.
+
+## What It Checks
+
+**Test Organization** - File co-location, naming conventions, describe block depth (≤2 levels), test descriptions as sentences
+
+**AAA Pattern** - Clear Arrange-Act-Assert separation with comment markers, descriptive variable names, focused test scope
+
+**Assertions** - Strict assertions (`toEqual`, `toStrictEqual`, `toThrow`) avoiding loose matchers (`toBeTruthy`, `toBeDefined`)
+
+**Test Doubles** - Proper hierarchy (fakes > stubs > spies > mocks), global mock cleanup config, avoiding mocking internal code
+
+**Async Testing** - Promises with async/await, timer mocking with `vi.useFakeTimers()`, concurrent test isolation
+
+**Error Handling** - Exception testing with `toThrow`, edge case coverage, defensive programming tests with invalid inputs
+
+**Performance** - Fast test execution (&lt;50ms), beforeEach for shared setup, global mock cleanup configuration
+
+**Property-Based Testing** - Identifying opportunities for fast-check, roundtrip properties, idempotence, invariants, generated test cases
+
+**Vitest Features** - Coverage configuration, watch mode, setup files, snapshot testing best practices
+
+**Anti-Patterns** - Testing constants/types, exporting internals for tests, testing library internals, implementation details vs behavior
+
+## Examples
+
+### Example: Writing a Basic Test with AAA Pattern
+
+```typescript
+describe('ProductService', () => {
+  describe('add', () => {
+    it('should set status to pending approval when no price is specified', () => {
+      // Arrange
+      const productService = new ProductService();
+
+      // Act
+      const newProduct = productService.add({ name: 'Widget' });
+
+      // Assert
+      expect(newProduct.status).toEqual('pendingApproval');
+    });
+  });
+});
+```
+
+### Example: Parameterized Tests with it.each()
+
+```typescript
+describe('parseNumber', () => {
+  it.each([
+    { input: '42', expected: 42 },
+    { input: '3.14', expected: 3.14 },
+    { input: '-10', expected: -10 },
+    { input: '0', expected: 0 },
+  ])('should parse "$input" as $expected', ({ input, expected }) => {
+    // Act
+    const result = parseNumber(input);
+
+    // Assert
+    expect(result).toBe(expected);
+  });
+});
+```
+
+### Example: Testing Async Functions
+
+```typescript
+describe('fetchUser', () => {
+  it('should return user data when API call succeeds', async () => {
+    // Arrange
+    const mockResponse = { id: 1, name: 'Alice' };
+    vi.spyOn(api, 'get').mockResolvedValue(mockResponse);
+
+    // Act
+    const user = await fetchUser(1);
+
+    // Assert
+    expect(user).toEqual(mockResponse);
+    expect(api.get).toHaveBeenCalledWith('/users/1');
+  });
+});
+```
+
+### Example: Property-Based Testing with fast-check
+
+```typescript
+import fc from 'fast-check';
+
+describe('base64 encode/decode', () => {
+  it('property: decode(encode(x)) === x for all valid strings', () => {
+    fc.assert(
+      fc.property(fc.string(), (input) => {
+        const encoded = base64Encode(input);
+        const decoded = base64Decode(encoded);
+        expect(decoded).toEqual(input);
+      })
+    );
+  });
+});
+```
+
+### Example: Testing Error Handling
+
+```typescript
+describe('divideNumbers', () => {
+  it('should throw error when dividing by zero', () => {
+    // Arrange
+    const numerator = 10;
+    const denominator = 0;
+
+    // Act & Assert
+    expect(() => divideNumbers(numerator, denominator)).toThrow(
+      'Cannot divide by zero'
+    );
+  });
+});
+```
+
+### Example: Configuring Global Mock Cleanup
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    clearMocks: true,
+    mockReset: true,
+    restoreMocks: true,
+    globals: true,
+  },
+});
+```
+
+## Common Pitfalls
+
+> **Good to know:** This skill focuses on vitest testing patterns, not React component testing. For React component tests with Testing Library, use `accelint-react-testing` instead.
+
+> **Good to know:** Always check for existing test configuration before writing tests. Look for `vitest.config.ts` and setup files (`test/setup.ts`, `vitest.setup.ts`) to understand global mock cleanup and custom matchers already configured.
+
+> **Good to know:** During audits, the skill always checks for property-based testing opportunities. High-value patterns include encode/decode pairs, normalizers, validators, pure functions, and sorting functions that benefit from generated test cases.
+
+> **Good to know:** Don't test files that contain no behavior. Constants files (`export const X = 42`), type definition files, GLSL uniform declarations, and pure data files have no logic to verify. Test behavior (functions, transformations), not data declarations.
+
+> **Good to know:** Before marking test files as complete, run `tsc --noEmit` against the test file to catch type errors. Test files are typically excluded from project-wide type checking, so manual verification is required.
+
+## Related Skills
+
+- [accelint-react-testing](/docs/accelint-react-testing) - React component testing with Testing Library
+- [accelint-ts-best-practices](/docs/accelint-ts-best-practices) - TypeScript coding standards and type safety
+- [accelint-ts-performance](/docs/accelint-ts-performance) - Performance optimization and V8 profiling patterns

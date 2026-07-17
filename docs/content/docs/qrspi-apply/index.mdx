@@ -1,6 +1,397 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Implement QRSPI-planned OpenSpec changes with intelligent parallelization, orchestrating sub-agents to execute independent task slices in parallel while respecting dependencies.
+source: skills/accelint-qrspi-apply/SKILL.md
+source_sha: 124fcf2a75888b5ac77c108a737b4c665eb9dfc4
+doc_sha: c83173f07caccd1bd7164c33e614925ab8b3dbda
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-qrspi-apply` command with an optional change name
+- Saying "apply this QRSPI change", "implement with parallelization", or "run the parallel slices"
+- Mentioning "apply OpenSpec change" or "implement tasks" when working with QRSPI-generated changes
+
+```bash
+# Apply a specific change
+/accelint-qrspi-apply remove-security-ruleset
+
+# Interactive selection (prompts for change name)
+/accelint-qrspi-apply
+
+# Resume from partial completion
+/accelint-qrspi-apply auth-refactor
+```
+
+Once activated, the skill:
+1. Validates the change and parses the parallelization strategy from tasks.md
+2. Loads project context from `openspec/config.yaml` and injects it into sub-agent prompts
+3. Spawns sub-agents to implement task slices in parallel where dependencies allow
+4. Updates living documents (`openspec/config.yaml`, `ARCHITECTURE.md`, `AGENTS.md`, `README.md`)
+5. Runs verification to ensure completeness before archive
+
+**Prerequisites:**
+- OpenSpec CLI installed and initialized
+- Change created via `accelint-qrspi-propose` (includes Parallelization Strategy in tasks.md)
+- Sub-agent support for parallel execution
+- Markdown checklist format in tasks.md (`- [ ] task`)
+
+## When to Use
+
+Use this skill when:
+- Users want to apply a QRSPI change
+- Users say "implement with parallelization", "run the parallel slices", or "apply this QRSPI change"
+- Working with OpenSpec changes that include "Parallelization Strategy" sections in tasks.md
+- You need to implement tasks with intelligent dependency-aware parallelization
+- Resuming a partially completed change (skill detects completed slices and resumes)
+
+**Important:** This skill is specifically designed for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use `/opsx:apply` directly.
+
+## What It Does
+
+**Automates the implementation phase** of spec-driven development:
+- Task dependency analysis and execution planning
+- Parallel sub-agent orchestration for independent slices
+- Project context injection (loads from `openspec/config.yaml`)
+- Progress tracking with resumption detection
+- Living document updates (`openspec/config.yaml`, `ARCHITECTURE.md`, `AGENTS.md`, `README.md`)
+- Verification and archive readiness checks
+
+**Scope:** Task implementation → Validation → Archive readiness
+
+**Does NOT:** Create plans, modify specs, or automatically archive (suggests archival when ready)
+
+## Workflow Stages
+
+The skill follows a structured workflow:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Stage          Action                        Output            │
+├─────────────────────────────────────────────────────────────────┤
+│  Preflight      Select and validate change    Ready to proceed  │
+│  Parse          Extract parallelization       Dependency graph  │
+│  Dependencies   Identify blocking tasks       Execution plan    │
+│  Load Context   Read config.yaml context      Project context   │
+│  Execute        Run slices (parallel/serial)  Implemented code  │
+│  Update Docs    Sync living documents         Updated docs      │
+│  Verify         Run opsx:verify               Verification rpt  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Preflight and Change Selection
+
+- Accepts change name as argument or infers from conversation context
+- Falls back to interactive selection via `openspec list --json` if ambiguous
+- Validates that tasks.md exists using `openspec status --change <name> --json`
+- Verifies markdown checklist format (`- [ ] task` or `- [x] task`)
+- Exits early if tasks use numbered lists or plain bullets
+
+### Parse Tasks and Parallelization Strategy
+
+- Reads `openspec/changes/<change-name>/tasks.md`
+- Extracts "Parallelization Strategy" section to build dependency graph
+- Detects partial completion by counting completed checkboxes (`- [x]`)
+- Announces resumption point if any slices are already complete
+- Builds execution plan showing which slices run in parallel vs sequential
+
+**Example strategy:**
+```markdown
+## Parallelization Strategy
+
+- **Slice 1** must complete first (establishes infrastructure)
+- **Slice 2** and **Slice 3** can run in parallel after Slice 1
+- **Slice 2** (implementation cleanup) is independent of **Slice 3** (docs/verification)
+- Final integration: merge both slices, run full pre-commit checklist
+```
+
+**Parsed dependency graph:**
+```
+Level 0 (must run first):
+  - Slice 1
+
+Level 1 (can run in parallel after Level 0):
+  - Slice 2
+  - Slice 3
+
+Level 2 (after all previous):
+  - Final integration
+```
+
+### Load Project Context
+
+Loads project context from `openspec/config.yaml` and injects it into sub-agent prompts. This compensates for OpenSpec CLI's limitation where the `apply` command doesn't automatically load the `context` field.
+
+**Why this matters:** OpenSpec's `openspec instructions apply` does NOT inject the `context` field from `config.yaml`. Without manual injection, sub-agents don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation.
+
+**Context extraction:**
+1. Checks if `openspec/config.yaml` exists
+2. Parses and extracts the `context:` YAML block
+3. Preserves all whitespace and newlines
+4. Injects into sub-agent prompts as `<project_context>` block
+5. Falls back to empty string if context is missing
+
+### Execute Tasks
+
+**Sequential execution** (when tasks have dependencies):
+- Spawns one sub-agent per level with explicit slice targeting
+- Waits for completion before proceeding to next level
+- Each sub-agent invokes `/opsx:apply <change-name>` with slice-specific instructions
+
+**Parallel execution** (when slices are independent):
+- Spawns all sub-agents for a level simultaneously in a single turn
+- Each sub-agent works only on its assigned slice
+- Progress tracked independently via task checkboxes
+
+**Context management decision points:**
+After each dependency level completes, the skill offers:
+- **(a) Continue to next level** - Keep going with current context
+- **(b) Clear context and resume** - User runs `/clear`, then re-invokes skill (resumes from next level)
+- **(c) Pause here** - Exit skill, resume later (progress tracked in tasks.md)
+
+**Slice targeting approach:**
+OpenSpec CLI has no native `--slice N` flag. This skill achieves parallelization by:
+1. Using the full `/opsx:apply` workflow per sub-agent (loads all context files)
+2. Providing explicit instructions to work ONLY on assigned slice
+3. Relying on QRSPI's vertical slicing to ensure slices are independent
+4. Each sub-agent marks only its slice's tasks complete
+
+### Update Living Documents
+
+Updates project documentation **before verification** so verification can check documentation completeness:
+
+**Documents processed (in order):**
+1. **openspec/config.yaml** - Project DNA (stack facts, patterns, anti-patterns)
+2. **ARCHITECTURE.md** - System structure (components, data stores, deployment)
+3. **AGENTS.md** - Agent behavior (workflows, heuristics, guardrails)
+4. **README.md** - User-facing documentation (installation, features, usage)
+
+**Update methods:**
+- **Preferred:** Invoke specialized skills (`accelint-onboard-openspec`, `accelint-architecture-doc`, etc.) with findings from `design.md` decisions
+- **Fallback:** Manual updates if skills unavailable
+- **Skip condition:** Document doesn't exist or change doesn't affect its scope
+
+**Skills receive findings as:**
+```bash
+/accelint-onboard-openspec
+We have just completed the change spec openspec/changes/<change-name>.
+
+findings:
+- [Decision 1 rephrased as fact]
+- [Decision 2 rephrased as fact]
+```
+
+Skills merge these findings with their own codebase scans before presenting updates to the user.
+
+### Verify Implementation
+
+**Final mandatory step** that produces the completion report:
+1. Runs `/opsx:verify <change-name>` automatically
+2. Checks task completion, spec coverage, design adherence
+3. Validates living document updates
+4. Generates comprehensive report with CRITICAL/WARNING/SUGGESTION issues
+5. Includes next steps (archive if passed, fix issues if failed)
+
+**The verification report IS the completion report** - no additional reporting after this step.
+
+## Examples
+
+### Example: Change with Parallelization Strategy
+
+```bash
+# Command
+/accelint-qrspi-apply remove-security-ruleset
+
+# Output:
+Applying change: remove-security-ruleset
+
+Parsing parallelization strategy...
+
+Execution plan:
+- Level 0 (sequential): Slice 1 (Remove CLI surface)
+- Level 1 (parallel): Slice 2 (Remove implementation), Slice 3 (Docs/verification)
+
+Starting Level 0: Slice 1
+[spawns sub-agent]
+✓ Slice 1 complete (4 tasks, ~8 minutes)
+
+Starting Level 1: Slices 2 and 3 in parallel
+[spawns 2 sub-agents simultaneously]
+✓ Slice 2 complete (4 tasks, ~6 minutes)
+✓ Slice 3 complete (4 tasks, ~7 minutes)
+
+Updating living documents...
+📝 Living documents updated
+- README.md [via accelint-readme-writer]
+- ARCHITECTURE.md [via accelint-architecture-doc]
+
+Running verification...
+✅ Verification passed
+
+**Verification Report**
+
+**Change:** remove-security-ruleset
+**Tasks:** 12/12 complete
+**Files changed:** 67
+
+All requirements implemented. No critical issues found.
+
+### Next Steps
+1. Review the changes: `git diff`
+2. Run tests: `pnpm test`
+3. Archive this change: `/accelint-qrspi-archive remove-security-ruleset`
+
+Ready to archive!
+```
+
+### Example: Resuming Partial Completion
+
+```bash
+# Command (after previous session completed Slice 1)
+/accelint-qrspi-apply auth-refactor
+
+# Output:
+Applying change: auth-refactor
+
+Parsing parallelization strategy...
+
+Detected partial completion. Resuming from Slice 2.
+
+Execution plan:
+- Level 0: Slice 1 [COMPLETED ✓]
+- Level 1 (parallel): Slice 2 [PENDING], Slice 3 [PENDING]
+
+Starting Level 1: Slices 2 and 3 in parallel
+[spawns 2 sub-agents simultaneously]
+✓ Slice 2 complete (3 tasks, ~5 minutes)
+✓ Slice 3 complete (4 tasks, ~6 minutes)
+
+[continues with living document updates and verification...]
+```
+
+### Example: Context Management Between Levels
+
+```bash
+# After Level 0 completes
+✅ Level 0 complete
+
+Completed slices:
+- Slice 1: Removed CLI surface (4 tasks)
+
+Next: Level 1 has 2 slices to run (Slice 2, Slice 3)
+
+Options:
+(a) Continue to next level
+(b) Clear context and resume — I'll pick up from Level 1
+(c) Pause here — you can resume later with this skill
+
+# User chooses (b)
+Run `/clear` to reset context, then re-invoke this skill.
+I'll detect that Level 0 is complete and resume from Level 1.
+```
+
+### Example: Verification Failure
+
+```bash
+# Command
+/accelint-qrspi-apply auth-refactor
+
+# Output:
+[implementation proceeds...]
+
+Updating living documents...
+📝 Living documents updated
+- ARCHITECTURE.md [via accelint-architecture-doc]
+
+Running verification...
+❌ Verification failed
+
+**Verification Report**
+
+**Change:** auth-refactor
+**Critical Issues:**
+- Task 3.2 in tasks.md is incomplete (checkbox not marked)
+- Spec file specs/auth-service.md references non-existent file: src/old-auth.ts
+
+**Next Steps:**
+1. Fix critical issues
+2. Re-run verification: `/opsx:verify auth-refactor`
+3. Or re-invoke this skill to retry
+
+Not ready to archive until critical issues are resolved.
+```
+
+### Example: No Parallelization (Safe Fallback)
+
+```bash
+# Command
+/accelint-qrspi-apply update-readme
+
+# Output:
+Applying change: update-readme
+
+No parallelization strategy found. Running tasks sequentially.
+
+Working on task 1/3: Update installation section
+✓ Complete
+
+Working on task 2/3: Add examples section
+✓ Complete
+
+Working on task 3/3: Update changelog
+✓ Complete
+
+Updating living documents...
+📝 Living documents updated
+- README.md [via accelint-readme-writer]
+
+Running verification...
+✅ Verification passed
+
+**Verification Report**
+
+**Change:** update-readme
+All tasks complete. Ready to archive!
+```
+
+## Key Principles
+
+**Intelligent Parallelization**
+Automatically detects parallelization opportunities from the "Parallelization Strategy" section. When slices are independent, spawns multiple sub-agents to work in parallel, significantly reducing implementation time.
+
+**Safe Defaults**
+If no parallelization strategy is found, runs tasks sequentially. Ensures correctness even for changes that weren't planned with parallelization in mind.
+
+**Context Management and Resumption**
+- Supports pause/clear/resume workflow at dependency level boundaries
+- Resumption detection via tasks.md checkboxes
+- Offers context clearing between levels to prevent context bloat
+- Progress tracking is durable across context clears
+
+**Verification Before Archive**
+Always runs `/opsx:verify` as the final step. Catches incomplete tasks, broken references, or schema violations before archival. The verification report serves as the completion summary.
+
+**Human-in-the-Loop**
+Reports results and asks for guidance when validation fails, tasks are unclear, or errors occur during implementation.
+
+## Common Pitfalls
+
+> **Good to know:** This skill requires markdown checklist format (`- [ ] task`) in tasks.md for progress tracking. If tasks use numbered lists (1. 2. 3.) or plain bullets (- without [ ]), the skill exits with an error. Regenerate tasks.md using `accelint-qrspi-propose` or convert manually before applying.
+
+> **Good to know:** This skill is specifically designed for QRSPI-planned changes that include "Parallelization Strategy" sections. For standard OpenSpec changes without parallelization strategies, use `/opsx:apply` directly instead.
+
+> **Good to know:** Living document updates happen BEFORE verification, not after. This allows verification to check documentation completeness. The workflow is: Execute → Update Docs → Verify → Exit. Do not treat doc updates as a stopping point.
+
+> **Good to know:** The verification report is the completion report. Do not expect additional summary after verification completes - the report already includes status, issues, changed files, and next steps.
+
+> **Good to know:** Sub-agents invoke `/opsx:apply` themselves - they do not implement tasks directly. This ensures OpenSpec's progress tracking and context loading work correctly.
+
+## Related
+
+- [accelint-qrspi-propose](/docs/accelint-qrspi-propose) - Plan QRSPI changes before applying
+- [accelint-qrspi-archive](/docs/accelint-qrspi-archive) - Archive changes after verification passes
+- [accelint-architecture-doc](/docs/accelint-architecture-doc) - Update ARCHITECTURE.md
+- [accelint-onboard-openspec](/docs/accelint-onboard-openspec) - Update openspec/config.yaml

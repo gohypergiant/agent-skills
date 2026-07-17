@@ -1,31 +1,37 @@
 ---
 title: Overview
-description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness.
+description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness with progressive disclosure of detailed patterns and anti-patterns.
 source: skills/accelint-ts-best-practices/SKILL.md
 source_sha: 2d42a1f0533d6a152c7610b766efa202b8d5c56d
-doc_sha: d765dc724b966e118de81cf5afbda3f5305f7251
+doc_sha: fe54717b7242fad0f480b3746b34dfd36f1d7100
 deprecated: false
-updated: 2025-01-22
+updated: 2026-07-17
 ---
 
 ## Usage
 
 Activate this skill by:
-- Using the `/accelint-ts-best-practices` command with optional path
-- Saying "review this TypeScript code", "audit code quality", "check for anti-patterns"
+- Using the `/accelint-ts-best-practices` command with a file or directory path
+- Saying "review TS/JS code", "audit TypeScript", "check for type errors", "apply best practices"
+- Mentioning "any type", "enum", "null returns", "defensive programming", or "code correctness"
+- Working with `.ts`, `.tsx`, `.js`, `.jsx` files
 
 ```bash
-# Review a single file
-/accelint-ts-best-practices src/utils/parser.ts
+# Single file audit
+/accelint-ts-best-practices src/utils/helpers.ts
 
-# Audit an entire directory
-/accelint-ts-best-practices src/api/
+# Directory audit
+/accelint-ts-best-practices src/components/
 
-# Review code in current context
+# Current context
 /accelint-ts-best-practices
 ```
 
-Once activated, the skill analyzes your code for type safety issues, defensive programming gaps, and correctness problems. You get side-by-side before/after examples for each finding.
+Once activated, the skill uses **progressive disclosure** to minimize context usage:
+1. Scans AGENTS.md for rule summaries to identify relevant patterns
+2. Loads specific reference files only when needed for detailed guidance
+3. Provides ❌/✅ examples and implementation patterns
+4. Generates structured audit reports when invoked directly
 
 ## When to Use
 
@@ -33,154 +39,171 @@ Use this skill when:
 - Writing or reviewing TypeScript/JavaScript code
 - Fixing type errors or avoiding `any`/`enum`/`null`
 - Implementing control flow, state management, or error handling
-- Conducting code reviews for anti-patterns
+- Applying zero-value pattern or immutability
+- Conducting code reviews for TypeScript anti-patterns
+- Validating naming conventions, function design, or return values
 
-Don't use for:
-- **Performance optimization** → use `accelint-ts-performance` instead
-- **Documentation** → use `accelint-ts-documentation` instead
+**Delegation to related skills:**
+- For performance optimization → use `accelint-ts-performance` skill
+- For documentation tasks → use `accelint-ts-documentation` skill
+- For test writing → use `accelint-ts-testing` skill
 
-## What It Checks
+## What It Covers
 
-**Type Safety** - `any` types, `enum` usage, type vs interface, bundler paths
+**General Best Practices** - Naming conventions, function design, control flow patterns, state management, return values, DRY principle
 
-**Safety** - Input validation, unbounded loops, error handling, assertions
+**TypeScript Patterns** - Avoiding `any`, replacing `enum` with `as const`, preferring `type` over `interface`, bundler-friendly paths
 
-**Code Quality** - Naming conventions, function size, return values, immutability, pure functions, parameter mutation
+**Safety** - Input validation with schemas, assertions with values, explicit error handling, error messages, bounded iteration
+
+**Anti-Patterns** - Critical mistakes that degrade code quality (never use `any`, never use `enum`, never return `null`, never create unbounded loops)
 
 ## Examples
 
-### Example: File Audit
+### Example: Fixing Any Types
 
 ```bash
 # Command
-/accelint-ts-best-practices src/api/handler.ts
+/accelint-ts-best-practices src/api/client.ts
 
-# Output: Structured report
-
-Executive Summary:
-Reviewed handler.ts. Found 3 issues:
-- 1 Critical (any type)
-- 1 High (null return)
-- 1 Medium (parameter mutation)
-
-Critical Issues:
-
-1. Avoid `any` Type
-   Line: 15
-   Severity: Critical
-   
-   ❌ Before:
-   function handle(req: any) {
-     return req.body.data;
-   }
-   
-   ✅ Fix:
-   function handle(req: Request) {
-     return req.body.data;
-   }
-
-2. Return Zero Values
-   Line: 42
-   Severity: High
-   
-   ❌ Before:
-   function findUser(id: string): User | null {
-     return users.find(u => u.id === id) ?? null;
-   }
-   
-   ✅ Fix:
-   function findUser(id: string): User {
-     return users.find(u => u.id === id) ?? { id: '', name: '', email: '' };
-   }
-```
-
-### Example: Directory Audit
-
-```bash
-# Command
-/accelint-ts-best-practices src/api/
-
-# Output: Multi-file report
-
-Executive Summary:
-Reviewed 12 files in src/api/. Found 8 issues:
-- 3 Critical (any types, unbounded loops)
-- 2 High (null returns, parameter mutation)
-- 3 Medium (naming conventions, missing assertions)
-
-Critical Issues by File:
-
-src/api/handler.ts:
-1. Avoid `any` Type (line 15)
-   ❌ function handle(req: any)
-   ✅ function handle(req: Request)
-
-src/api/queue.ts:
-2. Unbounded Loop (line 42)
-   ❌ while (queue.length > 0) { ... }
-   ✅ let iterations = 0;
-      while (queue.length > 0 && iterations++ < 1000) { ... }
-
-[Detailed findings continue...]
-```
-
-### Example: Inline Review
-
-```bash
-# Command
-/accelint-ts-best-practices
-
-# Then paste code:
-enum Status {
-  Active = 'active',
-  Inactive = 'inactive'
+# Issue Found
+❌ function processData(data: any) {
+  return data.results.map(item => item.id);
 }
 
-# Output: Direct fix
+# Fix Applied
+✅ function processData<T extends { results: Array<{ id: string }> }>(data: T) {
+  return data.results.map(item => item.id);
+}
+```
 
-Replace `enum` with `as const` object:
+**Why:** The `any` type disables type checking and propagates through the codebase. Generics preserve type safety while maintaining flexibility.
 
-✅ Fix:
-const Status = {
-  Active: 'active',
-  Inactive: 'inactive'
+### Example: Replacing Enums
+
+```bash
+# Issue Found
+❌ enum Status {
+  Active = "active",
+  Inactive = "inactive"
+}
+
+# Fix Applied
+✅ const Status = {
+  Active: "active",
+  Inactive: "inactive"
 } as const;
 
 type Status = typeof Status[keyof typeof Status];
-
-Why: `enum` generates extra JavaScript at runtime. `as const` provides
-the same type safety with zero overhead.
 ```
+
+**Why:** The `enum` keyword generates 5+ lines of runtime code. The `as const` object provides zero-cost type-safe constants with no JavaScript output.
+
+### Example: Zero-Value Returns
+
+```bash
+# Issue Found
+❌ function getActiveUsers(users: User[]): User[] | null {
+  if (!users.length) return null;
+  return users.filter(u => u.active);
+}
+
+# Fix Applied
+✅ function getActiveUsers(users: User[]): User[] {
+  if (!users.length) return [];
+  return users.filter(u => u.active);
+}
+```
+
+**Why:** Returning `null` forces defensive null checks throughout the codebase. Returning empty arrays eliminates these checks and enables method chaining.
+
+### Example: Bounded Iteration
+
+```bash
+# Issue Found
+❌ while (queue.length > 0) {
+  const item = queue.shift();
+  processItem(item);
+}
+
+# Fix Applied
+✅ const MAX_ITERATIONS = 10000;
+let iterations = 0;
+while (queue.length > 0 && iterations < MAX_ITERATIONS) {
+  const item = queue.shift();
+  processItem(item);
+  iterations++;
+}
+if (iterations >= MAX_ITERATIONS) {
+  throw new Error(`Queue processing exceeded ${MAX_ITERATIONS} iterations`);
+}
+```
+
+**Why:** Unbounded loops can cause runaway resource consumption and system crashes if the queue grows faster than it's processed.
+
+## Key Patterns
+
+### Progressive Disclosure Structure
+
+The skill uses a three-layer approach to minimize context:
+
+**Layer 1: AGENTS.md** - One-line rule summaries organized by category. Scan this first to identify relevant patterns.
+
+**Layer 2: Reference Files** - Detailed ❌/✅ examples for each rule. Load only the specific files you need:
+- `references/any.md` - Avoiding `any` types
+- `references/enums.md` - Replacing `enum` with `as const`
+- `references/return-values.md` - Zero-value returns
+- `references/bounded-iteration.md` - Limiting loops and queues
+- `references/input-validation.md` - Schema validation
+- And 14 more specialized guides
+
+**Layer 3: Implementation** - Apply the pattern from examples to your code.
+
+### Audit Report Format
+
+When invoked with a file or directory path, generates a structured report:
+
+```markdown
+## Executive Summary
+[Impact assessment and severity breakdown]
+
+## Findings by Category
+
+### Type Safety (Critical)
+- **Pattern**: Never use `any`
+  **File**: src/api/client.ts:15
+  **Impact**: Type checking disabled, propagates unsafety
+  **Reference**: references/any.md
+
+### Safety (High)
+- **Pattern**: Bounded iteration required
+  **File**: src/workers/queue.ts:42
+  **Impact**: Potential infinite loop crash
+  **Reference**: references/bounded-iteration.md
+```
+
+### Critical Anti-Patterns
+
+**Never do these** - they appear frequently but degrade quality:
+
+- Never use `any` type (use `unknown` or generics)
+- Never use `enum` keyword (use `as const` objects)
+- Never use `interface` for simple types (use `type` instead)
+- Never mutate function parameters (creates hidden side effects)
+- Never return `null` or `undefined` (return zero values)
+- Never create unbounded loops or queues (set explicit limits)
 
 ## Common Pitfalls
 
-> **Good to know:** This skill focuses on code correctness and type safety, not performance. For optimization tasks (reducing allocations, improving loop efficiency), use `accelint-ts-performance` instead.
+> **Good to know:** This skill focuses on code correctness and type safety, not performance optimization. For profiling workflows and performance patterns, use the `accelint-ts-performance` skill instead.
 
-> **Good to know:** When you scan a file or directory with the slash command, you get a formal audit report with severity levels. For inline questions about specific code, the skill gives direct fixes without the report structure.
+> **Good to know:** When invoked directly with a path, generates a formal audit report. For quick fixes during conversation, just apply patterns without the report template.
 
-> **Good to know:** The skill delegates documentation tasks to `accelint-ts-documentation`. If you're adding JSDoc comments or fixing comment quality, use that skill instead.
-
-> **Good to know:** For systematic audits across multiple related skills (testing, performance, documentation), use `accelint-ts-audit-all` which runs all TypeScript audits in sequence.
-
-## Report Format
-
-When scanning files or directories with the slash command, the skill generates:
-
-**Executive Summary** - Issue counts by severity (Critical, High, Medium, Low)
-
-**Categorized Findings** - Grouped by Type Safety, Safety, State Management, Code Quality
-
-**Before/After Examples** - Code snippets showing the problem and solution with line numbers
-
-**Impact Analysis** - Potential bugs, type safety gaps, maintainability issues
-
-**Phase 2 Summary** - Tracking table for all issues across audit iterations
-
-For inline questions (without slash command), the skill skips the formal report and provides direct fixes with brief explanations.
+> **Good to know:** Progressive loading is key—don't load all reference files at once. Start with AGENTS.md summaries and load specific references as needed.
 
 ## Related
 
-- [accelint-ts-performance](/docs/ts-performance) - Performance optimization patterns
-- [accelint-ts-documentation](/docs/ts-documentation) - JSDoc and comment standards
-- [accelint-ts-testing](/docs/ts-testing) - Testing patterns with vitest
-- [accelint-ts-audit-all](/docs/ts-audit-all) - Systematic file audit system
+- [accelint-ts-performance](/accelint-ts-performance) - Performance optimization and profiling
+- [accelint-ts-documentation](/accelint-ts-documentation) - JSDoc and comment standards  
+- [accelint-ts-testing](/accelint-ts-testing) - Testing patterns with vitest
+- [accelint-react-best-practices](/accelint-react-best-practices) - React-specific patterns

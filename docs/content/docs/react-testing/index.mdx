@@ -1,6 +1,222 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Expert guidance for writing maintainable, user-centric React component tests with Testing Library, focusing on accessible queries, realistic user interactions, and avoiding implementation details.
+source: skills/accelint-react-testing/SKILL.md
+source_sha: e4af90344aabfd3ef3fad5c53c6dc23a47ab3b86
+doc_sha: 4c0810f49ae482c3f908f10ac972936e8b375fcf
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-react-testing` command followed by a file or directory path
+- Saying "review these tests", "audit test code", "check Testing Library usage"
+- Mentioning keywords like "getByRole", "userEvent", "fireEvent", "waitFor", "screen", "RTL", "Testing Library"
+- Working with `*.test.tsx` or `*.test.ts` files that import from `@testing-library/react`
+
+```bash
+# Review a single test file
+/accelint-react-testing src/components/Button.test.tsx
+
+# Audit entire directory
+/accelint-react-testing src/components/
+
+# Audit from current context
+/accelint-react-testing
+```
+
+Once activated, the skill provides expert guidance on:
+- Query selection (role → label → text → testId hierarchy)
+- Using `userEvent` instead of `fireEvent` for realistic interactions
+- Async testing patterns with `findBy` queries and `waitFor`
+- Custom render utilities for components needing providers
+- Accessibility-first testing patterns
+
+When invoked with a path, generates a structured report using severity levels (Critical, High, Medium, Low) and impact analysis.
+
+## When to Use
+
+Use this skill when:
+- Writing or reviewing React component tests with Testing Library
+- You see `render()`, `screen`, `fireEvent`, `userEvent`, `waitFor`, or `*.test.tsx` files
+- Implementing test coverage for React components
+- Refactoring tests to be more maintainable
+- Debugging test failures or "act" warnings
+- Setting up test utilities for complex component hierarchies
+- Ensuring tests verify accessibility and user experience
+
+## What It Checks
+
+**Query Priority** - Accessible query hierarchy verification (getByRole > getByLabelText > getByText > getByTestId), test ID overuse, container.querySelector usage
+
+**Query Variants** - Correct usage of getBy vs findBy vs queryBy, screen.debug() for debugging, stale query detection
+
+**User Events** - userEvent vs fireEvent patterns, missing await on async interactions, setup() usage and timing
+
+**Async Testing** - Proper promise handling, waitFor vs findBy selection, avoiding side effects in waitFor callbacks, act warning resolution
+
+**Custom Render** - Provider setup for Context/Redux/Router, render utility patterns, documented wrapper requirements
+
+**Accessibility Queries** - Role usage, ARIA attributes, accessible name verification, semantic HTML validation
+
+**Anti-Patterns** - Implementation detail testing, snapshot overuse, container/wrapper queries, test-only ARIA additions
+
+## Examples
+
+### Example: Auditing a Single Test File
+
+```bash
+# Command
+/accelint-react-testing src/components/LoginForm.test.tsx
+
+# Output: Structured report with findings
+## Executive Summary
+- 3 Critical issues found
+- 2 High priority issues
+- Accessibility confidence: Medium (test IDs bypassing role verification)
+- Test reliability: Low (fireEvent instead of userEvent)
+
+## Findings
+
+### Critical: Using fireEvent instead of userEvent
+**Pattern:** User Events
+**Impact:** Test reliability, realistic interaction simulation
+
+[Detailed analysis with code examples]
+```
+
+### Example: Query Priority Violation
+
+```tsx
+// ❌ Before: Test ID bypassing accessibility
+const button = screen.getByTestId('submit-button');
+await fireEvent.click(button);
+
+// ✅ After: Role verification with userEvent
+const user = userEvent.setup();
+const button = screen.getByRole('button', { name: /submit/i });
+await user.click(button);
+```
+
+**Why it matters:** The "before" version passes tests even if the button has no accessible name for screen readers. The "after" version fails unless the button is properly accessible.
+
+### Example: Async Testing Pattern
+
+```tsx
+// ❌ Before: waitFor with side effects
+await waitFor(() => {
+  fireEvent.click(button);
+  expect(screen.getByText('Success')).toBeInTheDocument();
+});
+
+// ✅ After: Action outside waitFor, findBy for async appearance
+const user = userEvent.setup();
+await user.click(button);
+expect(await screen.findByText('Success')).toBeInTheDocument();
+```
+
+**Why it matters:** The "before" version clicks the button multiple times as waitFor retries. The "after" version clicks once and efficiently waits for the result.
+
+### Example: Custom Render for Provider Dependencies
+
+```tsx
+// ❌ Before: Repeating provider setup
+test('shows user data', () => {
+  render(
+    <QueryClientProvider client={queryClient}>
+      <UserProfile />
+    </QueryClientProvider>
+  );
+});
+
+// ✅ After: Centralized render utility
+function renderWithProviders(ui: React.ReactElement) {
+  return render(
+    <QueryClientProvider client={queryClient}>
+      {ui}
+    </QueryClientProvider>
+  );
+}
+
+test('shows user data', () => {
+  renderWithProviders(<UserProfile />);
+});
+```
+
+**Why it matters:** Centralized provider setup reduces duplication and makes tests more maintainable when provider configuration changes.
+
+## Anti-Patterns
+
+### NEVER query by test IDs before trying accessible queries
+
+Test IDs bypass accessibility verification. A button with `data-testid="submit"` but no accessible name works in tests but fails for screen reader users.
+
+**Query hierarchy:** `getByRole` > `getByLabelText` > `getByText` > `getByTestId`
+
+Each step down this list means less confidence your UI is usable.
+
+### NEVER use fireEvent for user interactions when userEvent is available
+
+`fireEvent` dispatches single DOM events, missing the event sequence real users trigger. `fireEvent.click()` fires one click event, but real users trigger focus → mousedown → mouseup → click. Components that work with fireEvent break in production when users interact normally.
+
+### NEVER test implementation details instead of user behavior
+
+Tests that verify "state variable X equals Y" or "function Z was called" create false failures. You refactor from useState to useReducer, all tests fail, yet the UI works identically. Test what users see and do (rendered output, interaction results), not how your component achieves it internally.
+
+### NEVER query from container or use destructured queries
+
+`const { getByText } = render(<Component />)` creates stale queries that miss updates. After state changes, destructured queries search the initial DOM snapshot, missing newly rendered elements. Always use `screen.getByText()` which automatically queries the current DOM state.
+
+### NEVER perform side effects inside waitFor callback
+
+`waitFor(() => { fireEvent.click(button); expect(text).toBeInTheDocument(); })` runs the click multiple times as waitFor retries. Perform all actions outside waitFor, then use waitFor only for the assertion—or better yet, use `findBy` queries.
+
+## Key Decision Tree
+
+When selecting queries, try options from top to bottom:
+
+```
+1. getByRole          ← Preferred: accessible, reflects user interaction
+   ↓ Can't find role?
+   
+2. getByLabelText     ← For form fields: matches user understanding
+   ↓ No label?
+   
+3. getByPlaceholderText  ← For inputs: less accessible than labels
+   ↓ No placeholder?
+   
+4. getByText          ← For non-interactive content
+   ↓ Text not unique?
+   
+5. getByDisplayValue  ← For form inputs: current value
+   ↓ No display value?
+   
+6. getByAltText       ← For images: alt attribute
+   ↓ No alt text?
+   
+7. getByTitle         ← For title attribute: less accessible
+   ↓ No title?
+   
+8. getByTestId        ← Last resort: no accessibility verification
+```
+
+**Key principle:** Higher queries = more confidence in accessibility. If you can't query by role/label, fix the component's accessibility first.
+
+## Common Pitfalls
+
+> **Good to know:** This skill focuses on Testing Library patterns and React component testing. For vitest-specific testing patterns (AAA structure, parameterized tests, property-based testing with fast-check), use the `accelint-ts-testing` skill instead.
+
+> **Good to know:** When queries fail and you're not sure what to use, run `screen.debug()` to see the current DOM or `screen.logTestingPlaygroundURL()` for an interactive tool showing available queries. Don't guess at selectors.
+
+> **Good to know:** Act warnings mean React state updates happened outside Testing Library's awareness—usually from promises resolving after test completion or missing `await` on async queries. Not caused by correct use of `findBy` or `waitFor`.
+
+> **Good to know:** `userEvent` methods are async (return promises), `fireEvent` methods are sync. Forgetting `await userEvent.click()` causes "act" warnings and flaky tests.
+
+> **Good to know:** `queryBy` returns null silently—use `getBy` for better error messages. When an element should exist, `getBy*` throws with helpful suggestions about similar elements and available roles. Use `queryBy` only when asserting absence with `.not.toBeInTheDocument()`.
+
+## Related
+
+- [accelint-ts-testing](/docs/accelint-ts-testing) - Comprehensive vitest testing patterns including AAA structure, parameterized tests, and property-based testing
+- [accelint-react-best-practices](/docs/accelint-react-best-practices) - React performance optimization and component design patterns

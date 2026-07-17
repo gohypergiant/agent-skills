@@ -1,6 +1,303 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling, runtime patterns, and comprehensive anti-pattern detection across algorithmic complexity, caching, I/O, memory allocation, and code safety.
+source: skills/accelint-ts-performance/SKILL.md
+source_sha: 489c4f1d62c13c22f6e6d064afb3675fc5739e8c
+doc_sha: a1fa0cccd2e69bb85999f7380a8b1438f5726aab
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-ts-performance` command with a file or directory path
+- Saying "optimize performance", "audit performance", "this is slow", "reduce allocations", "improve speed", or "check performance"
+- Working with any JavaScript/TypeScript code (utilities, formatters, parsers are often in hot paths)
+
+```bash
+# Audit a single file
+/accelint-ts-performance src/utils/parser.ts
+
+# Audit an entire directory
+/accelint-ts-performance src/
+
+# Audit current context
+/accelint-ts-performance
+```
+
+**Two operation modes:**
+
+1. **Audit Mode** - Skill invoked directly or user explicitly requests performance audit
+   - Generates structured audit report using the template (Phases 1-2 only)
+   - Reports findings for user review before implementation
+   - User decides which optimizations to apply
+
+2. **Implementation Mode** - Skill triggers automatically during feature work
+   - Identifies and applies optimizations directly (all 4 phases)
+   - No formal report needed
+   - Fixes issues inline
+
+Once activated, the skill systematically audits ALL code for performance anti-patterns regardless of perceived simplicity, reports expected gains, and applies optimization patterns with correctness verification.
+
+## When to Use
+
+Use this skill when:
+- Users say "optimize performance", "audit performance", "this is slow", "reduce allocations", "improve speed", or "check performance"
+- Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste)
+- Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple
+- Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching)
+- Working with real-time systems (60fps rendering, live data visualization) where even 1.05x improvements matter
+
+This skill audits ALL code for anti-patterns and reports findings with expected gains. It does NOT assume code is "too simple" to optimize.
+
+## What It Audits
+
+**Algorithmic Issues (10-1000x speedup)** - Nested loops, O(n²) complexity, repeated searches, excessive branching, array method chaining
+
+**Caching Opportunities (2-100x speedup)** - Loop-invariant calculations, repeated function calls, property access in loops, Storage API reads
+
+**I/O Bottlenecks (2-50x speedup)** - Sequential async operations, premature await, unbatched network/database calls
+
+**Memory Problems (1.5-5x speedup)** - Excessive allocations, object spreads in loops, intermediate arrays, GC pressure
+
+**Locality Issues (1.5-3x speedup)** - Non-sequential array access, cache-unfriendly data structures
+
+**Safety Hazards (DoS prevention)** - Unbounded loops, runaway queues, missing iteration limits
+
+**Micro-optimizations (1.05-2x speedup)** - try/catch in hot paths, string concatenation in loops, uncurried hot path functions
+
+## Key Workflow
+
+The skill follows a 4-phase systematic audit workflow:
+
+### Phase 1: Profile to Identify Bottlenecks
+
+**CRITICAL: Audit ALL code for performance anti-patterns.** Do not skip code based on assumptions about usage frequency.
+
+- When profiling tools are available: Use Chrome DevTools Performance tab or `node --prof`
+- Always perform systematic static analysis: Identify ALL anti-patterns regardless of profiling data
+- Output: Complete list of ALL identified issues with locations and expected impact
+
+```bash
+# Node.js profiling
+node --prof script.js
+node --prof-process isolate-*.log
+
+# Browser: Chrome DevTools > Performance tab
+```
+
+### Phase 2: Analyze and Categorize Issues
+
+Categorize EVERY issue by optimization type:
+
+| Issue Type | Category | Expected Gain |
+|------------|----------|---------------|
+| Nested loops, O(n²) complexity | Algorithmic | 10-1000x |
+| Repeated expensive computations | Caching | 2-100x |
+| Allocation-heavy code | Memory | 1.5-5x |
+| Blocking async operations | I/O | 2-50x |
+
+Load `references/quick-reference.md` for detailed issue-to-category mapping.
+
+### Phase 3: Optimize Using Performance Patterns
+
+Identify bottleneck category → Load mandatory references → Apply patterns:
+
+| Category | Load These Files |
+|----------|------------------|
+| Algorithmic | `reduce-looping.md`, `reduce-branching.md` |
+| Caching | `memoization.md`, `cache-property-access.md` |
+| I/O | `batching.md`, `defer-await.md` |
+| Memory | `object-operations.md`, `avoid-allocations.md` |
+| Locality | `predictable-execution.md` |
+| Safety | `bounded-iteration.md` |
+| Micro-opt | `currying.md`, `performance-misc.md` |
+
+Apply patterns systematically with ❌/✅ examples from reference files.
+
+### Phase 4: Verify Improvements
+
+**Measure performance gain:**
+- Re-run profiler with same inputs
+- Compare before/after runtime
+- Document speedup factor
+
+**Verify correctness:**
+- All existing tests must pass
+- Add new tests for edge cases
+- Manual testing for user-facing functionality
+
+**Keep optimization if:**
+- &gt;10x speedup: Always keep if tests pass
+- 2-10x speedup: Keep if maintainable
+- 1.2-2x speedup: Keep for hot paths (&gt;1000 executions/sec)
+- 1.05-1.2x speedup: Only for critical paths or real-time systems
+
+## Examples
+
+### Example: Fixing Nested Loop O(n²) Complexity
+
+**Before optimization:**
+```typescript
+// ❌ O(n²) - nested iteration
+for (const user of users) {
+  const items = allItems.filter(item => item.userId === user.id);
+  process(items);
+}
+```
+
+**After applying reduce-looping pattern:**
+```typescript
+// ✅ O(n) - single pass with Map lookup
+// Performance: reduce-looping.md - build lookup once pattern
+// Speedup: 145x faster (5200ms → 36ms for 10k items)
+const itemsByUser = new Map<string, Item[]>();
+for (const item of allItems) {
+  if (!itemsByUser.has(item.userId)) {
+    itemsByUser.set(item.userId, []);
+  }
+  itemsByUser.get(item.userId)!.push(item);
+}
+
+for (const user of users) {
+  const items = itemsByUser.get(user.id) ?? [];
+  process(items);
+}
+```
+
+### Example: Eliminating Array Method Chaining
+
+**Before optimization:**
+```typescript
+// ❌ Multiple passes, intermediate arrays
+const result = users
+  .filter(u => u.active)
+  .map(u => u.name)
+  .filter(name => name.length > 3);
+```
+
+**After applying reduce-looping pattern:**
+```typescript
+// ✅ Single pass, zero intermediate allocations
+// Performance: reduce-looping.md - single reduce pattern
+// Speedup: 2.3x faster (450ms → 195ms for 10k items)
+const result = users.reduce((acc, u) => {
+  if (u.active && u.name.length > 3) {
+    acc.push(u.name);
+  }
+  return acc;
+}, [] as string[]);
+```
+
+### Example: Deferring Await to Conditional Branch
+
+**Before optimization:**
+```typescript
+// ❌ Always fetches data, even when not needed
+async function maybeProcess(shouldProcess: boolean) {
+  const data = await fetchExpensiveData();
+  if (shouldProcess) {
+    return process(data);
+  }
+  return null;
+}
+```
+
+**After applying defer-await pattern:**
+```typescript
+// ✅ Only fetches when actually needed
+// Performance: defer-await.md - conditional await pattern
+// Speedup: Eliminates 500ms I/O when shouldProcess=false
+async function maybeProcess(shouldProcess: boolean) {
+  if (!shouldProcess) {
+    return null;
+  }
+  const data = await fetchExpensiveData();
+  return process(data);
+}
+```
+
+### Example: Caching Property Access in Loop
+
+**Before optimization:**
+```typescript
+// ❌ Property lookup on every iteration
+function process(config: Config, items: Item[]) {
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].value > config.threshold) {
+      results.push(transform(items[i], config.multiplier));
+    }
+  }
+}
+```
+
+**After applying cache-property-access pattern:**
+```typescript
+// ✅ Cache property lookups before loop
+// Performance: cache-property-access.md - hoist before loop
+// Speedup: 1.4x faster (280ms → 200ms for 10k items)
+function process(config: Config, items: Item[]) {
+  const threshold = config.threshold;
+  const multiplier = config.multiplier;
+  const len = items.length;
+  
+  for (let i = 0; i < len; i++) {
+    if (items[i].value > threshold) {
+      results.push(transform(items[i], multiplier));
+    }
+  }
+}
+```
+
+## Anti-Patterns
+
+### NEVER assume code is cold path
+
+Utility functions, formatters, parsers, and validators appear simple but are frequently called in loops, rendering pipelines, or real-time systems. Always audit ALL code for performance anti-patterns. Do not make assumptions about usage frequency or skip auditing based on perceived simplicity.
+
+### NEVER apply all optimizations blindly
+
+Performance patterns have trade-offs. Balance optimization gains against code complexity. When conducting audits, identify ALL anti-patterns through systematic analysis and report them with expected gains. Let users decide which optimizations to apply based on their specific context.
+
+### NEVER ignore algorithmic complexity
+
+Optimizing O(n²) code with micro-optimizations is futile. For n=1000, algorithmic fix (O(n² → O(n)) yields 1000x speedup; micro-optimizations yield 1.1-2x at best. Fix algorithm first: use Maps/Sets for O(1) lookups, eliminate nested iterations, choose appropriate data structures.
+
+### NEVER sacrifice correctness for speed
+
+Performance bugs are still bugs. Optimizations frequently break edge cases: off-by-one errors in manual loops, wrong behavior for empty arrays, null handling issues. Verify behavior matches before and after. Add comprehensive tests covering edge cases before optimizing.
+
+### NEVER chain array methods
+
+`.filter().map().reduce()` creates intermediate arrays and iterates separately. For arrays with 10k items, `.filter().map()` allocates 10k + 5k items (if 50% pass filter) and iterates twice. Use single `reduce` pass to iterate once with zero intermediate allocations, yielding 2-5x speedup in hot paths.
+
+### NEVER use Array.includes() for repeated lookups
+
+`Array.includes()` is O(n) linear search. Checking 1000 items against array of 100 is O(n×m) = 100k operations. Use `Set.has()` instead: O(1) lookup via hash table, reducing 100k operations to 1000 for ~100x speedup. Build Set once upfront; amortized cost is negligible.
+
+### NEVER await before checking if you need the result
+
+`await` suspends execution immediately, even if the value isn't needed. Move `await` into conditional branches that actually use the result. Example: `const data = await fetch(url); if (condition) { use(data); }` wastes I/O time when condition is false. Better: `if (condition) { const data = await fetch(url); use(data); }` skips fetch entirely when unneeded.
+
+### NEVER place try/catch in hot paths
+
+V8 cannot inline functions containing try-catch blocks and marks entire function as non-optimizable. Single try-catch in hot loop causes 3-5x slowdown by preventing inlining, escape analysis, and other optimizations. Validate inputs before hot paths using type guards; move try-catch outside loops to wrap entire operation; use Result types for expected errors.
+
+## Related Skills
+
+- **accelint-ts-best-practices** - For type safety, defensive programming, and code correctness (not performance-focused)
+- **accelint-ts-testing** - For adding comprehensive tests before and after optimization
+- **accelint-ts-documentation** - For documenting performance optimizations with clear rationale
+
+## Common Pitfalls
+
+> **Good to know:** This skill audits ALL code regardless of perceived simplicity. Don't skip files thinking "this is just a utility." Utilities are often in hot paths.
+
+> **Good to know:** When generating audit reports, use the structured template at `assets/output-report-template.md` for consistent formatting.
+
+> **Good to know:** Real-time systems (60fps = 16.67ms frame budget) have stricter requirements. Even 1.05x improvements in critical rendering loops are valuable.
+
+> **Good to know:** Profile memory usage alongside CPU. Caching trades memory for speed—unbounded memoization causes memory leaks in long-running applications.
+
+> **Good to know:** This skill focuses on performance optimization. For general TypeScript best practices (avoiding `any`, using const assertions, defensive programming), use `accelint-ts-best-practices` instead.

@@ -1,6 +1,213 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Interactively onboard projects to agent-driven development by generating a complete AGENTS.md or CLAUDE.md through structured discovery and interview.
+source: skills/accelint-onboard-agent/SKILL.md
+source_sha: ffeb26e74a578a044c2d1e7f0a12b6b74682086f
+doc_sha: b9f0b3ef3709bd078050935f61178c053c41b095
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-onboard-agents` command
+- Saying "create AGENTS.md", "help me write AGENTS.md", "onboard agent", "set up agent rules"
+- Mentioning "AGENTS.md", "CLAUDE.md", "agent behavior", "agent instructions", "agent config", "configure claude code", "agent guardrails", or "agent workflow"
+
+Once activated, the skill runs a conversational interview to understand how your agent should behave, discovers existing conventions from your codebase in parallel, and generates a complete behavioral instruction file.
+
+## When to Use
+
+Use this skill when:
+- Starting a new project and want to define agent behavior from the beginning
+- Have an existing project but no formal agent instructions
+- Want to standardize agent behavior across a team or monorepo
+- Need to update existing AGENTS.md after workflow changes
+- Want to migrate from ad-hoc instructions to structured behavioral docs
+
+This skill produces the **behavior layer** (HOW the agent works). For the **project DNA layer** (WHAT the project is), use the `accelint-onboard-openspec` skill.
+
+## Key Patterns
+
+### Separation of Concerns
+
+The skill enforces a clean separation between agent behavior and project facts:
+
+**AGENTS.md (this skill)** — Agent identity and workflow:
+- Role definition ("You are a senior TypeScript engineer")
+- Communication style and tone
+- Workflow procedures (PR flow, commit conventions)
+- Decision-making heuristics
+- Tool usage preferences
+- Behavioral guardrails
+
+**openspec/config.yaml** — Project DNA:
+- Domain description and tech stack
+- Architectural patterns and coding standards
+- Project structure and per-artifact rules
+
+The skill flags content that belongs in the wrong layer during discovery.
+
+### Four Operation Modes
+
+The skill automatically detects file state and adapts:
+
+**Mode 1: Create** — File doesn't exist or is nearly empty. Runs full interview from scratch.
+
+**Mode 2: Import** — File exists with unrecognized structure. Offers three options:
+- **(a) Restructure** — Maps existing content to template sections, flags boundary violations, fills gaps
+- **(b) Append** — Adds new sections below existing content without modifying it
+- **(c) Dry run** — Shows what would be generated without writing
+
+**Mode 3: Refresh** — File matches expected template. Runs abbreviated interview covering only:
+- Drift detection (new CI checks, hooks, packages)
+- Unresolved TODOs from previous runs
+- External findings from other tools
+
+**Mode 0: Monorepo Package** — Detects root-level AGENTS.md and generates package-specific overrides only, referencing the root instead of duplicating instructions.
+
+### Parallel Discovery
+
+After the interview, the skill spawns parallel subagents to infer missing behavioral conventions from the codebase:
+
+- **Agent A** — Version control &amp; commit conventions (commitlint, git log, changesets)
+- **Agent B** — CI/CD &amp; pre-commit workflows (GitHub Actions, Husky, pre-commit hooks)
+- **Agent C** — Testing &amp; code quality (vitest, jest, package manager, TypeScript config)
+- **Agent D** — Security &amp; migrations (migration directories, secret handling)
+- **Agent E** — OpenSpec &amp; development workflow (spec-driven process detection)
+
+All agents run simultaneously. Results merge into a unified discovery map with source annotations.
+
+## Examples
+
+### Example: Fresh Project
+
+```bash
+/accelint-onboard-agents
+```
+
+**Output:**
+```
+No AGENTS.md found — I'll create one from scratch.
+
+Turn 1 — Role &amp; Identity
+What role should the agent play?
+> Senior TypeScript engineer
+
+...
+
+✓ Discovery complete. Preview:
+
+---
+- Always run `pnpm check` before committing   # inferred from .husky/pre-commit
+- Use Conventional Commits (`feat:`, `fix:`)  # inferred from commitlint.config.ts
+- Never force-push to any branch              # standard guardrail
+---
+
+Does this look right? [yes]
+
+✓ Written to AGENTS.md
+```
+
+### Example: Existing Unrecognized File
+
+```bash
+/accelint-onboard-agents
+```
+
+**Output:**
+```
+AGENTS.md exists with custom structure. How would you like to proceed?
+
+(a) Restructure — import your content, map to template, fill gaps
+(b) Append — add new sections below existing content
+(c) Dry run — show what I'd generate without writing
+
+> (a)
+
+✓ Mapped existing content to template sections
+⚠️  Found project DNA in "Role &amp; Identity" — this belongs in openspec/config.yaml:
+   - "Tech stack: Next.js 14, Prisma, PostgreSQL"
+   Move it? [yes]
+
+...
+```
+
+### Example: Refresh After Workflow Changes
+
+```bash
+/accelint-onboard-agents
+```
+
+**Output:**
+```
+AGENTS.md exists with recognized structure. Checking for drift...
+
+Found 2 sections that may have drifted:
+- New CI check added: `.github/workflows/security-scan.yml`
+- New pre-commit hook: `.husky/pre-push`
+
+I'll only ask about those — the rest looks current.
+
+Turn 1 — CI Workflow Update
+I found a new security-scan workflow. Should this be a required check?
+> Yes, must pass before merge
+
+...
+```
+
+### Example: Monorepo Package
+
+```bash
+cd packages/ui-components
+/accelint-onboard-agents
+```
+
+**Output:**
+```
+Found root-level AGENTS.md at ../../AGENTS.md. I'll reference it to avoid duplicating instructions.
+
+The root AGENTS.md defines:
+- Commit conventions (Conventional Commits)
+- PR workflow (draft → ready after CI)
+- Pre-commit checks (pnpm check, pnpm test)
+
+Does this package need to add to or override any of that?
+> Add: visual regression tests required for UI changes
+
+...
+
+✓ Written package-specific AGENTS.md with root reference
+```
+
+## Anti-Patterns
+
+The skill enforces these guardrails during generation:
+
+**NEVER run codebase discovery serially** — Phase 3 spawns parallel subagents for different behavioral domains. Serial scanning wastes time on codebases with many config files.
+
+**NEVER skip discovery before asking questions** — The skill attempts to infer behavioral conventions from the codebase before adding questions to the interview. Questions about commit format when `commitlint.config.ts` exists waste time.
+
+**NEVER omit sections from the generated AGENTS.md** — If a section cannot be inferred or answered, it's marked with `<!-- TODO: fill in -->` rather than left out. Missing sections silently shape agent behavior unpredictably.
+
+**NEVER duplicate root-level instructions in package-level files** — If a monorepo root AGENTS.md exists, package files reference it and add only package-specific content.
+
+**NEVER write the final file without showing a preview** — The user sees inferred values with source annotations and confirms before any filesystem write.
+
+**NEVER cross the layer boundary** — If the user volunteers stack facts during the interview, the skill acknowledges them and notes they belong in `openspec/config.yaml`, not AGENTS.md.
+
+## Common Pitfalls
+
+> **Good to know:** This skill creates behavioral instructions (HOW the agent works), not project facts (WHAT the project is). If you need both, run this skill first, then run `accelint-onboard-openspec` for the project DNA layer.
+
+> **Good to know:** Mode detection happens automatically before any interview question. If the skill picks the wrong mode for your situation, you can always choose "start fresh" when prompted.
+
+> **Good to know:** For monorepos, always run this skill at the root first. Package-specific runs will detect and reference the root file automatically.
+
+> **Good to know:** The skill preserves manual edits during refresh mode. Your customizations won't be overwritten — only stale sections and unresolved TODOs are updated.
+
+## Related
+
+- [accelint-onboard-openspec](/docs/accelint-onboard-openspec) — Generate openspec/config.yaml for project DNA
+- [accelint-architecture-doc](/docs/accelint-architecture-doc) — Generate ARCHITECTURE.md for system structure

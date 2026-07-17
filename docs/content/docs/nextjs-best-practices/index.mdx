@@ -1,6 +1,297 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Performance optimization and best practices for Next.js applications covering Server Components, Server Actions, RSC serialization, and server-side optimization.
+source: skills/accelint-nextjs-best-practices/SKILL.md
+source_sha: 0af092353242e94ddfd3cf2d0370fe424199f901
+doc_sha: a86f5c5e19d423b85e6aa521121c1432773489b5
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-nextjs-best-practices` command with optional file or directory path
+- Mentioning "Next.js", "Server Components", "Server Actions", "App Router", "RSC"
+- Working with Next.js code files (`.tsx`, `.ts` with `"use server"`, `app/` directory)
+- Asking about performance, data fetching, authentication, or serialization in Next.js
+
+```bash
+# Review a specific file
+/accelint-nextjs-best-practices app/actions/user.ts
+
+# Audit a directory
+/accelint-nextjs-best-practices app/
+
+# Use implicitly when working with Next.js
+"optimize this Server Action"
+"fix authentication in this Server Action"
+"why is my page loading slowly?"
+```
+
+Once activated, the skill provides performance optimization guidance, security patterns, and best practices specifically for Next.js App Router. It uses progressive disclosure—starting with AGENTS.md overview, then loading specific reference files as needed.
+
+## When to Use
+
+Use this skill when:
+
+- **Writing Next.js code** - Server Components, Client Components, Server Actions with `"use server"`, API routes, data fetching
+- **Performance issues** - Slow API routes, Server Actions, page loads, data fetching waterfalls, large HTML payloads
+- **Security concerns** - Authentication in Server Actions, authorization checks, input validation
+- **Optimization tasks** - RSC serialization, parallel data fetching, Suspense boundaries, request deduplication
+- **Code review** - Reviewing Next.js code for anti-patterns, performance issues, security vulnerabilities
+- **Refactoring** - Converting sequential to parallel operations, optimizing component composition, reducing serialization
+
+**Skip this skill for:**
+- React-specific patterns (use `accelint-react-best-practices`)
+- TypeScript/JavaScript general patterns (use `accelint-ts-best-practices`)
+- Testing (use `accelint-ts-testing`)
+- Build configuration or deployment setup
+
+## What It Covers
+
+**General Performance** - Waterfall prevention, parallelization, Suspense boundaries
+
+**Server-Side Optimization** - Server Actions security, RSC serialization (avoiding duplication, minimizing payload), parallel data fetching, React.cache() deduplication, after() for non-blocking operations
+
+**Component Architecture** - Server vs Client Component decisions, barrel import optimization
+
+**Security** - Authentication patterns, authorization checks, input validation with Zod
+
+## Key Patterns
+
+### Prevent Waterfall Chains
+
+Start independent operations immediately in API routes and Server Actions, even if you don't await them yet.
+
+```tsx
+// ❌ Sequential: 200ms total
+export async function GET(request: Request) {
+  const session = await auth()           // 50ms
+  const config = await fetchConfig()     // 50ms
+  const data = await fetchData(session.user.id) // 100ms
+  return Response.json({ data, config })
+}
+
+// ✅ Parallel: ~100ms total
+export async function GET(request: Request) {
+  const sessionPromise = auth()          // Starts now
+  const configPromise = fetchConfig()    // Starts now (parallel)
+  
+  const session = await sessionPromise
+  const [config, data] = await Promise.allSettled([
+    configPromise,
+    fetchData(session.user.id)
+  ])
+  
+  return Response.json({ data, config })
+}
+```
+
+Reference: [prevent-waterfall-chains.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/references/prevent-waterfall-chains.md)
+
+### Authenticate Server Actions
+
+Server Actions are public endpoints. Always verify authentication and authorization inside each action—do not rely on middleware or page-level guards.
+
+```tsx
+// ❌ No authentication check
+'use server'
+export async function deleteUser(userId: string) {
+  await db.user.delete({ where: { id: userId } })
+  return { success: true }
+}
+
+// ✅ Authentication + authorization + validation
+'use server'
+import { verifySession } from '@/lib/auth'
+import { z } from 'zod'
+
+const schema = z.object({ userId: z.string().uuid() })
+
+export async function deleteUser(data: unknown) {
+  const { userId } = schema.parse(data)
+  
+  const session = await verifySession()
+  if (!session) throw new Error('Unauthorized')
+  
+  // Check authorization
+  if (session.user.role !== 'admin' && session.user.id !== userId) {
+    throw new Error('Cannot delete other users')
+  }
+  
+  await db.user.delete({ where: { id: userId } })
+  return { success: true }
+}
+```
+
+Reference: [server-actions-security.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/references/server-actions-security.md)
+
+### Minimize RSC Serialization
+
+Only pass fields the client actually uses—every prop is serialized into HTML. Transform data on the client when possible.
+
+```tsx
+// ❌ Over-serialization: sends 1MB of user data per item
+<UserList users={users} /> // users includes passwords, tokens, metadata
+
+// ✅ Only send what's needed: 10KB total
+<UserList 
+  users={users.map(u => ({ 
+    id: u.id, 
+    name: u.name, 
+    avatar: u.avatar 
+  }))} 
+/>
+```
+
+Reference: [minimize-serialization.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/references/minimize-serialization.md)
+
+### Strategic Suspense Boundaries
+
+Use Suspense to show wrapper UI immediately while data loads, instead of blocking the entire page.
+
+```tsx
+// ❌ Entire page waits for slow data
+export default async function Page() {
+  const data = await fetchSlowData() // 2 seconds
+  return (
+    <div>
+      <Header />
+      <DataDisplay data={data} />
+    </div>
+  )
+}
+
+// ✅ Show Header immediately, stream data
+export default function Page() {
+  return (
+    <div>
+      <Header /> {/* Shows immediately */}
+      <Suspense fallback={<Spinner />}>
+        <DataDisplay /> {/* Streams when ready */}
+      </Suspense>
+    </div>
+  )
+}
+```
+
+Reference: [strategic-suspense-boundaries.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/references/strategic-suspense-boundaries.md)
+
+## Examples
+
+### Example: Fixing Slow Server Action
+
+**Problem:** Server Action takes 300ms with sequential operations.
+
+```bash
+/accelint-nextjs-best-practices app/actions/update-profile.ts
+```
+
+**Output:** Identifies waterfall pattern, suggests parallelization:
+
+```tsx
+// Before: 300ms sequential
+const session = await auth()          // 50ms
+const validated = await validate(data) // 100ms
+const profile = await fetchProfile(session.user.id) // 150ms
+
+// After: ~150ms parallel
+const [session, validated] = await Promise.allSettled([
+  auth(),
+  validate(data)
+])
+const profile = await fetchProfile(session.user.id)
+```
+
+### Example: Securing Server Action
+
+**Problem:** Server Action has no authentication check.
+
+```tsx
+// Before: Anyone can call this
+'use server'
+export async function deletePost(postId: string) {
+  await db.post.delete({ where: { id: postId } })
+}
+
+// After: Authentication + authorization
+'use server'
+export async function deletePost(postId: string) {
+  const session = await verifySession()
+  if (!session) throw new Error('Unauthorized')
+  
+  const post = await db.post.findUnique({ where: { id: postId } })
+  if (post.authorId !== session.user.id) {
+    throw new Error('Not authorized')
+  }
+  
+  await db.post.delete({ where: { id: postId } })
+}
+```
+
+### Example: Reducing HTML Payload
+
+**Problem:** HTML response is 500KB due to over-serialization.
+
+```tsx
+// Before: Sends entire user objects with sensitive data
+<UserList users={users} /> // 500KB
+
+// After: Only send display fields
+<UserList 
+  users={users.map(u => ({ 
+    id: u.id, 
+    name: u.name, 
+    avatar: u.avatar 
+  }))} 
+/> // 15KB
+```
+
+## Common Pitfalls
+
+> **Good to know:** This skill focuses on Next.js-specific patterns. For React patterns (hooks, re-renders, memoization), use `accelint-react-best-practices`. For general TypeScript, use `accelint-ts-best-practices`.
+
+> **Good to know:** Server Actions are public endpoints—treat them like API routes. Always authenticate inside the action, even if the page is protected.
+
+> **Good to know:** RSC deduplicates by reference, not value. Calling `.map()`, `.filter()`, or `.toSorted()` on server creates duplicates. Do transformations on client instead.
+
+> **Good to know:** Use Promise.allSettled() instead of Promise.all()—it handles failures gracefully and lets you process partial results.
+
+## Report Format
+
+When invoked for code review (e.g., `/accelint-nextjs-best-practices app/`), the skill generates a structured report using this template:
+
+**Template:** [output-report-template.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/assets/output-report-template.md)
+
+**Report includes:**
+- Executive Summary with impact assessment
+- Severity levels (Critical, High, Medium, Low)
+- Impact categories (Performance, Security, Data Transfer, Maintainability)
+- Pattern references with links to detailed guidance
+- Summary table for tracking all issues
+
+**When NOT to use report format:**
+- User asks to "fix this" directly (apply fixes instead)
+- User asks specific questions (answer directly)
+- Interactive refactoring (apply changes incrementally)
+
+## Related
+
+- [accelint-react-best-practices](/accelint-react-best-practices) - React-specific patterns (hooks, re-renders, memoization)
+- [accelint-ts-best-practices](/accelint-ts-best-practices) - TypeScript/JavaScript patterns
+- [accelint-ts-testing](/accelint-ts-testing) - Testing patterns with Vitest
+
+## Additional Resources
+
+- [Next.js App Router Documentation](https://nextjs.org/docs/app)
+- [Server Components Guide](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
+- [Server Actions Guide](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
+- [Authentication Guide](https://nextjs.org/docs/app/guides/authentication)
+- [Performance Optimization](https://nextjs.org/docs/app/building-your-application/optimizing)
+
+**Skill References:**
+- [AGENTS.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/AGENTS.md) - Quick reference with rule summaries
+- [references/](https://github.com/accelint/agent-skills/tree/main/skills/accelint-nextjs-best-practices/references) - Detailed pattern documentation
+- [quick-checklist.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/references/quick-checklist.md) - Priority checklist for reviews
+- [compound-patterns.md](https://github.com/accelint/agent-skills/blob/main/skills/accelint-nextjs-best-practices/references/compound-patterns.md) - Real-world examples

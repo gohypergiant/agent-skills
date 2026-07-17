@@ -1,6 +1,330 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Archive an OpenSpec change end-to-end by invoking the native archive command, then following up with cross-capability linking and index maintenance that OpenSpec doesn't build on its own.
+source: skills/accelint-qrspi-archive/SKILL.md
+source_sha: d8935aae2a757834b78b34a898d867d979b403cf
+doc_sha: d62c4b7ab7289c13f1f3525b566971608fb00aac
+deprecated: false
+updated: 2026-07-17
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-qrspi-archive` command
+- Saying "archive this change", "bulk archive these changes", "run opsx:archive", "run opsx:bulk-archive"
+- Mentioning "update the specs index", "cross-link the specs", or wanting the archived-change changelog kept current
+
+```bash
+# Single change
+/accelint-qrspi-archive add-live-sync
+
+# All pending changes (bulk archive)
+/accelint-qrspi-archive
+```
+
+Once activated, the skill:
+1. Runs preflight checks to verify frontmatter and Purpose headings
+2. Invokes `/opsx:archive` or `/opsx:bulk-archive` directly (never as a subagent)
+3. Extracts specs_touched and decisions from archived changes
+4. Computes cross-capability co-touch pairs
+5. Spawns one subagent per capability to update spec.md files
+6. Patches openspec/specs/INDEX.md for touched capabilities only
+7. Appends rows to openspec/changes/archive/INDEX.md
+
+This is the entry point for archiving — it calls the native command itself rather than reacting to an archive that happened elsewhere.
+
+## When to Use
+
+Use this skill when:
+- Users want to archive a change
+- Users say "archive this change", "bulk archive these changes", "run opsx:archive", "run opsx:bulk-archive"
+- Users want to "update the specs index", "cross-link the specs"
+- Users want the archived-change changelog kept current
+- Working with OpenSpec changes ready to merge into main specs
+
+## What It Does
+
+**Archive Phase:**
+- Runs `/opsx:archive <name>` or `/opsx:bulk-archive` directly in this context
+- Automatically answers "yes" to routine sync prompts
+- Surfaces non-routine prompts (like conflict resolution) to the user
+- Stays with the archive command through internal branches (e.g., sync skills)
+- Extracts specs_touched and decisions from archived design.md
+
+**Cross-Linking Phase:**
+- Computes all 2-combinations within each change's specs_touched (A touches B and C → pairs: A-B, A-C, B-C)
+- Spawns one subagent per capability to merge new partners into existing related: frontmatter
+- Regenerates each spec's ## Related Specs section to match frontmatter
+- Never drops existing related: entries (additive only)
+
+**Index Maintenance:**
+- Patches openspec/specs/INDEX.md row-by-row for touched capabilities only (no full rebuild except first bootstrap)
+- Appends one row per archived change to openspec/changes/archive/INDEX.md (append-only, never reordered)
+- Preserves trailing content in changes/archive/INDEX.md (status legends, totals)
+
+**Additive Only:**
+- Never prunes a related: entry
+- Never changes a Status column after initial write
+- Never reorders existing changelog rows
+- Pruning and synthesis belong to accelint-archive-synthesis
+
+## Key Patterns
+
+### Preflight Checks
+
+**Task A — design.md frontmatter:**
+- Confirms specs_touched and decisions exist in frontmatter
+- If missing: derives candidate from proposal.md and delta specs, asks for explicit confirmation before writing
+- If no candidate can be derived: stops and asks user to fix manually
+
+**Task B — Purpose heading convention:**
+- Confirms every touched capability's spec.md has a ## Purpose heading
+- Offers to add placeholder or asks user to fix first
+- Never invents purpose text silently
+
+### Archive Always Runs Inline
+
+Archive and extraction never delegates to a subagent, even when sub-agent support is available:
+
+**Why inline:** `/opsx:archive` and `/opsx:bulk-archive` are agent-driven skills that can branch mid-run (e.g., into sync) or raise interactive prompts. A subagent can't resume after an internal branch or surface a prompt to the user — both failure modes observed in practice with the old subagent design.
+
+**Cost accepted:** Archive's internal work (delta spec comparison, conflict resolution) enters this context instead of being isolated. Spec writing still uses subagents to keep raw spec.md contents out of the parent.
+
+**Never use raw CLI:** Don't shell out to `openspec archive`/`openspec bulk-archive` directly — the skill is where OpenSpec's delta-spec comparison and bulk-archive conflict resolution actually happen.
+
+### Spec Writing Always Uses Subagents
+
+Spec writing spawns one subagent per capability unconditionally:
+
+**Why subagents:** Keeps raw spec.md contents out of the parent's context, regardless of batch size. This is the same discipline accelint-qrspi-propose and accelint-qrspi-apply use for all file operations.
+
+**Not a threshold:** Delegation isn't conditional on batch size — one capability or forty, it always uses subagents. Making it threshold-based would mean context cost varies run to run for no reason.
+
+**Degraded fallback:** If sub-agent support is unavailable, falls back to inline writes with an explicit warning. This is a degraded fallback, not normal operation.
+
+### Cross-Link Computation (All-Pairs Union)
+
+For a change with `specs_touched: [A, B, C]`, the contributed pairs are:
+- (A, B)
+- (A, C)
+- (B, C)
+
+Co-touch is symmetric — A gains B as a related partner AND B gains A in the same operation.
+
+**Pure computation:** This step touches zero files. It only combines specs_touched lists from validated records. The merge with existing related: entries happens during spec writing, where the file is already open.
+
+### Index Patching (Not Rebuilding)
+
+**specs/INDEX.md:**
+- Grep for the capability name in the first column
+- Replace only that line with updated Purpose, related:, last_touched_by
+- Every untouched capability's row is never read or written
+- Full rebuild only if the file doesn't exist yet (bootstrap case)
+
+**changes/archive/INDEX.md:**
+- Locate end of table's data rows (not end of file — trailing content may exist)
+- Insert new row(s) immediately after last data row
+- Never reorder, never touch existing rows
+- Never edit trailing content (status legends, totals)
+
+**Row format:** Single-space cell separation, no cross-row padding alignment:
+```markdown
+| sync/protocol | Defines the live-sync wire proto | ui/status-indicator | add-live-sync |
+```
+
+Padding would force full-table rewrites whenever any text length changes. Unaligned rows trade visual consistency for one-line diffs.
+
+## Examples
+
+### Example: Archive Single Change with Cross-Linking
+
+```bash
+/accelint-qrspi-archive add-live-sync
+```
+
+**Output:**
+```
+Running preflight checks...
+✓ design.md frontmatter valid (specs_touched: sync/protocol, ui/status-indicator)
+✓ Both capabilities have a ## Purpose heading
+
+Running /opsx:archive add-live-sync directly...
+Sync now? (y/n) → yes
+✓ Synced delta specs, resuming remaining steps...
+✓ Archived to openspec/changes/archive/2026-03-02-add-live-sync/
+
+Computing new co-touch pairs...
+- sync/protocol ↔ ui/status-indicator (new pair)
+
+[spawns subagent: sync/protocol]
+[spawns subagent: ui/status-indicator]
+✓ sync/protocol/spec.md: related: [ui/status-indicator]
+✓ ui/status-indicator/spec.md: related: [sync/protocol]
+
+Updating openspec/specs/INDEX.md... (2 rows patched)
+Appending to openspec/changes/archive/INDEX.md... (1 row)
+
+✅ Archive complete: add-live-sync
+```
+
+### Example: Bulk Archive with Overlapping Specs
+
+```bash
+/accelint-qrspi-archive
+```
+
+**Scenario:** Two pending changes both touch specs/ui/
+
+**Output:**
+```
+Running preflight checks across 2 pending changes...
+✓ All design.md frontmatter valid
+
+Running /opsx:bulk-archive directly...
+Sync now? (y/n) → yes
+⚠ add-dark-mode and update-footer both touch specs/ui/ — archive both,
+  merging in chronological order? (y/n)
+
+[Surfaces prompt to user — this isn't the routine sync prompt]
+```
+
+**User confirms:** Yes
+
+```
+✓ Archived add-dark-mode, then update-footer
+✓ specs/ui/ merged in chronological order
+
+Computing cross-links across both changes...
+[continues with cross-linking and index updates]
+```
+
+This is why archive runs inline — a subagent can't relay the ordering question to the user.
+
+### Example: Missing Frontmatter Recovery
+
+```bash
+/accelint-qrspi-archive enhance-mock-consistency-rule
+```
+
+**Output:**
+```
+Running preflight checks...
+⚠ design.md has no specs_touched or decisions frontmatter
+
+Checking proposal.md and delta specs for derivable candidate...
+
+Derived from this change's own files:
+  specs_touched: [testing/mock-consistency]
+  decisions:
+    - id: D1
+      choice: enforce consistency at lint time, not runtime
+      rationale: catches drift before merge instead of in CI
+      alternatives: [runtime assertion, manual review checklist]
+
+(a) Confirm this as written
+(b) Edit it first
+(c) Pause so I can fix design.md myself
+```
+
+**User confirms:** (a)
+
+```
+✓ Writing confirmed frontmatter to design.md
+Running /opsx:archive enhance-mock-consistency-rule...
+[continues normally]
+```
+
+### Example: Missing Purpose Heading
+
+```bash
+/accelint-qrspi-archive add-session-store
+```
+
+**Output:**
+```
+Running preflight checks...
+✓ design.md frontmatter valid
+⚠ auth/session-store is missing a ## Purpose heading
+
+How would you like to handle auth/session-store?
+(a) Add a placeholder purpose now and continue
+(b) Pause so you can add the heading yourself first
+```
+
+**User chooses:** (b)
+
+```
+Paused. Add a ## Purpose heading to openspec/specs/auth/session-store/spec.md,
+then re-invoke this skill to continue.
+```
+
+## Anti-Patterns
+
+### NEVER stop between workflow steps unless an error occurs
+
+Once archive completes successfully, immediately proceed to validation → cross-linking → spec writing → index updates → changelog → report. Don't wait for user confirmation between phases. The only legitimate stopping points are errors or preflight failures.
+
+### NEVER run validation/linking/reporting once per intermediate merge
+
+For `/opsx:bulk-archive`, validation through reporting run exactly ONCE after every merge resolves. Running early computes pairs against incomplete specs_touched and patches INDEX.md against a half-finished batch.
+
+### NEVER prune a related: entry
+
+This skill only adds. Removing entries is accelint-archive-synthesis's job with human confirmation.
+
+### NEVER derive specs_touched/decisions without explicit author confirmation
+
+Task A's recovery path derives candidates from the change's own files, but never writes them without the author confirming (a) as-is, (b) edited, or (c) pause to fix manually.
+
+### NEVER re-pad existing rows in specs/INDEX.md when patching
+
+Cell padding is per-row, not table-wide. Realigning every row's whitespace to keep columns visually consistent defeats the point of targeted line edits and turns a one-line diff into a full-file rewrite.
+
+### NEVER change an existing Status value in changes/archive/INDEX.md
+
+Write `current` once at creation, never touch that column again. Transitions like `current` → `superseded` belong to accelint-archive-synthesis.
+
+### NEVER read Date from design.md
+
+Always use the archive folder's YYYY-MM-DD prefix. A change can sit in review for weeks, so design.md dates are stale by archive time.
+
+### NEVER duplicate capability or purpose into frontmatter
+
+Capability is the file's path. Purpose is the ## Purpose heading. Restating either creates a second source of truth that will drift.
+
+### NEVER hand-maintain ## Related Specs
+
+Always regenerate it wholesale from related: frontmatter. Treating it as independently editable invites drift between frontmatter and body.
+
+### NEVER append to end-of-file for changes/archive/INDEX.md
+
+Locate the end of the table's data rows and insert there. The file may have trailing content (totals, legends) — writing to end-of-file lands a data row in prose instead of the table.
+
+### NEVER spawn a subagent for archive, even when available
+
+Always run `/opsx:archive`/`/opsx:bulk-archive` directly in this context. A subagent can't resume after internal branches or surface prompts to the user — both observed failure modes.
+
+### NEVER run spec writing inline when subagents are available
+
+Always delegate, regardless of batch size. This keeps raw spec.md contents out of the orchestrating context on every run.
+
+## Common Pitfalls
+
+> **Good to know:** This skill invokes `/opsx:archive` itself — it's the entry point for archiving, not a post-archive reaction. If you've already run archive through some other path, this skill will try to archive again.
+
+> **Good to know:** The routine sync prompt during `/opsx:archive`/`/opsx:bulk-archive` is always answered "yes" automatically. Non-routine prompts (like bulk-archive conflict ordering) are surfaced to you.
+
+> **Good to know:** Archive runs inline (never a subagent), but spec writing always uses subagents. This is by design — archive can branch or prompt mid-run, which subagents can't handle. Spec writing is deterministic file I/O with no branches.
+
+> **Good to know:** Preflight Task A can derive missing frontmatter from a change's own files, but it always asks for your explicit confirmation before writing. If you're seeing this frequently, fix accelint-qrspi-propose to write specs_touched/decisions at design time — that closes the gap at the source.
+
+> **Good to know:** Cross-linking is additive only. If a related: entry looks wrong or stale, use accelint-archive-synthesis for pruning — it has the cross-change context and human confirmation workflow this skill doesn't.
+
+> **Good to know:** specs/INDEX.md is patched row-by-row for touched capabilities, not rebuilt wholesale every run. If a spec was hand-edited outside this workflow and its INDEX.md row is stale, this skill won't catch it. Neither does accelint-archive-synthesis currently — its checks read INDEX.md as ground truth. This is an accepted gap worth closing someday in archive-synthesis, not a per-archive cost.
+
+## Related
+
+- **accelint-qrspi-propose** — Creates the specs_touched/decisions frontmatter this skill expects to find
+- **accelint-qrspi-apply** — Implements changes before archive
+- **accelint-archive-synthesis** — Prunes related: entries, transitions Status values, detects decision drift

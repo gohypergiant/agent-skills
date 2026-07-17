@@ -225,24 +225,39 @@ Check:
 - Code fences have language tags
 - Examples have descriptive names (not "Example 1")
 - Links use markdown format, not bare URLs
+- **MDX special characters are escaped:**
+  - `<` followed by numbers → use `&lt;` (e.g., "&lt;500 lines" not "<500 lines")
+  - `>` followed by numbers → use `&gt;` (e.g., "&gt;50%" not ">50%")
+  - `&` in prose → use `&amp;` (e.g., "Testing &amp; QA" not "Testing & QA")
+  - Curly braces in prose → use `{{` and `}}` (e.g., `{{ label: "text" }}`)
 
 ### 6. Compute doc_sha
 
 After generating content:
 ```bash
+# Strip accelint- prefix for doc path
+doc_dir="docs/content/docs/${skill_name#accelint-}"
+
 # Extract content after frontmatter, hash it
-awk '/^---$/{if(++count==2){flag=1;next}}flag' docs/content/docs/skill-name/index.mdx | git hash-object --stdin
+awk '/^---$/{if(++count==2){flag=1;next}}flag' "$doc_dir/index.mdx" | git hash-object --stdin
 ```
 
 Update frontmatter: replace `doc_sha: pending` with computed hash.
 
 ### 7. Write Output
 
-Write to `docs/content/docs/skill-name/index.mdx`.
+**IMPORTANT - Path Construction:**
+- Strip `accelint-` prefix from skill name for docs path
+- Example: `skills/accelint-ac-to-playwright/` → `docs/content/docs/ac-to-playwright/index.mdx`
+- Example: `skills/skill-creator/` → `docs/content/docs/skill-creator/index.mdx` (no prefix to strip)
+
+Write to `docs/content/docs/{skill-name-without-accelint-prefix}/index.mdx`.
 
 If the directory doesn't exist, create it:
 ```bash
-mkdir -p docs/content/docs/skill-name
+# Strip accelint- prefix if present
+doc_dir="docs/content/docs/${skill_name#accelint-}"
+mkdir -p "$doc_dir"
 ```
 
 ## Updating Existing Docs
@@ -252,9 +267,12 @@ When source changes and docs exist:
 ### 1. Detect Changes
 
 ```bash
+# Strip accelint- prefix for doc path
+doc_dir="docs/content/docs/${skill_name#accelint-}"
+
 # Compare source_sha to current
 current_sha=$(git hash-object skills/skill-name/SKILL.md)
-documented_sha=$(grep 'source_sha:' docs/content/docs/skill-name/index.mdx | awk '{print $2}')
+documented_sha=$(grep 'source_sha:' "$doc_dir/index.mdx" | awk '{print $2}')
 
 if [ "$current_sha" != "$documented_sha" ]; then
   echo "Source changed, docs may be stale"
@@ -264,9 +282,12 @@ fi
 ### 2. Check for Manual Edits
 
 ```bash
+# Strip accelint- prefix for doc path
+doc_dir="docs/content/docs/${skill_name#accelint-}"
+
 # Compute current doc content hash
-current_doc_sha=$(awk '/^---$/{if(++count==2){flag=1;next}}flag' docs/content/docs/skill-name/index.mdx | git hash-object --stdin)
-recorded_doc_sha=$(grep 'doc_sha:' docs/content/docs/skill-name/index.mdx | awk '{print $2}')
+current_doc_sha=$(awk '/^---$/{if(++count==2){flag=1;next}}flag' "$doc_dir/index.mdx" | git hash-object --stdin)
+recorded_doc_sha=$(grep 'doc_sha:' "$doc_dir/index.mdx" | awk '{print $2}')
 
 if [ "$current_doc_sha" != "$recorded_doc_sha" ]; then
   echo "Manual edits detected, preserve prose"
@@ -296,8 +317,11 @@ Run these checks on command or when user asks to "validate docs":
 
 For each documented skill:
 ```bash
+# Strip accelint- prefix for doc path
+doc_dir="docs/content/docs/${skill_name#accelint-}"
+
 current_sha=$(git hash-object skills/skill-name/SKILL.md)
-documented_sha=$(grep 'source_sha:' docs/content/docs/skill-name/index.mdx | awk '{print $2}')
+documented_sha=$(grep 'source_sha:' "$doc_dir/index.mdx" | awk '{print $2}')
 
 if [ "$current_sha" != "$documented_sha" ]; then
   # Count commits since documented version

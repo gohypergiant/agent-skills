@@ -1,13 +1,288 @@
 ---
 title: Getting Started
-description: Getting Started description
+description: Install and configure agent skills in your project for enhanced AI-assisted development
 ---
 
-TODO
+This guide covers installing agent skills, activating them in your project, and using them effectively with your AI coding assistant.
 
-## Example Cards
+## Quick Start
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
-</Cards>
+Install skills to your project using the `skills` CLI:
+
+```bash
+# Install from skills.sh (recommended for project scope)
+npx skills add gohypergiant/agent-skills
+
+# Or install directly from GitHub
+npx skills add github:gohypergiant/agent-skills
+```
+
+> **Good to know:** We recommend **project-scoped installs** over global installs. This ensures each project has explicit, version-controlled skill dependencies and avoids version conflicts across projects.
+
+Once installed, skills are available to your agent immediately. No additional configuration required. In some harnesses, you may need to restart/reload for the new skills to be recognized.
+
+## Using Skills in Your Project
+
+### Activating Skills
+
+Skills activate when your task matches their description. You can trigger them:
+
+**Explicit activation via slash commands:**
+```bash
+/ts-best-practices src/utils/parser.ts
+/security-best-practices src/
+/react-best-practices
+```
+
+**Natural language matching skill descriptions:**
+```
+"Can you review this code for React best practices?"
+"Audit this file for security vulnerabilities"
+"Generate an ARCHITECTURE.md for this project"
+```
+
+> **Good to know:** Agents decide which skills to activate by matching your task to skill descriptions loaded at startup. The better a skill's description captures its use cases and keywords, the more reliably it triggers.
+
+## Installation Options
+
+### Project-Scoped (Recommended)
+
+Install skills to a specific project:
+
+```bash
+cd your-project
+npx skills add gohypergiant/agent-skills
+```
+
+Skills are install to `.agents/skills/` in your project root directory and then symlinked to appropriate harness folders such as `.pi` or `.claude`. Commit these to version control so your team shares the same skill versions.
+
+**Benefits:**
+- Explicit dependencies per project
+- Version control integration
+- No cross-project conflicts
+- Team-wide consistency
+
+### Global Install
+
+Install skills system-wide (use sparingly):
+
+```bash
+npx skills add gohypergiant/agent-skills --global
+```
+
+**When to use global:**
+- Personal skills used across all projects
+- Experimental skills during development
+
+> **Good to know:** Project-scoped skills take precedence over global skills. If both exist, the agent uses the project version.
+
+## Common Workflows
+
+### Code Review Workflow
+
+Audit code quality across multiple dimensions:
+
+```bash
+# Comprehensive audit (runs all TypeScript quality skills)
+/ts-audit-all src/
+
+# Individual audits
+/ts-best-practices src/components/
+/ts-performance src/utils/
+/security-best-practices src/api/
+```
+
+### Documentation Workflow
+
+Generate and maintain project documentation:
+
+```bash
+# Set up project documentation
+/architecture-doc          # Generate ARCHITECTURE.md
+/onboard-agent             # Create AGENTS.md
+/onboard-openspec          # Create openspec/config.yaml
+/readme-writer             # Generate comprehensive README
+```
+
+### Testing Workflow
+
+Create and validate tests:
+
+```bash
+# Add test coverage
+/ts-testing src/utils/parser.ts
+
+# Convert acceptance criteria to Playwright tests
+/ac-to-playwright requirements/feature.md
+
+# Review React component tests
+/react-testing src/components/button.test.tsx
+```
+
+### QRSPI Development Workflow
+
+Spec-driven development from planning to implementation:
+
+```bash
+# 1. Plan the change (Questions → Research → Design → Structure)
+/qrspi-propose <description>
+
+# 2. Implement with parallelization
+/qrspi-apply
+
+# 3. Archive and cross-link
+/qrspi-archive
+
+# 4. Periodically lint for drift
+/archive-synthesis
+```
+
+### Frontend Development Workflow
+
+Optimize React and Next.js applications:
+
+```bash
+# Review component patterns
+/react-best-practices src/components/
+
+# Optimize Next.js App code
+/nextjs-best-practices src/app/
+
+# Review TanStack Query usage
+/tanstack-query-best-practices src/data-access/
+
+# Apply design system
+/design-foundation src/components/
+```
+
+## Skill Composition
+
+Skills work together. Many workflows involve multiple skills:
+
+**TypeScript Audit All** orchestrates:
+1. TypeScript Testing (add coverage)
+2. TypeScript Best Practices (code quality)
+3. TypeScript Performance (optimization)
+4. TypeScript Documentation (JSDoc)
+
+**Documentation Suite** uses:
+- Architecture Doc (system structure)
+- Onboard Agent (agent behavior)
+- Onboard OpenSpec (project DNA)
+- README Writer (user-facing docs)
+
+**QRSPI Workflow** integrates:
+- QRSPI Propose (planning)
+- QRSPI Apply (implementation)
+- QRSPI Archive (archiving)
+- Archive Synthesis (linting)
+
+**Frontend Stack** combines:
+- React Best Practices (component patterns)
+- Next.js Best Practices (framework optimization)
+- TanStack Query (data fetching)
+- Design Foundation (styling)
+
+> **Good to know:** Agents automatically coordinate between related skills. You can activate one skill and it will suggest or invoke others when appropriate.
+
+## Configuration
+
+### Skill Priority
+
+When multiple skills apply, agents follow this priority:
+
+1. **Explicitly invoked** (slash command) - Takes highest priority
+2. **Context-triggered** (file type, keywords) - Automatic activation
+3. **Related skills** (suggested by primary skill) - Secondary guidance
+
+## Best Practices
+
+### When to Use Skills
+
+**Use skills when:**
+- Implementing domain-specific patterns (React hooks, Next.js optimization)
+- Auditing code quality (security, performance, correctness)
+- Generating project documentation (README, ARCHITECTURE.md)
+- Following organizational conventions (commit format, testing patterns)
+- Converting between formats (AC → Playwright tests)
+
+**Don't use skills for:**
+- General programming questions agents already know
+- Language syntax or basic concepts
+- One-off custom logic without reusable patterns
+
+### Skill Maintenance
+
+**Keep skills updated:**
+```bash
+# Check for updates
+npx skills list
+
+# Update skills
+npx skills update
+```
+
+**Track versions:**
+Commit skill directories to version control. This ensures:
+- Team uses same skill versions
+- Changes are reviewable in PRs
+- Rollback is possible if needed
+
+**Monitor effectiveness:**
+- Review agent suggestions from skills
+- Report issues to skill maintainers
+- Contribute improvements based on usage
+
+### Performance Impact
+
+Skills load progressively to minimize context usage. If you experience slowdowns:
+
+**Reduce skill scope:**
+```bash
+# Audit specific file instead of entire directory
+/ts-best-practices src/utils/parser.ts
+```
+
+**Use targeted skills:**
+```bash
+# Use specific skill instead of comprehensive audit
+/ts-performance src/hot-path.ts
+# Instead of:
+/ts-audit-all src/
+```
+
+**Clear context between runs:**
+Start new agent sessions for independent tasks to avoid context accumulation.
+
+## Next Steps
+
+**Start with quick wins:**
+- [TypeScript Best Practices](/docs/ts-best-practices) - Immediate code quality improvements
+- [Security Best Practices](/docs/security-best-practices) - Catch vulnerabilities early
+
+**Set up your project:**
+- [Architecture Doc](/docs/architecture-doc) - Create system overview
+- [Onboard OpenSpec](/docs/onboard-openspec) - Document project DNA
+- [Onboard Agent](/docs/onboard-agent) - Define agent behavior
+- [README Writer](/docs/readme-writer) - Generate comprehensive documentation
+
+**Contribute:**
+Skills are open source. Report issues, suggest improvements, or create your own skills:
+- GitHub: [gohypergiant/agent-skills](https://github.com/gohypergiant/agent-skills)
+- Skills registry: [skills.sh/gohypergiant/agent-skills](https://skills.sh/gohypergiant/agent-skills)
+
+## Learn More
+
+**Documentation:**
+- [skills.sh/docs](https://skills.sh/docs) - Skills CLI reference
+- [skills.sh/docs/cli](https://skills.sh/docs/cli) - CLI commands
+- [skills.sh/docs/api](https://skills.sh/docs/api) - Skills API
+
+**Community:**
+- Browse [all skills](https://skills.sh/) on the registry
+- Review [security audits](https://skills.sh/audits)
+- Explore skills by [topic](https://skills.sh/topic) or [agent](https://skills.sh/agent)
+
+**Resources:**
+- [Agent Skills Specification](https://agentskills.io/specification)
+- [Anthropic's Skill Building Guide](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf)
