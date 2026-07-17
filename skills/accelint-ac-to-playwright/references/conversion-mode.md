@@ -21,9 +21,8 @@
   - If validation fails, read the error, fix the JSON, and use the Write tool to overwrite the file with corrected content
   - Maximum 3 validation attempts - if still failing after 2 attempts, stop and report the validation errors to the user
 4. **Execute translation and write test file**:
-  - Run: `cd /Users/tanya.fortunaGHM7GPQV67/Coding/agent-skills/skills/accelint-ac-to-playwright && npx translate-plan <plans-output-dir>/<suite-slug>.json`
-  - Capture the generated TypeScript test code from the script output
-  - Use the Write tool to create the file at `<tests-output-dir>/<suite-slug>.spec.ts` with the test code
+  - Run: `cd /Users/tanya.fortunaGHM7GPQV67/Coding/agent-skills/skills/accelint-ac-to-playwright && npx generate-tests <plans-output-dir>/<suite-slug>.json --tests-dir <tests-output-dir> --summary-dir <summaries-output-dir>`
+  - The script will automatically write the test file to `<tests-output-dir>/<suite-slug>.spec.ts`
   - Verify the file was written successfully by using the Read tool to check its contents
 5. **Next steps**: 
   - Work on the next input file, if any remain.
