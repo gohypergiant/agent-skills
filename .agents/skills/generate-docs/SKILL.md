@@ -24,20 +24,77 @@ All generated content is editable markdown. Engineers can freely customize—ada
 
 ## Target Audience
 
-Developers using agent harnesses such as Claude Code or pi.
+Humans evaluating or using documented skills in agent harnesses such as Claude Code or pi.
+
+Write for someone trying to understand whether a skill is useful, what it helps them accomplish, and how it behaves. Do not write as if you are instructing another agent how to execute the skill unless that operational detail is directly relevant to the human reader.
 
 ## Writing Style Rules
 
-Prose should be to the point—help folks get up and running quickly. Follow these patterns:
+Prose should be to the point—help folks understand what the skill is for, when to reach for it, and what value it provides. Follow these patterns:
 
-1. **Lead with what it does** - No preamble, no "This is a...", just direct description
-2. **Show code immediately** - Usage section comes before Reference section
-3. **Name examples by use case** - "Example: Filtering null values" not "Example 1"
-4. **Direct imperative voice** - "Returns the filtered array" not "This function returns..."
-5. **Standard markdown only** - Must work in fumadocs
-6. **Edge cases in callouts** - Use `> **Good to know:**` for gotchas
+1. **Lead with what it helps a human do** - Start from user outcomes, not internal implementation
+2. **Prefer human-facing explanation over agent-facing instructions** - Describe behavior and value before invocation mechanics
+3. **Name examples by use case** - "Example: Auditing a weak skill description" not "Example 1"
+4. **Translate internals into benefits** - If the source describes internal orchestration, explain why that matters to the user instead of copying the instruction literally
+5. **Summarize patterns, do not restate every rule** - Explain the skill's shape and behavior at a useful level of abstraction instead of enumerating every nitpick from SKILL.md
+6. **Standard markdown only** - Must work in fumadocs
+7. **Use callouts only for user-relevant gotchas** - Use `> **Good to know:**` only when it helps a human choose, use, or not misuse the skill
+8. **Compress aggressively** - Prefer short, information-dense summaries over walkthroughs, transcripts, or exhaustive inventories
+9. **Avoid duplication across sections** - Each section should add new information rather than restating the same point in different words
+10. **Default to a short page** - Most pages should feel skimmable in one pass rather than like internal design docs
 
 Remove AI-sounding phrasing like "leverages", "streamlines", "comprehensive", "robust". Keep it direct and human.
+
+## Compression Heuristics
+
+Use these as strong defaults:
+
+- Aim for roughly **500–900 words** for most pages
+- Prefer **4–6 total sections** on most pages
+- Prefer **3–6 bullets per section**
+- Default `## How It Works` to **3–5 bullets** or **3–4 short subsections**
+- Keep examples short: **one command + one outcome summary** beats transcript-style walkthroughs
+
+Longer pages are justified only when the skill has multiple genuinely distinct user-facing modes or deliverables.
+
+## Audience Filter
+
+Before including any detail, classify it:
+
+### Include
+- What the skill helps the human accomplish
+- When the skill should be used
+- What it optimizes, evaluates, or changes
+- Key behaviors, decision frameworks, and tradeoffs
+- Degrees of freedom: where the skill is prescriptive vs flexible
+- User-relevant limitations, pitfalls, or boundaries
+
+### Exclude by default
+- Internal agent instructions about loading files, reading references, or traversal order
+- Template-authoring notes meant for skill maintainers unless they directly affect the user outcome
+- Scaffolding details such as "read X before Y" or "delete comments after reading"
+- Internal resource filenames such as `references/*.md`, `assets/*`, helper docs, or other skill internals unless they are directly user-consumable artifacts
+- Low-value operational notes that do not help a human decide whether to use the skill
+
+### Consumer relevance test
+
+Before including any detail, ask:
+1. Does this help a user decide whether to use the skill?
+2. Does this help them understand what kind of behavior or output to expect?
+3. Would this still make sense if the reader never saw the underlying SKILL.md?
+
+If the answer is no, omit it.
+
+### Translate instead of copying
+If the source contains agent-operational guidance with user-facing significance, convert it into human language.
+
+Examples:
+- Internal: "Load references only when needed"
+  - Human-facing: "The skill keeps detailed guidance modular so it can go deep where needed without bloating the core instructions."
+- Internal: "Calibrate freedom to task fragility"
+  - Human-facing: "The skill becomes more prescriptive for fragile tasks and more flexible for creative ones."
+- Internal: "Read the template comments before deleting them"
+  - Human-facing: omit unless the docs are explicitly for maintainers editing the template itself.
 
 ## Document Structure
 
@@ -54,13 +111,30 @@ updated: YYYY-MM-DD
 ---
 ```
 
-**Body sections** (start with H2, NOT H1):
-- `## Usage` - Minimal working example
+**Default body sections** (start with H2, NOT H1):
+- `## What It Helps You Do` - User-facing outcomes and scope
 - `## When to Use` - Trigger patterns and contexts
-- `## Key Patterns` - Main workflows from SKILL.md
-- `## Examples` - Named by use case (extract from SKILL.md examples or references/)
-- `## Anti-Patterns` - "NEVER Do X" sections if present
+- `## How It Works` - Main workflows, behaviors, or evaluation dimensions from SKILL.md
+
+**Optional sections** (include only when clearly user-relevant):
+- `### Intelligent Discovery Process` - Only when the skill has a concrete, user-visible multi-stage discovery process that materially changes behavior, output, or required user interaction
+- `## Good to Know` - Scope boundaries, important limitations, sibling-skill distinctions, and user-facing gotchas
+- `## Prerequisites` - Required tools, configuration, existing files, or environmental assumptions the user must satisfy before the skill is useful
+- `## What You Get` - The output artifact, report shape, generated files, or result structure the user can expect. Use only when the skill reliably produces a concrete, reviewable deliverable that is distinct from the user outcome itself.
+- `## Examples` - Named by use case when concrete examples materially help adoption
+- `## Limits` or `## What It Does Not Do` - Sharp boundaries that are central to understanding the skill's scope
+- `## Degrees of Freedom` - How prescriptive vs flexible the skill is, when relevant
 - `## Related` - Links to related skills
+
+Do not add sections just because the source contains them. Start with the three core sections and keep the page tight unless extra structure clearly improves consumer understanding.
+
+Prefer **4–6 total sections** on most pages. If `## Good to Know` exists, do not also create extra boundary/gotcha sections such as `## Common Issues`, `## Critical Setup Rules`, `## Review Format`, or `## Key Behaviors` unless they are truly distinct and essential.
+
+When in doubt, use a short `## Good to Know` section instead of inventing a specialized heading.
+
+Avoid `## Common Pitfalls` as a default catch-all. If the content is not actually about pitfalls or misuse, use a more accurate section name such as `## Good to Know`, `## Limits`, or `## Related`.
+
+Avoid `## Key Patterns` and `## Anti-Patterns` as default generated sections. These often balloon into a restatement of the SKILL.md internals. Only surface that material indirectly through concise behavior summaries in `## How It Works`, or through a short `## Good to Know` / `## Limits` section when it materially changes user expectations.
 
 **IMPORTANT**: 
 - Body starts with `##`, NOT `#` (frontmatter title becomes page H1)
@@ -125,29 +199,33 @@ Store this value for frontmatter.
 
 Extract information from source—don't infer or hallucinate. Focus on:
 
-**Usage section**: Explain how to activate the skill and what happens after
+**Opening section**: Start with user-facing outcomes. Invocation details are optional and should appear only when they materially help the reader use the skill.
 ```markdown
-## Usage
+## What It Helps You Do
 
+Use this skill to [core outcomes in human terms].
+
+It is especially useful when you need to:
+- [Outcome 1]
+- [Outcome 2]
+- [Outcome 3]
+
+[Optional invocation details only if helpful]
 Activate this skill by:
-- Using the `/<name-from-frontmatter>` command (slash command matches the skill's `name` field)
+- Using the `/<name-from-frontmatter>` command
 - Saying "[key phrases from description]"
 - Mentioning "[keywords]" while [context]
-
-[If skill accepts path arguments, show examples:]
-```bash
-# Single file
-/<skill-name> path/to/file.ext
-
-# Directory
-/<skill-name> path/to/directory/
-
-# Current context
-/<skill-name>
 ```
 
-Once activated, the skill [what it does - the workflow/guidance it provides].
-```
+For tool-like skills, concrete invocation examples are useful. For process, audit, or judgment skills, spend more space on outcomes and behavior than on command syntax.
+
+Aim for compression:
+- Prefer 3–6 bullets per section
+- Avoid repeating the frontmatter description in different words
+- Leave maintainer-only details out
+- If a detail is interesting but not decision-relevant, omit it
+- Each section must add new information; do not restate the same point across multiple sections
+- If a point already appears in `## What It Helps You Do`, do not repeat it in `## Good to Know` unless you are reframing it as a boundary, limit, or gotcha
 
 **When to Use section**: Extract from description field
 ```markdown
@@ -159,16 +237,34 @@ Use this skill when:
 - [Other trigger patterns]
 ```
 
-**What It Checks** (or similar): Terse, comprehensive overview of capabilities
+**Behavior / evaluation section**: Summarize what the skill optimizes, checks, or calibrates.
 ```markdown
-## What It Checks
+## How It Works
 
-**Category 1** - Brief list of items (comma-separated, no details)
+- [Behavior pattern 1 in user-facing language]
+- [Behavior pattern 2 in user-facing language]
+- [Behavior pattern 3 in user-facing language]
 
-**Category 2** - Brief list of items
+### Intelligent Discovery Process
 
-[Keep this section scannable - user can read full details in examples]
+- [Only include when the staged discovery process is concrete, visible to the user, and important to expectations or output]
 ```
+
+Use labels such as `## How It Works` or `## What It Checks` based on the skill type, but default to `## How It Works`.
+
+This section should answer questions like:
+- Does the skill audit, recommend, transform, or scaffold?
+- Does it adapt by scenario?
+- Does it get more prescriptive for fragile tasks and more flexible for creative ones?
+- Does it use staged discovery that affects depth or output?
+
+Default this section to **3–5 bullets** or **3–4 short subsections**. Do not narrate the full internal execution plan unless those mechanics materially change the user's expectations.
+
+Only add `### Intelligent Discovery Process` when the section contains concrete, user-visible behavior such as phased scanning, targeted interviews, preview/approval checkpoints, or other workflow stages that change the user's experience. Do not include it for generic statements like "the skill adapts its guidance" or "the skill goes deeper where needed."
+
+If the explanation reads like instructions for the agent rather than expectations for the human reader, compress it.
+
+This section should NOT list internal file reads, traversal order, hidden resource names, or long lists of anti-patterns / rules copied from SKILL.md.
 
 **Examples**: Extract from SKILL.md body or references/, show explicit slash command usage
 ```markdown
@@ -179,30 +275,90 @@ Use this skill when:
 ```bash
 # Command (always show explicit slash command when possible)
 /<skill-name> path/to/target
-
-# Output: [what the user sees]
-[Code or steps]
-```
 ```
 
-**Common Pitfalls** (optional): User-facing gotchas about WHEN/HOW to use the skill, NOT how to code
+[One short sentence about what the user gets back]
+```
+
+Examples should demonstrate use cases, not simulate the entire internal workflow. Prefer one command + one outcome summary over transcript-style step-by-step narration. If two examples teach the same thing, keep the clearer one.
+
+**Good to Know** (optional): User-facing scope boundaries, limitations, or sibling-skill distinctions
 ```markdown
-## Common Pitfalls
+## Good to Know
 
 > **Good to know:** [When this skill applies vs when to use a different skill]
 
-> **Good to know:** [Gotcha about invocation or scope]
+> **Good to know:** [Non-obvious limitation, scope boundary, or expected output]
 
-> **Good to know:** [Delegation to related skills]
-
-For example:
-- "This skill focuses on X, not Y. For Y tasks, use skill-name instead."
-- "When you scan a directory, you get format A. For quick questions, you get format B."
-- NOT: "Never use any types" (that's teaching the domain, not using the skill)
+> **Good to know:** [Gotcha that prevents misuse or wrong expectations]
 ```
 
-Keep prose concise. Show code/steps first, explain after.
+**Prerequisites** (optional): Use when the skill depends on real user-facing setup or environment assumptions
+```markdown
+## Prerequisites
 
+- [Required CLI, package, or tool]
+- [Required configuration or enabled workflow]
+- [Expected project file or environment capability]
+```
+
+**What You Get** (optional): Use only when the skill consistently produces a concrete, recognizable output shape that is distinct from `## What It Helps You Do`
+```markdown
+## What You Get
+
+- [Generated file, report, or artifact 1]
+- [Generated file, report, or artifact 2]
+- [What the user can review, edit, or approve]
+```
+
+Do NOT use this section for advisory or best-practice skills when the content would just restate the guidance already described in `## What It Helps You Do`. If the "output" is merely recommendations, guidance, or help, fold that into `## What It Helps You Do` and omit `## What You Get`.
+
+Do not turn this section into an exhaustive inventory of every subsection or internal artifact unless that detail materially helps the user decide whether to use the skill.
+
+**Limits / What It Does Not Do** (optional): Use when a sharp boundary is central to correct expectations
+```markdown
+## Limits
+
+- [Important non-goal or out-of-scope area]
+- [Adjacent task this skill intentionally does not handle]
+```
+
+Use `## Common Pitfalls` only for actual pitfalls or misuse patterns. Do not put generic scope notes under a pitfalls heading.
+
+For example:
+- `## Good to Know`: "This skill focuses on X, not Y. For Y tasks, use skill-name instead."
+- `## Good to Know`: "When you scan a directory, you get format A. For quick questions, you get format B."
+- `## Limits`: "This skill plans the change but does not implement it."
+- `## What You Get`: "A generated ARCHITECTURE.md draft plus a preview for review before write."
+- NOT `## What You Get`: "Guidance on choosing query keys and mutation patterns" when those points are already covered in `## What It Helps You Do`
+- `## Common Pitfalls`: "Using this skill for Y usually leads to shallow results because it is optimized for X."
+- NOT: "Read the template comments before deleting them"
+- NOT: "Load reference file X before Y" unless the page is specifically for maintainers of the skill itself
+
+### Bad vs good transformations
+
+- Bad: `Load: query-client-setup.md and server-integration.md`
+  - Good: `The skill covers both client-side QueryClient setup and server-rendered integration patterns.`
+- Bad: `Skip: mutation and caching references`
+  - Good: omit unless the boundary matters to the user
+- Bad: `Read references only when needed`
+  - Good: `The skill keeps detailed guidance modular so it can go deep without bloating the core instructions.`
+- Bad: `Spawns one subagent per touched capability`
+  - Good: `Updates each affected capability independently so larger archive operations stay manageable.`
+- Bad: `Loads project context into subagent prompts`
+  - Good: `Uses project conventions so implementation stays aligned with the repo.`
+
+Keep prose concise. Prefer user outcomes and behavior first. Show commands or internal steps only when they help the human apply the skill.
+
+## Final Style Check
+
+Before writing or saving, verify:
+- Is the page primarily about user outcomes?
+- Are any sections duplicating points already made elsewhere?
+- Does `## How It Works` read like a workflow summary rather than an implementation manual?
+- Are examples concise and non-redundant?
+- Could a specialized heading be folded into `## Good to Know`?
+- Is any phrase only useful to a skill maintainer rather than a user?
 ### 4. Add Frontmatter
 
 ```yaml
@@ -366,3 +522,5 @@ Ask the user:
 - Preserve manual edits when updating (three-way merge)
 - Be specific in examples—show realistic use cases
 - Ask when uncertain about what to include
+- Default to human-facing relevance over internal execution details
+- Do not surface agent-operational scaffolding unless it materially changes user expectations or outcomes

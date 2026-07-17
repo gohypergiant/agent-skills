@@ -1,274 +1,113 @@
 ---
 title: Overview
-description: Automate the QRSPI + OpenSpec planning workflow (Questions → Research → Design → Structure) for spec-driven development with mandatory checkpoints before implementation.
+description: Automate the QRSPI + OpenSpec planning workflow (Questions → Research → Design → Structure) for spec-driven development, handling ONLY the planning phase before implementation.
 source: skills/accelint-qrspi-propose/SKILL.md
 source_sha: 576220e64e275241b4b0869fc03d4a39e595a4e6
-doc_sha: 53e2a4864c526b6c2c5808847338722c1e04a6cc
+doc_sha: 9e622f20fc9109bfbec51a718d263c09d38a0a5b
 deprecated: false
-updated: 2026-07-17
+updated: 2025-01-15
 ---
 
-## Usage
+## What It Helps You Do
+
+Use this skill to plan features and changes through the QRSPI methodology before writing any code. It automates the Question generation → Research → Design → Structure phases, producing a complete OpenSpec change ready for implementation.
+
+This skill is especially useful when you need to:
+- Break down a ticket or feature request into structured, implementable tasks
+- Ensure research is objective and design decisions are explicit before coding begins
+- Create vertical task slices that deliver end-to-end testable increments
+- Generate specs-of-record that document both current state and planned changes
 
 Activate this skill by:
-- Using the `/accelint-qrspi-propose` command with a ticket or feature description
-- Saying "plan this with QRSPI", "use QRSPI to plan", "start QRSPI workflow", or "create spec-driven change"
-- Asking to plan a feature/change before implementation
+- Using the `/accelint-qrspi-propose` command with your ticket or feature description
+- Saying "plan this with QRSPI", "use QRSPI to plan", "start QRSPI workflow"
+- Asking to "create spec-driven change" or "plan a feature before implementation"
 
-```bash
-# With a ticket description
-/accelint-qrspi-propose ATI-123: Add user authentication to the API...
-
-# Interactive (will prompt for ticket)
-/accelint-qrspi-propose
-```
-
-Once activated, the skill orchestrates the QRSPI methodology:
-1. **Questions** - Generates research questions from the ticket
-2. **Research** - Answers questions by examining codebase and existing specs
-3. **Design** - Creates proposal.md and design.md artifacts
-4. **Checkpoint 1** - MANDATORY review of design.md before continuing
-5. **Structure** - Generates delta specs and tasks.md with vertical slicing
-6. **Checkpoint 2** - MANDATORY review of tasks.md before completion
-
-Output is a complete OpenSpec change ready for `/accelint-qrspi-apply`.
+> **Good to know:** This skill handles ONLY the planning phase. After completion, you'll run `/accelint-qrspi-apply` to begin implementation. This separation allows you to plan multiple changes before implementing any of them.
 
 ## When to Use
 
 Use this skill when:
-- Planning a ticket or feature request before implementation
-- Starting spec-driven development with QRSPI methodology
-- Creating an OpenSpec change with structured research and design
-- Working on complex features that benefit from upfront planning
-
-This skill handles ONLY the planning phase—it does NOT implement code. After completion, continue with `/accelint-qrspi-apply` for implementation.
+- You want to plan a ticket, feature, or change before writing code
+- You need objective research about the current codebase state
+- You want explicit design decisions documented before implementation
+- You're working in a spec-driven development workflow with OpenSpec
+- You need task breakdown with vertical slicing for parallel implementation
 
 ## Prerequisites
 
-Requires OpenSpec's expanded workflows (`explore`, `new`, `continue`).
+- OpenSpec installed and initialized with an `openspec/` directory
+- Expanded OpenSpec workflows enabled (`explore`, `new`, `continue`)
+- Project configuration in `openspec/config.yaml`
+- Agent behavior context in `AGENTS.md` or `CLAUDE.md`
 
-Verify configuration:
+If the expanded workflows are missing, enable the expanded OpenSpec profile before using this skill.
 
-```bash
-openspec config list
-```
+## How It Works
 
-If any workflows are missing, enable the expanded profile:
+The skill moves through the QRSPI phases with two required review checkpoints:
 
-```bash
-openspec config profile
-# Select "expanded" from the list
-openspec update
-```
+1. **Questions** — turns the request into research questions without jumping to solutions
+2. **Research** — gathers objective facts about the current codebase
+3. **Design** — creates `proposal.md` and `design.md` from the research
+4. **Design checkpoint** — you review the proposed direction before specs are written
+5. **Specs &amp; Tasks** — generates capability deltas and a task plan
+6. **Tasks checkpoint** — you approve the task structure and parallelization plan before implementation
 
-The skill validates prerequisites automatically and guides you if setup is needed.
+The task plan is intentionally vertically sliced, so each slice delivers an end-to-end increment rather than a layer-by-layer handoff.
 
-## Key Patterns
+## What You Get
 
-### Context Isolation
+A complete OpenSpec change under `openspec/changes/<change-name>/`, including:
+- `proposal.md`
+- `design.md`
+- capability delta specs
+- `tasks.md` with vertical slices and a parallelization plan
 
-QRSPI prevents "solution-first thinking" through context isolation:
-
-- **Questions stage**: Ticket IN context → generates research questions
-- **Research stage**: Ticket OUT of context, only questions IN context → objective facts
-- **Design stage**: Questions + research IN context, ticket OUT → prevents completion bleed
-
-This ensures research is objective and design is grounded in facts, not assumptions.
-
-### Mandatory Checkpoints
-
-Two critical review gates before code is written:
-
-**Checkpoint 1 (After design.md)**:
-- Review pattern references (did it find the current way or the legacy way?)
-- Check assumptions (are there unresolved decisions presented as facts?)
-- Verify affected systems (are all service boundaries accounted for?)
-- Catch scope creep (does the design exceed the ticket?)
-
-**Checkpoint 2 (After tasks.md)**:
-- Validate vertical slicing (end-to-end features, not architectural layers)
-- Review parallelization strategy (can slices run independently?)
-- Verify testability (does each slice have explicit verification?)
-
-Corrections at these checkpoints cost minutes; the same corrections after implementation cost review cycles.
-
-### Vertical Slicing
-
-The skill enforces vertical slicing for parallelization and incremental delivery. Each slice must deliver an end-to-end testable feature path.
-
-✓ **Correct - Vertical (end-to-end feature slices)**:
-```
-Slice 1: Mock API + working frontend (user can see and click)
-Slice 2: Wire real service layer (now pulls actual data)
-Slice 3: Add database integration (data persists)
-```
-
-✗ **Wrong - Horizontal (architectural layers)**:
-```
-Slice 1: All database migrations
-Slice 2: All service layer changes
-Slice 3: All API endpoints
-Slice 4: All frontend components
-```
-
-If the OpenSpec workflow generates horizontal slices, the skill automatically converts them to vertical slices before presenting for review.
-
-### Frontmatter Capture
-
-After design approval, the skill captures `specs_touched` and `decisions` as structured frontmatter in design.md. This metadata enables the `accelint-qrspi-archive` skill to cross-link capabilities and maintain running indices.
+The result is ready for implementation via `/accelint-qrspi-apply <change-name>`.
 
 ## Examples
 
-### Example: Planning a New Feature
+### Example: Planning a CLI feature
 
 ```bash
-# User provides ticket
-/accelint-qrspi-propose ATI-42: Add dark mode support to the dashboard
+/accelint-qrspi-propose
 
-# Skill executes:
-# 1. Validates OpenSpec config
-# 2. Generates research questions (sub-agent sees ONLY ticket)
-# 3. Answers questions (fresh sub-agent sees ONLY questions)
-# 4. Creates OpenSpec change with /opsx:new
-# 5. Generates proposal.md and design.md via /opsx:continue
-# 6. STOPS for design review
+ATI-12: smart-ls CLI tool
 
-✓ Design artifact generated. Please review for:
-  - Wrong pattern references
-  - Unresolved assumptions
-  - Missing affected systems
-  - Scope creep
-
-Options:
-(a) Approve — continue to task breakdown
-(b) Request edits — tell me what to change
-(c) Manual edit — edit the file yourself
-
-# User approves
-(a)
-
-# Skill continues:
-# 7. Captures specs_touched/decisions frontmatter
-# 8. Generates specs/* and tasks.md via /opsx:continue
-# 9. Validates vertical slicing (converts if needed)
-# 10. Adds Parallelization Strategy section
-# 11. STOPS for tasks review
-
-✓ Task structure follows vertical slicing
-
-Options:
-(a) Approve — planning complete
-(b) Request changes
-(c) Manual edit
-
-# User approves
-(a)
-
-✅ QRSPI planning phase complete.
-
-Change name: add-dark-mode-support
-
-Generated artifacts:
-- openspec/changes/add-dark-mode-support/proposal.md
-- openspec/changes/add-dark-mode-support/design.md
-- openspec/changes/add-dark-mode-support/specs/*
-- openspec/changes/add-dark-mode-support/tasks.md
-
-Next steps:
-1. Review the artifacts one more time if needed
-2. Run `/clear` to start fresh context for implementation
-3. Run `/accelint-qrspi-apply add-dark-mode-support`
+Create a CLI tool that returns structured directory listings as JSON.
+Should support filtering by file type and sorting by size or date.
 ```
 
-### Example: Converting Horizontal Slices
+The skill turns the request into research questions, produces a design for review, then generates specs and vertically sliced tasks.
 
-If the OpenSpec workflow generates horizontal slicing (organized by architectural layer), the skill automatically restructures to vertical slicing:
-
-**Before (horizontal)**:
-```
-Slice 1: Database Schema Changes
-- [ ] Add theme column to users table
-- [ ] Create theme_preferences table
-
-Slice 2: API Layer Changes
-- [ ] Add GET /api/user/theme endpoint
-- [ ] Add POST /api/user/theme endpoint
-
-Slice 3: Frontend Changes
-- [ ] Create ThemeSwitcher component
-- [ ] Wire theme context provider
-```
-
-**After (vertical)**:
-```
-Slice 1: Theme Toggle with Mock Data
-Deliverable: Working theme switcher UI with localStorage persistence
-- [ ] Create ThemeSwitcher component
-- [ ] Add theme context provider
-- [ ] Implement localStorage persistence
-Test: User can toggle dark/light mode, preference survives page refresh
-
-Slice 2: Theme API Integration
-Deliverable: Theme preference synced to backend
-- [ ] Add GET /api/user/theme endpoint
-- [ ] Add POST /api/user/theme endpoint
-- [ ] Wire ThemeSwitcher to API
-Test: Theme preference syncs across devices after login
-
-Slice 3: Database Persistence
-Deliverable: Theme preference persists server-side
-- [ ] Add theme column to users table
-- [ ] Update user service to read/write theme
-Test: Theme preference survives account migration
-```
-
-### Example: Design Review with Edits
+### Example: Turning a vague request into a planned change
 
 ```bash
-/accelint-qrspi-propose ATI-88: Add rate limiting to API endpoints
+/accelint-qrspi-propose
 
-# ... after design.md generated ...
-
-✓ Design artifact generated. Please review.
-
-# User requests changes
-(b) The design references the old middleware pattern. We switched to
-    route-level configuration in v2.0. Also, it doesn't mention the
-    public/private endpoint distinction.
-
-# Skill edits design.md in place
-✓ Updated design.md:
-  - Changed middleware reference to route-level config
-  - Added section distinguishing public/private endpoints
-
-Please review updated design:
-[shows relevant diff]
-
-Options:
-(a) Approve
-(b) Request more changes
-(c) Manual edit
-
-# User approves
-(a)
-
-# Skill captures frontmatter and continues to specs/tasks...
+Users complain that search is slow. We should make it faster.
 ```
 
-## Common Pitfalls
+The skill researches the current search implementation, proposes a direction for review, and turns the approved design into a task plan.
 
-> **Good to know:** This skill stops after planning—it does NOT implement code. After completion, run `/clear` to start fresh context, then use `/accelint-qrspi-apply` for implementation. Keeping planning and implementation in separate contexts prevents token bloat and maintains focus.
+## Good to Know
 
-> **Good to know:** The mandatory checkpoints (after design.md and after tasks.md) are not optional. If you skip review or proceed without explicit approval, you bypass QRSPI's core value—cheap corrections before code is written.
+> **Good to know:** The two review checkpoints are central to the workflow. They let you correct direction before implementation starts.
 
-> **Good to know:** Context isolation is critical. The ticket should NOT be visible during research or design phases. If you see the ticket in those contexts, the agent may propose solutions instead of gathering objective facts.
+> **Good to know:** This skill works best when `openspec/config.yaml` already defines clear design, spec, and task rules.
 
-> **Good to know:** Vertical slicing is required for the `/accelint-qrspi-apply` skill to parallelize implementation. Each slice must deliver an end-to-end testable feature, not an architectural layer. The skill enforces this and converts horizontal slices automatically.
+> **Good to know:** Task subtasks use markdown checklist format (`- [ ] instruction`) so the apply workflow can track progress later.
 
-> **Good to know:** The skill captures `specs_touched` and `decisions` frontmatter ONLY after design.md is approved. This metadata enables `accelint-qrspi-archive` to cross-link capabilities. If design.md lacks clear capability declarations or decision rationale, the skill will ask you to add it before continuing.
+## Limits
+
+This skill does not implement code, run tests, create pull requests, or archive completed changes.
+
+For implementation, use `/accelint-qrspi-apply <change-name>` after planning is complete. For archiving, use `/accelint-qrspi-archive <change-name>` after implementation and review.
 
 ## Related
 
-- [accelint-qrspi-apply](/docs/accelint-qrspi-apply) - Implements QRSPI-planned changes with parallelization
-- [accelint-qrspi-archive](/docs/accelint-qrspi-archive) - Archives completed changes with cross-capability linking
-- [accelint-onboard-openspec](/docs/accelint-onboard-openspec) - Configures OpenSpec for QRSPI workflow
+- **accelint-qrspi-apply** - Implements QRSPI-planned changes with parallelization
+- **accelint-qrspi-archive** - Archives completed changes and updates capability cross-references
+- **accelint-onboard-openspec** - Configures OpenSpec with QRSPI-compatible rules
+- **accelint-onboard-agents** - Sets up agent behavior context for better planning

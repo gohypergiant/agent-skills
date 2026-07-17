@@ -1,377 +1,146 @@
 ---
 title: Overview
-description: Expert patterns for TanStack Query in Next.js App Router covering QueryClient configuration, mutations, optimistic updates, cache invalidation, observer debugging, and multi-layer caching with Server Components.
+description: Expert guidance for TanStack Query in Next.js App Router covering QueryClient setup, mutations, cache invalidation, optimistic updates, HydrationBoundary integration, and multi-layer caching strategies.
 source: skills/accelint-tanstack-query-best-practices/SKILL.md
 source_sha: 3faeb812cfc2c9e136d831bb530ef134f86f544e
-doc_sha: 812c00fc8b47abb9ccaae89df2d88cc0b6dc10bd
+doc_sha: 88ad5126d27f6df2857ae0d9ce963d15f8bebb96
 deprecated: false
-updated: 2025-01-19
+updated: 2025-01-29
 ---
 
-## Usage
+## What It Helps You Do
 
-Activate this skill by:
-- Using the `/accelint-tanstack-query-best-practices` command
-- Saying "configure QueryClient", "implement mutations", "debug TanStack Query performance", "add optimistic updates"
-- Mentioning "TanStack Query", "useSuspenseQuery", "useQuery", "useMutation", "invalidateQueries", "staleTime", "gcTime", "refetch", "hydration"
-- Working with `@tanstack/react-query` in Next.js App Router projects
+Use this skill to implement TanStack Query correctly in React applications with Next.js App Router and Server Components. It helps you:
 
-Once activated, the skill provides progressive disclosure guidance based on your scenario:
+- Configure QueryClient safely for server-rendered applications without data leakage
+- Structure query keys for consistent cache invalidation
+- Choose between optimistic and pessimistic mutation patterns
+- Debug performance issues with high observer counts
+- Integrate server-side caching with client-side state management
+- Handle hydration correctly with HydrationBoundary
 
-1. **Setting Up** - Read `query-client-setup.md` and `server-integration.md` for server/client patterns
-2. **Building Queries** - Read `query-keys.md` for factory setup
-3. **Implementing Mutations** - Read `mutations-and-updates.md` for CRUD patterns
-4. **Debugging Performance** - Use observer count thresholds, then read targeted references
-5. **Multi-Layer Caching** - Read `caching-strategy.md` for Next.js integration
-
-The skill uses decision matrices and configuration tables to help you choose the right pattern for your use case.
+The skill is especially useful when you're setting up a new QueryClient, debugging why data isn't updating after saves, dealing with N+1 query problems in lists, or implementing multi-layer caching with Next.js `use cache`.
 
 ## When to Use
 
 Use this skill when:
 
-- Configuring QueryClient for production Next.js applications
-- Implementing mutations with optimistic or pessimistic updates
-- Debugging performance issues (infinite requests, N+1 queries, slow rendering)
-- Adding cache invalidation after mutations
-- Integrating TanStack Query with Next.js Server Components
-- Implementing multi-layer caching (Next.js `use cache` + TanStack Query + HTTP cache)
-- Fixing hydration mismatches between server and client
-- Working with HydrationBoundary for SSR
-- Optimizing observer counts or structural sharing
+- Configuring QueryClient for Next.js App Router
+- Implementing mutations with useMutation
+- Debugging performance issues in components using TanStack Query
+- Adding optimistic updates
+- Working with useSuspenseQuery, useQuery, invalidateQueries
+- Integrating HydrationBoundary for server rendering
+- Setting up multi-layer caching strategies
+- Seeing infinite requests, stale data flashes, or hydration mismatches
 
-## Key Anti-Patterns
+## How It Works
 
-The skill emphasizes critical mistakes that lead to security issues, performance problems, or data corruption:
+The skill provides expert patterns organized by scenario with progressive disclosure—you load only the guidance relevant to your current task.
 
-**Security &amp; Data Leakage**
-- NEVER use a singleton QueryClient on the server - causes data leakage between users and race conditions
-- Each server request must get its own isolated QueryClient instance
+### Core Patterns
 
-**State Management**
-- NEVER synchronize query data to useState - background refetches make local copies stale immediately
-- Use query data directly or derive with useMemo
+**Server safety**: Ensures QueryClient setup prevents data leakage between users by using factory functions instead of singletons on the server.
 
-**Performance**
-- NEVER put queries inside list item components - creates N observers and N network requests for N items
-- NEVER use unstable query keys (Date.now(), unsorted arrays, non-deterministic objects)
-- NEVER skip enabled guards for dependent queries - fires requests with undefined parameters
+**Query key architecture**: Hierarchical key factories enable precise cache invalidation at any level—invalidate everything, all lists, or a single item.
 
-**Mutations**
-- NEVER use optimistic updates for high-stakes operations (life-critical, audit trails, external triggers)
-- NEVER skip onSettled in optimistic updates - it's your cleanup guarantee even if onError throws
-- NEVER assume cache invalidation is synchronous - use cancelQueries to prevent race conditions
+**Mutation patterns**: Decision matrix for choosing optimistic vs pessimistic updates based on risk, reversibility, and user experience requirements.
 
-**Cache Management**
-- NEVER use setQueryData without structural comparison - bypasses referential equality optimizations
-- NEVER forget to handle hydration mismatches - server and client may produce different data
+**Observer economics**: Identifies when too many components subscribing to the same query creates performance bottlenecks and provides refactoring patterns.
 
-## Configuration Reference
+**Cache configuration**: Decision tables for staleTime, gcTime, and refetchInterval tuned to data freshness requirements—from static lookup tables to real-time dashboards.
 
-### Query Configuration Matrix
+### Scenario-Based Loading
 
-Choose cache settings based on data freshness requirements:
+The skill uses targeted reference loading:
 
-| Data Type | staleTime | gcTime | refetchInterval | structuralSharing |
-|-----------|-----------|--------|-----------------|-------------------|
-| Reference/Lookup | 1hr | Infinity | - | true |
-| User Profile | 5min | 10min | - | true |
-| Real-time Tracking | 5s | 30s | 5s | false |
-| Live Dashboard | 2s | 1min | 2s | Depends on size |
-| Detail View | 30s | 2min | - | true |
-| Search Results | 1min | 5min | - | true |
+- **Setting up QueryClient**: Load complete server/client setup patterns
+- **Building query hooks**: Load query key factories and configuration tables
+- **Implementing mutations**: Load complete mutation patterns with rollback handling
+- **Debugging performance**: Load observer analysis and structural sharing patterns
+- **Multi-layer caching**: Load unified Next.js + TanStack Query + HTTP cache strategy
 
-### Mutation Pattern Selection
+> **Good to know:** The skill focuses on @tanstack/react-query in Next.js App Router with Server Components. For other frameworks or older React patterns, the query key and mutation guidance still applies but server integration differs.
 
-Choose update strategy based on operation risk:
+## Key Decisions
 
-| Scenario | Pattern | When to Use |
-|----------|---------|-------------|
-| Form submission | Pessimistic | Multi-step forms, server validation required |
-| Toggle/checkbox | Optimistic | Binary state changes, low latency required |
-| Drag and drop | Optimistic | Immediate visual feedback essential |
-| Batch operations | Pessimistic | Multiple items, partial failures possible |
-| Life-critical ops | Pessimistic | Medical, financial, safety-critical systems |
-| Audit trail required | Pessimistic | Compliance systems, logged events |
+### Cache Configuration
 
-### Observer Count Thresholds
+Match configuration to your data's freshness requirements:
 
-Monitor observer counts in TanStack Query DevTools:
+| Data Type | staleTime | gcTime | When |
+|-----------|-----------|--------|------|
+| Reference data (countries, categories) | 1 hour | Infinity | Changes rarely, high cache retention |
+| User profiles | 5 minutes | 10 minutes | Moderate freshness needs |
+| Real-time tracking | 5 seconds | 30 seconds | Frequent updates required |
+| Search results | 1 minute | 5 minutes | Cacheable but not time-critical |
 
-| Observer Count | Performance Impact | Action Required |
-|----------------|-------------------|------------------|
-| 1-5 | Negligible | None |
-| 6-20 | Minimal | Monitor, no immediate action |
-| 21-50 | Noticeable on updates | Consider hoisting queries to parent |
-| 51-100 | Significant overhead | Refactor: hoist queries or use select |
-| 100+ | Critical impact | Immediate refactor required |
+### Mutation Strategy
 
-## Examples
+Choose your approach based on reversibility and stakes:
 
-### Example: QueryClient Factory Pattern
+| Pattern | When to Use |
+|---------|-------------|
+| **Optimistic** | Toggle switches, drag-and-drop, low-stakes UI that needs instant feedback |
+| **Pessimistic** | Multi-step forms, batch operations, life-critical systems, audit trails |
 
-```typescript
-// configs/query-client/index.ts
-import { QueryClient, isServer } from '@tanstack/react-query';
+### Observer Thresholds
 
-function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 1000 * 20, // 20 seconds
-        gcTime: 1000 * 60 * 2, // 2 minutes
-        retry: 3,
-        refetchOnWindowFocus: false,
-      },
-    },
-  });
-}
+Monitor observer counts to catch performance issues:
 
-let browserQueryClient: QueryClient | undefined = undefined;
+| Observer Count | Action |
+|----------------|--------|
+| 1-20 | Normal, no action needed |
+| 21-50 | Consider hoisting queries to parent components |
+| 51-100 | Refactor required—hoist queries or use select |
+| 100+ | Critical—immediate refactor to single query with prop distribution |
 
-export function getQueryClient() {
-  if (isServer) {
-    // Server: ALWAYS create a new query client per request
-    // CRITICAL: Prevents data leakage between users
-    return makeQueryClient();
-  } else {
-    // Browser: Create a singleton to maintain cache across navigations
-    browserQueryClient ??= makeQueryClient();
-    return browserQueryClient;
-  }
-}
-```
+## Common Fixes
 
-### Example: Query Key Factory
+**Data doesn't update after save**: You likely copied query data into useState. Use the query data directly or derive it with useMemo—TanStack Query handles updates automatically.
+
+**Infinite requests**: Query keys are unstable. Avoid `Date.now()`, unsorted arrays, or non-deterministic object keys. Use factory functions with stable serialization.
+
+**N duplicate requests in lists**: Each list item is calling useQuery individually. Hoist the query to the parent component and pass data down as props.
+
+**Query fires with undefined params**: Add an `enabled` guard: `useQuery({{ queryKey, queryFn, enabled: Boolean(dependency) }})`
+
+**Optimistic update won't rollback**: Your `onError` callback isn't using the context from `onMutate`. Always pair `onMutate` with `onSettled` for cleanup.
+
+**Server hydration mismatch**: Timestamps or user-specific data differ between server and client. Use `suppressHydrationWarning` or ensure deterministic rendering with stable timestamps.
+
+## Multi-Layer Caching
+
+When using Next.js `use cache` alongside TanStack Query, use the same key factory for both layers:
 
 ```typescript
-// Hierarchical factory for consistent invalidation
-export const trackKeys = {
+// Shared key factory
+export const keys = {{
   all: () => ['tracks'] as const,
-  lists: () => [...trackKeys.all(), 'list'] as const,
-  list: (filters: string) => [...trackKeys.lists(), filters] as const,
-  details: () => [...trackKeys.all(), 'detail'] as const,
-  detail: (id: string) => [...trackKeys.details(), id] as const,
-};
+  detail: (id: string) => [...keys.all(), id] as const,
+}};
 
-// Usage in components
-function TrackList({ filters }: { filters: string }) {
-  const { data } = useQuery({
-    queryKey: trackKeys.list(filters),
-    queryFn: () => fetchTracks(filters),
-  });
-}
+// Server mutation invalidates server cache
+updateTag(keys.detail(id).tag);
 
-function TrackDetail({ id }: { id: string }) {
-  const { data } = useQuery({
-    queryKey: trackKeys.detail(id),
-    queryFn: () => fetchTrack(id),
-  });
-}
-
-// Invalidation after mutations
-function useUpdateTrack() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: updateTrack,
-    onSuccess: (_, variables) => {
-      // Invalidate specific track
-      queryClient.invalidateQueries({ queryKey: trackKeys.detail(variables.id) });
-      // Invalidate all lists
-      queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
-    },
-  });
-}
+// Client mutation invalidates client cache
+queryClient.invalidateQueries({{ queryKey: keys.detail(id) }});
 ```
 
-### Example: Optimistic Update with Rollback
+This keeps server cache (cross-request) and client cache (per-tab) synchronized with the same invalidation hierarchy.
 
-```typescript
-function useToggleFavorite() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (trackId: string) => api.toggleFavorite(trackId),
-    
-    onMutate: async (trackId) => {
-      // Cancel background refetches
-      await queryClient.cancelQueries({ queryKey: trackKeys.detail(trackId) });
-      
-      // Snapshot current data for rollback
-      const previous = queryClient.getQueryData(trackKeys.detail(trackId));
-      
-      // Optimistically update cache
-      queryClient.setQueryData(trackKeys.detail(trackId), (old: Track) => ({
-        ...old,
-        isFavorite: !old.isFavorite,
-      }));
-      
-      // Return context for rollback
-      return { previous, trackId };
-    },
-    
-    onError: (err, trackId, context) => {
-      // Rollback to snapshot on error
-      if (context?.previous) {
-        queryClient.setQueryData(trackKeys.detail(trackId), context.previous);
-      }
-    },
-    
-    onSettled: (_, __, trackId) => {
-      // Always refetch to ensure cache matches server
-      queryClient.invalidateQueries({ queryKey: trackKeys.detail(trackId) });
-    },
-  });
-}
-```
+## Critical Patterns
 
-### Example: Preventing N+1 Query Problem
+**Never use a singleton QueryClient on the server**: Each request needs its own isolated QueryClient instance to prevent data from one user leaking to another.
 
-```typescript
-// ❌ Bad: Query in list item creates N requests
-function TrackListBad() {
-  const { data: trackIds } = useQuery({ /* ... */ });
-  
-  return trackIds.map(id => <TrackItem key={id} id={id} />);
-}
+**Never synchronize query data to useState**: Background refetches and cache updates won't reflect in your local copy, causing "my save didn't work" bugs.
 
-function TrackItem({ id }: { id: string }) {
-  // Creates N observers and N requests!
-  const { data } = useQuery({
-    queryKey: trackKeys.detail(id),
-    queryFn: () => fetchTrack(id),
-  });
-  
-  return <div>{data.name}</div>;
-}
+**Never put queries inside list item components**: Creates N network requests and N observers, causing O(n) performance overhead on cache updates.
 
-// ✅ Good: Single parent query, distribute via props
-function TrackListGood() {
-  const { data: tracks } = useQuery({
-    queryKey: trackKeys.lists(),
-    queryFn: fetchAllTracks,
-  });
-  
-  return tracks.map(track => <TrackItem key={track.id} track={track} />);
-}
+**Always use cancelQueries before optimistic updates**: Background refetches can overwrite your optimistic changes before the mutation completes.
 
-function TrackItem({ track }: { track: Track }) {
-  // No query, just receives data as props
-  return <div>{track.name}</div>;
-}
-```
+> **Good to know:** For static reference data that never changes, consider whether TanStack Query's refetching machinery adds value over simpler alternatives like module-level constants or Context.
 
-### Example: Server Component Integration
+## Related
 
-```typescript
-// app/tracks/page.tsx (Server Component)
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getQueryClient } from '@/configs/query-client';
-import { TrackList } from './track-list';
-
-export default async function TracksPage() {
-  const queryClient = getQueryClient();
-  
-  // Prefetch on server
-  await queryClient.prefetchQuery({
-    queryKey: trackKeys.lists(),
-    queryFn: fetchTracks,
-  });
-  
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <TrackList />
-    </HydrationBoundary>
-  );
-}
-
-// app/tracks/track-list.tsx (Client Component)
-'use client';
-
-export function TrackList() {
-  // Uses prefetched data, no loading state needed
-  const { data } = useSuspenseQuery({
-    queryKey: trackKeys.lists(),
-    queryFn: fetchTracks,
-  });
-  
-  return <div>{/* render tracks */}</div>;
-}
-```
-
-### Example: Multi-Layer Cache Invalidation
-
-```typescript
-// Server-side cache with Next.js use cache
-import { cache } from 'react';
-import { unstable_cacheTag as cacheTag } from 'next/cache';
-
-export const getTracks = cache(async (filters: string) => {
-  'use cache';
-  cacheTag(trackKeys.list(filters).join(':'));
-  
-  return await db.query.tracks.findMany({ where: filters });
-});
-
-// Server action for mutations
-'use server';
-import { revalidateTag } from 'next/cache';
-import { updateTag } from 'next/cache';
-
-export async function updateTrack(id: string, data: TrackData) {
-  await db.update(tracks).set(data).where(eq(tracks.id, id));
-  
-  // Invalidate server cache
-  updateTag(trackKeys.detail(id).join(':'));
-  updateTag(trackKeys.lists().join(':'));
-}
-
-// Client-side mutation
-'use client';
-
-function useUpdateTrack() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (variables) => updateTrack(variables.id, variables.data),
-    onSuccess: (_, variables) => {
-      // Invalidate client cache
-      queryClient.invalidateQueries({ queryKey: trackKeys.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: trackKeys.lists() });
-    },
-  });
-}
-```
-
-## Common Pitfalls
-
-> **Good to know:** This skill manages server state (API data, database records). For UI state (modals, themes, form drafts), use Zustand or useState instead.
-
-> **Good to know:** Query keys must be JSON-serializable and deterministic. Avoid Date.now(), Math.random(), unsorted arrays, or objects without stable serialization.
-
-> **Good to know:** When using `select` to transform data, extract the selector to a stable module-level variable. Inline functions re-run on every render.
-
-> **Good to know:** `cancelQueries` in `onMutate` is critical for optimistic updates. Background refetches can overwrite your optimistic changes before the mutation completes.
-
-> **Good to know:** HydrationBoundary must wrap client components only. Server components bypass the boundary entirely.
-
-> **Good to know:** For performance debugging, check observer counts first (TanStack Query DevTools), then check data size and update frequency, then profile React components.
-
-## Related Skills
-
-- [accelint-react-best-practices](/docs/accelint-react-best-practices) - React performance patterns (useMemo, useCallback, re-render optimization)
-- [accelint-nextjs-best-practices](/docs/accelint-nextjs-best-practices) - Next.js Server Components, Server Actions, App Router patterns
-- [accelint-ts-performance](/docs/accelint-ts-performance) - JavaScript/TypeScript performance optimization
-
-## Progressive Disclosure
-
-The skill uses progressive disclosure to minimize context loading:
-
-- **Scenario 1: Setting Up** - Load `query-client-setup.md` + `server-integration.md`
-- **Scenario 2: Building Queries** - Load `query-keys.md`
-- **Scenario 3: Implementing Mutations** - Load `mutations-and-updates.md`
-- **Scenario 4: Debugging Performance** - Use observer thresholds, then load targeted files
-- **Scenario 5: Multi-Layer Caching** - Load `caching-strategy.md`
-
-Each reference file is loaded on-demand based on your specific task to keep context focused and relevant.
+For TypeScript best practices in your query hooks and mutation handlers, see **accelint-ts-best-practices**. For performance optimization of query functions themselves, see **accelint-ts-performance**.

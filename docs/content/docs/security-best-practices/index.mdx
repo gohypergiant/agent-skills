@@ -1,45 +1,25 @@
 ---
 title: Overview
-description: Comprehensive security audit and vulnerability detection for JavaScript/TypeScript applications following OWASP Top 10, covering hardcoded secrets, injection vulnerabilities, XSS/CSRF, broken access control, insecure authentication, rate limiting, dependency vulnerabilities, and sensitive data exposure.
+description: Comprehensive security audit and vulnerability detection for JavaScript/TypeScript applications following OWASP Top 10.
 source: skills/accelint-security-best-practices/SKILL.md
 source_sha: e543472a8e8be7b6da7b246c99bcfca079351337
-doc_sha: e53456f6a13f03f56b5c28f6b9f335fef748ee4b
+doc_sha: 0180d52ff020c51bbf80b14423cb93e4c2595f37
 deprecated: false
-updated: 2026-07-17
+updated: 2025-06-01
 ---
 
-## Usage
+## What It Helps You Do
 
-Activate this skill by:
-- Using the `/accelint-security-best-practices` command with an optional file or directory path
-- Saying "audit security", "check for vulnerabilities", "security review", "implement authentication", or "secure this code"
-- Working with authentication, API endpoints, file uploads, or handling user input
-- Dealing with secrets, credentials, or sensitive data
-- Implementing payment features or blockchain integrations
-- Conducting pre-deployment security checks
+Use this skill to audit JavaScript/TypeScript applications for security vulnerabilities and apply OWASP Top 10 security patterns.
 
-```bash
-# Audit a specific file
-/accelint-security-best-practices src/api/auth.ts
+It is especially useful when you need to:
+- Conduct security audits before deployment
+- Identify and fix authentication, authorization, or injection vulnerabilities
+- Review code for hardcoded secrets, insecure storage, or data exposure
+- Add security controls around APIs, file uploads, and user input
+- Improve alignment with OWASP guidance
 
-# Audit a directory
-/accelint-security-best-practices src/api/
-
-# Audit current context
-/accelint-security-best-practices
-```
-
-Once activated, the skill operates in two modes:
-
-**Audit Mode** (skill invoked directly or explicit security audit request):
-- Generates a structured security audit report using the template
-- Reports findings for user review before implementation
-- User decides which security fixes to apply
-
-**Implementation Mode** (skill triggers automatically during feature work):
-- Identifies and applies security fixes directly
-- No formal report needed
-- Focuses on fixing vulnerabilities inline
+Security guidance is framework-agnostic. The examples illustrate the pattern, but the implementation should fit your stack.
 
 ## When to Use
 
@@ -50,140 +30,81 @@ Use this skill when:
 - Implementing payment features or blockchain integrations
 - Conducting pre-deployment security checks
 
-The skill audits for: hardcoded secrets, injection vulnerabilities, XSS/CSRF, broken access control, insecure authentication, rate limiting, dependency vulnerabilities, and sensitive data exposure.
+## How It Works
 
-## What It Checks
+The skill works in two modes:
 
-**Secrets &amp; Authentication** - Hardcoded API keys/tokens/passwords, insecure token storage (localStorage), weak session management, missing MFA
+- **Audit mode** produces a structured security review so you can decide what to fix first.
+- **Implementation mode** applies security fixes inline when security issues surface during feature work.
 
-**Input Validation &amp; Injection** - SQL/NoSQL/command injection, missing input validation, XSS vulnerabilities, unsanitized file uploads, SSRF vulnerabilities
+In both modes, it follows the same basic sequence:
+1. Discover vulnerabilities in the codebase
+2. Categorize them by OWASP area and severity
+3. Apply the relevant remediation pattern
+4. Verify that fixes hold and do not introduce new issues
 
-**Access Control** - Missing authentication, no authorization checks, IDOR vulnerabilities, broken ownership verification, insecure direct object references
+## Good to Know
 
-**Security Configuration** - Default configurations in production, missing security headers (CSP, HSTS), permissive CORS, missing CSRF protection, no rate limiting
+> **Good to know:** This skill focuses on security vulnerabilities and OWASP-style remediation patterns. For general TypeScript quality, performance, or documentation work, use the corresponding accelint-ts skills.
 
-**Data Protection** - Sensitive data in logs, detailed error messages to users, vulnerable dependencies, insufficient security logging
+> **Good to know:** The guidance becomes more prescriptive as severity increases. Critical and high-severity issues get less flexibility than lower-risk findings.
 
-## Security Audit Workflow
+> **Good to know:** When security and convenience conflict, the skill prioritizes security for critical vulnerabilities.
 
-The skill follows a 4-phase workflow for systematic security analysis:
+## Prerequisites
 
-### Phase 1: Discover Security Vulnerabilities
+- JavaScript/TypeScript codebase
+- Node.js runtime (the skill works with any package manager: npm, yarn, pnpm, bun)
+- Git repository (for computing source SHA hashes)
+- Existing test suite (recommended for validating security fixes)
 
-Performs systematic static code analysis to identify ALL security anti-patterns:
-- Hardcoded secrets (API keys, passwords, tokens)
-- Missing input validation (user data, file uploads, API responses)
-- Injection vulnerabilities (SQL, NoSQL, Command, XSS)
-- Broken access control (missing auth, no ownership checks, IDOR)
-- Insecure authentication (tokens in localStorage, weak session management)
-- Missing rate limiting (auth endpoints, expensive operations)
-- Sensitive data exposure (logs, error messages, client responses)
-- Security misconfiguration (default configs, missing headers, permissive CORS)
-- Vulnerable dependencies (outdated packages, known CVEs)
-- Missing CSRF protection (state-changing operations)
-- SSRF vulnerabilities (unvalidated URL fetching)
+## What You Get
 
-**Output**: Complete list of ALL identified vulnerabilities with locations, severity, and OWASP category.
+**In audit mode:**
+- A structured security review with OWASP categories and severity levels
+- Prioritized findings ready for remediation
+- Recommended patterns for each vulnerability type
 
-### Phase 2: Categorize and Assess Risk
+**In implementation mode:**
+- Security fixes applied directly to code
+- Updated code that follows the recommended remediation pattern
 
-Categorizes ALL vulnerabilities by OWASP Top 10 category and severity:
-
-**Severity Levels:**
-
-- **Critical**: Direct path to data breach, remote code execution, or complete system compromise
-  - Examples: SQL injection, hardcoded production secrets, no authentication on admin endpoints
-
-- **High**: Likely to enable unauthorized access, data theft, or service disruption
-  - Examples: Missing authorization checks, XSS vulnerabilities, insecure session management
-
-- **Medium**: Could be exploited with specific conditions or chained with other vulnerabilities
-  - Examples: Missing rate limiting, weak CORS policy, insufficient logging
-
-- **Low**: Defense-in-depth improvements, best practices, or edge case protections
-  - Examples: Missing security headers, overly detailed error messages
-
-**OWASP Categories:**
-
-| Category | Common Issues | Severity Range |
-|----------|---------------|----------------|
-| A01: Broken Access Control | Missing auth, no ownership checks, IDOR | Critical-High |
-| A02: Cryptographic Failures | Hardcoded secrets, weak hashing, insecure storage | Critical-Medium |
-| A03: Injection | SQL, NoSQL, Command, XSS vulnerabilities | Critical-High |
-| A04: Insecure Design | Missing rate limiting, no input validation | High-Medium |
-| A05: Security Misconfiguration | Default configs, missing headers, dev mode in prod | High-Low |
-| A06: Vulnerable Components | Outdated dependencies, known CVEs | Critical-Low |
-| A07: Auth Failures | Weak session management, no MFA, credential stuffing | Critical-High |
-| A08: Data Integrity Failures | Missing CSRF, unsigned updates | High-Medium |
-| A09: Logging Failures | No security logging, insufficient monitoring | Medium-Low |
-| A10: SSRF | Unvalidated URL fetching, internal network access | High-Medium |
-
-**Output**: Categorized list of ALL vulnerabilities with their OWASP categories and severity levels.
-
-### Phase 3: Remediate Using Security Patterns
-
-Applies security patterns from the skill's reference files based on vulnerability category:
-
-| Category | Reference Files |
-|----------|----------------|
-| Secrets Management | secrets-management.md |
-| Input Validation | input-validation.md, file-uploads.md (for file uploads) |
-| Injection Prevention | injection-prevention.md |
-| Authentication | authentication.md, mfa.md (for multi-factor auth) |
-| Authorization | authorization.md |
-| XSS Prevention | xss-prevention.md |
-| CSRF Protection | csrf-protection.md |
-| Rate Limiting | rate-limiting.md |
-| Sensitive Data | sensitive-data.md |
-| Dependency Security | dependency-security.md |
-| Security Headers | security-headers.md |
-| SSRF Prevention | ssrf-prevention.md |
-
-Each reference file provides ❌/✅ code examples showing insecure patterns and their secure alternatives.
-
-### Phase 4: Verify Security Fixes
-
-Validates vulnerability closure:
-1. Reviews code to confirm vulnerability is fully addressed
-2. Verifies no new vulnerabilities introduced by the fix
-3. Checks defense in depth - are multiple layers protecting critical resources?
-4. Runs existing test suite - all tests must pass
-5. Adds security-specific tests for the vulnerability
-6. Documents security fix with date, vulnerability type, OWASP category, and verification
+**In both modes:**
+- Vulnerability categorization by OWASP area
+- Severity assessment
+- Actionable remediation guidance
 
 ## Examples
 
-### Example: Auditing API Authentication
+### Example: Auditing Authentication Implementation
 
 ```bash
-# Audit authentication module
-/accelint-security-best-practices src/api/auth.ts
+# Command
+/accelint-security-best-practices src/auth/
 
-# Output: Structured report with findings
+# Output: Structured audit report
+Phase 1: Discovered 3 vulnerabilities
+- JWT token stored in localStorage (High)
+- Missing rate limiting on /api/login (High)
+- No session expiration (Medium)
+
+Phase 2: Categorized by OWASP
+- A07: Authentication Failures (2 issues)
+- A04: Insecure Design (1 issue)
+
+Phase 3: Remediation patterns loaded
+- authentication.md: httpOnly cookie patterns
+- rate-limiting.md: login endpoint protection
 ```
 
-The skill identifies vulnerabilities like:
-- Hardcoded JWT secrets in source code
-- Missing rate limiting on login endpoint
-- JWT tokens stored in localStorage (XSS vulnerable)
-- No input validation on email/password fields
-
-For each vulnerability, the report includes:
-- Location (file:line)
-- Current insecure code with ❌ marker
-- Explanation of the security risk
-- Severity (Critical, High, Medium, Low)
-- OWASP Category (A01-A10)
-- Recommended fix with ✅ marker and reference to security pattern
-
-### Example: Fixing SQL Injection
+### Example: Fixing SQL Injection Vulnerability
 
 ```typescript
-// ❌ Before: SQL Injection vulnerability
+// Before: SQL Injection vulnerability
 const query = `SELECT * FROM users WHERE email = '${email}'`;
 const user = await db.query(query);
 
-// ✅ After: Parameterized query prevents injection
+// After: Parameterized query prevents injection
 // Security: injection-prevention.md - parameterized queries
 const user = await db.query(
   'SELECT * FROM users WHERE email = $1',
@@ -191,85 +112,34 @@ const user = await db.query(
 );
 ```
 
-### Example: Securing Token Storage
+### Example: Securing API Endpoints
 
 ```typescript
-// ❌ Before: XSS vulnerable - tokens in localStorage
-localStorage.setItem('token', authToken);
-
-// ✅ After: httpOnly cookies protect against XSS
-// Security: authentication.md - secure token storage
-res.cookie('token', authToken, {
-  httpOnly: true,      // JavaScript cannot access
-  secure: true,        // HTTPS only
-  sameSite: 'strict',  // CSRF protection
-  maxAge: 3600000      // 1 hour
+// Before: Missing authentication and authorization
+app.get('/api/user/:id', async (req, res) => {
+  const user = await db.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
+  res.json(user);
 });
+
+// After: Defense in depth with auth + authorization
+// Security: authentication.md + authorization.md
+app.get('/api/user/:id', 
+  authenticate, // Verify user is logged in
+  async (req, res) => {
+    const requestedId = req.params.id;
+    // Verify user owns this resource
+    if (req.user.id !== requestedId && !req.user.isAdmin) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    const user = await db.query('SELECT * FROM users WHERE id = $1', [requestedId]);
+    res.json(user);
+  }
+);
 ```
 
-### Example: Adding Authorization Checks
+## Limits
 
-```typescript
-// ❌ Before: IDOR vulnerability - no ownership check
-app.delete('/api/posts/:id', authenticate, async (req, res) => {
-  await db.posts.delete(req.params.id);
-  res.json({ success: true });
-});
-
-// ✅ After: Verify ownership before deletion
-// Security: authorization.md - ownership checks
-app.delete('/api/posts/:id', authenticate, async (req, res) => {
-  const post = await db.posts.findById(req.params.id);
-  
-  if (!post) {
-    return res.status(404).json({ error: 'Post not found' });
-  }
-  
-  // Critical: Verify user owns the post before deletion
-  if (post.authorId !== req.user.id) {
-    return res.status(403).json({ error: 'Forbidden' });
-  }
-  
-  await db.posts.delete(req.params.id);
-  res.json({ success: true });
-});
-```
-
-## Anti-Patterns
-
-The skill identifies and reports these critical security anti-patterns:
-
-**NEVER hardcode secrets** - API keys, tokens, passwords, or credentials in source code are immediately compromised when pushed to version control. Even private repositories leak secrets through employee turnover, third-party access, and git history. Use environment variables exclusively.
-
-**NEVER concatenate user input into queries** - Use parameterized queries, ORMs, or prepared statements exclusively. String concatenation in SQL, NoSQL, or shell commands enables injection attacks.
-
-**NEVER store sensitive data in localStorage** - localStorage is vulnerable to XSS attacks where malicious scripts steal tokens. JWT tokens, session IDs, or credentials in localStorage persist across sessions and are accessible to any JavaScript code. Use httpOnly cookies for auth tokens.
-
-**NEVER skip authorization checks** - Authentication verifies identity; authorization verifies permission. Attackers will manipulate IDs, skip authentication, or guess URLs. Every endpoint accessing resources must verify the requesting user owns that resource or has appropriate role.
-
-**NEVER expose detailed errors to users** - Log server-side, return generic messages. Stack traces leak architecture for reconnaissance.
-
-**NEVER use Array.includes() for permission checks** - Permission arrays with 100+ roles suffer O(n) lookup time and type safety issues. Use `Set.has()` for O(1) lookup or role-based access control (RBAC) with proper type checking.
-
-**NEVER skip rate limiting on APIs** - Unlimited API requests enable brute force attacks (1000 password attempts/second), denial of service (exhaust server resources), or data scraping (enumerate all users/resources). Apply rate limits to all endpoints, with stricter limits on authentication and expensive operations.
-
-**NEVER log sensitive data** - Passwords, tokens, credit cards, or personal information in logs persist in log aggregation systems, backups, and third-party services. Logs are accessible to more people than the application itself. Redact sensitive fields before logging.
-
-**NEVER use default configurations in production** - Default secrets, disabled security headers, permissive CORS, or development modes in production create known vulnerabilities. Attackers scan for defaults. Harden all configurations for production environments.
-
-## Common Pitfalls
-
-> **Good to know:** This skill audits ALL code for security vulnerabilities regardless of current exposure. Internal utilities, helpers, and data transformations are frequently exposed through APIs, file uploads, or user interactions even when their implementation appears isolated.
-
-> **Good to know:** The skill reports all findings with severity and OWASP category. Don't filter based on "likelihood" of exploitation - systematic auditing identifies vulnerabilities before they become attack vectors.
-
-> **Good to know:** Security fixes sometimes conflict with existing functionality. The skill provides expert solutions for common scenarios like parameterized queries with dynamic column sorting, rate limiting in tests, and CSRF tokens in API integration tests.
-
-> **Good to know:** For general TypeScript best practices (type safety, code quality), use accelint-ts-best-practices. For documentation improvements, use accelint-ts-documentation. For performance optimization, use accelint-ts-performance. This skill focuses exclusively on security patterns.
-
-## Related
-
-- **accelint-ts-best-practices** - TypeScript type safety and code correctness (non-security patterns)
-- **accelint-react-best-practices** - React component security patterns (XSS prevention, state management)
-- **accelint-nextjs-best-practices** - Next.js security patterns (Server Actions, API routes, authentication)
-- **accelint-ts-testing** - Security testing patterns with vitest
+- This skill audits code for security vulnerabilities but does not perform runtime penetration testing or network security analysis
+- Dependency vulnerability detection relies on identifying outdated packages—it does not scan for zero-day vulnerabilities
+- The skill provides security patterns for common frameworks but may require adaptation for custom authentication systems or proprietary frameworks
+- For infrastructure security (cloud configurations, network policies, container security), use specialized infrastructure security tools

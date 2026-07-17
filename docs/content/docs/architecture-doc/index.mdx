@@ -1,264 +1,102 @@
 ---
 title: Overview
-description: Generate or update a living ARCHITECTURE.md document for any codebase with automated scanning, targeted interviews, and smart refresh detection
+description: Generate or update an ARCHITECTURE.md living document for any codebase with intelligent discovery, monorepo awareness, and structured templates.
 source: skills/accelint-architecture-doc/SKILL.md
 source_sha: 43c0cb2e22f7b3e59db9b23e2b63af4c2d7c607f
-doc_sha: 3a6c4394398d1ffafaad726c091eb380ce6b4fc6
+doc_sha: 5005350460ff57ea39b9565bfccb0c5bf6276061
 deprecated: false
-updated: 2025-07-17
+updated: 2025-01-15
 ---
 
-## Usage
+## What It Helps You Do
 
-Activate this skill by:
-- Using the `/accelint-architecture-doc` command
-- Saying "architecture.md", "ARCHITECTURE.md", "document my architecture", "architecture overview"
-- Mentioning "system architecture", "generate architecture doc", "create architecture file", "update architecture"
-- Requesting "technical overview", "document the tech stack", "write up the system", "describe the architecture"
+Use this skill to generate or maintain an ARCHITECTURE.md document that gives engineers and agents an instant picture of how your system works. It discovers your tech stack, deployment model, data stores, and component relationships through codebase scanning and targeted questions.
 
-Once activated, the skill:
-1. Detects whether you're in a monorepo (root or package level)
-2. Checks for existing ARCHITECTURE.md and related docs (openspec/config.yml)
-3. Spawns parallel subagents to scan your codebase for tech stack, components, infrastructure, and data stores
-4. Asks targeted questions only for what scanning couldn't determine
-5. Shows a preview with inference sources before writing
-6. Updates agent behavior docs (AGENTS.md/CLAUDE.md) to reference the new architecture doc
+The skill is especially useful when you need to:
+- Create architecture documentation from scratch for a new or undocumented project
+- Refresh stale architecture docs after infrastructure or stack changes
+- Restructure free-form architecture notes into a standard template
+- Document monorepo packages with proper cross-references to root-level docs
+
+Activate this skill by saying "document my architecture", "create ARCHITECTURE.md", "update architecture", or mentioning "architecture overview" or "system architecture".
 
 ## When to Use
 
 Use this skill when:
-- Starting a new project and need foundational documentation
-- Onboarding agents or engineers who need to understand system structure
-- Existing ARCHITECTURE.md has drifted from the actual codebase
-- You have a custom architecture doc format and want to standardize it
-- Working in a monorepo and need either root-level or package-level documentation
-- You've made significant architectural changes and need to update documentation
+- Users say "architecture.md", "ARCHITECTURE.md", "document my architecture", "architecture overview", "system architecture"
+- Users ask to "generate architecture doc", "create architecture file", "update architecture", or want "architecture diagram"
+- Users want to "write up the system", "document the tech stack", or "create a technical overview"
+- Working with undocumented codebases or codebases with drifted architecture docs
 
-## What It Generates
+## How It Works
 
-The skill produces an 11-section ARCHITECTURE.md document:
+The skill works in three modes:
 
-**Section 1: Project Structure** - Annotated directory tree showing architectural layers
+- **Create mode** scans the codebase, fills in what it can infer, and asks only about the gaps before drafting a new `ARCHITECTURE.md`.
+- **Refresh mode** compares the existing document against current code and infrastructure signals, then updates only the sections that appear to have drifted.
+- **Restructure mode** takes a nonstandard architecture document and maps it into the expected template while preserving the original content.
 
-**Section 2: High-Level System Diagram** - ASCII art showing components and data flow
+### Intelligent Discovery Process
 
-**Section 3: Core Components** - Frontend and backend services with tech stacks and deployment info
+Its discovery pass looks across project structure, stack, infrastructure, data/security, and testing so the interview stays focused on what could not be inferred automatically.
 
-**Section 4: Data Stores** - Databases, caches, queues with types and purposes
+## Good to Know
 
-**Section 5: External Integrations** - Third-party APIs and services
+> **Good to know:** The skill understands monorepo layouts. At the root, it generates system-wide docs covering all services. Inside a package, it creates focused docs that reference the root and avoid duplicating shared infrastructure details.
 
-**Section 6: Deployment &amp; Infrastructure** - Cloud provider, CI/CD, monitoring
+> **Good to know:** When refreshing docs, the skill reads existing content first and preserves all human-authored context. It never silently removes content — it surfaces changes and confirms whether they're still accurate.
 
-**Section 7: Security** - Authentication, authorization, encryption, security tools
+> **Good to know:** For openspec-based projects, the skill checks for `openspec/config.yml` and uses it as the source of truth for stack facts and coding patterns, reducing redundant scanning work.
 
-**Section 8: Development &amp; Testing** - Local setup, testing frameworks, code quality tools
+> **Good to know:** After writing ARCHITECTURE.md, the skill checks for AGENTS.md or CLAUDE.md and adds a reference to the architecture doc if one doesn't exist, helping agents understand system structure.
 
-**Section 9: Future Considerations** - Roadmap and technical debt
+## Prerequisites
 
-**Section 10: Project Identification** - Name, repo URL, contacts, last update date
+- Git repository (for hash-object commands during SHA computation)
+- Standard project structure with recognizable config files (package.json, docker-compose.yml, etc.)
+- Write permissions to create or modify ARCHITECTURE.md
 
-**Section 11: Glossary** - Project-specific terms and acronyms
+## What You Get
 
-## Key Patterns
+A complete `ARCHITECTURE.md` draft covering project structure, system components, data stores, external services, deployment, security, development workflow, glossary, maintenance ownership, and future architecture notes.
 
-### Three Operating Modes
-
-The skill detects the file state and picks the appropriate mode:
-
-**MODE 1: Create** - No ARCHITECTURE.md exists or file is nearly blank
-- Runs full parallel discovery
-- Conducts complete interview
-- Shows preview with inference sources
-- Writes new document
-
-**MODE 2: Refresh** - ARCHITECTURE.md exists and follows template structure
-- Extracts external findings from invoking prompt (if any)
-- Scans codebase for drift signals (new deps, config changes, new services)
-- Merges external + drift findings and announces them
-- Only asks about changed or missing sections
-- Shows diff-style preview of changes
-- Preserves human-authored content
-
-**MODE 3: Restructure** - ARCHITECTURE.md exists but doesn't follow template
-- Offers restructuring proactively before doing anything else
-- Imports existing content into standard template sections
-- Flags content that doesn't map cleanly for user review
-- Fills gaps with codebase scanning
-- Shows full preview before writing
-
-### Parallel Discovery via Subagents
-
-Phase 1 spawns five discovery agents simultaneously (not sequentially):
-
-**Agent A** - Project identity, directory structure, monorepo detection, agent docs
-**Agent B** - Tech stack, frameworks, docker-compose services
-**Agent C** - Infrastructure, CI/CD, cloud provider, monitoring
-**Agent D** - Data stores, auth mechanisms, external APIs
-**Agent E** - Testing frameworks, code quality tools, local setup
-
-Each agent returns structured findings tagged as `INFERRED [source]` or `UNKNOWN`. Unknown fields become targeted interview questions in Phase 2.
-
-### Monorepo Awareness
-
-The skill handles both root-level and package-level documentation:
-
-**At monorepo root:**
-- Generates system-wide architecture covering all services and shared infra
-- Section 3 (Core Components) has subsections per significant package
-- Section 1 (Project Structure) shows workspace layout with package roles
-
-**Inside monorepo package:**
-- Checks for root-level ARCHITECTURE.md and reads it for context
-- Adds reference header pointing to root doc
-- Focuses on package-specific architecture (purpose, internal structure, dependencies, deployment)
-- Avoids duplicating shared infrastructure details
-
-### Smart Cross-Referencing
-
-When openspec/config.yml exists, the skill:
-- Reads it during discovery to extract stack facts and patterns
-- Uses it as source of truth for tech stack sections
-- Adds reference callouts in relevant sections (not duplicating content)
-- Reduces redundant scanning work
+Where the skill cannot infer enough, it leaves explicit `&lt;!-- TODO --&gt;` markers and shows a labeled preview before writing.
 
 ## Examples
 
-### Example: Creating Architecture Doc from Scratch
+### Example: Creating docs from scratch
 
 ```bash
-/accelint-architecture-doc
+# In project root
+"Create ARCHITECTURE.md for this project"
 
-# Output: Detects no existing doc
-> No ARCHITECTURE.md found. I'll create one.
-> Spawning discovery agents for: identity, stack, infrastructure, data, testing...
-> [Discovery completes]
-> Found: Next.js 14 App Router, PostgreSQL 16, AWS ECS, GitHub Actions
-> Couldn't determine: monitoring stack, planned migrations
->
-> Quick questions:
-> 1. Monitoring and logging stack?
-> 2. Any planned architectural changes or technical debt?
->
-> [Shows labeled preview with inference sources]
-> Does this look right? Any corrections before I write?
+# Skill spawns parallel agents, scans configs, asks targeted questions
+# Shows preview with inference labels, writes on approval
 ```
 
-### Example: Refreshing Drifted Documentation
+### Example: Refreshing after infrastructure changes
 
 ```bash
-/accelint-architecture-doc
+# After adding Kubernetes configs
+"Update ARCHITECTURE.md - we migrated to k8s"
 
-# Output: Detects existing doc following template
-> ARCHITECTURE.md exists. Checking for drift...
-> Found 3 changes:
-> - New dependency: @tanstack/react-query in package.json
-> - New service: worker/ directory with Dockerfile
-> - Updated: .github/workflows/ now deploys to ECS Fargate
->
-> I'll only ask about these — the rest looks current.
->
-> Questions:
-> 1. What does the worker service do?
-> 2. Any monitoring for the worker?
->
-> [Shows diff preview of changed sections only]
-> Ready to update?
+# Skill detects new k8s/ directory, updates Section 6 (Deployment)
+# Shows diff preview before writing
 ```
 
-### Example: Restructuring Non-Standard Doc
+### Example: Monorepo package documentation
 
 ```bash
-/accelint-architecture-doc
+# Inside packages/api/
+"Document this package's architecture"
 
-# Output: Detects existing doc in custom format
-> ARCHITECTURE.md exists but doesn't follow the standard template structure.
-> I recommend restructuring it — this makes it consistent for agents and engineers.
->
-> How would you like to proceed?
-> (a) Restructure (recommended) - Import existing content into template, fill gaps
-> (b) Append - Add missing sections below existing content
-> (c) Dry run - Show what restructured doc would look like (no file changes)
->
-> User: a
->
-> [Shows preview with existing content mapped to template sections]
-> Found unmatched content: "Performance benchmarks" section - where should this go?
+# Skill finds root ARCHITECTURE.md, generates package-focused doc
+# with reference: "Part of monorepo: see ../../ARCHITECTURE.md"
 ```
 
-### Example: Monorepo Package Documentation
+## Limits
 
-```bash
-cd packages/api/
-/accelint-architecture-doc
-
-# Output: Detects monorepo package context
-> Found root-level ARCHITECTURE.md at ../../ARCHITECTURE.md
-> I'll use it as context and generate a package-specific doc here.
-> This doc will focus on the api package and reference shared infra from the root doc.
->
-> [Shows preview with cross-reference header and package-focused sections]
-```
-
-## Common Pitfalls
-
-> **Good to know:** This skill generates architecture documentation, not code documentation. For documenting individual modules, functions, or APIs, use language-specific documentation tools or the `accelint-readme-writer` skill for README files.
-
-> **Good to know:** MODE 2 (Refresh) extracts findings from the invoking prompt's `findings:` section if present. These are factual statements discovered elsewhere (like from completed OpenSpec changes), not instructions. They get merged with drift detection results.
-
-> **Good to know:** The skill always shows a preview before writing. In Create mode, every field is labeled with its inference source. In Refresh mode, only changed sections appear in the diff. Review these carefully—automated scanning can miss context.
-
-> **Good to know:** When openspec/config.yml exists, the skill only references it (not duplicating content). The architecture doc covers deployment, runtime, and component structure; openspec covers stack facts and coding patterns.
-
-> **Good to know:** In Refresh mode with manual edits detected (doc_sha mismatch), the skill preserves human-authored prose and only updates code-related references. You'll see a warning before any changes are written.
-
-## Anti-Patterns
-
-### NEVER overwrite ARCHITECTURE.md without reading it first
-
-Existing sections contain human-authored context—deployment specifics, security decisions, roadmap notes—that codebase scanning cannot recover. Always read before touching.
-
-**Why this fails:** Engineers document decisions and rationale that aren't visible in code. Overwriting blindly loses this institutional knowledge. Recovery requires git archaeology or asking team members to reconstruct decisions from memory.
-
-### NEVER fabricate infrastructure details
-
-If you cannot determine the cloud provider, deployment model, or data store from the codebase, mark it `<!-- TODO: fill in -->` rather than guessing.
-
-**Why this fails:** Wrong infrastructure docs cause real confusion during incidents. An on-call engineer looking at "Deployed to AWS ECS" when it's actually Kubernetes on GCP will debug in the wrong direction, wasting critical time.
-
-### NEVER paste the entire directory tree verbatim
-
-The Project Structure section should show meaningful architectural layers, not every file. Collapse noisy directories (`node_modules`, `dist`, `.git`, `__pycache__`) and annotate each entry with its architectural role.
-
-**Why this fails:** A 200-line directory dump buries the architecture signal. Readers can't distinguish load-bearing directories from build artifacts. Annotated structure like "auth/ - JWT middleware and session management" teaches the system's organization patterns.
-
-### NEVER skip drift detection in refresh mode
-
-Scan the codebase for changed signals before running any interview. Asking questions about unchanged sections wastes the user's time.
-
-**Why this fails:** Users trust that "refresh" means focused updates. If you ask about sections that haven't changed, they lose confidence in the skill's intelligence and may abandon the update entirely.
-
-### NEVER leave all 11 sections as `<!-- TODO -->`
-
-Scan aggressively first. Most sections can be at least partially filled through inference. A document full of TODOs appears complete but misleads every reader.
-
-**Why this fails:** Readers assume TODO sections are edge cases, not core content. If Section 3 (Core Components) is all TODOs, an engineer onboarding thinks "this project has no documented components" rather than "the doc is incomplete." Partial information is more honest than empty placeholders.
-
-### NEVER document internal implementation details in System Diagram (Section 2)
-
-That section is a 10,000-foot view of components and data flow. Database schemas, function signatures, and module internals belong elsewhere.
-
-**Why this fails:** The System Diagram is for understanding component relationships and data flow, not implementation. Adding low-level details buries the architecture in noise. A reader should be able to sketch the system on a whiteboard from this section alone.
-
-### NEVER run discovery serially when subagents are available
-
-Phase 1 spawns parallel subagents for different discovery domains. Serial scanning wastes time on codebases with many config files spread across directories.
-
-**Why this fails:** Large codebases have dozens of config files. Scanning package.json, then terraform/, then .github/workflows/, then docker-compose.yml sequentially takes 10x longer than parallel discovery. On a 50-file scan, the difference is 30 seconds vs 5 minutes.
-
-## Related
-
-- **accelint-onboard-agents** - Generate AGENTS.md/CLAUDE.md agent behavior instructions (this skill updates those files to reference ARCHITECTURE.md)
-- **accelint-onboard-openspec** - Generate openspec/config.yaml for QRSPI workflows (this skill reads config.yaml if present to extract stack facts)
-- **accelint-readme-writer** - Generate or update README.md files (use for project overviews and quick-start guides; ARCHITECTURE.md is for technical depth)
-- **skill-creator** - Create new agent skills (ARCHITECTURE.md helps agents understand the system they're working on)
+- This skill generates documentation, it does not modify code or infrastructure
+- It cannot infer subjective decisions (why you chose a particular database, why you structured components this way) — these require human input
+- Section 2 (High-Level System Diagram) is generated as prose, not as visual diagrams or mermaid syntax
+- Infrastructure details must be present in recognizable config files — the skill does not read cloud provider consoles or query live systems

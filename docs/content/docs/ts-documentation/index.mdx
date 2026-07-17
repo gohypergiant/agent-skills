@@ -1,105 +1,93 @@
 ---
 title: Overview
-description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments (@param, @returns, @template, @example), comment markers (TODO, FIXME, HACK), and code comment quality.
+description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments, comment markers, and code comment quality with intelligent export-vs-internal differentiation.
 source: skills/accelint-ts-documentation/SKILL.md
 source_sha: 3e322a22a441b78a0c96350ce2b822c4796a37ff
-doc_sha: 1bbf6d0d166b9b1de947a5c5e75d6c29ec76a0ee
+doc_sha: b09dc0cbb298ee5deb99ce0387cb75327c96875a
 deprecated: false
-updated: 2026-07-17
+updated: 2025-01-17
 ---
 
-## Usage
+## What It Helps You Do
 
-Activate this skill by:
-- Using the `/accelint-ts-documentation` command followed by a file or directory path
-- Saying "add JSDoc", "document this function", "audit documentation", "fix comments"
-- Mentioning "add TODO/FIXME markers" or "improve code documentation"
-- Asking to "review all documentation" when working with TypeScript/JavaScript files
+Use this skill to systematically improve documentation across JavaScript and TypeScript codebases. It helps you add comprehensive JSDoc comments to public APIs, clean up comment clutter, and apply proper comment markers for actionable issues.
 
-```bash
-# Audit a single file
-/accelint-ts-documentation src/utils/helpers.ts
+The skill applies intelligent judgment about what to document based on visibility:
+- **Exported code** gets comprehensive documentation (consumers need full context)
+- **Internal code** gets minimal documentation (team members can read implementation)
 
-# Audit an entire directory
-/accelint-ts-documentation src/components/
-
-# Audit current file context
-/accelint-ts-documentation
-```
-
-Once activated, the skill analyzes your code for documentation completeness and quality, then either:
-- **For explicit audits:** Generates a structured report with numbered findings, categories, and before/after examples
-- **For specific requests:** Directly implements fixes (e.g., "add JSDoc to this function")
+This prevents documentation rot while ensuring public APIs remain well-documented.
 
 ## When to Use
 
 Use this skill when:
-- Users say "add JSDoc", "document this function", "audit documentation", "fix comments", "add TODO/FIXME markers", or "improve code documentation"
-- Working with TypeScript or JavaScript files requiring documentation improvements
-- Reviewing exported functions, types, interfaces, or classes for JSDoc completeness
-- Ensuring internal code has minimum required documentation
-- Validating JSDoc syntax (missing @param, @returns, @example tags)
-- Improving comment quality (markers, placement, removing obvious statements)
+- Adding JSDoc comments (@param, @returns, @template, @example)
+- Auditing documentation completeness
+- Improving comment quality and removing comment clutter
+- Adding proper comment markers (TODO, FIXME, HACK, NOTE)
+- Validating that exported functions and types are properly documented
+- Reviewing code for missing or incomplete documentation
 
-## What It Checks
+Activate by saying "add JSDoc", "document this function", "audit documentation", "fix comments", "add TODO/FIXME markers", or "improve code documentation".
 
-**JSDoc Completeness** - Missing/incomplete @param, @returns, @template, @throws, @example tags, object parameter dot notation
+## How It Works
 
-**JSDoc Syntax** - @example code fence requirements (language identifiers), void function @returns, generic @template tags
+The skill applies a two-tier documentation strategy:
 
-**Comment Quality** - Missing markers (TODO, FIXME, HACK, NOTE), end-of-line comment placement, commented-out code, edit history, obvious statements
+**Tier 1 - Exported Code (Public API):**
+- Requires comprehensive documentation for all exports
+- All @param tags with property documentation for objects
+- @returns describing outcomes in different scenarios
+- @template with constraint explanations for generics
+- @throws documenting all possible errors with triggering conditions
+- At least one realistic @example showing usage
 
-**Documentation Tiers** - Comprehensive docs for exported APIs, judgment-based minimal docs for internal code
-
-**Quality Standards** - Business logic explanations, linter directive preservation, WHAT/WHY focus (not HOW)
-
-## Documentation Philosophy
-
-The skill applies a two-tier documentation approach:
-
-**Exported (Public API):** Comprehensive documentation required
-- All @param, @returns, @template, @throws, @example tags
-- Even if "obvious" to you — consumers lack your context
-- Documentation appears in IDE autocomplete
-
-**Internal Code:** Judgment-based minimal documentation
-- Brief description (one line acceptable)
-- @param/@returns only for non-obvious cases
+**Tier 2 - Internal Code:**
+- Minimal documentation focused on non-obvious behavior
+- Brief descriptions (one line acceptable)
+- @param only for non-obvious parameters
 - @example only for complex behavior
-- Focus on WHAT/WHY, not HOW
+- Emphasis on WHAT/WHY over HOW
 
 ### Expert Judgment Framework
 
-Before auditing, apply this thinking:
+Before documenting, the skill considers:
+- **Who is the reader?** API consumers lack implementation context, team members have it
+- **Opacity vs complexity?** Document hidden intent, not intricate implementation
+- **Maintenance cost?** High-churn code gets minimal docs, stable APIs get comprehensive docs
 
-**Question 1: Who is the reader?**
-- API consumers: Lack implementation context → Document comprehensively
-- Team members: Have codebase context → Document non-self-evident behaviors only
-- Future you (6 months): Will forget subtle decisions → Document rationale
+### JSDoc Standards
 
-**Question 2: Opacity vs Complexity?**
-- Opacity = Intent is hidden → Must document (e.g., why cache.invalidate()?)
-- Complexity = Implementation is intricate → Implementation comments, not JSDoc
+When adding JSDoc, the skill ensures:
+- Object parameters use dot notation (`@param options.timeout`)
+- @example tags use proper code fences with language identifiers
+- Descriptions focus on WHAT/WHY, not HOW (implementation details)
+- No @returns on void functions
+- Generic functions have @template for each type parameter
 
-**Question 3: Maintenance cost trade-off?**
-- High churn code: Minimal docs (won't stay accurate)
-- Stable API: Comprehensive docs (will stay accurate)
-- Internal utilities: Brief docs (low reader count × low frequency = minimal ROI)
+### Comment Quality
+
+For comment audits, the skill:
+- Categorizes comments with proper markers (TODO, FIXME, HACK, NOTE, PERF, REVIEW)
+- Removes unnecessary comments (commented-out code, edit history, obvious statements)
+- Preserves important comments (markers with context, linter directives, business logic)
+- Ensures markers are specific with ownership: `TODO(username): Replace with binary search`
+
+### Audit Reports
+
+When explicitly invoked for audits, the skill produces structured reports with:
+- Numbered findings with before/after examples
+- Categorization (Missing, Incomplete, Incorrect Syntax, Quality)
+- References to detailed guidance
+- Summary table for tracking issues
 
 ## Examples
 
-### Example: Documenting Exported Function with Object Parameters
+### Example: Adding Comprehensive Public API Documentation
+
+For exported functions, the skill adds complete JSDoc:
 
 ```typescript
-// ❌ Before: Missing comprehensive documentation
-export function fetchUserProfile(
-  userId: string,
-  options?: { includeMetadata?: boolean; timeout?: number }
-): Promise<UserProfile> {
-  // implementation
-}
-
-// ✅ After: Complete public API documentation
 /**
  * Fetches user profile data from the authentication service
  *
@@ -117,18 +105,11 @@ export function fetchUserProfile(
  *
  * @example
  * ```typescript
- * // Basic usage
  * const profile = await fetchUserProfile('user-123');
  * console.log(profile.email);
- *
- * // With metadata and custom timeout
- * const profile = await fetchUserProfile('user-123', {
- *   includeMetadata: true,
- *   timeout: 10000
- * });
  * ```
  */
-export function fetchUserProfile(
+export async function fetchUserProfile(
   userId: string,
   options?: { includeMetadata?: boolean; timeout?: number }
 ): Promise<UserProfile> {
@@ -136,269 +117,42 @@ export function fetchUserProfile(
 }
 ```
 
-### Example: Generic Function with @template
+### Example: Minimal Internal Documentation
+
+For internal utilities, brief documentation is sufficient:
 
 ```typescript
-// ❌ Before: Missing @template tag
-/**
- * Returns the first element of an array.
- *
- * @param arr - The array to get the first element from.
- * @returns The first element.
- */
-function first<T>(arr: T[]): T | undefined {
-  return arr[0];
-}
-
-// ✅ After: With @template documentation
-/**
- * Returns the first element of an array.
- *
- * @template T - The type of elements in the array.
- * @param arr - The array to get the first element from.
- * @returns The first element, or undefined if array is empty.
- *
- * @example
- * ```typescript
- * const num = first([1, 2, 3]); // 1
- * const str = first(['a', 'b']); // 'a'
- * const none = first([]); // undefined
- * ```
- */
-function first<T>(arr: T[]): T | undefined {
-  return arr[0];
-}
-```
-
-### Example: @example Code Fence Requirement
-
-```typescript
-// ❌ Before: Missing code fence in @example
-/**
- * Clamps a number within bounds.
- * @example
- * const result = clamp(5, 15, 10);
- */
-export function clamp(min: number, max: number, value: number): number {
-  return Math.max(min, Math.min(max, value));
-}
-
-// ✅ After: @example with proper code fence
-/**
- * Clamps a number within the specified bounds.
- *
- * @param min - The lower bound to clamp to.
- * @param max - The upper bound to clamp to.
- * @param value - The number value to clamp to the given range.
- * @returns The clamped value.
- *
- * @throws {RangeError} Throws if min > max.
- *
- * @example
- * ```typescript
- * const value = clamp(5, 15, 10); // 10
- * const value = clamp(5, 15, 2);  // 5
- * const value = clamp(5, 15, 20); // 15
- * ```
- */
-export function clamp(min: number, max: number, value: number): number {
-  if (min > max) {
-    throw new RangeError(`min (${min}) > max (${max})`);
-  }
-  return Math.max(min, Math.min(max, value));
-}
-```
-
-### Example: Comment Markers and Quality
-
-```typescript
-// ❌ Before: Vague markers and obvious comments
-// TODO: fix this
-// Increment counter
-counter++;
-
-// Loop through users
-for (const user of users) {
-  // Process user
-  processUser(user);
-}
-
-// ✅ After: Specific markers and meaningful comments
-// TODO(username): Replace with binary search for O(log n) lookup
-// Reset counter for next batch
-counter = 0;
-
-// Process users in registration order (stable sort required)
-for (const user of users) {
-  processUser(user);
-}
-```
-
-### Example: Internal vs Exported Documentation
-
-```typescript
-// Internal utility - minimal documentation
-/** Checks if value is not null/undefined */
-function isValid(x: unknown): boolean {
-  return x != null;
-}
-
-// Public API - comprehensive documentation even if "obvious"
-/**
- * Validates user input data
- *
- * @param data - User input to validate
- * @returns True if data is defined and not null
- *
- * @example
- * ```typescript
- * if (validateInput(userData)) {
- *   processData(userData);
- * }
- * ```
- */
-export function validateInput(data: unknown): boolean {
-  return data != null;
-}
-```
-
-## Anti-Patterns
-
-### NEVER Over-document Internal Code
-
-Internal documentation rots faster than public API docs because it's adjacent to frequently-changed implementation. Team members can read the implementation faster than reading outdated documentation. Comprehensive docs on internal utilities increase maintenance burden without proportional benefit — every refactor requires doc updates, leading to drift.
-
-```typescript
-// ❌ Wrong: Verbose internal documentation
-/**
- * Internal helper function that validates input
- * @internal
- * @param x - The input value
- * @returns True if valid, false otherwise
- * @example
- * ```typescript
- * if (isValid(data)) { ... }
- * ```
- */
-function isValid(x: unknown): boolean {
-  return x != null;
-}
-
-// ✅ Right: Brief internal documentation
 /** Checks if value is not null/undefined */
 function isValid(x: unknown): boolean {
   return x != null;
 }
 ```
 
-### NEVER Document HOW (Implementation Details)
+### Example: Improving Comment Markers
 
-JSDoc appears in IDE autocomplete for API consumers who don't have access to implementation. Explaining HOW in JSDoc creates confusion and increases refactoring surface area — every implementation change requires doc updates. Focus on WHAT the function does and WHY it exists.
-
+Before:
 ```typescript
-// ❌ Wrong: Documents implementation details
-/**
- * Loops through array using reduce to accumulate values into a sum
- */
-function sum(numbers: number[]): number {
-  return numbers.reduce((a, b) => a + b, 0);
-}
-
-// ✅ Right: Documents purpose and behavior
-/**
- * Calculates the sum of all numbers in the array
- *
- * @param numbers - Array of numbers to sum
- * @returns The total sum, or 0 for empty array
- */
-function sum(numbers: number[]): number {
-  return numbers.reduce((a, b) => a + b, 0);
-}
-```
-
-### NEVER Use Vague Comment Markers
-
-"TODO: fix this" creates diffusion of responsibility. After months pass, nobody knows if it's still relevant, who should fix it, or what "this" refers to. Vague markers accumulate as noise, reducing trust in ALL markers and causing developers to ignore even critical ones.
-
-```typescript
-// ❌ Wrong: Vague, unactionable markers
 // TODO: fix this
 // TODO: improve performance
-// FIXME: handle edge case
+```
 
-// ✅ Right: Specific markers with ownership and context
+After:
+```typescript
 // TODO(username): Replace with binary search for O(log n) lookup
 // FIXME(username): Throws error on empty array, add guard clause
-// HACK(username): Temporary workaround for API bug #1234, remove when fixed
 ```
 
-### NEVER Add @returns to Void Functions
+## Good to Know
 
-void functions don't return meaningful values. Adding @returns to void functions creates noise in IDE autocomplete and suggests the function returns something when it doesn't. Omit @returns entirely for void functions.
+> **Good to know:** This skill focuses on documentation quality and completeness. For general code quality improvements, use `accelint-ts-best-practices`. For performance optimization, use `accelint-ts-performance`.
 
-```typescript
-// ❌ Wrong: @returns on void function
-/**
- * Logs a message to the console.
- *
- * @param message - The message to log.
- * @returns Nothing (incorrect - should be omitted for void).
- */
-function log(message: string): void {
-  console.log(message);
-}
+> **Good to know:** When performing audits on multiple files, the skill produces a structured report. For single-function documentation requests, it applies changes directly without formal reporting.
 
-// ✅ Right: No @returns for void function
-/**
- * Logs a message to the console.
- *
- * @param message - The message to log.
- */
-function log(message: string): void {
-  console.log(message);
-}
-```
+> **Good to know:** The skill loads detailed reference files only when needed - `jsdoc.md` for JSDoc tasks, `comments.md` for comment quality tasks. This keeps responses focused and efficient.
 
-### NEVER Use @example Without Code Fences
+## What It Does Not Do
 
-@example blocks without code fences render incorrectly in IDE tooltips and documentation generators. They break syntax highlighting and make examples harder to read. Always use triple backticks with the appropriate language identifier (typescript, javascript, tsx, jsx).
-
-```typescript
-// ❌ Wrong: No code fence
-/**
- * @example
- * const result = add(1, 2); // 3
- */
-
-// ❌ Wrong: Code fence without language
-/**
- * @example
- * ```
- * const result = add(1, 2); // 3
- * ```
- */
-
-// ✅ Right: Code fence with language identifier
-/**
- * @example
- * ```typescript
- * const result = add(1, 2); // 3
- * ```
- */
-```
-
-## Common Pitfalls
-
-> **Good to know:** This skill focuses on documentation (JSDoc, comments), not code quality or type safety. For type safety issues, use `accelint-ts-best-practices`. For performance optimization, use `accelint-ts-performance`.
-
-> **Good to know:** When you invoke the skill directly with a path (e.g., `/accelint-ts-documentation src/file.ts`), you get a structured audit report with numbered findings. For quick questions or specific fixes (e.g., "add JSDoc to this function"), you get direct implementation without the formal report template.
-
-> **Good to know:** The skill preserves tool directive comments unchanged (eslint-disable, biome-ignore, prettier-ignore, @ts-expect-error). These have specific syntaxes required by their tools and must not be reformatted or removed.
-
-> **Good to know:** Test files (*.test.ts, *.test.tsx) and test directories (__tests__/, __mocks__/) are excluded from documentation audits. Test code follows different documentation conventions focused on readability over comprehensive JSDoc.
-
-## Related
-
-- [accelint-ts-best-practices](/docs/accelint-ts-best-practices) - TypeScript coding standards and type safety
-- [accelint-ts-performance](/docs/accelint-ts-performance) - Performance optimization and V8 profiling
-- [accelint-ts-testing](/docs/accelint-ts-testing) - vitest testing patterns and best practices
+- General code quality improvements (type safety, control flow)
+- Performance optimization
+- Framework-specific documentation (React PropTypes, Vue props)
+- Documentation for test files or mock utilities

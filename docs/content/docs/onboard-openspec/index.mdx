@@ -1,287 +1,148 @@
 ---
 title: Overview
-description: Interactively onboard a project to OpenSpec by running a structured interview and generating a complete QRSPI-configured openspec/config.yaml with parallel codebase inference.
+description: Interactively onboard a project to OpenSpec by running a structured interview and generating a complete QRSPI-configured openspec/config.yaml.
 source: skills/accelint-onboard-openspec/SKILL.md
 source_sha: 48ff87c44089278cba311200e7cf3876060674dd
-doc_sha: 319f6791d4bda42e635a1a5fd63cfc688b631cd9
+doc_sha: fb08a9e1a92b802dfe03877e51564e88f98e133a
 deprecated: false
-updated: 2025-01-21
+updated: 2025-06-01
 ---
 
-## Usage
+## What It Helps You Do
+
+Use this skill to set up OpenSpec for your project through a guided interview that produces a complete `openspec/config.yaml` file configured for the QRSPI methodology.
+
+The skill is especially useful when you need to:
+- Generate project-specific OpenSpec configuration from scratch
+- Import and restructure existing config files into the QRSPI schema
+- Refresh stale configuration when your codebase has evolved
+- Document your project's architectural facts and patterns for AI-generated artifacts
 
 Activate this skill by:
 - Using the `/accelint-onboard-openspec` command
-- Saying "set up openspec", "onboard to openspec", "generate openspec config", "help me set up openspec", or "I want to use openspec"
-- Mentioning "openspec config", "config.yaml for openspec", or "QRSPI config"
-
-Once activated, the skill runs a conversational interview to gather project facts and generates a complete `openspec/config.yaml` file configured for the QRSPI (Question → Research → Design → Structure → Propose → Implement) methodology.
-
-The skill operates in one of three modes based on file state:
-- **Create mode** - Full interview from scratch for new projects
-- **Import mode** - Merges existing non-standard configs into QRSPI schema
-- **Refresh mode** - Abbreviated interview covering only detected drift and unresolved TODOs
+- Saying "set up openspec", "onboard to openspec", or "generate openspec config"
+- Mentioning "QRSPI config" or "config.yaml for openspec"
 
 ## When to Use
 
 Use this skill when:
-- Starting a new OpenSpec project and need to create config.yaml
-- Converting an existing project to OpenSpec with QRSPI methodology
-- Refreshing stale openspec config after significant codebase changes
-- Importing and restructuring a custom config.yaml into the standard schema
-- Ensuring config.yaml includes all required sections for downstream AI artifacts
+- Users mention "openspec config", "config.yaml for openspec", or "QRSPI config"
+- Starting a new project that will use OpenSpec for spec-driven development
+- You have an existing config that needs to be restructured or updated
+- Your codebase has changed significantly since the config was last generated
 
-## What It Generates
+## How It Works
 
-The skill produces a complete `openspec/config.yaml` with:
+The skill runs a conversational interview across multiple phases to build your configuration:
 
-**Context Section** - Objective project facts injected into every AI artifact:
-- Stack facts (runtime, language, frameworks, testing, CI/CD)
+**Discovery Interview** — Asks targeted questions about your project in grouped topics:
+- Project identity (name, purpose, monorepo structure)
+- Tech stack (runtime, language, frameworks, libraries, tooling)
 - Architecture patterns (organization, path aliases, design patterns)
-- Domain concepts (key entities with definitions)
+- Domain concepts (key entities and terminology)
+- Performance targets and constraints
+- Code patterns (naming, exports, error handling, testing)
+- Anti-patterns (banned or deprecated approaches)
+- Per-artifact rules (proposal, design, tasks, spec requirements)
+
+**Smart Defaults** — After each stack answer, surfaces relevant conventions to confirm instead of asking every detail. For example, detecting Next.js prompts confirmation about App Router vs Pages Router patterns.
+
+**Parallel Codebase Inference** — Spawns four simultaneous discovery agents to fill gaps by scanning your codebase:
+- Agent A: Stack and build tooling (runtime versions, TypeScript config, package manager)
+- Agent B: Testing and code quality (test framework, linters, test structure patterns)
+- Agent C: Architecture and code patterns (directory organization, naming conventions, error handling)
+- Agent D: CI/CD and versioning (workflows, release strategy, documented anti-patterns)
+
+Each inferred value is tagged with its source for transparency. Values that cannot be resolved are marked with `# TODO: fill in` so you know what needs manual input.
+
+**Preview and Validation** — Shows the complete generated config with labeled inference sources before writing anything. After you confirm, the skill validates the YAML syntax to catch any formatting issues.
+
+### Intelligent Mode Detection
+
+Before asking any questions, the skill checks whether `openspec/config.yaml` exists and adapts its approach:
+
+**Create Mode** — File doesn't exist or is empty. Runs the full interview from scratch.
+
+**Import Mode** — File has unrecognized content. Presents three options:
+- **(a) Restructure** — Maps existing content onto the QRSPI schema, flags behavioral content that belongs in AGENTS.md instead, runs targeted interview for gaps
+- **(b) Append** — Adds QRSPI sections alongside existing content without modifying what's there
+- **(c) Dry run** — Shows what would be generated without changing any files
+
+**Refresh Mode** — File matches the expected schema. Runs abbreviated interview covering only:
+- Drift detection (scanning for changes since last update: new packages, tooling changes, config tightening)
+- Unresolved TODOs (surfaces `# TODO: fill in` markers from previous run)
+- External findings (if the prompt includes a `findings:` list from completed changes)
+
+## Good to Know
+
+> **Good to know:** This skill produces the **project DNA layer** (structural facts about what the project is). It is the companion to `accelint-onboard-agents`, which produces the **behavior layer** (how the agent acts and makes decisions). If you volunteer behavioral content during the interview—commit conventions, workflow steps, tool preferences—the skill will note it for AGENTS.md instead of adding it to config.yaml.
+
+> **Good to know:** The skill attempts codebase inference before asking questions. If inference fails for a field, it marks the section with `# TODO: fill in` rather than omitting it. An explicit TODO is actionable; a missing section silently degrades every AI artifact it drives.
+
+> **Good to know:** YAML syntax is strict about special characters. The skill automatically quotes values that start with special characters like `(`, `[`, `|`, or `:` to prevent syntax errors. After writing, it validates the generated YAML and fixes any issues immediately.
+
+## Prerequisites
+
+- Basic understanding of your project's tech stack and architecture
+- Access to the project repository
+- (Optional) ARCHITECTURE.md file — if present, the skill reads it to avoid asking questions about deployment and infrastructure that are already documented
+
+## What You Get
+
+A complete `openspec/config.yaml` file with two main sections:
+
+**context:** — Objective facts about your codebase injected into every AI-generated artifact (proposal, design, spec, tasks). Includes:
+- Stack facts (runtime, language, frameworks, tooling)
+- Architecture patterns (organization, path aliases, design patterns)
+- Domain concepts (key entities and terminology)
 - Performance targets
-- Code patterns (exports, naming, error handling, validation)
-- Testing patterns (AAA structure, property-based testing, assertions)
+- Code patterns to follow
+- Anti-patterns to avoid
 
-**Rules Section** - Per-artifact quality checkpoints:
-- Proposal rules (scope definition, boundaries)
-- Design rules (current state, desired state, decisions)
-- Tasks rules (vertical slicing, granularity, testing gates)
-- Spec rules (Given/When/Then, edge cases)
-
-**Anti-Patterns** - Banned patterns across code, performance, testing, and documentation domains
-
-## Key Workflow
-
-### Phase 0: File State Detection
-
-Before asking questions, the skill:
-1. Checks for related documentation (ARCHITECTURE.md) to pre-fill infrastructure answers
-2. Assesses openspec/config.yaml state:
-   - Missing → Create mode (full interview)
-   - Empty/near-blank → Create mode with overwrite confirmation
-   - Has recognized schema → Refresh mode (drift + TODOs only)
-   - Has unrecognized content → Import mode (three options: restructure, append, dry run)
-
-### Phase 1: Discovery Interview
-
-Conversational interview grouped into natural topic turns:
-- **Turn 1** - Project identity (name, purpose, monorepo structure, build system)
-- **Turn 2** - Tech stack (runtime, language, frameworks, testing, CI/CD)
-- **Turn 3** - Architecture (organization, path aliases, design patterns)
-- **Turn 4** - Domain concepts (3-5 key entities, specialized terminology)
-- **Turn 5** - Performance targets (concrete metrics, hot paths, constraints)
-- **Turn 6** - Code patterns (exports, naming, error handling, testing structure)
-- **Turn 7** - Anti-patterns (banned patterns, deprecated code, performance traps)
-- **Turn 8-10** - Per-artifact rules (proposal, design, tasks)
-
-### Phase 2: Smart Defaults
-
-After each stack answer, surfaces relevant conventions for confirmation:
-- Next.js + TypeScript → App Router vs Pages Router, Server Component boundaries
-- React + Vitest → userEvent over fireEvent, screen query priority
-- Python + FastAPI → Pydantic version, dependency injection patterns
-- Node.js + Prisma → transaction patterns, migration conventions
-
-### Phase 3: Parallel Codebase Inference
-
-Spawns 4 parallel discovery subagents to fill remaining gaps:
-- **Agent A** - Stack &amp; build tooling (runtime version, TS config, package manager, monorepo workspaces)
-- **Agent B** - Testing &amp; code quality (test framework, linters, test structure, type checking config)
-- **Agent C** - Architecture &amp; code patterns (directory organization, path aliases, export style, naming conventions)
-- **Agent D** - CI/CD &amp; versioning (workflows, release strategy, documented anti-patterns)
-
-Each field gets tagged as `INFERRED [source]` or `UNKNOWN` in the preview. Fields that cannot be inferred are marked `# TODO: fill in`.
-
-### Phase 4: Generation
-
-1. Shows labeled preview with inference sources and TODOs
-2. Asks for confirmation and corrections
-3. Writes to `openspec/config.yaml` (strips inference comments from final file)
-4. Validates YAML syntax (no tabs, proper quoting, no syntax errors)
-5. Prints summary of configured vs inferred vs TODO fields
+**rules:** — Per-artifact quality checkpoints that encode your team's standards:
+- Proposal rules (scope definition requirements, length limits)
+- Design rules (required sections, diagram preferences, technical depth)
+- Task rules (vertical slicing preferences, granularity, test requirements)
+- Spec rules (Given/When/Then format, edge case documentation)
 
 ## Examples
 
-### Example: Creating config.yaml for a new Next.js monorepo
+### Example: Creating config from scratch
 
 ```bash
+# Start the onboarding interview
 /accelint-onboard-openspec
+
+# The skill detects no existing config and runs Create Mode
+# After answering interview questions and reviewing the preview:
+# Output: openspec/config.yaml created with complete QRSPI configuration
 ```
 
-**Output:**
-```text
-Mode detected: Create (no existing config.yaml)
-Found ARCHITECTURE.md — I'll use it to avoid asking about deployment.
-
-Turn 1 — Project Identity
-What is the project name and primary purpose?
-> Acme Dashboard - Internal analytics platform
-
-Monorepo, single package, or something else?
-> Monorepo with 3 workspaces: @acme/ui, @acme/api, @acme/shared
-
-[... conversational interview continues ...]
-
-Phase 3: Spawning parallel discovery agents...
-✓ Agent A: Found Node.js 20.11 in .nvmrc, TypeScript 5.4 strict mode
-✓ Agent B: Found Vitest with Testing Library, ESLint + Prettier
-✓ Agent C: Feature-based architecture, named exports convention
-✓ Agent D: GitHub Actions CI, Changesets versioning
-
-Preview (before writing):
----
-context: |
-  ## Project Identity
-  Acme Dashboard - Internal analytics platform
-  Monorepo with 3 workspaces: @acme/ui, @acme/api, @acme/shared
-  
-  ## Tech Stack
-  - Runtime: Node.js 20.11 LTS        # inferred from .nvmrc
-  - Language: TypeScript 5.4, strict  # inferred from tsconfig.json
-  [...]
-
-Does this look right?
-> Yes, write it
-
-✓ Written to openspec/config.yaml
-✓ YAML validation passed
-
-Summary:
-- 18 fields answered directly
-- 12 fields inferred from codebase
-- 2 TODO fields need human input (performance targets, domain concepts)
-```text
-
-### Example: Refreshing stale config after codebase changes
+### Example: Refreshing stale config
 
 ```bash
+# Run the skill when your codebase has evolved
 /accelint-onboard-openspec
+
+# The skill detects existing config matching QRSPI schema
+# Runs Refresh Mode: scans for drift, surfaces TODOs
+# Shows only changed sections in preview before updating
 ```
 
-**Output:**
-```text
-Mode detected: Refresh (recognized schema)
-
-Drift detection:
-- Node version changed: 18.x → 20.x (found in .nvmrc)
-- New package added: @tanstack/react-query (found in package.json)
-- TypeScript strictNullChecks enabled (found in tsconfig.json)
-- New anti-pattern documented: polling deprecated in favor of webhooks
-
-Unresolved TODOs:
-- Performance targets still marked "# TODO: fill in"
-
-I'll only ask about those 5 items — the rest looks current.
-
-[... targeted interview for changed items ...]
-
-Preview (only changed sections):
-  ## Tech Stack
-  - Runtime: Node.js 20.11 LTS  # updated from 18.x
-+ - Key Libraries: @tanstack/react-query 5.x  # new
-  
-  ## Code Patterns
-+ - Validation: Zod schemas with strictNullChecks  # tightened
-
-  ## Performance Anti-Patterns
-+ - Polling APIs when webhooks available — creates unnecessary load  # new
-
-Write changes?
-> Yes
-
-✓ Updated openspec/config.yaml
-✓ YAML validation passed
-```text
-
-### Example: Importing existing custom config
+### Example: Importing existing config
 
 ```bash
+# You have an existing config with custom structure
 /accelint-onboard-openspec
+
+# The skill detects unrecognized content
+# Presents options: (a) Restructure, (b) Append, (c) Dry run
+# Choose (a) to map existing content onto QRSPI schema
+# Shows merged preview with labels: "# from existing file" vs "# new"
 ```
-
-**Output:**
-```text
-Mode detected: Import (unrecognized structure)
-
-This config.yaml has existing content with a structure I don't recognize.
-How would you like to proceed?
-
-(a) Restructure — map onto context:/rules: schema, flag behavioral content
-(b) Append — add skill's sections alongside existing content
-(c) Dry run — show what would be generated without changing files
-
-> a
-
-Reading existing content...
-
-Found behavioral content (belongs in AGENTS.md):
-- "All commits must follow Conventional Commits" → workflow procedure
-- "Use npm run dev for local testing" → tool preference
-
-Should I move these to AGENTS.md and remove from config.yaml?
-> Yes
-
-Mapped existing sections:
-- "Dependencies" → context: Tech Stack
-- "Coding Standards" → context: Code Patterns
-- "Review Checklist" → rules: proposal
-
-Running targeted interview for gaps...
-[... asks about missing sections ...]
-
-Preview (merged):
-context: |
-  ## Tech Stack
-  - Runtime: Node.js 18  # from existing file
-  [...]
-
-Write merged config?
-> Yes
-
-✓ Written to openspec/config.yaml
-✓ Moved behavioral content to AGENTS.md
-```text
-
-## Common Pitfalls
-
-> **Good to know:** This skill focuses on **project DNA** (WHAT the project is), not agent behavior (HOW agents act). Commit conventions, workflow procedures, and tool preferences belong in AGENTS.md via the `accelint-onboard-agents` skill.
-
-> **Good to know:** Parallel inference in Phase 3 is mandatory — spawning 4 discovery agents simultaneously is faster than serial scanning, especially for monorepos with many config files.
-
-> **Good to know:** Fields marked `# TODO: fill in` are intentional — they preserve config structure and prompt action. Silent omission creates invisible gaps that degrade all downstream AI artifacts.
-
-> **Good to know:** YAML is strict about special characters. Values starting with `(`, `[`, `|`, `"` must be quoted. The skill validates syntax after generation and fixes issues automatically.
-
-## YAML Generation Safety
-
-The skill follows strict quoting rules to avoid syntax errors:
-
-**Special characters requiring quotes:** `|`, `>`, `"`, `'`, `(`, `)`, `[`, `]`, `{`, `}`, `*`, `&`, `!`, `%`, `@`, `` ` ``
-
-**Examples:**
-```yaml
-# Correct quoting
-description: "(internal) auth module"
-tag: "[PKG:auth]"
-pattern: "some|other"
-command: 'npm run "test:unit"'
-
-# Multi-line content uses block scalars
-context: |
-  Line 1
-  Line 2
-```
-
-**Post-generation validation checks:**
-- No tab characters (YAML requires spaces)
-- Consistent 2-space indentation
-- Quoted values for special characters
-- Valid YAML structure (no unmatched brackets/quotes)
 
 ## Related
 
-- **accelint-onboard-agents** - Generate AGENTS.md/CLAUDE.md for agent behavior rules (companion skill)
-- **accelint-qrspi-propose** - Plan OpenSpec changes using QRSPI methodology (uses config.yaml context)
-- **accelint-qrspi-apply** - Apply QRSPI changes with parallelization (driven by config.yaml rules)
-- **accelint-architecture-doc** - Generate ARCHITECTURE.md (read by this skill to pre-fill infrastructure questions)
+- **accelint-onboard-agents** — Generates AGENTS.md/CLAUDE.md (agent behavior layer)
+- **accelint-qrspi-propose** — Uses config.yaml to plan OpenSpec changes
+- **accelint-architecture-doc** — Generates ARCHITECTURE.md (system overview)

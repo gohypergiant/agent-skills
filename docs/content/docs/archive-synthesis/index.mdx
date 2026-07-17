@@ -1,307 +1,150 @@
 ---
 title: Overview
-description: Periodic consistency checker for OpenSpec archives that detects decision drift and structural over-coupling across the entire corpus of archived changes, implementing the backward-looking "lint" operation missing from the rest of the QRSPI/OpenSpec stack.
+description: Periodically lint the full OpenSpec archive for cross-change decision drift, index/spec reconciliation, and structural over-coupling — the backward-looking consistency check that nothing else in the QRSPI/OpenSpec stack covers.
 source: skills/accelint-archive-synthesis/SKILL.md
 source_sha: c741708f05f8457f20e12af93ce91520d5b6e3b1
-doc_sha: d68354f2e7a1f2bd881477b8f202f5304fc3ba41
+doc_sha: 7ce6600fe96bee9d3fd4ab056ede261c2c29662a
 deprecated: false
-updated: 2026-07-17
+updated: 2026-01-03
 ---
 
-## Usage
+## What It Helps You Do
 
-Activate this skill by:
-- Using the `/accelint-archive-synthesis` command
-- Saying "run archive synthesis", "lint the openspec archive", "check for decision drift"
-- Asking to "audit the spec archive for contradictions", "find stale specs", "check capability coupling"
-- Mentioning "reconcile the specs index" or "check if old design decisions still hold"
+Use this skill to audit your OpenSpec archive for long-term inconsistencies that individual change workflows do not catch.
 
-```bash
-# Typically invoked when accelint-qrspi-archive suggests it after ~15 archived changes
-/accelint-archive-synthesis
+It is especially useful when you need to find:
+- **Decision drift** between archived changes that no longer agree
+- **Stale index rows** where `specs/INDEX.md` no longer matches the underlying spec files
+- **Structural over-coupling** where a capability now touches too many related specs
 
-# Or manually at any time
-/accelint-archive-synthesis
-```
+Unlike the rest of the QRSPI/OpenSpec workflow, this skill looks backward across the full archive instead of evaluating one change at a time.
 
-Once activated, the skill reads backward across the entire archived-change history to check whether it still agrees with itself. It scans two indexes (`openspec/changes/archive/INDEX.md` and `openspec/specs/INDEX.md`), performs targeted verification of flagged candidates, and produces a report with CRITICAL/WARNING/SUGGESTION findings in the same register as `/opsx:verify`.
-
-> **Good to know:** This skill never runs automatically and never blocks another skill's workflow—it's always either a human-invoked audit or an offered suggestion the human accepts explicitly.
-
-> **Good to know:** For confirmed decision-drift findings, you'll be asked to specify which side of the contradiction stands before any Status update is written—the skill never infers this from recency alone.
+Activate by saying "run archive synthesis," "lint the openspec archive," or "check for decision drift."
 
 ## When to Use
 
 Use this skill when:
-- Users say "run archive synthesis", "lint the openspec archive", "check for decision drift"
-- `accelint-qrspi-archive` suggests that 15+ changes have archived since the last synthesis run
-- You want to audit the spec archive for contradictions or inconsistencies
-- Investigating whether an old design decision still holds given everything decided since
-- Checking whether `specs/INDEX.md` still matches the actual `spec.md` files on disk
-- Determining if some capability has become an over-coupled refactor candidate
-- Running a corpus health check manually
 
-## What It Checks
+- `accelint-qrspi-archive` suggests running synthesis (typically after 15+ changes)
+- Checking whether an old design decision still holds given everything decided since
+- Verifying `specs/INDEX.md` still matches the actual spec.md files on disk
+- Finding capabilities that have become over-coupled refactor candidates
+- Auditing the archive for contradictions before a major milestone or release
 
-**Decision Drift** - Archived decisions that no longer cohere with each other (e.g., one change chose polling due to budget constraints, later change adopted a message broker for unrelated capability)
+## How It Works
 
-**Index Reconciliation** - `specs/INDEX.md` rows that disagree with actual `spec.md` files or point to directories/files that no longer exist
+The skill runs three archive-wide checks:
 
-**Structural Coupling** - Capabilities whose `related:` count indicates they've outgrown their boundaries (≥5 relationships and ≥2× the index median)
+### Decision Drift
 
-**Staleness Signals** - Capabilities with old `Last touched by` dates relative to clustered recent activity in related capabilities
+It looks for archived changes that appear to make conflicting decisions about the same or related capabilities, then verifies only the flagged candidates in more detail.
 
-## Key Patterns
+### Index Reconciliation
 
-### The Three Checks
+It checks whether `specs/INDEX.md` still matches the actual spec files on disk, including basic existence, purpose text, and `related:` metadata.
 
-**Decision Drift Detection:**
-1. Group archived changes by shared or related capabilities
-2. Coarse-scan `Decision` column for opposing patterns (polling vs push, eager vs lazy, sync vs async, etc.)
-3. Spawn subagents to verify flagged candidates against full `design.md` files
-4. Classify as CRITICAL if capability was touched after earlier change, WARNING otherwise
+### Structural Coupling
 
-**Index Reconciliation:**
-1. Verify every `specs/INDEX.md` row's capability directory and `spec.md` file exists (CRITICAL if missing)
-2. Read `## Purpose` heading and `related:` frontmatter from each `spec.md`
-3. Compare against index row values (WARNING if mismatched)
+It flags capabilities whose relationship count suggests they may have grown beyond their intended boundaries and should be reviewed as technical debt.
 
-**Structural Coupling:**
-1. Compute median `related:` list length across all capabilities
-2. Flag any with count ≥5 AND ≥2× median (SUGGESTION level)
-3. Report as plain fact, route to ARCHITECTURE.md's Known Technical Debt section
+## What You Get
 
-### Cost Control at Scale
+A structured report in the same CRITICAL/WARNING/SUGGESTION format as `/opsx:verify`:
 
-The skill achieves efficient scaling through:
-
-- **Index-first scanning** - Reads structured indexes (stay cheap regardless of history length), not raw files
-- **Targeted verification** - Opens `design.md` only for specific candidates the coarse scan flagged
-- **Subagent delegation** - Keeps raw design content out of parent context on every run
-- **Dismissed-pair tracking** - Skips pairs already ruled out permanently in prior runs
-
-### Human Review and Routing
-
-Every finding offers three options:
-
-**Decision-drift findings:**
-- **Confirm** - Skill asks which change stands, updates `Status` column, routes to relevant writer skill(s)
-- **Dismiss** - Recorded permanently to `SYNTHESIS-LOG.md`; pair never flagged again
-- **Defer** - Left as-is; resurfaces next run
-
-**Structural coupling/reconciliation findings:**
-- **Confirm** - Routes to appropriate writer skill or patches index row directly
-- **Dismiss** - NOT persisted; finding resurfaces next run (live snapshot, not historical fact)
-- **Defer** - Left as-is; resurfaces next run
-
-> **Good to know:** Only decision-drift dismissals persist. Structural coupling and index reconciliation are live snapshots that deserve re-checking every run regardless of prior dismissals.
-
-### The Two Indexes (Owned Elsewhere)
-
-This skill reads but doesn't write these indexes (maintained by `accelint-qrspi-archive`):
-
-```markdown
-openspec/changes/archive/INDEX.md — one row per archived change:
-| Change        | Date       | Decision                                  | Specs touched                      | Status  |
-|---------------|------------|-------------------------------------------|------------------------------------|---------|
-| add-live-sync | 2026-03-02 | polling with 5s interval, no infra budget | sync/protocol, ui/status-indicator | current |
 ```
-
-```markdown
-openspec/specs/INDEX.md — one row per capability:
-| Capability    | Purpose                                     | Related             | Last touched by            |
-|---------------|---------------------------------------------|---------------------|----------------------------|
-| sync/protocol | Defines how client and server exchange state | ui/status-indicator | add-live-sync (2026-03-02) |
-```
-
-Exception: The skill can update a single row's `Status` column in `archive/INDEX.md` after confirmed decision-drift, and can patch or remove a single row in `specs/INDEX.md` after confirmed reconciliation finding.
-
-### The Log (Owned by This Skill)
-
-`openspec/changes/archive/SYNTHESIS-LOG.md` tracks synthesis checkpoints:
-
-```markdown
-2026-07-06 — checked through row 42 — 2 confirmed, 1 dismissed, 1 deferred
-  dismissed: [add-live-sync|adopt-notification-gateway|sync/protocol]
-```
-
-This append-only log enables:
-- Computing "changes since last run" for cadence sanity-checks
-- Permanently suppressing dismissed decision-drift pairs across all future runs
-
-## Examples
-
-### Example: Suggested run with confirmed contradiction
-
-```bash
-# accelint-qrspi-archive notices 15 changes since last synthesis
-ℹ️ 15 changes have archived since last synthesis run (2026-01-10).
-  Consider running accelint-archive-synthesis.
-
-# User accepts suggestion
-/accelint-archive-synthesis
-```
-
-**Output:**
-```
-Preflight —
-✓ Task B: both indexes present, 47 archived changes, 22 capabilities
-✓ Task A: actual cadence ~1.1 changes/week; 15-change trigger reasonable
-✓ Task C: index median related-count is 6; 5-and-2× floor looks good
-
-Decision drift —
-[spawns subagent: verify sync/protocol candidate]
-✓ Confirmed: add-live-sync (2026-03-02) chose polling for sync/protocol,
-  citing no infra budget for a message broker. adopt-notification-gateway
-  (2026-06-18) later adopted a message broker for unrelated capability.
-  sync/protocol has been touched twice since — CRITICAL.
-
 ## Archive Synthesis Report — 2026-07-06
 Corpus: 47 archived changes, 22 capabilities, checked back to 2026-01-10.
 
 ### CRITICAL
-Finding 1: add-live-sync's stated budget constraint for sync/protocol may
-no longer hold, given adopt-notification-gateway's later message-broker
-adoption.
-  (a) Confirm — I'll ask which change stands, then update Status and
-      notify the relevant doc skill(s)
-  (b) Dismiss — Recorded permanently; this exact pair won't be flagged again
-  (c) Defer  — Left as-is; resurfaces next run
+- [Confirmed decision contradiction with actively-touched capability]
+- [Missing capability directory or spec.md file]
 
-[User selects: Confirm]
+### WARNING
+- [Confirmed decision contradiction on dormant capability]
+- [Index row disagrees with its own spec.md]
 
-For Finding 1 — which change should Status reflect: add-live-sync's
-original budget constraint, or adopt-notification-gateway's later adoption?
-
-[User: adopt-notification-gateway — the budget constraint's gone now]
-
-✓ archive/INDEX.md: add-live-sync row Status → "superseded by
-  adopt-notification-gateway (2026-06-18)"
-[invokes accelint-architecture-doc with findings: — sync/protocol budget
-  constraint may be stale]
-
-✅ Synthesis complete: 1 confirmed, 0 dismissed, 0 deferred.
+### SUGGESTION
+- [Staleness flag]
+- [Structural coupling flag]
 ```
 
-### Example: First-ever run on small corpus
+For each finding, you choose:
+
+- **Confirm** — the skill updates `Status` (for decision drift), patches/removes the index row (for reconciliation), or routes to the relevant doc skill via the shared `findings:` interface
+- **Dismiss** — for decision drift, recorded permanently; for coupling/reconciliation, not persisted (resurfaces next run if still present)
+- **Defer** — left as-is; resurfaces next run
+
+## Prerequisites
+
+- OpenSpec CLI installed and initialized
+- `accelint-qrspi-archive` already in regular use (both indexes must exist with at least one row each)
+- Sub-agent support for targeted `design.md` and `spec.md` reads
+- Read access to every capability directory under `openspec/specs/`
+- For automatic routing to work, writer skills (`accelint-architecture-doc`, `accelint-onboard-openspec`, `accelint-onboard-agent`, `accelint-readme-writer`) need Mode 3 Refresh support with the `findings:` interface
+
+> **Good to know:** If writer skills don't support `findings:` yet, the skill still produces the report — you just handle the routing manually.
+
+## Good to Know
+
+> **Good to know:** This skill never runs automatically and does not block other QRSPI/OpenSpec workflows. It is an explicit audit step.
+
+> **Good to know:** Confirmed index reconciliation findings can patch `specs/INDEX.md`, but the skill does not rewrite spec files themselves.
+
+> **Good to know:** Dismissed decision-drift pairs are recorded in `openspec/changes/archive/SYNTHESIS-LOG.md` so the same dismissed contradiction does not keep resurfacing.
+
+> **Good to know:** Thresholds such as the 15-change trigger and the structural-coupling cutoff are defaults for review, not automatic policy changes.
+
+## Limits
+
+This skill does not:
+
+- Run automatically or block any other skill's workflow
+- Edit hub docs directly (routes through writer skills via `findings:`)
+- Write to `archive/INDEX.md` except the `Status` column for confirmed decision drift
+- Write to `specs/INDEX.md` except patching/removing a single confirmed reconciliation row
+- Touch any `design.md` or `spec.md` file (reads only)
+- Operate across repositories (local project only)
+- Adjust thresholds on its own authority
+
+## Examples
+
+### Example: Suggested run after 15 changes
+
+```bash
+# accelint-qrspi-archive suggests synthesis
+/accelint-archive-synthesis
+
+# Output:
+# Preflight checks pass
+# Scans archive, finds 1 CRITICAL decision drift
+# Human confirms, names which change stands
+# Updates Status, routes to accelint-architecture-doc
+# Logs checkpoint to SYNTHESIS-LOG.md
+```
+
+### Example: First-ever run on a small corpus
 
 ```bash
 /accelint-archive-synthesis
+
+# Output:
+# ⚠ 6 archived changes is a small corpus
+# Continue anyway? Yes
+# No findings (too few changes for meaningful signal)
+# Creates SYNTHESIS-LOG.md fresh
 ```
 
-**Output:**
-```
-Preflight —
-✓ Task B: both indexes present, 6 archived changes, 4 capabilities
-ℹ️ SYNTHESIS-LOG.md doesn't exist yet — this is the first-ever run
-⚠️ 6 archived changes is a small corpus — cross-archive synthesis has
-   little to work with yet. Continue anyway with a low-signal run?
-
-[User: Yes, go ahead]
-
-Decision drift — no candidate collisions found across 4 capabilities
-Index reconciliation — 4/4 directories present; all files match index
-Structural coupling — corpus too small for meaningful median
-
-## Archive Synthesis Report — 2026-07-06
-Corpus: 6 archived changes, 4 capabilities, checked back to project start.
-
-No CRITICAL, WARNING, or SUGGESTION findings this run.
-
-✅ Synthesis complete: nothing to confirm. Re-run once more changes have
-   archived — corpus too small yet for signal to be meaningful.
-```
-
-### Example: Dismissed pair stays suppressed on next run
+### Example: Dismissed pair stays suppressed
 
 ```bash
-# Run 1 - three months earlier
-Finding 1 [WARNING]: legacy-cache-warmer chose eager cache warming,
-adopt-lazy-init later chose lazy initialization for unrelated capability.
+# Run 1: human dismisses a decision-drift finding
+# Skill records to SYNTHESIS-LOG.md dismissed: list
 
-[User: Dismiss — these were never in tension, different teams]
-
-✓ Recorded as dismissed.
-  dismissed: [adopt-lazy-init|legacy-cache-warmer|cache/layer]
-
-# Run 2 - today
+# Run 2 (months later):
 /accelint-archive-synthesis
+
+# Output:
+# Loads dismissed-pair history
+# Skips that specific pair without re-verification
+# Reports "previously dismissed — not re-surfaced this run"
 ```
-
-**Output:**
-```
-Preflight —
-✓ Task A: reading SYNTHESIS-LOG.md — last run 2026-04-02, checked
-  through row 31; 1 dismissed pair on record
-
-Decision drift —
-- legacy-cache-warmer / adopt-lazy-init / cache/layer: matches a
-  dismissed pair on record, skipped without re-verification
-
-## Archive Synthesis Report — 2026-07-06
-Corpus: 53 archived changes, 24 capabilities, checked back to 2026-04-02.
-(cache/layer's legacy-cache-warmer/adopt-lazy-init pair previously
-dismissed — not re-surfaced this run)
-
-No new findings.
-```
-
-### Example: Index reconciliation finding
-
-```bash
-/accelint-archive-synthesis
-```
-
-**Output:**
-```
-Index reconciliation —
-✓ Existence check: 21/22 capability directories present
-✗ CRITICAL: specs/INDEX.md row for cache/layer points at
-  openspec/specs/cache/layer/spec.md, which no longer exists
-
-[spawns subagent: content-check api/gateway]
-✗ WARNING: api/gateway's specs/INDEX.md row lists related: [auth-service],
-  but api/gateway/spec.md's actual frontmatter reads
-  related: [auth-service, rate-limiter] — added by hand-edit
-
-### CRITICAL
-Finding 1: cache/layer directory no longer exists
-  (a) Confirm — I'll remove this row from specs/INDEX.md
-  (b) Dismiss — Not persisted; resurfaces next run if still missing
-  (c) Defer  — Left as-is; resurfaces next run
-
-### WARNING  
-Finding 2: api/gateway's specs/INDEX.md row disagrees with spec.md
-  (a) Confirm — I'll patch this row (Purpose + related: only,
-      last_touched_by unchanged)
-  (b) Dismiss — Not persisted; resurfaces next run if still mismatched
-  (c) Defer  — Left as-is; resurfaces next run
-
-[User: Confirm both]
-
-✓ Finding 1: removed row for cache/layer from specs/INDEX.md
-✓ Finding 2: patched api/gateway row — related: [auth-service] →
-  [auth-service, rate-limiter] (last_touched_by unchanged)
-```
-
-## Common Pitfalls
-
-> **Good to know:** This skill focuses on backward-looking consistency across the archive. For forward-looking checks (does implementation match design.md?), use `/opsx:verify` before archiving. The two are complementary—a change can pass verification cleanly and still surface in a decision-drift finding years later.
-
-> **Good to know:** Dismissing a structural coupling or index reconciliation finding does NOT permanently suppress it—both are live snapshots that get re-checked every run. Only decision-drift dismissals persist to the log, since those are anchored to immutable archived changes.
-
-> **Good to know:** The skill can detect contradictions but never resolves them on its own authority. After confirming a decision-drift finding, you'll always be asked which side stands before any Status update is written.
-
-> **Good to know:** This skill routes findings to writer skills via the shared `findings:` interface—it never rewrites hub docs directly. If a writer skill doesn't support the interface yet, the finding is presented in the report but needs manual follow-up.
-
-> **Good to know:** The 15-change trigger and 5-and-2×-median coupling thresholds are reasoned defaults, not measured ones. Preflight checks report mismatches but never adjust automatically—changing numbers is a human's call based on your project's actual velocity and relationship density.
-
-## Related
-
-- [`accelint-qrspi-archive`](/docs/accelint-qrspi-archive) - Prerequisite; produces the indexes this skill reads
-- [`accelint-qrspi-apply`](/docs/accelint-qrspi-apply) - Uses same `findings:` interface for Phase 4 hub-doc refresh
-- [`accelint-qrspi-propose`](/docs/accelint-qrspi-propose) - Phase 2 extension reads `specs/INDEX.md` at propose time
-- [`accelint-architecture-doc`](/docs/accelint-architecture-doc) - Routing target for structural/coupling drift findings
-- [`accelint-onboard-openspec`](/docs/accelint-onboard-openspec) - Routing target for tech stack drift findings
-- [`accelint-onboard-agent`](/docs/accelint-onboard-agents) - Routing target for agent behavior drift findings
-- [`accelint-readme-writer`](/docs/accelint-readme-writer) - Routing target for user-facing drift findings

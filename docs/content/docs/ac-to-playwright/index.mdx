@@ -3,145 +3,107 @@ title: Overview
 description: Convert and validate acceptance criteria for Playwright test automation, handling both bullet-style markdown and Gherkin syntax with JSON test plan generation and validation.
 source: skills/accelint-ac-to-playwright/SKILL.md
 source_sha: cdf7f949f42bcd294963c8244a2565622a63dff3
-doc_sha: 7baf42fef8d46e0eef5696fb896db92e219354d6
+doc_sha: ce355bd637e7203700a9fb5e5cf8af2666bef7e5
 deprecated: false
-updated: 2026-07-17
+updated: 2025-01-24
 ---
 
-## Usage
+## What It Helps You Do
+
+Use this skill to convert acceptance criteria into Playwright test automation. It transforms requirements written in markdown bullets or Gherkin syntax into validated JSON test plans and executable test suites.
+
+It is especially useful when you need to:
+- Validate whether AC are ready for automation before writing tests
+- Convert AC files (`.md` or `.feature`) into Playwright test suites
+- Ensure acceptance criteria follow automation-ready patterns
+- Generate test plans with proper target selectors and assertions
 
 Activate this skill by:
-- Using the `/accelint-ac-to-playwright` command
-- Saying "review these AC", "evaluate if AC are ready for automation", "convert these AC to tests", "generate Playwright tests from acceptance criteria"
-- Mentioning "turn AC into tests", "check if AC can be converted", "assess AC quality"
-- Working with `.md` bullet-style or `.feature` Gherkin acceptance criteria files
-
-The skill operates in two modes:
-
-**Assessment mode** - Analyzes AC files for conversion readiness without generating artifacts:
-```bash
-# Activate with phrases like:
-# "review these AC"
-# "are these AC automation-ready?"
-# "check if these AC can be converted"
-```
-
-**Full conversion mode** - Generates JSON test plans and Playwright test files:
-```bash
-# Activate with phrases like:
-# "convert these AC to tests"
-# "generate Playwright tests from these AC"
-# "turn AC into test automation"
-```
-
-Once activated in assessment mode, the skill validates AC structure, targets, actions, and expected outcomes, then reports whether AC are conversion-ready with detailed issue lists.
-
-Once activated in full conversion mode, the skill runs assessment first, then generates validated JSON test plans and translates them to Playwright `.spec.ts` files with shared fixtures.
+- Saying "review these AC", "evaluate AC quality", "check if AC are ready"
+- Saying "convert these AC", "generate tests from AC", "turn AC into Playwright tests"
+- Mentioning "acceptance criteria" or "Gherkin" with "Playwright" or "automation"
 
 ## When to Use
 
 Use this skill when:
-- Reviewing or evaluating acceptance criteria for test automation readiness
-- Assessing if AC can be converted as-is or need modifications
-- Validating AC quality against Playwright requirements
-- Converting `.md` bullet files or `.feature` Gherkin files to Playwright specs
-- Generating test automation from requirements
-- Creating test plans with structured JSON schema validation
+- Users ask to review/evaluate/check if AC are ready for automation
+- Users want to assess if AC can be converted as-is
+- Users ask to validate AC quality for Playwright
+- Users want to turn AC into tests, generate tests from acceptance criteria
+- Users need to convert `.md` bullets or `.feature` Gherkin files to Playwright specs
+- Users request test automation creation from requirements
 
-## What It Converts
+## How It Works
 
-**Input formats**:
-- Bullet-style markdown (`.md`) - each `- ` bullet becomes one test
-- Gherkin syntax (`.feature`) - each Scenario becomes one test, Scenario Outlines expand to multiple tests
+The skill operates in two modes based on your request:
 
-**Output artifacts**:
-- JSON test plans (`<suite-slug>.json`) conforming to schema
-- Playwright test files (`<suite-slug>.spec.ts`)
-- Shared fixtures (`fixtures/error-handling.ts`, `fixtures/console-tracking.ts`)
-- Batch summary JSON with metadata
-
-**Validation checks**:
-- Structure and format (proper bullets or Gherkin keywords, step ordering)
-- Targets (area/component/intent pattern with controlled vocabulary)
-- Actions (recognized verbs mappable to Playwright: click, fill, select, drag)
+**Assessment mode** analyzes AC text without generating artifacts. It validates:
+- Structure and format (bullet markers, Gherkin syntax, step ordering)
+- Target completeness (area/component/intent pattern with controlled vocabulary)
+- Action verbs (click, fill, select with proper values)
 - Expected outcomes (explicit, measurable assertions)
-- Values (quoted literals for fills/selects, not placeholders)
 
-## Key Patterns
+Reports either "✓ AC are conversion-ready" with validation checklist or "❌ AC are not conversion-ready" with detailed issue list.
 
-### Assessment Workflow
+**Conversion mode** generates complete test automation:
+1. Runs assessment validation first (stops if issues found)
+2. Generates JSON test plan from AC using controlled vocabulary
+3. Validates plan against schema (max 2 attempts)
+4. Translates plan to Playwright spec file
+5. Creates summary metadata and copies shared fixtures
 
-1. Detect intent from user phrasing (review/evaluate/assess)
-2. Load `references/acceptance-criteria.md` and `references/test-hooks.md`
-3. Analyze each AC file against conversion requirements
-4. Report pass/fail with detailed issue list or validated checklist
-5. Do not generate any artifacts in this mode
+### Target Pattern System
 
-### Conversion Workflow
+The skill expects each action target to follow `area.component.intent`, which keeps selectors predictable and easier to maintain.
+- **Area** identifies where the interaction happens
+- **Component** identifies the UI element type
+- **Intent** identifies the action's purpose
 
-1. Detect intent from user phrasing (convert/generate/turn into tests)
-2. Run assessment mode against all input files first
-3. If assessment fails for any file, stop immediately
-4. For each passing file:
-   - Generate JSON test plan conforming to `references/plan-schema.ts`
-   - Validate plan with `npx validate-plan`
-   - If validation fails, retry once to fix specific issue, then stop
-   - If validation passes, translate plan to Playwright test with `scripts/translate-plan-to-tests.ts`
-   - Append summary entry to batch JSON file
-5. Copy shared fixtures directory to test output location
+### Output Shape
 
-### Naming Transformations
+One AC file becomes one test suite:
+- `.md` bullets become individual tests
+- `.feature` scenarios become individual tests, while Scenario Outline rows become parameterized cases
 
-| Input | Suite Name | Test Name | Output Slug |
-|-------|------------|-----------|-------------|
-| `.feature` | `Feature:` text → lowercase → capitalize first | Scenario text (lowercase, ~64 char limit) + ` (params)` for Scenario Outlines | suite name → lowercase, spaces to dashes |
-| `.md` | filename → lowercase → dashes to spaces → capitalize first | Summarize bullet intent (present tense, lowercase, ~64 char) | suite name → lowercase, spaces to dashes |
+## Good to Know
 
-For Scenario Outlines, parameters use shortest left-to-right column combo that uniquely identifies each row, joined with `/`.
+> **Good to know:** Assessment mode does not generate files. Use review-style prompts for validation and conversion-style prompts when you want artifacts written.
 
-### Target Pattern
+> **Good to know:** The skill asks for explicit output directories before writing plans, tests, and summaries.
 
-Targets must follow the `area.component.intent` pattern with controlled vocabulary:
+> **Good to know:** Validation stops after two failed attempts rather than guessing at a third correction.
 
-```
-<intent> <component> on the <area>
-```
+> **Good to know:** Generated tests depend on the shared `fixtures/` directory, so copy both the `.spec.ts` files and the fixtures when moving output into your Playwright project.
 
-**Example**: "clicks the Submit button on the form" → `button.form.submit`
+## Prerequisites
 
-**Controlled vocabulary**:
-- Area keywords: nav, header, footer, form, drawer, card, toast, modal, table, page, area
-- Component keywords: button, link, input, dropdown, checkbox, radio, text, div, component
+- Playwright installed in your project
+- TypeScript support configured
+- Acceptance criteria files in bullet markdown (`.md`) or Gherkin (`.feature`) format
+- For validation: The skill's dependencies built (`npm run build` in the skill directory)
 
-### Mouse and Keyboard Actions
+## What You Get
 
-**Element clicks** (most common):
-```
-Given the user clicks the Submit button on the form
-```
+**Assessment mode output:**
+- Validation report listing issues by file with specific problems, examples, and fixes
+- Or confirmation that AC are conversion-ready with validated checklist
 
-**Coordinate clicks**:
-```
-Given the user clicks at position 150, 200
-Given the user right-clicks at position 300, 400
-```
-
-**Keyboard combinations**:
-```
-Given the user presses Shift+g
-Given the user presses Control+Enter
-```
-
-Modifier combinations automatically translate to three-step sequence: keyDown → press → keyUp.
+**Conversion mode output:**
+- JSON test plan file (`<plans-dir>/<suite-slug>.json`)
+- Playwright test suite (`<tests-output-dir>/<suite-slug>.spec.ts`)
+- Summary metadata (JSON batch file in summary directory)
+- Shared fixtures directory (error-handling.ts, console-tracking.ts)
+- Optional Playwright config template
 
 ## Examples
 
-### Example: Assessment mode identifies missing targets
+### Example: Assessing AC Quality
 
 ```bash
-# User: "Review these AC files for conversion readiness"
-# Skill loads acceptance-criteria.md and test-hooks.md, analyzes files
+# User provides AC file and asks:
+"Review this feature file and tell me if it's ready for automation"
 
+# Skill analyzes and reports issues:
 ❌ AC are not conversion-ready. Issues found:
 
 File: login-flow.feature
@@ -149,90 +111,36 @@ File: login-flow.feature
    - Problem: Test hook selector incomplete (button.form instead of button.form.submit)
    - Example: "clicks the button on the form"
    - Fix: Specify intent: "clicks the Submit button on the form"
-
-File: form-actions.feature
-2. Scenario "User submits form": Unknown action verb
-   - Problem: "hovers" is not a recognized Playwright action
-   - Example: "the user hovers over the tooltip"
-   - Fix: Use a supported action (click, fill, select) or clarify the intent
 ```
 
-### Example: Full conversion from bullet markdown
+### Example: Converting AC to Tests
 
-Input file `checkout.md`:
-```markdown
-- From the checkout page, a user fills the email input field with 'test@example.com', fills the card number input field with '4111111111111111', clicks the Pay button on the form, and sees success text that says 'Payment complete' appear in a toast.
+```bash
+# User provides AC file and specifies output directories:
+"Convert form-validation.feature to Playwright tests. 
+Put plans in ./test-plans, tests in ./e2e/tests, summaries in ./test-summaries"
+
+# Skill generates:
+# - ./test-plans/form-validation.json (validated plan)
+# - ./e2e/tests/form-validation.spec.ts (Playwright suite)
+# - ./test-summaries/batch-[timestamp].json (metadata)
+# - ./e2e/tests/fixtures/ (shared utilities)
 ```
 
-Conversion output:
-- JSON plan: `checkout.json` with validated schema
-- Test file: `checkout.spec.ts` with Playwright test
-- Fixtures: `fixtures/error-handling.ts`, `fixtures/console-tracking.ts`
+## Limits
 
-### Example: Gherkin with Scenario Outline
+- The skill plans the test structure but does not execute tests or verify they pass against your actual application
+- Validation is limited to 2 attempts per plan (initial + 1 correction)
+- Target selectors use controlled vocabulary; custom patterns require AC updates
+- The skill cannot infer missing information—targets, values, and assertions must be explicit in AC
+- For converting plans to tests, the skill relies on `scripts/translate-plan-to-tests.ts` which must be available
 
-Input file `navigation.feature`:
-```gherkin
-@suite-tag
-Feature: Site navigation
+## Good to Know
 
-  Background:
-    Given the user is logged in
+> **Good to know:** AC that say "interact with" or "use" cannot be mapped cleanly to Playwright actions. Use specific verbs such as `click`, `fill`, or `select`.
 
-  @smoke
-  Scenario Outline: User navigates to authorized pages
-    Given the user is on the home page
-    When the user clicks the <location> link in the header
-    Then the page heading text in the header says "<title>"
+> **Good to know:** Targets need the full `area.component.intent` pattern. A selector like `button.form` is too ambiguous; `button.form.submit` is automation-ready.
 
-    Examples:
-      | location | title    |
-      | settings | Settings |
-      | help     | Help     |
-```
+> **Good to know:** Test generation works best when AC include literal values like `'premium@example.com'` rather than descriptive placeholders such as "a valid email".
 
-Generated tests:
-- `user navigates to authorized pages (settings/Settings)`
-- `user navigates to authorized pages (help/Help)`
-
-Suite tags: `@suite-tag`  
-Test tags: `@smoke` (not duplicated from suite level)
-
-## Anti-Patterns
-
-**NEVER use bare string values with selectOption** — Playwright's `selectOption()` matches HTML `value` attributes by default, not visible text. AC writers specify visible option text (e.g., "Premium Plan"), so always use `{{ label: "text" }}` syntax. Using bare strings causes silent mismatches where tests pass locally but fail in production.
-
-**NEVER generate artifacts in assessment mode** — when the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files.
-
-**NEVER skip controlled vocabulary checks** — verify that area and component keywords in targets match the lists in `test-hooks.md`. Generic targets like `button.generic` bypass the system and create tests that match multiple elements unpredictably.
-
-**NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions.
-
-**NEVER use `doubleClick` for element interactions** — `doubleClick` is only for coordinate-based double-clicks (x,y positions). For double-clicking elements, use the element-based `click` action twice in sequence.
-
-**NEVER use `mouseClick` for element interactions** — `mouseClick` is only for coordinate-based clicks (x,y positions). For clicking elements, always use `click` with test IDs.
-
-**NEVER invent assertions** — only add `expectText`, `expectVisible`, `expectNotVisible` when AC explicitly states expected outcomes (exception: `expectUrl` for navigation, visibility pairs for show/hide actions).
-
-**NEVER assume targets or values** — if AC says "click the button" without identifying which button, ask for clarification rather than guessing.
-
-**NEVER write a plan file without validating first** — validation catches structural errors; writing invalid plans creates broken artifacts requiring manual cleanup.
-
-**NEVER process multiple steps of one file in parallel** — complete the full pipeline (AC → plan → test → summary) for each file before moving to the next to avoid partial artifacts and state confusion.
-
-## Common Pitfalls
-
-> **Good to know:** Assessment mode vs conversion mode intent detection is critical. Phrases like "review", "evaluate", "check if ready", or "assess" trigger assessment only. Phrases like "convert", "generate", or "turn into tests" trigger full conversion. If the user says "review and then convert", run assessment first, report results, then ask if they want to proceed with conversion.
-
-> **Good to know:** When converting AC to tests, the skill always runs assessment mode first. If assessment fails for any file, conversion stops immediately. Fix all assessment issues before attempting conversion.
-
-> **Good to know:** Generated tests import from `fixtures/` directory. When copying tests to your Playwright project, copy both the `.spec.ts` files AND the `fixtures/` directory. Tests will fail to compile without these shared utilities.
-
-> **Good to know:** The skill validates JSON plans before writing files and allows up to 2 attempts total (initial + 1 correction). After 2 failed attempts, it reports the error to the user rather than continuing to retry.
-
-> **Good to know:** Start URL defaults to `/` unless AC explicitly states a different starting page. If tests need to start on a specific page, include it in the AC: "Given the user is on the settings page".
-
-## Related
-
-- [accelint-ts-testing](/docs/accelint-ts-testing) - For writing tests following vitest best practices
-- [accelint-react-testing](/docs/accelint-react-testing) - For React component testing patterns
+> **Good to know:** The skill only generates assertions for outcomes stated explicitly in the AC. If expected behavior is omitted, the resulting test will omit that assertion.

@@ -1,304 +1,131 @@
 ---
 title: Overview
-description: Create, refactor, and audit agent skills with domain expertise, workflows, and tool integrations using structured workflows and progressive disclosure
+description: Create, audit, and refactor agent skills with structured workflows for domain expertise, anti-patterns, and progressive disclosure.
 source: skills/accelint-skill-manager/SKILL.md
 source_sha: 3af365c0388b9f2d9fda33fe812d02050a9f2077
-doc_sha: 1ae1036ed0480c12011b99581a6381b78dbe0f0e
+doc_sha: bd3c710ff063a637e3dc9e54dd0520fc9eb0ab26
 deprecated: false
-updated: 2026-05-18
+updated: 2026-07-17
 ---
 
-## Usage
+## What It Helps You Do
+
+Use this skill to build and maintain high-quality agent skills that capture expert knowledge. It guides you through:
+
+- Creating new skills from user examples and domain expertise
+- Auditing existing skills for quality, structure, and knowledge value
+- Refactoring skills to improve clarity, token efficiency, and activation accuracy
+- Ensuring skills follow best practices for frontmatter, descriptions, and progressive disclosure
+
+The skill focuses on capturing what takes experts years to learn—not teaching basics or standard procedures.
 
 Activate this skill by:
-- Using the `/accelint-skill-manager` command
-- Saying "create a skill", "make a new skill", "build a skill", "skill for X"
-- Saying "audit this skill", "review this skill", "check skill quality"
-- Saying "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill"
-
-The skill provides structured workflows:
-
-**For creating new skills:**
-```bash
-# Command
-/accelint-skill-manager
-
-# Follow the 4-step workflow:
-# 1. Understanding - Gather concrete examples
-# 2. Planning - Identify scripts, references, assets
-# 3. Initializing - Create directory structure from template
-# 4. Editing - Write agent-focused content with CHANGELOG
-```
-
-**For auditing existing skills:**
-```bash
-# Command
-/accelint-skill-manager path/to/skill/
-
-# Runs structured audit:
-# - Frontmatter validation
-# - Structure audit
-# - CHANGELOG and version audit
-# - Knowledge delta test
-# - Actionable improvement recommendations
-```
-
-Once activated, the skill guides you through skill creation or audit with progressive disclosure—loading detailed reference files only when needed to minimize context usage.
+- Saying "create a skill", "build a skill for X", "make a new skill"
+- Asking to "audit this skill", "review skill quality", "check this skill"
+- Requesting "fix this skill", "improve this skill", "refactor this skill", "optimize this skill"
 
 ## When to Use
 
 Use this skill when:
-- Creating a new agent skill from scratch
-- Refactoring or improving an existing skill
-- Auditing skill quality against specifications
-- Unsure how to structure skill content
-- Need guidance on freedom calibration (prescriptive vs principle-based)
-- Need to validate frontmatter, descriptions, or CHANGELOG format
+- Creating domain expertise into structured agent skills
+- Auditing skills for knowledge density and activation accuracy
+- Improving existing skills with better structure or clearer descriptions
+- Ensuring skills follow frontmatter conventions and progressive disclosure patterns
 
-## Key Concepts
+## How It Works
+
+The skill provides three distinct workflows tailored to your task:
+
+**Skill Creation Workflow** (4 steps):
+1. **Understanding** - Gather concrete usage examples and trigger phrases from users
+2. **Planning** - Identify reusable scripts, references, and assets from the examples
+3. **Initializing** - Check for overlapping skills, create directory structure from template
+4. **Editing** - Write expert knowledge with calibrated freedom levels and update CHANGELOG
+
+**Skill Audit Workflow**:
+1. Frontmatter validation (name conventions, description quality, version alignment)
+2. Structure check (required sections, anti-patterns presence, progressive disclosure)
+3. CHANGELOG and version verification (format, rationale, version matching)
+4. Knowledge delta test (measures redundant vs expert-only content percentage)
+5. Actionable recommendations with improved description and revised SKILL.md
+
+**Freedom Calibration**:
+The skill adjusts how prescriptive it becomes based on task fragility:
+- **High freedom** for creative tasks (principles, thinking patterns)
+- **Medium freedom** for code review (guidelines with examples)
+- **Low freedom** for fragile operations (exact scripts, specific commands)
 
 ### Progressive Disclosure
 
-The skill uses a three-layer approach to minimize context usage:
+The skill minimizes context usage through layered loading:
+- Core workflow stays in SKILL.md (&lt;500 lines)
+- Detailed conventions go in references/ (loaded on-demand)
+- Reusable code goes in scripts/, templates in assets/
 
-**Layer 1: Metadata (~100 tokens)** - Always loaded via description field  
-**Layer 2: SKILL.md (&lt;500 lines)** - Core workflow loaded on activation  
-**Layer 3: Resources (on-demand)** - References, scripts, assets loaded only when needed
+## Examples
 
-References available:
-- `references/file-system.md` - Directory structure and naming
-- `references/skill.md` - Description field conventions
-- `references/agents.md` - AGENTS.md patterns
-- `references/progressive-disclosure.md` - Context optimization rules
-- `references/references.md` - Reference file format
-- `references/scripts.md` - Script conventions
-- `references/assets.md` - Asset guidelines
-- `references/changelog.md` - CHANGELOG maintenance
+### Example: Creating a New Skill
 
-### Freedom Calibration
-
-Match guidance style to task fragility:
-
-| Task Type | Freedom | Format | Example |
-|-----------|---------|--------|---------|
-| **Creative/Design** | High | Principles, anti-patterns | "Commit to a bold aesthetic" |
-| **Code Review** | Medium | Guidelines with examples | "Priority: security > logic > performance" |
-| **File Operations** | Low | Exact scripts, specific steps | "Use exact command: `pandoc --flag`" |
-
-**The test:** "If the agent makes a mistake, what's the consequence?"
-- High consequence (file corruption, data loss) → Low freedom with precise scripts
-- Medium consequence (suboptimal code, style issues) → Medium freedom with examples
-- Low consequence (aesthetic choices) → High freedom with principles
-
-### Knowledge Delta Test
-
-For each content block, ask: **"Does Claude already know this?"**
-
-✅ **Expert-only knowledge** - Hard-won patterns, domain anti-patterns, non-obvious rules  
-❌ **Redundant knowledge** - Tutorials, standard library usage, generic advice
-
-If &gt;50% redundant, substantial revision is needed.
-
-## Workflows
-
-### Which Workflow to Follow
-
-**Creating a new skill from scratch** → Follow Skill Creation Workflow (4 steps)  
-**Improving an existing skill** → Jump to Step 4 (Edit the Skill)  
-**Auditing a skill for quality** → Follow Skill Audit Workflow
-
-### Skill Creation Workflow
-
-Track progress with this checklist:
-
-```
-- [ ] Step 1: Understanding - Gather concrete examples of skill usage
-- [ ] Step 2: Planning - Identify reusable scripts, references, assets
-- [ ] Step 3: Initializing - Check existing skills, create directory structure
-- [ ] Step 4: Editing - Write agent-focused content and update CHANGELOG
-```
-
-#### Step 1: Understanding with Concrete Examples
-
-Ask 2-3 concrete questions to understand skill usage:
-- What functionality?
-- Usage examples?
-- Trigger phrases?
-
-Example for `image-editor` skill:
-- "What functionality? Editing, rotating, other?"
-- "Usage examples?"
-- "Trigger phrases: 'Remove red-eye', 'Rotate image'—others?"
-
-Follow up based on answers rather than front-loading all questions.
-
-#### Step 2: Planning Reusable Contents
-
-Analyze each example to identify reusable resources:
-
-**Scripts** - Avoid rewriting code each time  
-Example: `pdf-editor` stores `scripts/rotate-pdf.sh`
-
-**Assets** - Boilerplate templates  
-Example: `frontend-app-builder` stores `assets/hello-world/` template
-
-**References** - Domain knowledge loaded on-demand  
-Example: `big-query` stores `references/schema.md` with table schemas
-
-#### Step 3: Initializing the Skill
-
-**Load `references/file-system.md` before creating directory structure.**
-
-For new skills, copy the template:
 ```bash
-cp -r skills/accelint-skill-manager/assets/skill-template/ skills/new-skill-name/
+# User provides domain and examples
+"Create a skill for PDF manipulation. I need to rotate pages, merge files, and extract text."
+
+# Skill manager asks clarifying questions
+"What trigger phrases? 'Rotate this PDF'? Any other examples?"
+
+# After understanding, initializes structure
+/skill-manager create pdf-editor
+
+# Generates: skills/pdf-editor/SKILL.md with anti-patterns, references, scripts
 ```
 
-Before creating, check for existing skills:
+### Example: Auditing an Existing Skill
+
 ```bash
-ls -la .claude/skills 2>/dev/null || echo "No project skills"
-ls -la ~/.claude/skills 2>/dev/null || echo "No global skills"
+# Review quality of existing skill
+/skill-manager audit skills/accelint-react-testing
+
+# Output includes:
+# - Frontmatter issues (description missing keywords)
+# - Structure gaps (missing anti-patterns section)
+# - Knowledge delta (40% redundant content flagged)
+# - Specific recommendations with improved description
+# - Revised SKILL.md with fixes applied
 ```
 
-#### Step 4: Edit the Skill
+## Good to Know
 
-**Load `references/skill.md` for description field conventions.**
+> **Good to know:** The skill distinguishes between three workflows—creation, refactoring, and auditing. Each has different inputs and outputs. Choose the workflow that matches your task.
 
-Focus on procedural knowledge that helps another agent instance execute tasks effectively. Consider:
-- Non-obvious decisions
-- Domain-specific workflows
-- Edge cases Claude wouldn't know
+> **Good to know:** Skills without a "NEVER Do" section are missing half their value. Anti-patterns capture what experts learned the hard way.
 
-**Version Control:**
-- **Major (1.0 → 2.0):** Substantial rewrites, breaking changes
-- **Minor (1.0 → 1.1):** New sections, significant additions
-- **Patch (1.0.0 → 1.0.1):** Bug fixes, typo corrections (optional third digit)
+> **Good to know:** The description field is critical for activation. It must answer WHAT, WHEN, and include concrete KEYWORDS users actually say.
 
-**CHANGELOG Maintenance:**
+> **Good to know:** Version bumps and CHANGELOG updates are mandatory when editing skills. The version in frontmatter must match the latest CHANGELOG entry.
 
-Update `CHANGELOG.md` after changes using "Keep a Changelog" format:
+## Prerequisites
 
-```markdown
-# Changelog
+- Access to the skills directory (`skills/` or `.claude/skills/`)
+- Template files at `skills/accelint-skill-manager/assets/skill-template/`
+- Git for computing SHA hashes (`git hash-object`)
 
-## [X.Y.Z] - YYYY-MM-DD
+## What You Get
 
-### Added
-- New features with rationale
+**For creation:**
+- Fully structured skill directory with SKILL.md, CHANGELOG.md, AGENTS.md
+- Organized references/, scripts/, and assets/ as needed
+- Frontmatter with proper name, description, version, and metadata
 
-### Changed
-- Modifications with why (rationale is critical)
+**For audits:**
+- Frontmatter validation report (name conventions, description quality)
+- Structure analysis (missing sections, progressive disclosure issues)
+- Knowledge delta score (redundant vs expert content percentage)
+- Actionable recommendations ranked by priority
+- Improved description and revised SKILL.md with fixes applied
 
-### Fixed
-- Bug fixes with explanation
+## Limits
 
-### Version
-- Version bump note
-```
-
-The CHANGELOG version must match frontmatter `metadata.version`.
-
-### Skill Audit Workflow
-
-#### 1. Frontmatter Audit
-
-Check each field:
-- `name`: lowercase, hyphens only, ≤64 chars, matches directory name
-- `description`: starts with "Use when", includes WHAT/WHEN/KEYWORDS, concrete trigger phrases
-- `license`: present (optional but recommended)
-- `metadata.version`: present, matches CHANGELOG.md latest version
-
-#### 2. Structure Audit
-
-Compare against expected sections:
-- NEVER Do
-- Before [Action] Ask
-- How to Use
-- Main Workflow
-
-Note missing sections.
-
-#### 3. CHANGELOG and Version Audit
-
-Check CHANGELOG.md:
-- **Missing CHANGELOG:** Flag as missing documentation
-- **Version mismatch:** Verify CHANGELOG matches frontmatter version
-- **Missing rationale:** Ensure changes include WHY, not just WHAT
-- **Format compliance:** Check "Keep a Changelog" structure
-- **Empty sections:** Verify meaningful content
-
-#### 4. Knowledge Delta Test
-
-For each content block, classify as REDUNDANT or EXPERT-ONLY.
-
-Calculate percentage of redundant content. If &gt;50%, recommend substantial revision.
-
-#### 5. Produce Actionable Output
-
-- Specific improvement recommendations ranked by priority
-- Concrete improved description (not just criticism)
-- Improved SKILL.md alongside audit report
-
-## Anti-Patterns
-
-### NEVER write tutorials explaining basics
-Assume Claude knows standard concepts, libraries, and patterns. A skill explaining how to use `Array.map()` wastes tokens on knowledge Claude already has. Focus on expert-only knowledge.
-
-### NEVER put triggering information in body
-"When to use" guidance belongs ONLY in the description field. The body is loaded after activation decision, so including triggering conditions there wastes context and causes confusion.
-
-❌ Bad:
-```markdown
-## When to Use This Skill
-Use this skill when working with React components...
-```
-
-✅ Good (in frontmatter description only):
-```yaml
-description: Use when writing React components, optimizing re-renders, fixing hydration...
-```
-
-### NEVER dump everything in SKILL.md
-Use progressive disclosure. Keep SKILL.md under 500 lines with core workflow. Move detailed content to `references/` for on-demand loading.
-
-❌ Bad: 1200-line SKILL.md with every edge case  
-✅ Good: 400-line SKILL.md, 6 reference files loaded as needed
-
-### NEVER use generic warnings
-"Be careful" and "avoid errors" provide no actionable guidance. Provide specific anti-patterns with concrete reasons from experience.
-
-❌ Bad: "NEVER skip validation — causes errors"  
-✅ Good: "NEVER skip validation of user-provided file paths — leads to directory traversal vulnerabilities where attackers can read arbitrary files by injecting '../' sequences"
-
-### NEVER use same freedom level for all tasks
-Creative domains need high freedom with principles. Fragile operations need low freedom with exact scripts. Mismatched freedom causes either over-constraint (stifling creativity) or under-constraint (causing errors).
-
-❌ Bad: Giving exact scripts for UI design (over-constrains creativity)  
-❌ Bad: Giving vague principles for file format parsing (under-constrains, causes bugs)  
-✅ Good: Principles for design, scripts for parsing
-
-### NEVER skip the anti-patterns section
-A skill without "NEVER Do" is missing half of expert knowledge. Anti-patterns capture mistakes experts learned the hard way—the non-obvious failures that take years to discover.
-
-### NEVER write a vague description
-"A skill for X" causes false positives and missed activations. The description must answer WHAT, WHEN, and include concrete KEYWORDS users actually say.
-
-❌ Bad: "Helps with React development"  
-✅ Good: "Use when writing React components, hooks, JSX; optimizing re-renders; debugging infinite loops; fixing hydration mismatches. Triggers on useEffect, useState, memo..."
-
-## Common Pitfalls
-
-> **Good to know:** Creating a skill vs auditing a skill are distinct workflows. Don't mix creation concerns (gathering examples, planning structure) with audit concerns (validating existing content). Use the "Which Workflow to Follow" section to route to the right process.
-
-> **Good to know:** The template in `assets/skill-template/` includes detailed comments explaining WHY each section matters. Read the comments before deleting them—they provide context on the reasoning behind the structure.
-
-> **Good to know:** When updating an existing skill, bump `metadata.version` in frontmatter AND update `CHANGELOG.md` with the same version number. Version mismatches cause confusion about which iteration is documented.
-
-> **Good to know:** Load reference files only when you need implementation details for that specific rule. Loading all references at once wastes context. The AGENTS.md provides rule summaries—start there and drill down as needed.
-
-## Related Skills
-
-- **skill-judge** - Evaluate skill design quality against specifications (multi-dimensional scoring)
-- **skill-creator** - Create skills with test-driven iteration and performance benchmarking
-- **accelint-readme-writer** - Generate README.md for skills with practical examples
-- **accelint-architecture-doc** - Document system architecture (useful for complex skills with integrations)
+- This skill creates and improves skills—it does not execute the skills themselves
+- Skill audit evaluates structure and conventions, not domain expertise accuracy
+- Knowledge delta test identifies redundant content, but you decide what to keep
+- CHANGELOG maintenance is required but format flexibility is allowed within "Keep a Changelog" structure
