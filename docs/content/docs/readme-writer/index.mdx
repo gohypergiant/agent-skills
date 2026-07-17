@@ -1,6 +1,159 @@
 ---
-title: "Overview"
-description: "TODO"
+title: Overview
+description: Creates and maintains comprehensive README documentation by analyzing your codebase and keeping docs in sync with actual functionality.
+source: skills/accelint-readme-writer/SKILL.md
+source_sha: 227caa0d72bfe8c8a862258854717e4316481de9
+doc_sha: fc5699213e61448a43d0bf8b1463a328f6fcd6ec
+deprecated: false
+updated: 2025-01-22
 ---
 
-TODO
+## Usage
+
+Activate this skill by:
+- Using the `/accelint-readme-writer` command with optional path
+- Saying "create a README", "write a README", "document this package"
+- Mentioning "README.md" while asking for documentation help
+
+```bash
+# Generate README for a package
+/accelint-readme-writer packages/design-tokens/
+
+# Update existing README at root
+/accelint-readme-writer
+
+# Generate for monorepo subdirectory
+/accelint-readme-writer packages/my-lib/
+```
+
+Once activated, the skill analyzes your codebase from the README location and generates documentation. It checks for related docs (config.yml, ARCHITECTURE.md), spawns parallel discovery agents to map your public API and dependencies, compares findings against existing README, and generates human-sounding documentation with proper package manager detection.
+
+For monorepos, scope is determined by README location:
+```
+project-root/README.md     → documents entire monorepo
+packages/my-lib/README.md  → documents only my-lib
+```
+
+## When to Use
+
+Use this skill when:
+- Creating a new README.md for a project or package
+- Updating an existing README after code changes
+- Auditing documentation for completeness and accuracy
+- User asks to "document this package" or "write a README"
+
+Don't use for:
+- API documentation generation (use JSDoc/TSDoc tools)
+- Changelogs or release notes
+- Internal developer notes
+
+## What It Generates
+
+**Context Discovery** - Checks openspec/config.yml, ARCHITECTURE.md, AGENTS.md/CLAUDE.md for existing documentation
+
+**Codebase Analysis** - Entry points, public API, dependencies, package manager, examples, usage patterns
+
+**Documentation Sections** - Installation, quick start, API reference, examples, configuration, contributing, license
+
+**Cross-References** - Links to related docs when they exist (ARCHITECTURE.md, AGENTS.md, openspec config)
+
+## Examples
+
+### Example: Generate README for New Package
+
+```bash
+# Command
+/accelint-readme-writer packages/design-tokens/
+
+# Workflow
+1. Checks packages/design-tokens/ for related docs (none found)
+2. Spawns 4 parallel discovery agents
+3. Finds exported tokens in src/index.ts
+4. Extracts examples from __tests__/tokens.test.ts
+5. Detects pnpm from pnpm-lock.yaml
+6. Generates README using template
+7. Runs humanizer to remove AI phrasing
+
+# Output
+Created packages/design-tokens/README.md with:
+- Installation using pnpm (from lockfile)
+- Quick start with real examples (from tests)
+- API reference for exported tokens
+- Configuration section (from tsconfig.json)
+```
+
+### Example: Update Stale README
+
+```bash
+# Command
+/accelint-readme-writer
+
+# User context: "We added TypeScript support"
+
+# Workflow
+1. Reads existing README.md at root
+2. Scans codebase for new exports
+3. Identifies gaps:
+   - Missing: TypeScript usage examples
+   - Missing: Type import instructions
+   - Stale: Installation uses npm (lockfile is yarn.lock)
+4. Suggests specific changes
+5. Applies updates after confirmation
+
+# Output
+Updated README.md with:
+- TypeScript examples in Quick Start
+- Type import instructions in API Reference
+- Changed all npm commands to yarn
+```
+
+### Example: Monorepo with Existing Context
+
+```bash
+# Command
+/accelint-readme-writer
+
+# Existing docs at root:
+- openspec/config.yml (has package manager: pnpm)
+- ARCHITECTURE.md (describes service architecture)
+
+# Workflow
+1. Reads openspec/config.yml → uses pnpm for all commands
+2. Reads ARCHITECTURE.md → includes in cross-reference section
+3. Skips redundant tech stack discovery
+4. Generates README with proper cross-links
+
+# Output
+README.md with:
+- All commands use pnpm (from config.yml)
+- Architecture section linking to ARCHITECTURE.md
+- Contributing section linking to openspec workflow
+```
+
+## Common Pitfalls
+
+> **Good to know:** The skill only documents your public API (exports accessible through package entry points). Internal helper functions not re-exported from index.ts won't appear in the generated README.
+
+> **Good to know:** When sub-agents are available, the skill spawns parallel discovery automatically. This is faster than serial file-by-file scanning but means you'll see multiple agents working simultaneously.
+
+> **Good to know:** All usage examples come from real code—test files, JSDoc blocks, or examples/ directories. The skill never fabricates examples.
+
+> **Good to know:** Package manager commands are detected from lockfiles. If your lockfile says pnpm but existing README uses npm commands, the skill will update them to pnpm for consistency.
+
+> **Good to know:** The skill requires the `humanizer` skill to remove AI writing patterns from generated content. If humanizer isn't available, you'll be prompted to enable it.
+
+## Package Manager Detection
+
+The skill detects the correct package manager from lockfiles and uses it consistently:
+
+| Lockfile | Package Manager | Install Command |
+|----------|-----------------|-----------------|
+| `pnpm-lock.yaml` | pnpm | `pnpm install` |
+| `package-lock.json` | npm | `npm install` |
+| `yarn.lock` | yarn | `yarn` |
+| `bun.lockb` | bun | `bun install` |
+
+## Related
+
+- [humanizer](/docs/humanizer) - Removes AI writing patterns from generated text
+- [accelint-architecture-doc](/docs/architecture-doc) - Generates ARCHITECTURE.md files
