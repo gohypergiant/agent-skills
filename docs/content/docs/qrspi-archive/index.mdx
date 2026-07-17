@@ -20,7 +20,7 @@ This skill invokes `/opsx:archive` or `/opsx:bulk-archive` itself as its first p
 Cross-linking happens after the merge resolves, not before—a delta spec in `openspec/changes/<slug>/specs/` is provisional until conflicts are resolved. Only the merged, archived spec is worth indexing.
 
 Activate this skill by:
-- Using the `/qrspi-archive` command
+- Using the `/accelint-qrspi-archive` command
 - Saying "archive this change", "bulk archive these changes", "run opsx:archive", "update the specs index", or "cross-link the specs"
 
 ## When to Use
@@ -62,7 +62,7 @@ The linking side is additive only: it updates relationships and archive bookkeep
 ### Example: Archiving a single change
 
 ```bash
-/qrspi-archive
+/accelint-qrspi-archive
 ```
 
 The skill runs preflight checks, archives the change through OpenSpec, updates touched spec relationships, patches the relevant specs index rows, and appends the archive changelog.
@@ -70,7 +70,7 @@ The skill runs preflight checks, archives the change through OpenSpec, updates t
 ### Example: Archiving with missing frontmatter
 
 ```bash
-/qrspi-archive
+/accelint-qrspi-archive
 ```
 
 If required archive metadata is missing, the skill derives a candidate from the change files and asks you to confirm or edit it before continuing.
