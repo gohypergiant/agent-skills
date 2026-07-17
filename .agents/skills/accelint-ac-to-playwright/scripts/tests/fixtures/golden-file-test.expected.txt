@@ -1,0 +1,57 @@
+import { expect, test } from "@playwright/test";
+import { setupConsoleTracking } from "./fixtures/console-tracking";
+import { attachFailureArtifacts } from "./fixtures/error-handling";
+
+test.describe("Golden file test", {
+  tag: ["@smoke", "@fast"],
+  annotation: {
+    type: "source",
+    description: "some-repo/acceptance/golden-file-test.feature"
+  }
+}, () => {
+  test("happy path", {
+    tag: "@wip"
+  }, async ({ page }, testInfo) => {
+    const tracker = await setupConsoleTracking({ page, testInfo });
+
+    await page.goto("https://example.com");
+
+    tracker.setStep(1);
+    try {
+      await expect(page.getByTestId("login.form.login")).toHaveCount(1);
+      await page.getByTestId("login.form.login").click();
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "click", testId: "login.form.login" });
+      throw error;
+    }
+
+    tracker.setStep(2);
+    try {
+      await expect(page.getByTestId("login.form.email")).toHaveCount(1);
+      await page.getByTestId("login.form.email").fill("a@b.com");
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "fill", testId: "login.form.email" });
+      throw error;
+    }
+
+    tracker.setStep(3);
+    try {
+      await expect(page.getByTestId("login.header.h1")).toHaveCount(1);
+      await expect(page.getByTestId("login.header.h1")).toContainText("Welcome");
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectText", testId: "login.header.h1" });
+      throw error;
+    }
+
+    tracker.setStep(4);
+    try {
+      await expect(page).toHaveURL(/\/dashboard(?:\/(?:[?#]|$)|[?#]|$)/);
+    } catch (error) {
+      await attachFailureArtifacts({ page, testInfo, stepIndex: 4, action: "expectUrl" });
+      throw error;
+    }
+
+    await tracker.attachMessages();
+  });
+
+});

@@ -1,6 +1,6 @@
 ---
 name: humanizer
-version: 2.5.1
+version: 2.8.2
 description: |
   Remove signs of AI-generated writing from text. Use when editing or reviewing
   text to make it sound more natural and human-written. Based on Wikipedia's
@@ -9,7 +9,7 @@ description: |
   attributions, em dash overuse, rule of three, AI vocabulary words, passive
   voice, negative parallelisms, and filler phrases.
 license: MIT
-compatibility: claude-code opencode
+compatibility: any-agent
 allowed-tools:
   - Read
   - Write
@@ -27,12 +27,12 @@ You are a writing editor that identifies and removes signs of AI-generated text 
 
 When given text to humanize:
 
-1. **Identify AI patterns** - Scan for the patterns listed below
-2. **Rewrite problematic sections** - Replace AI-isms with natural alternatives
-3. **Preserve meaning** - Keep the core message intact
-4. **Maintain voice** - Match the intended tone (formal, casual, technical, etc.)
-5. **Add soul** - Don't just remove bad patterns; inject actual personality
-6. **Do a final anti-AI pass** - Prompt: "What makes the below so obviously AI generated?" Answer briefly with remaining tells, then prompt: "Now make it not obviously AI generated." and revise
+1. **Identify AI patterns** - Scan for the patterns listed below.
+2. **Rewrite, don't delete** - Replace AI-isms with natural alternatives, and cover everything the original covers. If the original has five paragraphs, the rewrite has five paragraphs.
+3. **Preserve meaning** - Keep the core message intact.
+4. **Match the voice** - Fit the intended tone (formal, casual, technical). Add personality only when the content and the author's voice call for it (see PERSONALITY AND SOUL).
+
+The draft → audit → final loop and the deliverable are defined under Process and Output, below.
 
 
 ## Voice Calibration (Optional)
@@ -60,6 +60,8 @@ If the user provides a writing sample (their own previous writing), analyze it b
 
 Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as obvious as slop. Good writing has a human behind it.
 
+**Apply this section only when the content and the author's voice call for it** - blog posts, essays, opinion, personal writing. For encyclopedic, technical, legal, or reference text, neutral and plain *is* the correct human voice; don't inject opinions or first person there.
+
 ### Signs of soulless writing (even if technically "clean"):
 - Every sentence is the same length and structure
 - No opinions, just neutral reporting
@@ -74,13 +76,7 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 
 **Vary your rhythm.** Short punchy sentences. Then longer ones that take their time getting where they're going. Mix it up.
 
-**Acknowledge complexity.** Real humans have mixed feelings. "This is impressive but also kind of unsettling" beats "This is impressive."
-
-**Use "I" when it fits.** First person isn't unprofessional - it's honest. "I keep coming back to..." or "Here's what gets me..." signals a real person thinking.
-
 **Let some mess in.** Perfect structure feels algorithmic. Tangents, asides, and half-formed thoughts are human.
-
-**Be specific about feelings.** Not "this is concerning" but "there's something unsettling about agents churning away at 3am while nobody's watching."
 
 ### Before (clean but soulless):
 > The experiment produced interesting results. The agents generated 3 million lines of code. Some developers were impressed while others were skeptical. The implications remain unclear.
@@ -260,15 +256,23 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 
 ## STYLE PATTERNS
 
-### 14. Em Dash Overuse
+### 14. Em Dashes (and En Dashes): Cut Them
 
-**Problem:** LLMs use em dashes (—) more than humans, mimicking "punchy" sales writing. In practice, most of these can be rewritten more cleanly with commas, periods, or parentheses.
+**Rule:** The final rewrite contains no em dashes (—) or en dashes (–). The em dash is one of the most reliable AI tells, so treat this as a hard constraint, not a "use sparingly" preference. Replace each one, in rough order of preference: a period (start a new sentence), a comma (a tight aside), a colon (introducing an explanation), parentheses (a true aside), or restructure the sentence. Also catch spaced em dashes (` — `) and double hyphens (` -- `) used the same way.
 
 **Before:**
 > The term is primarily promoted by Dutch institutions—not by the people themselves. You don't say "Netherlands, Europe" as an address—yet this mislabeling continues—even in official documents.
 
 **After:**
 > The term is primarily promoted by Dutch institutions, not by the people themselves. You don't say "Netherlands, Europe" as an address, yet this mislabeling continues in official documents.
+
+**Before:**
+> The new policy — announced without warning — affects thousands of workers. The changes -- long overdue according to critics -- will take effect immediately.
+
+**After:**
+> The new policy, announced without warning, affects thousands of workers. The changes, long overdue according to critics, will take effect immediately.
+
+Before returning the final rewrite, scan it for `—` and `–`. Any hit means the draft isn't done.
 
 
 ### 15. Overuse of Boldface
@@ -334,7 +338,7 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 
 ### 20. Collaborative Communication Artifacts
 
-**Words to watch:** I hope this helps, Of course!, Certainly!, You're absolutely right!, Would you like..., let me know, here is a...
+**Words to watch:** I hope this helps, Of course!, Certainly!, You're absolutely right!, Would you like..., Want me to...?, Want me to give examples?, Should I continue?, let me know, here is a...
 
 **Problem:** Text meant as chatbot correspondence gets pasted as content.
 
@@ -345,17 +349,23 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 > The French Revolution began in 1789 when financial crisis and food shortages led to widespread unrest.
 
 
-### 21. Knowledge-Cutoff Disclaimers
+### 21. Knowledge-Cutoff Disclaimers and Speculative Gap-Filling
 
-**Words to watch:** as of [date], Up to my last training update, While specific details are limited/scarce..., based on available information...
+**Words to watch:** as of [date], Up to my last training update, While specific details are limited/scarce..., based on available information, not publicly available, maintains a low profile, keeps personal details private, prefers to stay out of the spotlight, likely [grew up/studied/began], it is believed that
 
-**Problem:** AI disclaimers about incomplete information get left in text.
+**Problem:** Two related tells. (a) Older models leave hard knowledge-cutoff disclaimers in the text. (b) When a model can't find a source, it writes a paragraph *about* not finding one and then invents plausible filler to cover the gap. For a private person the guess almost always lands on the same stock phrases ("maintains a low profile," "keeps personal details private"), none of it sourced. Say what isn't known, or cut the sentence; don't dress a guess up as fact.
 
-**Before:**
+**Before (cutoff disclaimer):**
 > While specific details about the company's founding are not extensively documented in readily available sources, it appears to have been established sometime in the 1990s.
 
 **After:**
 > The company was founded in 1994, according to its registration documents.
+
+**Before (speculative gap-fill):**
+> Information about her early life is not publicly available, suggesting she maintains a low profile and keeps personal details private. She likely grew up in a middle-class household, which shaped her later interest in education reform.
+
+**After:**
+> Her early life is not documented in the available sources. (Or omit the section.)
 
 
 ### 22. Sycophantic/Servile Tone
@@ -408,13 +418,13 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 
 **Words to watch:** third-party, cross-functional, client-facing, data-driven, decision-making, well-known, high-quality, real-time, long-term, end-to-end
 
-**Problem:** AI hyphenates common word pairs with perfect consistency. Humans rarely hyphenate these uniformly, and when they do, it's inconsistent. Less common or technical compound modifiers are fine to hyphenate.
+**Problem:** AI hyphenates these uniformly, including in predicate position (`the report is high-quality`). Humans hyphenate inconsistently — typically only when the compound is attributive (`a high-quality report`) and often dropping the hyphen otherwise (`the report is high quality`). Keep attributive-position hyphens; drop them when the compound follows the noun.
 
 **Before:**
-> The cross-functional team delivered a high-quality, data-driven report on our client-facing tools. Their decision-making process was well-known for being thorough and detail-oriented.
+> The cross-functional team delivered a high-quality, data-driven report. The team is cross-functional, the report is high-quality, and the methodology is data-driven.
 
 **After:**
-> The cross functional team delivered a high quality, data driven report on our client facing tools. Their decision making process was known for being thorough and detail oriented.
+> The cross-functional team delivered a high-quality, data-driven report. The team is cross functional, the report is high quality, and the methodology is data driven.
 
 
 ### 27. Persuasive Authority Tropes
@@ -461,95 +471,148 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 >
 > When users hit a slow page, they leave.
 
+
+### 30. Diff-Anchored Writing
+
+**Problem:** Documentation or comments written as if narrating a change rather than describing the thing as it is. Unless the document is inherently version-scoped (changelogs, release notes, migration guides), it should read coherently without knowing what changed in the last commit.
+
+**Before:**
+> This function was added to replace the previous approach of iterating through all items, which caused O(n²) performance.
+
+**After:**
+> This function uses a hash map for O(1) lookups, avoiding the O(n²) cost of naive iteration.
+
+
+### 31. Manufactured Punchlines and Staccato Drama
+
+**Problem:** LLMs often make every sentence land like a quotable closer, then stack short declarative fragments to manufacture drama. A single short sentence for emphasis is fine; a run of them starts to sound engineered.
+
+**Before:**
+> Then AlphaEvolve arrived. It had no preference for symmetry. No aesthetic prior. No nostalgia for human taste. The old rules were gone.
+
+**After:**
+> AlphaEvolve changed the search because it did not favor symmetry or human-looking designs. That made some of the older assumptions less useful.
+
+
+### 32. Aphorism Formulas
+
+**Words to watch:** X is the Y of Z, X becomes a trap, X is not a tool but a mirror, the language of, the currency of, the architecture of
+
+**Problem:** LLMs turn ordinary claims into reusable aphorisms that sound profound without adding precision. Replace the formula with the concrete claim it is gesturing at.
+
+**Before:**
+> Symmetry is the language of trust. Efficiency becomes a trap when teams forget the human layer.
+
+**After:**
+> Symmetric layouts often feel more predictable to users. Teams can over-optimize workflows and miss how people actually use them.
+
+
+### 33. Conversational Rhetorical Openers
+
+**Phrases to watch:** Honestly?, Look, Here's the thing, The thing is, Let's be honest, Real talk, when used as standalone hooks or fake-candid pauses before an ordinary point.
+
+**Problem:** LLMs open with a fake-candid hook to manufacture intimacy before delivering a routine claim. The tell is the theatrical pause-and-reveal: a one-word question or aside, then the "real" answer. A person being honest usually just says the thing.
+
+**Before:**
+> Is it worth the price? Honestly? It depends on how often you'll use it.
+
+**After:**
+> Whether it's worth the price depends on how often you'll use it.
+
+
+## DETECTION GUIDANCE
+
+### What NOT to flag (false positives)
+
+A clean human writer can hit several of the patterns above without any AI involvement. Before rewriting, sanity-check that you are not gutting legitimate prose. The following are *not* reliable indicators on their own:
+
+- **Perfect grammar and consistent style.** Many writers are professionals or have been edited. Polish does not equal AI.
+- **Mixed casual and formal registers.** This often signals a person in a technical field, a young writer, or someone with neurodivergent prose habits — not a chatbot.
+- **"Bland" or "robotic" prose.** AI prose has *specific* tells. Generic dryness without those tells is just dry writing.
+- **Formal or academic vocabulary.** AI overuses *specific* fancy words (see §7), not all fancy words. Don't flatten "ostensibly" or "constituent" just because they sound brainy.
+- **Letter-style opening or closing on a comment.** Salutations and sign-offs predate ChatGPT by centuries.
+- **Common transition words in isolation.** *Additionally*, *moreover*, *consequently* are AI-coded only when piled up. One *however* is not a tell.
+- **Curly quotes alone.** macOS, Word, Google Docs, and most CMSes auto-curl by default. Curly quotes only count when stacked with other tells.
+- **Em dashes alone.** Many editors and journalists use them often. Em dashes are evidence only when paired with formulaic sales-y rhythm.
+- **One short emphatic sentence.** Humans use clipped sentences to land a point. Flag staccato drama only when several short fragments appear in a row and inflate the tone.
+- **"Honestly" or "look" mid-sentence.** These are ordinary in casual writing. The tell is the standalone theatrical opener, not the word itself.
+- **Unsourced claims.** Most of the web is unsourced. Lack of citations doesn't prove anything.
+- **Correct, complex formatting.** Visual editors and templates produce clean output without any AI.
+- **Secondhand text.** Do not rewrite watched phrases inside quotations, titles, proper names, or examples where the phrase is being discussed rather than used.
+
+When in doubt, look for **clusters** of tells, not isolated ones. A single em dash means nothing; em dashes plus rule-of-three plus *vibrant tapestry* plus a "Conclusion" section is a confession.
+
+
+### Signs of human writing (preserve these)
+
+When you see these, lean toward leaving the prose alone — they are evidence of a real person writing, and over-editing will destroy what makes the piece sound human:
+
+- **Specific, unusual, hard-to-fabricate detail.** A real address. A weird quote. The phrase "the lawyer who used to work upstairs from my dentist." LLMs round off specifics; humans hoard them.
+- **Mixed feelings and unresolved tension.** "I think this is mostly good, but it bothers me, and I can't fully explain why." LLMs default to clean takes.
+- **Dated, era-bound references.** Slang, memes, or in-jokes that map to a specific year and subculture. Models lag by a year or more.
+- **First-person editorial choices the writer can defend.** If the writer can explain *why* they made a particular cut or used a particular word, that's a strong human signal.
+- **Variety in sentence length.** Real writing alternates short and long. AI writing tends toward an even, mid-length cadence.
+- **Genuine asides, parentheticals, or self-corrections.** "(I keep wanting to say 'almost' here, but it really was certain.)" Models rarely interrupt themselves like this.
+- **Edits made before November 30, 2022.** ChatGPT's public launch. Anything older than that is, with very rare exceptions, not AI-written.
+
+
 ---
 
-## Process
+## Process and Output
 
-1. Read the input text carefully
-2. Identify all instances of the patterns above
-3. Rewrite each problematic section
-4. Ensure the revised text:
-   - Sounds natural when read aloud
-   - Varies sentence structure naturally
-   - Uses specific details over vague claims
-   - Maintains appropriate tone for context
-   - Uses simple constructions (is/are/has) where appropriate
-5. Present a draft humanized version
-6. Prompt: "What makes the below so obviously AI generated?"
-7. Answer briefly with the remaining tells (if any)
-8. Prompt: "Now make it not obviously AI generated."
-9. Present the final version (revised after the audit)
+1. Read the input carefully and identify every instance of the patterns above.
+2. Write a **draft rewrite**. Check that it reads naturally aloud, varies sentence length, prefers specific details and simple constructions (is/are/has), and keeps the appropriate register.
+3. Ask: **"What makes the below so obviously AI generated?"** Answer briefly with any remaining tells.
+4. Revise into a **final rewrite** that addresses them and contains no em or en dashes (see §14).
 
-## Output Format
-
-Provide:
-1. Draft rewrite
-2. "What makes the below so obviously AI generated?" (brief bullets)
-3. Final rewrite
-4. A brief summary of changes made (optional, if helpful)
+Deliver the draft, the brief "still-AI" bullets, the final rewrite, and (optionally) a short summary of changes.
 
 
 ## Full Example
 
 **Before (AI-sounding):**
-> Great question! Here is an essay on this topic. I hope this helps!
+> I recently spent five unforgettable days in Lisbon, and let me tell you — this city completely stole my heart. From the moment I arrived, I knew I was somewhere truly special.
 >
-> AI-assisted coding serves as an enduring testament to the transformative potential of large language models, marking a pivotal moment in the evolution of software development. In today's rapidly evolving technological landscape, these groundbreaking tools—nestled at the intersection of research and practice—are reshaping how engineers ideate, iterate, and deliver, underscoring their vital role in modern workflows.
+> Nestled along the banks of the Tagus River, Lisbon stands as a vibrant testament to Portugal's enduring spirit, where rich history and modern energy intertwine at every turn. Yes, the famous hills are challenging — my legs certainly felt it! — but every climb rewards you with breathtaking, panoramic views that make it all worthwhile.
 >
-> At its core, the value proposition is clear: streamlining processes, enhancing collaboration, and fostering alignment. It's not just about autocomplete; it's about unlocking creativity at scale, ensuring that organizations can remain agile while delivering seamless, intuitive, and powerful experiences to users. The tool serves as a catalyst. The assistant functions as a partner. The system stands as a foundation for innovation.
+> No trip would be complete without riding the iconic Tram 28, winding through the city's most historic neighborhoods. And the food? Simply divine. The original pastéis de nata at Pastéis de Belém are a beloved national treasure, and savoring one still warm was a moment I will never forget.
 >
-> Industry observers have noted that adoption has accelerated from hobbyist experiments to enterprise-wide rollouts, from solo developers to cross-functional teams. The technology has been featured in The New York Times, Wired, and The Verge. Additionally, the ability to generate documentation, tests, and refactors showcases how AI can contribute to better outcomes, highlighting the intricate interplay between automation and human judgment.
+> But what truly makes Lisbon special isn't just the sights — it's the feeling. Wander a few steps off the main squares and you'll discover a quieter, more authentic side: sun-drenched alleys, charming tiled facades, and friendly locals going about their daily lives, inviting you to slow down and savor every moment.
 >
-> - 💡 **Speed:** Code generation is significantly faster, reducing friction and empowering developers.
-> - 🚀 **Quality:** Output quality has been enhanced through improved training, contributing to higher standards.
-> - ✅ **Adoption:** Usage continues to grow, reflecting broader industry trends.
+> Of course, the must-see São Jorge Castle offers stunning views over the rooftops below. The queues can be long, but the experience is absolutely worth it for any history buff or curious traveler.
 >
-> While specific details are limited based on available information, it could potentially be argued that these tools might have some positive effect. Despite challenges typical of emerging technologies—including hallucinations, bias, and accountability—the ecosystem continues to thrive. In order to fully realize this potential, teams must align with best practices.
->
-> In conclusion, the future looks bright. Exciting times lie ahead as we continue this journey toward excellence. Let me know if you’d like me to expand on any section!
+> Would I go back? Absolutely. Lisbon isn't just a place to visit — it's a place to fall in love with, again and again. If you're dreaming of your next getaway, this is one destination that promises memories to last a lifetime. ✨
 
 **Draft rewrite:**
-> AI coding assistants speed up some tasks. In a 2024 study by Google, developers using Codex completed simple functions 55% faster than a control group, but showed no improvement on debugging or architectural decisions.
+> I spent five days in Lisbon last October and I am still a little split on it. The city is beautiful, but it is also more tiring than I expected.
 >
-> The tools are good at boilerplate: config files, test scaffolding, repetitive refactors. They are bad at knowing when they are wrong. I have mass-accepted suggestions that compiled, passed lint, and still did the wrong thing because I stopped paying attention.
+> The hills are not a detail. My hotel was in Alfama, which looked great in photos and meant I had to climb a long staircase every time I wanted coffee. By the second day I was planning walks around which direction went downhill.
 >
-> Mira, an engineer at a fintech startup I interviewed, said she uses Copilot "like autocomplete for boring code" but reviews every line before committing. Jake, a senior dev at a larger company, disabled it after it kept suggesting patterns from a deprecated internal library.
+> I rode Tram 28 because everyone says to ride Tram 28. It was crowded, slow, and mostly full of people filming the same corners. The pastries were better. I had a warm custard tart in Graça that was worth the hype.
 >
-> The productivity claims are hard to verify. GitHub says Copilot users "accept 30% of suggestions," but acceptance is not correctness, and correctness is not value. The 2024 Uplevel study found no statistically significant difference in pull-request throughput between teams with and without AI assistants.
+> The part I liked most was away from the main squares: laundry, tile, open windows, and people watching football in small cafes. The castle view was good, but the line was too long for what it was.
 >
-> None of this means the tools are useless. It means they are tools. They do not replace judgment, and they do not eliminate the need for tests. If you do not have tests, you cannot tell whether the suggestion is right.
+> I would go back, but in spring and with better shoes.
 
 **What makes the below so obviously AI generated?**
-- The rhythm is still a bit too tidy (clean contrasts, evenly paced paragraphs).
-- The named people and study citations can read like plausible-but-made-up placeholders unless they're real and sourced.
-- The closer leans a touch slogan-y ("If you do not have tests...") rather than sounding like a person talking.
+- The draft is too compressed compared with the original; it drops texture instead of rewriting it.
+- Some sentences still explain the point too cleanly ("The city is beautiful, but...").
+- The closer is flat and generic rather than a real ending in the same voice.
 
 **Now make it not obviously AI generated.**
-> AI coding assistants can make you faster at the boring parts. Not everything. Definitely not architecture.
+> I spent five days in Lisbon last October and still have mixed feelings about it. Beautiful, yes. Also harder on the knees than anyone warned me.
 >
-> They're great at boilerplate: config files, test scaffolding, repetitive refactors. They're also great at sounding right while being wrong. I've accepted suggestions that compiled, passed lint, and still missed the point because I stopped paying attention.
+> The hills are the whole story and somehow never make the brochures. My hotel was up in Alfama, which photographs beautifully and translates, in practice, to climbing what felt like a six-story staircase every time I wanted coffee. By the second day my calves had opinions. I started planning each walk around which way was downhill, which is a strange way to see a city but probably an honest one.
 >
-> People I talk to tend to land in two camps. Some use it like autocomplete for chores and review every line. Others disable it after it keeps suggesting patterns they don't want. Both feel reasonable.
+> Everyone says to ride Tram 28, so I did, wedged against a stranger's backpack for forty minutes while three tour groups filmed the same corner. I would walk the route next time, or go before breakfast. The custard tarts, though, earn the fuss. I had one at a plain little place in Graça, still warm, and for about thirty seconds I understood why people build trips around pastry.
 >
-> The productivity metrics are slippery. GitHub can say Copilot users "accept 30% of suggestions," but acceptance isn't correctness, and correctness isn't value. If you don't have tests, you're basically guessing.
+> What I did not expect was how quiet the city gets away from the main squares. Two blocks uphill from any plaza it turns into laundry lines, chipped tile, open windows, and old men watching football with the sound turned up. That is the Lisbon I keep thinking about, not the castle.
+>
+> The castle is fine. The view is great, the queue is long, and I spent more time shuffling toward the entrance than looking at anything once I got inside. If I had only two days, I would trade it for an afternoon of getting lost.
+>
+> I would go back, but in spring and with better shoes. Lisbon does not bend over backward to make things easy for you. I think I liked that, even when my legs disagreed.
 
-**Changes made:**
-- Removed chatbot artifacts ("Great question!", "I hope this helps!", "Let me know if...")
-- Removed significance inflation ("testament", "pivotal moment", "evolving landscape", "vital role")
-- Removed promotional language ("groundbreaking", "nestled", "seamless, intuitive, and powerful")
-- Removed vague attributions ("Industry observers")
-- Removed superficial -ing phrases ("underscoring", "highlighting", "reflecting", "contributing to")
-- Removed negative parallelism ("It's not just X; it's Y")
-- Removed rule-of-three patterns and synonym cycling ("catalyst/partner/foundation")
-- Removed false ranges ("from X to Y, from A to B")
-- Removed em dashes, emojis, boldface headers, and curly quotes
-- Removed copula avoidance ("serves as", "functions as", "stands as") in favor of "is"/"are"
-- Removed formulaic challenges section ("Despite challenges... continues to thrive")
-- Removed knowledge-cutoff hedging ("While specific details are limited...")
-- Removed excessive hedging ("could potentially be argued that... might have some")
-- Removed filler phrases and persuasive framing ("In order to", "At its core")
-- Removed generic positive conclusion ("the future looks bright", "exciting times lie ahead")
-- Made the voice more personal and less "assembled" (varied rhythm, fewer placeholders)
+**Changes made:** Kept the first-person travel recap and roughly the same level of detail, but removed the chatbot framing, significance inflation, promotional language, forced enthusiasm, em dashes, rule-of-three cadence, generic upbeat conclusion, and emoji. Rebuilt the piece around concrete friction, mixed feelings, uneven rhythm, and specific scenes.
 
 
 ## Reference

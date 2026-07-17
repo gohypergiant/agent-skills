@@ -1,17 +1,127 @@
 {
   "version": 1,
   "skills": {
+    "accelint-ac-to-playwright": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "2c8e9574f534476e69f3cd5c3ee35ac12b9c48089ed637782b3212cafed8c200"
+    },
+    "accelint-architecture-doc": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "25f6a033f4c596b2cfb6a9fde618b08d9e7e49df7684cd92c41a36a0d9859271"
+    },
+    "accelint-design-foundation": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "8f28e9994dfafac54772abd6440c1a93289f2af4996d4467f83ae9575c6b20b7"
+    },
+    "accelint-nextjs-best-practices": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "cf62a8806d0ca8e67c2be330b9b3e3c675ec6c67acc759dd9816d60855e8cc2b"
+    },
+    "accelint-onboard-agents": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "18e3e675b7dad4f68a43f35e453517b2796fffde8e7210b58b5d1ce99cccc14b"
+    },
+    "accelint-onboard-openspec": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "d288af7b683147242c3d224edeefe7e6cd5b63d520444dddfbe4d235ed2fb462"
+    },
+    "accelint-persona-review": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "9f6e2a3c19d48ba1d851dcc55c4c6661f43aa3d5916cc29a9828c5ab103bf151"
+    },
+    "accelint-prompt-manager": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "049adcbca2d23de499e8aa16042fc1c61b909e1ba559d79fc462a49a4abdb598"
+    },
+    "accelint-qrspi-apply": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "56c85f5ad2833e574e55dc9c405fce061f3d4e7241df03d8d923d393d638c197"
+    },
+    "accelint-qrspi-archive": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "f4fa0df5e7793e872783d8164fd5103abb53389f59c1dfbf5e786eb9cb66c51e"
+    },
+    "accelint-qrspi-propose": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "775f59df0bf3c03d3806f474ed5e8c1026ceec56c86a836f93b4c7d0ef4ae1ee"
+    },
+    "accelint-react-best-practices": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "551dcb14841d4d716ae4c6455064747f690dcfba03470c138de88862e9526fc5"
+    },
+    "accelint-react-testing": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "57966e285d54e4cb1daddffe3168fb5a0f6e5a1f4175fcad26178a95b02f8236"
+    },
+    "accelint-readme-writer": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "8c6c2801f0448d630e51c2425021cd65fd1bfb40cf03ad2c313778f00f0e8b2f"
+    },
+    "accelint-security-best-practices": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "1be582275cf516ca4f43e00f2d49c44e0d94c030b5961a39d503d53c2de86b13"
+    },
+    "accelint-skill-manager": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "454d3879072d3bf81a065a3fdeb4c077ae73e4971bb985ca0f95ff14133ef0dc"
+    },
+    "accelint-tanstack-query-best-practices": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "125dc5ced24684d22a71f6cc835ac9c1434511a881152759ab46045210d81f30"
+    },
+    "accelint-ts-audit-all": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "edef75e916a2c59f08a054f3a8dc90abbfd829ccacfc0f737829357d293bb531"
+    },
+    "accelint-ts-best-practices": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "d3e992e1d203d13f4d7a59deeca5ee41edfc7593a4a1508d757a27b06b9fd965"
+    },
+    "accelint-ts-documentation": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "320de6e5236f61065a82d1fb71ebfcdd5b5ed4e7d2764a407c05de8e89a13441"
+    },
+    "accelint-ts-performance": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "b267aacab7ff516f46429f0b0d5fe4d73fc33f750e9bb9dcd0cf60227df41b59"
+    },
+    "accelint-ts-testing": {
+      "source": "/Users/brandon.pierce/Projects/agent-skills/skills",
+      "sourceType": "local",
+      "computedHash": "f12959b4420dec47e20becfc6e70d8723347ff0c13a7cb463e1bb9bc6603637d"
+    },
     "bash-defensive-patterns": {
       "source": "wshobson/agents",
       "sourceType": "github",
       "skillPath": "plugins/shell-scripting/skills/bash-defensive-patterns/SKILL.md",
-      "computedHash": "33de6a9e8260a7a5f772c5bf1e389b5207318a17a3a0a13160066c5e76a059d3"
+      "computedHash": "9c63659b9130b214b75f84ec11ac715b647250ca8e0cde2357f4c578d43cfc24"
     },
     "humanizer": {
       "source": "blader/humanizer",
       "sourceType": "github",
       "skillPath": "SKILL.md",
-      "computedHash": "b813857f183da05d08d5a80adac671df94c139f855809bd47ab8b7bb245546a2"
+      "computedHash": "71a65e340e413dc6828da29eff38d9e2c6868e93898303bd062a06bed9f95102"
     },
     "skill-creator": {
       "source": "anthropics/skills",
