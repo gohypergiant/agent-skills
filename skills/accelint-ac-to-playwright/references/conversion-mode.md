@@ -24,6 +24,7 @@
   - Run: `cd /Users/tanya.fortunaGHM7GPQV67/Coding/agent-skills/skills/accelint-ac-to-playwright && npx generate-tests <plans-output-dir>/<suite-slug>.json --tests-dir <tests-output-dir> --summary-dir <summaries-output-dir>`
   - The script will automatically write the test file to `<tests-output-dir>/<suite-slug>.spec.ts`
   - Verify the file was written successfully by using the Read tool to check its contents
+  - If translation fails, spawn subagent with `references/diagnose-translation-errors.md` to diagnose the error and suggest a fix. This is mandatory if translation fails. Do not skip spawning the subagent because the error "seems obvious".
 5. **Next steps**: 
   - Work on the next input file, if any remain.
   - After all files are processed:
@@ -148,10 +149,6 @@ Use `npx validate-plan path/to/plan.json` to validate a plan against `scripts/pl
 - Make multiple changes at once (always fix ONE thing at a time)
 - Retry by rephrasing same JSON differently
 - Guess at schema requirements if error is unclear
-
-## Translation Error Recovery
-
-When `generate-tests.ts` fails to translate JSON plan to Playwright test code, spawn subagent with `references/diagnose-translation-errors.md` to diagnose the error and suggest a fix.
 
 ## NEVER Do
 
