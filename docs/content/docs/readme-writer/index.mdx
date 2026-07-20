@@ -1,157 +1,91 @@
 ---
 title: Overview
-description: Generate and maintain comprehensive, human-friendly README documentation by analyzing codebases and ensuring docs stay in sync with actual functionality.
+description: Generate and maintain comprehensive README documentation by analyzing codebases, extracting real examples from tests, and ensuring docs stay synchronized with actual functionality.
 source: skills/accelint-readme-writer/SKILL.md
 source_sha: 227caa0d72bfe8c8a862258854717e4316481de9
-doc_sha: beb88308f0d314a7568750eabcd544c2868d56ed
+doc_sha: 3736f6ee231d286a47e11831aaf792580983fbee
 deprecated: false
 updated: 2025-01-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to create or update README.md files that accurately reflect your codebase. The skill analyzes your code structure, extracts public APIs, discovers usage examples from tests, and generates thorough documentation with practical, copy-pasteable examples.
+Use this skill to create or update README.md files that accurately reflect your codebase. It analyzes code structure, extracts the public API, discovers usage patterns from tests, and generates documentation with practical, copy-pasteable examples.
 
-It is especially useful when you need to:
+Activate it with:
+- `/accelint-readme-writer`
+- Phrases like "create a README" or "update the README"
+- Related requests about documenting a package, refreshing stale README content, or writing project docs
+
+Especially useful when you need to:
 - Create a new README for a project or package
 - Update documentation after code changes
 - Ensure README accuracy by comparing docs to actual exports
 - Convert sparse documentation into comprehensive guides
-- Generate human-sounding prose instead of robotic AI text
 
-Activate this skill by:
-- Saying "create a README", "update the README", or "document this package"
-- Mentioning "README" in context of a specific directory or package
-- Asking to fix outdated or incomplete documentation
 
 ## When to Use
 
-Use this skill when:
-- Creating a README.md for any project or package
-- User asks to "document this" or "write a README"
+Use when:
+- Creating or updating a README.md for any project or package
 - Existing README is stale after code changes
 - Documentation needs auditing for completeness
-- Working with monorepo packages that need individual READMEs
+- Working with monorepo packages needing individual READMEs
 
-Do NOT use for:
-- API documentation generation (use JSDoc/TSDoc tools instead)
+Skip for:
+- API documentation generation (use JSDoc/TSDoc tools)
 - Changelogs or release notes
 - Internal developer notes
-- Non-Markdown documentation formats
 
 ## How It Works
 
-The skill follows a systematic workflow to generate accurate, helpful documentation:
+The skill analyzes your codebase to ensure documentation matches reality:
 
-### Parallel Codebase Discovery
+- **Discovers structure in parallel**: Spawns concurrent discovery agents (when available) to map entry points, dependencies, examples, and existing docs efficiently
+- **Extracts real examples**: Pulls usage patterns from test files, `examples/` directories, and JSDoc blocks rather than fabricating examples
+- **Cross-references related docs**: Checks for openspec/config.yml, ARCHITECTURE.md, and AGENTS.md to maintain consistency and create proper cross-links
+- **Identifies gaps**: Compares discovered code against existing README to find missing exports, stale examples, wrong package manager commands, or signature mismatches
+- **Generates human-sounding prose**: Uses the `humanizer` skill to remove AI writing patterns and robotic language
 
-The skill spawns multiple discovery agents in parallel when available to efficiently analyze different aspects of your codebase:
-
-- **Entry Points & Public API**: Traces `package.json` exports, main entry files, and all re-exported functions/types to map the complete public API
-- **Dependencies & Configuration**: Identifies runtime dependencies, peer dependencies, package manager (from lockfiles), and available npm scripts
-- **Examples & Usage**: Extracts real usage patterns from test files, `examples/` directories, and JSDoc `@example` blocks
-- **Documentation Context**: Checks for existing README, CHANGELOG, CONTRIBUTING, and related docs
-
-After discovery completes, the skill identifies documentation gaps such as missing exports, stale examples, outdated commands, or missing sections.
-
-### Cross-Document Intelligence
-
-Before scanning, the skill checks for related documentation:
-- **openspec/config.yml**: Extracts package manager, tech stack, and key libraries to avoid redundant scanning
-- **ARCHITECTURE.md**: References system architecture for cross-linking
-- **AGENTS.md / CLAUDE.md**: Notes contribution guidelines
-
-This ensures consistency (e.g., README uses the same package manager as config.yml) and creates proper cross-references.
-
-### Gap Analysis and Updates
-
-For existing READMEs, the skill compares discovered code structure against current documentation to identify:
-- Public API exports not documented
-- Code examples using deprecated patterns
-- Wrong package manager commands
-- Missing critical sections (installation, quick start, API reference)
-- Signature mismatches between docs and actual code
-
-### Human-Sounding Output
-
-The skill generates natural-sounding prose by:
-- Extracting real examples from tests and source code (never fabricating usage patterns)
-- Using the `humanizer` skill to remove AI writing patterns like inflated language, promotional tone, and robotic phrasing
-- Writing as if a helpful developer is explaining the package to a colleague
+For existing READMEs, you get a gap analysis before any changes, showing what's missing, outdated, or mismatched.
 
 ## Good to Know
 
-> **Good to know:** This skill only documents public APIs accessible through package entry points. Internal helper functions not re-exported from `index.ts` are intentionally excluded.
+> **Good to know:** Only documents public APIs accessible through package entry points. Internal helpers not re-exported from `index.ts` are excluded.
 
-> **Good to know:** Package manager detection is automatic based on lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`). All install commands use the detected manager.
+> **Good to know:** Package manager detection is automatic from lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`). All commands use the detected manager.
 
-> **Good to know:** The skill requires the `humanizer` skill to remove AI writing patterns. If not available, generated READMEs may contain robotic language.
+> **Good to know:** Requires the `humanizer` skill for natural-sounding output. Without it, generated READMEs may contain robotic language.
 
-> **Good to know:** In monorepos, README scope is determined by location. A README at `packages/my-lib/` documents only that package, not the entire repository.
-
-## Prerequisites
-
-- A codebase with identifiable entry points (`package.json` with `main`, `module`, `types`, or `exports` fields)
-- The `humanizer` skill must be available for natural-sounding output
-
-## What You Get
-
-A complete README.md file with:
-- Installation instructions using the correct package manager
-- Quick start examples extracted from real code
-- API reference documenting all public exports
-- Usage examples from test files or `examples/` directories
-- Cross-references to ARCHITECTURE.md, AGENTS.md, or other related docs (when they exist)
-- Human-sounding prose free of AI writing patterns
-
-For updates to existing READMEs, you receive:
-- A list of identified gaps (missing exports, stale examples, outdated commands)
-- Suggested changes before applying updates
-- Preserved structure with targeted fixes to outdated sections
+> **Good to know:** In monorepos, README scope is determined by location. A README at `packages/my-lib/` documents only that package.
 
 ## Examples
 
-### Example: Creating a New README for a Package
+### Example: Creating a New README
 
 ```bash
-# User prompt
-"Create a README for packages/my-lib"
+/accelint-readme-writer "Create a README for packages/my-lib"
 
-# Output: Complete README.md generated
-# - Automatically detects package manager from lockfile
-# - Extracts public API from src/index.ts
-# - Pulls usage examples from my-lib.test.ts
-# - Cross-references ARCHITECTURE.md if it exists
+# Result: Complete README.md with:
+# - Auto-detected package manager from lockfile
+# - Public API extracted from src/index.ts
+# - Usage examples from my-lib.test.ts
+# - Cross-references to ARCHITECTURE.md (if exists)
 ```
 
 ### Example: Updating Stale Documentation
 
 ```bash
-# User prompt
-"Update the README to reflect recent changes"
+/accelint-readme-writer "Update the README to reflect recent changes"
 
-# Process:
-# 1. Discovers new exported functions not in current README
-# 2. Identifies deprecated examples in docs that don't match current code
-# 3. Presents list of gaps to user
-# 4. Applies targeted updates while preserving manual edits
-```
-
-### Example: Monorepo Package Documentation
-
-```bash
-# User prompt
-"Document packages/auth-sdk"
-
-# Output:
-# - Scopes analysis to packages/auth-sdk/ only
-# - Uses lockfile from project root for package manager detection
-# - Documents only exports from packages/auth-sdk/src/index.ts
-# - Creates packages/auth-sdk/README.md
+# Result: Gap analysis showing:
+# - New exported functions not documented
+# - Deprecated examples that don't match current code
+# - Targeted updates applied after review
 ```
 
 ## Related
 
 - **humanizer**: Required for removing AI writing patterns from generated docs
-- **accelint-architecture-doc**: Use for generating ARCHITECTURE.md files referenced in README
-- **accelint-onboard-agents**: Use for generating AGENTS.md/CLAUDE.md referenced in contributing sections
+- **accelint-architecture-doc**: For generating ARCHITECTURE.md files referenced in README
+- **accelint-onboard-agents**: For generating AGENTS.md referenced in contributing sections

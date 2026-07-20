@@ -1,109 +1,79 @@
 ---
 title: Overview
-description: Opinionated Tailwind conventions for styling with @accelint/design-foundation and @accelint/design-toolkit, including semantic tokens, custom spacing scale, outline-based borders, and CSS module patterns.
+description: Opinionated Tailwind conventions for styling with @accelint/design-foundation and @accelint/design-toolkit, featuring semantic tokens, custom spacing, outline-first borders, and CSS modules.
 source: skills/accelint-design-foundation/SKILL.md
 source_sha: 2b459d7e70b063e6d6332a4557804d2f37965f3f
-doc_sha: 4abb3c3ba719825eb8f76f3046faa32aa6ef7d58
+doc_sha: 6851ebcefe03ed5c1a8060c526a87aa06ca6fe03
 deprecated: false
-updated: 2025-01-27
+updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to style components with `@accelint/design-foundation` and `@accelint/design-toolkit` using the design system's Tailwind conventions rather than vanilla Tailwind defaults.
+Use this skill to style components with `@accelint/design-foundation` and `@accelint/design-toolkit` following the design system's opinionated Tailwind conventions.
+
+Activate it with:
+- `/accelint-design-foundation`
+- Phrases like "style this", "add styling", or "theme this component"
+- Related requests about CSS modules, `@variant`, or design-foundation setup
 
 It is especially useful when you need to:
-- Apply semantic tokens for color, spacing, and outlines
-- Structure styles in CSS modules with the expected layer and variant patterns
-- Set up the required PostCSS and `@reference` wiring
-- Migrate components from vanilla Tailwind to design-foundation conventions
+- Apply semantic tokens for theming (colors, spacing, outlines)
+- Structure component styles in CSS modules with layers and variants
+- Set up PostCSS configuration and CSS module references
+- Migrate from vanilla Tailwind to design-foundation patterns
 
-> **Good to know:** This is not vanilla Tailwind. The design foundation replaces default Tailwind theme assumptions with semantic tokens, 1:1 numeric spacing, and outline-first borders.
 
 ## When to Use
 
 Use this skill when:
-- Styling components with `@accelint/design-foundation` or `@accelint/design-toolkit` packages
-- Users say "style this", "add styling", "theme this component", "add colors", "add spacing"
-- Working with `.module.css` files or CSS modules
-- Seeing "CSS modules", "setup design foundation", "@variant" mentioned
+- Styling components with `@accelint/design-foundation` or `@accelint/design-toolkit`
+- Adding colors, spacing, or outlines to elements
+- Working with CSS modules in the design system
 - Encountering build errors like "undefined variable" or "@variant not found"
-
-## Prerequisites
-
-Required setup before using design foundation:
-
-**PostCSS configuration** - Create `postcss.config.mjs` in project root:
-```javascript
-export default {
-  plugins: {
-    '@tailwindcss/postcss': {},
-    '@accelint/postcss-tailwind-css-modules': {}, // Required
-  },
-};
-```
-
-**CSS module references** - Every `.module.css` file must include:
-```css
-@reference '@accelint/design-foundation/styles';
-```
-
-**Root layout import** - Import design foundation styles first:
-```tsx
-import '@accelint/design-foundation/styles'; // First import
-import { ReactNode } from 'react';
-
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return <html>{children}</html>;
-}
-```
 
 ## How It Works
 
-The skill steers you toward three core conventions:
+### Core Conventions
 
-### Semantic Tokens
+The skill enforces three main patterns:
 
-Prefer semantic tokens over primitive values so styles adapt to theme changes:
-- `bg-*` for surfaces and backgrounds
-- `fg-*` for text and foreground emphasis
-- `outline-*` for borders, dividers, and focus treatments
+**Semantic tokens over primitives** - Use tokens that adapt to theme changes automatically:
+- `bg-surface-default` instead of `bg-gray-100`
+- `fg-primary-bold` instead of `text-gray-900`
+- `outline-interactive` instead of `border-blue-500`
 
-```tsx
-<div className="bg-surface-default fg-primary-bold outline-1 outline-interactive">
-  Content
-</div>
-```
+**Semantic spacing scale** - Use the named scale (`xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`, `oversized`) for consistency. Numeric classes exist as fallbacks with 1:1 mapping (`p-1` = 1px, not 4px like vanilla Tailwind), but should only be used for non-standard designs.
 
-### Semantic Spacing First
+**Outlines instead of borders** - Prefer `outline-*` utilities since they don't affect element dimensions, preventing layout shifts.
 
-Use the semantic spacing scale (`xxs` → `oversized`) for normal component work, and fall back to numeric spacing only when the design truly requires an exact value.
+### Setup Requirements
 
-```css
-.button {
-  @apply px-m py-xs;
-}
+Every project needs:
+1. **PostCSS plugin** in `postcss.config.mjs`:
+   ```javascript
+   export default {
+     plugins: {
+       '@tailwindcss/postcss': {},
+       '@accelint/postcss-tailwind-css-modules': {},
+     },
+   };
+   ```
 
-.nonStandard {
-  @apply p-13;
-}
-```
+2. **Reference directive** at the top of each CSS module:
+   ```css
+   @reference '@accelint/design-foundation/styles';
+   ```
 
-### Outline-First Borders
+3. **Root import** as first import in layout:
+   ```tsx
+   import '@accelint/design-foundation/styles';
+   ```
 
-Prefer `outline-*` utilities over `border-*` so visual boundaries do not change element dimensions.
-
-```css
-.card {
-  @apply outline-1 outline-interactive;
-}
-```
-
-## Component Styling Pattern
+### Component Styling Pattern
 
 Component styles belong in CSS modules, not inline classes:
 
-**button.module.css:**
 ```css
 @reference '@accelint/design-foundation/styles';
 
@@ -118,44 +88,71 @@ Component styles belong in CSS modules, not inline classes:
     @variant color-critical {
       @apply outline-2 outline-critical-bold fg-critical-bold;
     }
-
-    @variant size-large {
-      @apply px-l py-s;
-    }
   }
 }
 ```
 
-**button.tsx:**
 ```tsx
 import { clsx } from '@accelint/design-foundation/lib/utils';
 import styles from './button.module.css';
 
-export function Button({ children, color, size }) {
+export function Button({ children, color }) {
   return (
-    <button
-      className={styles.button}
-      data-color={color}
-      data-size={size}
-    >
+    <button className={styles.button} data-color={color}>
       {children}
     </button>
   );
 }
 ```
 
-> **Good to know:** Always import `clsx` from `@accelint/design-foundation/lib/utils`, not directly from the `clsx` package. The design foundation re-exports it with additional type support.
+## Examples
+
+### Example: Styling a card component
+
+```bash
+/accelint-design-foundation "add styling to this card component"
+```
+
+The skill guides you to create a CSS module with semantic tokens:
+
+```css
+@reference '@accelint/design-foundation/styles';
+
+@layer components.l1 {
+  .card {
+    @apply bg-surface-default outline-1 outline-static p-m;
+  }
+  
+  .title {
+    @apply fg-primary-bold text-body-l mb-s;
+  }
+  
+  .content {
+    @apply fg-primary-muted text-body-m;
+  }
+}
+```
+
+### Example: Setting up design foundation
+
+```bash
+/accelint-design-foundation "setup design foundation"
+```
+
+The skill walks through the required configuration steps: adding the PostCSS plugin, creating a CSS entrypoint if needed, and verifying `@reference` directives in CSS modules.
 
 ## Good to Know
 
-> **Good to know:** Every `.module.css` file needs `@reference '@accelint/design-foundation/styles';` at the top. Missing it usually causes token and variant errors that look unrelated at first glance.
+> **Good to know:** This is not vanilla Tailwind. The design foundation replaces Tailwind's default theme with semantic tokens, custom spacing, and outline-first conventions. Don't rely on any Tailwind defaults.
 
-> **Good to know:** Keep each rule to a single `@apply` statement when possible. That preserves IDE plugin support better than splitting utilities across multiple `@apply` lines.
+> **Good to know:** Every CSS module needs `@reference '@accelint/design-foundation/styles';` at the top. Missing this causes "undefined variable" and "@variant not found" errors.
 
-> **Good to know:** Use `@variant` blocks instead of handwritten attribute selectors for component states and variants. That keeps your styling aligned with the design foundation's conventions.
+> **Good to know:** Always import `clsx` from `@accelint/design-foundation/lib/utils`, not directly from the `clsx` package. The design foundation version includes additional type support.
 
-> **Good to know:** If tokens show up as raw values or selectors like `group-hover/button` fail, the usual cause is setup drift: a missing PostCSS plugin, a missing `@reference`, or importing `@accelint/design-foundation/styles` too late.
+> **Good to know:** Use single `@apply` statements per rule when possible. Multiple `@apply` directives in one rule break IDE plugin support for class sorting and validation.
 
-> **Good to know:** Component styles belong in CSS modules (`.module.css`), not inline `className` props. Use inline Tailwind classes only for minor one-off overrides.
+> **Good to know:** Component styles belong in CSS modules. Use inline Tailwind classes only for minor one-off overrides, not for primary component styling.
 
-> **Good to know:** Semantic tokens should be your first choice. The utility classes fall back to `domain-*` and `primitive-*` tokens for rare cases where designs exceed the system.
+> **Good to know:** Semantic tokens should be your default choice. Utility classes fall back to `domain-*` and `primitive-*` tokens only for exceptional cases where designs exceed the system.
+
+> **Good to know:** If `group-hover/button:` selectors fail or tokens show as raw values, check that the PostCSS plugin is configured and `@accelint/design-foundation/styles` is imported first in your root layout.

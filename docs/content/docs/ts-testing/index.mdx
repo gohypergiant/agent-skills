@@ -3,46 +3,46 @@ title: Overview
 description: Comprehensive vitest testing guidance for TypeScript projects covering test organization, assertions, test doubles, async patterns, performance optimization, and property-based testing.
 source: skills/accelint-ts-testing/SKILL.md
 source_sha: dd440be67db17eea8ed9592f954d7c4b7d83aca0
-doc_sha: d2f03dbf4af115e5cf782014990beeea61fa0e65
+doc_sha: c3b30c16080084781f88f8e4801f77e193db269e
 deprecated: false
-updated: 2025-01-27
+updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to write maintainable, effective vitest tests that catch real bugs and support confident refactoring. It helps you:
+Use this skill to write maintainable, effective vitest tests that catch real bugs and support confident refactoring.
+
+Activate it with:
+- `/accelint-ts-testing <path>`
+- Phrases like "review this test" or "write tests for X"
+- Related requests about vitest, fast-check, async tests, or property-based testing
+
+It helps you:
 
 - Structure tests with clear patterns (AAA, parameterized tests, proper organization)
 - Choose the right assertions and test doubles (fakes, stubs, mocks, spies)
 - Handle async code, timers, and concurrent tests correctly
 - Optimize test performance for fast feedback loops
 - Apply property-based testing for stronger coverage with generated inputs
-- Identify and fix common anti-patterns that create brittle, unreliable tests
+- Identify and fix anti-patterns that create brittle, unreliable tests
 
-The skill is especially useful when you need expert-level guidance on test quality, reliability, and maintainability rather than just syntax help.
 
 ## When to Use
 
 Use this skill when:
 
 - Writing new tests with AAA pattern, parameterized tests, or async/await
-- Reviewing test code for anti-patterns like loose assertions (`toBeTruthy`), over-mocking, or nested describe blocks
+- Reviewing test code for anti-patterns like loose assertions (`toBeTruthy`), over-mocking, or nested describe blocks &gt;2 levels deep
 - Optimizing slow test suites
-- Implementing property-based testing with fast-check - especially for encode/decode pairs, roundtrip properties, validators, normalizers, and idempotence checks
+- Implementing property-based testing with fast-check for encode/decode pairs, validators, normalizers, and idempotence checks
 - Auditing existing tests for quality and reliability issues
-
-Trigger this skill by:
-
-- Saying "review this test", "audit tests", "write tests for X"
-- Working with `*.test.ts` files, `describe`, `it`, `expect`, `vi.mock`
-- Mentioning vitest, fast-check, `fc.property`, roundtrip, idempotence
 
 ## How It Works
 
 The skill provides expert patterns organized by testing concern:
 
 - **Test Organization**: File structure, naming conventions, describe block hierarchy
-- **AAA Pattern**: Arrange-Act-Assert structure for clarity
+- **AAA Pattern**: Arrange-Act-Assert structure for test clarity
 - **Parameterized Tests**: Using `it.each()` to eliminate duplication
 - **Assertions**: Strict assertions that catch unintended values (avoid `toBeTruthy()`, `toBeDefined()`)
 - **Test Doubles Hierarchy**: When to use fakes &gt; stubs &gt; spies &gt; mocks
@@ -50,21 +50,17 @@ The skill provides expert patterns organized by testing concern:
 - **Performance**: Fast tests through efficient setup and global configuration
 - **Property-Based Testing**: Using fast-check for generated test inputs and stronger invariants
 
-The skill emphasizes testing behavior over implementation, isolation between tests, and making tests valuable long-term rather than just passing today.
-
-### Progressive Disclosure
-
-The skill uses modular guidance to minimize context usage:
-
-1. **Check existing configuration first** - Scan for `vitest.config.ts`, setup files, and global mock cleanup settings before writing tests
-2. **Load specific patterns as needed** - Each testing concern (async, mocking, performance, etc.) has dedicated detailed guidance
-3. **Mandatory patterns for audits** - When reviewing tests, always check for property-based testing opportunities alongside standard patterns
-
-When you audit tests, the skill identifies high-value property-based testing opportunities for encode/decode pairs, validators, normalizers, and pure functions.
+The skill emphasizes testing behavior over implementation, isolation between tests, and making tests valuable long-term. Detailed guidance is available for specific scenarios, while the main workflow stays concise. When you audit tests, the skill identifies high-value property-based testing opportunities for encode/decode pairs, validators, normalizers, and pure functions.
 
 ## Examples
 
 ### Example: Writing a Test with AAA Pattern
+
+```bash
+/accelint-ts-testing src/cart/cart.test.ts
+```
+
+The skill highlights weak structure in a test file and suggests a clearer Arrange-Act-Assert shape.
 
 ```typescript
 // ✅ Clear AAA structure
@@ -82,7 +78,13 @@ it('should add item to cart', () => {
 });
 ```
 
-### Example: Parameterized Tests
+### Example: Parameterized Tests for Variations
+
+```bash
+/accelint-ts-testing src/utils/string-utils.test.ts
+```
+
+The skill spots repeated test cases and recommends collapsing them into a parameterized form.
 
 ```typescript
 // ✅ Avoid duplication with it.each()
@@ -95,7 +97,13 @@ it.each([
 });
 ```
 
-### Example: Property-Based Testing
+### Example: Property-Based Testing for Roundtrip Properties
+
+```bash
+/accelint-ts-testing src/codec/serializer.test.ts
+```
+
+The skill identifies a good candidate for property-based testing and proposes a roundtrip invariant.
 
 ```typescript
 import fc from 'fast-check';
@@ -118,20 +126,10 @@ it('property: decode(encode(x)) === x for all valid inputs', () => {
 
 > **Good to know:** The skill emphasizes global mock cleanup configuration (`clearMocks: true` in `vitest.config.ts`) to prevent test order dependencies rather than manual cleanup in each test.
 
+> **Good to know:** When invoked for test review or audit, you get a formatted report with severity levels, categorized findings, impact analysis, and property-based testing opportunities. For direct questions or test writing requests, you get targeted guidance without a formal report.
+
 ## Prerequisites
 
 - vitest testing framework installed and configured
 - For property-based testing examples: fast-check library (`npm install -D fast-check`)
 - TypeScript with test files included in type checking scope
-
-## What You Get
-
-When you invoke the skill for test review or audit:
-
-- **Formatted report** with severity levels (Critical, High, Medium, Low)
-- **Categorized findings** (Organization, Assertions, Test Doubles, Async, Performance)
-- **Impact analysis** on test reliability, maintainability, and clarity
-- **Property-based testing opportunities** identified for high-value patterns
-- **Before/after examples** showing how to fix each issue
-
-For direct questions or test writing requests, you get targeted guidance and implementation without a formal report.

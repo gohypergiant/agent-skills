@@ -1,61 +1,71 @@
 ---
 title: Overview
-description: TypeScript and JavaScript best-practice guidance for writing, reviewing, and auditing code with stronger type safety, defensive defaults, and clearer correctness boundaries.
+description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness for writing, reviewing, and auditing code.
 source: skills/accelint-ts-best-practices/SKILL.md
 source_sha: 2d42a1f0533d6a152c7610b766efa202b8d5c56d
-doc_sha: a8195f4b56520a91504172ba60cf40b8374fd038
+doc_sha: 8fe2f0906ee476dbe39bc0dd9a4271b7aa037321
 deprecated: false
 updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to improve TypeScript and JavaScript code quality with patterns that reduce bugs, tighten type safety, and make behavior easier to reason about.
+Use this skill to improve TypeScript and JavaScript code quality with patterns that reduce bugs, strengthen type safety, and make code behavior easier to reason about.
+
+Activate it with:
+- `/accelint-ts-best-practices <path>`
+- Phrases like "review this code" or "check for TypeScript anti-patterns"
+- Related requests about type safety, defensive programming, or correctness-focused audits
 
 It is especially useful when you need to:
-- Review TS/JS code for correctness, safety, and maintainability issues
-- Replace weak patterns like `any`, `enum`, nullable returns, or mutation-heavy state updates
-- Refactor control flow, function design, naming, and error handling into clearer, safer defaults
-- Audit files or directories for recurring TypeScript anti-patterns before they spread
+- Audit or review TS/JS files for correctness and maintainability issues
+- Replace weak patterns like `any`, `enum`, nullable returns, or mutation-heavy state
+- Refactor control flow, function design, naming conventions, or error handling
+- Catch TypeScript anti-patterns before they spread across the codebase
+
 
 ## When to Use
 
 Use this skill when:
 - Writing or reviewing `.ts` or `.js` code
-- Fixing type errors or trying to avoid weak typing in new code
-- Refactoring state management, return values, validation, or control flow
-- Performing a code-quality review focused on safety and correctness rather than speed
-- You want a structured TypeScript audit or direct guidance on specific TS/JS patterns
+- Fixing type errors or avoiding weak typing (`any`, `enum`, loose nullability)
+- Implementing control flow, state management, or error handling
+- Applying defensive programming patterns like input validation or immutability
+- Performing code reviews focused on safety and correctness (not performance)
 
 ## How It Works
 
-- Focuses on defensive programming patterns such as explicit validation, safer return shapes, bounded logic, and clearer error paths.
-- Encourages predictable TypeScript usage, including stronger typing choices and patterns that avoid fragile or misleading abstractions.
-- Uses concrete wrong-vs-right examples so the guidance is practical during both code reviews and direct implementation.
-- Adjusts to the scope of the request: larger reviews can become structured audits, while narrow requests stay focused on the code in front of you.
+The skill provides comprehensive guidance across several dimensions:
+
+- **Type Safety**: Stronger alternatives to `any`, `enum`, and nullable patterns; preferring `type` over `interface`; ensuring imports are statically analyzable
+- **Defensive Programming**: Input validation with schemas, explicit error handling, bounded iteration, immutable state patterns
+- **Code Clarity**: Naming conventions, function design principles, early returns, flat control flow
+- **Return Values**: Zero-value pattern instead of null/undefined for safer defaults
+
+When you request a broad audit, you get a structured report with severity levels (Critical, High, Medium, Low) to help prioritize fixes. For narrow fix requests, you get direct implementation guidance instead.
 
 ## Examples
 
-### Example: Auditing a file for TypeScript anti-patterns
+### Example: Auditing a single file
 
 ```bash
 /accelint-ts-best-practices src/utils/parse-config.ts
 ```
 
-You get a review of correctness and type-safety issues, with recommended replacements for risky patterns.
+Returns a review of type safety and correctness issues with recommended fixes.
 
-### Example: Reviewing a directory before a refactor
+### Example: Reviewing a directory
 
 ```bash
 /accelint-ts-best-practices src/lib
 ```
 
-You get a broader audit that helps prioritize cleanup work across multiple files.
+Returns a broader audit across multiple files to help prioritize cleanup work.
 
 ## Good to Know
 
-> **Good to know:** This skill is about correctness, safety, and maintainability. For runtime speed, allocation issues, or V8-specific tuning, use `accelint-ts-performance` instead.
+> **Good to know:** This skill focuses on correctness, safety, and maintainability. For runtime performance optimization (speed, allocations, V8 tuning), use `accelint-ts-performance` instead.
 
-> **Good to know:** For JSDoc, code comments, and documentation-focused cleanup, use `accelint-ts-documentation` instead.
+> **Good to know:** For JSDoc comments, documentation standards, and comment quality, use `accelint-ts-documentation` instead.
 
-> **Good to know:** Broad audit requests can produce a severity-based report, while narrow fix requests usually get direct implementation guidance instead of a formal report.
+> **Good to know:** Broad audit requests produce severity-based reports for prioritization. Narrow fix requests get direct implementation without a formal report structure.

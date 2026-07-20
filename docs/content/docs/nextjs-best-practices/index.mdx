@@ -3,66 +3,60 @@ title: Overview
 description: Next.js performance optimization and best practices covering Server Components, Server Actions, data fetching, RSC serialization, and parallel operations for both App Router and Pages Router.
 source: skills/accelint-nextjs-best-practices/SKILL.md
 source_sha: 0af092353242e94ddfd3cf2d0370fe424199f901
-doc_sha: 7e58e362a5d08eb719afe5465f8d0414965cc709
+doc_sha: 9f376bc3dd23b7daa61dc79557379cb2a6361971
 deprecated: false
-updated: 2025-01-22
+updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to optimize Next.js applications for performance and security. It helps you:
+Optimize Next.js applications for performance and security across App Router and Pages Router patterns.
 
-- Eliminate server-side data fetching waterfalls
-- Secure Server Actions with proper authentication and validation
-- Reduce RSC serialization overhead and response sizes
-- Implement parallel data fetching patterns
-- Choose correctly between Server and Client Components
-- Place Suspense boundaries strategically
-- Fix authentication issues in Server Actions
+Activate it with:
+- `/accelint-nextjs-best-practices`
+- Phrases like "optimize this Next.js code" or "secure this Server Action"
+- Related requests about Server Components, RSC serialization, Suspense, or slow Next.js pages
 
-The skill catches common Next.js anti-patterns during code review and suggests optimized alternatives with performance impact metrics.
+This skill helps you:
+
+- Eliminate server-side data fetching waterfalls and parallelize independent operations
+- Secure Server Actions with authentication and input validation
+- Reduce RSC serialization overhead to minimize response sizes
+- Place Suspense boundaries strategically for faster rendering
+- Choose between Server and Client Components based on interactivity needs
+- Catch anti-patterns during code review with expected performance impact
 
 ## When to Use
 
-Use this skill when:
+Activate this skill when:
 
-- Writing or refactoring Server Components, Client Components, or Server Actions
-- Users say "optimize this Next.js code", "this page is slow", "secure this Server Action"
-- Implementing data fetching patterns with `fetch()`, `React.cache()`, or database queries
-- Reviewing Next.js code for performance bottlenecks
-- Working with App Router or Pages Router
-- Debugging RSC serialization duplication or large HTML payloads
-- Deciding between server and client component boundaries
+- Writing Next.js code (App Router or Pages Router) with Server Components, Server Actions, or API routes
+- Saying "optimize this Next.js code", "this page is slow", "secure this Server Action"
+- Implementing data fetching with `fetch()`, `React.cache()`, or database queries
+- Reviewing code for performance issues, RSC serialization problems, or authentication gaps
+- Deciding between Server and Client Component boundaries
+- Implementing Suspense boundaries or parallel data fetching
 
 ## How It Works
 
-The skill focuses on three areas:
+The skill targets three optimization areas:
 
-### Core Optimization Areas
+- **Server-side performance** — Eliminates waterfall chains by starting operations immediately, parallelizes independent fetches with `Promise.all()`, deduplicates requests using `React.cache()`, and minimizes RSC serialization by passing only necessary data
+- **Security** — Validates and authenticates every Server Action, implements authorization checks before database operations, and prevents data exposure through input validation
+- **Component architecture** — Places Suspense boundaries strategically to unblock rendering, chooses Server vs Client Components based on interactivity, and structures components to enable parallel data streaming
 
-**Server-side performance:**
-- Prevents waterfall chains by starting operations immediately
-- Parallelizes independent data fetches with `Promise.all()` or `Promise.allSettled()`
-- Deduplicates requests using `React.cache()`
-- Minimizes RSC serialization by passing only necessary data
-- Uses `after()` for non-blocking background operations
-
-**Security:**
-- Validates and authenticates every Server Action
-- Prevents data exposure through proper input validation
-- Implements authorization checks before database operations
-- Avoids exposing sensitive data through serialization
-
-**Component architecture:**
-- Places Suspense boundaries strategically to unblock rendering
-- Decides server vs client component placement based on interactivity needs
-- Avoids barrel imports that slow development builds
-- Structures components to enable parallel data streaming
+Each pattern includes before/after examples with expected performance impact so you can prioritize the most valuable improvements.
 
 
 ## Examples
 
 ### Example: Eliminating Data Fetching Waterfalls
+
+```bash
+/accelint-nextjs-best-practices src/app/dashboard/page.tsx
+```
+
+The skill spots sequential fetches, recommends where to parallelize, and shows the before/after pattern to apply.
 
 ```tsx
 // Before: Sequential fetching (waterfall)
@@ -83,6 +77,12 @@ async function Page() {
 ```
 
 ### Example: Securing Server Actions
+
+```bash
+/accelint-nextjs-best-practices src/app/actions/delete-post.ts
+```
+
+The skill reviews the action for missing auth and validation, then suggests the safer server-side pattern.
 
 ```tsx
 // Before: No authentication
@@ -106,6 +106,12 @@ export async function deletePost(postId: string) {
 
 ### Example: Minimizing RSC Serialization
 
+```bash
+/accelint-nextjs-best-practices src/app/profile/UserProfile.tsx
+```
+
+The skill highlights oversized server payloads and recommends selecting only the fields the client component actually needs.
+
 ```tsx
 // Before: Over-serialization (entire user object)
 async function UserProfile({ userId }: Props) {
@@ -127,13 +133,7 @@ async function UserProfile({ userId }: Props) {
 
 > **Good to know:** This skill focuses on Next.js-specific patterns. For general React optimization, use `accelint-react-best-practices`. For broader TypeScript guidance, use `accelint-ts-best-practices`.
 
-> **Good to know:** Pattern guidance includes expected impact so you can prioritize the fixes that matter most.
-
-## Prerequisites
-
-- Next.js project (App Router or Pages Router)
-- Understanding of React Server Components concepts
-- Basic familiarity with async/await patterns
+> **Good to know:** Requires a Next.js project (App Router or Pages Router) and basic understanding of React Server Components and async/await patterns.
 
 ## Related
 

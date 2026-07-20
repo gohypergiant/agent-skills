@@ -63,6 +63,7 @@ Before including any detail, classify it:
 
 ### Include
 - What the skill helps the human accomplish
+- A short, top-level slash command cue that makes the skill easy to invoke
 - When the skill should be used
 - What it optimizes, evaluates, or changes
 - Key behaviors, decision frameworks, and tradeoffs
@@ -202,23 +203,24 @@ Store this value for frontmatter.
 
 Extract information from source—don't infer or hallucinate. Focus on:
 
-**Opening section**: Start with user-facing outcomes. Invocation details are optional and should appear only when they materially help the reader use the skill.
+**Opening section**: Start with user-facing outcomes and include a short invocation block so every skill doc shows the slash command near the top. Keep it brief.
 ```markdown
 ## What It Helps You Do
 
 Use this skill to [core outcomes in human terms].
 
+Activate it with:
+- `/<name-from-frontmatter>`
+- Phrases like "[key phrases from description]"
+- Related requests about [context or keywords]
+
 It is especially useful when you need to:
 - [Outcome 1]
 - [Outcome 2]
 - [Outcome 3]
-
-[Optional invocation details only if helpful]
-Activate this skill by:
-- Using the `/<name-from-frontmatter>` command
-- Saying "[key phrases from description]"
-- Mentioning "[keywords]" while [context]
 ```
+
+Keep the invocation block to 2–3 bullets max. The goal is discoverability, not a long trigger list.
 
 For tool-like skills, concrete invocation examples are useful. For process, audit, or judgment skills, spend more space on outcomes and behavior than on command syntax.
 

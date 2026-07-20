@@ -3,129 +3,111 @@ title: Overview
 description: Create, audit, and refactor agent skills with structured workflows for domain expertise, anti-patterns, and progressive disclosure.
 source: skills/accelint-skill-manager/SKILL.md
 source_sha: 3af365c0388b9f2d9fda33fe812d02050a9f2077
-doc_sha: bd3c710ff063a637e3dc9e54dd0520fc9eb0ab26
+doc_sha: bd69345263b2b5c1fcdcf18c2b0c5dfd3b57b51c
 deprecated: false
-updated: 2026-07-17
+updated: 2026-01-21
 ---
 
 ## What It Helps You Do
 
-Use this skill to build and maintain high-quality agent skills that capture expert knowledge. It guides you through:
+Use this skill to build and maintain agent skills that capture expert knowledge rather than basics.
 
-- Creating new skills from user examples and domain expertise
-- Auditing existing skills for quality, structure, and knowledge value
-- Refactoring skills to improve clarity, token efficiency, and activation accuracy
-- Ensuring skills follow best practices for frontmatter, descriptions, and progressive disclosure
+Activate it with:
+- `/accelint-skill-manager`
+- Phrases like "create a skill" or "audit this skill"
+- Related requests about reviewing skill quality, fixing a skill, or improving trigger descriptions
 
-The skill focuses on capturing what takes experts years to learn—not teaching basics or standard procedures.
+It guides you through:
 
-Activate this skill by:
-- Saying "create a skill", "build a skill for X", "make a new skill"
-- Asking to "audit this skill", "review skill quality", "check this skill"
-- Requesting "fix this skill", "improve this skill", "refactor this skill", "optimize this skill"
+- Creating new skills from concrete usage examples
+- Auditing existing skills for knowledge density and activation accuracy  
+- Refactoring skills to improve structure and token efficiency
+- Ensuring skills follow frontmatter conventions and best practices
+
+The skill focuses on what takes experts years to learn—not standard procedures or library tutorials.
+
 
 ## When to Use
 
 Use this skill when:
-- Creating domain expertise into structured agent skills
-- Auditing skills for knowledge density and activation accuracy
-- Improving existing skills with better structure or clearer descriptions
-- Ensuring skills follow frontmatter conventions and progressive disclosure patterns
+- Creating structured agent skills from domain expertise
+- Auditing skills for quality, structure, and effective triggering
+- Improving existing skills with better descriptions or organization
+- Working with skill files in `skills/` or `.claude/skills/` directories
 
 ## How It Works
 
-The skill provides three distinct workflows tailored to your task:
+The skill provides three workflows based on your task:
 
-**Skill Creation Workflow** (4 steps):
-1. **Understanding** - Gather concrete usage examples and trigger phrases from users
-2. **Planning** - Identify reusable scripts, references, and assets from the examples
-3. **Initializing** - Check for overlapping skills, create directory structure from template
-4. **Editing** - Write expert knowledge with calibrated freedom levels and update CHANGELOG
+**For creating skills:**
+1. Gather concrete usage examples and trigger phrases
+2. Identify reusable scripts, references, and asset needs
+3. Initialize directory structure from template
+4. Write expert knowledge with freedom calibrated to task fragility
 
-**Skill Audit Workflow**:
-1. Frontmatter validation (name conventions, description quality, version alignment)
-2. Structure check (required sections, anti-patterns presence, progressive disclosure)
-3. CHANGELOG and version verification (format, rationale, version matching)
-4. Knowledge delta test (measures redundant vs expert-only content percentage)
-5. Actionable recommendations with improved description and revised SKILL.md
+**For auditing skills:**
+1. Validate frontmatter (name conventions, description quality, version)
+2. Check structure (required sections, anti-patterns presence)
+3. Measure knowledge density (redundant vs expert-only content)
+4. Provide ranked recommendations with revised SKILL.md
 
-**Freedom Calibration**:
-The skill adjusts how prescriptive it becomes based on task fragility:
-- **High freedom** for creative tasks (principles, thinking patterns)
-- **Medium freedom** for code review (guidelines with examples)
-- **Low freedom** for fragile operations (exact scripts, specific commands)
+**Freedom calibration:**
+- Creative tasks get high freedom (principles, thinking patterns)
+- Code review gets medium freedom (guidelines with examples)
+- Fragile operations get low freedom (exact scripts, no variation)
 
-### Progressive Disclosure
-
-The skill minimizes context usage through layered loading:
-- Core workflow stays in SKILL.md (&lt;500 lines)
-- Detailed conventions go in references/ (loaded on-demand)
-- Reusable code goes in scripts/, templates in assets/
+The skill keeps detailed guidance in loadable references rather than dumping everything in SKILL.md, so you only load what's needed for the current step.
 
 ## Examples
 
 ### Example: Creating a New Skill
 
 ```bash
-# User provides domain and examples
-"Create a skill for PDF manipulation. I need to rotate pages, merge files, and extract text."
+/accelint-skill-manager "Create a skill for PDF manipulation. I need to rotate pages, merge files, and extract text."
 
-# Skill manager asks clarifying questions
-"What trigger phrases? 'Rotate this PDF'? Any other examples?"
-
-# After understanding, initializes structure
-/skill-manager create pdf-editor
-
-# Generates: skills/pdf-editor/SKILL.md with anti-patterns, references, scripts
+# Skill manager asks: "What trigger phrases? Any other examples?"
+# Then initializes: skills/pdf-editor/SKILL.md with anti-patterns, references, scripts
 ```
 
-### Example: Auditing an Existing Skill
+You get a complete skill structure with organized scripts and references.
+
+### Example: Auditing a Skill
 
 ```bash
-# Review quality of existing skill
-/skill-manager audit skills/accelint-react-testing
+/accelint-skill-manager "audit skills/accelint-react-testing"
 
-# Output includes:
-# - Frontmatter issues (description missing keywords)
-# - Structure gaps (missing anti-patterns section)
-# - Knowledge delta (40% redundant content flagged)
-# - Specific recommendations with improved description
-# - Revised SKILL.md with fixes applied
+# Returns:
+# - Frontmatter issues (missing keywords in description)
+# - Structure gaps (missing anti-patterns section)  
+# - Knowledge delta (40% redundant content)
+# - Actionable fixes with improved description
 ```
 
 ## Good to Know
 
-> **Good to know:** The skill distinguishes between three workflows—creation, refactoring, and auditing. Each has different inputs and outputs. Choose the workflow that matches your task.
+> **Good to know:** The skill has three distinct workflows—creation, refactoring, and auditing. Choose the one that matches your task.
 
-> **Good to know:** Skills without a "NEVER Do" section are missing half their value. Anti-patterns capture what experts learned the hard way.
+> **Good to know:** Skills without a "NEVER Do" section are missing half their value. Anti-patterns capture mistakes experts learned the hard way.
 
-> **Good to know:** The description field is critical for activation. It must answer WHAT, WHEN, and include concrete KEYWORDS users actually say.
+> **Good to know:** The description field is critical for activation. It must answer WHAT the skill does, WHEN to use it, and include KEYWORDS users actually say.
 
-> **Good to know:** Version bumps and CHANGELOG updates are mandatory when editing skills. The version in frontmatter must match the latest CHANGELOG entry.
+> **Good to know:** Version bumps and CHANGELOG updates are required when editing skills. The version in frontmatter must match the latest CHANGELOG entry.
 
 ## Prerequisites
 
-- Access to the skills directory (`skills/` or `.claude/skills/`)
+- Access to `skills/` or `.claude/skills/` directory
 - Template files at `skills/accelint-skill-manager/assets/skill-template/`
-- Git for computing SHA hashes (`git hash-object`)
+- Git for computing SHA hashes
 
 ## What You Get
 
 **For creation:**
-- Fully structured skill directory with SKILL.md, CHANGELOG.md, AGENTS.md
-- Organized references/, scripts/, and assets/ as needed
-- Frontmatter with proper name, description, version, and metadata
+- Structured skill directory with SKILL.md, CHANGELOG.md, optional AGENTS.md
+- Organized references/, scripts/, assets/ as planned
+- Proper frontmatter with name, description, version
 
 **For audits:**
-- Frontmatter validation report (name conventions, description quality)
-- Structure analysis (missing sections, progressive disclosure issues)
-- Knowledge delta score (redundant vs expert content percentage)
-- Actionable recommendations ranked by priority
-- Improved description and revised SKILL.md with fixes applied
-
-## Limits
-
-- This skill creates and improves skills—it does not execute the skills themselves
-- Skill audit evaluates structure and conventions, not domain expertise accuracy
-- Knowledge delta test identifies redundant content, but you decide what to keep
-- CHANGELOG maintenance is required but format flexibility is allowed within "Keep a Changelog" structure
+- Frontmatter and structure validation report
+- Knowledge density score (redundant vs expert content percentage)
+- Ranked recommendations
+- Improved description and revised SKILL.md

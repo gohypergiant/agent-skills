@@ -3,23 +3,26 @@ title: Overview
 description: Comprehensive TypeScript file audit system that systematically applies testing, best practices, performance, and documentation skills with progress tracking and interactive approval.
 source: skills/accelint-ts-audit-all/SKILL.md
 source_sha: 7f11370aea0a75621c478917098c65c7b02e0ee0
-doc_sha: 2a7d73a0d96aed6e7a1160c6dfe15f92f9688502
+doc_sha: 85d8c548effc30c80619043f0894ed6c6e0bcf14
 deprecated: false
-updated: 2025-01-20
+updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to systematically audit TypeScript files for quality, performance, and documentation issues across multiple dimensions. It orchestrates four specialized audit skills in a controlled sequence with interactive approval at each stage.
+Use this skill to systematically audit TypeScript files across four dimensions: testing, best practices, performance, and documentation. It orchestrates specialized audit skills in a controlled sequence with interactive approval at each stage.
+
+Activate it with:
+- `/accelint-ts-audit-all <path>`
+- Explicit requests to run a full TypeScript audit
+- Related requests about multi-skill code review, interactive approvals, or tracked TS audits
 
 This skill is especially useful when you need to:
-- Audit entire directories of TypeScript code systematically
-- Apply multiple audit perspectives (testing, best practices, performance, documentation) without contradiction
-- Track audit progress across multiple sessions when working on large codebases
-- Review and approve changes interactively before they are applied
-- Work on audits in parallel using isolated git worktrees
+- Audit entire directories with progress tracking across sessions
+- Apply multiple audit perspectives without contradictory recommendations
+- Review and approve changes interactively with severity indicators
+- Work on parallel audits using isolated git worktrees
 
-Activate this skill by using the `/accelint-ts-audit-all` command followed by a file or directory path.
 
 ## When to Use
 
@@ -34,45 +37,24 @@ This is a command-only skill with no natural language triggers. Invoke it explic
 The skill executes an 8-step audit process for each file:
 
 **Phase 1: Test Coverage First**
-- Runs testing audit to establish test coverage before making any code changes
-- Includes 100-pass verification for property-based tests to ensure stability
-- Interactive approval with severity-ranked issue table
+- Establishes test coverage before making any code changes
+- Runs 100-pass verification for property-based tests to ensure stability
 
 **Phase 2: Code Quality &amp; Performance in Parallel**
-- Runs best-practices and performance audits simultaneously to identify overlapping or conflicting recommendations
-- Presents merged suggestions when changes affect the same code
-- Interactive approval with combined severity table from both audits
+- Runs best-practices and performance audits simultaneously
+- Merges overlapping recommendations to avoid contradictions
 
 **Phase 3: Verification**
 - Runs documented test, build, and lint commands
 - Ensures changes don't break existing functionality
-- Interactive approval for any verification failures
 
 **Phase 4: Documentation**
-- Runs documentation audit after code changes are stable
-- Adds JSDoc comments, TODO markers, and improves code comments
-- Final verification to ensure documentation didn't introduce issues
+- Adds JSDoc comments, TODO markers, and code comments
+- Runs final verification to ensure stability
 
-The skill creates an isolated git worktree for audit work to enable parallel audits without conflicts. All progress is tracked in audit process files that survive context limits.
+Every change requires interactive approval through a two-phase process: overview table with emoji severity indicators (🛑 Critical, ⚠️ High, ⚡ Medium, 🔵 Low, ✅ Info), followed by detailed before/after code, and numbered selection (e.g., "1, 2, 5" or "all" or "skip").
 
-### Interactive Approval Pattern
-
-Every change goes through a two-phase approval process:
-
-1. **Overview Table** - Displays all issues with emoji severity indicators (🛑 Critical, ⚠️ High, ⚡ Medium, 🔵 Low, ✅ Info)
-2. **Detailed Changes** - Shows complete before/after code for each issue with expected benefits
-3. **Numbered Selection** - User specifies which changes to apply (e.g., "1, 2, 5" or "all" or "skip")
-
-This pattern prevents one-by-one approvals and allows you to spot conflicts across parallel processes.
-
-### Progress Tracking
-
-The skill maintains detailed progress files:
-- **Audit Process File** - Tracks current file, completed steps, verification commands
-- **Audit History File** - Archives detailed findings after each file completes
-- **Worktree Management** - Isolates audit work in timestamped branches
-
-Progress is saved after each step, allowing you to pause and resume audits across sessions without losing context.
+The skill creates isolated git worktrees to enable parallel audits without conflicts. Progress is saved in audit process files after each step, allowing you to pause and resume across sessions without losing context.
 
 ## Prerequisites
 
@@ -95,10 +77,9 @@ Progress is saved after each step, allowing you to pause and resume audits acros
 
 After completion:
 - Comprehensive audit of all TypeScript files in the target directory
-- Interactive approval history showing which changes were accepted or rejected
-- Detailed audit history file with findings from each file
-- Merged branch with all approved changes committed to your original branch
-- Clean worktree removal after successful merge
+- Detailed audit history file with findings and decisions from each file
+- Merged branch with all approved changes
+- Automatic worktree cleanup
 
 ## Examples
 

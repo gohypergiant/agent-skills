@@ -1,25 +1,32 @@
 ---
 title: Overview
-description: Expert guidance for TanStack Query in Next.js App Router covering QueryClient setup, mutations, cache invalidation, optimistic updates, HydrationBoundary integration, and multi-layer caching strategies.
+description: Expert guidance for TanStack Query in Next.js App Router covering QueryClient setup, mutations, cache invalidation, optimistic updates, and multi-layer caching strategies.
 source: skills/accelint-tanstack-query-best-practices/SKILL.md
 source_sha: 3faeb812cfc2c9e136d831bb530ef134f86f544e
-doc_sha: 88ad5126d27f6df2857ae0d9ce963d15f8bebb96
+doc_sha: 58d19911aaf3ecf41f94c0bce35a5149c39c57fa
 deprecated: false
 updated: 2025-01-29
 ---
 
 ## What It Helps You Do
 
-Use this skill to implement TanStack Query correctly in React applications with Next.js App Router and Server Components. It helps you:
+Use this skill to implement TanStack Query correctly in React applications with Next.js App Router and Server Components.
+
+Activate it with:
+- `/accelint-tanstack-query-best-practices`
+- Phrases like "debug why this query isn't updating" or "add optimistic updates"
+- Related requests about QueryClient setup, cache invalidation, hydration, or TanStack Query performance
+
+It helps you:
 
 - Configure QueryClient safely for server-rendered applications without data leakage
 - Structure query keys for consistent cache invalidation
 - Choose between optimistic and pessimistic mutation patterns
-- Debug performance issues with high observer counts
+- Debug performance issues from too many observers
 - Integrate server-side caching with client-side state management
 - Handle hydration correctly with HydrationBoundary
 
-The skill is especially useful when you're setting up a new QueryClient, debugging why data isn't updating after saves, dealing with N+1 query problems in lists, or implementing multi-layer caching with Next.js `use cache`.
+The skill is especially useful when setting up a new QueryClient, debugging why data isn't updating after saves, dealing with N+1 query problems in lists, or implementing multi-layer caching with Next.js `use cache`.
 
 ## When to Use
 
@@ -27,99 +34,115 @@ Use this skill when:
 
 - Configuring QueryClient for Next.js App Router
 - Implementing mutations with useMutation
-- Debugging performance issues in components using TanStack Query
+- Debugging performance issues with TanStack Query
 - Adding optimistic updates
-- Working with useSuspenseQuery, useQuery, invalidateQueries
+- Working with useSuspenseQuery, useQuery, invalidateQueries, staleTime, gcTime, refetch
 - Integrating HydrationBoundary for server rendering
 - Setting up multi-layer caching strategies
-- Seeing infinite requests, stale data flashes, or hydration mismatches
 
 ## How It Works
 
-The skill provides expert patterns organized by scenario with progressive disclosure—you load only the guidance relevant to your current task.
+The skill provides patterns for common TanStack Query challenges:
 
-### Core Patterns
-
-**Server safety**: Ensures QueryClient setup prevents data leakage between users by using factory functions instead of singletons on the server.
+**Server safety**: Prevents data leakage between users by ensuring QueryClient setup uses factory functions instead of singletons on the server—each request gets its own isolated instance.
 
 **Query key architecture**: Hierarchical key factories enable precise cache invalidation at any level—invalidate everything, all lists, or a single item.
 
-**Mutation patterns**: Decision matrix for choosing optimistic vs pessimistic updates based on risk, reversibility, and user experience requirements.
+**Mutation patterns**: Helps choose between optimistic updates (instant UI feedback, easy rollback) and pessimistic updates (wait for server confirmation) based on risk and reversibility.
 
-**Observer economics**: Identifies when too many components subscribing to the same query creates performance bottlenecks and provides refactoring patterns.
+**Performance diagnosis**: Identifies when too many components subscribing to the same query (observers) create bottlenecks—over 50 observers signals a refactor to hoist queries to parent components.
 
-**Cache configuration**: Decision tables for staleTime, gcTime, and refetchInterval tuned to data freshness requirements—from static lookup tables to real-time dashboards.
+**Cache tuning**: Configuration guidance for staleTime, gcTime, and refetchInterval based on data freshness needs—from static lookup tables (1 hour staleTime) to real-time dashboards (5 second staleTime with polling).
 
-### Scenario-Based Loading
+## Common Scenarios
 
-The skill uses targeted reference loading:
+### Setting Up QueryClient
 
-- **Setting up QueryClient**: Load complete server/client setup patterns
-- **Building query hooks**: Load query key factories and configuration tables
-- **Implementing mutations**: Load complete mutation patterns with rollback handling
-- **Debugging performance**: Load observer analysis and structural sharing patterns
-- **Multi-layer caching**: Load unified Next.js + TanStack Query + HTTP cache strategy
+The most critical pattern is server-safe QueryClient setup. Each server request must get its own QueryClient instance to prevent data from one user appearing for another:
 
-> **Good to know:** The skill focuses on @tanstack/react-query in Next.js App Router with Server Components. For other frameworks or older React patterns, the query key and mutation guidance still applies but server integration differs.
+```tsx
+// ✅ Good: Factory function creates isolated instances
+function makeQueryClient() {{
+  return new QueryClient({{ /* config */ }});
+}}
 
-## Key Decisions
+// Server Component
+export default async function Layout({{ children }}) {{
+  const queryClient = makeQueryClient();
+  // ...
+}}
 
-### Cache Configuration
+// ❌ Bad: Singleton causes data leakage
+const queryClient = new QueryClient(); // NEVER on server
+```
 
-Match configuration to your data's freshness requirements:
+### Structuring Query Keys
 
-| Data Type | staleTime | gcTime | When |
-|-----------|-----------|--------|------|
-| Reference data (countries, categories) | 1 hour | Infinity | Changes rarely, high cache retention |
-| User profiles | 5 minutes | 10 minutes | Moderate freshness needs |
-| Real-time tracking | 5 seconds | 30 seconds | Frequent updates required |
-| Search results | 1 minute | 5 minutes | Cacheable but not time-critical |
-
-### Mutation Strategy
-
-Choose your approach based on reversibility and stakes:
-
-| Pattern | When to Use |
-|---------|-------------|
-| **Optimistic** | Toggle switches, drag-and-drop, low-stakes UI that needs instant feedback |
-| **Pessimistic** | Multi-step forms, batch operations, life-critical systems, audit trails |
-
-### Observer Thresholds
-
-Monitor observer counts to catch performance issues:
-
-| Observer Count | Action |
-|----------------|--------|
-| 1-20 | Normal, no action needed |
-| 21-50 | Consider hoisting queries to parent components |
-| 51-100 | Refactor required—hoist queries or use select |
-| 100+ | Critical—immediate refactor to single query with prop distribution |
-
-## Common Fixes
-
-**Data doesn't update after save**: You likely copied query data into useState. Use the query data directly or derive it with useMemo—TanStack Query handles updates automatically.
-
-**Infinite requests**: Query keys are unstable. Avoid `Date.now()`, unsorted arrays, or non-deterministic object keys. Use factory functions with stable serialization.
-
-**N duplicate requests in lists**: Each list item is calling useQuery individually. Hoist the query to the parent component and pass data down as props.
-
-**Query fires with undefined params**: Add an `enabled` guard: `useQuery({{ queryKey, queryFn, enabled: Boolean(dependency) }})`
-
-**Optimistic update won't rollback**: Your `onError` callback isn't using the context from `onMutate`. Always pair `onMutate` with `onSettled` for cleanup.
-
-**Server hydration mismatch**: Timestamps or user-specific data differ between server and client. Use `suppressHydrationWarning` or ensure deterministic rendering with stable timestamps.
-
-## Multi-Layer Caching
-
-When using Next.js `use cache` alongside TanStack Query, use the same key factory for both layers:
+Use hierarchical factories for flexible invalidation:
 
 ```typescript
-// Shared key factory
 export const keys = {{
   all: () => ['tracks'] as const,
-  detail: (id: string) => [...keys.all(), id] as const,
+  lists: () => [...keys.all(), 'list'] as const,
+  list: (filters: string) => [...keys.lists(), filters] as const,
+  details: () => [...keys.all(), 'detail'] as const,
+  detail: (id: string) => [...keys.details(), id] as const,
 }};
 
+// Invalidate at any level
+queryClient.invalidateQueries({{ queryKey: keys.all() }}); // Everything
+queryClient.invalidateQueries({{ queryKey: keys.lists() }}); // All lists
+queryClient.invalidateQueries({{ queryKey: keys.detail(id) }}); // One item
+```
+
+Keys must be stable and deterministic—avoid `Date.now()`, unsorted arrays, or objects without consistent serialization.
+
+### Choosing Mutation Patterns
+
+**Optimistic updates** provide instant feedback but require rollback logic:
+
+```typescript
+useMutation({{
+  mutationFn: updateTrack,
+  onMutate: async (newTrack) => {{
+    // Cancel outbound refetches to prevent overwriting optimistic update
+    await queryClient.cancelQueries({{ queryKey: keys.detail(id) }});
+    
+    // Save previous value for rollback
+    const previous = queryClient.getQueryData(keys.detail(id));
+    
+    // Optimistically update cache
+    queryClient.setQueryData(keys.detail(id), newTrack);
+    
+    return {{ previous }}; // Context for onError
+  }},
+  onError: (err, newTrack, context) => {{
+    // Rollback on failure
+    queryClient.setQueryData(keys.detail(id), context.previous);
+  }},
+  onSettled: () => {{
+    // Refetch to ensure consistency
+    queryClient.invalidateQueries({{ queryKey: keys.detail(id) }});
+  }},
+}});
+```
+
+**Pessimistic updates** wait for server confirmation—use for high-stakes operations (financial transactions, audit trails) or when rollback is complex:
+
+```typescript
+useMutation({{
+  mutationFn: updateTrack,
+  onSuccess: () => {{
+    queryClient.invalidateQueries({{ queryKey: keys.detail(id) }});
+  }},
+}});
+```
+
+### Multi-Layer Caching
+
+When using Next.js `use cache` alongside TanStack Query, use the same key factory for both:
+
+```typescript
 // Server mutation invalidates server cache
 updateTag(keys.detail(id).tag);
 
@@ -127,19 +150,33 @@ updateTag(keys.detail(id).tag);
 queryClient.invalidateQueries({{ queryKey: keys.detail(id) }});
 ```
 
-This keeps server cache (cross-request) and client cache (per-tab) synchronized with the same invalidation hierarchy.
+This keeps server cache (cross-request) and client cache (per-tab) synchronized.
 
-## Critical Patterns
+## Common Fixes
 
-**Never use a singleton QueryClient on the server**: Each request needs its own isolated QueryClient instance to prevent data from one user leaking to another.
+**Data doesn't update after save**: You likely copied query data into useState. Use the query data directly—TanStack Query handles updates automatically. Background refetches and cache updates won't reflect in local state copies.
 
-**Never synchronize query data to useState**: Background refetches and cache updates won't reflect in your local copy, causing "my save didn't work" bugs.
+**Infinite requests**: Query keys are unstable. Ensure keys use deterministic serialization—no `Date.now()`, unsorted arrays, or non-deterministic object keys.
 
-**Never put queries inside list item components**: Creates N network requests and N observers, causing O(n) performance overhead on cache updates.
+**N duplicate requests in lists**: Each list item is calling useQuery individually. Hoist the query to the parent component and pass data down as props. Over 50 observers on a single query signals this problem.
 
-**Always use cancelQueries before optimistic updates**: Background refetches can overwrite your optimistic changes before the mutation completes.
+**Query fires with undefined params**: Add an `enabled` guard: `useQuery({{ queryKey, queryFn, enabled: Boolean(dependency) }})`
 
-> **Good to know:** For static reference data that never changes, consider whether TanStack Query's refetching machinery adds value over simpler alternatives like module-level constants or Context.
+**Optimistic update won't rollback**: Your `onError` callback isn't using the context from `onMutate`. The context returned from `onMutate` is passed to both `onError` and `onSettled` for rollback state.
+
+**Server hydration mismatch**: Timestamps or user-specific data differ between server and client renders. Use `suppressHydrationWarning` on the container or ensure deterministic rendering with stable timestamps.
+
+**Background refetches overwrite optimistic updates**: Use `await queryClient.cancelQueries({{ queryKey }})` in `onMutate` before setting optimistic data. Without cancellation, in-flight refetches can overwrite your changes before the mutation completes.
+
+## Good to Know
+
+> **Good to know:** Never synchronize query data to useState. Background refetches, invalidations, and optimistic updates all modify the cache—local state copies become stale immediately, causing "my save didn't work" bugs.
+
+> **Good to know:** Never put queries inside list item components. This creates N observers for N items, causing O(n) iteration on every cache update. With 200 list items, you get 200 network requests and 200 observers recalculating on every mutation.
+
+> **Good to know:** For performance issues with large datasets (&gt;1000 items updating frequently), disable structural sharing with `structuralSharing: false`. The O(n) deep equality checks become CPU overhead when data changes often.
+
+> **Good to know:** Always pair `onMutate` with `onSettled` in optimistic updates. `onSettled` is your cleanup guarantee even if `onError` throws—without it, UI can be left in corrupted state when error handlers fail.
 
 ## Related
 

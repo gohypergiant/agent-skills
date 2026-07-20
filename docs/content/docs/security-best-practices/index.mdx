@@ -3,23 +3,27 @@ title: Overview
 description: Comprehensive security audit and vulnerability detection for JavaScript/TypeScript applications following OWASP Top 10.
 source: skills/accelint-security-best-practices/SKILL.md
 source_sha: e543472a8e8be7b6da7b246c99bcfca079351337
-doc_sha: 0180d52ff020c51bbf80b14423cb93e4c2595f37
+doc_sha: aa484cfc29241c271dfb5a408f00944d9f1773ab
 deprecated: false
-updated: 2025-06-01
+updated: 2025-01-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to audit JavaScript/TypeScript applications for security vulnerabilities and apply OWASP Top 10 security patterns.
+Use this skill to audit JavaScript/TypeScript applications for security vulnerabilities and apply OWASP Top 10 remediation patterns.
+
+Activate it with:
+- `/accelint-security-best-practices <path>`
+- Phrases like "audit security" or "secure this code"
+- Related requests about authentication, secrets, vulnerabilities, or sensitive data handling
 
 It is especially useful when you need to:
-- Conduct security audits before deployment
-- Identify and fix authentication, authorization, or injection vulnerabilities
-- Review code for hardcoded secrets, insecure storage, or data exposure
+- Identify hardcoded secrets, injection vulnerabilities, or broken access control
+- Review authentication, authorization, and session management
 - Add security controls around APIs, file uploads, and user input
-- Improve alignment with OWASP guidance
+- Conduct pre-deployment security audits
+- Fix security issues discovered during feature development
 
-Security guidance is framework-agnostic. The examples illustrate the pattern, but the implementation should fit your stack.
 
 ## When to Use
 
@@ -32,72 +36,62 @@ Use this skill when:
 
 ## How It Works
 
-The skill works in two modes:
+The skill operates in two modes depending on context:
 
-- **Audit mode** produces a structured security review so you can decide what to fix first.
-- **Implementation mode** applies security fixes inline when security issues surface during feature work.
+**Audit mode** (explicit security review):
+- Systematically scans code for all security vulnerabilities
+- Categorizes findings by OWASP category and severity
+- Produces a structured report with prioritized remediation guidance
+- User reviews and decides which fixes to apply
 
-In both modes, it follows the same basic sequence:
-1. Discover vulnerabilities in the codebase
-2. Categorize them by OWASP area and severity
-3. Apply the relevant remediation pattern
-4. Verify that fixes hold and do not introduce new issues
+**Implementation mode** (inline security fixes):
+- Identifies and fixes security issues during feature development
+- Applies remediation patterns directly to code
+- No formal report—focuses on immediate vulnerability closure
+
+### Four-Phase Process
+
+Both modes follow the same systematic approach:
+
+1. **Discover** — Scan code for all security vulnerabilities (hardcoded secrets, injection risks, broken access control, missing rate limiting, etc.)
+2. **Categorize** — Map each vulnerability to OWASP Top 10 categories and assign severity (Critical, High, Medium, Low)
+3. **Remediate** — Apply security patterns from references (parameterized queries, httpOnly cookies, input validation schemas, etc.)
+4. **Verify** — Validate fixes resolve vulnerabilities without breaking functionality
+
+The skill uses progressive disclosure—loading detailed security patterns only for the vulnerability types found in your code.
 
 ## Good to Know
 
-> **Good to know:** This skill focuses on security vulnerabilities and OWASP-style remediation patterns. For general TypeScript quality, performance, or documentation work, use the corresponding accelint-ts skills.
+> **Good to know:** This skill focuses on security vulnerabilities and OWASP remediation patterns. For general TypeScript quality, performance, or documentation work, use the corresponding accelint-ts skills.
 
-> **Good to know:** The guidance becomes more prescriptive as severity increases. Critical and high-severity issues get less flexibility than lower-risk findings.
+> **Good to know:** Guidance becomes more prescriptive as severity increases. Critical vulnerabilities (SQL injection, hardcoded production secrets) get exact patterns with no deviation. Lower-severity issues allow more implementation flexibility.
 
-> **Good to know:** When security and convenience conflict, the skill prioritizes security for critical vulnerabilities.
+> **Good to know:** Security guidance is framework-agnostic—examples illustrate patterns using common libraries, but adapt them to your specific stack (Express, Fastify, Next.js, etc.).
 
-## Prerequisites
-
-- JavaScript/TypeScript codebase
-- Node.js runtime (the skill works with any package manager: npm, yarn, pnpm, bun)
-- Git repository (for computing source SHA hashes)
-- Existing test suite (recommended for validating security fixes)
+> **Good to know:** The skill audits ALL code for vulnerabilities regardless of current exposure. Internal utilities and helpers are frequently exposed through APIs or user interactions even when they appear isolated.
 
 ## What You Get
 
-**In audit mode:**
-- A structured security review with OWASP categories and severity levels
+**Audit mode output:**
+- Structured security report with OWASP categories and severity levels
 - Prioritized findings ready for remediation
 - Recommended patterns for each vulnerability type
 
-**In implementation mode:**
+**Implementation mode output:**
 - Security fixes applied directly to code
-- Updated code that follows the recommended remediation pattern
-
-**In both modes:**
-- Vulnerability categorization by OWASP area
-- Severity assessment
-- Actionable remediation guidance
+- Comments explaining the security consideration and referencing the pattern
 
 ## Examples
 
-### Example: Auditing Authentication Implementation
+### Example: Auditing Authentication
 
 ```bash
-# Command
 /accelint-security-best-practices src/auth/
-
-# Output: Structured audit report
-Phase 1: Discovered 3 vulnerabilities
-- JWT token stored in localStorage (High)
-- Missing rate limiting on /api/login (High)
-- No session expiration (Medium)
-
-Phase 2: Categorized by OWASP
-- A07: Authentication Failures (2 issues)
-- A04: Insecure Design (1 issue)
-
-Phase 3: Remediation patterns loaded
-- authentication.md: httpOnly cookie patterns
-- rate-limiting.md: login endpoint protection
 ```
 
-### Example: Fixing SQL Injection Vulnerability
+**Output:** Structured audit report identifying JWT tokens in localStorage (High), missing rate limiting on login endpoint (High), and no session expiration (Medium). Categorized as A07 Authentication Failures and A04 Insecure Design with remediation patterns loaded.
+
+### Example: Fixing SQL Injection
 
 ```typescript
 // Before: SQL Injection vulnerability
@@ -112,34 +106,8 @@ const user = await db.query(
 );
 ```
 
-### Example: Securing API Endpoints
-
-```typescript
-// Before: Missing authentication and authorization
-app.get('/api/user/:id', async (req, res) => {
-  const user = await db.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
-  res.json(user);
-});
-
-// After: Defense in depth with auth + authorization
-// Security: authentication.md + authorization.md
-app.get('/api/user/:id', 
-  authenticate, // Verify user is logged in
-  async (req, res) => {
-    const requestedId = req.params.id;
-    // Verify user owns this resource
-    if (req.user.id !== requestedId && !req.user.isAdmin) {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-    const user = await db.query('SELECT * FROM users WHERE id = $1', [requestedId]);
-    res.json(user);
-  }
-);
-```
-
 ## Limits
 
 - This skill audits code for security vulnerabilities but does not perform runtime penetration testing or network security analysis
-- Dependency vulnerability detection relies on identifying outdated packages—it does not scan for zero-day vulnerabilities
-- The skill provides security patterns for common frameworks but may require adaptation for custom authentication systems or proprietary frameworks
+- Dependency vulnerability detection identifies outdated packages but does not scan for zero-day vulnerabilities
 - For infrastructure security (cloud configurations, network policies, container security), use specialized infrastructure security tools

@@ -3,26 +3,27 @@ title: Overview
 description: Evaluate Figma designs from operator persona perspectives through design critique and user experience evaluation, analyzing cognitive load, communication patterns, and operational context.
 source: skills/accelint-persona-review/SKILL.md
 source_sha: 01febba86366b8fd4d387e20d5fe733b633bcdf6
-doc_sha: 2248ca99e583fb14f150b07c1cff4dcddb434c9b
+doc_sha: c2d0a7caa9071e96d6132f98b26c4b3aee599212
 deprecated: false
-updated: 2025-06-10
+updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to evaluate interface designs through the lens of specific operator personas—going beyond generic UX advice to surface insights grounded in documented user profiles.
+Evaluate interface designs through the lens of specific operator personas, surfacing insights grounded in documented user profiles rather than generic UX advice.
+
+Activate it with:
+- `/persona-review`
+- Phrases like "review this design for [persona]"
+- Related requests about persona review, operator UX critique, or design evaluation by role
 
 It is especially useful when you need to:
 - Review designs for specific user roles (e.g., air-surveillance-tech, weapons-director)
 - Assess whether an interface supports documented workflows and responsibilities
-- Identify how design choices affect cognitive load for operators in high-tempo environments
-- Check if system visibility matches the tools and information sources operators actually use
-- Validate that communication patterns align with how operators relay information
+- Identify how design choices affect cognitive load in high-tempo environments
+- Validate that system visibility matches the tools operators actually use
+- Check that communication patterns align with how operators relay information
 
-Activate this skill by:
-- Saying "review this design for [persona]" or "evaluate this from the [role] perspective"
-- Mentioning "persona review", "design critique", or "operator interface evaluation"
-- Using the `/persona-review` command
 
 ## When to Use
 
@@ -37,86 +38,53 @@ Works with Figma MCP (desktop or URL) and Outline documentation server for suppo
 
 ## How It Works
 
-The skill evaluates designs across multiple dimensions specific to the operator persona:
+The skill evaluates designs across six dimensions specific to the operator persona:
 
-- **Cognitive load assessment**: Checks whether information density and visual hierarchy match the operator's experience level and work tempo
-- **Communication pattern alignment**: Validates that the interface supports documented workflows, typical actions, and information relay patterns
-- **Pain point mitigation**: Identifies which documented pain points the design addresses or inadvertently creates
-- **Context awareness**: Ensures complexity is appropriate for rank, experience, and operational responsibilities
-- **System visibility**: Verifies that critical systems the operator monitors are accessible and integrated appropriately
-- **Communication support**: Evaluates how well the design facilitates their documented communication channels
+- **Cognitive load**: Information density and visual hierarchy matched to experience level and work tempo
+- **Communication patterns**: Interface support for documented workflows and information relay
+- **Pain point mitigation**: Which documented frustrations the design addresses or creates
+- **Context awareness**: Complexity appropriate for rank, experience, and operational responsibilities
+- **System visibility**: Access to critical systems the operator monitors
+- **Communication support**: Facilitation of documented communication channels
 
-### Review Process
-
-The skill follows a structured discovery approach:
-
-1. **Load the persona profile** to understand the operator's responsibilities, pain points, systems they monitor, and communication patterns
-2. **Gather design context** from Figma (URL, desktop selection, or screenshot if MCP unavailable)
-3. **Search supporting documentation** via Outline MCP for UI standards, previous reviews, system requirements, and training materials
-4. **Analyze and critique** using the evaluation framework calibrated to the persona's operational context
-
-The review adapts its structure based on findings rather than forcing insights into rigid sections. Critical elements include clear connections to the persona's profile, specific actionable recommendations, and prioritization based on operational impact.
+Reviews adapt structure based on findings rather than forcing insights into rigid sections. The output includes connections to the persona's profile, specific actionable recommendations, and prioritization by operational impact.
 
 ## Examples
 
-### Example: Reviewing an Air Surveillance Dashboard
+### Example: Air Surveillance Dashboard Review
 
 ```bash
-# With Figma URL
 /persona-review "Review this for the air-surveillance-tech persona" [Figma URL]
-
-# With Figma desktop open
-/persona-review "Evaluate the selected frame from the AST perspective"
-
-# Output includes:
-- Critical findings grounded in the AST's documented responsibilities
-- Cognitive load assessment for high-tempo track management
-- Pain point analysis (e.g., does it reduce context switching between BCS-F and RS-4?)
-- Recommendations prioritized by operational impact
 ```
 
-### Example: Evaluating Communication Workflows
-
-```bash
-/persona-review "Check if this design supports the weapons-director's communication patterns"
-
-# The review examines:
-- Whether the interface facilitates documented "Says & Does" actions
-- Integration with communication channels listed in "Hears" (e.g., Surveillance Net)
-- Error prevention aligned with documented pain points
-- System visibility for tools they monitor in "Sees"
-```
+You get critical findings grounded in the AST's responsibilities, cognitive load assessment for high-tempo track management, pain point analysis (does it reduce context switching between BCS-F and RS-4?), and recommendations prioritized by operational impact.
 
 ## Good to Know
 
-> **Good to know:** This skill requires access to persona profile files in the `references/personas/` directory. If the requested persona doesn't exist, you'll get a list of available personas to choose from.
+> **Good to know:** Requires persona profile files in `references/personas/`. If the requested persona doesn't exist, you'll get a list of available options.
 
-> **Good to know:** Reviews are most valuable when Figma MCP and Outline MCP are available for full design context and supporting documentation. Without these, the review continues with more limited context based on screenshots or manual inputs.
+> **Good to know:** Reviews are most valuable with Figma MCP and Outline MCP for full design context and supporting documentation. Without these, the review continues with screenshots or manual inputs.
 
-> **Good to know:** The skill assumes operators are domain experts. It won't suggest simplifications that remove necessary complexity—instead, it evaluates whether complexity serves documented operational needs.
+> **Good to know:** Assumes operators are domain experts. The skill won't suggest simplifications that remove necessary complexity—it evaluates whether complexity serves documented operational needs.
 
 ## Prerequisites
 
-- Persona profile files in `references/personas/` directory with documented responsibilities, pain points, systems, and communication patterns
+- Persona profile files in `references/personas/` with documented responsibilities, pain points, systems, and communication patterns
 - Ideally: Figma MCP (desktop or URL access) for design context
 - Ideally: Outline MCP for supporting documentation
-- Fallback: Screenshots and manual context if MCP servers unavailable
 
 ## What You Get
 
-A structured design critique that includes:
+A design critique adapted to findings depth and design scope:
 
-- **Design summary**: Brief overview of what was reviewed
 - **Critical findings**: 2-3 most important insights specific to the operator persona
-- **Detailed evaluation**: Assessments across cognitive load, communication patterns, pain points, context awareness, system visibility, and communication support
+- **Detailed evaluation**: Assessments across the six dimensions (cognitive load, communication patterns, pain points, context awareness, system visibility, communication support)
 - **Recommendations**: Prioritized, actionable improvements grounded in the persona's operational profile
-- **Supporting references**: Links to relevant documentation found during research
-
-The structure adapts based on the depth of findings, completeness of the persona profile, and design scope.
+- **Supporting references**: Links to relevant documentation
 
 ## Limits
 
-- The skill reviews designs for documented persona profiles only—it doesn't create generic UX reviews
-- If Figma MCP is unavailable, reviews are limited to visual elements visible in screenshots
-- Without Outline MCP, the review proceeds without organizational standards and supporting documentation
-- The skill doesn't implement design changes—it provides critique and recommendations for designers to execute
+- Reviews designs for documented persona profiles only—no generic UX reviews
+- Without Figma MCP, reviews are limited to visual elements in screenshots
+- Without Outline MCP, reviews proceed without organizational standards and supporting documentation
+- Provides critique and recommendations, not implementation

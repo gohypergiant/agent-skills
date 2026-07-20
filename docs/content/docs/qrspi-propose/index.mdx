@@ -3,68 +3,87 @@ title: Overview
 description: Automate the QRSPI + OpenSpec planning workflow (Questions → Research → Design → Structure) for spec-driven development, handling ONLY the planning phase before implementation.
 source: skills/accelint-qrspi-propose/SKILL.md
 source_sha: 576220e64e275241b4b0869fc03d4a39e595a4e6
-doc_sha: 9e622f20fc9109bfbec51a718d263c09d38a0a5b
+doc_sha: f6ba2ebe4bc8320f1896ac7c23fafb30f18764e2
 deprecated: false
-updated: 2025-01-15
+updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to plan features and changes through the QRSPI methodology before writing any code. It automates the Question generation → Research → Design → Structure phases, producing a complete OpenSpec change ready for implementation.
+Plan features and changes using QRSPI methodology before writing code. The skill generates research questions, gathers objective facts about your codebase, proposes a design for review, then produces vertical task slices ready for implementation.
 
-This skill is especially useful when you need to:
-- Break down a ticket or feature request into structured, implementable tasks
-- Ensure research is objective and design decisions are explicit before coding begins
-- Create vertical task slices that deliver end-to-end testable increments
-- Generate specs-of-record that document both current state and planned changes
+Activate it with:
+- `/accelint-qrspi-propose`
+- Phrases like "plan this with QRSPI" or "create spec-driven change"
+- Related requests about planning tickets, OpenSpec changes, or QRSPI workflows
 
-Activate this skill by:
-- Using the `/accelint-qrspi-propose` command with your ticket or feature description
-- Saying "plan this with QRSPI", "use QRSPI to plan", "start QRSPI workflow"
-- Asking to "create spec-driven change" or "plan a feature before implementation"
+Most valuable when you:
+- Need to break down tickets into structured, implementable tasks
+- Want research isolated from solution bias (QRSPI's core insight)
+- Need vertical slices that deliver testable increments rather than layer-by-layer handoffs
+- Work in spec-driven development with OpenSpec
 
-> **Good to know:** This skill handles ONLY the planning phase. After completion, you'll run `/accelint-qrspi-apply` to begin implementation. This separation allows you to plan multiple changes before implementing any of them.
+
+> **Good to know:** This skill stops at planning. After completion, run `/accelint-qrspi-apply <change-name>` for implementation. This separation lets you plan multiple changes before implementing any of them.
 
 ## When to Use
 
-Use this skill when:
-- You want to plan a ticket, feature, or change before writing code
-- You need objective research about the current codebase state
-- You want explicit design decisions documented before implementation
-- You're working in a spec-driven development workflow with OpenSpec
-- You need task breakdown with vertical slicing for parallel implementation
+Use when:
+- Planning tickets, features, or changes before writing code
+- Needing objective research about current codebase state
+- Wanting design decisions documented before implementation begins
+- Working in spec-driven workflows with OpenSpec
+- Breaking work into vertically sliced tasks for parallel implementation
 
 ## Prerequisites
 
-- OpenSpec installed and initialized with an `openspec/` directory
-- Expanded OpenSpec workflows enabled (`explore`, `new`, `continue`)
-- Project configuration in `openspec/config.yaml`
-- Agent behavior context in `AGENTS.md` or `CLAUDE.md`
+Verify the expanded OpenSpec workflows are enabled:
 
-If the expanded workflows are missing, enable the expanded OpenSpec profile before using this skill.
+```bash
+openspec config list
+```
+
+Check that `workflows:` includes `explore`, `new`, and `continue`. If missing, enable the expanded profile:
+
+```bash
+openspec config profile
+# Select "expanded"
+openspec update
+```
+
+Also requires:
+- OpenSpec initialized (`openspec/` directory exists)
+- Configuration in `openspec/config.yaml`
+- Agent behavior context in `AGENTS.md` or `CLAUDE.md`
 
 ## How It Works
 
-The skill moves through the QRSPI phases with two required review checkpoints:
+QRSPI moves through four phases with two mandatory checkpoints:
 
-1. **Questions** — turns the request into research questions without jumping to solutions
-2. **Research** — gathers objective facts about the current codebase
-3. **Design** — creates `proposal.md` and `design.md` from the research
-4. **Design checkpoint** — you review the proposed direction before specs are written
-5. **Specs &amp; Tasks** — generates capability deltas and a task plan
-6. **Tasks checkpoint** — you approve the task structure and parallelization plan before implementation
+**Questions** — Generates research questions from your ticket without jumping to solutions. The agent sees only the ticket at this stage.
 
-The task plan is intentionally vertically sliced, so each slice delivers an end-to-end increment rather than a layer-by-layer handoff.
+**Research** — Answers questions using a fresh agent context that sees only the questions, not the original ticket. This prevents "completion bleed" where knowing the desired outcome biases research toward confirming preconceived solutions.
+
+**Design** — Creates `proposal.md` and `design.md` from research findings. The ticket stays out of context here too, forcing the design to derive from facts rather than assumptions.
+
+**Checkpoint 1: Design review** — You review the proposed direction. Corrections here cost minutes. The same fix after implementation costs a code review cycle.
+
+**Specs &amp; Tasks** — Generates capability deltas and a task plan with vertical slicing (each slice delivers an end-to-end testable increment, not a horizontal layer).
+
+**Checkpoint 2: Tasks review** — You approve the task structure and parallelization plan before implementation starts.
+
+The skill validates that tasks are vertically sliced and adds a parallelization strategy showing which slices can run concurrently.
 
 ## What You Get
 
-A complete OpenSpec change under `openspec/changes/<change-name>/`, including:
-- `proposal.md`
-- `design.md`
-- capability delta specs
-- `tasks.md` with vertical slices and a parallelization plan
+A complete OpenSpec change at `openspec/changes/<change-name>/`:
 
-The result is ready for implementation via `/accelint-qrspi-apply <change-name>`.
+- `proposal.md` — summary and rationale
+- `design.md` — decisions, alternatives, affected systems (with `specs_touched` and `decisions` frontmatter)
+- Capability delta specs under `specs/`
+- `tasks.md` — vertically sliced with parallelization strategy
+
+Task subtasks use markdown checklist format (`- [ ] instruction`) so the apply workflow can track progress.
 
 ## Examples
 
@@ -79,9 +98,9 @@ Create a CLI tool that returns structured directory listings as JSON.
 Should support filtering by file type and sorting by size or date.
 ```
 
-The skill turns the request into research questions, produces a design for review, then generates specs and vertically sliced tasks.
+The skill generates research questions about directory handling in your codebase, answers them objectively, proposes a design approach for your review, then creates vertically sliced tasks showing parallel implementation paths.
 
-### Example: Turning a vague request into a planned change
+### Example: Turning a vague request into a plan
 
 ```bash
 /accelint-qrspi-propose
@@ -89,25 +108,26 @@ The skill turns the request into research questions, produces a design for revie
 Users complain that search is slow. We should make it faster.
 ```
 
-The skill researches the current search implementation, proposes a direction for review, and turns the approved design into a task plan.
+Research identifies current search implementation and bottlenecks. Design proposes an approach. After your approval, tasks break the work into testable slices.
 
 ## Good to Know
 
-> **Good to know:** The two review checkpoints are central to the workflow. They let you correct direction before implementation starts.
+> **Good to know:** The two checkpoints are central to QRSPI. Correcting design before specs are written prevents rework during implementation and code review.
 
-> **Good to know:** This skill works best when `openspec/config.yaml` already defines clear design, spec, and task rules.
+> **Good to know:** Context isolation (keeping the ticket out of research and design phases) is what prevents solution-first thinking. Research stays objective when the agent doesn't know what outcome you originally wanted.
 
-> **Good to know:** Task subtasks use markdown checklist format (`- [ ] instruction`) so the apply workflow can track progress later.
+> **Good to know:** If `/opsx:continue` generates horizontal slices (organized by architectural layer), the skill automatically restructures them into vertical slices (end-to-end feature deliverables) before the tasks checkpoint.
 
 ## Limits
 
-This skill does not implement code, run tests, create pull requests, or archive completed changes.
+This skill does not implement code, run tests, create pull requests, or archive changes.
 
-For implementation, use `/accelint-qrspi-apply <change-name>` after planning is complete. For archiving, use `/accelint-qrspi-archive <change-name>` after implementation and review.
+For implementation, use `/accelint-qrspi-apply <change-name>`.  
+For archiving after implementation and review, use `/accelint-qrspi-archive <change-name>`.
 
 ## Related
 
-- **accelint-qrspi-apply** - Implements QRSPI-planned changes with parallelization
-- **accelint-qrspi-archive** - Archives completed changes and updates capability cross-references
-- **accelint-onboard-openspec** - Configures OpenSpec with QRSPI-compatible rules
-- **accelint-onboard-agents** - Sets up agent behavior context for better planning
+- **accelint-qrspi-apply** — implements QRSPI-planned changes with parallelization
+- **accelint-qrspi-archive** — archives completed changes and cross-links affected capabilities
+- **accelint-onboard-openspec** — configures OpenSpec with QRSPI-compatible rules
+- **accelint-onboard-agents** — sets up agent behavior context for planning

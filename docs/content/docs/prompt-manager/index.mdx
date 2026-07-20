@@ -3,149 +3,132 @@ title: Overview
 description: Transform vague, ambiguous, or unclear requests into optimized, well-structured prompts through systematic assessment, pattern detection, and framework application across any domain.
 source: skills/accelint-prompt-manager/SKILL.md
 source_sha: d38f3240503909499c4af5deef09f6a3be56fb62
-doc_sha: 2062998601a69f206c5dbf72b17f1ccaf923d752
+doc_sha: b8c106bf14fae18c832601f33f20745ddd3743f3
 deprecated: false
 updated: 2025-01-23
 ---
 
 ## What It Helps You Do
 
-Use this skill to clarify and structure unclear requests before attempting to execute them. It's particularly valuable when you're not quite sure how to articulate what you need, or when your initial request lacks the specificity needed for good results.
+Use this skill to clarify and structure unclear requests before attempting to execute them. It transforms vague goals into concrete, actionable prompts ready for execution.
+
+Activate it with:
+- `/accelint-prompt-manager`
+- Phrases like "optimize my prompt" or "clarify this request"
+- Related requests about vague goals, undefined success criteria, or prompt framework selection
 
 The skill helps you:
-- Convert vague goals into concrete, actionable prompts with measurable success criteria
-- Identify and resolve ambiguities that would lead to misaligned results
-- Choose appropriate prompt frameworks (CO-STAR, RISEN, RODES) based on task type
-- Remove patterns that waste tokens or degrade output quality
-- Calibrate prompts to specific execution contexts (Claude Code, API calls, system prompts)
+- Convert ambiguous requests into prompts with measurable success criteria
+- Identify and resolve interpretation conflicts that would cause misaligned results
+- Select appropriate prompt frameworks (CO-STAR, RISEN, RODES) based on task type
+- Remove token-wasting patterns and model-specific anti-patterns
+- Calibrate prompts for specific execution contexts (Claude Code, API calls, system prompts)
 
-**Important:** This skill optimizes prompts—it doesn't execute the tasks they describe. You'll receive a refined prompt ready to use, not a completed task.
+
+> **Good to know:** This skill optimizes prompts—it doesn't execute the tasks they describe. You receive a refined prompt ready to use, not a completed task.
 
 ## When to Use
 
-Activate this skill when:
-- Users express vague goals: "make this better", "improve our X", "I don't know where to start"
-- Success criteria are undefined: "should look professional", "explain clearly", missing constraints
-- Requirements have multiple valid interpretations: "analyze the data" without specifying what to look for
-- You're working on prompt engineering: "optimize this prompt", "review my instructions"
-- Communication feels unclear: "how do I explain this", "help me figure out what to ask"
+The skill triggers on these patterns:
+- Vague goals: "improve our X", "I don't know where to start", "kinda lost on what to do"
+- Undefined success: "should look professional", "explain clearly", missing constraints/audience/format
+- Ambiguous requirements: "analyze the data" (what to look for?), "make it robust" (how defined?)
+- Meta-prompting: "optimize this prompt", "review my instructions", learning about frameworks like CO-STAR/RISEN/RODES
+- Communication unclear: "how do I explain this", "help me figure out what to ask"
 
-You can invoke it with:
-- The `/accelint-prompt-manager` command
-- Phrases like "help me write a better prompt for X"
-- Keywords like "optimize prompt", "clarify request", "structure this"
 
 ## How It Works
 
-The skill follows a four-phase workflow:
+The skill follows a four-phase workflow calibrated to your skill level (newcomer, intermediate, expert).
 
 ### Phase 1: Intake & Assessment
-- Extracts the core intent from your request
-- Calibrates to your skill level (newcomer, intermediate, expert)
-- Assesses task complexity (simple, moderate, complex)
-- Identifies execution context (where and how the prompt will run)
-
-For complex tasks involving multiple interdependent decisions or more than five sequential phases, the skill recommends using plan mode before proceeding.
+- Extracts core intent and assesses task complexity
+- Identifies execution context (interactive chat, API call, system prompt)
+- Recommends plan mode for complex tasks with 3+ interdependent decisions or 5+ sequential phases
 
 ### Phase 2: Pattern Detection
-- Scans for credit-killing patterns that waste tokens or degrade output quality
-- Flags ambiguous terms that could be interpreted multiple ways
-- Identifies trade-offs between competing goals (speed vs thoroughness, flexibility vs consistency)
-- Surfaces missing context (audience, success criteria, constraints, format requirements)
-
-The skill provides 2-3 interpretation options for each ambiguity with clear implications.
+- Scans for credit-killing patterns (fabrication techniques, inappropriate Chain-of-Thought instructions, front-loaded context)
+- Flags ambiguities with 2-3 interpretation options and trade-off implications
+- Identifies missing context (audience, success criteria, constraints, format)
 
 ### Phase 3: Framework Selection & Optimization
-Applies the appropriate prompt framework silently based on task type:
-- **CO-STAR:** For structured output and specific format needs (format-driven)
-- **RISEN:** For multi-step procedures and workflows (process-driven)
-- **RODES:** When examples would clarify expectations or style (example-driven)
-
-The framework is applied transparently—you won't see methodology labels in the output.
+Applies the appropriate framework silently based on task type:
+- **CO-STAR**: Structured output needs (format-driven)
+- **RISEN**: Multi-step procedures (process-driven)
+- **RODES**: Clarification through examples (example-driven)
 
 Uses safe optimization techniques:
 - Replaces vague terms with concrete criteria
-- Adds constraints to define creative boundaries
-- Positions critical information at start/end (not lost-in-middle)
+- Positions critical info at start/end (avoids lost-in-middle problem)
 - Eliminates ambiguous pronouns in multi-step instructions
-- Pins success criteria to measurable outcomes
+- Adds constraints to define creative boundaries
 
 ### Phase 4: Validation & Handoff
-- Runs quality checks on the optimized prompt
-- Flags any remaining ambiguities that need your decision
-- Recommends execution mode (direct, monitored, or plan mode)
-- Delivers the optimized prompt directly in a markdown code block for easy copying
+- Runs quality checks and flags remaining ambiguities needing your decision
+- Delivers optimized prompt directly in a markdown code block for easy copying
 - Offers to save to file and/or copy to clipboard
-
-After delivery, the skill offers to iterate if you want to refine specific aspects.
+- Provides iteration options for refinement
 
 ## What You Get
 
-The primary deliverable is an optimized prompt presented directly in your conversation, formatted in a markdown code block for easy copying.
+An optimized prompt presented directly in your conversation, formatted in a markdown code block for easy copying. 
 
-After delivering the prompt, you'll be offered optional post-delivery actions:
-- Save the prompt to a markdown file (with path suggestions)
-- Copy the prompt to your clipboard
-- Both save and copy
+For newcomers: before/after comparison with explanations. For experts: concise optimization notes.
 
-For newcomers, you'll also see a before/after comparison explaining key changes. For experts, you'll receive concise optimization notes.
-
-## Good to Know
-
-> **Good to know:** The skill adapts its communication style to your skill level. Newcomers receive explanations of what's being detected and why it matters. Experts get pattern names and line numbers directly.
-
-> **Good to know:** This skill never fetches external resources or researches topics. If you provide a prompt mentioning "GitHub APIs" or other external systems, the skill optimizes the prompt text itself—it doesn't investigate those systems.
-
-> **Good to know:** Optimization strategies are model-specific. Claude 4.5+ uses extended thinking natively and doesn't benefit from explicit "think step by step" instructions, while older models might. The skill considers target model capabilities.
+Optional post-delivery: save to markdown file, copy to clipboard, or both.
 
 ## Examples
 
-### Example: Converting a Vague Request into an Actionable Prompt
+### Example: Clarifying a Vague Request
 
 ```bash
-# Input
-"make our documentation better"
-
-# After optimization
-Context: You're improving technical documentation for a Node.js library's README.
-Objective: Restructure documentation to reduce new user onboarding time from 30 minutes to under 10 minutes.
-Success Criteria:
-- Quick Start section completable in &lt;3 minutes
-- API reference with copy-paste examples for top 5 use cases
-- Troubleshooting section covering 3 most common setup errors
-Target Audience: JavaScript developers with npm experience but no prior knowledge of this library.
-Constraints:
-- Keep README under 500 lines
-- Include runnable code examples, not pseudocode
-- Link to full docs for advanced topics rather than embedding everything
-Format: Markdown with clear section headers and table of contents.
+/accelint-prompt-manager "make our documentation better"
 ```
 
-### Example: Optimizing an Ambiguous Prompt
+The skill turns the vague request into a concrete prompt with success criteria, audience, constraints, and output format.
+
+```text
+Context: Technical documentation for a Node.js library README
+Objective: Reduce new user onboarding time from 30 minutes to &lt;10 minutes
+Success Criteria:
+  - Quick Start completable in &lt;3 minutes
+  - API reference with copy-paste examples for top 5 use cases
+  - Troubleshooting section for 3 most common setup errors
+Audience: JavaScript developers with npm experience, no prior library knowledge
+Constraints:
+  - Keep README under 500 lines
+  - Include runnable code examples, not pseudocode
+  - Link to advanced topics rather than embedding everything
+Format: Markdown with section headers and table of contents
+```
+
+### Example: Resolving Ambiguity
 
 ```bash
-# Input
-"Analyze this codebase and tell me what's wrong"
+/accelint-prompt-manager "Analyze this codebase and tell me what's wrong"
+```
 
-# After optimization
-Role: Senior code reviewer conducting a security and performance audit.
-Objective: Identify critical issues in [codebase] that would block production deployment.
+The skill narrows the scope, defines priorities, and turns an open-ended request into a usable review prompt.
+
+```text
+Role: Senior code reviewer conducting security and performance audit
+Objective: Identify critical issues blocking production deployment in [codebase]
 Focus Areas (prioritized):
-1. Security vulnerabilities (SQL injection, XSS, exposed secrets)
-2. Performance bottlenecks (O(n²) algorithms, N+1 queries, memory leaks)
-3. Error handling gaps (unhandled rejections, missing validation)
-Scope: Scan src/ directory only, exclude test files and vendor code.
+  1. Security vulnerabilities (SQL injection, XSS, exposed secrets)
+  2. Performance bottlenecks (O(n²) algorithms, N+1 queries, memory leaks)
+  3. Error handling gaps (unhandled rejections, missing validation)
+Scope: Scan src/ directory only, exclude test files and vendor code
 Output Format:
-- Executive summary with risk levels (Critical/High/Medium/Low)
-- Per-issue: location, impact, remediation steps
-- Prioritized fix list with estimated effort
-Constraints: Complete review within current token budget; flag but don't fix issues yourself.
+  - Executive summary with risk levels (Critical/High/Medium/Low)
+  - Per-issue: location, impact, remediation steps
+  - Prioritized fix list with estimated effort
+Constraints: Complete review within token budget; flag but don't fix issues
 ```
 
 ## Good to Know
 
-> **Good to know:** This skill optimizes prompts rather than completing the underlying task. If you need the work done, use the refined prompt with Claude or another model afterward.
+> **Good to know:** The skill never fetches external resources or researches topics. If you provide a prompt mentioning "GitHub APIs", it optimizes the prompt text itself—it doesn't investigate those systems.
 
-> **Good to know:** If it's unclear whether you need prompt optimization or direct task execution, the skill will pause to clarify before proceeding.
+> **Good to know:** Optimization strategies are model-specific. Claude 4.5+ uses extended thinking natively and doesn't benefit from explicit "think step by step" instructions, while older models might.
 
-> **Good to know:** Optimization patterns are model-specific. Claude, GPT, and other model families respond differently to the same prompt structure.
+> **Good to know:** The skill adapts communication style to your level. Newcomers receive explanations of detected patterns. Experts get pattern names and line numbers directly.

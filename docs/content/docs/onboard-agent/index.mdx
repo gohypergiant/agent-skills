@@ -3,75 +3,115 @@ title: Overview
 description: Interactively onboard a project to agent-driven development by running a structured interview and generating a complete AGENTS.md (or CLAUDE.md) that governs AI agent behavior.
 source: skills/accelint-onboard-agent/SKILL.md
 source_sha: ffeb26e74a578a044c2d1e7f0a12b6b74682086f
-doc_sha: 69f17ea12d7c880b79c11908f28aa251cb6d3a69
+doc_sha: 04477ca89109337b6f5c5ec6f5b3ee4ef98dbcae
 deprecated: false
 updated: 2026-07-17
 ---
 
 ## What It Helps You Do
 
-Use this skill to create project-specific agent behavior instructions that define how an AI coding agent should work across all interactions in your project.
+Use this skill to create project-specific agent behavior instructions through a guided interview. The result is a complete `AGENTS.md` or `CLAUDE.md` that defines how an AI coding agent should work across all interactions in your project.
+
+Activate it with:
+- `/accelint-onboard-agents`
+- Phrases like "help me write AGENTS.md" or "configure claude code"
+- Related requests about agent behavior, guardrails, or project-specific AI instructions
 
 It is especially useful when you need to:
-- Generate a complete AGENTS.md or CLAUDE.md through a guided interview
 - Define agent identity, communication style, and workflow procedures
 - Establish decision-making heuristics and behavioral guardrails
-- Import and restructure existing agent instructions
-- Refresh stale agent configuration when your project evolves
+- Import and restructure existing agent instructions onto a standard template
+- Refresh stale configuration when your project evolves
 
 The skill produces the **behavior layer** of your agent instruction stack—defining WHO the agent is and HOW it works—while keeping project facts (stack, architecture, coding standards) separate in `openspec/config.yaml`.
-
-Activate this skill by:
-- Using the `/accelint-onboard-agents` command
-- Saying "create AGENTS.md", "onboard agent", "configure claude code"
-- Mentioning "agent behavior", "agent instructions", or "agent guardrails"
 
 ## When to Use
 
 Use this skill when:
 - Users mention "AGENTS.md", "CLAUDE.md", "agent behavior", "agent instructions", or "agent config"
-- Setting up agent rules for a new project
-- Asking how to configure Claude Code or other AI agents for a project
-- Onboarding a project to agent-driven development
-- Working with agent workflows or guardrails
+- Saying "onboard agent", "configure claude code", "set up agent rules"
+- Asking how to tell an AI agent how to behave in a project
 
 ## How It Works
 
-The skill runs an adaptive interview that adjusts based on what already exists in your project:
+The skill adapts its approach based on what already exists:
 
-- **Create mode** — Full interview from scratch for new projects
-- **Import mode** — Maps existing content onto a standardized template, flags content that belongs in other files
-- **Refresh mode** — Detects codebase drift since last update and fills gaps with targeted questions
+**Create mode** — Runs a full conversational interview for new projects, covering role definition, communication preferences, workflow procedures, decision heuristics, tool preferences, and guardrails.
+
+**Import mode** — Maps existing unrecognized content onto a standard template, flags content that belongs in other files (like `openspec/config.yaml`), fills gaps with targeted questions, and produces a merged file.
+
+**Refresh mode** — Detects codebase drift (new CI checks, husky hooks, migration directories, versioning tools), surfaces unresolved TODOs from previous runs, and runs a targeted interview covering only what changed.
 
 ### Intelligent Discovery Process
 
-Before asking questions, the skill scans the repo for conventions around version control, CI/CD, testing, security, and development workflow. It then asks only about the gaps it could not infer and shows inferred values with source annotations in the preview.
+Before asking questions, the skill spawns parallel subagents to scan for conventions it can infer from the codebase:
+
+- Version control & commit conventions (commitlint, git log, branch protection)
+- CI/CD & pre-commit workflows (GitHub Actions, husky, package.json scripts)
+- Testing & code quality (vitest/jest config, package manager, TypeScript setup)
+- Security & migrations (migration directories, secret handling patterns)
+- OpenSpec & development workflow (openspec directory, spec-driven development usage)
+
+Inferred values appear in the preview with source annotations like `# inferred from .husky/pre-commit` so you can verify accuracy before writing.
 
 ### Separation of Concerns
 
-The skill keeps behavior instructions in `AGENTS.md` or `CLAUDE.md` and project facts in `openspec/config.yaml`. If you provide stack facts during the interview, it redirects those details to the OpenSpec config layer instead.
-
-### Monorepo Support
-
-In a monorepo, package-level files reference the root agent instructions where possible instead of duplicating shared guidance.
+The skill enforces a clear boundary: behavior instructions go in `AGENTS.md` or `CLAUDE.md`, while project facts (tech stack, domain concepts, architectural patterns, coding standards) belong in `openspec/config.yaml`. If you provide stack facts during the interview, the skill redirects them to the appropriate layer.
 
 ## What You Get
 
-A complete `AGENTS.md` or `CLAUDE.md` draft covering role and identity, communication style, workflows, decision heuristics, tool preferences, guardrails, and links to related project docs.
+A complete `AGENTS.md` or `CLAUDE.md` covering:
 
-Sections that still need human input are marked with `<!-- TODO: fill in -->` rather than being omitted.
+- **Role & Identity** — Agent's role definition and scope constraints
+- **Communication** — Response style, code change format, handling uncertainty
+- **Workflow Procedures** — Feature development flow, bug fix TDD process, pre-commit checklist, commit message convention, PR conventions, versioning workflow
+- **Decision Heuristics** — When to ask vs. proceed, scope creep handling, approach selection
+- **Tool Preferences** — Package manager, test runner, linting/formatting, task runner
+- **Guardrails** — Hard stops (never rules) and soft gates (always ask first)
+- **Related Documentation** — Links to openspec/config.yaml, ARCHITECTURE.md, README.md
+
+Sections that cannot be inferred or answered are marked with `&lt;!-- TODO: fill in --&gt;` rather than being omitted, ensuring every section that shapes agent behavior is explicitly present.
+
+## Examples
+
+### Example: Creating AGENTS.md for a new project
+
+```bash
+/accelint-onboard-agents
+```
+
+The skill detects no existing file, runs a full interview about role, communication, workflows, decisions, tools, and guardrails, then shows a preview with inferred conventions before writing.
+
+### Example: Refreshing outdated AGENTS.md
+
+```bash
+/accelint-onboard-agents
+```
+
+The skill detects an existing file with recognized structure, scans for codebase drift (new CI checks, modified husky hooks), surfaces unresolved TODOs, runs a targeted interview covering only gaps, and shows a diff-style preview of changed sections.
+
+### Example: Restructuring unrecognized AGENTS.md
+
+```bash
+/accelint-onboard-agents
+```
+
+The skill detects existing content in an unrecognized shape, offers three options:
+- **(a) Restructure** — Map content onto standard template, flag misplaced content, fill gaps
+- **(b) Append** — Add new sections below existing content without modification
+- **(c) Dry run** — Preview what would be generated without touching the filesystem
 
 ## Good to Know
 
-> **Good to know:** The skill shows a labeled preview of the full AGENTS.md before writing anything. Inferred values carry source comments so you can see exactly where each convention came from.
+> **Good to know:** In monorepos with a root-level AGENTS.md, package-level files should reference it and add only package-specific overrides. Repeated instructions inflate context on every agent invocation.
 
-> **Good to know:** For monorepos with a root-level AGENTS.md, package-level files should reference it and add only package-specific overrides. Repeated instructions across root and package files inflate context on every agent invocation.
+> **Good to know:** The skill checks for related documentation (openspec/config.yaml, ARCHITECTURE.md) and announces their presence to maintain the separation of concerns boundary.
 
-> **Good to know:** If you have an existing AGENTS.md with unrecognized structure, the skill offers three options: restructure it onto the standard template, append new sections below the existing content, or run a dry run to preview what would be generated.
+> **Good to know:** All generated content is editable markdown. The preview shows inferred values with source comments, but the final written file has those annotations stripped.
 
 ## Prerequisites
 
-- Git repository (for computing source_sha and detecting configuration)
+- Git repository (for computing source_sha and detecting configuration files)
 - Write access to create or modify AGENTS.md or CLAUDE.md at project root
 
 ## Related

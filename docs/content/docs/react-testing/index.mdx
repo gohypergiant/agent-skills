@@ -1,59 +1,54 @@
 ---
 title: Overview
-description: Write maintainable, user-centric React component tests with Testing Library, focusing on accessibility-first queries and realistic user interactions.
+description: Write maintainable, accessibility-first React component tests with Testing Library. Use when writing or reviewing React tests, working with render/screen/userEvent/waitFor, choosing between getByRole/getByTestId queries, testing async behavior, or setting up components with providers. Make sure to use this skill whenever you see *.test.tsx files, Testing Library imports, or need guidance on query selection, user interactions, async testing patterns, or custom render utilities.
 source: skills/accelint-react-testing/SKILL.md
 source_sha: e4af90344aabfd3ef3fad5c53c6dc23a47ab3b86
-doc_sha: cadcdc3f43b05dbe5808df0cd08c75bae104eae8
+doc_sha: de264eb4ee183ea07fafdc61d710def3d72f3640
 deprecated: false
-updated: 2025-01-18
+updated: 2025-01-27
 ---
 
 ## What It Helps You Do
 
-Use this skill to write React component tests that verify user-facing behavior rather than implementation details. It guides you toward accessible, maintainable tests that catch real bugs while remaining resilient to refactoring.
+Use this skill to write React component tests that verify user-facing behavior instead of implementation details.
 
-Apply this skill when:
-- Writing or reviewing tests with Testing Library
-- Choosing the right query method (getByRole vs getByTestId)
-- Simulating user interactions (clicks, typing, form submission)
-- Testing async behavior (data loading, timeouts, promises)
-- Setting up components that need providers (Context, Redux, Router)
-- Improving test reliability and reducing flakiness
+Activate it with:
+- `/accelint-react-testing <path>`
+- Phrases like "review this test" or "help me test this component"
+- Related requests about Testing Library, query selection, async React tests, or provider setup
+
+It helps you:
+
+- Choose the right query method from the accessibility hierarchy (getByRole → getByLabelText → getByTestId)
+- Simulate realistic user interactions that catch bugs fireEvent misses
+- Handle async behavior without flaky tests or act warnings
+- Set up components with providers (Context, Redux, Router) efficiently
+- Write tests that survive refactoring while catching real UX bugs
+- Improve accessibility by making query difficulty reveal component issues
 
 ## When to Use
 
-Activate this skill when you encounter:
-- `render()`, `screen`, `fireEvent`, `userEvent`, or `waitFor` in test files
-- `*.test.tsx` or `*.test.jsx` files with React components
-- Testing Library queries: `getByRole`, `findBy*`, `queryBy*`
-- Test setup requiring React context or state management
-- Keywords: RTL, Testing Library, jest-dom, toBeInTheDocument
+Use this skill when:
+- Writing or reviewing `*.test.tsx` or `*.test.jsx` files
+- You see `render()`, `screen`, `fireEvent`, `userEvent`, `waitFor` in code
+- Working with Testing Library queries: `getByRole`, `findBy*`, `queryBy*`
+- Testing async behavior with promises, loading states, or data fetching
+- Components need Context, Redux, or Router providers
+- Debugging flaky tests or act warnings
 
 ## How It Works
 
-The skill uses query difficulty as a quality signal—if queries are hard, your component likely has accessibility problems. It teaches you to:
+The skill uses query difficulty as a quality signal—when queries are hard to write, your component likely has accessibility problems.
 
-**Query by user behavior first**: Start with `getByRole` (how screen readers find elements), fall back to `getByLabelText` (how sighted users read forms), and use `getByTestId` only as a last resort when accessibility is impossible.
+**Query by accessibility first**: Start with `getByRole` (how screen readers work), fall back to `getByLabelText` (how users read forms), and only use `getByTestId` when accessibility is impossible. Higher queries = more confidence your UI is usable.
 
-**Simulate realistic interactions**: Use `userEvent.click()` instead of `fireEvent.click()` because real users trigger focus → mousedown → mouseup → click, not just a single click event. Components that work with fireEvent sometimes break in production.
+**Simulate realistic interactions**: Use `userEvent.click()` instead of `fireEvent.click()` because real users trigger focus → mousedown → mouseup → click, not just one event. Components passing with fireEvent sometimes break in production.
 
-**Test outcomes, not internals**: Assert what users see and do (rendered text, interaction results), not how your component achieves it (state variables, function calls). This keeps tests resilient to refactoring while catching actual UX bugs.
+**Test outcomes, not internals**: Assert what users see (rendered text, interaction results), not how your component achieves it (state variables, function calls). Tests survive refactoring while catching real bugs.
 
-**Handle async correctly**: Use `findBy*` queries for elements that load asynchronously instead of `waitFor` loops. Use `waitForElementToBeRemoved` for disappearance. Each async utility has specific semantics that prevent flaky tests.
+**Handle async correctly**: Use `findBy*` queries for asynchronously loaded elements instead of `waitFor` loops. Use `waitForElementToBeRemoved` for disappearance. Each utility has specific semantics preventing flaky tests.
 
-**Set up providers once**: Create custom render utilities that wrap components in required providers (Context, Redux, Router) automatically instead of repeating setup in every test.
-
-### Progressive Disclosure
-
-The skill uses staged loading to minimize context usage:
-
-1. **Query Priority** (mandatory when writing queries): The accessible query hierarchy and when to use each level
-2. **User Events** (mandatory for interactions): Why and how to use userEvent instead of fireEvent
-3. **Query Variants** (load when confused about getBy vs findBy vs queryBy): When to use each variant and their error handling differences
-4. **Async Testing** (load for async patterns): Handling promises, avoiding act warnings, using findBy correctly
-5. **Custom Render** (load for provider-dependent components): Setting up Context, Redux, Router wrappers
-6. **Accessibility Queries** (load for ARIA/a11y testing): Testing with roles, labels, and semantic HTML
-7. **Anti-patterns** (load when seeing container/rerender): Avoiding implementation details and stale queries
+**Set up providers once**: Create custom render utilities wrapping components in required providers (Context, Redux, Router) instead of repeating setup in every test.
 
 ## Examples
 
@@ -116,13 +111,13 @@ renderWithProviders(<Component />);
 
 ## Good to Know
 
-> **Good to know:** Higher queries in the hierarchy provide more accessibility confidence. If you can't use `getByRole` or `getByLabelText`, that's a sign your component needs accessibility improvements before it ships.
+> **Good to know:** Higher queries in the hierarchy provide more accessibility confidence. If you can't use `getByRole` or `getByLabelText`, that signals your component needs accessibility improvements.
 
-> **Good to know:** Use `screen.debug()` when queries fail to see the current DOM structure, or `screen.logTestingPlaygroundURL()` for an interactive tool showing what queries work for your rendered output.
+> **Good to know:** Use `screen.debug()` when queries fail to see current DOM, or `screen.logTestingPlaygroundURL()` for an interactive tool showing available queries.
 
-> **Good to know:** `queryBy*` returns null silently—use `getBy*` for better error messages when an element should exist. Reserve `queryBy*` only for asserting absence with `.not.toBeInTheDocument()`.
+> **Good to know:** `queryBy*` returns null silently—use `getBy*` for better error messages when elements should exist. Reserve `queryBy*` only for asserting absence with `.not.toBeInTheDocument()`.
 
-> **Good to know:** Act warnings usually mean promises resolved after test completion or you forgot `await` on async queries. They're not caused by correct use of `findBy` or `waitFor`.
+> **Good to know:** Act warnings mean promises resolved after test completion or missing `await` on async queries. Correct use of `findBy` or `waitFor` prevents them.
 
 ## Prerequisites
 
