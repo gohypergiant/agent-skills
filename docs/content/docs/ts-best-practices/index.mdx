@@ -1,149 +1,61 @@
 ---
 title: Overview
-description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness with progressive disclosure of detailed patterns and anti-patterns.
+description: TypeScript and JavaScript best-practice guidance for writing, reviewing, and auditing code with stronger type safety, defensive defaults, and clearer correctness boundaries.
 source: skills/accelint-ts-best-practices/SKILL.md
 source_sha: 2d42a1f0533d6a152c7610b766efa202b8d5c56d
-doc_sha: dd362003e7c56b9f842aeb02530dc6ffb37379e4
+doc_sha: a8195f4b56520a91504172ba60cf40b8374fd038
 deprecated: false
-updated: 2025-01-22
+updated: 2026-07-20
 ---
 
 ## What It Helps You Do
 
-Use this skill to write safer, more maintainable TypeScript and JavaScript code. It focuses on type safety, defensive programming, and code correctness — helping you avoid common pitfalls that lead to runtime errors, type confusion, and fragile codebases.
+Use this skill to improve TypeScript and JavaScript code quality with patterns that reduce bugs, tighten type safety, and make behavior easier to reason about.
 
-This skill is especially useful when you need to:
-- Write or review TypeScript/JavaScript code for quality and safety
-- Fix type errors or eliminate `any`, `enum`, or `null` usage
-- Implement robust control flow, state management, or error handling
-- Apply zero-value patterns or immutability principles
-- Conduct code reviews for TypeScript anti-patterns
-
-Activate this skill by saying phrases like "review this code", "fix type errors", "apply best practices", "audit code quality", or when working with `.ts` or `.js` files.
+It is especially useful when you need to:
+- Review TS/JS code for correctness, safety, and maintainability issues
+- Replace weak patterns like `any`, `enum`, nullable returns, or mutation-heavy state updates
+- Refactor control flow, function design, naming, and error handling into clearer, safer defaults
+- Audit files or directories for recurring TypeScript anti-patterns before they spread
 
 ## When to Use
 
 Use this skill when:
-- Writing or reviewing TS/JS code
-- Fixing type errors or avoiding `any`/`enum`/`null`
-- Implementing control flow, state management, or error handling
-- Applying zero-value pattern or immutability
-- Conducting code reviews for TypeScript anti-patterns
-
-> **Good to know:** For performance optimization, use the `accelint-ts-performance` skill instead. For documentation tasks, use the `accelint-ts-documentation` skill.
+- Writing or reviewing `.ts` or `.js` code
+- Fixing type errors or trying to avoid weak typing in new code
+- Refactoring state management, return values, validation, or control flow
+- Performing a code-quality review focused on safety and correctness rather than speed
+- You want a structured TypeScript audit or direct guidance on specific TS/JS patterns
 
 ## How It Works
 
-This skill uses **progressive disclosure** to minimize token usage while providing comprehensive guidance:
-
-1. **Start with the overview** — Scan rule summaries in `AGENTS.md` to identify relevant patterns
-2. **Load specific rules as needed** — Each reference file is self-contained with ❌/✅ examples
-3. **Apply the pattern** — Follow the detailed guidance for the specific issue you're addressing
-
-The skill covers critical anti-patterns that frequently appear in codebases:
-
-- **Type Safety** — Never use `any` (use `unknown` or generics), never use `enum` (use `as const` objects), prefer `type` over `interface`
-- **Return Values** — Return zero values ([], {}, 0, '') instead of null/undefined to eliminate defensive null checks
-- **State Management** — Use `const` to signal immutability, never mutate function parameters, keep leaf functions pure
-- **Safety** — Always validate external data with schemas, set explicit limits on loops and queues, handle all errors explicitly
-- **Code Quality** — Use descriptive names with qualifier ordering, keep functions under 50 lines, use early returns for guard clauses
-
-When invoked directly or for comprehensive audits, the skill generates a structured report using a standardized template with severity levels (Critical, High, Medium, Low), impact analysis, and pattern references.
-
-### Key Rule Categories
-
-**General Best Practices:**
-- Naming conventions (qualifier ordering, boolean prefixes)
-- Function design (size, parameters, explicit return types)
-- Control flow (early returns, block style)
-- State management (const vs let, immutability)
-- Return values (zero values instead of null)
-- Code duplication (DRY principle)
-
-**TypeScript Patterns:**
-- Avoiding `any` type
-- Using `as const` objects instead of `enum`
-- Preferring `type` over `interface`
-- Using statically analyzable import paths
-
-**Safety:**
-- Input validation at system boundaries
-- Assertions with included values
-- Explicit error handling
-- Bounded iteration to prevent resource exhaustion
-
-## What You Get
-
-When the skill is invoked for an audit, you receive:
-- **Executive Summary** with impact assessment
-- **Severity-prioritized issues** (Critical, High, Medium, Low)
-- **Pattern references** linking to detailed ❌/✅ examples
-- **Phase 2 summary table** tracking all findings
-- **Actionable recommendations** for each issue
-
-For direct implementation requests, you get immediate fixes applied with explanations.
+- Focuses on defensive programming patterns such as explicit validation, safer return shapes, bounded logic, and clearer error paths.
+- Encourages predictable TypeScript usage, including stronger typing choices and patterns that avoid fragile or misleading abstractions.
+- Uses concrete wrong-vs-right examples so the guidance is practical during both code reviews and direct implementation.
+- Adjusts to the scope of the request: larger reviews can become structured audits, while narrow requests stay focused on the code in front of you.
 
 ## Examples
 
-### Example: Eliminating `any` Types
+### Example: Auditing a file for TypeScript anti-patterns
 
-```typescript
-// ❌ Before: any disables type checking
-function processData(input: any): any {
-  return input.value;
-}
-
-// ✅ After: unknown forces validation
-function processData(input: unknown): string {
-  if (typeof input === 'object' && input !== null && 'value' in input) {
-    return String(input.value);
-  }
-  throw new Error('Invalid input structure');
-}
+```bash
+/accelint-ts-best-practices src/utils/parse-config.ts
 ```
 
-### Example: Zero-Value Returns
+You get a review of correctness and type-safety issues, with recommended replacements for risky patterns.
 
-```typescript
-// ❌ Before: null checks everywhere
-function getUsers(): User[] | null {
-  if (!hasUsers) return null;
-  return users;
-}
-const result = getUsers();
-if (result !== null) {
-  result.forEach(u => console.log(u));
-}
+### Example: Reviewing a directory before a refactor
 
-// ✅ After: no defensive checks needed
-function getUsers(): User[] {
-  if (!hasUsers) return [];
-  return users;
-}
-getUsers().forEach(u => console.log(u));
+```bash
+/accelint-ts-best-practices src/lib
 ```
 
-### Example: Replacing Enums
-
-```typescript
-// ❌ Before: enum generates 5+ lines of runtime code
-enum Status {
-  Active = 'active',
-  Inactive = 'inactive'
-}
-
-// ✅ After: as const has zero runtime cost
-const Status = {
-  Active: 'active',
-  Inactive: 'inactive'
-} as const;
-type Status = typeof Status[keyof typeof Status];
-```
+You get a broader audit that helps prioritize cleanup work across multiple files.
 
 ## Good to Know
 
-> **Good to know:** This skill focuses on code correctness and safety. For performance optimization (O(n²) complexity, excessive allocations, V8 deoptimization), use `accelint-ts-performance`. For JSDoc and comment quality, use `accelint-ts-documentation`.
+> **Good to know:** This skill is about correctness, safety, and maintainability. For runtime speed, allocation issues, or V8-specific tuning, use `accelint-ts-performance` instead.
 
-> **Good to know:** The skill uses a progressive disclosure structure — you don't need to load all reference files at once. Start with the overview, then load specific patterns as you encounter them.
+> **Good to know:** For JSDoc, code comments, and documentation-focused cleanup, use `accelint-ts-documentation` instead.
 
-> **Good to know:** When invoked directly via `/accelint-ts-best-practices <path>` or for comprehensive audits, the skill generates a formal report. For direct questions or specific fixes, it provides immediate implementation without the report structure.
+> **Good to know:** Broad audit requests can produce a severity-based report, while narrow fix requests usually get direct implementation guidance instead of a formal report.

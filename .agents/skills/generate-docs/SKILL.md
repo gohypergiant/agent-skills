@@ -74,6 +74,7 @@ Before including any detail, classify it:
 - Template-authoring notes meant for skill maintainers unless they directly affect the user outcome
 - Scaffolding details such as "read X before Y" or "delete comments after reading"
 - Internal resource filenames such as `references/*.md`, `assets/*`, helper docs, or other skill internals unless they are directly user-consumable artifacts
+- Internal architecture or implementation mechanics such as progressive disclosure, reference-loading strategy, file traversal order, hidden orchestration, subagent coordination, or context-management tactics unless they materially affect the user's interaction, deliverable, or expectations
 - Low-value operational notes that do not help a human decide whether to use the skill
 
 ### Consumer relevance test
@@ -86,13 +87,15 @@ Before including any detail, ask:
 If the answer is no, omit it.
 
 ### Translate instead of copying
-If the source contains agent-operational guidance with user-facing significance, convert it into human language.
+If the source contains agent-operational guidance with user-facing significance, convert it into human language. Never describe how the skill is implemented when you can describe what the user experiences or receives instead.
 
 Examples:
 - Internal: "Load references only when needed"
   - Human-facing: "The skill keeps detailed guidance modular so it can go deep where needed without bloating the core instructions."
 - Internal: "Calibrate freedom to task fragility"
   - Human-facing: "The skill becomes more prescriptive for fragile tasks and more flexible for creative ones."
+- Internal: "This skill uses progressive disclosure"
+  - Human-facing: `Omit by default.` Include only if that structure changes the user's interaction, output depth, or expectations; if it does, describe the user-visible effect rather than naming the internal technique.
 - Internal: "Read the template comments before deleting them"
   - Human-facing: omit unless the docs are explicitly for maintainers editing the template itself.
 
@@ -264,7 +267,7 @@ Only add `### Intelligent Discovery Process` when the section contains concrete,
 
 If the explanation reads like instructions for the agent rather than expectations for the human reader, compress it.
 
-This section should NOT list internal file reads, traversal order, hidden resource names, or long lists of anti-patterns / rules copied from SKILL.md.
+This section should NOT list internal file reads, traversal order, hidden resource names, long lists of anti-patterns / rules copied from SKILL.md, or internal implementation mechanics that do not change the user's experience.
 
 **Examples**: Extract from SKILL.md body or references/, show explicit slash command usage
 ```markdown
@@ -282,13 +285,13 @@ This section should NOT list internal file reads, traversal order, hidden resour
 
 Examples should demonstrate use cases, not simulate the entire internal workflow. Prefer one command + one outcome summary over transcript-style step-by-step narration. If two examples teach the same thing, keep the clearer one.
 
-**Good to Know** (optional): User-facing scope boundaries, limitations, or sibling-skill distinctions
+**Good to Know** (optional): User-facing scope boundaries, prerequisites, limitations, expected outputs, or sibling-skill distinctions. This section is not for maintainer notes or internal implementation details.
 ```markdown
 ## Good to Know
 
 > **Good to know:** [When this skill applies vs when to use a different skill]
 
-> **Good to know:** [Non-obvious limitation, scope boundary, or expected output]
+> **Good to know:** [Non-obvious limitation, scope boundary, prerequisite, or expected output]
 
 > **Good to know:** [Gotcha that prevents misuse or wrong expectations]
 ```
@@ -328,12 +331,14 @@ Use `## Common Pitfalls` only for actual pitfalls or misuse patterns. Do not put
 For example:
 - `## Good to Know`: "This skill focuses on X, not Y. For Y tasks, use skill-name instead."
 - `## Good to Know`: "When you scan a directory, you get format A. For quick questions, you get format B."
+- `## Good to Know`: "You get a structured audit report for full reviews, but direct implementation help for narrow fix requests."
 - `## Limits`: "This skill plans the change but does not implement it."
 - `## What You Get`: "A generated ARCHITECTURE.md draft plus a preview for review before write."
 - NOT `## What You Get`: "Guidance on choosing query keys and mutation patterns" when those points are already covered in `## What It Helps You Do`
 - `## Common Pitfalls`: "Using this skill for Y usually leads to shallow results because it is optimized for X."
 - NOT: "Read the template comments before deleting them"
 - NOT: "Load reference file X before Y" unless the page is specifically for maintainers of the skill itself
+- NOT: "The skill uses a progressive disclosure structure" unless that internal design changes the user's experience in a concrete, user-visible way
 
 ### Bad vs good transformations
 
@@ -343,6 +348,9 @@ For example:
   - Good: omit unless the boundary matters to the user
 - Bad: `Read references only when needed`
   - Good: `The skill keeps detailed guidance modular so it can go deep without bloating the core instructions.`
+- Bad: `The skill uses a progressive disclosure structure — you don't need to load all reference files at once.`
+  - Good: `Detailed guidance is available for specific scenarios, while the main workflow stays concise.`
+  - Better: omit entirely if that distinction does not change what the user should expect.
 - Bad: `Spawns one subagent per touched capability`
   - Good: `Updates each affected capability independently so larger archive operations stay manageable.`
 - Bad: `Loads project context into subagent prompts`
@@ -359,6 +367,7 @@ Before writing or saving, verify:
 - Are examples concise and non-redundant?
 - Could a specialized heading be folded into `## Good to Know`?
 - Is any phrase only useful to a skill maintainer rather than a user?
+- Would a normal user care about this detail if they never read the underlying `SKILL.md`?
 ### 4. Add Frontmatter
 
 ```yaml
