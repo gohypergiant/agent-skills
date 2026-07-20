@@ -1,0 +1,112 @@
+{
+  "suiteName": "All Actions Present",
+  "source": { "repo": "some-repo", "path": "path/to/file.md" },
+  "tests": [
+    {
+      "name": "Properly validate all actions",
+      "startUrl": "https://example.com",
+      "steps": [
+        {
+          "action": "goto",
+          "value": "https://example.com/login"
+        },
+        {
+          "action": "fill",
+          "target": "form.input.username",
+          "value": "someone"
+        },
+        {
+          "action": "fill",
+          "target": "form.input.password",
+          "value": "password123"
+        },
+        {
+          "action": "select",
+          "target": "form.dropdown.role",
+          "value": "admin"
+        },
+        {
+          "action": "keyDown",
+          "value": "Shift"
+        },
+        {
+          "action": "press",
+          "value": "Enter"
+        },
+        {
+          "action": "keyUp",
+          "value": "Shift"
+        },
+        {
+          "action": "click",
+          "target": "form.button.login"
+        },
+        {
+          "action": "doubleClick",
+          "x": 250,
+          "y": 300
+        },
+        {
+          "action": "expectUrl",
+          "value": "https://example.com/dashboard"
+        },
+        {
+          "action": "mouseClick",
+          "x": 150,
+          "y": 200
+        },
+        {
+          "action": "mouseClick",
+          "x": 300,
+          "y": 400,
+          "button": "right"
+        },
+        {
+          "action": "mouseDown"
+        },
+        {
+          "action": "mouseMove",
+          "x": 500,
+          "y": 600
+        },
+        {
+          "action": "mouseUp"
+        },
+        {
+          "action": "scroll",
+          "direction": "down",
+          "amount": 200
+        },
+        {
+          "action": "expectNotVisible",
+          "target": "page.div.welcome"
+        },
+        {
+          "action": "click",
+          "target": "page.button.show-welcome"
+        },
+        {
+          "action": "expectVisible",
+          "target": "page.div.welcome"
+        },
+        {
+          "action": "expectVisible",
+          "target": "page.div.error"
+        },
+        {
+          "action": "click",
+          "target": "page.button.hide-error"
+        },
+        {
+          "action": "expectNotVisible",
+          "target": "page.div.error"
+        },
+        {
+          "action": "expectText",
+          "target": "page.div.welcome",
+          "value": "Welcome!"
+        }
+      ]
+    }
+  ]
+}

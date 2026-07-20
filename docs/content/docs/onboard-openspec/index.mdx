@@ -1,0 +1,97 @@
+---
+title: Overview
+description: Interactively onboard a project to OpenSpec by running a structured interview and generating a complete QRSPI-configured openspec/config.yaml.
+source: skills/accelint-onboard-openspec/SKILL.md
+source_sha: 48ff87c44089278cba311200e7cf3876060674dd
+doc_sha: 184a89540f22735e149034ae2dd4bfa30ea782e6
+deprecated: false
+updated: 2026-07-20
+---
+
+## What It Helps You Do
+
+Use this skill to set up OpenSpec for your project through a guided interview that produces a complete `openspec/config.yaml` file configured for the QRSPI methodology.
+
+Activate it with:
+- `/accelint-onboard-openspec`
+- Phrases like "set up openspec" or "generate openspec config"
+- Related requests about QRSPI config, onboarding to OpenSpec, or config.yaml generation
+
+It helps you:
+- Generate project-specific OpenSpec configuration from scratch
+- Import and restructure existing config files into the QRSPI schema
+- Refresh stale configuration when your codebase has evolved
+- Document your project's architectural facts and patterns for AI-generated artifacts
+
+
+## When to Use
+
+Use this skill when:
+- Users mention "openspec config", "config.yaml for openspec", or "QRSPI config"
+- Starting a new project that will use OpenSpec for spec-driven development
+- You have an existing config that needs to be restructured or updated
+- Your codebase has changed significantly since the config was last generated
+
+## How It Works
+
+The skill adapts its approach based on your project's current state:
+
+**Create Mode** — Runs a full conversational interview covering project identity, tech stack, architecture, domain concepts, performance targets, code patterns, and per-artifact rules. Groups related questions into natural turns instead of asking everything at once.
+
+**Import Mode** — When it finds existing config with unrecognized structure, offers three options: restructure onto QRSPI schema, append new sections alongside existing content, or dry run to preview without changes.
+
+**Refresh Mode** — For existing QRSPI configs, runs abbreviated interview targeting only drift (new packages, tooling changes), unresolved TODOs, and external findings from completed changes.
+
+After the interview, the skill spawns parallel discovery agents to fill gaps by scanning runtime versions, TypeScript config, test framework, directory organization, and CI/CD workflows. Inferred values show their source; unresolved fields get marked `# TODO: fill in`. You review a labeled preview before any files are written.
+
+## Good to Know
+
+> **Good to know:** This skill produces the **project DNA layer** (structural facts about what the project is). Its companion skill `accelint-onboard-agents` produces the **behavior layer** (how the agent acts and makes decisions). If you mention commit conventions, workflow steps, or tool preferences during the interview, the skill notes them for AGENTS.md instead of config.yaml.
+
+> **Good to know:** The skill infers missing fields from your codebase before asking. If inference fails, it marks the section `# TODO: fill in` rather than omitting it—an explicit TODO is actionable, while a missing section silently degrades every AI artifact.
+
+## Prerequisites
+
+- Basic understanding of your project's tech stack and architecture
+- Access to the project repository
+- (Optional) ARCHITECTURE.md — if present, used to pre-fill deployment and infrastructure questions
+
+## What You Get
+
+A complete `openspec/config.yaml` file with two sections:
+
+**context:** — Objective facts injected into every AI artifact: stack details, architecture patterns, domain concepts, performance targets, code patterns, and anti-patterns.
+
+**rules:** — Per-artifact quality standards: proposal scope requirements, design section structure, task vertical slicing preferences, and spec format conventions.
+
+## Examples
+
+### Example: Creating config from scratch
+
+```bash
+/accelint-onboard-openspec
+```
+
+Runs full interview, shows labeled preview with inference sources, writes `openspec/config.yaml` with complete QRSPI configuration.
+
+### Example: Refreshing stale config
+
+```bash
+/accelint-onboard-openspec
+```
+
+Detects existing QRSPI config, scans for drift (new packages, tooling changes), surfaces unresolved TODOs, shows only changed sections before updating.
+
+### Example: Importing existing config
+
+```bash
+/accelint-onboard-openspec
+```
+
+Detects unrecognized structure, presents restructure/append/dry-run options. Restructure mode maps existing content onto QRSPI schema and flags behavioral content for AGENTS.md.
+
+## Related
+
+- **accelint-onboard-agents** — Generates AGENTS.md/CLAUDE.md (agent behavior layer)
+- **accelint-qrspi-propose** — Uses config.yaml to plan OpenSpec changes
+- **accelint-architecture-doc** — Generates ARCHITECTURE.md (system overview)

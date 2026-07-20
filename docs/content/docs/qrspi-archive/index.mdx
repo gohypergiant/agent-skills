@@ -1,0 +1,97 @@
+---
+title: Overview
+description: Archive an OpenSpec change end-to-end, invoking the native merge then following up with cross-capability linking and running indices OpenSpec doesn't build on its own.
+source: skills/accelint-qrspi-archive/SKILL.md
+source_sha: d8935aae2a757834b78b34a898d867d979b403cf
+doc_sha: d010a3f7fa5dc3de3b2072dc1e66b206189c95b6
+deprecated: false
+updated: 2026-01-05
+---
+
+## What It Helps You Do
+
+Use this skill to archive OpenSpec changes completely—not just the merge, but also the cross-capability relationship graph and index bookkeeping that OpenSpec doesn't maintain automatically.
+
+Activate it with:
+- `/accelint-qrspi-archive`
+- Phrases like "archive this change" or "bulk archive these changes"
+- Related requests about updating the specs index, cross-linking specs, or running OpenSpec archive flows
+
+This skill invokes `/opsx:archive` or `/opsx:bulk-archive` itself, waits for the merge to fully resolve, then:
+- Links every pair of capabilities the change touched via a shared `related:` frontmatter list
+- Patches `openspec/specs/INDEX.md` for only the rows that changed
+- Appends a row to `openspec/changes/archive/INDEX.md`
+
+Cross-linking happens after the merge resolves, not before—a delta spec is provisional until conflicts are resolved.
+
+
+## When to Use
+
+Use this skill when:
+- You want to archive a change and ensure its capabilities are properly cross-linked
+- Users say "archive this change", "bulk archive these changes", "run opsx:archive", "run opsx:bulk-archive"
+- You need to update the specs index or cross-link specs after a merge
+- You want the archived-change changelog kept current
+
+## How It Works
+
+1. **Preflight** — verifies required metadata and spec structure before touching anything
+2. **Archive** — invokes `/opsx:archive` or `/opsx:bulk-archive` and waits for the merge to complete
+3. **Cross-link and index** — updates `related:` links across touched specs and patches affected rows in `openspec/specs/INDEX.md`
+4. **Append changelog** — adds one row per archived change to `openspec/changes/archive/INDEX.md`
+
+The linking side is additive only—it never prunes stale entries or changes existing status values.
+
+## Prerequisites
+
+- OpenSpec CLI installed and initialized
+- Sub-agent support for per-capability spec writes
+- Each change's `design.md` should have `specs_touched` and `decisions` frontmatter (can be derived with your confirmation if missing)
+- Every touched spec must have a `## Purpose` heading
+
+## What You Get
+
+- Change(s) archived via OpenSpec's native merge
+- Updated `related:` frontmatter and regenerated `## Related Specs` sections in touched specs
+- Patched `openspec/specs/INDEX.md` with only the touched rows changed
+- One appended row per archived change in `openspec/changes/archive/INDEX.md`
+- Summary report showing what changed
+
+## Examples
+
+### Example: Archiving a change
+
+```bash
+/accelint-qrspi-archive
+```
+
+Runs preflight checks, archives through OpenSpec, updates spec relationships, patches index rows, and appends the changelog.
+
+### Example: Handling missing frontmatter
+
+```bash
+/accelint-qrspi-archive
+```
+
+When required metadata is missing, the skill derives a candidate from change files and asks for your confirmation before continuing.
+
+## Good to Know
+
+> **Good to know:** This skill runs the native OpenSpec archive command itself—it's the entry point, not a post-merge cleanup step.
+
+> **Good to know:** Archive prompts reach you directly since the command runs in your context.
+
+> **Good to know:** Linking is additive only. Pruning stale `related:` entries or changing status belongs to `accelint-archive-synthesis`.
+
+## Limits
+
+- Does not prune `related:` entries or change `Status` values (requires cross-change judgment)
+- Does not verify `specs/INDEX.md` against every `spec.md` on disk (corpus-wide drift is `accelint-archive-synthesis`'s domain)
+- Does not reconcile summary stats in `changes/archive/INDEX.md`
+- Does not model relationship directionality—co-touch is symmetric
+
+## Related
+
+- **accelint-qrspi-propose**: Creates the `specs_touched` and `decisions` frontmatter this skill expects
+- **accelint-qrspi-apply**: Implements the change before archiving
+- **accelint-archive-synthesis**: Prunes stale `related:` entries and updates `Status` columns with human confirmation

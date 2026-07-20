@@ -1,0 +1,71 @@
+---
+title: Overview
+description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness for writing, reviewing, and auditing code.
+source: skills/accelint-ts-best-practices/SKILL.md
+source_sha: 2d42a1f0533d6a152c7610b766efa202b8d5c56d
+doc_sha: 8fe2f0906ee476dbe39bc0dd9a4271b7aa037321
+deprecated: false
+updated: 2026-07-20
+---
+
+## What It Helps You Do
+
+Use this skill to improve TypeScript and JavaScript code quality with patterns that reduce bugs, strengthen type safety, and make code behavior easier to reason about.
+
+Activate it with:
+- `/accelint-ts-best-practices <path>`
+- Phrases like "review this code" or "check for TypeScript anti-patterns"
+- Related requests about type safety, defensive programming, or correctness-focused audits
+
+It is especially useful when you need to:
+- Audit or review TS/JS files for correctness and maintainability issues
+- Replace weak patterns like `any`, `enum`, nullable returns, or mutation-heavy state
+- Refactor control flow, function design, naming conventions, or error handling
+- Catch TypeScript anti-patterns before they spread across the codebase
+
+
+## When to Use
+
+Use this skill when:
+- Writing or reviewing `.ts` or `.js` code
+- Fixing type errors or avoiding weak typing (`any`, `enum`, loose nullability)
+- Implementing control flow, state management, or error handling
+- Applying defensive programming patterns like input validation or immutability
+- Performing code reviews focused on safety and correctness (not performance)
+
+## How It Works
+
+The skill provides comprehensive guidance across several dimensions:
+
+- **Type Safety**: Stronger alternatives to `any`, `enum`, and nullable patterns; preferring `type` over `interface`; ensuring imports are statically analyzable
+- **Defensive Programming**: Input validation with schemas, explicit error handling, bounded iteration, immutable state patterns
+- **Code Clarity**: Naming conventions, function design principles, early returns, flat control flow
+- **Return Values**: Zero-value pattern instead of null/undefined for safer defaults
+
+When you request a broad audit, you get a structured report with severity levels (Critical, High, Medium, Low) to help prioritize fixes. For narrow fix requests, you get direct implementation guidance instead.
+
+## Examples
+
+### Example: Auditing a single file
+
+```bash
+/accelint-ts-best-practices src/utils/parse-config.ts
+```
+
+Returns a review of type safety and correctness issues with recommended fixes.
+
+### Example: Reviewing a directory
+
+```bash
+/accelint-ts-best-practices src/lib
+```
+
+Returns a broader audit across multiple files to help prioritize cleanup work.
+
+## Good to Know
+
+> **Good to know:** This skill focuses on correctness, safety, and maintainability. For runtime performance optimization (speed, allocations, V8 tuning), use `accelint-ts-performance` instead.
+
+> **Good to know:** For JSDoc comments, documentation standards, and comment quality, use `accelint-ts-documentation` instead.
+
+> **Good to know:** Broad audit requests produce severity-based reports for prioritization. Narrow fix requests get direct implementation without a formal report structure.

@@ -1,0 +1,135 @@
+---
+title: Overview
+description: Comprehensive vitest testing guidance for TypeScript projects covering test organization, assertions, test doubles, async patterns, performance optimization, and property-based testing.
+source: skills/accelint-ts-testing/SKILL.md
+source_sha: dd440be67db17eea8ed9592f954d7c4b7d83aca0
+doc_sha: c3b30c16080084781f88f8e4801f77e193db269e
+deprecated: false
+updated: 2026-07-20
+---
+
+## What It Helps You Do
+
+Use this skill to write maintainable, effective vitest tests that catch real bugs and support confident refactoring.
+
+Activate it with:
+- `/accelint-ts-testing <path>`
+- Phrases like "review this test" or "write tests for X"
+- Related requests about vitest, fast-check, async tests, or property-based testing
+
+It helps you:
+
+- Structure tests with clear patterns (AAA, parameterized tests, proper organization)
+- Choose the right assertions and test doubles (fakes, stubs, mocks, spies)
+- Handle async code, timers, and concurrent tests correctly
+- Optimize test performance for fast feedback loops
+- Apply property-based testing for stronger coverage with generated inputs
+- Identify and fix anti-patterns that create brittle, unreliable tests
+
+
+## When to Use
+
+Use this skill when:
+
+- Writing new tests with AAA pattern, parameterized tests, or async/await
+- Reviewing test code for anti-patterns like loose assertions (`toBeTruthy`), over-mocking, or nested describe blocks &gt;2 levels deep
+- Optimizing slow test suites
+- Implementing property-based testing with fast-check for encode/decode pairs, validators, normalizers, and idempotence checks
+- Auditing existing tests for quality and reliability issues
+
+## How It Works
+
+The skill provides expert patterns organized by testing concern:
+
+- **Test Organization**: File structure, naming conventions, describe block hierarchy
+- **AAA Pattern**: Arrange-Act-Assert structure for test clarity
+- **Parameterized Tests**: Using `it.each()` to eliminate duplication
+- **Assertions**: Strict assertions that catch unintended values (avoid `toBeTruthy()`, `toBeDefined()`)
+- **Test Doubles Hierarchy**: When to use fakes &gt; stubs &gt; spies &gt; mocks
+- **Async Testing**: Promises, async/await, timers, concurrent tests
+- **Performance**: Fast tests through efficient setup and global configuration
+- **Property-Based Testing**: Using fast-check for generated test inputs and stronger invariants
+
+The skill emphasizes testing behavior over implementation, isolation between tests, and making tests valuable long-term. Detailed guidance is available for specific scenarios, while the main workflow stays concise. When you audit tests, the skill identifies high-value property-based testing opportunities for encode/decode pairs, validators, normalizers, and pure functions.
+
+## Examples
+
+### Example: Writing a Test with AAA Pattern
+
+```bash
+/accelint-ts-testing src/cart/cart.test.ts
+```
+
+The skill highlights weak structure in a test file and suggests a clearer Arrange-Act-Assert shape.
+
+```typescript
+// ✅ Clear AAA structure
+it('should add item to cart', () => {
+  // Arrange
+  const cart = createCart();
+  const item = { id: '123', name: 'Widget', price: 10 };
+  
+  // Act
+  const result = cart.addItem(item);
+  
+  // Assert
+  expect(result.items).toHaveLength(1);
+  expect(result.items[0]).toEqual(item);
+});
+```
+
+### Example: Parameterized Tests for Variations
+
+```bash
+/accelint-ts-testing src/utils/string-utils.test.ts
+```
+
+The skill spots repeated test cases and recommends collapsing them into a parameterized form.
+
+```typescript
+// ✅ Avoid duplication with it.each()
+it.each([
+  { input: 'hello', expected: 'HELLO' },
+  { input: 'World', expected: 'WORLD' },
+  { input: '', expected: '' },
+])('should uppercase "$input" to "$expected"', ({ input, expected }) => {
+  expect(toUpperCase(input)).toBe(expected);
+});
+```
+
+### Example: Property-Based Testing for Roundtrip Properties
+
+```bash
+/accelint-ts-testing src/codec/serializer.test.ts
+```
+
+The skill identifies a good candidate for property-based testing and proposes a roundtrip invariant.
+
+```typescript
+import fc from 'fast-check';
+
+// ✅ Test encode/decode roundtrip with generated inputs
+it('property: decode(encode(x)) === x for all valid inputs', () => {
+  fc.assert(
+    fc.property(fc.record({ id: fc.string(), value: fc.integer() }), (obj) => {
+      expect(decode(encode(obj))).toEqual(obj);
+    })
+  );
+});
+```
+
+## Good to Know
+
+> **Good to know:** This skill focuses on vitest-specific patterns. For React component testing with Testing Library, use `accelint-react-testing` instead.
+
+> **Good to know:** Property-based testing with fast-check is highlighted during audits because it provides stronger guarantees than example-based tests for pure functions, validators, and data transformations.
+
+> **Good to know:** The skill emphasizes global mock cleanup configuration (`clearMocks: true` in `vitest.config.ts`) to prevent test order dependencies rather than manual cleanup in each test.
+
+> **Good to know:** When invoked for test review or audit, you get a formatted report with severity levels, categorized findings, impact analysis, and property-based testing opportunities. For direct questions or test writing requests, you get targeted guidance without a formal report.
+
+## Prerequisites
+
+- vitest testing framework installed and configured
+- For property-based testing examples: fast-check library (`npm install -D fast-check`)
+- TypeScript with test files included in type checking scope

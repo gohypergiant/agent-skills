@@ -1,0 +1,156 @@
+---
+title: Overview
+description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments, comment markers, and code comment quality with intelligent export-vs-internal differentiation.
+source: skills/accelint-ts-documentation/SKILL.md
+source_sha: 3e322a22a441b78a0c96350ce2b822c4796a37ff
+doc_sha: 1a1d11a6c7bdc293b62d451432ac6d8810ba9222
+deprecated: false
+updated: 2025-01-17
+---
+
+## What It Helps You Do
+
+Use this skill to systematically improve documentation across JavaScript and TypeScript codebases.
+
+Activate it with:
+- `/accelint-ts-documentation <path>`
+- Phrases like "add JSDoc" or "audit documentation"
+- Related requests about comment quality, TODO/FIXME markers, or documenting exported APIs
+
+It helps you:
+
+- Add comprehensive JSDoc comments to public APIs
+- Clean up comment clutter and remove unnecessary documentation
+- Apply proper comment markers (TODO, FIXME, HACK) with context and ownership
+- Audit documentation completeness across files or directories
+- Ensure exported code has full documentation while keeping internal code minimal
+
+The skill applies intelligent judgment about documentation depth based on visibility—exported code gets comprehensive docs because consumers lack implementation context, while internal code gets minimal docs since team members can read the source.
+
+## When to Use
+
+Use this skill when:
+- Adding or validating JSDoc comments (@param, @returns, @template, @example)
+- Auditing documentation completeness in a file or directory
+- Improving comment quality or adding actionable comment markers
+- Reviewing whether exported functions and types are properly documented
+- Users say "add JSDoc", "document this function", "audit documentation", "fix comments", or "add TODO/FIXME markers"
+
+## How It Works
+
+The skill applies a two-tier documentation strategy based on code visibility.
+
+### Tier 1 - Exported Code (Public API)
+
+Requires comprehensive documentation for all exports:
+- Full descriptions with usage context
+- All @param tags with property documentation for object parameters
+- @returns describing outcomes in different scenarios
+- @template with constraint explanations for generics
+- @throws documenting all possible errors with triggering conditions
+- At least one realistic @example showing usage patterns
+
+### Tier 2 - Internal Code
+
+Minimal documentation focused on non-obvious behavior:
+- Brief descriptions (one line acceptable)
+- @param only for non-obvious parameters
+- @example only for complex behavior
+- Focus on WHAT/WHY over HOW (implementation details)
+
+### Expert Judgment Framework
+
+Before documenting, the skill evaluates:
+- **Who is the reader?** API consumers lack context; team members have it
+- **Opacity vs complexity?** Document hidden intent, not intricate implementation
+- **Maintenance cost?** High-churn code gets minimal docs; stable APIs get comprehensive docs
+
+### JSDoc Standards
+
+When adding JSDoc, ensures:
+- Object parameters use dot notation: `@param options.timeout - Description`
+- @example tags use proper code fences with language identifiers
+- Descriptions focus on WHAT/WHY, not implementation details
+- No @returns on void functions
+- Generic functions have @template for each type parameter
+
+### Comment Quality Rules
+
+For comment audits:
+- Categorizes with proper markers: TODO, FIXME, HACK, NOTE, PERF, REVIEW
+- Removes unnecessary comments: commented-out code, edit history, obvious statements
+- Preserves important comments: markers with context, linter directives, business logic
+- Ensures specificity: `TODO(username): Replace with binary search for O(log n)`
+
+## Examples
+
+### Example: Comprehensive Public API Documentation
+
+```typescript
+/**
+ * Fetches user profile data from the authentication service
+ *
+ * Automatically retries up to 3 times on network failures with exponential
+ * backoff. Throws if user is not authenticated or profile doesn't exist.
+ *
+ * @param userId - Unique identifier for the user profile to fetch
+ * @param options - Configuration for fetch behavior
+ * @param options.includeMetadata - Include account metadata
+ * @param options.timeout - Request timeout in milliseconds (default: 5000)
+ * @returns User profile with email, name, and optional metadata
+ * @throws {AuthenticationError} When user session is expired
+ * @throws {NotFoundError} When user profile doesn't exist
+ * @throws {NetworkError} When all retry attempts are exhausted
+ *
+ * @example
+ * ```typescript
+ * const profile = await fetchUserProfile('user-123');
+ * console.log(profile.email);
+ * ```
+ */
+export async function fetchUserProfile(
+  userId: string,
+  options?: { includeMetadata?: boolean; timeout?: number }
+): Promise&lt;UserProfile&gt; {
+  // implementation
+}
+```
+
+The skill ensures exported functions document hidden behaviors (retry logic), all parameters including nested object properties, error conditions, and realistic usage examples.
+
+### Example: Minimal Internal Documentation
+
+```typescript
+/** Checks if value is not null/undefined */
+function isValid(x: unknown): boolean {
+  return x != null;
+}
+```
+
+Internal utilities get brief one-line descriptions. Team members can read the implementation if they need more detail.
+
+### Example: Improving Comment Markers
+
+Before:
+```typescript
+// TODO: fix this
+// TODO: improve performance
+```
+
+After:
+```typescript
+// TODO(username): Replace with binary search for O(log n) lookup
+// FIXME(username): Throws error on empty array, add guard clause
+```
+
+Markers become actionable with ownership and specific context.
+
+## Good to Know
+
+> **Good to know:** For general code quality improvements (type safety, control flow), use `accelint-ts-best-practices`. For performance optimization, use `accelint-ts-performance`. This skill focuses exclusively on documentation quality.
+
+> **Good to know:** When explicitly invoked for audits (`/accelint-ts-documentation path/to/file`), produces structured reports with numbered findings and before/after examples. For direct documentation requests ("add JSDoc to this function"), applies changes directly without formal reporting.
+
+> **Good to know:** The skill loads detailed reference files only when needed—`jsdoc.md` for JSDoc syntax tasks, `comments.md` for comment quality tasks. This keeps responses focused and efficient.
+
+> **Good to know:** Framework-specific documentation patterns (React PropTypes, Vue props) are out of scope. The skill focuses on standard JSDoc and TypeScript documentation conventions.

@@ -1,0 +1,131 @@
+---
+title: Overview
+description: Comprehensive TypeScript file audit system that systematically applies testing, best practices, performance, and documentation skills with progress tracking and interactive approval.
+source: skills/accelint-ts-audit-all/SKILL.md
+source_sha: 7f11370aea0a75621c478917098c65c7b02e0ee0
+doc_sha: 85d8c548effc30c80619043f0894ed6c6e0bcf14
+deprecated: false
+updated: 2026-07-20
+---
+
+## What It Helps You Do
+
+Use this skill to systematically audit TypeScript files across four dimensions: testing, best practices, performance, and documentation. It orchestrates specialized audit skills in a controlled sequence with interactive approval at each stage.
+
+Activate it with:
+- `/accelint-ts-audit-all <path>`
+- Explicit requests to run a full TypeScript audit
+- Related requests about multi-skill code review, interactive approvals, or tracked TS audits
+
+This skill is especially useful when you need to:
+- Audit entire directories with progress tracking across sessions
+- Apply multiple audit perspectives without contradictory recommendations
+- Review and approve changes interactively with severity indicators
+- Work on parallel audits using isolated git worktrees
+
+
+## When to Use
+
+This is a command-only skill with no natural language triggers. Invoke it explicitly when you want to:
+- Run a comprehensive audit on TypeScript files
+- Apply multiple code quality checks systematically
+- Track audit progress across multiple files
+- Work through audit findings with interactive approval
+
+## How It Works
+
+The skill executes an 8-step audit process for each file:
+
+**Phase 1: Test Coverage First**
+- Establishes test coverage before making any code changes
+- Runs 100-pass verification for property-based tests to ensure stability
+
+**Phase 2: Code Quality &amp; Performance in Parallel**
+- Runs best-practices and performance audits simultaneously
+- Merges overlapping recommendations to avoid contradictions
+
+**Phase 3: Verification**
+- Runs documented test, build, and lint commands
+- Ensures changes don't break existing functionality
+
+**Phase 4: Documentation**
+- Adds JSDoc comments, TODO markers, and code comments
+- Runs final verification to ensure stability
+
+Every change requires interactive approval through a two-phase process: overview table with emoji severity indicators (🛑 Critical, ⚠️ High, ⚡ Medium, 🔵 Low, ✅ Info), followed by detailed before/after code, and numbered selection (e.g., "1, 2, 5" or "all" or "skip").
+
+The skill creates isolated git worktrees to enable parallel audits without conflicts. Progress is saved in audit process files after each step, allowing you to pause and resume across sessions without losing context.
+
+## Prerequisites
+
+- Git repository with a valid branch
+- TypeScript files to audit (.ts files, excluding .test.ts, .spec.ts, .bench.ts)
+- Documented verification commands (test, build, lint) in your project
+- Clean working directory before starting (commit or stash changes)
+
+## Good to Know
+
+&gt; **Good to know:** This skill creates isolated git worktrees to prevent conflicts. Multiple audits can run in parallel without interfering with each other or your main branch.
+
+&gt; **Good to know:** The skill maintains `.agents/audit/` tracking files in the original repository (should be gitignored) while performing work in `.agents/worktrees/` directories.
+
+&gt; **Good to know:** Property-based tests require 100 consecutive passes to verify stability. The skill runs verification without coverage reporting to increase speed and prevent flaky failures.
+
+&gt; **Good to know:** Best-practices and performance audits run in parallel to identify contradictory recommendations before presenting them. The skill will merge overlapping suggestions when possible.
+
+## What You Get
+
+After completion:
+- Comprehensive audit of all TypeScript files in the target directory
+- Detailed audit history file with findings and decisions from each file
+- Merged branch with all approved changes
+- Automatic worktree cleanup
+
+## Examples
+
+### Example: Auditing a Single File
+
+```bash
+/accelint-ts-audit-all src/utils/parser.ts
+```
+
+The skill will:
+1. Create an isolated worktree with timestamped branch
+2. Run the 8-step audit process
+3. Present findings with severity indicators
+4. Apply approved changes interactively
+5. Merge back to your original branch
+
+### Example: Auditing an Entire Directory
+
+```bash
+/accelint-ts-audit-all src/components
+```
+
+The skill will:
+1. Discover all .ts files (excluding test files)
+2. Create a TODO list in the audit process file
+3. Audit each file systematically with progress tracking
+4. Save progress after each file to survive context limits
+5. Allow resumption across multiple sessions
+
+### Example: Resuming an Existing Audit
+
+If you have an existing audit in progress:
+
+```bash
+/accelint-ts-audit-all
+```
+
+The skill will:
+1. Check `.agents/audit/` for existing audit process files
+2. Display current status and resume instructions
+3. Continue from the last saved checkpoint
+4. Work in the existing worktree without creating a new one
+
+## Limits
+
+- This skill orchestrates other audit skills but does not implement new audit logic itself
+- It does not run audits on test files (.test.ts, .spec.ts) or benchmark files (.bench.ts)
+- It requires interactive approval and cannot run fully autonomously
+- Large directories (&gt;5 files) typically require multiple sessions due to context limits

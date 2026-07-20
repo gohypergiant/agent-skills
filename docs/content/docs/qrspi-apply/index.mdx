@@ -1,0 +1,96 @@
+---
+title: Overview
+description: Implement QRSPI-planned OpenSpec changes with intelligent parallelization, orchestrating parallel sub-agent execution based on dependency analysis for faster task completion.
+source: skills/accelint-qrspi-apply/SKILL.md
+source_sha: 124fcf2a75888b5ac77c108a737b4c665eb9dfc4
+doc_sha: b74643434e23fb7481c2d6ada93e444777279cde
+deprecated: false
+updated: 2025-01-24
+---
+
+## What It Helps You Do
+
+Use this skill to implement OpenSpec changes planned using QRSPI methodology. It automates the complete implementation phase: analyzing task dependencies, spawning parallel sub-agents where independent work exists, updating living documents, and verifying completeness.
+
+Activate it with:
+- `/accelint-qrspi-apply <change-name>`
+- Phrases like "apply this QRSPI change" or "implement with parallelization"
+- Related requests about running parallel slices or applying planned OpenSpec changes
+
+The skill is especially useful when you need to:
+- Apply QRSPI-planned changes with independent task slices
+- Speed up implementation through parallel execution
+- Keep living documents synchronized during implementation
+- Verify readiness before archival
+
+
+## Prerequisites
+
+- OpenSpec CLI installed and initialized
+- QRSPI-planned change via `accelint-qrspi-propose` (includes "Parallelization Strategy" in tasks.md)
+- Tasks in markdown checklist format (`- [ ] task`)
+- Sub-agent support for parallel execution
+
+> **Good to know:** Standard OpenSpec changes without parallelization strategies should use `/opsx:apply` directly.
+
+## When to Use
+
+Use this skill when:
+- Users say "apply this QRSPI change", "implement with parallelization", "run the parallel slices"
+- Working with changes that include vertical slicing and parallelization strategies
+- Implementing changes where independent slices can run simultaneously
+
+## How It Works
+
+The skill orchestrates implementation through four stages:
+
+**Validate and Plan**: Selects the target change, reads the parallelization strategy from tasks.md, and builds a dependency graph showing which slices can run in parallel and which must wait on dependencies.
+
+**Execute Slices**: Independent slices run in parallel via separate sub-agents, while dependent slices wait for blockers to finish. Progress is tracked through task checkboxes, enabling pause and resume across sessions.
+
+**Refresh Living Docs**: Updates project documentation (OpenSpec config, ARCHITECTURE.md, AGENTS.md, README.md) before verification so the final check can catch stale docs.
+
+**Verify Readiness**: Runs `/opsx:verify` to check task completion, requirement coverage, design adherence, and documentation sync. The verification report serves as the completion summary with next steps.
+
+> **Good to know:** The skill detects partial completion from previous sessions and resumes from the next incomplete slice.
+
+> **Good to know:** Between dependency levels, you can pause and clear context without losing progress—task checkboxes preserve state.
+
+## What You Get
+
+- Fully implemented change with all tasks complete
+- Updated living documents synchronized with code
+- Verification report showing status and next steps
+- Archive guidance when verification passes
+
+## Examples
+
+### Example: Applying a parallelized change
+
+```bash
+/accelint-qrspi-apply remove-security-ruleset
+```
+
+The skill analyzes dependencies, runs independent slices in parallel, updates docs, and completes with a verification report.
+
+### Example: Resuming after pause
+
+```bash
+/accelint-qrspi-apply auth-refactor
+```
+
+If partially completed, the skill reads checkboxes and resumes from the next incomplete slice.
+
+## Good to Know
+
+> **Good to know:** Falls back to sequential execution if no parallelization strategy exists.
+
+> **Good to know:** Tasks must use `- [ ]` checklist format for progress tracking. Numbered lists or plain bullets are not supported.
+
+> **Good to know:** The skill suggests archival after passing verification but does not automatically archive. Use `/accelint-qrspi-archive` to complete the workflow.
+
+## Related
+
+- **accelint-qrspi-propose**: Creates the QRSPI-planned changes this skill implements
+- **accelint-qrspi-archive**: Archives completed changes after verification passes
+- **OpenSpec CLI**: The underlying workflow engine

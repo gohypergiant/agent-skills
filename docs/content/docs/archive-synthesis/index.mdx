@@ -1,0 +1,134 @@
+---
+title: Overview
+description: Periodically lint the full OpenSpec archive for cross-change decision drift, index/spec reconciliation, and structural over-coupling — the backward-looking consistency check that nothing else in the QRSPI/OpenSpec stack covers.
+source: skills/accelint-archive-synthesis/SKILL.md
+source_sha: c741708f05f8457f20e12af93ce91520d5b6e3b1
+doc_sha: de563d61d91c712564272076fdd5cc2d2d1c01f8
+deprecated: false
+updated: 2026-07-20
+---
+
+## What It Helps You Do
+
+Use this skill to audit your OpenSpec archive for long-term inconsistencies that accumulate across many changes.
+
+Activate it with:
+- `/accelint-archive-synthesis`
+- Phrases like "run archive synthesis" or "lint the openspec archive"
+- Related requests about decision drift, index reconciliation, or cross-change consistency
+
+It helps you find:
+- **Decision contradictions** where archived changes no longer agree with each other
+- **Stale index entries** where `specs/INDEX.md` drifted from actual spec files
+- **Over-coupled capabilities** whose relationship counts suggest boundary problems
+
+Unlike other QRSPI/OpenSpec tools that validate individual changes forward, this skill looks backward across the full archive to check whether it still coheres with itself.
+
+
+## When to Use
+
+Use this skill when:
+
+- `accelint-qrspi-archive` suggests synthesis (typically after 15+ changes)
+- Checking whether an old design decision still holds
+- Verifying `specs/INDEX.md` matches actual spec files on disk
+- Finding over-coupled refactor candidates
+- Auditing before a major milestone
+
+## How It Works
+
+The skill runs three corpus-wide checks:
+
+**Decision Drift** — identifies archived changes that appear to contradict each other about the same or related capabilities, then verifies only the flagged candidates in detail.
+
+**Index Reconciliation** — confirms every `specs/INDEX.md` row still points to a real capability and matches its actual `spec.md` content.
+
+**Structural Coupling** — flags capabilities whose `related:` count is both at least 5 and double the index median, signaling possible boundary sprawl.
+
+Each check surfaces findings at CRITICAL/WARNING/SUGGESTION severity. For confirmed findings, the skill can update `Status` in the archive index, patch reconciliation mismatches, or route to relevant writer skills.
+
+## What You Get
+
+A structured report showing what changed since last run:
+
+```
+## Archive Synthesis Report — 2026-07-06
+Corpus: 47 archived changes, 22 capabilities
+
+### CRITICAL
+- [Decision contradiction with actively-touched capability]
+
+### WARNING  
+- [Index row disagrees with its spec.md]
+
+### SUGGESTION
+- [Structural coupling above threshold]
+```
+
+For each finding you choose:
+- **Confirm** — updates status, patches index row, or routes to writer skill
+- **Dismiss** — for decision drift, never resurfaces; for others, rechecked next run
+- **Defer** — left as-is, resurfaces next run
+
+## Prerequisites
+
+- OpenSpec CLI installed and initialized
+- `accelint-qrspi-archive` in regular use (both indexes must exist)
+- Sub-agent support for targeted file reads
+- Read access to `openspec/specs/` directory
+- Writer skills support `findings:` interface for automatic routing
+
+> **Good to know:** If writer skills don't support `findings:` yet, you get the report and manual routing guidance instead.
+
+## Good to Know
+
+> **Good to know:** Dismissed decision-drift pairs persist to `SYNTHESIS-LOG.md` so they never resurface. Dismissed coupling/reconciliation findings do not persist — they're rechecked every run against current state.
+
+> **Good to know:** Confirmed reconciliation findings patch `specs/INDEX.md` directly, but never edit the spec files themselves.
+
+> **Good to know:** The 15-change trigger and structural coupling thresholds are defaults you can adjust. The skill reports when they look mismatched for your corpus, but never changes them automatically.
+
+## Limits
+
+This skill does not:
+
+- Run automatically or block other workflows
+- Edit hub docs directly (routes through writer skills)
+- Touch `design.md` or `spec.md` files (reads only)
+- Operate across repositories (local project only)
+
+## Examples
+
+### Example: Typical synthesis run after 15 changes
+
+```bash
+/accelint-archive-synthesis
+
+# Finds 1 CRITICAL contradiction, 1 WARNING index mismatch, 1 SUGGESTION coupling
+# You confirm all three
+# Skill updates archive Status, patches index row, routes to writer skills
+# Logs checkpoint for next run
+```
+
+### Example: First-ever run on a small corpus
+
+```bash
+/accelint-archive-synthesis
+
+# Warns: 6 archived changes is small, continue? Yes
+# No findings (too few changes for signal)
+# Creates SYNTHESIS-LOG.md for future runs
+```
+
+### Example: Dismissed pair stays suppressed
+
+```bash
+# Run 1: You dismiss a decision-drift finding
+# Recorded to SYNTHESIS-LOG.md dismissed: list
+
+# Run 2 (months later):
+/accelint-archive-synthesis
+
+# Loads dismissed history, skips that pair without re-verification
+# Only new candidates appear in this run's report
+```

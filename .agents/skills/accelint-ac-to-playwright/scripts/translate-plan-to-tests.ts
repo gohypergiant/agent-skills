@@ -1,0 +1,404 @@
+// This script converts a json test plan file to a Playwright test file.
+
+import type { z } from "zod";
+import type { stepSchema, testSchema, testSuiteSchema } from "./plan-schema";
+
+// Types
+
+type GeneratedFile = {
+  path: string;
+  content: string;
+  sourceDescription: string;
+};
+
+export type PlanFile = z.infer<typeof testSuiteSchema>;
+export type Step = z.infer<typeof stepSchema>;
+export type Test = z.infer<typeof testSchema>;
+
+// Main functionality
+
+// Translates one plan (which can contain many tests) to one test file
+type TranslatePlanOptions = {
+  outDir: string;
+};
+
+export function translatePlan(
+  planFile: PlanFile,
+  options: TranslatePlanOptions
+): GeneratedFile {
+  const lines: string[] = [];
+
+  lines.push(`import { expect, test } from "@playwright/test";`);
+  lines.push(`import { setupConsoleTracking } from "./fixtures/console-tracking";`);
+  lines.push(`import { attachFailureArtifacts } from "./fixtures/error-handling";`);
+  lines.push(``);
+
+  // Set up group
+  const sourceDescription =
+    planFile.source.repo === "external"
+      ? `external file: ${planFile.source.path}`
+      : `${planFile.source.repo}/${planFile.source.path}`;
+
+  if (planFile.tags?.length) {
+    lines.push(`test.describe(${JSON.stringify(planFile.suiteName)}, {`);
+    lines.push(`  tag: ${formatTags(planFile.tags)},`);
+  } else {
+    lines.push(`test.describe(${JSON.stringify(planFile.suiteName)}, {`);
+  }
+  lines.push(`  annotation: {`);
+  lines.push(`    type: "source",`);
+  lines.push(`    description: ${JSON.stringify(sourceDescription)}`);
+  lines.push(`  }`);
+  lines.push(`}, () => {`);
+
+  // Write tests
+  for (const test of planFile.tests) {
+    lines.push(translateSingleTest(test));
+  }
+
+  lines.push(`});`);
+
+  const suiteSlug = slug(planFile.suiteName);
+  if (!suiteSlug) {
+    throw new Error(
+      `Invalid suiteName: "${planFile.suiteName}". Name must contain at least one alphanumeric character (a-z or 0-9).`
+    );
+  }
+
+  return {
+    path: joinOutDir(options.outDir, `${suiteSlug}.spec.ts`),
+    content: lines.join("\n"),
+    sourceDescription,
+  };
+}
+
+// Helper functions
+
+// Translates a single test within a plan
+function translateSingleTest(test: Test): string {
+  const lines: string[] = [];
+  
+  if (test.tags?.length) {
+    lines.push(`  test(${JSON.stringify(test.name)}, {`);
+    lines.push(`    tag: ${formatTags(test.tags)}`);
+    lines.push(`  }, async ({ page }, testInfo) => {`);
+  } else {
+    lines.push(`  test(${JSON.stringify(test.name)}, async ({ page }, testInfo) => {`);
+  }
+
+  lines.push(`    const tracker = await setupConsoleTracking({ page, testInfo });`);
+  lines.push(``);
+  lines.push(`    await page.goto(${JSON.stringify(test.startUrl)});`);
+
+  test.steps.forEach((step, index) => {
+    lines.push(``);
+    lines.push(`    tracker.setStep(${index + 1});`);
+    lines.push(renderStep(step, index + 1));
+  });
+  
+  lines.push(``);
+  lines.push(`    await tracker.attachMessages();`);
+  lines.push(`  });`);
+  lines.push(``);
+
+  return lines.join("\n");
+}
+
+// Create file name slug from suite name
+function slug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+// Creates a clean output path with user-specified target dir
+function joinOutDir(outDir: string, filename: string): string {
+  const trimmed = outDir.replace(/[/\\]+$/, "");
+  const separator =
+    trimmed.includes("\\") && !trimmed.includes("/") ? "\\" : "/";
+  return `${trimmed}${separator}${filename}`;
+}
+
+// Converts a string to a regex literal that matches the path portion of a URL
+  function toRegexLiteral(pattern: string): string {
+    // Normalize: add leading slash if missing
+    const normalized = pattern.startsWith('/') ? pattern : `/${pattern}`;
+
+    // Escape special regex characters
+    const escaped = normalized
+      .replace(/[\\^$.*+?()[\]{}|]/g, "\\$&")  // Escape all regex metacharacters
+      .replace(/\//g, "\\/");                  // Also escape forward slashes for the literal
+
+    // Match the path, optionally followed by trailing slash (but not more path segments), query params, or hash
+    // The pattern ensures /dashboard matches /dashboard, /dashboard/, /dashboard?x, /dashboard#x
+    // but NOT /dashboard/edit or URLs where dashboard appears in query/hash
+    return `/${escaped}(?:\\/(?:[?#]|$)|[?#]|$)/`;
+  }
+
+// Outputs tags in the correct format for Playwright
+function formatTags(tags: string[]): string {
+  if (tags.length === 1) return JSON.stringify(tags[0]);
+  
+  return `[${tags.map((tag) => JSON.stringify(tag)).join(", ")}]`;
+}
+
+// Step actions
+function renderStep(step: Step, stepIndex: number): string {
+  switch (step.action) {
+    case "click": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await ${locator}.click();`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "doubleClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.dblclick(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "drag": {
+      const hasButton = step.button && step.button !== "left";
+      return [
+        `    try {`,
+        `      await page.mouse.move(${step.fromX}, ${step.fromY});`,
+        `      await page.mouse.down(${hasButton ? `{ button: "${step.button}" }` : ""});`,
+        `      await page.mouse.move(${step.toX}, ${step.toY});`,
+        `      await page.mouse.up(${hasButton ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "expectNotVisible": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      try {`,
+        `        await expect(${locator}).toHaveCount(0);`,
+        `      } catch {`,
+        `        await expect(${locator}).toHaveCount(1);`,
+        `        await expect(${locator}).not.toBeVisible();`,
+        `      }`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "expectText": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await expect(${locator}).toContainText(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "expectUrl":
+      return [
+        `    try {`,
+        `      await expect(page).toHaveURL(${toRegexLiteral(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "expectVisible": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await expect(${locator}).toBeVisible();`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "fill": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await ${locator}.fill(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "goto":
+      return [
+        `    try {`,
+        `      await page.goto(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "hover": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await ${locator}.hover();`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+    
+    case "keyDown":
+      return [
+        `    try {`,
+        `      await page.keyboard.down(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+      
+    case "keyUp":
+      return [
+        `    try {`,
+        `      await page.keyboard.up(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+        
+    case "mouseClick": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.click(${step.x}, ${step.y}${buttonArg});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+        
+    case "mouseDown": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.down(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+        
+    case "mouseMove":
+      return [
+        `    try {`,
+        `      await page.mouse.move(${step.x}, ${step.y});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+          
+    case "mouseUp": {
+      const buttonArg = step.button && step.button !== "left" ? `, { button: "${step.button}" }` : "";
+      return [
+        `    try {`,
+        `      await page.mouse.up(${buttonArg ? `{ button: "${step.button}" }` : ""});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+          
+    case "press":
+      return [
+        `    try {`,
+        `      await page.keyboard.press(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "reload":
+      return [
+        `    try {`,
+        `      await page.reload();`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+
+    case "scroll": {
+      const deltaX = step.direction === "left" ? -step.amount : step.direction === "right" ? step.amount : 0;
+      const deltaY = step.direction === "up" ? -step.amount : step.direction === "down" ? step.amount : 0;
+      return [
+        `    try {`,
+        `      await page.mouse.wheel(${deltaX}, ${deltaY});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+  
+    case "select": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await ${locator}.selectOption({ label: ${JSON.stringify(step.value)} });`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    default: {
+      throw new Error(`Unsupported step: ${JSON.stringify(step)}`);
+    }
+  }
+}
+
+// @internal exports for unit tests
+export { 
+  formatTags as _formatTags,
+  joinOutDir as _joinOutDir,
+  renderStep as _renderStep, 
+  slug as _slug, 
+  toRegexLiteral as _toRegexLiteral,
+  translateSingleTest as _translateSingleTest
+};

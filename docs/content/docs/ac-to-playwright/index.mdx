@@ -1,0 +1,122 @@
+---
+title: Overview
+description: Convert and validate acceptance criteria for Playwright test automation, handling both bullet-style markdown and Gherkin syntax with JSON test plan generation and validation.
+source: skills/accelint-ac-to-playwright/SKILL.md
+source_sha: cdf7f949f42bcd294963c8244a2565622a63dff3
+doc_sha: 25d12acbf9b844a0ee01d9acc51a5398d196ea18
+deprecated: false
+updated: 2026-07-20
+---
+
+## What It Helps You Do
+
+Use this skill to convert acceptance criteria into Playwright test automation. It validates whether your AC are automation-ready, then generates validated test plans and executable test suites.
+
+Activate it with:
+- `/accelint-ac-to-playwright`
+- Phrases like "review these AC" or "convert these AC to tests"
+- Related requests about Playwright-ready acceptance criteria, Gherkin conversion, or test generation
+
+Three main workflows:
+- **Assess readiness**: Check if AC follow automation patterns before writing tests
+- **Convert to tests**: Transform `.md` bullets or `.feature` Gherkin files into Playwright specs
+- **Fix validation gaps**: Get specific feedback on what needs to change (missing targets, vague actions, unmeasurable outcomes)
+
+
+## When to Use
+
+Use this skill when users ask to:
+- Review, evaluate, or check if AC are ready for automation
+- Assess if AC can be converted as-is
+- Validate AC quality for Playwright
+- Turn AC into tests or generate tests from acceptance criteria
+- Convert `.md` bullets or `.feature` Gherkin files to Playwright specs
+- Create test automation from requirements
+
+## How It Works
+
+The skill operates in two modes:
+
+### Assessment Mode
+
+Analyzes AC text without generating files. Validates:
+- **Structure**: Proper bullet markers or Gherkin syntax, correct step ordering (Given → When → Then)
+- **Targets**: Complete `area.component.intent` pattern using controlled vocabulary
+- **Actions**: Recognized verbs (click, fill, select) with literal values where needed
+- **Outcomes**: Explicit, measurable assertions
+
+Reports either "✓ AC are conversion-ready" with checklist or "❌ Issues found" with specific problems, examples, and fixes.
+
+### Conversion Mode
+
+Generates complete test automation:
+1. Runs assessment validation first (stops if issues found)
+2. Generates JSON test plan using `area.component.intent` selectors
+3. Validates plan against schema (max 2 attempts)
+4. Translates plan to Playwright spec file
+5. Creates summary metadata and copies shared fixtures
+
+**Target pattern**: Each action specifies `area.component.intent` for predictable, maintainable selectors—area identifies location, component identifies UI element type, intent identifies purpose.
+
+**Output mapping**: One AC file → one test suite. Markdown bullets become individual tests; Gherkin scenarios become tests, with Scenario Outline rows becoming parameterized cases.
+
+## Prerequisites
+
+- Playwright installed with TypeScript support
+- AC files in bullet markdown (`.md`) or Gherkin (`.feature`) format
+- For validation: Skill dependencies built (`npm run build` in skill directory)
+
+## What You Get
+
+**Assessment mode**:
+- Validation report with issues by file (problem, example, fix) or confirmation that AC are ready
+
+**Conversion mode**:
+- JSON test plan (`&lt;plans-dir&gt;/&lt;suite-slug&gt;.json`)
+- Playwright test suite (`&lt;tests-dir&gt;/&lt;suite-slug&gt;.spec.ts`)
+- Summary metadata (JSON batch file)
+- Shared `fixtures/` directory (copy both `.spec.ts` files and fixtures to your project)
+
+## Examples
+
+### Example: Assessing AC Quality
+
+```bash
+/accelint-ac-to-playwright "Review login-flow.feature and check if it's automation-ready"
+
+# Output:
+❌ AC are not conversion-ready. Issues found:
+
+File: login-flow.feature
+1. Scenario "User logs in": Missing target intent
+   - Problem: Selector incomplete (button.form vs button.form.submit)
+   - Example: "clicks the button on the form"
+   - Fix: Specify intent: "clicks the Submit button on the form"
+```
+
+### Example: Converting AC to Tests
+
+```bash
+/accelint-ac-to-playwright "Convert form-validation.feature to Playwright tests.
+Plans in ./test-plans, tests in ./e2e/tests, summaries in ./test-summaries"
+
+# Generates:
+# - ./test-plans/form-validation.json
+# - ./e2e/tests/form-validation.spec.ts
+# - ./test-summaries/batch-[timestamp].json
+# - ./e2e/tests/fixtures/
+```
+
+## Good to Know
+
+> **Good to know:** Assessment mode analyzes without writing files—use "review" language for validation, "convert" language for generation.
+
+> **Good to know:** The skill asks for explicit output directories before writing artifacts.
+
+> **Good to know:** Targets need the full `area.component.intent` pattern. Incomplete selectors like `button.form` are too ambiguous; `button.form.submit` is automation-ready.
+
+> **Good to know:** AC must use specific action verbs (click, fill, select) with literal values like `'premium@example.com'` rather than placeholders like "a valid email". Vague verbs like "interact with" cannot map to Playwright actions.
+
+> **Good to know:** The skill only generates assertions for outcomes stated explicitly in AC. Omitted expected behavior results in omitted assertions.
+
+> **Good to know:** Validation stops after 2 failed attempts rather than guessing at corrections. Plans must be structurally valid before tests are generated.

@@ -1,0 +1,183 @@
+---
+title: Overview
+description: Expert guidance for TanStack Query in Next.js App Router covering QueryClient setup, mutations, cache invalidation, optimistic updates, and multi-layer caching strategies.
+source: skills/accelint-tanstack-query-best-practices/SKILL.md
+source_sha: 3faeb812cfc2c9e136d831bb530ef134f86f544e
+doc_sha: 58d19911aaf3ecf41f94c0bce35a5149c39c57fa
+deprecated: false
+updated: 2025-01-29
+---
+
+## What It Helps You Do
+
+Use this skill to implement TanStack Query correctly in React applications with Next.js App Router and Server Components.
+
+Activate it with:
+- `/accelint-tanstack-query-best-practices`
+- Phrases like "debug why this query isn't updating" or "add optimistic updates"
+- Related requests about QueryClient setup, cache invalidation, hydration, or TanStack Query performance
+
+It helps you:
+
+- Configure QueryClient safely for server-rendered applications without data leakage
+- Structure query keys for consistent cache invalidation
+- Choose between optimistic and pessimistic mutation patterns
+- Debug performance issues from too many observers
+- Integrate server-side caching with client-side state management
+- Handle hydration correctly with HydrationBoundary
+
+The skill is especially useful when setting up a new QueryClient, debugging why data isn't updating after saves, dealing with N+1 query problems in lists, or implementing multi-layer caching with Next.js `use cache`.
+
+## When to Use
+
+Use this skill when:
+
+- Configuring QueryClient for Next.js App Router
+- Implementing mutations with useMutation
+- Debugging performance issues with TanStack Query
+- Adding optimistic updates
+- Working with useSuspenseQuery, useQuery, invalidateQueries, staleTime, gcTime, refetch
+- Integrating HydrationBoundary for server rendering
+- Setting up multi-layer caching strategies
+
+## How It Works
+
+The skill provides patterns for common TanStack Query challenges:
+
+**Server safety**: Prevents data leakage between users by ensuring QueryClient setup uses factory functions instead of singletons on the server—each request gets its own isolated instance.
+
+**Query key architecture**: Hierarchical key factories enable precise cache invalidation at any level—invalidate everything, all lists, or a single item.
+
+**Mutation patterns**: Helps choose between optimistic updates (instant UI feedback, easy rollback) and pessimistic updates (wait for server confirmation) based on risk and reversibility.
+
+**Performance diagnosis**: Identifies when too many components subscribing to the same query (observers) create bottlenecks—over 50 observers signals a refactor to hoist queries to parent components.
+
+**Cache tuning**: Configuration guidance for staleTime, gcTime, and refetchInterval based on data freshness needs—from static lookup tables (1 hour staleTime) to real-time dashboards (5 second staleTime with polling).
+
+## Common Scenarios
+
+### Setting Up QueryClient
+
+The most critical pattern is server-safe QueryClient setup. Each server request must get its own QueryClient instance to prevent data from one user appearing for another:
+
+```tsx
+// ✅ Good: Factory function creates isolated instances
+function makeQueryClient() {{
+  return new QueryClient({{ /* config */ }});
+}}
+
+// Server Component
+export default async function Layout({{ children }}) {{
+  const queryClient = makeQueryClient();
+  // ...
+}}
+
+// ❌ Bad: Singleton causes data leakage
+const queryClient = new QueryClient(); // NEVER on server
+```
+
+### Structuring Query Keys
+
+Use hierarchical factories for flexible invalidation:
+
+```typescript
+export const keys = {{
+  all: () => ['tracks'] as const,
+  lists: () => [...keys.all(), 'list'] as const,
+  list: (filters: string) => [...keys.lists(), filters] as const,
+  details: () => [...keys.all(), 'detail'] as const,
+  detail: (id: string) => [...keys.details(), id] as const,
+}};
+
+// Invalidate at any level
+queryClient.invalidateQueries({{ queryKey: keys.all() }}); // Everything
+queryClient.invalidateQueries({{ queryKey: keys.lists() }}); // All lists
+queryClient.invalidateQueries({{ queryKey: keys.detail(id) }}); // One item
+```
+
+Keys must be stable and deterministic—avoid `Date.now()`, unsorted arrays, or objects without consistent serialization.
+
+### Choosing Mutation Patterns
+
+**Optimistic updates** provide instant feedback but require rollback logic:
+
+```typescript
+useMutation({{
+  mutationFn: updateTrack,
+  onMutate: async (newTrack) => {{
+    // Cancel outbound refetches to prevent overwriting optimistic update
+    await queryClient.cancelQueries({{ queryKey: keys.detail(id) }});
+    
+    // Save previous value for rollback
+    const previous = queryClient.getQueryData(keys.detail(id));
+    
+    // Optimistically update cache
+    queryClient.setQueryData(keys.detail(id), newTrack);
+    
+    return {{ previous }}; // Context for onError
+  }},
+  onError: (err, newTrack, context) => {{
+    // Rollback on failure
+    queryClient.setQueryData(keys.detail(id), context.previous);
+  }},
+  onSettled: () => {{
+    // Refetch to ensure consistency
+    queryClient.invalidateQueries({{ queryKey: keys.detail(id) }});
+  }},
+}});
+```
+
+**Pessimistic updates** wait for server confirmation—use for high-stakes operations (financial transactions, audit trails) or when rollback is complex:
+
+```typescript
+useMutation({{
+  mutationFn: updateTrack,
+  onSuccess: () => {{
+    queryClient.invalidateQueries({{ queryKey: keys.detail(id) }});
+  }},
+}});
+```
+
+### Multi-Layer Caching
+
+When using Next.js `use cache` alongside TanStack Query, use the same key factory for both:
+
+```typescript
+// Server mutation invalidates server cache
+updateTag(keys.detail(id).tag);
+
+// Client mutation invalidates client cache
+queryClient.invalidateQueries({{ queryKey: keys.detail(id) }});
+```
+
+This keeps server cache (cross-request) and client cache (per-tab) synchronized.
+
+## Common Fixes
+
+**Data doesn't update after save**: You likely copied query data into useState. Use the query data directly—TanStack Query handles updates automatically. Background refetches and cache updates won't reflect in local state copies.
+
+**Infinite requests**: Query keys are unstable. Ensure keys use deterministic serialization—no `Date.now()`, unsorted arrays, or non-deterministic object keys.
+
+**N duplicate requests in lists**: Each list item is calling useQuery individually. Hoist the query to the parent component and pass data down as props. Over 50 observers on a single query signals this problem.
+
+**Query fires with undefined params**: Add an `enabled` guard: `useQuery({{ queryKey, queryFn, enabled: Boolean(dependency) }})`
+
+**Optimistic update won't rollback**: Your `onError` callback isn't using the context from `onMutate`. The context returned from `onMutate` is passed to both `onError` and `onSettled` for rollback state.
+
+**Server hydration mismatch**: Timestamps or user-specific data differ between server and client renders. Use `suppressHydrationWarning` on the container or ensure deterministic rendering with stable timestamps.
+
+**Background refetches overwrite optimistic updates**: Use `await queryClient.cancelQueries({{ queryKey }})` in `onMutate` before setting optimistic data. Without cancellation, in-flight refetches can overwrite your changes before the mutation completes.
+
+## Good to Know
+
+> **Good to know:** Never synchronize query data to useState. Background refetches, invalidations, and optimistic updates all modify the cache—local state copies become stale immediately, causing "my save didn't work" bugs.
+
+> **Good to know:** Never put queries inside list item components. This creates N observers for N items, causing O(n) iteration on every cache update. With 200 list items, you get 200 network requests and 200 observers recalculating on every mutation.
+
+> **Good to know:** For performance issues with large datasets (&gt;1000 items updating frequently), disable structural sharing with `structuralSharing: false`. The O(n) deep equality checks become CPU overhead when data changes often.
+
+> **Good to know:** Always pair `onMutate` with `onSettled` in optimistic updates. `onSettled` is your cleanup guarantee even if `onError` throws—without it, UI can be left in corrupted state when error handlers fail.
+
+## Related
+
+For TypeScript best practices in your query hooks and mutation handlers, see **accelint-ts-best-practices**. For performance optimization of query functions themselves, see **accelint-ts-performance**.

@@ -1,0 +1,138 @@
+---
+title: Overview
+description: Write maintainable, accessibility-first React component tests with Testing Library. Use when writing or reviewing React tests, working with render/screen/userEvent/waitFor, choosing between getByRole/getByTestId queries, testing async behavior, or setting up components with providers. Make sure to use this skill whenever you see *.test.tsx files, Testing Library imports, or need guidance on query selection, user interactions, async testing patterns, or custom render utilities.
+source: skills/accelint-react-testing/SKILL.md
+source_sha: e4af90344aabfd3ef3fad5c53c6dc23a47ab3b86
+doc_sha: de264eb4ee183ea07fafdc61d710def3d72f3640
+deprecated: false
+updated: 2025-01-27
+---
+
+## What It Helps You Do
+
+Use this skill to write React component tests that verify user-facing behavior instead of implementation details.
+
+Activate it with:
+- `/accelint-react-testing <path>`
+- Phrases like "review this test" or "help me test this component"
+- Related requests about Testing Library, query selection, async React tests, or provider setup
+
+It helps you:
+
+- Choose the right query method from the accessibility hierarchy (getByRole → getByLabelText → getByTestId)
+- Simulate realistic user interactions that catch bugs fireEvent misses
+- Handle async behavior without flaky tests or act warnings
+- Set up components with providers (Context, Redux, Router) efficiently
+- Write tests that survive refactoring while catching real UX bugs
+- Improve accessibility by making query difficulty reveal component issues
+
+## When to Use
+
+Use this skill when:
+- Writing or reviewing `*.test.tsx` or `*.test.jsx` files
+- You see `render()`, `screen`, `fireEvent`, `userEvent`, `waitFor` in code
+- Working with Testing Library queries: `getByRole`, `findBy*`, `queryBy*`
+- Testing async behavior with promises, loading states, or data fetching
+- Components need Context, Redux, or Router providers
+- Debugging flaky tests or act warnings
+
+## How It Works
+
+The skill uses query difficulty as a quality signal—when queries are hard to write, your component likely has accessibility problems.
+
+**Query by accessibility first**: Start with `getByRole` (how screen readers work), fall back to `getByLabelText` (how users read forms), and only use `getByTestId` when accessibility is impossible. Higher queries = more confidence your UI is usable.
+
+**Simulate realistic interactions**: Use `userEvent.click()` instead of `fireEvent.click()` because real users trigger focus → mousedown → mouseup → click, not just one event. Components passing with fireEvent sometimes break in production.
+
+**Test outcomes, not internals**: Assert what users see (rendered text, interaction results), not how your component achieves it (state variables, function calls). Tests survive refactoring while catching real bugs.
+
+**Handle async correctly**: Use `findBy*` queries for asynchronously loaded elements instead of `waitFor` loops. Use `waitForElementToBeRemoved` for disappearance. Each utility has specific semantics preventing flaky tests.
+
+**Set up providers once**: Create custom render utilities wrapping components in required providers (Context, Redux, Router) instead of repeating setup in every test.
+
+## Examples
+
+### Example: Query Selection
+
+```tsx
+// ❌ Bad: Test ID provides no accessibility confidence
+const button = screen.getByTestId('submit-button');
+
+// ✅ Good: Role query verifies button is accessible
+const button = screen.getByRole('button', { name: /submit/i });
+```
+
+### Example: User Interactions
+
+```tsx
+// ❌ Bad: fireEvent misses the full interaction sequence
+fireEvent.click(button);
+
+// ✅ Good: userEvent simulates realistic user behavior
+await userEvent.click(button);
+```
+
+### Example: Async Content
+
+```tsx
+// ❌ Bad: Polling with waitFor when findBy solves it directly
+await waitFor(() => expect(screen.getByText('loaded')).toBeInTheDocument());
+
+// ✅ Good: findBy waits for element to appear
+expect(await screen.findByText('loaded')).toBeInTheDocument();
+```
+
+### Example: Custom Render with Providers
+
+```tsx
+// ❌ Bad: Repeating provider setup in every test
+render(
+  <ThemeProvider>
+    <UserContext.Provider value={mockUser}>
+      <Component />
+    </UserContext.Provider>
+  </ThemeProvider>
+);
+
+// ✅ Good: Centralized custom render utility
+function renderWithProviders(ui, { user = mockUser, ...options } = {}) {
+  return render(ui, {
+    wrapper: ({ children }) => (
+      <ThemeProvider>
+        <UserContext.Provider value={user}>{children}</UserContext.Provider>
+      </ThemeProvider>
+    ),
+    ...options,
+  });
+}
+
+renderWithProviders(<Component />);
+```
+
+## Good to Know
+
+> **Good to know:** Higher queries in the hierarchy provide more accessibility confidence. If you can't use `getByRole` or `getByLabelText`, that signals your component needs accessibility improvements.
+
+> **Good to know:** Use `screen.debug()` when queries fail to see current DOM, or `screen.logTestingPlaygroundURL()` for an interactive tool showing available queries.
+
+> **Good to know:** `queryBy*` returns null silently—use `getBy*` for better error messages when elements should exist. Reserve `queryBy*` only for asserting absence with `.not.toBeInTheDocument()`.
+
+> **Good to know:** Act warnings mean promises resolved after test completion or missing `await` on async queries. Correct use of `findBy` or `waitFor` prevents them.
+
+## Prerequisites
+
+- `@testing-library/react` installed
+- `@testing-library/user-event` for realistic interactions
+- `@testing-library/jest-dom` for extended matchers (toBeInTheDocument, toBeVisible, etc.)
+- Test runner: vitest or jest
+
+## What You Get
+
+When auditing existing tests (via `/accelint-react-testing <path>`), you receive a structured report with:
+- Severity-ranked issues (Critical → Low)
+- Impact analysis (accessibility confidence, reliability, refactor safety)
+- Specific line numbers and file paths
+- Pattern references for detailed guidance
+- Summary metrics for tracking improvements
+
+For direct questions or writing new tests, you get immediate guidance on the right patterns without formal reporting overhead.
