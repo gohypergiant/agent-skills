@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose heading in its body.
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Accelint QRSPI Archive
@@ -254,15 +254,25 @@ Always spawn one subagent per touched capability to do this — every time, not 
 
    Then regenerate the ## Related Specs section in the body from the same
    final, sorted related: list (replace any existing ## Related Specs
-   content entirely — this section is never hand-maintained):
+   content entirely — this section is never hand-maintained).
+
+   For each partner in the sorted related: list, read its spec.md file to
+   extract the ## Purpose heading text. Format each line as:
+
+     - [<partner>](../<partner>/spec.md) - <Purpose heading text>
+
+   Example format (one entry per line, alphabetically sorted by partner name):
 
      ## Related Specs
 
-     - <partner>
-     - <partner>
+     - [auth-session-store](../auth-session-store/spec.md) - Secure session token storage and retrieval
+     - [sync-protocol](../sync-protocol/spec.md) - Defines the live-sync wire protocol for real-time updates
 
-   If no ## Related Specs heading exists, insert one directly after
-   ## Purpose, or at the end of the file if there's no clear insertion point.
+   The format is: markdown link with partner name as link text, relative
+   path to its spec.md, then space-dash-space (not em-dash), then the
+   first sentence or paragraph from that partner's ## Purpose heading.
+
+   If no ## Related Specs heading exists, insert one at the end of the file.
 
    Report back ONLY: the file path, whether the write was a no-op
    (byte-identical to what was already there) or an actual change, the
