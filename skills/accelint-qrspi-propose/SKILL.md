@@ -131,8 +131,19 @@ Execute these steps in order without stopping between them:
 
    [paste full ticket description here]
 
+   Walk down each branch of the decision tree, resolving dependencies between 
+   decisions one-by-one.
+
    Generate a list of research questions that will tell us everything we need
-   to know before building this. Do not propose any solutions. Questions only.
+   to know before building this. Do NOT propose any solutions. Questions ONLY.
+
+   These questions must be detailed. For example, rather than "How do we handle 
+   payments?", ask "The ticket mentions integrating Stripe, but payment.ts 
+   currently uses a hardcoded PayPal SDK instance. Are we replacing Paypal 
+   entirely,  or building a factory to support both?"
+
+   You MUST dig deep enough to formulate highly specific, file-based 
+   technical questions.
    ```
 
 11. Wait for the sub-agent to complete and return the questions
@@ -148,7 +159,7 @@ Execute these steps in order without stopping between them:
 
    [paste ONLY the research questions from step 12]
 
-   Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
+   Answer each question with 100% facts only. Include exact file:line references where possible. Zero opinions. Zero suggestions. Zero implementation Ideas. Do not critique code quality, and do not editorialize. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file).
    ```
 
 15. Wait for the sub-agent to complete and return the research document
