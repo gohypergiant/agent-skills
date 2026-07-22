@@ -36,7 +36,7 @@ The skill spawns subagents for one of two modes based on user phrasing:
 ## Routing Rules
 
 **Assessment mode:**
-Spawn agent with prompt: "Load agents/assessment-mode.md to handle this assessment request for [AC file/description]" (fill in bracketed placeholder)
+Spawn agent (one per input file) with this prompt: "Load agents/assessment-mode.md to handle this assessment request for [AC file/description]" (fill in bracketed placeholder)
 
 **Conversion mode:**
 Spawn agent using the prompt template in the next section. Fill bracketed placeholders with user-provided information, but do not otherwise modify the template.

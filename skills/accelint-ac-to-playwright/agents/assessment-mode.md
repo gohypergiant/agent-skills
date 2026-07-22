@@ -7,7 +7,6 @@ Do not attempt inline validation — validation subagents check against schemas 
 0. **Detect intent**: User asks to review/evaluate/assess/check AC readiness.
 1. **Prepare for the task**:
   - Read `references/acceptance-criteria.md` and `references/test-hooks.md`.
-  - Work one input file at a time.
   - Verify filename is valid:
     - Contains at least one letter or number
     - Extension is exactly `.feature` or `.md`
@@ -57,7 +56,6 @@ Do not attempt inline validation — validation subagents check against schemas 
   - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
   - If no issues: Report "✓ AC are conversion-ready" with validated checklist
   - Do NOT generate any files (no JSON plans, no test files)
-  - Report results for all input files - do not stop Assessment mode after a single failure to ensure all issues are surfaced to the user at once.
 
 ## Issue Classification
 
@@ -151,7 +149,9 @@ When AC contain one or more major issues, provide a summary and offer the choice
 ```
 ❌ AC are not conversion-ready
 
-The file has [N] major issues that need discussion:
+File analyzed: [filename]
+
+The AC has [N] major issues that need discussion:
 1. [Brief description of major issue type and line number]
 2. [Next major issue...]
 
@@ -164,7 +164,9 @@ Example output:
 ```
 ❌ AC are not conversion-ready
 
-The file has 2 major issues that need discussion:
+File analyzed: registration.feature
+
+The AC has 2 major issues that need discussion:
 1. Line 15 - Vague verb "uses" (not in schema)
 2. Line 23 - Unmeasurable outcome "the page updates"
 
@@ -178,23 +180,28 @@ Would you like to:
 Report issues in this structure:
 
 ```
-❌ AC are not conversion-ready. Issues found:
+❌ AC are not conversion-ready. 
 
-File: [filename]
+File analyzed: [filename or "pasted text"]
+
+Issues found:
+
 1. [Line/Scenario reference]: [Specific issue]
    - Problem: [What's wrong]
    - Example: [Quote from AC]
    - Fix: [What needs to change]
 
-File: [filename]
 2. [Next issue...]
 ```
 
 Example output:
 ```
-❌ AC are not conversion-ready. Issues found:
+❌ AC are not conversion-ready. 
 
-File: login-flow.feature
+File analyzed: login-flow.feature
+
+Issues found:
+
 1. Scenario "User logs in": Missing target intent
    - Problem: Test hook selector incomplete (button.form instead of button.form.submit)
    - Example: "clicks the button on the form"
@@ -206,7 +213,9 @@ File: login-flow.feature
 ```
 ✓ AC are conversion-ready
 
-Validated ([X] AC in [Y] files):
+File analyzed: [filename or "pasted text"]
+
+Validated ([X] AC):
 - Structure: Proper format (bullets or Gherkin) with correct step ordering
 - Targets: All meet the area/component/intent pattern with controlled vocabulary
 - Actions: All verbs recognized (click/fill/select) with input values where required
@@ -214,11 +223,6 @@ Validated ([X] AC in [Y] files):
 - Vocabulary: All areas/components match test-hooks.md keywords
 
 These AC can be converted without modification.
-
-Files analyzed:
-[filename 1]
-[filename 2]
-...
 ```
 
 ### Interactive clarification mode (BAD AC)
