@@ -160,3 +160,7 @@ The subagent must handle edge cases intelligently:
 - Suite and test names should be concise (~100 char limit) and describe the scenario intent in present tense
 - For markdown bullets, summarize the scenario flow rather than listing every step
 - All transformations should produce human-readable, meaningful names
+
+## Core Anti-Patterns
+
+- **NEVER invent suite names** — use the Feature text or filename exactly as written, applying only the transformations in the Naming Transformation Rules section (e.g. lowercase → capitalize first) and the Graceful Handling section (e.g. shortening too-long names). Even if the source text is `---`, a placeholder, or seems incomplete, use it verbatim if possible. If the translation script later rejects it for validation reasons, report that error to the user - do not work around it by inventing a descriptive name.
