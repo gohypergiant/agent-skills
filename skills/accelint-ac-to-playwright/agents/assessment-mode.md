@@ -1,8 +1,8 @@
 # Assessment Mode
 
-**When to load this file:** Load when the user asks to review/evaluate/assess AC readiness, check if AC are ready for automation, or validate AC quality for Playwright. Do NOT load for full conversion requests (generate/convert/turn AC into tests).
-
 ## Assessment Workflow
+
+Do not attempt inline validation — validation subagents check against schemas and controlled vocabulary lists that you don't have loaded. You must spawn the validation subagents below as you work through each section.
 
 0. **Detect intent**: User asks to review/evaluate/assess/check AC readiness.
 1. **Prepare for the task**:
@@ -12,33 +12,52 @@
     - Contains at least one letter or number
     - Extension is exactly `.feature` or `.md`
     - Reject if filename is empty, has no extension, or has invalid extension
-2. **Analyze AC text** against all conversion requirements (all validation checks can be run in parallel via subagents):
-   - **Structure & Format**:
-     - For .md files: spawn subagent with `references/validate-bullet-format.md`
-     - For .feature files: spawn subagent with `references/validate-gherkin-structure.md`
-     - Subagents return validation results with line numbers for any violations
-   - **Targets** (semantic validation):
-     - Every action specifies a target
-     - Extract all targets from AC text using the pattern documented in `acceptance-criteria.md` (lines 110-129): `<intent> <component> on the <area>` → `area.component.intent`
-       - Example: "Submit button on the form" → `{"line": 5, "target": "form.button.submit"}`
-       - Format as array: `[{"line": 5, "target": "form.button.submit"}, {"line": 8, "target": "toast.text.success"}]`
-     - Spawn subagent with `references/validate-targets.md` to validate target format and controlled vocabulary
-     - Subagent returns `{valid: [...], invalid: [...]}` - report any invalid targets as blocking issues
-   - **Given Steps (Preconditions)**:
-     - Extract all Given steps with line numbers, verbs, targets, and values
-     - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
-     - Spawn subagent with `references/validate-preconditions.md` to validate context setup patterns
-     - Subagent returns validation results with line numbers for any violations
-   - **When Steps (Actions)**:
-     - Extract all When steps with line numbers, actions, targets, values, and coordinates
-     - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "...", "coordinates": {...}}]`
-     - Spawn subagent with `references/validate-actions.md` to validate actions, required parameters, and values
-     - Subagent returns validation results with line numbers for any violations
-   - **Then Steps (Assertions)**:
-     - Extract all Then steps with line numbers, verbs, targets, and values
-     - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
-     - Spawn subagent with `references/validate-assertions.md` to validate explicitness and measurability
-     - Subagent returns validation results with line numbers for any violations
+2. **Analyze AC text** in two phases:
+  - **Phase A: Extract data** from AC per the categories below
+  - **Phase B: Validate extracted data** by spawning validation subagents (all can run in parallel)
+   
+  You must complete both phases. Extraction alone is insufficient — validation subagents check against schemas you don't have access to.
+
+  - **Structure & Format**:
+    - There is no Phase A work for this section.
+    - Phase B: 
+      - For .md files: spawn subagent with `agents/validate-bullet-format.md`
+      - For .feature files: spawn subagent with `agents/validate-gherkin-structure.md`
+    - Subagents return validation results with line numbers for any violations
+  - **Targets** (semantic validation):
+    - Phase A:
+      - Extract all targets from AC text using the pattern documented in `acceptance-criteria.md` (lines 110-129):  `<intent> <component> on the <area>` → `area.component.intent`
+        - Example: "Submit button on the form" → `{"line": 5, "target": "form.button.submit"}`
+        - Format as array: `[{"line": 5, "target": "form.button.submit"}, {"line": 8, "target": "toast.text.success"}]`
+    - Phase B: 
+      - Spawn subagent with `agents/validate-targets.md` to validate target format and controlled vocabulary
+    - Subagent returns `{valid: [...], invalid: [...]}` - report any invalid targets as blocking issues
+  - **Given Steps (Preconditions)**:
+    - Phase A:
+      - Extract all Given steps with line numbers, verbs, targets, and values
+      - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
+    - Phase B:
+      - Spawn subagent with `agents/validate-preconditions.md` to validate context setup patterns
+    - Subagent returns validation results with line numbers for any violations
+  - **When Steps (Actions)**:
+    - Phase A: 
+      - Extract all When steps with line numbers, actions, targets, values, and coordinates
+      - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "...", "coordinates": {...}}]`
+    - Phase B:
+      - Spawn subagent with `agents/validate-actions.md` to validate actions, required parameters, and values
+    - Subagent returns validation results with line numbers for any violations
+  - **Then Steps (Assertions)**:
+    - Phase A:
+      - Extract all Then steps with line numbers, verbs, targets, and values
+      - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
+    - Phase B:
+      - Spawn subagent with `agents/validate-assertions.md` to validate explicitness and measurability
+    - Subagent returns validation results with line numbers for any violations
+3. **Report results**:
+  - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
+  - If no issues: Report "✓ AC are conversion-ready" with validated checklist
+  - Do NOT generate any files (no JSON plans, no test files)
+  - Report results for all input files - do not stop Assessment mode after a single failure to ensure all issues are surfaced to the user at once.
 
 ## Issue Classification
 
@@ -54,6 +73,7 @@ These require simple text edits where the underlying intent is already clear:
 
 **Invalid controlled vocabulary** — Area/component not defined in test-hooks.md
 - Example: "profile button on the sidebar" when sidebar isn't a recognized area
+- Fix: change "sidebar" to a recognized area
 
 **Missing quotes around values** — Fill/select actions need quoted literal values
 - Example: `fills the email input with a valid email` → needs concrete value
@@ -63,7 +83,9 @@ These require simple text edits where the underlying intent is already clear:
 
 **Format issues** — Simple syntax fixes:
 - Missing @ prefix on tags
+- Fix: add @ prefix to tags
 - Missing Feature declaration
+- Fix: Add Feature declaration
 
 ### Major Issues (Require Discussion)
 
@@ -88,12 +110,6 @@ These indicate unclear requirements needing back-and-forth clarification with th
   - Examples table column names don't match Scenario Outline placeholders (breaks parameterization)
   - Orphaned When step without Then assertion (unclear what outcome to verify)
 
-3. **Report results**:
-   - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
-   - If no issues: Report "✓ AC are conversion-ready" with validated checklist
-   - Do NOT generate any files (no JSON plans, no test files)
-   - Report results for all input files - do not stop Assessment mode after a single failure to ensure all issues are surfaced to the user at once.
-
 ## Response Calibration: Quality-Driven Assessment
 
 **Zero-defect principle:** Even ONE issue that prevents automatic conversion = "❌ AC are not conversion-ready"
@@ -107,7 +123,7 @@ Before reporting, classify the AC quality level to determine the appropriate res
 | **BAD** | One or more major issues present | Switch to interactive clarification mode — ask targeted questions to help user improve AC quality rather than enumerating issues |
 
 **Classification logic:**
-1. Scan all validation results from subagents
+1. Scan all validation results from the spawned subagents
 2. Categorize each issue as minor or major (see Issue Classification section)
 3. If any major issues exist → **BAD**
 4. If only minor issues exist → **MIXED**
@@ -281,6 +297,7 @@ After all questions answered:
 
 ## NEVER Do
 
+- **NEVER read `acceptance-criteria.md` and `test-hooks.md` with range limits** — always read them completely from start to finish.
 - **NEVER generate artifacts in assessment mode** — when the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
 - **NEVER report AC as conversion-ready when issues exist** — even one blocking issue means "❌ AC are not conversion-ready". False positives (over-flagging) are better than false negatives (missing issues).
 - **NEVER assume targets or values** — if AC says "click the button" without identifying which button, flag it as a missing target issue rather than assuming. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
