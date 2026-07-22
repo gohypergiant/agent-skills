@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0] - 2026-07-22
+
+### Changed
+- **Strengthened question-generation guidance** — the questions sub-agent now explicitly walks the problem tree branch-by-branch, avoids solutioning, and aims for empirically answerable technical questions rather than broad prompts
+  - Rationale: The branch updates tighten the front end of QRSPI so research starts from sharper, dependency-aware questions instead of vague discovery prompts that can miss critical unknowns.
+- **Raised the bar for research-answer objectivity** — the research sub-agent now requires 100% factual findings, explicitly forbids opinions/suggestions/editorializing, and calls out unanswered questions when the codebase or specs do not provide evidence
+  - Rationale: QRSPI depends on a clean separation between research and design. Making the research prompt stricter reduces solution bleed and gives the later design step a more reliable factual base.
+- **Refined skill prose for tighter execution behavior** — wording updates make the Questions and Research steps more explicit about what good output looks like without changing the broader workflow introduced in 1.4.0
+  - Rationale: These branch-level prompt refinements are small in scope but materially improve consistency in how sub-agents interpret the planning workflow.
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
 ## [1.4.0] - 2026-07-10
 
 ### Changed
