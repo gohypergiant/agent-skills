@@ -1,10 +1,5 @@
 # Naming Transformation Generator
 
-**When to spawn subagent:** After AC assessment passes, before building JSON plan.
-
-**Subagent prompt template:**
-"Generate suite name, test names, and output slug from this AC file following naming transformation rules."
-
 ## Task
 
 Generate suite names, test names, and output slugs from AC source files by applying transformation rules and intelligently summarizing content.

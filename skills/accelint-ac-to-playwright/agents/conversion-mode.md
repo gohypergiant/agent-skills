@@ -1,30 +1,34 @@
 # Conversion Mode
 
-**When to load this file:** Load when the user asks to convert/generate/turn AC into tests, translate AC to Playwright, or create test automation from acceptance criteria. Do NOT load for assessment-only requests (review/evaluate/check AC readiness).
-
 ## Conversion Workflow
 
 0. **Detect intent**: User asks to generate/convert/write tests from AC files.
 1. **Run Assessment mode**:
-  - Run Assessment mode against all input files and report pass/fail result.
+  - Spawn subagents (one per input file) with this prompt: "Load agents/assessment-mode.md to handle this assessment request for [AC file/description]" (fill in bracketed placeholder)
   - If Assessment mode reported any failures across all files, **STOP**. **Do not** proceed with the rest of Conversion mode.
 2. **Prepare for the task**:
   - Require the user to explicitly provide output directories for plans, tests, and summaries before writing any files.
   - Read `references/acceptance-criteria.md`.
   - Read `references/test-hooks.md` (contains controlled vocabulary for area.component.intent target pattern).
-  -  Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
-  -  Derive suite name, test names, startUrl, steps, targets, tags, and source metadata per the rules below.
+  - Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
+  - Derive startUrl, steps, targets, tags, and source metadata per the rules below.
 3. **Generate and write JSON test plan file**:
+  - Find the globally installed skill directory for `accelint-ac-to-playwright`
+  - Ensure dependencies are installed and scripts are built: run `npm install && npm run build` in the skill directory
   - Construct the complete JSON test plan object following `scripts/plan-schema.ts` structure
   - Use the Write tool to create the file at `<plans-output-dir>/<suite-slug>.json` with the JSON content
-  - Run validation: `cd /Users/tanya.fortunaGHM7GPQV67/Coding/agent-skills/skills/accelint-ac-to-playwright && npx validate-plan <plans-output-dir>/<suite-slug>.json`
-  - If validation fails, read the error, fix the JSON, and use the Write tool to overwrite the file with corrected content
-  - Maximum 3 validation attempts - if still failing after 2 attempts, stop and report the validation errors to the user
+  - Run validation from the skill directory: `npx validate-plan <plans-output-dir>/<suite-slug>.json`
+  - If validation fails:
+    - Spawn subagent using the Schema Diagnostic Prompt Template below
+    - Apply the suggested fix → validate again
+    - If still failing after 2 fix attempts (3 validation attempts total), stop and report the validation errors to the user
 4. **Execute translation and write test file**:
-  - Run: `cd /Users/tanya.fortunaGHM7GPQV67/Coding/agent-skills/skills/accelint-ac-to-playwright && npx generate-tests <plans-output-dir>/<suite-slug>.json --tests-dir <tests-output-dir> --summary-dir <summaries-output-dir>`
-  - The script will automatically write the test file to `<tests-output-dir>/<suite-slug>.spec.ts`
-  - Verify the file was written successfully by using the Read tool to check its contents
-  - If translation fails, spawn subagent with `references/diagnose-translation-errors.md` to diagnose the error and suggest a fix. This is mandatory if translation fails. Do not skip spawning the subagent because the error "seems obvious".
+  - From the skill directory, run: `npx generate-tests <plans-output-dir>/<suite-slug>.json --tests-dir <tests-output-dir> --summary-dir <summaries-output-dir>`
+  - If translation fails:
+    - Spawn subagent using the Translation Diagnostic Prompt Template below (mandatory regardless of how obvious the error seems)
+    - Apply the suggested fix and retry translation
+    - If translation still fails, stop and report the error to the user
+  - If translation succeeds: verify the file was written successfully by using the Read tool to check `<tests-output-dir>/<suite-slug>.spec.ts`
 5. **Next steps**: 
   - Work on the next input file, if any remain.
   - After all files are processed:
@@ -65,7 +69,7 @@ Would you like help understanding any of the issues, or should I re-assess after
 - `.md` bullet-style: each `- ` bullet = one test
 - `.feature` Gherkin: each Scenario = one test; each Examples row in Scenario Outline = one test
 
-**Spawn subagent**: Use `references/generate-names.md` to derive suite name, test names, and output slug from AC file after assessment passes.
+**Spawn subagent** with this prompt: "Load agents/generate-names.md. Generate suite name, test names, and output slug from [AC file path] following naming transformation rules."
 
 **Output structure**: After conversion completes, the test output directory will contain:
 - `<suite-slug>.spec.ts` files (one per AC file)
@@ -127,31 +131,41 @@ Would you like help understanding any of the issues, or should I re-assess after
 - `scripts/translate-plan-to-tests.ts` — converts a validated plan to a Playwright spec.
 - `scripts/cli/generate-tests.ts` — CLI wrapper for reading, validating, and writing spec files.
 
-## Validation and Retry Protocol
+## Diagnostic Prompt Templates
 
-Use `npx validate-plan path/to/plan.json` to validate a plan against `scripts/plan-schema.ts` (after build).
+### Schema Diagnostic Prompt Template
 
-**Maximum attempts**: 3 total
+When plan validation fails, spawn subagent with:
+```
+Load agents/diagnose-schema-errors.md.
 
-1. Generate JSON → validate
-  - Pass → write file
-  - Fail → spawn subagent:
-    - Load `references/diagnose-schema-errors.md` and follow its prompt template
-    - Apply the suggested fix → validate again
-      - Pass → write file
-      - Fail → spawn subagent:
-        - Load `references/diagnose-schema-errors.md` and follow its prompt template
-        - Apply the suggested fix → validate again
-          - Pass → write file
-          - Fail → STOP, report error to user
+Diagnose this validation error and suggest ONE fix.
 
-**NEVER**:
-- Make multiple changes at once (always fix ONE thing at a time)
-- Retry by rephrasing same JSON differently
-- Guess at schema requirements if error is unclear
+JSON plan:
+[full plan content]
+
+Error message:
+[full error output from npx validate-plan]
+```
+
+### Translation Diagnostic Prompt Template
+
+When translation fails, spawn subagent with:
+```
+Load agents/diagnose-translation-errors.md.
+
+Diagnose this translation error and suggest ONE fix.
+
+Error message:
+[full error output from generate-tests]
+
+JSON plan (relevant section):
+[relevant JSON excerpt showing the problematic step/field]
+```
 
 ## NEVER Do
 
+- **NEVER read `acceptance-criteria.md` and `test-hooks.md` with range limits** — always read them completely from start to finish.
 - **NEVER generate targets without loading test-hooks.md first** — test-hooks.md defines the controlled vocabulary for the area.component.intent pattern and valid area/component keywords. Skipping it causes reversed target patterns (intent.component.area instead of area.component.intent) and invalid keyword usage that fails validation.
 - **NEVER use bare string values with selectOption** — Playwright's `selectOption()` matches HTML `value` attributes by default, not visible text. AC writers specify visible option text (e.g., "Premium Plan"), so always use `{ label: "text" }` syntax: `.selectOption({ label: "Premium Plan" })`. Using bare strings (`.selectOption("Premium Plan")`) causes silent mismatches where tests pass locally but fail in production because the value attribute differs from display text.
 - **NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.

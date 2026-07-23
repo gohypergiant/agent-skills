@@ -46,7 +46,7 @@ Spawn agent using the prompt template in the next section. Fill bracketed placeh
 ```
 THIS IS AN EXECUTION TASK, NOT A PLANNING TASK. Do not create any plan documents.
 
-Convert [AC file path] to Playwright tests using the accelint-ac-to-playwright skill. Load references/conversion-mode.md for the complete workflow and specifications.
+Convert [AC file path] to Playwright tests using the accelint-ac-to-playwright skill. Load agents/conversion-mode.md for the complete workflow and specifications.
 
 Output directories:
 - Plans: [exact path user provided]
