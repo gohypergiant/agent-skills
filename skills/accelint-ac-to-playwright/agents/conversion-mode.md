@@ -11,6 +11,7 @@
   - Read `references/acceptance-criteria.md`.
   - Read `references/test-hooks.md` (contains controlled vocabulary for area.component.intent target pattern).
   - Work one input file at a time. Do not parallelize so that errors in one file's workflow do not affect other files' workflows.
+  - Generate naming: spawn the subagent described in the Naming Transformations section to get suite name, test names, and output slug. The output slug becomes `<suite-slug>` used in filenames throughout steps 3-4.
   - Derive startUrl, steps, targets, tags, and source metadata per the rules below.
 3. **Generate and write JSON test plan file**:
   - Find the globally installed skill directory for `accelint-ac-to-playwright`

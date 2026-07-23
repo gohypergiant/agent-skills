@@ -7,7 +7,7 @@ Generate suite names, test names, and output slugs from AC source files by apply
 ## Input
 
 - Raw AC file content (markdown bullets or Gherkin .feature file)
-- Filename
+- Filename (if provided and not pasted AC)
 
 ## Output Format
 
@@ -28,8 +28,9 @@ Generate suite names, test names, and output slugs from AC source files by apply
 
 | Input | Suite Name | Test Name | Output Slug |
 |-------|------------|-----------|-------------|
-| `.feature` | `Feature:` text (exact, trim whitespace) → lowercase → capitalize first (~100 char limit). Use the result verbatim even if it's `---`, empty, or contains only symbols. | Scenario text (lowercase, ~100 char limit) + ` (params)` for Scenario Outlines | suite name → lowercase, spaces to dashes |
-| `.md` | filename (exact, without extension) → lowercase → dashes to spaces → capitalize first (~100 char limit) | Summarize bullet intent (present tense, lowercase, ~100 char) | suite name → lowercase, spaces to dashes |
+| Gherkin | `Feature:` text (exact, trim whitespace) → lowercase → capitalize first (~100 char limit). Use the result verbatim even if it's `---`, empty, or contains only symbols. | Scenario text (lowercase, ~100 char limit) + ` (params)` for Scenario Outlines | suite name → lowercase, spaces to dashes |
+| Markdown with filename | filename (exact, without extension) → lowercase → dashes to spaces → capitalize first (~100 char limit) | Summarize bullet intent (present tense, lowercase, ~100 char) | suite name → lowercase, spaces to dashes |
+| Markdown without filename (pasted) | Analyze all bullets to identify cohesive theme (e.g., "registration", "login", "checkout") → lowercase → capitalize first (~100 char limit). Use common domain action verbs from the scenarios, not generic names like "user flow" or "test suite". | Summarize bullet intent (present tense, lowercase, ~100 char) | suite name → lowercase, spaces to dashes |
 
 **Scenario Outline parameters**: Use shortest left-to-right column combo that uniquely identifies each row, joined with `/`.
 
