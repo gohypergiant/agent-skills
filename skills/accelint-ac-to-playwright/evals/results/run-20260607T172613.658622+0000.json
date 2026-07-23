@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "run_started_at": "2026-06-07T17:26:13.658622+00:00",
+  "run_completed_at": "2026-06-07T17:30:20.627421+00:00",
+  "duration_seconds": 246.97,
+  "judge_model_alias": "bedrock-claude-4-5-sonnet",
+  "sut_provider": "litellm",
+  "sut_model_id": "bedrock-claude-4-5-sonnet",
+  "prompt_hash": "19f52d8a09b0a790",
+  "skill_md_hash": "b94cd77d81a3f8cc",
+  "references_hash": "bbdb242d5a187881",
+  "metrics": [
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_mixed_ac_assessment_task_completion",
+      "name": "task_completion",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "mixed-assess",
+      "reason": "The agent produced a complete assessment report identifying AC as not conversion-ready with a properly formatted issues list. The report contains 4 distinct issues with clear problem descriptions, examples, and fixes. Each issue references specific line numbers and scenario names from the feature file. The format follows the expected structure (issues list with explanations), shows no refusal or confusion, and demonstrates full understanding of the assessment task. The output is complete and actionable."
+    },
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_mixed_ac_assessment_goal_accuracy",
+      "name": "goal_accuracy",
+      "score": 0.3,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "mixed-assess",
+      "reason": "The agent correctly identified 2 out of 4 real issues: the missing @ prefix on line 9 (tag 'missing-at-symbol') and the action-after-assertion ordering problem on line 47. However, it reported 2 false positives: the 'vague input value' on line 23 (the phrase 'a valid email address' is acceptable in AC as it describes intent, not implementation) and the 'incomplete expected outcome' on line 40 (the assertion 'the point is marked successfully' is a valid outcome statement). The agent also missed no real issues beyond what it found. Accuracy: (2 true positives - 2 false positives) / 4 real issue\u2026"
+    },
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_mixed_ac_assessment_quality",
+      "name": "assessment_quality",
+      "score": 0.4,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "mixed-assess",
+      "reason": "The actual output detected 4 issues while 7 were expected, missing 3 critical problems: missing intent in target (line 17), vague action verb 'uses' (line 22), and invalid area keyword 'notification' (line 39). Line numbers are also incorrect - the actual output references lines 9, 23, 40, 47 while expected issues are at lines 7, 17, 22, 29, 39, 47, 54. The detected issues do correctly identify tag format, vague input value, incomplete expected outcome, and step ordering problems with appropriate fix suggestions, but the incomplete coverage and line number mismatches significantly reduce accu\u2026"
+    },
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_bad_ac_assessment_task_completion",
+      "name": "task_completion",
+      "score": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "bad-assess",
+      "reason": "The agent produced a complete assessment report with the expected format, listing 7 specific issues found across the feature file. Each issue includes the scenario name, line number, problem description, example, and fix recommendation. The report correctly identifies various AC conversion problems including missing component keywords, incorrect action-element pairings, unquoted literals, variable syntax errors, vague visibility language, and unsupported double-click syntax. The output shows no refusal, confusion, or mode misunderstanding, and is fully complete with detailed, actionable feedb\u2026"
+    },
+    {
+      "nodeid": "tests/test_assessment_mode.py::test_bad_ac_assessment_quality",
+      "name": "assessment_quality",
+      "score": 0.9,
+      "threshold": 0.8,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "pm",
+      "scenario": "bad-assess",
+      "reason": "The actual output detects 7 of 8 expected issues. It correctly identifies: missing component keyword (line 9), fill on button (line 15/16), unquoted select value (line 21/22), both variable placeholders {user_email} and $user_password (lines 26-28), vague visibility 'is there' (line 31/34), vague 'can see' (line 33/35), and element-based double-click (line 37/39). All detections include proper line references, specific problem descriptions, examples, and fix suggestions matching expected criteria. However, there's a minor line number discrepancy: the actual output reports issue 5 at line 26 w\u2026"
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_structural",
+      "name": "json_structural",
+      "score": 1.0,
+      "threshold": 1.0,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "Plan passes Zod schema validation"
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_target_coverage",
+      "name": "target_coverage",
+      "score": 1.0,
+      "threshold": 1.0,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "All 19 required targets found"
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_no_hallucinations",
+      "name": "hallucinations",
+      "score": 1.0,
+      "threshold": 1.0,
+      "passed": true,
+      "dimension": "pitfalls",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "No assertions found in plan"
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_task_completion",
+      "name": "task_completion",
+      "score": 0.9,
+      "threshold": 0.9,
+      "passed": true,
+      "dimension": "completeness",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "The agent successfully produced valid JSON output representing a complete test plan structure with all required fields (suiteName, tags, source, tests array). The output includes 10 test scenarios with properly formatted steps containing type, action, target, and value fields as appropriate. Each test has a name, startUrl, tags, and steps array. The JSON is well-formed and conversion-ready. However, the response includes extensive markdown commentary before the JSON block, which deviates from a pure JSON output format, though the actual JSON portion is complete and valid."
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_goal_accuracy",
+      "name": "goal_accuracy",
+      "score": 0.4,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "completeness",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "The actual output has 10 tests matching the 10 scenarios in the AC. However, there are critical structural issues: (1) startUrl is '/' instead of '/test' as specified in the Background; (2) field naming inconsistencies - uses 'name' vs 'testName', 'action' vs 'type', 'value' vs 'text/url/key'; (3) step structure differs - actual wraps actions in objects with 'type' and 'action' fields while expected uses flat 'type' field; (4) visibility assertions are out of order in test 1 - actual places initial state checks before the click action, while AC shows click first then state changes; (5) drag o\u2026"
+    },
+    {
+      "nodeid": "tests/test_conversion_mode.py::test_perfect_ac_conversion_semantic_quality",
+      "name": "semantic_quality",
+      "score": 0.7,
+      "threshold": 0.8,
+      "passed": false,
+      "dimension": "pitfalls",
+      "persona": "engineer",
+      "scenario": "perfect-convert",
+      "reason": "The plan demonstrates strong alignment with the AC source. All 10 scenarios are correctly mapped to tests with proper 1:1 correspondence. Target patterns consistently follow area.component.intent format using controlled vocabulary (page, form, drawer, modal, card, header, toast, nav). Action types are correctly mapped (click, fill, select, press, drag, mouseMove, mouseDown, mouseUp, doubleClick, scroll, reload, hover, keyDown, keyUp). However, there is a critical issue: Scenario 1 'Multiple visibility state changes' has missing initial assertions. The AC implies three initial states ('the set\u2026"
+    }
+  ],
+  "invocations": [
+    {
+      "mode": "assessment",
+      "fixture": "MIXED-AC.feature",
+      "latency_seconds": 12.568,
+      "prompt_tokens": 12256,
+      "completion_tokens": 400,
+      "total_tokens": 12656
+    },
+    {
+      "mode": "assessment",
+      "fixture": "MIXED-AC.feature",
+      "latency_seconds": 6.679,
+      "prompt_tokens": 12256,
+      "completion_tokens": 400,
+      "total_tokens": 12656
+    },
+    {
+      "mode": "assessment",
+      "fixture": "MIXED-AC.feature",
+      "latency_seconds": 7.313,
+      "prompt_tokens": 12256,
+      "completion_tokens": 400,
+      "total_tokens": 12656
+    },
+    {
+      "mode": "assessment",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 9.253,
+      "prompt_tokens": 11937,
+      "completion_tokens": 632,
+      "total_tokens": 12569
+    },
+    {
+      "mode": "assessment",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 8.787,
+      "prompt_tokens": 11937,
+      "completion_tokens": 632,
+      "total_tokens": 12569
+    },
+    {
+      "mode": "assessment",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 7.051,
+      "prompt_tokens": 12229,
+      "completion_tokens": 258,
+      "total_tokens": 12487
+    },
+    {
+      "mode": "assessment",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 8.707,
+      "prompt_tokens": 11937,
+      "completion_tokens": 632,
+      "total_tokens": 12569
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 16.452,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2309,
+      "total_tokens": 14713
+    },
+    {
+      "mode": "conversion",
+      "fixture": "BAD-AC.feature",
+      "latency_seconds": 8.877,
+      "prompt_tokens": 12112,
+      "completion_tokens": 755,
+      "total_tokens": 12867
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 16.784,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2309,
+      "total_tokens": 14713
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 16.496,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2309,
+      "total_tokens": 14713
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 16.412,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2309,
+      "total_tokens": 14713
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 16.313,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2309,
+      "total_tokens": 14713
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 16.533,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2309,
+      "total_tokens": 14713
+    },
+    {
+      "mode": "conversion",
+      "fixture": "PERFECT-AC.feature",
+      "latency_seconds": 17.752,
+      "prompt_tokens": 12404,
+      "completion_tokens": 2309,
+      "total_tokens": 14713
+    }
+  ],
+  "efficiency": {
+    "sut_invocations": 15,
+    "latency_p50": 12.568,
+    "latency_p95": 17.074399999999997,
+    "latency_max": 17.752,
+    "total_prompt_tokens": 183748,
+    "total_completion_tokens": 20272,
+    "total_tokens": 204020,
+    "mean_tokens_by_mode": {
+      "assessment": 12594.6,
+      "conversion": 14482.2
+    }
+  },
+  "summary": {
+    "total": 11,
+    "passed": 7,
+    "failed": 4,
+    "below_threshold": [
+      "assessment_quality",
+      "goal_accuracy",
+      "semantic_quality"
+    ]
+  }
+}

@@ -1,0 +1,324 @@
+{
+  "suiteName": "Comprehensive action and assertion coverage",
+  "tags": [
+    "@comprehensive-test",
+    "@automation-ready"
+  ],
+  "source": {
+    "repo": "agent-skills",
+    "path": "skills/accelint-ac-to-playwright/assets/evals/PERFECT-AC.feature"
+  },
+  "tests": [
+    {
+      "name": "multiple visibility state changes",
+      "startUrl": "/test",
+      "tags": [
+        "@visibility-changes",
+        "@smoke"
+      ],
+      "steps": [
+        {
+          "type": "assertion",
+          "action": "expectNotVisible",
+          "target": "drawer.div.settings-panel"
+        },
+        {
+          "type": "assertion",
+          "action": "expectNotVisible",
+          "target": "modal.text.welcome"
+        },
+        {
+          "type": "assertion",
+          "action": "expectVisible",
+          "target": "card.text.tutorial"
+        },
+        {
+          "type": "action",
+          "action": "click",
+          "target": "page.button.toggle-interface"
+        },
+        {
+          "type": "assertion",
+          "action": "expectVisible",
+          "target": "drawer.div.settings-panel"
+        },
+        {
+          "type": "assertion",
+          "action": "expectVisible",
+          "target": "modal.text.welcome"
+        },
+        {
+          "type": "assertion",
+          "action": "expectNotVisible",
+          "target": "card.text.tutorial"
+        }
+      ]
+    },
+    {
+      "name": "keyboard modifier combination",
+      "startUrl": "/test",
+      "tags": [
+        "@keyboard-modifier-combo"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "keyDown",
+          "value": "Shift"
+        },
+        {
+          "type": "action",
+          "action": "press",
+          "value": "e"
+        },
+        {
+          "type": "action",
+          "action": "keyUp",
+          "value": "Shift"
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "header.text.banner",
+          "value": "Edit mode activated"
+        }
+      ]
+    },
+    {
+      "name": "keyboard hold and release sequence",
+      "startUrl": "/test",
+      "tags": [
+        "@keyboard-hold-sequence"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "keyDown",
+          "value": "Shift"
+        },
+        {
+          "type": "action",
+          "action": "click",
+          "target": "page.button.item"
+        },
+        {
+          "type": "action",
+          "action": "keyUp",
+          "value": "Shift"
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "page.text.selection",
+          "value": "Multi-select enabled"
+        }
+      ]
+    },
+    {
+      "name": "element-based actions and basic assertions",
+      "startUrl": "/test",
+      "tags": [
+        "@basic-interactions",
+        "@smoke"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "click",
+          "target": "form.button.login"
+        },
+        {
+          "type": "action",
+          "action": "fill",
+          "target": "form.input.email",
+          "value": "test@example.com"
+        },
+        {
+          "type": "action",
+          "action": "fill",
+          "target": "form.input.password",
+          "value": "secure123"
+        },
+        {
+          "type": "action",
+          "action": "select",
+          "target": "form.dropdown.plan",
+          "value": "Premium Plan"
+        },
+        {
+          "type": "action",
+          "action": "press",
+          "value": "Enter"
+        },
+        {
+          "type": "assertion",
+          "action": "expectUrl",
+          "value": "/success"
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "page.text.success",
+          "value": "Submitted successfully"
+        }
+      ]
+    },
+    {
+      "name": "mouse drag operation",
+      "startUrl": "/test",
+      "tags": [
+        "@mouse-drag"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "drag",
+          "fromX": 100,
+          "fromY": 100,
+          "toX": 300,
+          "toY": 300
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "toast.text.success",
+          "value": "Zoom area has been set"
+        }
+      ]
+    },
+    {
+      "name": "mouse position, press, and release sequence",
+      "startUrl": "/test",
+      "tags": [
+        "@mouse-click-sequence"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "mouseMove",
+          "x": 150,
+          "y": 200
+        },
+        {
+          "type": "action",
+          "action": "mouseDown",
+          "button": "left"
+        },
+        {
+          "type": "action",
+          "action": "press",
+          "value": "p"
+        },
+        {
+          "type": "action",
+          "action": "mouseUp",
+          "button": "left"
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "toast.text.success",
+          "value": "Point marked"
+        }
+      ]
+    },
+    {
+      "name": "coordinate-based double-click",
+      "startUrl": "/test",
+      "tags": [
+        "@mouse-single-and-double-click"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "mouseClick",
+          "x": 250,
+          "y": 50
+        },
+        {
+          "type": "action",
+          "action": "doubleClick",
+          "x": 250,
+          "y": 100
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "modal.text.distance",
+          "value": "Distance between these points is 50"
+        }
+      ]
+    },
+    {
+      "name": "user scrolls on the page",
+      "startUrl": "/test",
+      "tags": [
+        "@scrolling"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "scroll",
+          "direction": "down",
+          "amount": 200
+        },
+        {
+          "type": "action",
+          "action": "scroll",
+          "direction": "right",
+          "amount": 75
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "page.text.position",
+          "value": "You scrolled to the southeast"
+        }
+      ]
+    },
+    {
+      "name": "page reload action",
+      "startUrl": "/test",
+      "tags": [
+        "@page-reload"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "click",
+          "target": "nav.link.refresh"
+        },
+        {
+          "type": "action",
+          "action": "reload"
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "header.text.status",
+          "value": "Page refreshed"
+        }
+      ]
+    },
+    {
+      "name": "hover interaction",
+      "startUrl": "/test",
+      "tags": [
+        "@hover-action"
+      ],
+      "steps": [
+        {
+          "type": "action",
+          "action": "hover",
+          "target": "card.button.info"
+        },
+        {
+          "type": "assertion",
+          "action": "expectText",
+          "target": "card.text.tooltip",
+          "value": "Additional information"
+        }
+      ]
+    }
+  ]
+}
