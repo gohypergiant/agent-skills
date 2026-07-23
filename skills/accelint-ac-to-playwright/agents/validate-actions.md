@@ -1,10 +1,5 @@
 # Action Validator
 
-**When to spawn subagent:** When validating action verbs and values during assessment mode.
-
-**Subagent prompt template:**
-"Validate all actions in this AC file. Check that action verbs are recognized and mappable to Playwright actions, fill/select actions have quoted literal values, and coordinate-based actions include coordinates. Report all violations with line numbers."
-
 ## Task
 
 Validate that all action verbs in AC are recognized and properly specified with required parameters.

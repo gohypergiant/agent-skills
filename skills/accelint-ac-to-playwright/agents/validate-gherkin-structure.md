@@ -1,10 +1,5 @@
 # Gherkin Structure Validator
 
-**When to spawn subagent:** When assessing Gherkin .feature file structure during assessment mode.
-
-**Subagent prompt template:**
-"Validate this Gherkin file's structure against all Gherkin requirements. Check Feature declaration, Background placement, Scenario/Scenario Outline structure, Examples tables, step ordering, and tag format. Report all violations with line numbers."
-
 ## Task
 
 Validate that Gherkin .feature files follow proper structure and formatting rules.

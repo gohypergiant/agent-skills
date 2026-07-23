@@ -1,10 +1,5 @@
 # Target Validator
 
-**When to spawn subagent:** When assessing AC targets during assessment mode.
-
-**Subagent prompt template:**
-"Validate these extracted targets using the target-validator.ts script. Return separate lists of valid and invalid targets with their line numbers and error messages."
-
 ## Task
 
 Validate that all targets in AC meet the area.component.intent pattern and use controlled vocabulary, using the existing validation script.

@@ -1,10 +1,5 @@
 # Preconditions Validator
 
-**When to spawn subagent:** When validating Given steps during assessment mode.
-
-**Subagent prompt template:**
-"Validate all Given step preconditions in this AC file. Check that they follow the allowed pattern for setting starting context. Report all violations with line numbers."
-
 ## Task
 
 Validate that all Given step preconditions in AC follow the allowed patterns for test context setup.

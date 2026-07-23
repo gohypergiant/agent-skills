@@ -1,10 +1,5 @@
 # Assertions Validator
 
-**When to spawn subagent:** When validating Then steps during assessment mode.
-
-**Subagent prompt template:**
-"Validate all Then step assertions in this AC file. Check that outcomes are explicitly stated (not implied), measurable (specific text/element/state), and visibility changes use trigger words. Report all violations with line numbers."
-
 ## Task
 
 Validate that all Then step assertions in AC are explicit, measurable, and properly specified.

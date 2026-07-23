@@ -20,8 +20,8 @@ Do not attempt inline validation — validation subagents check against schemas 
   - **Structure & Format**:
     - There is no Phase A work for this section.
     - Phase B: 
-      - For .md files: spawn subagent with `agents/validate-bullet-format.md`
-      - For .feature files: spawn subagent with `agents/validate-gherkin-structure.md`
+      - For .md files: spawn subagent using the Bullet Format Validation Template below
+      - For .feature files: spawn subagent using the Gherkin Structure Validation Template below
     - Subagents return validation results with line numbers for any violations
   - **Targets** (semantic validation):
     - Phase A:
@@ -29,33 +29,107 @@ Do not attempt inline validation — validation subagents check against schemas 
         - Example: "Submit button on the form" → `{"line": 5, "target": "form.button.submit"}`
         - Format as array: `[{"line": 5, "target": "form.button.submit"}, {"line": 8, "target": "toast.text.success"}]`
     - Phase B: 
-      - Spawn subagent with `agents/validate-targets.md` to validate target format and controlled vocabulary
+      - Spawn subagent using the Target Validation Template below
     - Subagent returns `{valid: [...], invalid: [...]}` - report any invalid targets as blocking issues
   - **Given Steps (Preconditions)**:
     - Phase A:
       - Extract all Given steps with line numbers, verbs, targets, and values
       - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
     - Phase B:
-      - Spawn subagent with `agents/validate-preconditions.md` to validate context setup patterns
+      - Spawn subagent using the Precondition Validation Template below
     - Subagent returns validation results with line numbers for any violations
   - **When Steps (Actions)**:
     - Phase A: 
       - Extract all When steps with line numbers, actions, targets, values, and coordinates
       - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "...", "coordinates": {...}}]`
     - Phase B:
-      - Spawn subagent with `agents/validate-actions.md` to validate actions, required parameters, and values
+      - Spawn subagent using the Action Validation Template below
     - Subagent returns validation results with line numbers for any violations
   - **Then Steps (Assertions)**:
     - Phase A:
       - Extract all Then steps with line numbers, verbs, targets, and values
       - Format as array: `[{"line": N, "verb": "...", "target": "...", "value": "..."}]`
     - Phase B:
-      - Spawn subagent with `agents/validate-assertions.md` to validate explicitness and measurability
+      - Spawn subagent using the Assertion Validation Template below
     - Subagent returns validation results with line numbers for any violations
 3. **Report results**:
   - If issues found: Report "❌ AC are not conversion-ready" with detailed issue list (see output format below)
   - If no issues: Report "✓ AC are conversion-ready" with validated checklist
   - Do NOT generate any files (no JSON plans, no test files)
+
+## Validation Prompt Templates
+
+### Bullet Format Validation Template
+
+When spawning, use this prompt:
+
+```
+Load agents/validate-bullet-format.md.
+
+Validate this markdown file's bullet format. Check that AC lines start with '- ' and are properly structured. Report all violations with line numbers.
+
+[paste full AC content]
+```
+
+### Gherkin Structure Validation Template
+
+When spawning, use this prompt:
+
+```
+Load agents/validate-gherkin-structure.md.
+
+Validate this Gherkin file's structure against all Gherkin requirements. Check Feature declaration, Background placement, Scenario/Scenario Outline structure, Examples tables, step ordering, and tag format. Report all violations with line numbers.
+
+[paste full AC content]
+```
+
+### Target Validation Template
+
+When spawning, use this prompt:
+
+```
+Load agents/validate-targets.md.
+
+Validate these extracted targets using the target-validator.ts script. Return separate lists of valid and invalid targets with their line numbers and error messages.
+
+[paste extracted target array from Phase A]
+```
+
+### Precondition Validation Template
+
+When spawning, use this prompt:
+
+```
+Load agents/validate-preconditions.md.
+
+Validate all Given step preconditions in this AC file. Check that they follow the allowed pattern for setting starting context. Report all violations with line numbers.
+
+[paste extracted preconditions array from Phase A]
+```
+
+### Action Validation Template
+
+When spawning, use this prompt:
+
+```
+Load agents/validate-actions.md.
+
+Validate all actions in this AC file. Check that action verbs are recognized and mappable to Playwright actions, fill/select actions have quoted literal values, and coordinate-based actions include coordinates. Report all violations with line numbers.
+
+[paste extracted actions array from Phase A]
+```
+
+### Assertion Validation Template
+
+When spawning, use this prompt:
+
+```
+Load agents/validate-assertions.md.
+
+Validate all Then step assertions in this AC file. Check that outcomes are explicitly stated (not implied), measurable (specific text/element/state), and visibility changes use trigger words. Report all violations with line numbers.
+
+[paste extracted assertions array from Phase A]
+```
 
 ## Issue Classification
 

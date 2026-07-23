@@ -1,9 +1,5 @@
 # Naming Transformation Generator
 
-## Task
-
-Generate suite names, test names, and output slugs from AC source files by applying transformation rules and intelligently summarizing content.
-
 ## Input
 
 - Raw AC file content (markdown bullets or Gherkin .feature file)

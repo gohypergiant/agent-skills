@@ -1,10 +1,5 @@
 # Bullet Format Validator
 
-**When to spawn subagent:** When assessing markdown .md file with bullet-style AC during assessment mode.
-
-**Subagent prompt template:**
-"Validate this markdown file's bullet format. Check that AC lines start with '- ' and are properly structured. Report all violations with line numbers."
-
 ## Task
 
 Validate that markdown .md files with bullet-style AC follow proper formatting rules.
