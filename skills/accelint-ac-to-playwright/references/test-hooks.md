@@ -1,4 +1,7 @@
 # Target conventions
+
+**When to load this file:** Load when converting AC to JSON plans or running assessment mode. Contains controlled vocabulary for area/component/intent target naming patterns. Do NOT load when converting plans to tests (translation script handles this automatically).
+
 The pattern `<area>.<component>.<intent>` is used for `target` values. 
 
 - area (controlled list): see `target-vocabulary.ts` for the canonical list
