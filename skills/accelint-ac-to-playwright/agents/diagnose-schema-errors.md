@@ -1,18 +1,5 @@
 # Schema Validation Diagnostics
 
-**When to spawn subagent:** When plan validation fails in conversion mode.
-
-**Subagent prompt template:**
-```
-Diagnose this validation error and suggest ONE fix.
-
-JSON plan:
-[full plan here]
-
-Error message:
-[full error output from npx validate-plan]
-```
-
 ## Task
 
 When `npx validate-plan` fails, diagnose the specific schema error and suggest ONE focused fix for the main agent to apply. Report what needs to change and let the main agent make the modification and re-validate.

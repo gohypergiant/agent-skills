@@ -1,18 +1,5 @@
 # Translation Script Error Diagnostics
 
-**When to spawn subagent:** When the translation script (`generate-tests.ts`) fails to convert JSON plan to Playwright test code.
-
-**Subagent prompt template:**
-```
-Diagnose this translation error and suggest ONE fix.
-
-Error message:
-[full error output from generate-tests.ts]
-
-JSON plan (relevant section):
-[relevant JSON excerpt showing the problematic step/field]
-```
-
 ## Task
 
 When `generate-tests.ts` fails during JSON-to-Playwright translation, diagnose the specific error and suggest ONE focused fix for the main agent to apply.
