@@ -1,0 +1,71 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Code Quality & Safety",
+      "description": "Defensive programming, type safety, performance optimization, and security auditing.",
+      "skills": [
+        "accelint-ts-best-practices",
+        "accelint-ts-performance",
+        "accelint-security-best-practices",
+        "accelint-ts-audit-all"
+      ]
+    },
+    {
+      "title": "Testing",
+      "description": "Test creation, validation, and automation patterns.",
+      "skills": [
+        "accelint-ts-testing",
+        "accelint-react-testing",
+        "accelint-ac-to-playwright"
+      ]
+    },
+    {
+      "title": "Frontend/React",
+      "description": "React, Next.js, and frontend framework optimization.",
+      "skills": [
+        "accelint-react-best-practices",
+        "accelint-tanstack-query-best-practices",
+        "accelint-nextjs-best-practices",
+        "accelint-design-foundation"
+      ]
+    },
+    {
+      "title": "Documentation",
+      "description": "README generation and code documentation.",
+      "skills": [
+        "accelint-readme-writer",
+        "accelint-ts-documentation"
+      ]
+    },
+    {
+      "title": "Project Onboarding",
+      "description": "Set up agent behavior, project configuration, and architectural docs.",
+      "skills": [
+        "accelint-onboard-agent",
+        "accelint-onboard-openspec",
+        "accelint-architecture-doc"
+      ]
+    },
+    {
+      "title": "QRSPI/OpenSpec Workflow",
+      "description": "Spec-driven development with questions, research, design, and structured implementation.",
+      "skills": [
+        "accelint-qrspi-propose",
+        "accelint-qrspi-apply",
+        "accelint-qrspi-archive",
+        "accelint-archive-synthesis"
+      ]
+    },
+    {
+      "title": "Specialized",
+      "description": "Prompt optimization, design review, skill creation, and more.",
+      "skills": [
+        "accelint-prompt-manager",
+        "accelint-persona-review",
+        "accelint-skill-manager"
+      ]
+    }
+  ]
+}
