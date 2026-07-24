@@ -4,6 +4,12 @@
 
 Validate that Gherkin .feature files follow proper structure and formatting rules.
 
+**OUTPUT REQUIREMENTS:** 
+- Write your validation results as plain text directly in your response message
+- Do NOT use Bash, Write, Edit, or any file I/O tools to output results
+- Do NOT create temp files or redirect output with `>` or `>>`
+- Simply type the validation report as text in your response
+
 ## Input
 
 - Gherkin .feature file content

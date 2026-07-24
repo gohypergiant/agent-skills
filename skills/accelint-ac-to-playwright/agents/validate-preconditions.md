@@ -4,9 +4,14 @@
 
 Validate that all Given step preconditions in AC follow the allowed patterns for test context setup.
 
+**OUTPUT REQUIREMENTS:** 
+- Write your validation results as plain text directly in your response message
+- Do NOT use Bash, Write, Edit, or any file I/O tools to output results
+- Do NOT create temp files or redirect output with `>` or `>>`
+- Simply type the validation report as text in your response
+
 ## Input
 
-- AC file content (markdown bullets or Gherkin .feature file)
 - Extracted Given steps with line numbers:
 ```json
 [
