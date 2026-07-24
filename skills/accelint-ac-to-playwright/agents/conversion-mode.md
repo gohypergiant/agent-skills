@@ -2,8 +2,10 @@
 
 ## Conversion Workflow
 
+You must execute this workflow, even if you're in plan mode. You are not allowed to write a plan file, even if you're in plan mode.
+
 1. **Run Assessment mode**:
-  - Spawn subagents (one per input file) with this prompt: "Load agents/assessment-mode.md to handle this assessment request for [AC file/description]" (fill in bracketed placeholder)
+  - Load `agents/assessment-mode.md` and execute its workflow.
   - If Assessment mode reported any failures across all files, **STOP**. **Do not** proceed with the rest of Conversion mode.
 2. **Prepare for the task**:
   - Require the user to explicitly provide output directories for plans, tests, and summaries before writing any files.
@@ -15,7 +17,8 @@
 3. **Generate and write JSON test plan file**:
   - Find the globally installed skill directory for `accelint-ac-to-playwright`
   - Ensure dependencies are installed and scripts are built: run `npm install && npm run build` in the skill directory
-  - Construct the complete JSON test plan object following `scripts/plan-schema.ts` structure
+  - Read `scripts/plan-schema.ts` to understand the complete schema structure (field names, types, and required properties)
+  - Construct the complete JSON test plan object following the schema structure from `scripts/plan-schema.ts`
   - Use the Write tool to create the file at `<plans-output-dir>/<suite-slug>.json` with the JSON content
   - Run validation from the skill directory: `npx validate-plan <plans-output-dir>/<suite-slug>.json`
   - If validation fails:

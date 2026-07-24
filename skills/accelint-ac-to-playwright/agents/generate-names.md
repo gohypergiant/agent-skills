@@ -7,6 +7,12 @@
 
 ## Output Format
 
+**OUTPUT REQUIREMENTS:**
+- Write the naming results as plain text directly in your response
+- Do NOT use Write, Edit, or any file I/O tools to output results
+- Do NOT create temp files or caches
+- Simply type the formatted output as text following the format below
+
 ```
 **Suite name**: [formatted suite name]
 **Test names**:

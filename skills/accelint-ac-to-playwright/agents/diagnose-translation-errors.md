@@ -11,6 +11,13 @@ When `generate-tests.ts` fails during JSON-to-Playwright translation, diagnose t
 
 ## Output Format
 
+**OUTPUT REQUIREMENTS:**
+- Write your diagnostic report as plain text directly in your response
+- Do NOT use Write, Edit, or any file I/O tools
+- Do NOT create temp files
+- Simply type the diagnostic as text following the format below
+- Provide EXACTLY ONE fix - do not add additional analysis or suggestions
+
 Provide EXACTLY this format with ONE fix only:
 
 **Error type**: [e.g. runtime error, slug generation, script crash]
