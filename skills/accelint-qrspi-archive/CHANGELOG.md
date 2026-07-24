@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0] - 2026-07-24
+
+### Changed
+- **Expanded Purpose heading support** — skill now accepts both `## Purpose` and `### Purpose` heading levels
+  - Rationale: Some specs use h3 level for Purpose headings within capability sections. Supporting both heading levels makes the skill more flexible without changing validation behavior
+  - Updated all references throughout:
+    - Compatibility note: "must already have a ## Purpose heading" → "must already have a ## Purpose or ### Purpose heading"
+    - Preflight Task B: validation now checks for either heading level
+    - Spec writing prompts: instructions updated to reference "## Purpose or ### Purpose heading"
+    - Index update logic: reads from either heading level when extracting purpose text
+    - Error messages: updated to mention both heading formats
+  - Why: Rigid heading level requirements create unnecessary friction when specs organize content differently. The actual requirement is semantic (a Purpose section exists), not syntactic (specific heading level)
+
+### Version
+- Bumped from 1.2.0 → 1.3.0
+
 ## [1.2.0] - 2026-07-21
 
 ### Changed

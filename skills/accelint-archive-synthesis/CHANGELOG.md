@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.1] - 2026-07-24
+
+### Fixed
+- **Typo in compatibility note** — corrected "findings:" to "findings -" (em-dash formatting issue)
+  - Issue: Compatibility section had incorrect punctuation in "findings: interface" 
+  - Fix: Changed to "findings - interface" for proper readability
+  - Impact: Documentation clarity improvement only, no functional change
+
+### Version
+- Bumped from 1.1.0 → 1.1.1
+
 ## [1.1.0] - 2026-07-10
 
 ### Changed
