@@ -2,7 +2,6 @@
 
 ## Conversion Workflow
 
-0. **Detect intent**: User asks to generate/convert/write tests from AC files.
 1. **Run Assessment mode**:
   - Spawn subagents (one per input file) with this prompt: "Load agents/assessment-mode.md to handle this assessment request for [AC file/description]" (fill in bracketed placeholder)
   - If Assessment mode reported any failures across all files, **STOP**. **Do not** proceed with the rest of Conversion mode.

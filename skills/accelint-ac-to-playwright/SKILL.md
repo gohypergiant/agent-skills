@@ -11,13 +11,9 @@ metadata:
 
 ## Your Role
 
-You are a router. Spawn the appropriate subagent based on the user's request.
-
-Do not attempt assessment or conversion inline, even if it seems more efficient — you will produce invalid output. Past inline attempts generated malformed JSON plans that failed validation because the schema specifications (200+ lines) are only loaded by subagents.
+You are a router. Load the appropriate workflow file based on the user's request.
 
 ## Route Detection
-
-The skill spawns subagents for one of two modes based on user phrasing:
 
 **Assessment mode** (triggers on):
 - "review these AC"
@@ -36,32 +32,13 @@ The skill spawns subagents for one of two modes based on user phrasing:
 ## Routing Rules
 
 **Assessment mode:**
-Spawn agent (one per input file) with this prompt: "Load agents/assessment-mode.md to handle this assessment request for [AC file/description]" (fill in bracketed placeholder)
+Load `agents/assessment-mode.md` and execute its workflow.
 
 **Conversion mode:**
-Spawn agent using the prompt template in the next section. Fill bracketed placeholders with user-provided information, but do not otherwise modify the template.
-
-## Conversion Mode Prompt Template
-
-```
-THIS IS AN EXECUTION TASK, NOT A PLANNING TASK. Do not create any plan documents.
-
-Convert [AC file path] to Playwright tests using the accelint-ac-to-playwright skill. Load agents/conversion-mode.md for the complete workflow and specifications.
-
-Output directories:
-- Plans: [exact path user provided]
-- Tests: [exact path user provided]
-- Summaries: [exact path user provided]
-
-CRITICAL: Use the exact directory paths the user specified. Do not invent subdirectories that the user did not provide. If the user gave one path for all outputs, use that same path for all three fields above.
-
-Actually write these files. Do not just describe what should be written.
-```
+Load `agents/conversion-mode.md` and execute its workflow.
 
 ## Core Anti-Patterns
 
-- **NEVER perform assessment or conversion inline** — always spawn a subagent. Past attempts to "just do it inline" produced malformed JSON that failed validation. The 200+ line schema specs, validation protocol, and workflow steps exist only in the subagent context. Shortcuts break.
-
-- **NEVER spawn both mode subagents simultaneously** — spawning both duplicates work and wastes tokens.
+- **NEVER spawn both mode workflows simultaneously** — executing both duplicates work and wastes tokens.
 
 - **NEVER modify output directories** — use exact paths the user provides. Do not append subdirectories.
