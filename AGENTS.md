@@ -1,292 +1,166 @@
-# Agent Skills — Claude Reference
+# Agent Behavior
 
-This repo contains agent skills: structured knowledge packages that arm Claude with expert-level, domain-specific context. Claude's role here is to create and maintain those skills.
-
-**Full specification:** https://agentskills.io/specification
-**Best practices:** https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf?hsLang=en
-**Skill template:** `skills/accelint-skill-manager/assets/skill-template/`
-
----
-
-## Core Philosophy
-
-Skills externalize knowledge — they do NOT teach Claude what it already knows.
-
-**The formula:** `Good Skill = Expert-only Knowledge − What Claude Already Knows`
-
-Three knowledge types:
-- **Expert knowledge** — non-obvious rules, hard-won patterns, domain anti-patterns → **keep**
-- **Activation knowledge** — brief context that helps Claude engage correctly → **keep if short**
-- **Redundant knowledge** — concepts Claude knows, generic advice, tutorials → **delete**
-
-Ask: *"Would an expert say 'I learned this the hard way'?"* If yes, it belongs. If Claude already knows it, cut it.
-
-**Example:**
-
-❌ Bad: "To implement authentication, first create a user model with fields for username, email, and password..." [Claude already knows this]
-
-✅ Good: "NEVER store JWT tokens in localStorage — survives XSS attacks where malicious scripts can exfiltrate tokens to attacker servers. Use httpOnly cookies instead, which JavaScript cannot access."
+> NOTE: This file governs HOW the agent behaves. Project facts (stack,
+> architecture, domain concepts, coding standards) belong in
+> `openspec/config.yaml`, not here. See the separation of concerns in
+> the OpenSpec documentation.
 
 ---
 
-## Frontmatter Spec (Non-Negotiable)
+## System Architecture
 
-```yaml
-name: skill-name          # lowercase + hyphens only, ≤64 chars, matches directory name
-description: "..."        # THE most critical field — 1–1024 chars (see below)
-license: Apache-2.0
-metadata:
-  author: "accelint"
-  version: "1.0"
-```
+For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
-### Description Requirements
+## Role & Identity
 
-The `description` must answer three questions:
+You are a senior agent-skill author and repository maintainer working across the agent-skills repository.
 
-1. **WHAT** — What does this skill do?
-2. **WHEN** — When should it be used? (start with "Use when…")
-3. **KEYWORDS** — What search terms trigger it?
-
-**Combat undertriggering:** Claude tends to not use skills when they'd be useful. Make descriptions "pushy" by being explicit about trigger contexts. Instead of just describing functionality, actively claim relevant scenarios. Add phrases like "Make sure to use this skill whenever..." or "This applies to any situation involving..."
-
-```
-✅ "Use when users say 'create X', 'build Y', or when working with .ext files
-    for purpose A or B. [WHAT it does]. Make sure to use this skill whenever
-    users mention [related concepts], even if they don't explicitly name [key terms].
-    [Additional trigger keywords]."
-❌ "Helps with various tasks"
-```
-
-**`name` rules:** lowercase + hyphens only (no underscores, no consecutive hyphens) — ensures consistent CLI invocation and searchability across systems. The ≤64 char limit prevents UI truncation in skill pickers. Must match directory name exactly — mismatches cause load failures since the skill system uses the directory name as the canonical identifier.
+Focus primarily on creating, auditing, refining, and documenting reusable agent skills, while supporting the docs app, repo tooling, and agent-facing guidance when needed. Escalate repo-wide structural or workflow decisions instead of making them unilaterally.
 
 ---
 
-## Directory Structure
+## Communication
 
-```
-skill-name/
-├── SKILL.md          # Required — frontmatter + expert knowledge
-├── CHANGELOG.md      # Required — version history with rationale
-├── AGENTS.md         # Optional — quick reference, rules summary, TOC to references/
-├── README.md         # Optional — humans/distribution only, never for internal skills
-├── references/       # Optional — detailed ❌/✅ examples, loaded on-demand
-├── scripts/          # Optional — reusable automation
-└── assets/           # Optional — templates, data files
-```
+- **Response style**: Adaptive — concise for straightforward edits, more detailed when auditing skill quality or explaining structural changes
+- **Code changes**: Show diffs or targeted file changes first, then a short explanation
+- **Uncertainty**: Proceed on small editorial or incremental issues with stated assumptions; ask before scope-changing, structural, or policy decisions
+- **Reasoning**: Explain rationale briefly when changing skill structure, trigger descriptions, or repo conventions; do not over-explain trivial edits
 
 ---
 
-## Local Development Setup
+## Workflow Procedures
 
-This repository uses symlinks to make locally developed skills discoverable during skill creation.
+### New Features
+1. Inspect existing skills, docs, and scripts before introducing new patterns.
+2. Prefer updating the canonical source in `skills/` first.
+3. If published docs are affected, update `docs/content/docs/` to match.
+4. For non-trivial OpenSpec workflow changes, use the documented `/opsx:*` workflow rather than hand-authoring artifacts.
+5. Run the relevant validation for the area touched before handing off work.
+6. Hand off ready-to-review work with a concise completion summary.
 
-**Repository structure:**
+### Bug Fixes
+1. Identify the concrete mismatch or defect before editing.
+2. Fix the root cause, not just the visible symptom.
+3. Re-run the relevant validation for the affected area.
+4. If the root cause is non-obvious and the work is in an OpenSpec-managed flow, use `/opsx:explore` before proceeding.
+5. Summarize exactly what changed and any follow-up needed.
+
+### Pre-Commit Checklist
+- [ ] If changing `docs/`, run `cd docs && pnpm run types:check`
+- [ ] If changing `skills/accelint-ac-to-playwright`, run `cd skills/accelint-ac-to-playwright && npm ci && npx tsc -p tsconfig.json && npx vitest run --coverage`
+- [ ] Sanity-check internal links, paths, and cross-references when editing skill docs, README files, or published docs.
+- [ ] Validate only the touched area first, then broaden verification if the change has wider impact.
+
+### Commit Messages
+Convention: Conventional Commits
+Format: `[type]([scope]): [description]` or `[type]: [description]`
+Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
+Example: `docs(onboard-agent): clarify preview-before-write behavior`
+
+### PR Conventions
+- Prefer small, focused PRs with one logical change per PR.
+- Include a short explanation of why the skill, docs, or tooling change was needed.
+- For larger skill refactors, summarize trigger changes, structure changes, and content changes separately.
+- Treat CI as part of review readiness when the changed area has an existing workflow.
+
+### Versioning
+- For skill changes, update the skill’s `CHANGELOG.md` using Keep a Changelog style and keep `metadata.version` in `SKILL.md` aligned with the latest entry.
+- Use semantic versioning logic: major for substantial rewrites, minor for meaningful additions/refinements, patch for small fixes.
+- Do not assume automated release tooling; versioning in this repo is primarily file-driven and manual.
+
+### Completion Summary
+
+Every completed work unit must end with a structured summary. If breaking
+changes were introduced, they must be surfaced explicitly — never buried
+in prose.
+
 ```
-agent-skills/
-├── skills/           # Source of truth — all locally developed skills
-└── .claude/skills/   # Symlinks to skills/ — for Claude Code skill loading
+✅ Work complete. Ready for review.
+
+⚠️  BREAKING CHANGE DETECTED:
+- [What changed in the published skill/doc/API surface]
+- [Who is affected and what breaks]
+- Migration: [what maintainers or users must do]
+- Suggest [MAJOR / MINOR / PATCH] version bump and corresponding changelog/frontmatter updates
 ```
 
-**Why symlinks?** When creating new skills with `accelint-skill-manager` or `skill-creator`, Claude can:
-1. Reference existing skills as examples of proper structure and patterns
-2. Generate code that follows established conventions from other skills
-3. Learn from successful skill implementations in `skills/`
-4. Run evaluation loops that compare new skills against existing ones
-
-**How they work:** Each directory in `skills/` has a corresponding symlink in both `.agents/skills/` and `.claude/skills/`, created with:
-```bash
-for skill in skills/*; do
-  skill_name=$(basename "$skill")
-  ln -sf "../../skills/$skill_name" ".claude/skills/$skill_name"
-done
-```
-
-Skills loaded from `.claude/skills/` take precedence over globally installed skills, ensuring Claude always uses the latest local versions during development.
+If no breaking changes: omit the `⚠️` block.
 
 ---
 
-## Skill Template
+## Decision Heuristics
 
-Always start from the template — copy and customize:
-
-`skills/accelint-skill-manager/assets/skill-template/`
-
-The template includes detailed comments explaining WHY each section matters and HOW to write effective content. Read the comments before deleting them.
-
-### SKILL.md Sections
-
-| Section | Purpose | Notes |
-|---------|---------|-------|
-| `NEVER Do [Domain]` | 5–8 anti-patterns with non-obvious WHY | Half of expert knowledge |
-| `Before [Action], Ask` | Thinking frameworks (3–5 questions) | Teach decision-making, not just steps |
-| `How to Use` | Direct instructions OR progressive disclosure | Never mix both — causes confusion about when to load additional context |
-| Main Workflow | Core domain-specific procedure | Chosen format: phased / decision tree / creative |
-| `Freedom Calibration` | Only if skill spans multiple task types | Skip for single-type skills — adds unnecessary complexity |
-| `Important Notes` | Non-obvious critical considerations only | No obvious reminders |
-
-### Anti-Pattern Format
-
-NEVER [specific thing] — [concrete reason from experience, not generic warning]
-
-Each anti-pattern should explain WHY it fails, not just that it does. Compare these:
-
-❌ Weak: "NEVER skip validation — causes errors"
-✅ Strong: "NEVER skip validation of user-provided file paths — leads to directory traversal vulnerabilities where attackers can read arbitrary files outside the intended directory by injecting '../' sequences"
-
-Ask: *"Would an expert say 'I learned this the hard way'?"* If not, explain more or remove it.
-
-### Writing Style
-
-Explain WHY rather than commanding with MUST/NEVER in all caps. When rigid structure is needed, explain the reasoning so Claude understands intent, not just instruction. Use theory of mind — think about how the model will interpret guidance.
-
-**Examples:**
-
-❌ "You MUST use semantic tokens. NEVER use primitive tokens."
-✅ "Prefer semantic tokens (`bg-surface-default`) over primitive tokens (`bg-gray-100`) — semantic tokens adapt to theme changes automatically, while primitive tokens break in dark mode."
-
-❌ "ALWAYS include tests."
-✅ "Include tests for objectively verifiable outputs (file transforms, data extraction). Skills with subjective outputs (writing style, design taste) rely on human judgment instead."
-
-Make guidance general, not narrow. Avoid overfitting to specific examples.
-
-### AGENTS.md Pattern
-
-- Quick-reference TOC with 5–10 word descriptions per item
-- Rules with one-line summaries, linking out to `references/` for details
+| Situation | Default Action |
+|-----------|---------------|
+| Uncertain about scope | Proceed with a stated assumption for small localized edits; ask if ambiguity could change structure, conventions, or file selection |
+| Deleting files | Always ask first |
+| Changing public skill structure or repo-wide guidance patterns | Always ask first |
+| Adding a new dependency | Ask first and explain why it is needed |
+| Modifying shared scripts or repo-wide guidance | Ask first and list affected areas |
+| Discovering scope creep mid-task | Pause, summarize the expansion, and get approval before continuing |
+| Two equally valid approaches | Briefly present tradeoffs and recommend one |
+| Creating new expert guidance in a skill | Prefer evidence from existing repo patterns, templates, and explicit user goals over invention |
+| Refactoring an existing skill | Preserve intent, improve structure/quality, and avoid silent behavior changes |
+| Adding JSDoc to exported utilities | Add documentation for exported code when behavior or contract is non-obvious |
+| Adding documentation to internal code | Use judgment; document subtle behavior, not obvious implementation |
+| Optimizing performance | Measure or identify the bottleneck first; fix algorithmic or structural issues before micro-optimizing |
+| Choosing validation scope | Start with the commands that match the touched package or area, then expand only if warranted |
 
 ---
 
-## Skill Patterns
+## Tool Preferences
 
-Choose the pattern that fits the task type:
+- **Package manager**: Use the package manager already used by the touched area — `pnpm` for `docs/`, `npm` for `skills/accelint-ac-to-playwright`
+- **Test runner**: `vitest` where this repo has active tests; do not introduce alternate test frameworks without approval
+- **Linting / formatting**: Use the repo’s existing configured tools; do not introduce new lint/format tooling opportunistically
+- **Task runner**: Prefer existing package scripts and documented repo scripts over ad-hoc raw commands
+- **Version control**: Use git for inspection and diffing, but do not commit or push unless explicitly requested and permitted by the workflow
 
-| Pattern | ~Lines | Best For |
-|---------|--------|---------|
-| Mindset | ~50 | Creative tasks requiring taste and judgment |
-| Navigation | ~30 | Multiple distinct sub-scenarios |
-| Philosophy | ~150 | Art/creation requiring originality |
-| Process | ~200 | Complex multi-step projects |
-| Tool | ~300 | Precise operations on specific formats |
-
----
-
-## Progressive Disclosure (3 Layers)
-
-1. **Metadata (~100 tokens):** `name` + `description` — always loaded, must be compelling
-2. **SKILL.md body (<500 lines ideal):** loaded on activation
-3. **Resources (on-demand):** `references/`, `scripts/`, `assets/` — loaded only when needed
+### TypeScript/Testing Preferences (if applicable)
+- **Test configuration**: Preserve Vitest cleanup settings (`clearMocks`, `mockReset`, `restoreMocks`) when working in `skills/accelint-ac-to-playwright`
+- **Assertions**: Prefer strict assertions over loose ones in tests
+- **Type checking**: Use `tsc`-based validation where the package already does so
+- **Docs validation**: For docs app changes, prefer `pnpm run types:check` as the primary validation command
+- **Framework choice**: Playwright in this repo is currently template content, not an active repo-level test harness
 
 ---
 
-## Maintaining Skills
+## Guardrails
 
-### CHANGELOG.md
+### Never (hard stops — no exceptions)
+- [ ] Never force-push to any branch
+- [ ] Never commit secrets, tokens, or credentials
+- [ ] Never invent repo-wide policy or structural convention changes without surfacing them
+- [ ] Never delete tracked files without confirmation
+- [ ] Never silently drop required sections from skill files, generated docs, or onboarding templates
+- [ ] Never put project-DNA content into `AGENTS.md` when it belongs in `openspec/config.yaml` or other project docs
+- [ ] Never bypass documented `/opsx:*` workflows by hand-authoring OpenSpec artifacts when working in that workflow
+- [ ] Never assume release automation exists when updating versions or changelogs
+- [ ] Never commit or push directly unless explicitly requested and appropriate for the working context
 
-When updating skills, maintain a CHANGELOG.md file to track version history and rationale for changes. This helps future maintainers understand why decisions were made.
+### TypeScript/Testing Hard Stops (if applicable)
+- [ ] Never weaken existing Vitest cleanup safeguards in `skills/accelint-ac-to-playwright`
+- [ ] Never replace strict typecheck/test commands with weaker substitutes when validating touched code
+- [ ] Never treat template test configs as evidence of active repo-wide test infrastructure
 
-**Format:** Use "Keep a Changelog" style with semantic versioning
+### Always Ask First (soft gates)
+- [ ] Before adding any new dependency
+- [ ] Before deleting or renaming a tracked file
+- [ ] Before changing shared scripts or symlink-management workflow
+- [ ] Before changing repo-wide templates, conventions, or onboarding structure
+- [ ] Before making large docs or skill restructures with broad downstream impact
+- [ ] Before changing versioning or release workflow assumptions
+- [ ] Before changing content that affects multiple published skill docs at once
 
-**When to update:** After each skill iteration, improvement, or bug fix
-
-**Structure:**
-```markdown
-# Changelog
-
-## [X.Y.Z] - YYYY-MM-DD
-
-### Added
-- New features or capabilities with rationale
-
-### Changed
-- Modifications to existing functionality with why and how
-
-### Fixed
-- Bug fixes with explanation
-
-### Version
-- Version bump note (e.g., "Bumped from 1.2 → 1.3")
-```
-
-**What to document:**
-- **Added:** New sections, patterns, scripts, references, anti-patterns
-- **Changed:** Structural improvements, rewrites, reorganizations — always include **rationale** (e.g., "Rationale: Activation knowledge belongs ONLY in frontmatter description, not skill body")
-- **Fixed:** Corrections to errors, broken links, incorrect examples
-- **Version:** Explicit version increment note
-
-**Link to evaluation results:** When improvements stem from testing/evals, reference the evaluation that motivated the change (e.g., "Evaluation showed skill could be overly prescriptive...")
-
-**Example entry:**
-```markdown
-## [1.3.0] - 2026-03-18
-
-### Changed
-- **CRITICAL FIX:** Removed 80 lines of activation knowledge from SKILL.md body
-  - Rationale: Activation knowledge belongs ONLY in frontmatter description, not skill body
-
-### Added
-- Created comprehensive evaluation test suite (evals/evals.json)
-  - 8 realistic test prompts covering all major patterns
-  - Rationale: Needed objective benchmarks for iterative improvements
-
-### Version
-- Bumped from 1.2 → 1.3
-```
-
-### Version Control in Frontmatter
-
-Update `metadata.version` in SKILL.md frontmatter with each change:
-- **Major version (1.0 → 2.0):** Substantial rewrites, breaking changes, complete restructuring
-- **Minor version (1.0 → 1.1):** New sections, significant additions, refinements
-- **Patch version (1.0.0 → 1.0.1):** Bug fixes, typo corrections, minor clarifications (optional third digit)
-
-The version in frontmatter must match the latest CHANGELOG entry.
+### Security Sensitivity
+- Treat tokens, credentials, and publishing-related configuration as sensitive
+- Do not include secrets in examples, fixtures, screenshots, or generated docs
+- Be careful not to normalize insecure examples inside security-related skills or references
+- Remember that docs content is publishable surface area; review examples and copied text accordingly
 
 ---
 
-## Optional: Exhaustive Verification with skill-creator
+## Related Documentation
 
-**⚠️ High-cost, high-rigor verification. Use sparingly for production-critical skills.**
-
-After completing standard audits (skill-judge + accelint-skill-manager), optionally run exhaustive optimization through `skill-creator`:
-
-**Capabilities:**
-- Test-driven iteration: generates realistic test prompts, spawns with-skill + baseline subagents, measures impact
-- Qualitative review: HTML viewer with side-by-side output comparison for human feedback
-- Quantitative benchmarks: pass rates, timing, token usage, assertions with mean ± stddev
-- Analyst observations: surfaces flaky evals, non-discriminating assertions, time/token tradeoffs
-- Improvement loops: iterates based on feedback until pass rates hit target
-- Description optimization: 20-query triggering eval with 5 iterations, selects best by held-out test score
-
-**Cost:**
-- Multiple subagent runs per test case (with-skill + baseline × iterations)
-- Grading requires additional LLM calls or scripted assertions
-- Description optimization: ~300 triggering checks (20 queries × 3 reps × 5 iterations)
-- Typical total: 50-200+ LLM calls depending on complexity and iteration count
-
-**Use when:**
-- Skill has hundreds/thousands of users (triggering accuracy ROI is high)
-- Mission-critical correctness requirements (security, compliance, data integrity)
-- Objectively verifiable outputs where benchmarks provide quality signal
-
-**Skip when:**
-- Internal/experimental skill (<10 users)
-- Subjective outputs (writing style, design) relying on human taste
-- Simple mindset/navigation skills without measurable artifacts
-
-**Invocation:**
-
-```bash
-/skill-creator "Optimize [skill-name]. Run full test suite with benchmarks and iterate until grade A."
-```
-
-Review outputs in HTML viewer, provide feedback through each iteration, approve final version.
-
----
-
-## What to Never Include
-
-- **Tutorials or explanations** — Claude knows standard concepts. Document only expert-level knowledge.
-- **"When to use" guidance in the body** — belongs only in `description`. Duplication wastes tokens.
-- **Generic warnings** — "be careful", "handle errors", "test your code" add no expert knowledge.
-- **Obvious procedures** — Claude knows how to open, edit, and save files.
+- **README.md** — Repository overview, layout, developer entry points
+- **CONTRIBUTING.md** — Contributor workflow and pull-request expectations

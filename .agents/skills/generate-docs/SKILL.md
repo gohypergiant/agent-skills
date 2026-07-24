@@ -3,6 +3,7 @@ name: generate-docs
 description: Generate fumadocs MDX documentation for agent skills. Use when users say "generate docs", "document this skill", "create fumadocs for X", "update skill docs", "validate docs", or when working with docs/content/docs directory. Handles initial generation, smart updates preserving manual edits, and validation. Uses SHA tracking for three-way merge logic.
 license: Apache-2.0
 metadata:
+  internal: true
   author: "accelint"
   version: "1.0"
 ---
