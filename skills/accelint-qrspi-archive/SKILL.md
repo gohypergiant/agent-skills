@@ -2,10 +2,10 @@
 name: accelint-qrspi-archive
 description: Archive an OpenSpec change end-to-end. This skill invokes `/opsx:archive` or `/opsx:bulk-archive` itself to perform the native merge, then immediately follows up with the cross-capability linking and running indices OpenSpec doesn't build on its own — linking every capability a change touched via a shared `related:` frontmatter list, keeping `openspec/specs/INDEX.md` current, and appending a row to `openspec/changes/archive/INDEX.md`. Use this skill whenever the user wants to archive a change, says "archive this change", "bulk archive these changes", "run opsx:archive", "run opsx:bulk-archive", "update the specs index", "cross-link the specs", or wants the archived-change changelog kept current. This skill is purely additive on the linking side — it never prunes a `related:` entry and never changes a change's `Status` column after the initial write; that pruning/synthesis work belongs to `accelint-archive-synthesis`.
 license: Apache-2.0
-compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose heading in its body.
+compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Accelint QRSPI Archive
@@ -26,9 +26,9 @@ Cross-linking has to happen after the merge resolves, not before it, which is ex
 - OpenSpec CLI installed and initialized, with one or more changes ready to archive.
 - Sub-agent support, for per-capability spec writes only — those always run as subagents, unconditionally, and this is a hard requirement for normal operation there, not an optional speedup for large batches (see Error Handling for the degraded fallback if unavailable). Archive and extraction never uses a subagent, regardless of whether sub-agent support exists — see the Archive and Extract section for why.
 - Each change's `openspec/changes/<slug>/design.md` has YAML frontmatter including `specs_touched` (a non-empty list of capability names) and `decisions` (a list of `{id, choice, rationale, alternatives}` entries).
-- Every capability named in any `specs_touched` list already has `openspec/specs/<capability>/spec.md` with a `## Purpose` heading in its body — this skill reads that heading rather than duplicating purpose text into frontmatter, and rewriting the correct behavior depends on that heading actually being there (verified in preflight checks, Task B).
+- Every capability named in any `specs_touched` list already has `openspec/specs/<capability>/spec.md` with a `## Purpose` or `### Purpose` heading in its body — this skill reads that heading rather than duplicating purpose text into frontmatter, and rewriting the correct behavior depends on that heading actually being there (verified in preflight checks, Task B).
 
-If any of these are missing, report the gap and guide the user to resolve it before proceeding — do not silently substitute a guessed default for a missing field. This applies as-is to spec writing's sub-agent support and a touched spec's missing `## Purpose` heading. A change's missing `specs_touched`/`decisions` frontmatter is handled differently: preflight Task A derives a candidate from the change's own files and gets the author's explicit confirmation before writing it, rather than stopping outright — see Task A below for why a hard stop isn't actually necessary here, and why it still isn't a silent guess.
+If any of these are missing, report the gap and guide the user to resolve it before proceeding — do not silently substitute a guessed default for a missing field. This applies as-is to spec writing's sub-agent support and a touched spec's missing `## Purpose` or `### Purpose` heading. A change's missing `specs_touched`/`decisions` frontmatter is handled differently: preflight Task A derives a candidate from the change's own files and gets the author's explicit confirmation before writing it, rather than stopping outright — see Task A below for why a hard stop isn't actually necessary here, and why it still isn't a silent guess.
 
 ## Workflow Overview
 
@@ -118,7 +118,7 @@ Goal: confirm the archive operation's inputs are shaped correctly before touchin
 
    This is evaluated per change in a bulk-archive batch — one change needing confirmation doesn't block preflight for the others.
 
-3. **Verification Task B — Purpose heading convention.** For every capability named across all `specs_touched` lists in this batch, confirm `openspec/specs/<capability>/spec.md` contains a `## Purpose` heading. Index updates read this heading directly for the Purpose column, and spec writing relies on it existing to decide where a `## Related Specs` section belongs. If a spec is missing the heading, do not invent placeholder purpose text — ask the user whether to (a) add a placeholder like `_purpose not yet documented_` for now, or (b) fix the spec first. Fixing first is almost always better: a guessed purpose written into the index by this skill becomes content nobody actually authored, and it will look authoritative to the next reader.
+3. **Verification Task B — Purpose heading convention.** For every capability named across all `specs_touched` lists in this batch, confirm `openspec/specs/<capability>/spec.md` contains a `## Purpose` or `### Purpose` heading. Index updates read this heading directly for the Purpose column, and spec writing relies on it existing to decide where a `## Related Specs` section belongs. If a spec is missing the heading, do not invent placeholder purpose text — ask the user whether to (a) add a placeholder like `_purpose not yet documented_` for now, or (b) fix the spec first. Fixing first is almost always better: a guessed purpose written into the index by this skill becomes content nobody actually authored, and it will look authoritative to the next reader.
 
 4. For any capability in `specs_touched` that has no `openspec/specs/<capability>/` directory yet — a brand-new capability introduced by this change — note it separately. Step 19 will need to create its `spec.md` frontmatter from scratch rather than editing an existing file, and step 20's Purpose column will need the user to supply a value manually since nothing exists yet to read.
 
@@ -250,14 +250,14 @@ Always spawn one subagent per touched capability to do this — every time, not 
    history.
 
    Do NOT add capability or purpose fields. The capability name is this
-   file's own path; purpose already lives in its ## Purpose heading.
+   file's own path; purpose already lives in its ## Purpose or ### Purpose heading.
 
    Then regenerate the ## Related Specs section in the body from the same
    final, sorted related: list (replace any existing ## Related Specs
    content entirely — this section is never hand-maintained).
 
    For each partner in the sorted related: list, read its spec.md file to
-   extract the ## Purpose heading text. Format each line as:
+   extract the ## Purpose or ### Purpose heading text. Format each line as:
 
      - [<partner>](../<partner>/spec.md) - <Purpose heading text>
 
@@ -270,16 +270,16 @@ Always spawn one subagent per touched capability to do this — every time, not 
 
    The format is: markdown link with partner name as link text, relative
    path to its spec.md, then space-dash-space (not em-dash), then the
-   first sentence or paragraph from that partner's ## Purpose heading.
+   first sentence or paragraph from that partner's ## Purpose or ### Purpose heading.
 
    If no ## Related Specs heading exists, insert one at the end of the file.
 
    Report back ONLY: the file path, whether the write was a no-op
    (byte-identical to what was already there) or an actual change, the
    final related: list you wrote, and the capability's current ## Purpose
-   heading text (a sentence or short paragraph — you're not writing this,
-   just reading it back so the parent doesn't have to reopen this file for
-   index updates). Do not return the file's full contents.
+   or `### Purpose`heading text (a sentence or short paragraph — you're not
+   writing this, just reading it back so the parent doesn't have to reopen
+   this file for index updates). Do not return the file's full contents.
    ```
 
 23. If the capability has no prior `spec.md` (a brand-new capability per preflight step 4), the subagent starts from an empty frontmatter block instead of reading an existing one — same prompt otherwise.
@@ -290,7 +290,7 @@ Always spawn one subagent per touched capability to do this — every time, not 
 
 **Update openspec/specs/INDEX.md**
 
-**Goal**: keep `openspec/specs/INDEX.md` in sync with what was just written, at the cost of touching only the lines that actually changed — not a re-scan of every capability's `spec.md`, and not even a full read of `specs/INDEX.md` itself. The spec-writing subagents already read each touched capability's current `related:`, `last_touched_by`, and `## Purpose` heading as part of doing their own write, and report those values back — index updates reuse that data directly instead of paying for a second full scan of `openspec/specs/`. The only time this step looks at capabilities beyond the ones this batch touched, or reads more than a single targeted line of `specs/INDEX.md`, is when the file doesn't exist yet at all — there's no existing state to patch, and a one-time full build is the right move, not a routine one.
+**Goal**: keep `openspec/specs/INDEX.md` in sync with what was just written, at the cost of touching only the lines that actually changed — not a re-scan of every capability's `spec.md`, and not even a full read of `specs/INDEX.md` itself. The spec-writing subagents already read each touched capability's current `related:`, `last_touched_by`, and `## Purpose`/`### Purpose` heading as part of doing their own write, and report those values back — index updates reuse that data directly instead of paying for a second full scan of `openspec/specs/`. The only time this step looks at capabilities beyond the ones this batch touched, or reads more than a single targeted line of `specs/INDEX.md`, is when the file doesn't exist yet at all — there's no existing state to patch, and a one-time full build is the right move, not a routine one.
 
 25. **The common case — `specs/INDEX.md` already exists.** Don't read the whole file into context to do this — locate and edit only the lines that actually change:
 
@@ -309,7 +309,7 @@ Always spawn one subagent per touched capability to do this — every time, not 
 
    Markdown tables render correctly regardless of padding — only the header separator's dash count matters, not whitespace consistency across data rows. Keeping cross-row alignment would mean every row's padding depends on every other row's content length, which forces a full-table rewrite the instant any single row's text changes length — exactly the cost this design exists to avoid. A patched row and its untouched neighbors will look slightly ragged in a raw diff; that's the trade for the diff actually being one line.
 
-27. **The bootstrap case — `specs/INDEX.md` doesn't exist yet.** There's no prior state to patch, and patching only the touched rows would permanently omit every untouched capability until each happens to be touched by some future change. List every directory under `openspec/specs/`, and for each one, read its `## Purpose` heading, `related:` frontmatter, and `last_touched_by` directly — a full scan. This runs at most once per project, the first time this skill archives anything against it; every archive after that goes through step 25 instead.
+27. **The bootstrap case — `specs/INDEX.md` doesn't exist yet.** There's no prior state to patch, and patching only the touched rows would permanently omit every untouched capability until each happens to be touched by some future change. List every directory under `openspec/specs/`, and for each one, read its `## Purpose` or `### Purpose` heading, `related:` frontmatter, and `last_touched_by` directly — a full scan. This runs at most once per project, the first time this skill archives anything against it; every archive after that goes through step 25 instead.
 
 28. **Bootstrap case only**: write `openspec/specs/INDEX.md` from the full scan gathered in step 27, using the row format from step 26. If the file already carries a project-specific title or preamble above the table, preserve it. The common case (step 25) has already written its edit directly — there's no separate write step for it.
 
@@ -392,7 +392,7 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **Missing or malformed design.md frontmatter (Task A)**: derive a candidate `specs_touched`/`decisions` from the change's own `proposal.md` and delta spec directories, present it to the user for explicit confirmation, and write the confirmed value back into `design.md` before archive runs for that change. Stop before archive for that change, with the field named, only if the user chooses to pause and fix it themselves, or if nothing in the change's own files supports a candidate at all.
 
-**Missing `## Purpose` heading (Task B)**: don't block archive, validation, or cross-link computation (they don't touch spec bodies), but stop before spec writing reaches that capability and ask the user to either add a placeholder or fix the spec first.
+**Missing `## Purpose` or `### Purpose` heading (Task B)**: don't block archive, validation, or cross-link computation (they don't touch spec bodies), but stop before spec writing reaches that capability and ask the user to either add a placeholder or fix the spec first.
 
 **A change touches only one capability**: `specs_touched` with a single entry produces zero pairs — that's expected, not an error. Still run spec writing for that capability (write `last_touched_by`/`last_touched_on`, regenerate `## Related Specs` even if its list is unchanged) and still add its row to `changes/archive/INDEX.md` in the changelog step.
 
@@ -424,7 +424,7 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **NEVER read `Date` from `design.md`** — always use the archive folder's own `YYYY-MM-DD` prefix. A change can sit in review for weeks before it's archived, so anything `design.md` says about dates will be stale by the time this skill runs.
 
-**NEVER duplicate `capability` or `purpose` into a spec's frontmatter** — both already exist as the file's own path and its `## Purpose` heading. Restating either creates a second source of truth that will eventually disagree with the first.
+**NEVER duplicate `capability` or `purpose` into a spec's frontmatter** — both already exist as the file's own path and its `## Purpose` or `### Purpose` heading. Restating either creates a second source of truth that will eventually disagree with the first.
 
 **NEVER hand-maintain `## Related Specs`** — always regenerate it wholesale from the `related:` frontmatter that was just written. Treating it as independently editable content invites drift between what the frontmatter says and what the body shows.
 
@@ -451,7 +451,7 @@ User: Archive the add-live-sync change with cross-linking
 
 Skill: Running preflight checks...
 ✓ design.md frontmatter valid (specs_touched: sync/protocol, ui/status-indicator)
-✓ Both capabilities have a ## Purpose heading
+✓ Both capabilities have a ## Purpose/### Purpose heading
 
 Running /opsx:archive add-live-sync directly (archive never uses a subagent)...
 Sync now? (y/n) → yes
@@ -484,7 +484,7 @@ User: Run bulk-archive on the pending changes
 
 Skill: Running preflight checks across 3 pending changes...
 ✓ All design.md frontmatter valid
-⚠ auth/session-store is missing a ## Purpose heading
+⚠ auth/session-store is missing a ## Purpose or ### Purpose heading
 
 How would you like to handle auth/session-store?
 (a) Add a placeholder purpose now and continue
@@ -492,7 +492,7 @@ How would you like to handle auth/session-store?
 
 User: (b)
 
-Skill: Paused. Add a ## Purpose heading to openspec/specs/auth/session-store/spec.md,
+Skill: Paused. Add a ## Purpose or ### Purpose heading to openspec/specs/auth/session-store/spec.md,
 then re-invoke this skill to continue.
 ```
 

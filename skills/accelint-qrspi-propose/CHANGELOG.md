@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.6.0] - 2026-07-24
+
+### Changed
+- **Simplified and clarified sub-agent prompts** — removed verbose multi-paragraph examples and prescriptive language, made guidance more concise
+  - Questions sub-agent (step 10):
+    - Removed detailed examples ("How do we handle payments?" → "The ticket mentions...")
+    - Removed instruction to "walk down each branch of the problem statement tree"
+    - Kept core requirement: "detailed... empirical and robust technical questions"
+    - Rationale: Overly prescriptive examples can constrain agents toward specific patterns. Brief guidance lets the model use its own judgment about question depth
+  - Research sub-agent (step 14):
+    - Restructured multi-sentence instruction into clearer bullet format
+    - Softened "100% facts only. Zero opinions. Zero suggestions." to "Facts only. No opinions. No suggestions."
+    - Moved anti-pattern instructions to end: "Do NOT critique code quality, editorialize or suggest changes..."
+    - Rationale: The 1.5.0 language felt heavy-handed. Same requirements, friendlier tone, better structure
+  - Why: More concise, less prescriptive prompts reduce token usage and give sub-agents appropriate freedom while maintaining quality standards
+
+### Version
+- Bumped from 1.5.0 → 1.6.0
+
 ## [1.5.0] - 2026-07-22
 
 ### Changed
