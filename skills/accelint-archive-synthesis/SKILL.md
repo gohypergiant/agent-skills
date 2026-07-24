@@ -2,10 +2,10 @@
 name: accelint-archive-synthesis
 description: Periodically lint the full OpenSpec archive for cross-change decision drift, index/spec reconciliation, and structural over-coupling, the gap nothing else in the QRSPI/OpenSpec stack covers, since every other drift check (accelint-onboard-openspec, accelint-architecture-doc, accelint-qrspi-apply Phase 4) only looks forward from a single change's own artifacts. Use this skill when the user wants to "run archive synthesis," "lint the openspec archive," "check for decision drift," "audit the spec archive for contradictions," "find stale specs," "reconcile the specs index," "check capability coupling," or when accelint-qrspi-archive has surfaced its own suggestion that 15+ changes have archived since the last synthesis run. Also use when the user asks whether an old design decision still holds given everything decided since, whether specs/INDEX.md still matches the actual spec.md files on disk, or whether some capability has become an over-coupled refactor candidate. This skill never runs automatically and never blocks another skill — it is always either a human-invoked audit or an offered suggestion the human accepts explicitly.
 license: Apache-2.0
-compatibility: Requires the OpenSpec CLI, sub-agent support, and a project already onboarded with accelint-qrspi-archive so that openspec/changes/archive/INDEX.md and openspec/specs/INDEX.md exist and are populated. Routing confirmed findings requires the shared findings: interface (Mode 3 Refresh support) in whichever writer skill(s) a given finding targets; without it, this skill still produces its report but degrades to manual guidance for that step.
+compatibility: Requires the OpenSpec CLI, sub-agent support, and a project already onboarded with accelint-qrspi-archive so that openspec/changes/archive/INDEX.md and openspec/specs/INDEX.md exist and are populated. Routing confirmed findings requires the shared findings - interface (Mode 3 Refresh support) in whichever writer skill(s) a given finding targets; without it, this skill still produces its report but degrades to manual guidance for that step.
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Accelint Archive Synthesis
