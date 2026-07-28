@@ -34,7 +34,7 @@ Use:
 - warning before risk
 - numbered procedures
 
-This is one of the highest-value uses of the skill.
+This context benefits strongly from the discipline.
 
 ## Error messages and support answers
 
@@ -47,19 +47,6 @@ Pattern:
 3. state the next action
 
 Avoid apology filler and vague reassurance.
-
-## Prompts, AGENTS.md, and other agent instructions
-
-Default mode: Technical
-
-Treat instructions as procedures for a reader that cannot ask follow-up questions in the moment.
-
-Use:
-
-- one instruction per sentence when possible
-- explicit conditions
-- stable verbs for repeated actions
-- no soft "should" where the rule is mandatory
 
 ## Incident reports and status updates
 
@@ -85,6 +72,29 @@ Use:
 - remove throat-clearing
 - keep tone appropriate to the relationship
 - preserve warmth if the sender wants warmth
+
+## Persuasive or hybrid technical writing
+
+Default mode: Hybrid
+
+Use this for writing that must be technically clear but still needs persuasion, trust, or brand fit.
+
+Examples:
+
+- RFC summaries
+- architecture overviews
+- design proposals
+- product docs near marketing surfaces
+- onboarding copy for developer tools
+
+Use:
+
+- direct claims supported by facts
+- stable technical terms
+- plain wording for the recommendation or benefit
+- preserved warmth, rhythm, or confidence when those moves help the text do its job
+
+Do not flatten these texts into dry manuals unless the user asked for strict technical tone.
 
 ## UI copy and empty states
 

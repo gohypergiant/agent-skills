@@ -1,0 +1,109 @@
+{
+  "skill_name": "accelint-english-discipline",
+  "evals": [
+    {
+      "id": 2,
+      "prompt": "Audit this paragraph and list the highest-risk issues first, then give a rewrite: 'We have identified an issue that may have impacted some users during the deployment window, and engineering is currently working to remediate the situation as quickly as possible.'",
+      "expected_output": "A severity-ordered audit plus a direct rewrite that distinguishes fake hedges from real uncertainty, avoids inventing unsupported specifics, and replaces inflated language with plainer wording.",
+      "files": [],
+      "assertions": [
+        "The response includes an audit, not just a rewrite.",
+        "The audit identifies at least one high-risk clarity or truthfulness problem before presenting the rewrite.",
+        "The rewrite preserves uncertainty honestly rather than overstating what is known.",
+        "The rewrite uses plainer language than the source by reducing inflated phrasing.",
+        "The rewrite does not invent unsupported specifics unless clearly framed as examples or alternatives."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Make this friendlier but still plain and direct: 'We are thrilled to announce that our small team has finally shipped the update we have been dreaming about for months.'",
+      "expected_output": "A voice-preserving rewrite that removes inflation without flattening warmth.",
+      "files": [],
+      "assertions": [
+        "The rewrite becomes friendlier while staying plain and direct.",
+        "The rewrite preserves warmth rather than flattening the positive tone completely.",
+        "The rewrite removes inflation such as exaggerated enthusiasm or overstatement.",
+        "The rewrite does not become stiff, corporate, or overly formal.",
+        "The rewrite preserves the small-team and shipped-update meaning from the source."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Tighten this sentence without adding scope or examples: 'This page explains the backup policy and when restores need approval from operations.'",
+      "expected_output": "A minimal rewrite that becomes clearer and tighter while preserving the backup-policy scope and the restore-approval condition without adding new examples, artifacts, or structure.",
+      "files": [],
+      "assertions": [
+        "The rewrite is tighter and clearer than the source sentence.",
+        "The rewrite preserves the original topic: the backup policy and restore approval.",
+        "The rewrite preserves the approval condition for restores rather than dropping or broadening it.",
+        "The rewrite does not add examples, artifacts, headings, bullet points, or extra structure that the prompt did not request.",
+        "The rewrite remains a single local sentence rewrite rather than turning into documentation or policy framing."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Clean up this short internal note, but keep it a note rather than turning it into a checklist or policy: 'If the sync fails at night, leave a note for the morning team and include the job ID if you have it.'",
+      "expected_output": "A local rewrite that improves clarity and flow, keeps the optional nature of the job ID, and does not expand the note into a procedure, checklist, or broader operations guidance.",
+      "files": [],
+      "assertions": [
+        "The rewrite stays an internal note rather than becoming a checklist, procedure, or policy.",
+        "The rewrite preserves the original condition: if the sync fails at night.",
+        "The rewrite preserves the instruction to leave a note for the morning team.",
+        "The rewrite keeps the optional nature of including the job ID, rather than making it mandatory.",
+        "The rewrite does not add broader operations guidance, escalation rules, or extra steps not requested by the prompt."
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "Rewrite this plain-English request more clearly, but do not turn it into an audit, checklist, or expanded artifact: 'Can you make this onboarding note easier to scan? New hires keep missing the bit about VPN access happening after device setup.' Return only the revised note in final output.",
+      "expected_output": "A concise local rewrite in final output that improves scanability, preserves the onboarding-note format, and keeps the sequencing point that VPN access happens after device setup without expanding into broader procedure or policy.",
+      "files": [],
+      "assertions": [
+        "The final output returns only the revised note, not an audit or explanation.",
+        "The rewrite stays a note rather than becoming a checklist, policy, or expanded procedure.",
+        "The rewrite preserves the sequencing point that VPN access happens after device setup.",
+        "The rewrite improves scanability without adding broader onboarding guidance.",
+        "The rewrite keeps the meaning and audience of the source request intact."
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "Tighten this release note entry without changing scope or adding hype: 'This update includes improvements to export reliability and reduces the number of cases where scheduled reports fail when a data source responds slowly.' Return only the revised release note in final output.",
+      "expected_output": "A tighter release-note sentence in final output that preserves the two concrete claims, stays factual, and does not add hype, extra benefits, or broader product claims.",
+      "files": [],
+      "assertions": [
+        "The final output returns only the revised release note.",
+        "The rewrite preserves both claims: improved export reliability and fewer scheduled-report failures when a data source is slow.",
+        "The rewrite stays factual and does not add hype or unsupported benefits.",
+        "The rewrite remains a release-note style sentence rather than becoming marketing copy or a long explanation.",
+        "The rewrite is tighter and clearer than the source."
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "Rewrite this error help text so it is clearer and easier to act on, but keep the command and filename exact: 'The config loader was unable to parse settings.json. Please check the file for trailing commas and then rerun sync --apply.' Return only the revised text in final output.",
+      "expected_output": "A concise action-oriented rewrite in final output that preserves the exact `settings.json` filename and `sync --apply` command while making the failure and next action clearer.",
+      "files": [],
+      "assertions": [
+        "The final output returns only the revised help text.",
+        "The rewrite preserves the exact filename `settings.json`.",
+        "The rewrite preserves the exact command `sync --apply`.",
+        "The rewrite makes the failure and next action clearer without changing the technical meaning.",
+        "The rewrite does not add new troubleshooting steps or broader workflow guidance not present in the source."
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "Review this paragraph for over-simplification risk, then rewrite it if needed: 'The migration can change how cached sessions behave, so some users may need to sign in again after the deploy.'",
+      "expected_output": "A compact audit plus rewrite that keeps the real uncertainty, avoids fake force, and preserves the relationship between the migration and possible reauthentication.",
+      "files": [],
+      "assertions": [
+        "The response includes a brief audit before any rewrite.",
+        "The audit distinguishes real uncertainty from wording that could be tightened safely.",
+        "The rewrite preserves the possibility that only some users need to sign in again.",
+        "The rewrite preserves the causal relationship between the migration and cached-session behavior.",
+        "The rewrite becomes clearer without overstating certainty or impact."
+      ]
+    }
+  ]
+}

@@ -80,7 +80,7 @@ This is especially important for:
 
 - warnings
 - dangerous commands
-- prompts and agent instructions
+- prompts and interface instructions
 - operational runbooks
 
 ## 5. Short sentences and bounded paragraphs

@@ -1,6 +1,6 @@
 # Examples by writing type
 
-Load this reference when the skill would benefit from a concrete pattern before drafting, rewriting, or auditing text.
+Use this reference when a concrete pattern will help before drafting, rewriting, or auditing text.
 
 These examples are intentionally short. Use them to anchor judgment, not to force a template onto unrelated prose.
 
@@ -74,17 +74,6 @@ Why this helps:
 - gives the cause if known
 - ends with a clear next action
 
-## Prompt or agent-instruction rewrite
-
-**Before:** You should probably review the config before making any changes, and if you notice that the environment is production, you should be extra careful with commands that might delete things.
-
-**After:** If the environment is production, review the config before you run destructive commands.
-
-Why this helps:
-- moves the condition first
-- removes soft, ambiguous wording
-- keeps the instruction short enough to follow reliably
-
 ## Email or internal communication rewrite
 
 **Before:** I just wanted to reach out and let you know that we are still waiting on the API key from the vendor, so the integration work is a little blocked right now.
@@ -129,6 +118,17 @@ Why this helps:
 - **Better rewrite:** "If the old secret is still active in production, rotate the key after the deploy."
 - **Note:** This keeps the condition, removes weak modality, and makes the action explicit.
 
+## Hybrid technical rewrite
+
+**Before:** This guide helps teams get aligned on architecture decisions while providing a comprehensive overview of the system in a way that is approachable for both engineers and stakeholders.
+
+**After:** This guide helps teams align on architecture decisions. It gives engineers and stakeholders a clear system overview.
+
+Why this helps:
+- keeps the persuasive value
+- splits the abstract promise into direct claims
+- stays readable without flattening the purpose
+
 ## Casual request where heavy structure would be wrong
 
 **User asks:** "can you clean this up but keep it friendly?"
@@ -138,29 +138,26 @@ Why this helps:
 - remove filler and repetition
 - do not force numbered steps unless the text is actually procedural
 
-This reminds the skill not to over-apply technical or ADHD-oriented structure to simple human communication.
+This reminder helps avoid over-applying technical or ADHD-oriented structure to simple human communication.
 
-## What to borrow from upstream examples
+## Reusable example patterns
 
-Reusable patterns from the source skills:
+Patterns that work well in this reference:
 - before/after pairs for the same sentence or paragraph
 - one instruction per step
 - condition first, then action
 - state the failure, the cause, and the next action
 - show why a rewrite is better, not just that it is shorter
-- audit findings ordered by reader risk, not by tiny local edits
 
-Avoid copying upstream examples too literally when they depend on:
+Avoid copying examples too literally when they depend on:
 - product-specific names
 - commands or file paths from another project
 - timestamps, metrics, or incidents from another system
-- medical framing that only belongs in ADHD-specific guidance
 
-## When to load this file
+## When to use this file
 
-Load `references/examples.md` when:
+Use this file when:
 - the request is ambiguous and a concrete pattern will help select the right mode
-- the skill is auditing text and needs a compact example of the reporting format
 - the text mixes clarity goals with voice-sensitive constraints
 - a procedural or support rewrite needs a quick anchor before drafting
 - the model is over-correcting toward rigidity and needs examples of when to stay light
