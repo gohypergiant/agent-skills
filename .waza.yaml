@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/microsoft/waza/main/schemas/config.schema.json
+
+paths:
+  skills: skills/
+  evals: evals/
+  results: results/
+files:
+  evalFile: eval.yaml
+  taskGlob: tasks/*.yaml
+  taskFileSuffix: .yaml
+defaults:
+  engine: copilot-sdk
+  # engine: mock
+  model: gpt-5.4
+  # model: bedrock-claude-4-5-sonnet
+  timeout: 600
+  parallel: false
+  verbose: true
+  sessionLog: true
+cache:
+  enabled: false
+  dir: .waza-cache
+server:
+  port: 3000
+  resultsDir: results/
+dev:
+  model: gpt-5.4
+  # model: bedrock-claude-4-5-sonnet
+  target: medium-high
+  maxIterations: 5
+tokens:
+  warningThreshold: 500
+  fallbackLimit: 1000
+graders:
+  programTimeout: 30
+storage:
+  enabled: false

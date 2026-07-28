@@ -1,0 +1,18 @@
+id: positive-trigger-002
+name: Positive Trigger 2
+description: Auto-generated positive-trigger task.
+tags:
+  - positive-trigger
+inputs:
+  prompt: "I need assistance with accelint qrspi propose-related work"
+expected:
+  should_trigger: true
+graders:
+  - type: text
+    name: contains-keywords
+    config:
+      contains:
+        - "accelint"
+        - "propose"
+        - "qrspi"
+
