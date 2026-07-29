@@ -191,7 +191,7 @@ Relax or adapt these rules when:
 
 Before you deliver:
 
-1. Did the same requests still trigger?
+1. Would the same requests still trigger?
 2. Would the workflow run the same way?
 3. Did any requirement get softer?
 4. Did any exact token disappear?

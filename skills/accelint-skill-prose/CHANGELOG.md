@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.3] - 2026-07-29
+
+### Fixed
+- Tightened a few wording hotspots in `SKILL.md` and supporting references without changing trigger coverage, workflow semantics, or guardrail strength.
+- Standardized recurring phrasing such as “the same requests” across the root skill and references to reduce low-risk synonym drift.
+- Marked the RFC 2119 source URL as inline code in `references/rfc-2119.md` so it stays visually distinct from ordinary prose.
+
+### Version
+- Patch release at `0.5.3`.
+
 ## [0.5.2] - 2026-07-29
 
 ### Fixed

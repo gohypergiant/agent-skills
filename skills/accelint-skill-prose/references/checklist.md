@@ -4,7 +4,7 @@ Run this before you deliver an audit or rewrite.
 
 ## 1. Trigger safety
 
-- Would the rewritten description still trigger for the same real requests?
+- Would the rewritten description still trigger for the same requests?
 - Did any scope-defining phrase disappear?
 - Did any new trigger family appear without an explicit request?
 - Did a short description turn into a broader trigger inventory?

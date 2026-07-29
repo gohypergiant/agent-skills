@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.5.2"
+  version: "0.5.3"
 ---
 
 # Skill Prose
@@ -19,7 +19,7 @@ Keep the same term for the same concept. Do not rotate terms just to avoid repet
 
 Borrow selectively from controlled-language disciplines such as Simplified Technical English when they improve clarity without changing behavior. Strong fits include consistent terminology, short explicit sentences, active voice by default, and clear separation between instructions and explanation. Do not import controlled-language rules mechanically when they would erase rationale, flatten scope, or weaken behavioral precision.
 
-This skill extends general English-discipline editing with extra safety for:
+This skill extends general English editing with extra safety for:
 
 - `SKILL.md` files
 - frontmatter descriptions
@@ -279,7 +279,7 @@ Focus first on:
 - exact-reference loss
 - only then general clarity issues
 
-Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 terms when describing the strength of a rule or rewrite recommendation, and use severity labels only when they help rank audit findings rather than define behavior. Reserve labels like `Critical` for issues likely to materially change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
+Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 terms when describing the strength of a rule or rewrite recommendation. Use severity labels only when they help rank audit findings rather than define behavior. Reserve labels like `Critical` for issues likely to materially change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
 
 ### Rewrite only
 
@@ -327,7 +327,7 @@ If the task is audit-only, also ask: did I accidentally draft replacement wordin
 
 This step is not optional.
 
-1. Re-read the trigger or scope language. Would it still route the same real requests?
+1. Re-read the trigger or scope language. Would it still route the same requests?
 2. Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
 3. Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, `important`, `mandatory`, and `required`. Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
 4. Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
