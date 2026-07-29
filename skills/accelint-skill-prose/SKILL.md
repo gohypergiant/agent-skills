@@ -295,6 +295,8 @@ Give the risk summary first, then the rewrite.
 
 Load references only when needed, but when the user asks you to work on a skill, crawl the skill files first so you know what behavior-bearing prose exists beyond the current excerpt. Read the local `SKILL.md`, then load any linked files such as `references/` content, templates, or other instruction files the skill depends on before you tighten or audit wording that may span them.
 
+If you rewrite a root `SKILL.md`, do not stop at the crawl. Re-check the linked support files and edit them when needed so terminology, severity language, examples, and workflow wording stay internally consistent with the rewritten root file. Treat this as part of finishing the rewrite, not as an optional follow-up.
+
 Load references only when needed:
 
 - `references/checklist.md` — final pass before delivery, output-mode compliance, no-rewrite decisions, and cross-file consistency checks
@@ -340,7 +342,7 @@ This skill is not a full Simplified Technical English enforcement pass, and it i
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
 
-When a rewrite changes the root `SKILL.md`, check whether linked support files such as `references/` content now use stale terminology, inconsistent severity language, or mismatched examples. Apply the same prose standard there when needed so the folder remains internally consistent.
+When a rewrite changes the root `SKILL.md`, check whether linked support files such as `references/` content now use stale terminology, inconsistent severity language, or mismatched examples. Edit those files when needed so the folder remains internally consistent before you deliver the work.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

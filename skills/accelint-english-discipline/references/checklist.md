@@ -83,6 +83,7 @@ Ask:
 
 If all three are true, deliver it.
 
+
 ## STE-specific audit note
 
 If the user asked for strict STE-style review, use `ste-rules.md` and report:

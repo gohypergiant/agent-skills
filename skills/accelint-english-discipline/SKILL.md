@@ -13,11 +13,11 @@ Use plain, direct English as a discipline, not as a blunt instrument.
 
 This skill combines three strengths:
 
-- **STE structure** as the technical-documentation discipline for short, unambiguous sentences, stable terminology, and translation-friendly wording
+- **STE structure** for short, unambiguous sentences, stable terminology, and translation-friendly wording in technical documentation
 - **ADHD-aware shaping** as an optional action-first overlay for skimmable operational output
-- **Orwell's filter** as a cleanup pass for stale, inflated, evasive prose
+- **Orwell's filter** as a cleanup pass for stale, inflated, or evasive prose
 
-The goal is not "make everything shorter." The goal is: **make the text easier to act on and harder to misread, while preserving the user's intended meaning, audience, tone, and explicit constraints.**
+The goal is not to make everything shorter. The goal is: **make the text easier to act on and harder to misread, while preserving the user's intended meaning, audience, tone, and explicit constraints.**
 
 Default to the **smallest rewrite that solves the user's stated problem**. Do not add scope, structure, examples, extra use-case lists, or artifact framing unless the prompt asks for them or the text clearly needs them to stay accurate.
 
@@ -31,17 +31,17 @@ Default to the **smallest rewrite that solves the user's stated problem**. Do no
 
 ## Default Biases
 
-Use these as defaults, not as mechanical laws:
+Use these as defaults, not as mechanical rules:
 
 - Keep one term for one concept when repeated wording names the same thing.
 - Prefer wording that is easier for non-native readers to understand and easier to translate when that does not reduce accuracy.
 - Lead with the next action when the output is meant to help someone act.
 - Cut filler openings, recap paragraphs, and vague closers unless they serve an explicit tone or relationship need.
-- Do not apply strict technical-writing rules to marketing, poetry, fiction, or brand voice by default. Use them as clarity aids only.
+- Do not apply strict technical-writing rules to marketing, poetry, fiction, or brand voice by default. Use them only as clarity aids.
 
 ## Before You Rewrite
 
-Classify the request before you touch the text.
+Classify the request before you edit the text.
 
 ### 1. What kind of writing is this?
 
@@ -77,9 +77,9 @@ If the request is only to "rewrite," "tighten," "clean up," or "make this cleare
 
 Special case: **short descriptions and compact blurbs**.
 
-- If the source is already short, preserve its scope and concrete details before adding broader framing.
+- If the source is already short, preserve its scope and concrete details before you add broader framing.
 - Do not convert a short description into a longer inventory, artifact summary, or expanded use-case list unless the user explicitly asks for expansion.
-- Do not add semantically related phrases just because they sound useful or more comprehensive.
+- Do not add semantically related phrases just because they sound useful or more complete.
 - "Suitable for a short blurb" means compact and scope-preserving, not automatically broader.
 
 ### 4. Which discipline level fits?
@@ -107,7 +107,6 @@ Keep the user's:
 
 Do not optimize the sentence while damaging the job the text must do.
 
-
 ### 2. Prefer direct, concrete English
 
 Default moves:
@@ -118,9 +117,9 @@ Default moves:
 - name the actor when the actor matters
 - prefer active voice
 
-Do not trade away source-specific detail just to sound cleaner. If the source names concrete scope like components, data flow, deployment, timing, or approval conditions, keep that specificity unless the user asked to generalize it.
+Do not trade away source-specific detail just to sound cleaner. If the source names concrete scope such as components, data flow, deployment, timing, or approval conditions, keep that specificity unless the user asked to generalize it.
 
-For short descriptions, prefer preserving the original scope words over replacing them with a broader phrase set.
+For short descriptions, preserve the original scope words before you replace them with a broader phrase set.
 
 If a candidate phrase is not in the source, ask whether it preserves scope exactly or silently broadens it. If it broadens the scope, leave it out unless expansion was explicitly requested.
 
@@ -215,7 +214,7 @@ Do not make prose falsely certain or crudely simple.
 Quick test:
 
 - **Real hedge**: the fact is uncertain, conditional, unverified, estimated, or incomplete
-- **Fake hedge**: the sentence stays true after you remove words like `may`, `might`, `perhaps`, `it appears`, or `in some cases`
+- **Fake hedge**: the sentence stays true after you remove words such as `may`, `might`, `perhaps`, `it appears`, or `in some cases`
 
 ### 8. Preserve untouchables exactly
 
@@ -259,7 +258,7 @@ Use this ladder when simplifying obligation and uncertainty:
 
 But do **not** delete uncertainty that is real and material.
 
-- Bad simplification: "The deploy can have caused the outage."  
+- Bad simplification: "The deploy can have caused the outage."
 - Better: "The cause is not confirmed. The deploy is one possible cause."
 
 For recommendations, distinguish three cases:
@@ -284,14 +283,14 @@ For recommendations, distinguish three cases:
 1. Preserve the user's meaning and constraints.
 2. Decide whether this is a local rewrite or a structural rewrite.
 3. For local rewrites, make the smallest change that fixes the problem.
-4. In technical cleanup, escalate to structural rewrite when local edits cannot fix mixed mode, hidden sequence, ambiguity, terminology drift, or buried safety/requirement content.
+4. In technical cleanup, escalate to structural rewrite when local edits cannot fix mixed mode, hidden sequence, ambiguity, terminology drift, or buried safety or requirement content.
 5. If the user asked to tighten, shorten the text meaningfully when safe.
 6. Remove filler, stale phrasing, and avoidable abstraction.
 7. Split overloaded sentences.
 8. Convert passive to active when it improves clarity.
-9. Recheck pronouns such as `this`, `it`, `they`, `these`, and `those`. Repeat the noun when reference is not immediate.
+9. Recheck pronouns such as `this`, `it`, `they`, `these`, and `those`. Repeat the noun when the reference is not immediate.
 10. Keep necessary jargon, nuance, or voice intentionally.
-11. If the prompt asks for only the rewrite, return only the rewrite in final output.
+11. If the prompt asks for only the rewrite, return only the rewrite in the final output.
 12. Run the self-check before you deliver.
 
 ### For checking text instead of rewriting it
@@ -307,7 +306,7 @@ Use this structure:
    - the offending text
    - a better rewrite
    - a short note when the tradeoff is about tone, nuance, audience, or strict correctness
-4. **Optional full rewrite** — include only if the user asked for one or if the passage has many repeated issues
+4. **Optional full rewrite** — include it only if the user asked for one or if the passage has many repeated issues
 
 Prefer grouping findings by severity or passage section instead of reporting tiny edits in random order.
 
@@ -354,7 +353,7 @@ For ADHD-friendly or operational help, visible progress helps the reader stay or
 
 ### Action-first response pattern
 
-Use for help replies, support answers, and other task-oriented outputs.
+Use this for help replies, support answers, and other task-oriented outputs.
 
 1. First line: the next action
 2. Then: only the context needed to do it correctly
@@ -364,32 +363,32 @@ Do not use this pattern mechanically for essays, persuasive prose, or warm relat
 
 ### Plain rewrite pattern
 
-1. Keep the meaning
-2. Keep concrete scope details
-3. For short descriptions, keep the original scope before adding any broader phrasing
-4. Do not add semantically related phrases unless the source already contains them or the user asked for expansion
-5. Cut filler
-6. Replace abstract wording with concrete wording
-7. Rewrite the sentence structure, not just the word choice, when a direct swap would distort meaning
-8. Split long sentences
-9. Standardize repeated terms
-10. Re-check tone
-11. Stop when the rewrite already solves the user's stated problem
+1. Keep the meaning.
+2. Keep concrete scope details.
+3. For short descriptions, keep the original scope before you add any broader phrasing.
+4. Do not add semantically related phrases unless the source already contains them or the user asked for expansion.
+5. Cut filler.
+6. Replace abstract wording with concrete wording.
+7. Rewrite the sentence structure, not just the word choice, when a direct swap would distort meaning.
+8. Split long sentences.
+9. Standardize repeated terms.
+10. Re-check tone.
+11. Stop when the rewrite already solves the user's stated problem.
 
 ### Technical rewrite pattern
 
-1. Classify as procedural, descriptive, note, or safety instruction
-2. Apply the matching sentence structure
-3. Move conditions before commands
-4. Promote hidden instructions, limits, or safety content out of notes and descriptive filler
-5. Preserve commands and identifiers exactly
-6. Run the checklist
+1. Classify the text as procedural, descriptive, note, or safety instruction.
+2. Apply the matching sentence structure.
+3. Move conditions before commands.
+4. Promote hidden instructions, limits, or safety content out of notes and descriptive filler.
+5. Preserve commands and identifiers exactly.
+6. Run the checklist.
 
 ## Progressive Disclosure
 
 Load references only when needed:
 
-Start with `references/checklist.md`, `references/substitutions.md`, and the most relevant mode reference before making wording changes.
+Start with `references/checklist.md`, `references/substitutions.md`, and the most relevant mode reference before you change wording.
 
 Prefer local rewrite unless the user asked for a new structure, broader coverage, or a more complete artifact.
 
@@ -421,4 +420,4 @@ This skill intentionally synthesizes three source traditions:
 
 When those traditions conflict, follow the Conflict Resolution section instead of applying any one source mechanically.
 
-When applying this skill, optimize for disciplined English without damaging precision, truthfulness, or the user's stated constraints.
+When you apply this skill, optimize for disciplined English without damaging precision, truthfulness, or the user's stated constraints.
