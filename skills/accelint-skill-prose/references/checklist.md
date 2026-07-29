@@ -56,14 +56,21 @@ Check that these stayed exact unless the user asked otherwise:
 - Did you split overloaded sentences without changing order?
 - Did you keep examples that define scope?
 - Did you preserve rationale sentences that explain a guardrail, checkpoint, or timing rule?
+- If the user asked for a note, checklist, banner, or other compact format, did you preserve that format instead of expanding it into procedure or policy prose?
 
-## 8. Output-mode compliance
+## 8. Cross-file consistency
+
+- If you changed `SKILL.md`, did you check linked support files such as `references/` for stale terms, mismatched severity language, or examples that now contradict the root guidance?
+- If the task covered a skill folder, did you audit the full behavior-bearing file set rather than only the quoted excerpt?
+- Did you preserve consistency between the root instructions and the linked files that complete the workflow or examples?
+
+## 9. Output-mode compliance
 
 - If the request was audit-only, did you avoid rewriting the full passage?
 - If the request was rewrite-only, did you avoid prepending audit notes?
 - If the safest result was no rewrite, did you say so explicitly instead of forcing a cosmetic edit?
 
-## 9. Final question
+## 10. Final question
 
 - Is this behaviorally safer than an ordinary prose edit?
 - If risk remains, should you revise less or recommend no rewrite?

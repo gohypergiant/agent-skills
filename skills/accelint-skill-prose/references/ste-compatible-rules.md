@@ -130,6 +130,8 @@ Do not use note-style text for:
 
 ## 9. Keep technical and repo-specific terms when they are the precise terms
 
+Apply this across the skill's linked file set when the task covers a whole skill. If `SKILL.md` and `references/` use different terms for the same behavior-bearing concept, normalize them deliberately rather than letting synonym drift persist across files.
+
 Do not replace exact repo vocabulary with plainer but broader wording.
 
 Preserve terms such as:

@@ -83,7 +83,38 @@ The safest move is to preserve a sentence that is already minimal, exact, and un
 **Why the unsafe version drifts:**
 It collapses distinct trigger families into a vague bucket and weakens the description's trigger logic.
 
-## 6. Preserve rationale when it carries policy
+## 6. Cross-file consistency when editing a skill
+
+**Request:** Tighten this skill's prose safely. The user pasted only one section, but the skill also has `references/` files.
+
+**Good response pattern:**
+1. Read the root `SKILL.md`
+2. Load the linked support files that carry workflow rules, examples, or trigger guidance
+3. Edit the minimum set of files needed to keep wording consistent across the skill
+
+**Why this is correct:**
+A local rewrite can create drift if linked files still use older terms, weaker severity language, or contradictory examples.
+
+## 7. Preserve short-note format
+
+**Request:** Make this onboarding note easier to scan. Return only the revised note.
+
+**Source:**
+> VPN access happens after device setup.
+
+**Safe rewrite:**
+> VPN access happens after device setup.
+
+**Also safe if a small emphasis cue helps scanability:**
+> **VPN access happens after device setup.**
+
+**Unsafe rewrite:**
+> Complete device setup first. VPN access is provisioned after your device is configured, and you will not receive credentials until IT confirms setup is complete.
+
+**Why the unsafe version drifts:**
+It escalates a simple note into a more procedural, policy-like instruction and adds process detail the source did not require.
+
+## 8. Preserve rationale when it carries policy
 
 **Before:**
 > Frontmatter capture happens at step 30 after Checkpoint 1 approval, not before, because earlier capture can write frontmatter against content the user is about to change.

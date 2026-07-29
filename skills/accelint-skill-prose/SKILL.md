@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.4.2"
+  version: "0.5.1"
 ---
 
 # Skill Prose
@@ -68,6 +68,7 @@ In skill prose, these are often part of the behavior, not decoration:
 - field names
 - quoted text
 - cross-references to other files or sections
+- linked support files whose wording completes the rule, example set, or workflow
 
 Do not simplify these casually.
 
@@ -136,6 +137,8 @@ Use when the prose defines step order, approval dependencies, decision points, s
 Extract what must stay fixed.
 
 First normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
+
+If the task concerns a skill folder rather than a single passage, inventory the behavior-bearing files before editing. At minimum, inspect the root `SKILL.md` and any referenced support files that define constraints, examples, workflows, or output structure. Do not assume the visible excerpt is the full contract.
 
 Look for:
 
@@ -230,6 +233,8 @@ Good edits:
 - keep required nouns, verbs, subjects, and articles explicit rather than omitting them for brevity
 - prefer active voice unless passive wording is necessary to preserve meaning or actor ambiguity
 - remove extra framing when it adds no operational meaning
+- preserve the source format when format is part of the request, such as note, checklist, banner, heading, or short inline instruction
+- for short practical notes, prefer the smallest local rewrite that improves scanability without escalating tone, adding process detail, or turning the note into a policy artifact
 
 Bad edits:
 
@@ -288,9 +293,11 @@ Give the risk summary first, then the rewrite.
 
 ## Progressive disclosure
 
+Load references only when needed, but when the user asks you to work on a skill, crawl the skill files first so you know what behavior-bearing prose exists beyond the current excerpt. Read the local `SKILL.md`, then load any linked files such as `references/` content, templates, or other instruction files the skill depends on before you tighten or audit wording that may span them.
+
 Load references only when needed:
 
-- `references/checklist.md` — final pass before delivery, output-mode compliance, and no-rewrite decisions
+- `references/checklist.md` — final pass before delivery, output-mode compliance, no-rewrite decisions, and cross-file consistency checks
 - `references/frontmatter-descriptions.md` — description tightening, trigger-family preservation, and trigger-scope safety
 - `references/workflow-guardrails.md` — workflow, approval, rationale, verb-sensitivity, and exact-reference preservation
 - `references/ste-compatible-rules.md` — selective Simplified Technical English patterns adapted for behavior-preserving prompt editing
@@ -332,6 +339,8 @@ This step is not optional.
 This skill is not a full Simplified Technical English enforcement pass, and it is not a general ADHD-friendly rewriting mode. Use compatible ideas from those disciplines selectively and subordinate them to behavior preservation.
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
+
+When a rewrite changes the root `SKILL.md`, check whether linked support files such as `references/` content now use stale terminology, inconsistent severity language, or mismatched examples. Apply the same prose standard there when needed so the folder remains internally consistent.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

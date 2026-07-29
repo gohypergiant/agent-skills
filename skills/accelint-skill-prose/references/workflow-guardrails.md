@@ -4,6 +4,8 @@ Use this reference when editing skill prose that controls execution order, appro
 
 ## Treat workflow prose as executable guidance
 
+When the user is editing a skill folder, do not assess a workflow passage in isolation if linked files finish the workflow contract. Read the root `SKILL.md` and the relevant support files first so you preserve cross-file order, gates, and exact references.
+
 Ask:
 
 - If an agent followed only the rewritten text, would it behave the same way?
@@ -21,6 +23,7 @@ Keep these exact unless the user explicitly asks otherwise:
 - field names and keys
 - slash-joined references such as `specs_touched/decisions`
 - examples that anchor the rule
+- linked support-file wording that completes the workflow contract
 - behavior-bearing verbs such as `stop`, `pause`, `wait`, `proceed`, `skip`, `require`, and `allow`
 - rationale sentences that explain why a guardrail exists or what risk it prevents
 

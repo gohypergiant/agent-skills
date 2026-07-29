@@ -6,6 +6,8 @@ Use this reference when tightening a skill description or other short trigger-de
 
 A frontmatter description is compact trigger logic. Treat it like behavior-defining scope, not like marketing copy.
 
+If the description belongs to a skill folder, check the root `SKILL.md` and any linked support files before tightening it. Description wording must still match the actual body guidance and boundaries the skill enforces elsewhere.
+
 ## Preserve exactly when important
 
 Default to preserving these unless the user asked to change them:

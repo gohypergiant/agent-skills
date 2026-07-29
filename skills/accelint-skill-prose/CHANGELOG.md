@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5.1] - 2026-07-29
+
+### Added
+- Added explicit skill-folder crawling guidance so edits start by reading the root `SKILL.md` and relevant linked support files before tightening behavior-bearing prose.
+- Added cross-file consistency checks to ensure `references/` content stays aligned with revised root instructions.
+
+### Changed
+- Updated `SKILL.md` and linked reference files to treat cross-file wording consistency as part of safe skill-prose editing.
+- Clarified that description tightening and workflow reviews should consider the full behavior-bearing file set, not only the quoted passage.
+
+### Fixed
+- Clarified that short practical notes should stay notes, not expand into more procedural or policy-like prose during scanability rewrites.
+- Added checklist and example guidance to preserve compact source formats such as notes, checklists, banners, and headings.
+
+### Version
+- Minor+patch changes combined in release `0.5.1`.
+
 ## [0.4.2] - 2026-07-29
 
 ### Fixed
