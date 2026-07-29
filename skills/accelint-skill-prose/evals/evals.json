@@ -80,7 +80,7 @@
       "prompt": "Tighten this hard stop without weakening the prohibition. Return only the revised text in final output.\n\n\"NEVER change the user's meaning to make a sentence shorter. Precision outranks brevity.\"",
       "expected_output": "A tighter hard stop that preserves the absolute prohibition against meaning drift and the precision-over-brevity rationale.",
       "files": [
-        "../accelint-english-discipline/SKILL.md"
+        "../accelint-english-manager/SKILL.md"
       ],
       "expectations": [
         "Preserves the 'NEVER' prohibition strength.",

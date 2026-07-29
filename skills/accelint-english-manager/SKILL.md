@@ -1,13 +1,13 @@
 ---
-name: accelint-english-discipline
+name: accelint-english-manager
 description: Use when drafting, rewriting, simplifying, reviewing, editing, polishing, humanizing, de-slopping, cleaning up, or checking written English that must become plainer, clearer, more direct, or easier to act on without changing the user's intended meaning, audience, tone, or explicit constraints. Also use when the user says "plain English", "simple English", "make this readable", "make this clearer", "make this direct", "make this sound better", "too wordy", "too formal", "edit this", "clean this up", "review this writing", "grammar check", "Orwell", "STE", "ASD-STE100", "ADHD-friendly", "shorter", "less fluffy", or asks for clearer docs, prompts, emails, UI copy, reports, support replies, or instructions.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.2.2"
 ---
 
-# English Discipline
+# English Manager
 
 Use plain, direct English as a discipline, not as a blunt instrument.
 
@@ -39,9 +39,9 @@ Use these as defaults, not as mechanical rules:
 - Cut filler openings, recap paragraphs, and vague closers unless they serve an explicit tone or relationship need.
 - Do not apply strict technical-writing rules to marketing, poetry, fiction, or brand voice by default. Use them only as clarity aids.
 
-## Before You Rewrite
+## Start by classifying the task
 
-Classify the request before you edit the text.
+Choose the primary mode before you edit.
 
 ### 1. What kind of writing is this?
 
@@ -66,12 +66,30 @@ Extract explicit constraints first:
 
 If a mechanical rule conflicts with an explicit user constraint, **the constraint wins**.
 
-### 3. Is this a local rewrite or a structural rewrite?
+### 3. Audit only, rewrite only, or audit plus rewrite?
+
+Choose the primary mode before you edit.
+
+#### Audit only
+
+Use when the user wants review, risk analysis, or a check for clarity, tone, actionability, or rule fit.
+
+In this mode, do not rewrite the text unless the user explicitly asks for a rewrite.
+
+#### Rewrite only
+
+Use when the user wants cleaner final text directly.
+
+#### Audit plus rewrite
+
+Use when the user wants both findings and a revised version.
+
+### 4. Is this a local rewrite or a structural rewrite?
 
 Choose the smallest fitting scope before you edit.
 
 - **Local rewrite** (default): tighten or clarify the given text only. Preserve concrete details. Do not add new examples, phrases, files, sections, artifact names, or extra framing unless the prompt explicitly asks.
-- **Structural rewrite**: reorganize or expand the text because the user asked for a fuller artifact, broader scope coverage, a new checklist, a new section, or a behavior audit.
+- **Structural rewrite**: reorganize or expand the text because the user asked for a fuller artifact, broader scope coverage, a new checklist, a new section, or a deeper audit.
 
 If the request is only to "rewrite," "tighten," "clean up," or "make this clearer," assume **local rewrite** unless the prompt clearly asks for more.
 
@@ -82,7 +100,7 @@ Special case: **short descriptions and compact blurbs**.
 - Do not add semantically related phrases just because they sound useful or more complete.
 - "Suitable for a short blurb" means compact and scope-preserving, not automatically broader.
 
-### 4. Which discipline level fits?
+### 5. Which discipline level fits?
 
 Use one of these levels:
 
@@ -123,7 +141,7 @@ For short descriptions, preserve the original scope words before you replace the
 
 If a candidate phrase is not in the source, ask whether it preserves scope exactly or silently broadens it. If it broadens the scope, leave it out unless expansion was explicitly requested.
 
-If the user asked to tighten, make a real reduction when you can do so safely. Do not hover near the source text just to avoid risk. Preserve the exact behavior, then remove avoidable words, repeated framing, and redundant explanation.
+If the user asked to tighten, make a real reduction when you can do so safely. Preserve the exact meaning, then remove avoidable words, repeated framing, and redundant explanation.
 
 **Before:** This functionality is designed to facilitate easier onboarding.
 **After:** This feature helps new users start faster.
@@ -170,9 +188,7 @@ Use this for explanation.
 
 ### 5. Shape action-oriented output for easy execution
 
-When the output helps a reader act, especially in chat or operational responses:
-
-Use this shaping for the answer format, not as a reason to expand a small rewrite into a larger document.
+When the output helps a reader act, especially in chat or operational responses, use this shaping for the answer format. Do not use it as a reason to expand a small rewrite into a larger document.
 
 1. Lead with the next action.
 2. Number multi-step work.
@@ -251,9 +267,9 @@ Use this ladder when simplifying obligation and uncertainty:
 
 | You see | Prefer |
 |---|---|
-| should (requirement) | must |
+| should (requirement) | must only if the source clearly expresses a true requirement and stronger force does not change meaning |
 | should (soft advice) | state the fact, recommendation, or condition directly |
-| may / might / could (mere possibility) | can |
+| may / might / could (mere possibility) | can only for capability or well-supported general possibility; keep real uncertainty when it matters |
 | would (avoidable hypothetical padding) | rewrite the sentence |
 
 But do **not** delete uncertainty that is real and material.
@@ -334,6 +350,27 @@ Specific resolutions:
 - **Active voice vs tact**: use active voice by default, but allow passive when tact, uncertainty, or deliberate emphasis matters.
 - **Hedge removal vs truthfulness**: remove fake hedges; keep real uncertainty.
 
+## Output rules by mode
+
+### Audit only
+
+Use this structure:
+
+1. **Summary** — 1 to 3 sentences
+2. **Highest-risk issues first**
+3. **Finding list** — problem category, offending text, better rewrite, and a short note when needed
+4. **Optional full rewrite** — only if the user asked for one
+
+### Rewrite only
+
+If the user asks for only the rewrite, return only the rewrite.
+
+Do not prepend audit notes or explanation unless the user asked.
+
+### Audit plus rewrite
+
+Give the findings first, then the rewrite.
+
 ## Multi-Turn Continuity
 
 Across turns, keep the chosen discipline level and terminology stable unless the user changes the goal.
@@ -349,44 +386,9 @@ When you revise in multiple passes:
 
 For ADHD-friendly or operational help, visible progress helps the reader stay oriented.
 
-## Quick Patterns
-
-### Action-first response pattern
-
-Use this for help replies, support answers, and other task-oriented outputs.
-
-1. First line: the next action
-2. Then: only the context needed to do it correctly
-3. Then: the visible result or remaining next step
-
-Do not use this pattern mechanically for essays, persuasive prose, or warm relationship-first messages.
-
-### Plain rewrite pattern
-
-1. Keep the meaning.
-2. Keep concrete scope details.
-3. For short descriptions, keep the original scope before you add any broader phrasing.
-4. Do not add semantically related phrases unless the source already contains them or the user asked for expansion.
-5. Cut filler.
-6. Replace abstract wording with concrete wording.
-7. Rewrite the sentence structure, not just the word choice, when a direct swap would distort meaning.
-8. Split long sentences.
-9. Standardize repeated terms.
-10. Re-check tone.
-11. Stop when the rewrite already solves the user's stated problem.
-
-### Technical rewrite pattern
-
-1. Classify the text as procedural, descriptive, note, or safety instruction.
-2. Apply the matching sentence structure.
-3. Move conditions before commands.
-4. Promote hidden instructions, limits, or safety content out of notes and descriptive filler.
-5. Preserve commands and identifiers exactly.
-6. Run the checklist.
-
 ## Progressive Disclosure
 
-Load references only when needed:
+Load references only when needed.
 
 Start with `references/checklist.md`, `references/substitutions.md`, and the most relevant mode reference before you change wording.
 
@@ -399,6 +401,17 @@ Prefer local rewrite unless the user asked for a new structure, broader coverage
 - `references/rfc-2119.md` — normalize informal severity labels into RFC 2119 obligation terms when operational clarity matters
 - `references/examples.md` — compact rewrite and audit examples by writing type
 - `references/substitutions.md` — slop-to-simple replacements, modal ladder, and consistency sets
+
+## Required self-check before delivery
+
+This step is not optional.
+
+1. Re-read the user's goal, tone, and constraints. Would the rewrite still do the same job?
+2. Search for terms you did not choose during vocabulary cleanup. Replace accidental synonym drift.
+3. Search for `should`, `would`, `may`, `might`, `could`, `critical`, `important`, `mandatory`, and `optional`. Confirm obligation, uncertainty, and severity did not shift by accident.
+4. Search for `this`, `it`, `they`, `these`, and `those`. Make sure each referent is clear in context.
+5. Re-check every untouchable the source relied on.
+6. Confirm the final answer matches the requested mode: audit only, rewrite only, or audit plus rewrite.
 
 ## Limits
 
