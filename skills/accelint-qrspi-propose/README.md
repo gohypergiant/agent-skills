@@ -1,6 +1,6 @@
 # Accelint QRSPI Propose
 
-Automate the planning phase of spec-driven development. This skill walks you through Questions → Research → Design → Structure (QRSPI), with mandatory review checkpoints before code gets written.
+Automate the planning phase of spec-driven development. This skill walks through Questions → Research → Design → Structure (QRSPI) and requires review checkpoints before code is written.
 
 ## What This Does
 
@@ -11,7 +11,7 @@ Takes a ticket or feature request and produces a complete OpenSpec change:
 - Delta specs (what changes in the system)
 - Task breakdown (vertical slices for implementation)
 
-The skill stops after planning. You run `/opsx:apply` when you're ready to implement.
+The skill stops after planning. You run `/accelint-qrspi-apply <change-name>` when you're ready to implement.
 
 ## When to Use This
 
@@ -81,17 +81,17 @@ A fresh sub-agent (new context) sees only the questions and answers them with fa
 
 Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts following your project's config.yaml rules.
 
-Mandatory checkpoint: You review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
+Required checkpoint: You review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
 
 #### Phase 4: Specs & Tasks
 
 Generate delta specs and task breakdown. A sub-agent receives questions + research + approved design (NO ticket) and creates remaining artifacts with emphasis on vertical slicing.
 
-Mandatory checkpoint: You review the task breakdown to ensure vertical slicing (not layer-by-layer).
+Required checkpoint: You review the task breakdown to ensure vertical slicing (not layer-by-layer).
 
 #### Phase 5: Completion
 
-The skill reports completion and exits. You decide when to run `/opsx:apply` to start implementation.
+The skill reports completion and exits. You decide when to run `/accelint-qrspi-apply <change-name>` to start implementation.
 
 ## Key Concepts
 
@@ -108,7 +108,7 @@ This prevents "solution bias" where the ticket's suggested solution biases the a
 
 ### Human Checkpoints
 
-Two mandatory review gates:
+Two required review gates:
 
 1. **After design.md**: Catch wrong patterns, missing systems, scope issues
 2. **After tasks.md**: Verify vertical slicing, phase ordering
@@ -118,7 +118,7 @@ You can:
 - Request edits (agent modifies in place)
 - Edit manually (you modify, confirm when done)
 
-The skill won't proceed without your explicit approval.
+The skill will not proceed without your explicit approval.
 
 ### Vertical Slicing
 
@@ -139,7 +139,7 @@ Phase 3: All API changes
 Phase 4: All frontend changes
 ```
 
-The skill checks for horizontal slicing and warns you if detected.
+The skill checks for horizontal slicing and corrects it before review if detected.
 
 ### No Automatic Implementation
 
@@ -149,7 +149,7 @@ The skill stops after planning. This allows:
 - Clearing context between planning and coding
 - User control over when implementation begins
 
-Run `/clear` and `/opsx:apply` when you're ready to start building.
+Run `/clear` and `/accelint-qrspi-apply <change-name>` when you're ready to start building.
 
 ## Example Usage
 
@@ -204,7 +204,7 @@ Generated artifacts:
 Next steps:
 1. Review the artifacts one more time if needed
 2. Run /clear to start fresh context for implementation
-3. Run /opsx:apply to begin implementation
+3. Run /accelint-qrspi-apply <change-name> to begin implementation
 ```
 
 ## Configuration Requirements
@@ -240,5 +240,5 @@ Don't rush to implementation. It's fine to create multiple specs before coding. 
 
 - `accelint-onboard-openspec` - Set up OpenSpec configuration for your project
 - `accelint-onboard-agent` - Create AGENTS.md with behavior rules
-- `opsx:apply` - Implement tasks from the generated change
+- `accelint-qrspi-apply` - Implement tasks from the generated change
 - `opsx:verify` - Verify implementation matches artifacts before archiving
