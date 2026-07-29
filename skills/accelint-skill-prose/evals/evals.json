@@ -19,33 +19,6 @@
       ]
     },
     {
-      "id": 4,
-      "prompt": "Generate a portable SKILL.md audit checklist covering wordiness, ambiguity, soft instructions, trigger drift, and exact-reference preservation. Maximum 1500 characters. Suitable for any repo.",
-      "expected_output": "A short, practical checklist tuned to portable SKILL.md auditing, not a repo-specific essay.",
-      "files": [],
-      "expectations": [
-        "Uses checklist format rather than an essay.",
-        "Stays at or under 1500 characters.",
-        "Covers wordiness, ambiguity, soft instructions, trigger drift, and exact-reference preservation.",
-        "Includes at least one behavior-safety or exact-reference check.",
-        "Stays portable and avoids repo-specific references."
-      ]
-    },
-    {
-      "id": 5,
-      "prompt": "Audit this skill guidance for behavior drift risk before rewriting it: 'If you are not sure whether the current workflow still applies, you should usually continue with the default plan unless the user says otherwise.'",
-      "expected_output": "A severity-ordered audit that identifies ambiguity, soft modality, and hidden behavior risk, then proposes a safer rewrite with calibrated severity labels.",
-      "files": [],
-      "expectations": [
-        "Identifies ambiguity in phrases like 'not sure', 'usually', or 'unless'.",
-        "Identifies soft modality in 'should'.",
-        "Explains the hidden behavior risk in 'default plan'.",
-        "Orders findings by risk severity.",
-        "Uses proportionate severity labels rather than theatrical ones.",
-        "Proposes a safer rewrite."
-      ]
-    },
-    {
       "id": 6,
       "prompt": "Tighten this portable skill description without turning it into a broad trigger inventory. Keep it suitable for frontmatter and preserve scope. Return only the revised description in final output.\n\n\"Use when users ask for deployment documentation or a short overview of how services connect in production.\"",
       "expected_output": "A compact frontmatter-safe rewrite that preserves the original deployment-documentation and production-service-overview scope without expanding into a broader trigger list.",
@@ -235,31 +208,6 @@
       ]
     },
     {
-      "id": 20,
-      "prompt": "Fix only the obvious clarity issue in this instruction without restructuring it. Return only the revised text in final output.\n\n\"After you've finished all the steps in the workflow that are listed above, and before you proceed to the next major phase which involves implementation, you should make sure to verify that the design document has been approved by the user.\"",
-      "expected_output": "A minimal-touch rewrite that cuts filler and clarifies the sentence while preserving the same sequence, approval requirement, and local structure.",
-      "files": [],
-      "expectations": [
-        "Cuts filler and improves clarity.",
-        "Preserves the sequence: complete workflow steps, then verify approval, before implementation.",
-        "Preserves the requirement that the design document be approved by the user.",
-        "Does not restructure into bullets or a checklist.",
-        "Returns only the revised instruction."
-      ]
-    },
-    {
-      "id": 21,
-      "prompt": "This section has clarity problems because of structure. Reorganize it for clarity while preserving all behavior. Return only the revised section in final output.\n\n\"You need to check the files. Make sure they're valid. The validation step comes after reading. Before reading, confirm the path is correct. If validation fails, stop. If the path is wrong, ask the user. If reading fails, report the error. After validation succeeds, proceed to the next step.\"",
-      "expected_output": "A full rewrite that reorganizes the section into execution order while preserving all checks, conditions, and outcomes.",
-      "files": [],
-      "expectations": [
-        "Reorganizes the content into a clearer execution order.",
-        "Preserves the path-check, read, validate, and proceed sequence.",
-        "Preserves all conditional branches: wrong path, reading failure, validation failure, validation success.",
-        "Returns only the revised section."
-      ]
-    },
-    {
       "id": 22,
       "prompt": "Tighten this instruction if possible. If it is already near-optimal, explain why no rewrite is recommended.\n\n\"Load references/workflow-steps.md before Step 5.\"",
       "expected_output": "A correct no-rewrite decision, or a truly minimal safer alternative, justified by compactness, exact reference preservation, and clear timing.",
@@ -304,23 +252,6 @@
       ]
     },
     {
-      "id": 25,
-      "prompt": "Tighten this guardrail text without changing what is required. Normalize the severity wording to RFC-2119 language when appropriate, and return only the revised text in final output.\n\n\"CRITICAL: Agents must preserve exact file paths and commands. IMPORTANT: They should keep rationale sentences when those sentences explain why a hard stop exists. OPTIONAL: They may shorten examples that do not define scope.\"",
-      "expected_output": "A tighter rewrite-only guardrail that preserves the same obligation levels while normalizing CRITICAL, IMPORTANT, and OPTIONAL into RFC-2119 terms.",
-      "files": [
-        "references/rfc-2119.md",
-        "references/checklist.md"
-      ],
-      "expectations": [
-        "Normalizes the CRITICAL requirement into MUST or REQUIRED language.",
-        "Normalizes the IMPORTANT recommendation into SHOULD or RECOMMENDED language.",
-        "Normalizes the OPTIONAL permission into MAY or OPTIONAL language.",
-        "Preserves the exact references to file paths and commands.",
-        "Preserves the rationale-sentence condition tied to hard stops.",
-        "Returns only the revised text."
-      ]
-    },
-    {
       "id": 26,
       "prompt": "Audit this behavior-defining prose for obligation drift and severity ambiguity before rewriting it: 'IMPORTANT: Checkpoint approval is critical before writing tasks.md, and reviewers should never paraphrase specs_touched/decisions because that field is mandatory.'",
       "expected_output": "A severity-aware audit plus safer rewrite that identifies mixed informal severity labels, clarifies obligation levels with RFC-2119 terms, and preserves exact workflow and token requirements.",
@@ -335,6 +266,136 @@
         "Preserves 'specs_touched/decisions' exactly.",
         "Proposes RFC-2119 normalization such as MUST, REQUIRED, or SHOULD where appropriate.",
         "Keeps the approval-before-writing workflow semantics intact."
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "Tighten this architecture-skill description without losing trigger coverage, quoted user phrases, or the architecture-documentation boundary. Keep it suitable for frontmatter. Return only the revised description in final output.\n\n\"Generate or update an ARCHITECTURE.md living document for any codebase. Use this skill whenever a user mentions 'architecture.md', 'ARCHITECTURE.md', 'document my architecture', 'architecture overview', 'system architecture', 'generate architecture doc', 'create architecture file', 'update architecture', 'architecture diagram', or wants a technical overview of how their project is structured. Make sure to use this skill whenever users want to document how their system works — even if they phrase it as 'write up the system', 'document the tech stack', 'create a technical overview', or 'help me describe the architecture'. Always prefer this skill over ad-hoc architecture documentation.\"",
+      "expected_output": "A tighter frontmatter description that preserves architecture-documentation trigger coverage, representative quoted examples, and the boundary against generic documentation help.",
+      "files": [
+        "../accelint-architecture-doc/SKILL.md"
+      ],
+      "expectations": [
+        "Preserves the ARCHITECTURE.md / architecture-doc scope.",
+        "Preserves several representative quoted trigger phrases.",
+        "Preserves the 'document how their system works' coverage.",
+        "Does not broaden into generic documentation or README writing.",
+        "Returns only the revised description."
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "Tighten this planning-skill description without losing trigger coverage, the planning-only boundary, or the implementation handoff. Keep it suitable for frontmatter. Return only the revised description in final output.\n\n\"Automate the QRSPI + OpenSpec planning workflow (Questions → Research → Design → Structure) for spec-driven development. Use this skill when the user wants to plan a ticket, start a QRSPI workflow, create a change with QRSPI, or says 'plan this with QRSPI', 'use QRSPI to plan', 'start QRSPI workflow', 'create spec-driven change', or asks about planning a feature/change before implementation. This skill handles ONLY the planning phase — it does NOT implement code. After completion, the user continues with /opsx:apply for implementation.\"",
+      "expected_output": "A tighter frontmatter description that preserves QRSPI planning coverage, quoted triggers, the planning-only boundary, and the /opsx:apply implementation handoff.",
+      "files": [
+        "../accelint-qrspi-propose/SKILL.md"
+      ],
+      "expectations": [
+        "Preserves QRSPI/OpenSpec planning scope.",
+        "Preserves representative quoted trigger phrases.",
+        "Preserves the 'ONLY the planning phase' boundary.",
+        "Preserves the 'does NOT implement code' restriction.",
+        "Preserves the /opsx:apply handoff exactly.",
+        "Returns only the revised description."
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "Tighten this archive-skill description without paraphrasing exact commands, exact index paths, or the `related:` frontmatter key. Keep it suitable for frontmatter. Return only the revised description in final output.\n\n\"Archive an OpenSpec change end-to-end. This skill invokes `/opsx:archive` or `/opsx:bulk-archive` itself to perform the native merge, then immediately follows up with the cross-capability linking and running indices OpenSpec doesn't build on its own — linking every capability a change touched via a shared `related:` frontmatter list, keeping `openspec/specs/INDEX.md` current, and appending a row to `openspec/changes/archive/INDEX.md`. Use this skill whenever the user wants to archive a change, says 'archive this change', 'bulk archive these changes', 'run opsx:archive', 'run opsx:bulk-archive', 'update the specs index', 'cross-link the specs', or wants the archived-change changelog kept current. This skill is purely additive on the linking side — it never prunes a `related:` entry and never changes a change's `Status` column after the initial write; that pruning/synthesis work belongs to `accelint-archive-synthesis`.\"",
+      "expected_output": "A tighter frontmatter description that preserves exact commands, exact paths, the `related:` key, additive-only behavior, and the archive-vs-synthesis boundary.",
+      "files": [
+        "../accelint-qrspi-archive/SKILL.md"
+      ],
+      "expectations": [
+        "Preserves `/opsx:archive` exactly.",
+        "Preserves `/opsx:bulk-archive` exactly.",
+        "Preserves `related:` exactly.",
+        "Preserves `openspec/specs/INDEX.md` exactly.",
+        "Preserves `openspec/changes/archive/INDEX.md` exactly.",
+        "Preserves the additive-only boundary and the non-pruning rule.",
+        "Preserves the boundary to `accelint-archive-synthesis`.",
+        "Returns only the revised description."
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "Audit this rewritten skill-prose guidance for synonym drift. Do NOT rewrite it; report findings only.\n\nOriginal concepts to keep stable: trigger coverage, workflow semantics, field names and keys.\n\nCandidate rewrite: 'Preserve activation coverage, keep the process behavior intact, and do not generalize properties or metadata names when tightening prompt instructions.'",
+      "expected_output": "An audit-only response that identifies vocabulary drift where the rewrite rotates behavior-bearing terms instead of preserving the original concept terms.",
+      "files": [
+        "SKILL.md",
+        "references/ste-compatible-rules.md"
+      ],
+      "expectations": [
+        "Flags 'activation coverage' as drift from 'trigger coverage'.",
+        "Flags 'process behavior' as drift from 'workflow semantics'.",
+        "Flags 'properties or metadata names' as drift from 'field names and keys'.",
+        "Explains why synonym rotation is risky in behavior-defining prose.",
+        "Produces findings only rather than a full rewrite."
+      ]
+    },
+    {
+      "id": 31,
+      "prompt": "Audit this instruction for referent ambiguity before rewriting it: 'After you review the description and the reference file, tighten it only if it still needs work; otherwise keep it and mention why.'",
+      "expected_output": "An audit or audit-plus-rewrite response that identifies ambiguous pronouns or referents and preserves the underlying decision logic.",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md"
+      ],
+      "expectations": [
+        "Identifies ambiguity in 'it' at least once.",
+        "Explains which possible referents compete in context.",
+        "Preserves the review-then-tighten-or-keep decision logic if suggesting a safer alternative.",
+        "Uses referent clarity as a behavior-safety concern rather than a purely stylistic one."
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "Make this easier to scan without changing it from a checklist into prose. Return only the revised checklist in final output.\n\n'- NEVER overwrite ARCHITECTURE.md without reading it first — existing sections contain human-authored context that codebase scanning cannot recover. Always read before touching.\n- NEVER fabricate infrastructure details — if you cannot determine the cloud provider, deployment model, or data store from the codebase, mark it `<!-- TODO: fill in -->` rather than guessing.\n- NEVER paste the entire directory tree verbatim — show meaningful architectural layers, not every file.'",
+      "expected_output": "A clearer checklist rewrite that preserves checklist shape, all hard stops, the exact ARCHITECTURE.md and TODO token references, and the anti-fabrication rationale.",
+      "files": [
+        "../accelint-architecture-doc/SKILL.md"
+      ],
+      "expectations": [
+        "Preserves checklist/list format rather than converting to prose.",
+        "Preserves 'ARCHITECTURE.md' exactly.",
+        "Preserves '`<!-- TODO: fill in -->`' exactly.",
+        "Preserves the hard-stop strength of each NEVER item.",
+        "Preserves the anti-fabrication and read-before-touch rationales.",
+        "Returns only the revised checklist."
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "This passage mixes instruction and rationale. Tighten it without turning the rationale into a hidden step or dropping it as filler. Return only the revised passage in final output.\n\n\"Cross-linking has to happen after the merge resolves, not before it, which is exactly why this skill runs the native command itself as its own first phase rather than treating 'a merge happened' as some external event to watch for. A delta spec in `openspec/changes/<slug>/specs/` is still provisional — `/opsx:bulk-archive` may resolve conflicts across several changes in chronological order before a capability's spec reaches its final shape. Only the merged, archived spec is worth indexing; anything computed earlier would be linking against content that might still change underneath it.\"",
+      "expected_output": "A tighter passage that preserves the after-merge timing rule, exact tokens, and rationale, while keeping explanation distinct from executable steps.",
+      "files": [
+        "../accelint-qrspi-archive/SKILL.md",
+        "references/workflow-guardrails.md",
+        "references/ste-compatible-rules.md"
+      ],
+      "expectations": [
+        "Preserves the after-merge/not-before timing rule.",
+        "Preserves `openspec/changes/<slug>/specs/` exactly.",
+        "Preserves `/opsx:bulk-archive` exactly.",
+        "Preserves the rationale that delta specs are provisional and earlier indexing would be unsafe.",
+        "Does not convert the explanatory rationale into a separate mandatory workflow step.",
+        "Returns only the revised passage."
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "Tighten this behavior-defining guidance using RFC-2119 obligation language where appropriate, but preserve the exact hard-stop strength and React-specific scope. Return only the revised text in final output.\n\n\"ALWAYS use this skill when working with any React code - writing components, hooks, JSX; refactoring; optimizing re-renders, memoization, state management; reviewing for performance; fixing hydration mismatches; debugging infinite re-renders, stale closures, input focus loss, animations restarting; preventing remounting; implementing transitions, lazy initialization, effect dependencies. Even simple React tasks benefit from these patterns.\"",
+      "expected_output": "A tighter rewrite that preserves React-specific trigger scope and strong obligation semantics, optionally normalized into RFC-2119 language without broadening scope.",
+      "files": [
+        "../accelint-react-best-practices/SKILL.md",
+        "references/rfc-2119.md"
+      ],
+      "expectations": [
+        "Preserves the any-React-code scope.",
+        "Preserves representative trigger families such as components/hooks/JSX and hydration or re-render issues.",
+        "Preserves the strong obligation semantics of ALWAYS use this skill.",
+        "Does not broaden into generic frontend or JavaScript guidance.",
+        "Returns only the revised text."
       ]
     }
   ]

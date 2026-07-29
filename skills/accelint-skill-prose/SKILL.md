@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.4.0"
+  version: "0.4.2"
 ---
 
 # Skill Prose
@@ -101,7 +101,11 @@ Choose the primary mode before editing.
 
 Use when the user wants review, risk analysis, or a check for ambiguity, drift, or weak wording.
 
-In this mode, do not rewrite the text unless the user explicitly asks for a rewrite. Naming a safer alternative briefly inside a finding is acceptable only if it functions as evidence for the risk you identified, not as a stealth rewrite of the full passage.
+In this mode, do not rewrite the text unless the user explicitly asks for a rewrite.
+
+Do not include replacement wording, "safer" rewrites, or suggested revised sentences as part of the deliverable. If you need to point at a safer pattern, describe the risk in principle instead of drafting substitute text.
+
+A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary as evidence for why the source is risky. In those cases, keep it fragment-level, not sentence-level, and do not let it become a stealth rewrite of the passage.
 
 ### 2. Rewrite only
 
@@ -199,7 +203,7 @@ If the source names a specific token like `specs_touched/decisions`, keep that t
 
 If the source contains words like `must`, `do not`, `never`, `required`, `critical`, or `important`, preserve the same obligation level.
 
-When rewriting behavior-defining prose, normalize informal severity labels to RFC 2119 terms when possible. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Do not apply this mechanically to quoted text, exact tokens, or other untouchables that must stay exact.
+When rewriting behavior-defining prose, normalize informal severity labels to RFC 2119 terms when possible. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Apply this to heading-level or banner-level labels like `MANDATORY CHECKPOINT`, `CRITICAL STEP`, or `IMPORTANT` too, not only sentence-level prose. Do not apply this mechanically to quoted text, exact tokens, or other untouchables that must stay exact. If you preserve an informal severity label, do so for an exactness reason, not just because the original wording feels emphatic.
 
 A clearer version must preserve the same obligation level.
 
@@ -259,7 +263,7 @@ Use this structure:
 1. **Summary** — 1 to 3 sentences
 2. **Highest-risk issues first**
 3. **Finding list** — category, source text, risk, and why it matters
-4. **Optional safer alternative** — only at finding level, and only when it clarifies the issue without becoming a full rewrite
+4. **Optional safer alternative** — only if the user explicitly asked for examples, and only at finding level
 5. **Optional full rewrite** — only if the user asked for it
 
 Focus first on:
@@ -308,17 +312,20 @@ Before you deliver, ask:
 
 If any answer is risky, revise less.
 
+If the task is audit-only, also ask: did I accidentally draft replacement wording instead of limiting myself to findings?
+
 ## Required self-check before delivery
 
 This step is not optional.
 
 1. Re-read the trigger or scope language. Would it still route the same real requests?
 2. Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
-3. Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, and `required`. Confirm obligation strength did not shift by accident. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis.
+3. Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, `important`, `mandatory`, and `required`. Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
 4. Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
 5. Re-check every exact token, command, path, field name, identifier, example, and behavior-bearing verb that the source relied on.
 6. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
 7. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
+8. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
 
 ## Limits
 

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.4.2] - 2026-07-29
+
+### Fixed
+- Clarified that RFC 2119 normalization applies to heading-level and banner-level severity labels such as `MANDATORY CHECKPOINT`, not only sentence-level prose.
+- Required an explicit exactness-based justification when preserving informal severity labels like `MANDATORY` or `CRITICAL` in behavior-defining rewrites.
+- Expanded the required self-check to inspect headings, banners, and checkpoint labels for unnormalized severity wording.
+
+### Version
+- Patch release at `0.4.2`.
+
+## [0.4.1] - 2026-07-29
+
+### Changed
+- Tightened audit-only mode in `SKILL.md` to prohibit sentence-level replacement wording unless the user explicitly asks for examples, reducing the risk of accidental rewrites in audit-only responses.
+- Updated the audit-only output rules and required self-check to explicitly verify that audit-only deliverables stay findings-only.
+
+### Version
+- Patch release at `0.4.1`.
+
 ## [0.4.0] - 2026-07-29
 
 ### Added
