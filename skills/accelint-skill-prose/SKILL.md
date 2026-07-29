@@ -138,7 +138,9 @@ Extract what must stay fixed.
 
 First normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
 
-If the task concerns a skill folder rather than a single passage, inventory the behavior-bearing files before editing. Start by reading the root `SKILL.md`, then recursively inspect support files inside the skill folder that may carry behavior, examples, workflows, output structure, or exact wording constraints. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline. Do not assume the visible excerpt is the full contract.
+If the task concerns a skill folder rather than a single passage, inventory the behavior-bearing files before editing. Start by reading the root `SKILL.md`, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline. Do not assume the visible excerpt is the full contract.
+
+If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
 
 Look for:
 
@@ -293,7 +295,7 @@ Give the risk summary first, then the rewrite.
 
 ## Progressive disclosure
 
-Load references only when needed, but when the user asks you to work on a skill, crawl the skill folder first so you know what behavior-bearing prose exists beyond the current excerpt. Read the local `SKILL.md`, then inspect linked files and other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files before you tighten or audit wording that may span them.
+Load references only when needed, but when the user asks you to work on a skill, crawl the skill folder first so you know what behavior-bearing prose exists beyond the current excerpt. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
 If you rewrite a root `SKILL.md`, do not stop at the crawl. Re-check the support files you inspected and edit them when needed so terminology, severity language, examples, and workflow wording stay internally consistent with the rewritten root file. Treat this as part of finishing the rewrite, not as an optional follow-up.
 
@@ -332,9 +334,11 @@ This step is not optional.
 3. Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, `important`, `mandatory`, and `required`. Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
 4. Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
 5. Re-check every exact token, command, path, field name, identifier, example, and behavior-bearing verb that the source relied on.
-6. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
-7. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
-8. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
+6. Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS.md`, and any inspected instruction files before deciding the support-file set was complete.
+7. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
+8. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
+9. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
+10. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
 
 ## Limits
 
@@ -342,7 +346,7 @@ This skill is not a full Simplified Technical English enforcement pass, and it i
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
 
-When a rewrite changes the root `SKILL.md`, check whether the rest of the inspected skill folder — including `references/` content and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, or mismatched examples. Edit those files when needed so the folder remains internally consistent before you deliver the work.
+When a rewrite changes the root `SKILL.md`, check whether the rest of the inspected skill folder — including files linked from `SKILL.md` or `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, or mismatched examples. Edit those files when needed so the folder remains internally consistent before you deliver the work.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

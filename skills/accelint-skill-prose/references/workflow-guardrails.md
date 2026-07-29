@@ -4,7 +4,9 @@ Use this reference when editing skill prose that controls execution order, appro
 
 ## Treat workflow prose as executable guidance
 
-When the user is editing a skill folder, do not assess a workflow passage in isolation if other files finish the workflow contract. Read the root `SKILL.md` and the relevant behavior-bearing support files first so you preserve cross-file order, gates, and exact references.
+When the user is editing a skill folder, do not assess a workflow passage in isolation if other files finish the workflow contract. Read the root `SKILL.md`, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to the relevant behavior-bearing support files so you preserve cross-file order, gates, and exact references.
+
+If discovery is inconclusive, retry with a simpler listing method or direct directory inspection. Do not treat an incomplete crawl as evidence that no linked support files exist.
 
 Ask:
 

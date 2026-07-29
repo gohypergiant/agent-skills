@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.4] - 2026-07-29
+
+### Fixed
+- Required skill-folder crawls to follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to generic support-file discovery.
+- Added an explicit recovery rule for inconclusive file discovery so agents MUST retry with a simpler listing method or direct directory inspection, or tell the user the crawl is incomplete before proceeding.
+- Expanded the required self-check and checklist guidance so incomplete support-file discovery is caught before delivery.
+
+### Version
+- Patch release at `0.5.4`.
+
 ## [0.5.3] - 2026-07-29
 
 ### Fixed
