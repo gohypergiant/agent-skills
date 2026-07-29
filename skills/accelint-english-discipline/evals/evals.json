@@ -104,6 +104,38 @@
         "The rewrite preserves the causal relationship between the migration and cached-session behavior.",
         "The rewrite becomes clearer without overstating certainty or impact."
       ]
+    },
+    {
+      "id": 22,
+      "prompt": "Rewrite this procedural note in plain English, but preserve the real obligation levels and normalize informal severity labels to RFC-2119 terms where that improves clarity: 'CRITICAL: You must rotate the signing key before release. IMPORTANT: You should notify support if session invalidation is expected. OPTIONAL: You may post the status note after verification.' Return only the revised text in final output.",
+      "expected_output": "A concise procedural rewrite in final output that preserves the requirement, recommendation, and permission levels while replacing informal severity labels with matching RFC-2119 terms.",
+      "files": [
+        "references/rfc-2119.md"
+      ],
+      "assertions": [
+        "The final output returns only the revised text.",
+        "The rewrite normalizes CRITICAL into MUST or REQUIRED language.",
+        "The rewrite normalizes IMPORTANT into SHOULD or RECOMMENDED language.",
+        "The rewrite normalizes OPTIONAL into MAY or OPTIONAL language.",
+        "The rewrite preserves the sequence and meaning of key rotation, support notification, and status-note posting.",
+        "The rewrite stays plain and direct without adding extra workflow detail."
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "Audit this sentence for clarity and obligation drift, then rewrite it if needed: 'Important: reviewers should keep exact file paths, and critical warnings must stay near the step they affect.'",
+      "expected_output": "A compact audit plus rewrite that identifies mixed severity language, preserves the true obligation levels, and clarifies the sentence in plainer English.",
+      "files": [
+        "references/rfc-2119.md"
+      ],
+      "assertions": [
+        "The response includes an audit before any rewrite.",
+        "The audit notes ambiguity or inconsistency in informal severity wording such as Important or critical.",
+        "The rewrite preserves the requirement to keep exact file paths.",
+        "The rewrite preserves the requirement that warnings stay near the affected step.",
+        "The rewrite uses clearer obligation language without weakening a real requirement.",
+        "The rewrite stays plain and direct."
+      ]
     }
   ]
 }

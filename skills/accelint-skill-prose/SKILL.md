@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.2.0"
+  version: "0.4.0"
 ---
 
 # Skill Prose
@@ -16,6 +16,8 @@ This skill is for text that does more than sound good. It defines when a skill t
 Use plain, direct English, but do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
 
 Keep the same term for the same concept. Do not rotate terms just to avoid repetition. In skill prose, consistent wording is part of the behavior contract.
+
+Borrow selectively from controlled-language disciplines such as Simplified Technical English when they improve clarity without changing behavior. Strong fits include consistent terminology, short explicit sentences, active voice by default, and clear separation between instructions and explanation. Do not import controlled-language rules mechanically when they would erase rationale, flatten scope, or weaken behavioral precision.
 
 This skill extends general English-discipline editing with extra safety for:
 
@@ -164,6 +166,8 @@ If a phrase is doing trigger work, keep it or replace it only with wording that 
 
 If an agent followed only the rewritten text, it should behave the same way.
 
+Separate procedural text from descriptive text when the distinction helps clarity. Procedural text tells the agent what to do. Descriptive text explains what something means, why a guardrail exists, or when a rule applies. Do not force descriptive or policy text into imperative form if that would change the behavior or make the constraint sound narrower than it is.
+
 Check for:
 
 - step order
@@ -193,7 +197,9 @@ If the source names a specific token like `specs_touched/decisions`, keep that t
 
 ### 4. Preserve hard-stop strength
 
-If the source contains words like `must`, `do not`, `never`, `required`, or `critical`, do not soften them.
+If the source contains words like `must`, `do not`, `never`, `required`, `critical`, or `important`, preserve the same obligation level.
+
+When rewriting behavior-defining prose, normalize informal severity labels to RFC 2119 terms when possible. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Do not apply this mechanically to quoted text, exact tokens, or other untouchables that must stay exact.
 
 A clearer version must preserve the same obligation level.
 
@@ -217,6 +223,8 @@ Good edits:
 - move conditions before commands when the meaning stays the same
 - replace inflated wording with concrete wording
 - standardize repeated terms
+- keep required nouns, verbs, subjects, and articles explicit rather than omitting them for brevity
+- prefer active voice unless passive wording is necessary to preserve meaning or actor ambiguity
 - remove extra framing when it adds no operational meaning
 
 Bad edits:
@@ -242,6 +250,8 @@ If the text is already compact, exact, and behaviorally clear, prefer an explici
 
 ## Output rules by mode
 
+For your own responses, you may borrow lightweight cognitive-load reduction patterns when they help the user act on the result. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries. Do not let response-formatting choices override audit accuracy, and do not reshape source text just to make it feel more ADHD-friendly unless the user explicitly asked for that delivery style.
+
 ### Audit only
 
 Use this structure:
@@ -260,7 +270,7 @@ Focus first on:
 - exact-reference loss
 - only then general clarity issues
 
-Use calibrated severity, not theatrics. Strong labels like `Critical` are allowed when they help order risk, but reserve them for issues likely to materially change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
+Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 terms when describing the strength of a rule or rewrite recommendation, and use severity labels only when they help rank audit findings rather than define behavior. Reserve labels like `Critical` for issues likely to materially change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
 
 ### Rewrite only
 
@@ -279,6 +289,8 @@ Load references only when needed:
 - `references/checklist.md` — final pass before delivery, output-mode compliance, and no-rewrite decisions
 - `references/frontmatter-descriptions.md` — description tightening, trigger-family preservation, and trigger-scope safety
 - `references/workflow-guardrails.md` — workflow, approval, rationale, verb-sensitivity, and exact-reference preservation
+- `references/ste-compatible-rules.md` — selective Simplified Technical English patterns adapted for behavior-preserving prompt editing
+- `references/rfc-2119.md` — normalize informal severity labels into RFC 2119 obligation terms without changing behavior strength
 - `references/examples.md` — before/after examples for audit-only, no-rewrite, guardrails, and frontmatter-safe tightening
 
 ## Quick decision tests
@@ -302,13 +314,15 @@ This step is not optional.
 
 1. Re-read the trigger or scope language. Would it still route the same real requests?
 2. Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
-3. Search for `must`, `should`, `may`, `avoid`, `critical`, and `required`. Confirm obligation strength did not shift by accident, and that any severity labels you added are proportionate to real behavior risk.
+3. Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, and `required`. Confirm obligation strength did not shift by accident. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis.
 4. Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
 5. Re-check every exact token, command, path, field name, identifier, example, and behavior-bearing verb that the source relied on.
 6. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
 7. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
 
 ## Limits
+
+This skill is not a full Simplified Technical English enforcement pass, and it is not a general ADHD-friendly rewriting mode. Use compatible ideas from those disciplines selectively and subordinate them to behavior preservation.
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
 

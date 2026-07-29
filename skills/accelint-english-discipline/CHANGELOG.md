@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0] - 2026-07-29
+
+### Added
+- Added `references/rfc-2119.md` with normalization guidance for requirement, recommendation, permission, and prohibition language based on RFC 2119.
+
+### Changed
+- Updated `SKILL.md` to normalize informal severity labels such as `critical`, `important`, `mandatory`, and `optional` into RFC 2119 terms when rewriting technical or behavior-bearing prose.
+- Added progressive-disclosure guidance to load the RFC 2119 reference when operational clarity depends on precise obligation language.
+
+### Version
+- Minor release at `1.2.0`.
+
 ## [1.1.0] - 2026-07-28
 
 ### Added

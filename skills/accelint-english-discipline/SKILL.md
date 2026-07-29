@@ -4,7 +4,7 @@ description: Use when drafting, rewriting, simplifying, reviewing, editing, poli
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # English Discipline
@@ -228,6 +228,8 @@ Do not rewrite these unless the user explicitly asks:
 
 When simplifying, preserve truth before force. A stronger sentence is not better if it becomes less accurate.
 
+When rewriting technical or behavior-bearing prose that uses informal severity labels such as `critical`, `important`, `mandatory`, or `optional`, normalize them to RFC 2119 terms when possible. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Do not do this mechanically for quoted text, legal text, code, commands, paths, identifiers, or voice-sensitive prose that must stay exact.
+
 Use this ladder when simplifying obligation and uncertainty:
 
 | You see | Prefer |
@@ -373,6 +375,7 @@ Prefer local rewrite unless the user asked for a new structure, broader coverage
 - `references/checklist.md` — final verification pass for rewrites and audits
 - `references/adhd-patterns.md` — action-first shaping for ADHD-friendly or operational responses
 - `references/use-cases.md` — adaptations for docs, prompts, errors, reports, UI copy, and creative work
+- `references/rfc-2119.md` — normalize informal severity labels into RFC 2119 obligation terms when operational clarity matters
 - `references/examples.md` — compact rewrite and audit examples by writing type
 - `references/substitutions.md` — slop-to-simple replacements, modal ladder, and consistency sets
 

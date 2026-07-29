@@ -302,6 +302,40 @@
         "Mentions output-format compliance where relevant.",
         "Does not say to deliver immediately without verification."
       ]
+    },
+    {
+      "id": 25,
+      "prompt": "Tighten this guardrail text without changing what is required. Normalize the severity wording to RFC-2119 language when appropriate, and return only the revised text in final output.\n\n\"CRITICAL: Agents must preserve exact file paths and commands. IMPORTANT: They should keep rationale sentences when those sentences explain why a hard stop exists. OPTIONAL: They may shorten examples that do not define scope.\"",
+      "expected_output": "A tighter rewrite-only guardrail that preserves the same obligation levels while normalizing CRITICAL, IMPORTANT, and OPTIONAL into RFC-2119 terms.",
+      "files": [
+        "references/rfc-2119.md",
+        "references/checklist.md"
+      ],
+      "expectations": [
+        "Normalizes the CRITICAL requirement into MUST or REQUIRED language.",
+        "Normalizes the IMPORTANT recommendation into SHOULD or RECOMMENDED language.",
+        "Normalizes the OPTIONAL permission into MAY or OPTIONAL language.",
+        "Preserves the exact references to file paths and commands.",
+        "Preserves the rationale-sentence condition tied to hard stops.",
+        "Returns only the revised text."
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "Audit this behavior-defining prose for obligation drift and severity ambiguity before rewriting it: 'IMPORTANT: Checkpoint approval is critical before writing tasks.md, and reviewers should never paraphrase specs_touched/decisions because that field is mandatory.'",
+      "expected_output": "A severity-aware audit plus safer rewrite that identifies mixed informal severity labels, clarifies obligation levels with RFC-2119 terms, and preserves exact workflow and token requirements.",
+      "files": [
+        "references/rfc-2119.md",
+        "references/workflow-guardrails.md"
+      ],
+      "expectations": [
+        "Identifies ambiguity caused by informal severity words like IMPORTANT or critical.",
+        "Flags or discusses obligation drift risk between should, never, and mandatory-strength language.",
+        "Preserves 'tasks.md' exactly.",
+        "Preserves 'specs_touched/decisions' exactly.",
+        "Proposes RFC-2119 normalization such as MUST, REQUIRED, or SHOULD where appropriate.",
+        "Keeps the approval-before-writing workflow semantics intact."
+      ]
     }
   ]
 }
