@@ -89,8 +89,8 @@ It collapses distinct trigger families into a vague bucket and weakens the descr
 
 **Good response pattern:**
 1. Read the root `SKILL.md`
-2. Load the linked support files that carry workflow rules, examples, or trigger guidance
-3. Edit the minimum set of files needed to keep wording consistent across the skill
+2. Load the behavior-bearing support files that carry workflow rules, examples, trigger guidance, or exact wording constraints, including relevant `references/` files
+3. Edit the minimum set of files needed to keep wording consistent across the skill folder
 
 **Why this is correct:**
 A local rewrite can create drift if linked files still use older terms, weaker severity language, or contradictory examples.

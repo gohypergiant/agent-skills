@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.5.2] - 2026-07-29
+
+### Fixed
+- Clarified that skill-folder work should start with the root `SKILL.md` and then recursively inspect other likely behavior-bearing files in the folder, not only explicitly linked files.
+- Clarified that `references/` content and other inspected support files are eligible for edit when cross-file consistency requires it.
+- Updated reference guidance and checklist language so folder-path invocations like `/accelint-skill-prose <path-to-skill-folder>` more reliably cover full-folder audits and rewrites.
+
+### Version
+- Patch release at `0.5.2`.
+
 ## [0.5.1] - 2026-07-29
 
 ### Added

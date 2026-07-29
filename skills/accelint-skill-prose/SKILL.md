@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.5.1"
+  version: "0.5.2"
 ---
 
 # Skill Prose
@@ -138,7 +138,7 @@ Extract what must stay fixed.
 
 First normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
 
-If the task concerns a skill folder rather than a single passage, inventory the behavior-bearing files before editing. At minimum, inspect the root `SKILL.md` and any referenced support files that define constraints, examples, workflows, or output structure. Do not assume the visible excerpt is the full contract.
+If the task concerns a skill folder rather than a single passage, inventory the behavior-bearing files before editing. Start by reading the root `SKILL.md`, then recursively inspect support files inside the skill folder that may carry behavior, examples, workflows, output structure, or exact wording constraints. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline. Do not assume the visible excerpt is the full contract.
 
 Look for:
 
@@ -293,9 +293,9 @@ Give the risk summary first, then the rewrite.
 
 ## Progressive disclosure
 
-Load references only when needed, but when the user asks you to work on a skill, crawl the skill files first so you know what behavior-bearing prose exists beyond the current excerpt. Read the local `SKILL.md`, then load any linked files such as `references/` content, templates, or other instruction files the skill depends on before you tighten or audit wording that may span them.
+Load references only when needed, but when the user asks you to work on a skill, crawl the skill folder first so you know what behavior-bearing prose exists beyond the current excerpt. Read the local `SKILL.md`, then inspect linked files and other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files before you tighten or audit wording that may span them.
 
-If you rewrite a root `SKILL.md`, do not stop at the crawl. Re-check the linked support files and edit them when needed so terminology, severity language, examples, and workflow wording stay internally consistent with the rewritten root file. Treat this as part of finishing the rewrite, not as an optional follow-up.
+If you rewrite a root `SKILL.md`, do not stop at the crawl. Re-check the support files you inspected and edit them when needed so terminology, severity language, examples, and workflow wording stay internally consistent with the rewritten root file. Treat this as part of finishing the rewrite, not as an optional follow-up.
 
 Load references only when needed:
 
@@ -342,7 +342,7 @@ This skill is not a full Simplified Technical English enforcement pass, and it i
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
 
-When a rewrite changes the root `SKILL.md`, check whether linked support files such as `references/` content now use stale terminology, inconsistent severity language, or mismatched examples. Edit those files when needed so the folder remains internally consistent before you deliver the work.
+When a rewrite changes the root `SKILL.md`, check whether the rest of the inspected skill folder — including `references/` content and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, or mismatched examples. Edit those files when needed so the folder remains internally consistent before you deliver the work.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

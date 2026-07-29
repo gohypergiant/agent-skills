@@ -60,8 +60,8 @@ Check that these stayed exact unless the user asked otherwise:
 
 ## 8. Cross-file consistency
 
-- If you changed `SKILL.md`, did you check linked support files such as `references/` for stale terms, mismatched severity language, or examples that now contradict the root guidance?
-- If the task covered a skill folder, did you audit the full behavior-bearing file set rather than only the quoted excerpt?
+- If you changed `SKILL.md`, did you check the rest of the inspected skill folder, such as `references/` and other behavior-bearing support files, for stale terms, mismatched severity language, or examples that now contradict the root guidance?
+- If the task covered a skill folder, did you audit the full behavior-bearing file set rather than only the quoted excerpt, and were those files eligible for edit when consistency required it?
 - Did you preserve consistency between the root instructions and the linked files that complete the workflow or examples?
 
 ## 9. Output-mode compliance
