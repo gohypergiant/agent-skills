@@ -136,6 +136,35 @@
         "The rewrite uses clearer obligation language without weakening a real requirement.",
         "The rewrite stays plain and direct."
       ]
+    },
+    {
+      "id": 24,
+      "prompt": "Make this support reply clearer and easier to act on, but keep the apology and do not add steps: 'Sorry about the mess here — it looks like the export got stuck after you changed the date range. If you try the same export again now, it should go through.' Return only the revised reply in final output.",
+      "expected_output": "A concise support reply in final output that keeps the apology, preserves the likely cause and suggested retry, and improves clarity without adding troubleshooting steps or removing warmth.",
+      "files": [],
+      "assertions": [
+        "The final output returns only the revised support reply.",
+        "The rewrite preserves the apology rather than stripping it out.",
+        "The rewrite preserves the likely cause that the export got stuck after the date-range change.",
+        "The rewrite preserves the suggested action to try the same export again now.",
+        "The rewrite does not add extra troubleshooting steps, escalation advice, or support-policy language.",
+        "The rewrite stays warm, clear, and direct rather than becoming stiff or corporate."
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "Rewrite this short persuasive technical blurb so it is clearer but still keeps some confidence and momentum: 'Our deployment model gives teams a practical path to ship changes faster without losing traceability during review.' Return only the revised blurb in final output.",
+      "expected_output": "A compact hybrid rewrite in final output that stays technically clear while preserving the persuasive point about faster shipping without lost traceability.",
+      "files": [
+        "references/use-cases.md"
+      ],
+      "assertions": [
+        "The final output returns only the revised blurb.",
+        "The rewrite preserves both key claims: teams can ship changes faster and still keep traceability during review.",
+        "The rewrite stays concise and technically clear.",
+        "The rewrite preserves some confidence or persuasive momentum rather than flattening into a dry manual sentence.",
+        "The rewrite does not add broader product claims, examples, or implementation detail not present in the source."
+      ]
     }
   ]
 }

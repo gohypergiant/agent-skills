@@ -13,9 +13,9 @@ Use plain, direct English as a discipline, not as a blunt instrument.
 
 This skill combines three strengths:
 
-- **STE structure** for short, unambiguous sentences and stable terminology
-- **ADHD-aware shaping** for action-first, skimmable output
-- **Orwell's filter** for cutting stale, inflated, evasive prose
+- **STE structure** as the technical-documentation discipline for short, unambiguous sentences, stable terminology, and translation-friendly wording
+- **ADHD-aware shaping** as an optional action-first overlay for skimmable operational output
+- **Orwell's filter** as a cleanup pass for stale, inflated, evasive prose
 
 The goal is not "make everything shorter." The goal is: **make the text easier to act on and harder to misread, while preserving the user's intended meaning, audience, tone, and explicit constraints.**
 
@@ -34,6 +34,7 @@ Default to the **smallest rewrite that solves the user's stated problem**. Do no
 Use these as defaults, not as mechanical laws:
 
 - Keep one term for one concept when repeated wording names the same thing.
+- Prefer wording that is easier for non-native readers to understand and easier to translate when that does not reduce accuracy.
 - Lead with the next action when the output is meant to help someone act.
 - Cut filler openings, recap paragraphs, and vague closers unless they serve an explicit tone or relationship need.
 - Do not apply strict technical-writing rules to marketing, poetry, fiction, or brand voice by default. Use them as clarity aids only.
@@ -162,7 +163,9 @@ Use this for instructions.
 Use this for explanation.
 
 - one main fact per sentence
+- introduce information gradually
 - group related facts
+- start paragraphs with a clear topic when possible
 - keep paragraphs on one topic
 - do not slip instructions into explanation paragraphs
 
@@ -224,9 +227,24 @@ Do not rewrite these unless the user explicitly asks:
 - product names, API names, config keys
 - legal or compliance text
 
+### 9. Handle safety, notes, and hidden requirements correctly
+
+In technical modes:
+
+- do not hide required actions inside descriptive paragraphs
+- do not hide instructions, limits, or safety-critical behavior inside notes
+- when a statement prevents harm, write it as a safety instruction
+- start safety instructions with the preventive command or triggering condition
+- follow with the concrete hazard or result
+
+For procedures, prefer direct imperative instructions over modal-heavy requirement phrasing.
+Use RFC 2119 normalization mainly for requirements, policy, interface contracts, or governance text.
+
 ## Modal and Tone Discipline
 
 When simplifying, preserve truth before force. A stronger sentence is not better if it becomes less accurate.
+
+In Technical and Strict STE-leaning modes, clarity, consistency, and controlled meaning outrank warmth, flourish, and stylistic variety. Preserve voice only when it does not add ambiguity or term drift.
 
 When rewriting technical or behavior-bearing prose that uses informal severity labels such as `critical`, `important`, `mandatory`, or `optional`, normalize them to RFC 2119 terms when possible. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Do not do this mechanically for quoted text, legal text, code, commands, paths, identifiers, or voice-sensitive prose that must stay exact.
 
@@ -266,13 +284,15 @@ For recommendations, distinguish three cases:
 1. Preserve the user's meaning and constraints.
 2. Decide whether this is a local rewrite or a structural rewrite.
 3. For local rewrites, make the smallest change that fixes the problem.
-4. If the user asked to tighten, shorten the text meaningfully when safe.
-5. Remove filler, stale phrasing, and avoidable abstraction.
-6. Split overloaded sentences.
-7. Convert passive to active when it improves clarity.
-8. Keep necessary jargon, nuance, or voice intentionally.
-9. If the prompt asks for only the rewrite, return only the rewrite in final output.
-10. Run the self-check before you deliver.
+4. In technical cleanup, escalate to structural rewrite when local edits cannot fix mixed mode, hidden sequence, ambiguity, terminology drift, or buried safety/requirement content.
+5. If the user asked to tighten, shorten the text meaningfully when safe.
+6. Remove filler, stale phrasing, and avoidable abstraction.
+7. Split overloaded sentences.
+8. Convert passive to active when it improves clarity.
+9. Recheck pronouns such as `this`, `it`, `they`, `these`, and `those`. Repeat the noun when reference is not immediate.
+10. Keep necessary jargon, nuance, or voice intentionally.
+11. If the prompt asks for only the rewrite, return only the rewrite in final output.
+12. Run the self-check before you deliver.
 
 ### For checking text instead of rewriting it
 
@@ -350,18 +370,20 @@ Do not use this pattern mechanically for essays, persuasive prose, or warm relat
 4. Do not add semantically related phrases unless the source already contains them or the user asked for expansion
 5. Cut filler
 6. Replace abstract wording with concrete wording
-7. Split long sentences
-8. Standardize repeated terms
-9. Re-check tone
-10. Stop when the rewrite already solves the user's stated problem
+7. Rewrite the sentence structure, not just the word choice, when a direct swap would distort meaning
+8. Split long sentences
+9. Standardize repeated terms
+10. Re-check tone
+11. Stop when the rewrite already solves the user's stated problem
 
 ### Technical rewrite pattern
 
-1. Classify as procedural or descriptive
+1. Classify as procedural, descriptive, note, or safety instruction
 2. Apply the matching sentence structure
 3. Move conditions before commands
-4. Preserve commands and identifiers exactly
-5. Run the checklist
+4. Promote hidden instructions, limits, or safety content out of notes and descriptive filler
+5. Preserve commands and identifiers exactly
+6. Run the checklist
 
 ## Progressive Disclosure
 
