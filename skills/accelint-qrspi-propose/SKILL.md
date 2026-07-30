@@ -125,15 +125,6 @@ Execute these steps in order without stopping between them:
    [paste full ticket description here]
 
    Generate a list of research questions that will tell us everything we need
-   to know before building this. Do NOT propose any solutions. Questions ONLY.
-
-   /opsx:explore
-
-   I have this ticket:
-
-   [paste full ticket description here]
-
-   Generate a list of research questions that will tell us everything we need
    to know before building this. Do not propose any solutions. Questions only.
    ```
 
@@ -146,16 +137,6 @@ Execute these steps in order without stopping between them:
 14. Spawn a NEW sub-agent (fresh context) with this exact prompt:
 
    ```
-   /opsx:explore
-
-   [paste ONLY the research questions from step 12]
-
-   Answer each question with facts only. No opinions. No suggestions.
-
-   Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file).
-
-   Note questions you were unable to empirically answer.
-
    /opsx:explore
 
    [paste ONLY the research questions from step 12]
