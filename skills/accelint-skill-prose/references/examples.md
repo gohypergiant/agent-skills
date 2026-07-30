@@ -85,15 +85,17 @@ It collapses distinct trigger families into a vague bucket and weakens the descr
 
 ## 6. Cross-file consistency when editing a skill
 
-**Request:** Tighten this skill's prose safely. The user pasted only one section, but the skill also has `references/` files.
+**Request:** Tighten this skill's prose safely. The user pasted only one section, but the skill also has `AGENTS.md` and `references/` files.
 
 **Good response pattern:**
-1. Read the root `SKILL.md`
-2. Load the behavior-bearing support files that carry workflow rules, examples, trigger guidance, or exact wording constraints, including relevant `references/` files
-3. Edit the minimum set of files needed to keep wording consistent across the skill folder
+1. Define the artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, and the behavior-bearing `references/` files that complete the contract
+2. Read the root `SKILL.md`
+3. Load the behavior-bearing support files that carry workflow rules, examples, trigger guidance, or exact wording constraints, including relevant `references/` files
+4. Edit the minimum set of artifact-set files needed to keep wording consistent across the skill folder
+5. Be ready to explain why any behavior-bearing file stayed unchanged
 
 **Why this is correct:**
-A local rewrite can create drift if linked files still use older terms, weaker severity language, or contradictory examples.
+A local rewrite can create drift if linked files still use older terms, weaker severity language, contradictory examples, or stale progressive-disclosure handoffs.
 
 ## 7. Preserve short-note format
 

@@ -417,6 +417,40 @@
         "States that sentence-level replacement text should be avoided unless the user explicitly asked for examples.",
         "Keeps audit findings separate from rewrite delivery."
       ]
+    },
+    {
+      "id": 36,
+      "prompt": "You are tightening a skill folder, not just a pasted excerpt. The folder contains `SKILL.md`, `AGENTS.md`, and `references/workflow-guardrails.md`. `SKILL.md` now says 'artifact set', but `AGENTS.md` still says 'support files' and the reference file still treats post-rewrite consistency as optional. What files should you treat as editable, and what must you do before delivery?",
+      "expected_output": "A folder-level rewrite plan that treats SKILL.md, AGENTS.md, and the relevant reference file as part of one editable artifact set, updates the files that need alignment, and explains that unchanged behavior-bearing files must be justified before delivery.",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md",
+        "references/workflow-guardrails.md",
+        "references/examples.md"
+      ],
+      "expectations": [
+        "Treats `SKILL.md`, `AGENTS.md`, and the relevant `references/*.md` file as editable artifact-set files.",
+        "Does not treat `AGENTS.md` or the reference file as read-only context once inconsistency is found.",
+        "States that the files needing alignment should be rewritten before delivery.",
+        "States that any unchanged behavior-bearing file must be explainable.",
+        "Preserves the idea that the folder is one behavior contract distributed across files."
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "The user asks: 'Safely tighten this skill folder.' They only pasted one paragraph from `SKILL.md`, but the folder also has a sibling `AGENTS.md` and several files in `references/`. What is the default artifact set, and when are those other files eligible for edit?",
+      "expected_output": "A concise explanation that the default artifact set is the root SKILL.md, sibling AGENTS.md if present, and behavior-bearing references/*.md, and that those files are eligible for edit whenever they complete the contract or need alignment.",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md",
+        "references/workflow-guardrails.md"
+      ],
+      "expectations": [
+        "Names the default artifact set as root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing `references/*.md`.",
+        "Explains that linked instruction files can join the artifact set when they complete the contract.",
+        "Explains that support files are eligible for edit when consistency or contract preservation requires it.",
+        "Does not limit editing to the pasted excerpt alone."
+      ]
     }
   ]
 }

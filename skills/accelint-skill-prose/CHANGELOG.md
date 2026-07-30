@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.1] - 2026-07-30
+
+### Fixed
+- Clarified that folder-level skill-prose work should treat the root `SKILL.md`, sibling `AGENTS.md` when present, and behavior-bearing `references/*.md` files as the default artifact set rather than as optional follow-up context.
+- Tightened rewrite and self-check guidance so agents rewrite any artifact-set files that need alignment and can explain why any behavior-bearing file stayed unchanged.
+- Updated checklist, workflow, and example references to treat support-file rewriting as part of the main task, including progressive-disclosure handoffs across files.
+- Expanded eval coverage for folder-level artifact-set behavior so `AGENTS.md` and `references/*.md` are more reliably treated as editable deliverables when consistency requires it.
+
+### Version
+- Patch release at `0.7.1`.
+
 ## [0.7.0] - 2026-07-30
 
 ### Changed

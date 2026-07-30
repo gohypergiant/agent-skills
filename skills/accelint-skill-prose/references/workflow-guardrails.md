@@ -4,7 +4,7 @@ Use this reference when editing skill prose that controls execution order, appro
 
 ## Treat workflow prose as executable guidance
 
-When the user is editing a skill folder, do not assess a workflow passage in isolation if other files finish the workflow contract. Read the root `SKILL.md`, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to the relevant behavior-bearing support files so you preserve cross-file order, gates, and exact references.
+When the user is editing a skill folder, do not assess a workflow passage in isolation if other files finish the workflow contract. Treat the folder as one behavior contract distributed across an artifact set. Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and relevant behavior-bearing `references/*.md`, then add other linked instruction files as needed. Read the root `SKILL.md`, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to the relevant behavior-bearing support files so you preserve cross-file order, gates, and exact references.
 
 If discovery is inconclusive, retry with a simpler listing method or direct directory inspection. Do not treat an incomplete crawl as evidence that no linked support files exist.
 
@@ -12,6 +12,7 @@ Ask:
 
 - If an agent followed only the rewritten text, would it behave the same way?
 - Did the rewrite preserve order, gates, conditions, and rationale?
+- Did you update every artifact-set file that needed changes, rather than checking support files without rewriting them?
 
 ## Preserve exactly when important
 

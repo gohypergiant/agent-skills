@@ -63,10 +63,12 @@ Check that these stayed exact unless the user asked otherwise:
 
 ## 8. Cross-file consistency
 
-- If you changed `SKILL.md`, did you check the rest of the inspected skill folder, such as files linked from `SKILL.md` or `AGENTS.md`, `references/`, and other behavior-bearing support files, for stale terms, mismatched severity language, or examples that now contradict the root guidance?
-- If the task covered a skill folder, did you follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
+- If the task covered a skill folder, did you define the default artifact set clearly: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract?
+- Did you follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
+- Did you audit the full behavior-bearing artifact set rather than only the quoted excerpt, and were those files eligible for edit when consistency required it?
+- Did you rewrite any artifact-set files that needed updates so terminology, severity language, workflow wording, examples, and progressive-disclosure handoffs stayed aligned?
+- If any behavior-bearing file stayed unchanged, can you explain why it did not need an edit?
 - If discovery was inconclusive, did you retry with a simpler listing method or direct directory inspection instead of treating the crawl as complete?
-- Did you audit the full behavior-bearing file set rather than only the quoted excerpt, and were those files eligible for edit when consistency required it?
 - Did you preserve consistency between the root instructions and the linked files that complete the workflow or examples?
 
 ## 9. Output-mode compliance
