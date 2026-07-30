@@ -127,7 +127,14 @@ Execute these steps in order without stopping between them:
    Generate a list of research questions that will tell us everything we need
    to know before building this. Do NOT propose any solutions. Questions ONLY.
 
-   These questions must be detailed. You MUST dig deep enough to formulate empirical and robust technical questions.
+   /opsx:explore
+
+   I have this ticket:
+
+   [paste full ticket description here]
+
+   Generate a list of research questions that will tell us everything we need
+   to know before building this. Do not propose any solutions. Questions only.
    ```
 
 11. Wait for the sub-agent to complete and return the questions
