@@ -1,6 +1,6 @@
 # Accelint QRSPI Propose
 
-Automate the planning phase of spec-driven development. This skill walks through Questions → Research → Design → Structure (QRSPI) and requires review checkpoints before code is written.
+Automate the planning phase of spec-driven development. This skill walks through Questions → Research → Design → Structure (QRSPI) and requires review checkpoints before any code is written.
 
 ## What This Does
 
@@ -11,7 +11,7 @@ Takes a ticket or feature request and produces a complete OpenSpec change:
 - Delta specs (what changes in the system)
 - Task breakdown (vertical slices for implementation)
 
-The skill stops after planning. You run `/accelint-qrspi-apply <change-name>` when you're ready to implement.
+The skill stops after planning. You run `/accelint-qrspi-apply <change-name>` when you are ready to implement.
 
 ## When to Use This
 
@@ -79,7 +79,7 @@ A fresh sub-agent (new context) sees only the questions and answers them with fa
 
 #### Phase 3: Design Scaffolding
 
-Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts following your project's config.yaml rules.
+Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts under your project's `config.yaml` rules.
 
 Required checkpoint: You review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
 
@@ -115,8 +115,8 @@ Two required review gates:
 
 You can:
 - Approve and continue
-- Request edits (agent modifies in place)
-- Edit manually (you modify, confirm when done)
+- Request edits (the agent modifies in place)
+- Edit manually (you modify the file, then confirm when done)
 
 The skill will not proceed without your explicit approval.
 
@@ -139,7 +139,7 @@ Phase 3: All API changes
 Phase 4: All frontend changes
 ```
 
-The skill checks for horizontal slicing and corrects it before review if detected.
+The skill checks for horizontal slicing and corrects it before review if it detects it.
 
 ### No Automatic Implementation
 
@@ -149,7 +149,7 @@ The skill stops after planning. This allows:
 - Clearing context between planning and coding
 - User control over when implementation begins
 
-Run `/clear` and `/accelint-qrspi-apply <change-name>` when you're ready to start building.
+Run `/clear` and `/accelint-qrspi-apply <change-name>` when you are ready to start building.
 
 ## Example Usage
 
@@ -220,9 +220,9 @@ If anything is missing, the skill will guide you through setup.
 
 ## Error Handling
 
-If OpenSpec commands fail, the skill surfaces the error and lets you retry or abort. It won't continue automatically.
+If OpenSpec commands fail, the skill surfaces the error and lets you retry or abort. It does not continue automatically.
 
-If a sub-agent fails, you'll see the error and can retry that phase or provide manual input (you write the questions/research yourself).
+If a sub-agent fails, you will see the error and can retry that phase or provide manual input (you write the questions or research yourself).
 
 If artifacts are missing after generation, the skill checks file paths and provides the expected locations for manual inspection.
 
@@ -234,7 +234,7 @@ The design checkpoint is your leverage point. A 5-minute review here prevents ho
 
 If the skill warns about horizontal slicing, listen. Layer-by-layer development hides integration issues until the end.
 
-Don't rush to implementation. It's fine to create multiple specs before coding. Planning artifacts are cheap; code is expensive.
+Do not rush to implementation. It is fine to create multiple specs before coding. Planning artifacts are cheap; code is expensive.
 
 ## Related Skills
 
