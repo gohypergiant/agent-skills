@@ -1,25 +1,25 @@
 ---
 name: accelint-skill-prose
-description: Use when creating, auditing, tightening, simplifying, de-slopping, polishing, or reviewing SKILL.md files, agent-skill instructions, CLAUDE.md/AGENTS-style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Make sure to use this skill whenever the user wants clearer skill prose without changing behavior, asks to rewrite a skill description safely, review prompt instructions for ambiguity, or preserve exact paths, commands, fields, identifiers, or approval semantics while editing.
+description: Use when creating, auditing, tightening, simplifying, de-slopping, polishing, or reviewing `SKILL.md` files, agent-skill instructions, `CLAUDE.md`/`AGENTS.md`-style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Use this skill whenever the user wants clearer skill prose without changing behavior, asks for a safe skill-description rewrite, reviews prompt instructions for ambiguity, or needs to preserve exact paths, commands, fields, identifiers, or approval semantics while editing.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.6.0"
+  version: "0.7.0"
 ---
 
 # Skill Prose
 
-Edit behavior-defining prose carefully.
+Use this skill to edit behavior-defining prose without changing behavior.
 
-This skill is for text that does more than sound good. It defines when a skill triggers, what it promises, what order work happens in, and what must stay exact.
+This skill applies to text that does more than sound good. It controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
 
-Use plain, direct English, but do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
+Write in plain, direct English. Do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
 
-Teach the reader how to act, not just what to avoid. When you rewrite, preserve behavior and also make the prose easier to follow, easier to audit, and harder to misread.
+Your job is to make the prose easier to follow, easier to audit, and harder to misread while preserving trigger coverage, workflow semantics, guardrail strength, and exact technical meaning.
 
-Keep the same term for the same concept. Do not rotate terms just to avoid repetition. In skill prose, consistent wording is part of the behavior contract.
+Keep one term for one concept. Do not rotate terms just to avoid repetition. In skill prose, stable terminology is part of the behavior contract.
 
-Borrow selectively from controlled-language disciplines such as Simplified Technical English when they improve clarity without changing behavior. Strong fits include consistent terminology, short explicit sentences, active voice by default, and clear separation between instructions and explanation. Do not import controlled-language rules mechanically when they would erase rationale, flatten scope, or weaken behavioral precision.
+Use compatible ideas from Simplified Technical English when they help, such as short explicit sentences, consistent terminology, active voice by default, and clear separation between instructions and explanation. Do not apply controlled-language rules mechanically if doing so would erase rationale, flatten scope, or weaken behavioral precision.
 
 This skill extends general English editing with extra safety for:
 
@@ -31,11 +31,18 @@ This skill extends general English editing with extra safety for:
 - hard stops and guardrails
 - exact technical references inside prose
 
-The goal is: **improve clarity without changing trigger coverage, workflow semantics, guardrail strength, or exact technical meaning.**
+## Primary goal
 
-Behavioral drift is not limited to paths, fields, and quoted tokens. If verb choice changes what an agent is allowed to do, when it does it, or how strongly a rule applies, that verb is behavior-bearing and must be preserved or replaced with wording that keeps the same behavior.
+Improve clarity without changing:
 
-Rationale is not automatically filler. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose.
+- trigger coverage
+- workflow semantics
+- guardrail strength
+- exact technical meaning
+
+Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it or replace it only with wording that keeps the same behavior.
+
+Rationale is not filler by default. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose.
 
 ## Untouchables
 
@@ -55,7 +62,7 @@ These are behavior anchors, not decorative prose.
 
 ## What makes this different from general prose editing
 
-In skill prose, these are often part of the behavior, not decoration:
+In skill prose, these often carry behavior rather than decoration:
 
 - trigger phrases
 - examples that define scope
@@ -72,7 +79,7 @@ In skill prose, these are often part of the behavior, not decoration:
 
 Do not simplify these casually.
 
-## Hard Stops
+## Hard stops
 
 - **Never broaden trigger coverage silently.**
 - **Never narrow trigger coverage silently.**
@@ -83,64 +90,65 @@ Do not simplify these casually.
 - **Never return a polished rewrite that is behaviorally less safe than the source.**
 - **Never slip a rewrite into audit-only mode.**
 
-## Default Priority Order
+## Priority order
 
 When goals conflict, use this order:
 
-1. Preserve trigger intent and scope
-2. Preserve workflow semantics and approval logic
-3. Preserve guardrails and hard-stop strength
-4. Preserve exact technical references
-5. Improve clarity, consistency, and actionability
-6. Improve brevity
+1. Preserve trigger intent and scope.
+2. Preserve workflow semantics and approval logic.
+3. Preserve guardrails and hard-stop strength.
+4. Preserve exact technical references.
+5. Improve clarity, consistency, and actionability.
+6. Improve brevity.
 
-## Start here
+## Operating controls
 
 Choose two controls before you edit:
 
-1. the **output mode** — what you will deliver
-2. the **rewrite mode** — how far you may reshape the prose
+1. **Output mode** — what you will deliver.
+2. **Rewrite mode** — how far you may reshape the prose.
 
-Keep these separate. Output mode controls the answer format. Rewrite mode controls the rewrite scope.
+Keep them separate. Output mode controls the deliverable. Rewrite mode controls the rewrite scope.
 
-### 1. Choose the output mode
+### Output mode
 
 #### Audit only
 
-Use when the user wants review, risk analysis, or a check for ambiguity, drift, or weak wording.
+Use this mode when the user wants review, risk analysis, or a check for ambiguity, drift, or weak wording.
 
-In this mode, do not rewrite the text unless the user explicitly asks for a rewrite.
+Do not rewrite the text unless the user explicitly asks for a rewrite.
 
-Do not include replacement wording, "safer" rewrites, or suggested revised sentences as part of the deliverable. If you need to point at a safer pattern, describe the risk in principle instead of drafting substitute text.
+Do not include replacement wording, “safer” rewrites, or suggested revised sentences in the deliverable. If you need to point to a safer pattern, describe the risk in principle instead of drafting substitute text.
 
-A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary as evidence for why the source is risky. In those cases, keep it fragment-level, not sentence-level, and do not let it become a stealth rewrite of the passage.
+A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary evidence for why the source is risky. In those cases, keep it at fragment level, not sentence level, and do not let it become a stealth rewrite of the passage.
 
 #### Rewrite only
 
-Use when the user wants cleaner final text directly.
+Use this mode when the user wants cleaner final text directly.
 
 #### Audit plus rewrite
 
-Use when the user wants both findings and a safer revision.
+Use this mode when the user wants both findings and a safer revision.
 
-### 2. Choose the rewrite mode
+### Rewrite mode
 
 For rewrite tasks, ask the user which rewrite mode they want unless they already made the scope clear.
 
 Offer these choices:
 
-- **`mode=default`** — local rewrite by default
-- **`mode=strict`** — structural rewrite allowed when needed
+- **`mode=default`** — local rewrite by default.
+- **`mode=strict`** — structural rewrite allowed when needed.
 
 For audit-only requests, you may proceed without asking for a rewrite mode. If the task expands into a rewrite, ask for the rewrite mode before you rewrite.
 
-### 3. Apply the rewrite mode
+### Apply the rewrite mode
 
 #### `mode=default`
 
-Use this by default for narrow cleanup, exactness-preserving clarification, typo fixes, or local tightening.
+Use this mode for narrow cleanup, exactness-preserving clarification, typo fixes, or local tightening.
 
 Behavior:
+
 - preserve the source structure unless the structure itself hides behavior
 - preserve examples, labels, and section order when they already carry behavior
 - prefer phrase-level and sentence-level repairs over reorganization
@@ -148,9 +156,10 @@ Behavior:
 
 #### `mode=strict`
 
-Use this when the user wants stronger control, stricter standardization, or when local edits cannot fix repeated ambiguity, mixed severity language, buried workflow logic, or unstable terminology.
+Use this mode when the user wants stronger control, stricter standardization, or when local edits cannot fix repeated ambiguity, mixed severity language, buried workflow logic, or unstable terminology.
 
 Behavior:
+
 - preserve behavior, but allow structural rewrite when the structure itself causes ambiguity
 - separate instructions, rationale, warnings, and examples when that improves control
 - normalize terminology and obligation language more deliberately across the edited artifact set
@@ -158,15 +167,15 @@ Behavior:
 
 Strict mode is not permission to broaden scope casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asked for a broader rewrite.
 
-### 4. Identify the artifact focus
+### Artifact focus
 
 #### Frontmatter description tightening
 
-Use when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
+Use this focus when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
 
 #### Workflow or guardrail tightening
 
-Use when the prose defines step order, approval dependencies, decision points, safety limits, or exact execution rules.
+Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, or exact execution rules.
 
 ## Before you edit
 
@@ -191,18 +200,18 @@ Look for:
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
 
-## Default writing method
+## Rewrite method
 
 Use this method whenever you rewrite behavior-defining prose.
 
-### 1. State the operational point early
+### 1. Lead with the operational point
 
-Lead with the rule, action, boundary, or decision that the reader must understand.
+Start with the rule, action, boundary, or decision the reader must understand.
 
 - In descriptions, surface the scope logic early.
 - In workflow prose, surface the action and sequence early.
 - In guardrails, surface the requirement or prohibition early.
-- In rationale, make the protected risk visible early.
+- In rationale, surface the protected risk early.
 
 Do not add a preamble when the instruction works better without one.
 
@@ -228,7 +237,7 @@ Procedural text tells the agent what to do. Descriptive text explains what somet
 
 Separate them when that makes the behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
 
-### 5. Put conditions before commands when the logic gets clearer
+### 5. Put conditions before commands when that clarifies the logic
 
 If a rule depends on a condition, put the condition first when doing so makes the logic easier to follow and does not change timing or emphasis.
 
@@ -242,13 +251,13 @@ Use RFC 2119 terms when they genuinely clarify normative force. Do not normalize
 
 Use short paragraphs, clean lists, and bounded sentences when they make the behavior easier to audit.
 
-Do not reshape source text just to make it feel lighter. Scanability is useful only when it preserves the same behavior.
+Do not reshape source text just to make it feel lighter. Scanability helps only when it preserves the same behavior.
 
-### 8. Prefer the smallest structure that makes the rule clear
+### 8. Use the smallest structure that makes the rule clear
 
 Do not over-edit. Improve the prose enough that the intended behavior is easier to follow and harder to misread.
 
-## Core operating rules
+## Core rules
 
 ### 1. Treat descriptions as trigger logic
 
@@ -262,13 +271,13 @@ When tightening a description:
 - do not add adjacent trigger families unless expansion was explicitly requested
 - do not convert a short description into a broad trigger inventory unless the user asked for that
 
-If a phrase is doing trigger work, keep it or replace it only with wording that preserves the same scope exactly.
+If a phrase does trigger work, keep it or replace it only with wording that preserves the same scope exactly.
 
 ### 2. Treat workflow prose as executable guidance
 
 If an agent followed only the rewritten text, it should behave the same way.
 
-Separate procedural text from descriptive text when the distinction helps clarity. Procedural text tells the agent what to do. Descriptive text explains what something means, why a guardrail exists, or when a rule applies. Do not force descriptive or policy text into imperative form if that would change the behavior or make the constraint sound narrower than it is.
+Separate procedural text from descriptive text when that distinction helps clarity. Procedural text tells the agent what to do. Descriptive text explains what something means, why a guardrail exists, or when a rule applies. Do not force descriptive or policy text into imperative form if that would change behavior or make the constraint sound narrower than it is.
 
 Check for:
 
@@ -313,11 +322,11 @@ Bad pattern:
 
 ### 5. Prefer minimal safe tightening
 
-If it is possible to cut a word out, cut it out — unless that word anchors trigger scope, differentiates the skill from adjacent skills, preserves a workflow step, or carries exact technical meaning.
+If you can cut a word, cut it only when that word does not anchor trigger scope, differentiate the skill from adjacent skills, preserve a workflow step, or carry exact technical meaning.
 
 Use direct English. Cut filler, stale phrasing, and avoidable abstraction.
 
-But only remove words that are not carrying behavior.
+Remove only words that are not carrying behavior.
 
 Good edits:
 
@@ -338,7 +347,7 @@ Bad edits:
 - deleting an example that anchors scope
 - turning a bounded instruction into a generic best practice
 
-### 6. Prefer "no rewrite" over risky rewrite
+### 6. Prefer no rewrite over risky rewrite
 
 If the source is already clear enough and further tightening risks drift, say so.
 
@@ -390,7 +399,7 @@ Give the risk summary first, then the rewrite.
 
 ## Progressive disclosure
 
-Load references only when needed, but when the user asks you to work on a skill, crawl the skill folder first so you know what behavior-bearing prose exists beyond the current excerpt. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
+Load references only when needed. When the user asks you to work on a skill, crawl the skill folder first so you know what behavior-defining prose exists beyond the current excerpt. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
 If you rewrite a root `SKILL.md`, do not stop at the crawl. Re-check the support files you inspected and edit them when needed so terminology, severity language, examples, and workflow wording stay internally consistent with the rewritten root file. Treat this as part of finishing the rewrite, not as an optional follow-up.
 
@@ -404,7 +413,7 @@ Load references only when needed:
 - `references/examples.md` — before/after examples for audit-only, no-rewrite, guardrails, and frontmatter-safe tightening
 - `references/artifact-patterns.md` — positive rewrite patterns for descriptions, workflows, guardrails, rationale, examples, and audit findings
 
-## Quick decision tests
+## Decision tests
 
 Before you deliver, ask:
 

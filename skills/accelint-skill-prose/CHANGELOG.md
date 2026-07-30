@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.0] - 2026-07-30
+
+### Changed
+- Rewrote `SKILL.md` in `mode=strict` to lead with operational controls, separate core rules from rewrite method, and make the action path easier to scan without changing trigger coverage, workflow semantics, guardrail strength, or exact technical meaning.
+- Tightened the frontmatter description so the trigger logic stays explicit while reading more directly.
+- Standardized terminology and section flow across the root skill so output mode, rewrite mode, artifact focus, rewrite method, and self-check guidance are easier to audit.
+
+### Version
+- Minor release at `0.7.0`.
+
 ## [0.6.0] - 2026-07-30
 
 ### Added
