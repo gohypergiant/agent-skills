@@ -88,7 +88,7 @@ Follow the prescribed order strictly. Users expect Installation near the top, AP
 
 ## 3. Writing Principles
 
-**REQUIRED SUB-SKILL:** Use `humanizer` to review all generated README content before you finalize it.
+**REQUIRED SUB-SKILL:** Use `accelint-english-manager` to review all generated README content before you finalize it.
 
 ### 3.1 Be Absurdly Thorough
 [View detailed examples](references/writing-principles.md)
@@ -122,7 +122,7 @@ Sound like someone who genuinely wants to help, not a robot generating docs.
 
 ### 3.7 Apply Humanizer Patterns
 
-After drafting README content, apply the `humanizer` skill to remove AI writing patterns:
+After drafting README content, apply the `accelint-english-manager` skill to remove AI writing patterns:
 
 - Remove inflated significance language ("pivotal", "testament", "crucial", "vital")
 - Replace promotional tone with neutral, specific language
@@ -224,5 +224,5 @@ Before finalizing a README, verify:
 - [ ] TOC included if > 200 lines
 - [ ] License section present
 - [ ] No orphaned documentation for removed exports
-- [ ] Content reviewed with `humanizer` skill for AI writing patterns
+- [ ] Content reviewed with `accelint-english-manager` skill for AI writing patterns
 - [ ] Writing has personality and does not sound sterile or voiceless

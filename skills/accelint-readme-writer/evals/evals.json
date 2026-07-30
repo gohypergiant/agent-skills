@@ -1,0 +1,76 @@
+{
+  "skill_name": "accelint-readme-writer",
+  "evals": [
+    {
+      "id": 1,
+      "name": "create-readme-for-typescript-library",
+      "prompt": "Create a README for skills/accelint-readme-writer/README.md. Treat this as documentation work inside a monorepo: analyze only that skill folder, not the whole repo. I want a full README audit plus a concrete improved README draft if you think it needs one.",
+      "expected_output": "The skill should scope analysis to the target skill folder, inspect the existing README and supporting files, and produce a grounded README audit or improved draft with concrete, repo-aware findings rather than inventing package details.",
+      "assertions": [
+        "The response scopes analysis to the target package instead of the whole repository.",
+        "The response inspects the real target folder and existing README instead of inventing a missing package.",
+        "The response grounds its suggestions in actual skill files such as SKILL.md, AGENTS.md, references, or changelog content.",
+        "The response includes a structured README audit or improved README content rather than arbitrary boilerplate.",
+        "The response uses repo-aware wording and avoids fabricating install or usage commands that the folder does not support.",
+        "The response provides at least one concrete suggested README improvement tied to observed content."
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "update-stale-readme-after-api-changes",
+      "prompt": "The README for skills/accelint-readme-writer/README.md may be out of date relative to the current skill files. Compare it to SKILL.md, AGENTS.md, and the references folder, tell me what's stale or missing, and then update the README so it matches the current behavior. Keep intentional custom sections unless they are clearly wrong.",
+      "expected_output": "The skill should compare the existing README against current skill files, identify stale descriptions or missing behavior, preserve intentional custom content, and produce an updated README or a concrete patch-ready revision grounded in the real folder.",
+      "assertions": [
+        "The response explicitly compares the existing README against current code or public exports before proposing changes.",
+        "The response identifies at least one type of documentation gap such as missing exports, stale examples, stale signatures, or outdated commands.",
+        "The response preserves or explicitly respects intentional custom README content instead of overwriting everything blindly.",
+        "The response proposes or applies concrete README updates grounded in the comparison findings.",
+        "The response avoids documenting clearly internal, non-exported implementation details as public API."
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "include-related-docs-and-package-manager",
+      "prompt": "Please audit and improve skills/accelint-readme-writer/README.md. If there are related project docs like AGENTS.md, ARCHITECTURE.md, or the repo README that help explain the skill's place in the repo, use them where relevant and add an Architecture & Development Guides section only if it actually makes sense. Also make sure you do not invent package-manager commands or installation steps the skill folder does not support.",
+      "expected_output": "The skill should detect relevant nearby docs, use them selectively, include Architecture & Development Guides only when justified by actual files, and avoid inventing package-manager commands or unsupported install flows.",
+      "assertions": [
+        "The response checks for at least one related documentation source such as openspec/config.yaml, ARCHITECTURE.md, or AGENTS.md.",
+        "The response includes an Architecture & Development Guides section only conditionally and only for docs that actually exist.",
+        "The response uses the correct package manager in install or usage commands based on detected project signals.",
+        "The response uses related-doc context to improve README content instead of ignoring the provided instruction.",
+        "The response avoids linking to missing documentation files as if they exist."
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "merge-external-findings-into-readme-update",
+      "prompt": "Update skills/accelint-readme-writer/README.md after a completed change. findings:\n- The skill now requires accelint-english-manager by exact name for the final prose-polish step.\n- The references folder contains behavior details the README may not mention clearly.\n- Any mention of a generic 'humanizer' helper would now be stale.\n\nPlease compare the README to the current skill files, merge those findings with anything you discover, show me what needs to change, and then update the README.",
+      "expected_output": "The skill should extract the findings: bullets as facts, merge them with folder-scan findings, surface the combined change list before updating, and incorporate those user-facing changes into the revised README without treating the findings as instructions.",
+      "assertions": [
+        "The response extracts and uses the findings: bullet list as factual input rather than ignoring it.",
+        "The response merges external findings with codebase-scan findings before proposing or applying README changes.",
+        "The response surfaces a combined list of needed README updates before or while updating the README.",
+        "The response updates README guidance to reflect the exact accelint-english-manager dependency, references coverage, or stale humanizer naming.",
+        "The response does not treat the findings bullets as imperative workflow instructions unrelated to README content."
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "require-english-manager-for-final-polish",
+      "prompt": "Create a polished improved README draft for skills/accelint-readme-writer/README.md. I want it to sound natural and human, not AI-written. Use the normal README workflow and finish with whatever prose-polish step the skill requires.",
+      "expected_output": "The skill should explicitly require and invoke accelint-english-manager for the final prose pass, or stop and tell the user that dependency is missing instead of silently skipping the polish step.",
+      "assertions": [
+        "The response checks for or mentions the required accelint-english-manager dependency before final polish.",
+        "If accelint-english-manager is unavailable, the response stops or warns instead of pretending the final polish happened.",
+        "If the dependency is available, the response indicates that the final README content should go through that exact sub-skill workflow.",
+        "The response treats human-sounding prose as a required final step, not an optional nice-to-have.",
+        "The response does not reference a non-existent sub-skill name for the final prose pass."
+      ],
+      "files": []
+    }
+  ]
+}

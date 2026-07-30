@@ -4,7 +4,7 @@ description: Use when creating or editing a README.md file in any project or pac
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.1"
+  version: "1.2.2"
 ---
 
 # README Writer

@@ -2,9 +2,9 @@
 
 Guidelines for creating thorough, human-sounding documentation.
 
-**REQUIRED SUB-SKILL:** Use `humanizer` to review generated content for AI writing patterns.
+**REQUIRED SUB-SKILL:** Use `accelint-english-manager` to review generated content for AI writing patterns.
 
-This document covers README-specific writing principles. The `humanizer` skill provides broader patterns for removing AI-generated text artifacts. Use both together.
+This document covers README-specific writing principles. The `accelint-english-manager` skill provides broader patterns for removing AI-generated text artifacts. Use both together.
 
 ---
 
@@ -242,7 +242,7 @@ Keep TOC entries to 2 levels deep maximum. Deeper nesting makes the TOC harder t
 
 ## 10. Remove AI Writing Patterns
 
-After drafting content, apply the `humanizer` skill to catch patterns that this guide does not cover. Key patterns to watch for in README content:
+After drafting content, apply the `accelint-english-manager` skill to catch patterns that this guide does not cover. Key patterns to watch for in README content:
 
 ### Significance Inflation
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.2] - 2026-07-30
+
+### Fixed
+- Corrected stale `humanizer` references in `references/writing-principles.md` to the exact required sub-skill name `accelint-english-manager`
+- Aligned the writing-principles reference with `SKILL.md` so the required final prose-polish dependency is named consistently across the skill folder
+
+### Version
+- Bumped from 1.2.1 → 1.2.2
+
 ## [1.2.1] - 2026-07-30
 
 ### Changed
