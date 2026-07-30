@@ -19,7 +19,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [1.3.0] - 2026-07-30
 
 ### Added
-- Added `RESEARCH_01.md` to preserve the multi-pass audit, evidence base, and approved implementation direction for future maintenance.
 - Added explicit `mode=default` and `mode=strict` behavior so strict plain-language and STE-leaning work can be requested without weakening the default editorial path.
 
 ### Changed
