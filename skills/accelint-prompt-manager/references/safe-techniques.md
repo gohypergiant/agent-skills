@@ -4,11 +4,11 @@ Five proven techniques that reliably improve prompt quality without risk of degr
 
 ## What
 
-Specific, actionable optimization methods that work across task types and models. These techniques have been validated through extensive production use.
+These are specific, actionable optimization methods that work across task types and models. These techniques have been validated through extensive production use.
 
 ## Why It Matters
 
-Not all optimization attempts improve quality. Some techniques help in specific contexts but harm in others. These five are universally safe—they improve clarity without introducing new problems.
+Not all optimization attempts improve quality. Some techniques help in specific contexts but harm quality in others. These five are universally safe. They improve clarity without introducing new problems.
 
 ---
 
@@ -34,7 +34,7 @@ Not all optimization attempts improve quality. Some techniques help in specific 
 ❌ **Before:** "Make code cleaner"
 ✅ **After:** "Refactor for readability: (1) extract magic numbers to named constants, (2) split functions >50 lines into smaller focused functions, (3) add JSDoc comments for non-obvious logic."
 
-**When to use:** Every time you see unmeasurable success criteria.
+**When to use:** Use this technique every time you see unmeasurable success criteria.
 
 ---
 
@@ -60,7 +60,7 @@ Not all optimization attempts improve quality. Some techniques help in specific 
 ❌ **Before:** "Explain this code"
 ✅ **After:** "Explain this authentication code for frontend developers new to our system. Include: (1) high-level flow diagram, (2) explanation of each function's purpose, (3) common pitfalls and how to avoid them. Length: 2-3 paragraphs max. Avoid: implementation details they don't need to know."
 
-**When to use:** Any task with subjective success criteria or creative elements.
+**When to use:** Use this technique for any task with subjective success criteria or creative elements.
 
 ---
 
@@ -119,7 +119,7 @@ Success criteria:
 - Average O(n log n) time complexity verified via profiling
 ```
 
-**When to use:** Any prompt >500 words or with extensive reference material.
+**When to use:** Use this technique for any prompt longer than 500 words or any prompt with extensive reference material.
 
 ---
 
@@ -167,7 +167,7 @@ If the config object is valid: use the config object to initialize the applicati
 If the config object is invalid: log validation errors to stderr and exit with code 1.
 ```
 
-**When to use:** Any instructions with >3 sequential steps or nested conditions.
+**When to use:** Use this technique for any instructions with more than 3 sequential steps or nested conditions.
 
 ---
 
@@ -194,7 +194,7 @@ If the config object is invalid: log validation errors to stderr and exit with c
 ❌ **Before:** "Create documentation"
 ✅ **After:** "Create API documentation with these sections: (1) Authentication (with curl example), (2) Rate limits (specific numbers), (3) Error codes (table with code, meaning, action), (4) Example requests/responses for each endpoint. Success criteria: a new developer can integrate the API without asking questions."
 
-**When to use:** Every task. If you can't define success criteria, clarify with user before optimizing.
+**When to use:** Use this technique for every task. If you cannot define success criteria, clarify them with the user before optimizing.
 
 ---
 

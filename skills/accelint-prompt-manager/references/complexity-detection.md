@@ -4,11 +4,11 @@ How to assess whether a task is simple (execute directly), moderate (proceed wit
 
 ## What
 
-Systematic criteria for categorizing task complexity before execution. Complexity determines optimization strategy and whether plan mode should be recommended.
+These are systematic criteria for categorizing task complexity before execution. Complexity determines the optimization strategy and whether plan mode should be recommended.
 
 ## Why It Matters
 
-Executing complex tasks without planning causes rework, missed requirements, and suboptimal architectures. Simple tasks don't need elaborate planning. The skill is distinguishing between them.
+Executing complex tasks without planning causes rework, missed requirements, and suboptimal architectures. Simple tasks do not need elaborate planning. The skill is to distinguish between them.
 
 ---
 
@@ -31,7 +31,7 @@ Executing complex tasks without planning causes rework, missed requirements, and
 - "Extract email addresses from this log file"
 
 **Optimization Strategy:**
-- Execute directly with optimized prompt
+- Execute directly with an optimized prompt
 - Minimal clarification needed
 - Framework application optional
 
@@ -57,7 +57,7 @@ Executing complex tasks without planning causes rework, missed requirements, and
 
 **Optimization Strategy:**
 - Clarify ambiguities upfront
-- Apply appropriate framework
+- Apply the appropriate framework
 - Specify success criteria explicitly
 - Monitor for blocking issues during execution
 
@@ -83,8 +83,8 @@ Executing complex tasks without planning causes rework, missed requirements, and
 
 **Optimization Strategy:**
 - ALWAYS recommend plan mode
-- Don't proceed with execution until plan is approved
-- Explain reasoning: "This task involves [X dependencies and Y phases]. Plan mode will help design the approach before execution, preventing costly rework."
+- Do not proceed with execution until the plan is approved
+- Explain the reasoning: "This task involves [X dependencies and Y phases]. Plan mode will help design the approach before execution, preventing costly rework."
 
 **Plan Mode:** REQUIRED
 

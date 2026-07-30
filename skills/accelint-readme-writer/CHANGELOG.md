@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.2.3] - 2026-07-30
+
+### Changed
+- Tightened behavior-defining prose across `SKILL.md`, `AGENTS.md`, and `references/writing-principles.md` without changing trigger coverage, workflow order, or guardrail strength
+  - Reorganized top-level sections in `SKILL.md` to surface workflow boundaries, hard stops, and required sub-skill behavior earlier
+  - Clarified `AGENTS.md` summary wording and aligned section-order guidance with the optional `Architecture & Development Guides` section
+  - Improved heading consistency and local sentence clarity in `references/writing-principles.md` while preserving examples and exact technical references
+
+### Version
+- Bumped from 1.2.2 → 1.2.3
+
+## [1.2.2] - 2026-07-30
+
+### Fixed
+- Corrected stale `humanizer` references in `references/writing-principles.md` to the exact required sub-skill name `accelint-english-manager`
+- Aligned the writing-principles reference with `SKILL.md` so the required final prose-polish dependency is named consistently across the skill folder
+
+### Version
+- Bumped from 1.2.1 → 1.2.2
+
+## [1.2.1] - 2026-07-30
+
+### Changed
+- Tightened behavior-defining prose across `SKILL.md`, `AGENTS.md`, and `references/` files without changing trigger coverage, workflow order, or guardrail strength
+  - Clarified discovery, comparison, and humanizer instructions with more direct wording
+  - Improved sentence structure and terminology consistency across the skill folder
+  - Preserved exact technical references, examples, and required sub-skill behavior
+
+### Version
+- Bumped from 1.2.0 → 1.2.1
+
 ## [1.2.0] - 2026-07-08
 
 ### Added

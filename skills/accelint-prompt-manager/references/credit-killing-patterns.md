@@ -4,11 +4,11 @@ These are production-tested anti-patterns that reliably degrade prompt quality. 
 
 ## What
 
-Specific prompt construction patterns that reduce model effectiveness, increase token waste, or produce unreliable outputs. These patterns "kill credits" by burning API calls without proportional value.
+These are specific prompt-construction patterns that reduce model effectiveness, increase token waste, or produce unreliable outputs. They "kill credits" by burning API calls without proportional value.
 
 ## Why It Matters
 
-Generic advice like "be clear" doesn't prevent concrete failures. These patterns represent actual problems encountered in production systems processing millions of prompts. Knowing what NOT to do is half of expert knowledge.
+Generic advice like "be clear" does not prevent concrete failures. These patterns represent actual problems encountered in production systems that process millions of prompts. Knowing what NOT to do is half of expert knowledge.
 
 ---
 
@@ -16,7 +16,7 @@ Generic advice like "be clear" doesn't prevent concrete failures. These patterns
 
 **Pattern:** Asking Claude to "act as 3 experts and debate", "explore multiple reasoning paths in a tree", or "build a graph of connected thoughts".
 
-**Why It Fails:** These techniques (Mixture-of-Experts, Tree-of-Thought, Graph-of-Thought) make Claude invent conversations between fake personas rather than deepening its own reasoning. The model fabricates the appearance of multi-agent collaboration without actual benefit. You get theatrical output that looks impressive but doesn't improve reasoning quality.
+**Why It Fails:** These techniques (Mixture-of-Experts, Tree-of-Thought, and Graph-of-Thought) make Claude invent conversations between fake personas instead of deepening its own reasoning. The model fabricates the appearance of multi-agent collaboration without actual benefit. You get theatrical output that looks impressive but does not improve reasoning quality.
 
 **Example:**
 ❌ "Act as 3 experts (a frontend dev, a backend dev, and a DBA). Debate the best approach to implementing this feature."
@@ -141,7 +141,7 @@ Generic advice like "be clear" doesn't prevent concrete failures. These patterns
 ❌ "Review this code for bugs, suggest performance improvements, write tests, update documentation, and refactor for readability."
 ✅ Split into sequential prompts: (1) bug review, (2) performance analysis, (3) test writing, (4) docs update, (5) refactoring.
 
-**Rule:** One primary objective per prompt. Complex projects need plan mode.
+**Rule:** Use one primary objective per prompt. Complex projects need plan mode.
 
 ---
 
@@ -259,4 +259,4 @@ These patterns follow the same structure. Due to space constraints, here are abb
 
 ## How to Apply
 
-When optimizing a prompt, scan for these patterns systematically. Each detected pattern has a concrete fix. This list is not exhaustive—new anti-patterns emerge with new models and use cases—but these 35 represent the most common production failures.
+When optimizing a prompt, scan for these patterns systematically. Each detected pattern has a concrete fix. This list is not exhaustive. New anti-patterns emerge with new models and use cases. These 35 patterns represent the most common production failures.

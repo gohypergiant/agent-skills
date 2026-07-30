@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.1] - 2026-07-29
+
+### Changed
+- **Tightened behavior-defining prose without changing workflow scope**
+  - Clarified the frontmatter description while preserving the same trigger families and planning-only boundary
+  - Tightened root `SKILL.md` wording around context isolation, required checkpoints, error handling, and anti-patterns
+  - Normalized several severity labels in body prose from rhetorical emphasis to clearer requirement language such as `REQUIRED`, while preserving existing `CRITICAL` wording inside exact sub-agent prompts and examples
+  - Updated `README.md` so implementation handoff references `/accelint-qrspi-apply <change-name>` consistently and summary prose matches the skill's current checkpoint and vertical-slicing behavior
+  - Rationale: Improve scanability and reduce ambiguity in behavior-bearing prose without changing trigger coverage, workflow order, or guardrail strength
+
+### Version
+- Bumped from 1.6.0 → 1.6.1
+
 ## [1.6.0] - 2026-07-24
 
 ### Changed

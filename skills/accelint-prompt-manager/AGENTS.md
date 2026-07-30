@@ -1,12 +1,12 @@
 # Prompt Manager — Quick Reference
 
-Expert-only knowledge for transforming vague prompts into optimized, actionable ones. This guide focuses on non-obvious patterns, hard-won insights, and systematic optimization techniques.
+Use this guide to turn vague prompts into optimized, actionable prompts. It focuses on non-obvious patterns, hard-won insights, and systematic optimization techniques.
 
 ## How to Use This Guide
 
-1. **Start with SKILL.md** — Run the 4-phase workflow for any prompt optimization
-2. **Reference this guide** — Quick lookup for patterns, frameworks, and techniques
-3. **Load details on-demand** — Deep-dive into specific `references/` files as needed
+1. **Start with `SKILL.md`** — Run the 4-phase workflow for any prompt optimization.
+2. **Use this guide for quick lookup** — Check patterns, frameworks, and techniques.
+3. **Load details on demand** — Read specific `references/` files when needed.
 
 ## Quick Reference
 
@@ -35,13 +35,13 @@ Expert-only knowledge for transforming vague prompts into optimized, actionable 
 - **RISEN** → Multi-step procedures, workflows (process-driven)
 - **RODES** → Needs examples for clarity, style matching (example-driven)
 
-**Application Rule:** Route user intent through framework structure silently — never expose methodology in output
+**Application Rule:** Route user intent through the framework structure silently. Never expose methodology in the output.
 
 → Full details: `references/frameworks.md`
 
 ### Optimization Techniques
 
-**5 Safe Techniques** that improve prompt quality without risk:
+**5 safe techniques** improve prompt quality without adding risk:
 1. **Specificity Injection** — Replace vague terms with concrete criteria
 2. **Constraint Addition** — Define boundaries for creative freedom
 3. **Context Positioning** — Critical info at start/end, not middle
@@ -76,7 +76,7 @@ Expert-only knowledge for transforming vague prompts into optimized, actionable 
 - "Simple" → Minimal code, easy to understand, or few dependencies?
 - "Clean" → Follows standards, minimal complexity, or well-documented?
 
-**Resolution Pattern:** Present 2-3 interpretation options with implications, let user decide
+**Resolution Pattern:** Present 2-3 interpretation options with implications, then let the user decide.
 
 → Full catalog: `references/ambiguity-examples.md`
 
@@ -124,10 +124,10 @@ Phase 4: Validation & Handoff
 
 ## Important Context
 
-**Model-Specific:** Claude 4.5+ uses native extended thinking, GPT-4 uses internal CoT — optimization strategies differ by model family
+**Model-Specific:** Claude 4.5+ uses native extended thinking, and GPT-4 uses internal CoT. Optimization strategies differ by model family.
 
-**Token Economy:** System prompts multiply by API call count — progressive disclosure reduces base cost
+**Token Economy:** System prompts multiply by API call count. Progressive disclosure reduces base cost.
 
-**Security:** Validate user inputs, use delimiters, never allow user content to override system instructions
+**Security:** Validate user inputs, use delimiters, and never allow user content to override system instructions.
 
-**Memory Persistence:** Save optimization patterns to memory blocks to prevent contradictions in extended conversations
+**Memory Persistence:** Save optimization patterns to memory blocks to prevent contradictions in extended conversations.
