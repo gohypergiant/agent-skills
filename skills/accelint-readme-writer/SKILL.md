@@ -1,24 +1,24 @@
 ---
 name: accelint-readme-writer
-description: Use when creating or editing a README.md file in any project or package. Recursively parses codebase from README location, suggests changes based on missing or changed functionality, and generates thorough, human-sounding documentation with copy-pasteable code blocks and practical examples.
+description: Use when creating or editing a README.md file in any project or package. Analyzes the codebase from the README location, identifies missing or stale documentation, and generates thorough, human-sounding README content with copy-pasteable code blocks and practical examples.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # README Writer
 
 This skill guides the creation and maintenance of comprehensive, human-friendly README documentation by analyzing the codebase and ensuring documentation stays in sync with actual functionality.
 
-## NEVER Do When Writing READMEs
+## Never Do When Writing READMEs
 
-- **NEVER run discovery serially when sub-agents are available** — spawn parallel discovery agents for different aspects (entry points, dependencies, examples, existing docs) to analyze the codebase efficiently. Serial file-by-file scanning wastes time.
-- **NEVER document non-exported internal functions** — only document the public API that's accessible through package entry points. Internal helper functions that aren't re-exported from `index.ts` don't belong in the README.
+- **NEVER run discovery serially when sub-agents are available** — spawn parallel discovery agents for different aspects of the codebase, such as entry points, dependencies, examples, and existing docs. Serial file-by-file scanning wastes time.
+- **NEVER document non-exported internal functions** — document only the public API that is accessible through package entry points. Internal helper functions that are not re-exported from `index.ts` do not belong in the README.
 - **NEVER fabricate usage examples** — extract real examples from test files, JSDoc blocks, or `examples/` directories. Made-up examples often contain subtle errors that confuse users.
 - **NEVER use the wrong package manager commands** — check for lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`) and use the matching package manager in all commands. Wrong commands break the user's first experience.
-- **NEVER skip comparing code to existing README** — when updating documentation, identify what's missing, what's stale, and what signature changes occurred. Silent drift between code and docs causes user frustration.
-- **NEVER write robotic, AI-sounding text** — use the humanizer skill to remove inflated language, promotional tone, and AI writing patterns. Documentation should sound like a helpful human wrote it.
+- **NEVER skip comparing code to the existing README** — when updating documentation, identify what is missing, what is stale, and what signature changes occurred. Silent drift between code and docs causes user frustration.
+- **NEVER write robotic, AI-sounding text** — use the `accelint-english-manager` skill in strict audit+rewrite mode to remove inflated language, promotional tone, and AI writing patterns. Documentation should sound like a helpful human wrote it.
 
 ## When to Activate This Skill
 
@@ -83,9 +83,9 @@ Before analyzing the codebase, check if other onboarding documents exist:
 
 ### Step 2: Parallel Codebase Discovery
 
-**Use parallel sub-agents when available** to discover different aspects of the codebase simultaneously. If sub-agents are not available, perform these discovery tasks inline but in the same systematic order.
+**Use parallel sub-agents when available** to discover different aspects of the codebase simultaneously. If sub-agents are not available, perform these discovery tasks inline in the same systematic order.
 
-Spawn these discovery agents in parallel (if sub-agents available):
+Spawn these discovery agents in parallel when sub-agents are available:
 
 **Agent A — Entry Points & Public API**
 - Check `package.json` for `main`, `module`, `types`, `exports` fields
@@ -117,13 +117,13 @@ Spawn these discovery agents in parallel (if sub-agents available):
 
 ### Step 3: Compare Against Existing README
 
-**Extract external findings first** — check if the invoking prompt includes a `findings:` list:
-- Parse the prompt for a `findings:` section (a bulleted list of factual statements)
-- Each finding is phrased as something already known to be true, never as an instruction
+**Extract external findings first** — check whether the invoking prompt includes a `findings:` list:
+- Parse the prompt for a `findings:` section, which is a bulleted list of factual statements.
+- Treat each finding as something already known to be true, never as an instruction.
 - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
-- Store these findings for merging with codebase scan findings below
+- Store these findings so you can merge them with the codebase scan findings below.
 
-If a README exists, identify gaps from codebase scan:
+If a README exists, identify gaps from the codebase scan:
 
 - **Missing exports**: Public API not documented
 - **Stale examples**: Code samples using deprecated patterns
@@ -131,9 +131,9 @@ If a README exists, identify gaps from codebase scan:
 - **Outdated commands**: Wrong package manager, missing scripts
 
 **Merge and present all findings**:
-- Combine external findings (if any) with codebase scan findings
-- Present the merged list to the user before generating updates
-- If external findings exist, note their source (e.g., "from completed OpenSpec change")
+- Combine external findings, if any, with the codebase scan findings.
+- Present the merged list to the user before generating updates.
+- If external findings exist, note their source, for example "from completed OpenSpec change".
 
 ### Step 4: Generate or Update README
 
@@ -179,13 +179,28 @@ Load these as needed for detailed guidance:
 
 ## Required Skills
 
-This skill requires the `humanizer` skill for reviewing generated content.
+This skill requires the `accelint-english-manager` skill to review generated content.
 
-If `humanizer` is not available:
-1. Check Settings > Capabilities to enable it
-2. Or invoke it with `/skill humanizer`
+Before invoking it, verify the skill exists.
 
-The humanizer skill removes AI writing patterns and ensures documentation sounds natural. Without it, generated READMEs may contain robotic language, inflated significance claims, and other AI artifacts.
+If `accelint-english-manager` is not available:
+1. Stop and tell the user this README workflow depends on `accelint-english-manager`.
+2. Ask them to install or enable that skill.
+3. Do not continue the final prose-polish step until it is available.
+
+If `accelint-english-manager` is available, invoke it with this exact prompt shape:
+
+```text
+/accelint-english-manager audit+rewrite in strict mode the following:
+
+"
+[PASTE CONTENT HERE]
+"
+
+I do not want a report, just apply the new content to the output directly.
+```
+
+Use the rewritten content as the final README output. Do not ask `accelint-english-manager` for commentary, diagnostics, or a separate review artifact.
 
 ## Important Notes
 
@@ -206,9 +221,23 @@ Include a TOC for READMEs over ~200 lines. Place it after the heading area, befo
 
 ### Human-Sounding Writing
 
-**REQUIRED SUB-SKILL:** Use `humanizer` to review and refine generated README content.
+**REQUIRED SUB-SKILL:** Use `accelint-english-manager` to review and refine generated README content.
 
-Documentation should sound like it was written by someone who genuinely wants to help. The humanizer skill identifies and removes AI writing patterns including:
+Before this final polish pass, confirm `accelint-english-manager` is installed. If it is missing, stop and tell the user they need to install it before this workflow can finish as designed.
+
+When it is available, call it in strict mode with this exact prompt shape:
+
+```text
+/accelint-english-manager audit+rewrite in strict mode the following:
+
+"
+[PASTE CONTENT HERE]
+"
+
+I do not want a report, just apply the new content to the output directly.
+```
+
+Documentation should sound like it was written by someone who genuinely wants to help. The `accelint-english-manager` skill identifies and removes AI writing patterns such as:
 
 - Inflated significance language ("pivotal", "testament", "crucial")
 - Promotional/advertisement-like tone
@@ -216,4 +245,4 @@ Documentation should sound like it was written by someone who genuinely wants to
 - Vague attributions and weasel words
 - Em dash overuse and rule-of-three patterns
 
-After generating README content, apply the humanizer skill to ensure the output sounds natural and human-written. See [references/writing-principles.md](references/writing-principles.md) for additional guidance specific to technical documentation.
+After generating README content, apply `accelint-english-manager` using the exact strict-mode prompt above and use its rewritten content directly as the final output. Do not return a separate audit report. See [references/writing-principles.md](references/writing-principles.md) for additional guidance specific to technical documentation.

@@ -1,7 +1,7 @@
 # README Writer
 
 > **Note:**
-> This document is for agents and LLMs to follow when creating or updating README documentation. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance.
+> This document is for agents and LLMs that create or update README documentation. Each rule includes a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance.
 
 ---
 
@@ -13,9 +13,9 @@ Comprehensive guide for creating thorough, human-sounding README documentation t
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant sections
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Follow the workflow**: Analyze codebase → Compare with existing docs → Generate/update
+1. **Start here**: Scan the rule summaries to identify the relevant sections.
+2. **Load references as needed**: Open detailed examples only when implementing.
+3. **Follow the workflow**: Analyze the codebase → Compare with existing docs → Generate or update.
 
 ---
 
@@ -31,10 +31,10 @@ Comprehensive guide for creating thorough, human-sounding README documentation t
 ### 1.2 Identifying Public API
 [View detailed examples](references/codebase-analysis.md)
 
-- Check `package.json` `exports` and `main` fields for entry points
-- Find all `export` statements in entry point files
-- Trace re-exports to their source definitions
-- Distinguish between public API (exported from entry) and internal utilities
+- Check the `package.json` `exports` and `main` fields for entry points.
+- Find all `export` statements in the entry point files.
+- Trace re-exports to their source definitions.
+- Distinguish between the public API, which is exported from an entry point, and internal utilities.
 
 ### 1.3 Extracting Signatures
 [View detailed examples](references/codebase-analysis.md)
@@ -59,7 +59,7 @@ Comprehensive guide for creating thorough, human-sounding README documentation t
 ### 2.1 Required Sections
 [View detailed examples](references/readme-structure.md)
 
-Every README must include these sections in order:
+Every README must include these sections in this order:
 
 1. **Heading Area** - Title, optional banner, optional badges
 2. **Installation** - How to install the package
@@ -82,13 +82,13 @@ Include when relevant:
 ### 2.3 Section Ordering
 [View detailed examples](references/readme-structure.md)
 
-Follow the prescribed order strictly. Users expect Installation near the top, API details in the middle, and License/Contributing at the bottom.
+Follow the prescribed order strictly. Users expect Installation near the top, API details in the middle, and License or Contributing at the bottom.
 
 ---
 
 ## 3. Writing Principles
 
-**REQUIRED SUB-SKILL:** Use `humanizer` to review all generated README content before finalizing.
+**REQUIRED SUB-SKILL:** Use `humanizer` to review all generated README content before you finalize it.
 
 ### 3.1 Be Absurdly Thorough
 [View detailed examples](references/writing-principles.md)
@@ -169,10 +169,10 @@ Present changes clearly:
 
 When updating:
 
-- Keep custom sections the user added
-- Preserve formatting choices where possible
-- Don't overwrite detailed explanations with generated text
-- Ask before removing content that might be intentional
+- Keep the custom sections that the user added.
+- Preserve formatting choices where possible.
+- Do not overwrite detailed explanations with generated text.
+- Ask before removing content that might be intentional.
 
 ---
 
@@ -181,7 +181,7 @@ When updating:
 ### 5.1 README Template
 [View complete template](references/readme-template.md)
 
-Use the template as a starting point. Customize section depth based on package complexity.
+Use the template as a starting point. Adjust the section depth to match the package complexity.
 
 ### 5.2 API Documentation Format
 
@@ -225,4 +225,4 @@ Before finalizing a README, verify:
 - [ ] License section present
 - [ ] No orphaned documentation for removed exports
 - [ ] Content reviewed with `humanizer` skill for AI writing patterns
-- [ ] Writing has personality — not sterile or voiceless
+- [ ] Writing has personality and does not sound sterile or voiceless

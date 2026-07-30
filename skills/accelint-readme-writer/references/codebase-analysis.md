@@ -8,7 +8,7 @@ How to parse and understand code for documentation purposes.
 
 ### Starting Point
 
-Always start from the directory containing the README, not the repository root.
+Always start from the directory that contains the README, not the repository root.
 
 ```
 monorepo/
@@ -28,9 +28,9 @@ monorepo/
 
 Respect `package.json` boundaries:
 
-- Only analyze files within the package directory
-- Don't document imports from sibling packages as "your" API
-- Note peer dependencies that users need to install
+- Analyze only files within the package directory.
+- Do not document imports from sibling packages as "your" API.
+- Note any peer dependencies that users need to install.
 
 ---
 
@@ -61,8 +61,8 @@ Look for entry point definitions:
 
 This tells you:
 
-- `index.ts` is the main entry point
-- `utils.ts` is a secondary entry point at `package-name/utils`
+- `index.ts` is the main entry point.
+- `utils.ts` is a secondary entry point at `package-name/utils`.
 
 ### Common Entry Point Patterns
 
@@ -79,7 +79,7 @@ Check these files in order:
 
 ### What Counts as Public
 
-Only document exports that are accessible to package consumers:
+Document only the exports that are accessible to package consumers:
 
 **✅ Public (document these)**
 ```typescript
@@ -110,7 +110,7 @@ export function parse(path: string): Promise<Config> {
 }
 ```
 
-Document the function as it appears in `parser.ts`, but note it's accessed via the main entry point.
+Document the function as it appears in `parser.ts`, but note that consumers access it through the main entry point.
 
 ### Export Patterns to Recognize
 
@@ -277,7 +277,7 @@ describe('parse', () => {
 });
 ```
 
-Extract patterns from tests for the Examples section.
+Extract usage patterns from tests for the Examples section.
 
 ---
 
@@ -317,11 +317,11 @@ Extract patterns from tests for the Examples section.
 
 Flag documentation as potentially stale when:
 
-- Function signatures don't match
-- Documented exports don't exist in code
-- Import paths in examples are wrong
-- Package manager doesn't match lockfile
-- Version numbers are outdated
+- Function signatures do not match.
+- Documented exports do not exist in code.
+- Import paths in examples are wrong.
+- The package manager does not match the lockfile.
+- Version numbers are outdated.
 
 ---
 

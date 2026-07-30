@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.1] - 2026-07-30
+
+### Changed
+- Tightened behavior-defining prose across `SKILL.md`, `AGENTS.md`, and `references/` files without changing trigger coverage, workflow order, or guardrail strength
+  - Clarified discovery, comparison, and humanizer instructions with more direct wording
+  - Improved sentence structure and terminology consistency across the skill folder
+  - Preserved exact technical references, examples, and required sub-skill behavior
+
+### Version
+- Bumped from 1.2.0 → 1.2.1
+
 ## [1.2.0] - 2026-07-08
 
 ### Added

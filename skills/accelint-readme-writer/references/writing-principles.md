@@ -4,13 +4,13 @@ Guidelines for creating thorough, human-sounding documentation.
 
 **REQUIRED SUB-SKILL:** Use `humanizer` to review generated content for AI writing patterns.
 
-This document covers README-specific writing principles. The `humanizer` skill provides comprehensive patterns for removing AI-generated text artifacts. Use both together.
+This document covers README-specific writing principles. The `humanizer` skill provides broader patterns for removing AI-generated text artifacts. Use both together.
 
 ---
 
 ## 1. Be Absurdly Thorough
 
-When in doubt, include it. More detail is always better for documentation.
+When in doubt, include it. For documentation, more detail is usually better.
 
 **❌ Incorrect: assumes too much knowledge**
 ```markdown
@@ -36,7 +36,7 @@ If you're using TypeScript, you're all set — types are included. For JavaScrip
 
 ## 2. Use Code Blocks Liberally
 
-Every command should be copy-pasteable. Don't describe commands in prose when you can show them.
+Every command should be copy-pasteable. Do not describe commands in prose when you can show them.
 
 **❌ Incorrect: describes instead of shows**
 ```markdown
@@ -58,7 +58,7 @@ This compiles TypeScript to JavaScript in the `dist/` directory.
 
 ## 3. Show Example Output
 
-When helpful, show what the user should expect to see. This confirms they're on the right track.
+When helpful, show what the user should expect to see. This confirms that they are on the right track.
 
 **❌ Incorrect: no indication of success**
 ```markdown
@@ -114,7 +114,7 @@ This prints detailed information about each step, which is helpful when tracking
 
 ## 5. Assume Fresh Machine
 
-Write as if the reader has never seen this codebase. Don't assume they know your conventions.
+Write as if the reader has never seen this codebase. Do not assume that they know your conventions.
 
 **❌ Incorrect: assumes familiarity**
 ```markdown
@@ -138,7 +138,7 @@ This installs all dependencies. The first install may take a few minutes.
 
 ## 6. Use Tables for Reference
 
-Environment variables, CLI options, configuration options, and script references work great as tables.
+Environment variables, CLI options, configuration options, and script references work well as tables.
 
 **❌ Incorrect: hard to scan**
 ```markdown
@@ -158,7 +158,7 @@ The `format` option can be "json" or "yaml". The `output` option specifies where
 
 ## 7. Keep Commands Current
 
-Detect the actual package manager and use it consistently. Never assume npm.
+Detect the actual package manager and use it consistently. Never assume `npm`.
 
 **❌ Incorrect: wrong package manager**
 ```markdown
@@ -189,7 +189,7 @@ Check for lockfiles in this order:
 
 ## 8. Write Like a Human
 
-Sound like someone who genuinely wants to help, not a robot generating documentation.
+Sound like someone who genuinely wants to help, not like a robot generating documentation.
 
 **❌ Incorrect: robotic**
 ```markdown
@@ -242,7 +242,7 @@ Keep TOC entries to 2 levels deep maximum. Deeper nesting makes the TOC harder t
 
 ## 10. Remove AI Writing Patterns
 
-After drafting content, apply the `humanizer` skill to catch patterns this guide doesn't cover. Key patterns to watch for in README context:
+After drafting content, apply the `humanizer` skill to catch patterns that this guide does not cover. Key patterns to watch for in README content:
 
 ### Significance Inflation
 
