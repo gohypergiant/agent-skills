@@ -4,23 +4,25 @@ description: Use when creating or editing a README.md file in any project or pac
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.2"
+  version: "1.2.3"
 ---
 
 # README Writer
 
-This skill guides the creation and maintenance of comprehensive, human-friendly README documentation by analyzing the codebase and ensuring documentation stays in sync with actual functionality.
+Use this skill to create or update README documentation that stays aligned with the actual codebase.
 
-## Never Do When Writing READMEs
+The workflow analyzes the code from the README location, compares it with existing documentation, and produces thorough README content with copy-pasteable commands and practical examples.
 
-- **NEVER run discovery serially when sub-agents are available** — spawn parallel discovery agents for different aspects of the codebase, such as entry points, dependencies, examples, and existing docs. Serial file-by-file scanning wastes time.
+## Hard stops
+
+- **NEVER run discovery serially when sub-agents are available** — spawn parallel discovery agents for different parts of the codebase, such as entry points, dependencies, examples, and existing docs. Serial file-by-file scanning wastes time.
 - **NEVER document non-exported internal functions** — document only the public API that is accessible through package entry points. Internal helper functions that are not re-exported from `index.ts` do not belong in the README.
 - **NEVER fabricate usage examples** — extract real examples from test files, JSDoc blocks, or `examples/` directories. Made-up examples often contain subtle errors that confuse users.
 - **NEVER use the wrong package manager commands** — check for lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`) and use the matching package manager in all commands. Wrong commands break the user's first experience.
 - **NEVER skip comparing code to the existing README** — when updating documentation, identify what is missing, what is stale, and what signature changes occurred. Silent drift between code and docs causes user frustration.
 - **NEVER write robotic, AI-sounding text** — use the `accelint-english-manager` skill in strict audit+rewrite mode to remove inflated language, promotional tone, and AI writing patterns. Documentation should sound like a helpful human wrote it.
 
-## When to Activate This Skill
+## When to use this skill
 
 Use this skill when:
 
@@ -31,16 +33,16 @@ Use this skill when:
 - User asks to "document this package" or "write a README"
 - User mentions README in context of a monorepo subdirectory
 
-## When NOT to Use This Skill
+## When not to use this skill
 
-Do not activate for:
+Do not use this skill for:
 
 - API documentation generation (use JSDoc/TSDoc tools)
 - Changelog or release notes
 - Internal developer notes not meant for README
 - Documentation in formats other than Markdown
 
-## How to Use
+## Workflow
 
 ### Step 1: Locate the README Context
 
@@ -177,14 +179,14 @@ Load these as needed for detailed guidance:
 - "Write docs for packages/my-lib"
 - "This package needs better documentation"
 
-## Required Skills
+## Required skill
 
 This skill requires the `accelint-english-manager` skill to review generated content.
 
-Before invoking it, verify the skill exists.
+Before you invoke it, verify that the skill exists.
 
 If `accelint-english-manager` is not available:
-1. Stop and tell the user this README workflow depends on `accelint-english-manager`.
+1. Stop and tell the user that this README workflow depends on `accelint-english-manager`.
 2. Ask them to install or enable that skill.
 3. Do not continue the final prose-polish step until it is available.
 
@@ -202,7 +204,7 @@ I do not want a report, just apply the new content to the output directly.
 
 Use the rewritten content as the final README output. Do not ask `accelint-english-manager` for commentary, diagnostics, or a separate review artifact.
 
-## Important Notes
+## Additional rules
 
 ### Package Manager Detection
 
@@ -219,11 +221,11 @@ Always use the correct package manager based on lockfiles:
 
 Include a TOC for READMEs over ~200 lines. Place it after the heading area, before the Installation section.
 
-### Human-Sounding Writing
+### Human-sounding writing
 
 **REQUIRED SUB-SKILL:** Use `accelint-english-manager` to review and refine generated README content.
 
-Before this final polish pass, confirm `accelint-english-manager` is installed. If it is missing, stop and tell the user they need to install it before this workflow can finish as designed.
+Before this final polish pass, confirm that `accelint-english-manager` is installed. If it is missing, stop and tell the user they need to install it before this workflow can finish as designed.
 
 When it is available, call it in strict mode with this exact prompt shape:
 

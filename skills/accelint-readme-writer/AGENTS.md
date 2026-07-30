@@ -1,19 +1,19 @@
 # README Writer
 
 > **Note:**
-> This document is for agents and LLMs that create or update README documentation. Each rule includes a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance.
+> This document is for agents and LLMs that create or update README documentation. It summarizes the workflow and links to detailed examples in the `references/` folder. Load reference files only when you need implementation detail.
 
 ---
 
 ## Abstract
 
-Comprehensive guide for creating thorough, human-sounding README documentation that stays in sync with actual codebase functionality. Designed for AI agents working with any JavaScript/TypeScript project, with special handling for monorepos.
+Guide for creating thorough, human-sounding README documentation that stays aligned with the actual codebase. Designed for AI agents working with JavaScript and TypeScript projects, including monorepos.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify the relevant sections.
+1. **Start here**: Scan the rule summaries to find the relevant sections.
 2. **Load references as needed**: Open detailed examples only when implementing.
 3. **Follow the workflow**: Analyze the codebase → Compare with existing docs → Generate or update.
 
@@ -82,7 +82,7 @@ Include when relevant:
 ### 2.3 Section Ordering
 [View detailed examples](references/readme-structure.md)
 
-Follow the prescribed order strictly. Users expect Installation near the top, API details in the middle, and License or Contributing at the bottom.
+Follow the prescribed order strictly. Users expect Installation near the top, API details in the middle, and License, Architecture & Development Guides, or Contributing near the bottom.
 
 ---
 
@@ -120,7 +120,7 @@ Detect and use the correct package manager. Never assume npm.
 
 Sound like someone who genuinely wants to help, not a robot generating docs.
 
-### 3.7 Apply Humanizer Patterns
+### 3.7 Apply humanizer patterns
 
 After drafting README content, apply the `accelint-english-manager` skill to remove AI writing patterns:
 
@@ -130,7 +130,7 @@ After drafting README content, apply the `accelint-english-manager` skill to rem
 - Replace vague attributions with specific sources or remove entirely
 - Fix em dash overuse and rule-of-three patterns
 - Remove sycophantic language ("Great question!", "Certainly!")
-- Add personality and voice — sterile writing is as obvious as AI slop
+- Add personality and voice. Sterile writing is as obvious as AI slop.
 
 ---
 

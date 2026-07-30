@@ -8,7 +8,7 @@ This document covers README-specific writing principles. The `accelint-english-m
 
 ---
 
-## 1. Be Absurdly Thorough
+## 1. Be absurdly thorough
 
 When in doubt, include it. For documentation, more detail is usually better.
 
@@ -187,7 +187,7 @@ Check for lockfiles in this order:
 
 ---
 
-## 8. Write Like a Human
+## 8. Write like a human
 
 Sound like someone who genuinely wants to help, not like a robot generating documentation.
 
@@ -209,7 +209,7 @@ Pass in a config object with your settings. At minimum, you need `apiKey` and `e
 - **Corporate speak**: "Leverage the functionality" → "Use"
 - **Filler phrases**: "In order to" → "To"
 
-### Aim For
+### Aim for
 
 - Direct, active voice
 - Second person ("you") when addressing the reader
@@ -240,9 +240,9 @@ Keep TOC entries to 2 levels deep maximum. Deeper nesting makes the TOC harder t
 
 ---
 
-## 10. Remove AI Writing Patterns
+## 10. Remove AI writing patterns
 
-After drafting content, apply the `accelint-english-manager` skill to catch patterns that this guide does not cover. Key patterns to watch for in README content:
+After drafting content, apply the `accelint-english-manager` skill to catch patterns that this guide does not cover. Watch for these patterns in README content:
 
 ### Significance Inflation
 
@@ -320,7 +320,7 @@ See the roadmap in CONTRIBUTING.md for planned features.
 
 ---
 
-## 11. Add Personality (Not Just Remove Patterns)
+## 11. Add personality, not just pattern removal
 
 Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as obvious.
 
