@@ -1,5 +1,46 @@
 # Changelog
 
+## [0.7.5] - 2026-07-30
+
+### Changed
+- Updated `SKILL.md` so audit-only outputs now also include the consistent report from `assets/output-template.md`, making the report format consistent across all output modes.
+- Updated `assets/output-template.md` usage guidance so audit-only outputs give the audit findings first and then append the completed report.
+- Realigned `metadata.version` in `SKILL.md` with the changelog at `0.7.5`.
+
+### Version
+- Patch release at `0.7.5`.
+
+## [0.7.4] - 2026-07-30
+
+### Changed
+- Updated `SKILL.md` so all rewrite-bearing outputs now include the consistent report from `assets/output-template.md`, including rewrite-only outputs.
+- Updated `assets/output-template.md` usage guidance so rewrite-only outputs return the rewrite first and then append the completed report.
+- Realigned `metadata.version` in `SKILL.md` with the changelog at `0.7.4`.
+
+### Version
+- Patch release at `0.7.4`.
+
+## [0.7.3] - 2026-07-30
+
+### Changed
+- Updated `SKILL.md` so audit-plus-rewrite outputs always include the consistent report from `assets/output-template.md`.
+- Updated `assets/output-template.md` usage guidance so the report is mandatory for audit-plus-rewrite outputs and still optional only when the user explicitly requests rewrite-only output with no added report.
+- Realigned `metadata.version` in `SKILL.md` with the changelog at `0.7.3`.
+
+### Version
+- Patch release at `0.7.3`.
+
+## [0.7.2] - 2026-07-30
+
+### Added
+- Added `assets/output-template.md` with a consistent delivery-report template for `accelint-skill-prose` work, including what changed, why it changed, and which other artifact-set files changed or stayed unchanged and why.
+
+### Changed
+- Updated `SKILL.md` to point agents to `assets/output-template.md` when the user wants a consistent rewrite report or artifact-set status report, while preserving rewrite-only output constraints.
+
+### Version
+- Patch release at `0.7.2`.
+
 ## [0.7.1] - 2026-07-30
 
 ### Fixed
@@ -112,7 +153,7 @@
 - Added `references/ste-compatible-rules.md` with a skill-specific distilled set of Simplified Technical English patterns adapted for behavior-preserving prompt editing.
 
 ### Changed
-- Updated `SKILL.md` to normalize labels such as `critical` and `important` into RFC 2119 terms when rewriting behavior-defining text, while preserving quoted text and exact untouchables.
+- Updated `SKILL.md` to normalize labels such as `critical` and `important` into RFC 2119 obligation terms when rewriting behavior-defining text, while preserving quoted text and exact untouchables.
 - Added progressive-disclosure guidance to load the RFC 2119 and STE-compatible references when obligation strength, sentence clarity, omission risk, or procedure-versus-description separation matters.
 - Strengthened the required self-check to verify that any RFC 2119 normalization matches the real requirement level rather than rhetorical emphasis.
 - Clarified that Simplified Technical English and ADHD-friendly patterns are optional supporting disciplines, not governing rewrite modes, and that behavior preservation remains the controlling priority.

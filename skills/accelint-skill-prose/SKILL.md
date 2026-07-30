@@ -4,18 +4,25 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.1"
+  version: "0.7.5"
 ---
 
 # Skill Prose
 
 Use this skill to edit behavior-defining prose without changing behavior.
 
+## Core contract
+
 This skill applies to text that does more than sound good. It controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
 
 Write in plain, direct English. Do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
 
-Your job is to make the prose easier to follow, easier to audit, and harder to misread while preserving trigger coverage, workflow semantics, guardrail strength, and exact technical meaning.
+Your job is to make the prose easier to follow, easier to audit, and harder to misread while preserving:
+
+- trigger coverage
+- workflow semantics
+- guardrail strength
+- exact technical meaning
 
 Keep one term for one concept. Do not rotate terms just to avoid repetition. In skill prose, stable terminology is part of the behavior contract.
 
@@ -33,14 +40,9 @@ This skill extends general English editing with extra safety for:
 - hard stops and guardrails
 - exact technical references inside prose
 
-## Primary goal
+Use `assets/output-template.md` for all outputs.
 
-Improve clarity without changing:
-
-- trigger coverage
-- workflow semantics
-- guardrail strength
-- exact technical meaning
+### Behavioral drift
 
 Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it or replace it only with wording that keeps the same behavior.
 
@@ -116,6 +118,8 @@ Keep them separate. Output mode controls the deliverable. Rewrite mode controls 
 
 #### Audit only
 
+Always include the consistent report from `assets/output-template.md`.
+
 Use this mode when the user wants review, risk analysis, or a check for ambiguity, drift, or weak wording.
 
 Do not rewrite the text unless the user explicitly asks for a rewrite.
@@ -171,6 +175,8 @@ Strict mode is not permission to broaden scope casually. In both modes, keep the
 
 ### Artifact focus
 
+Use these lenses when they match the text:
+
 #### Frontmatter description tightening
 
 Use this focus when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
@@ -181,13 +187,9 @@ Use this focus when the prose defines step order, approval dependencies, decisio
 
 ## Before you edit
 
-Extract what must stay fixed.
+### 1. Extract what must stay fixed
 
 First normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
-
-If the task concerns a skill folder rather than a single passage, define the behavior-bearing artifact set before editing. Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`, then add other linked instruction files only when they complete the contract. Start by reading the root `SKILL.md`, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline. Do not assume the visible excerpt is the full contract.
-
-If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
 
 Look for:
 
@@ -201,6 +203,16 @@ Look for:
 - quoted wording that must stay exact
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
+
+### 2. Define the artifact set when the task covers a skill folder
+
+Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`, then add other linked instruction files only when they complete the contract.
+
+Start by reading the root `SKILL.md`. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
+
+Do not assume the visible excerpt is the full contract.
+
+If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
 
 ## Rewrite method
 
@@ -378,6 +390,7 @@ Use this structure:
 3. **Finding list** — category, source text, risk, and why it matters
 4. **Optional safer alternative** — only if the user explicitly asked for examples, and only at finding level
 5. **Optional full rewrite** — only if the user asked for it
+6. **Completed report** — fill out `assets/output-template.md`
 
 Focus first on:
 
@@ -391,17 +404,25 @@ Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 
 
 ### Rewrite only
 
-If the user asks for only the rewrite, return only the rewrite.
+Always include the consistent report from `assets/output-template.md`.
+
+If the user asks for only the rewrite, return the rewrite first, then the completed report.
 
 Do not prepend audit notes or explanation unless the user asked.
 
 ### Audit plus rewrite
 
-Give the risk summary first, then the rewrite.
+Always include the consistent report from `assets/output-template.md`.
+
+Give the risk summary first, then the rewrite, then the completed report.
 
 ## Progressive disclosure
 
-Load references only when needed. When the user asks you to work on a skill, crawl the skill folder first so you know what behavior-defining prose exists beyond the current excerpt. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras. For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
+Load references only when needed.
+
+When the user asks you to work on a skill, crawl the skill folder first so you know what behavior-defining prose exists beyond the current excerpt. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
+
+For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
 When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite any artifact-set files that need updates so terminology, severity language, examples, workflow wording, and progressive-disclosure handoffs stay internally consistent. If you leave a behavior-bearing file unchanged, be able to explain why it did not need an edit.
 
