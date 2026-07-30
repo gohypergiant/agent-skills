@@ -104,4 +104,4 @@ For long drafts or large rewrites, prefer multiple passes:
 3. standardize terminology and modality
 4. re-check tone, nuance, and actionability
 
-This reduces accidental meaning drift and works better in constrained tool contexts.
+This reduces accidental meaning drift. It also works better in constrained tool contexts.

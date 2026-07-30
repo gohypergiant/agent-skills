@@ -1,6 +1,6 @@
 # Use cases and adaptation notes
 
-Use this reference to adapt the core writing method to different contexts without flattening everything into the same style.
+Use this reference to adapt the core writing method to different contexts. Do not flatten everything into the same style.
 
 The core defaults still apply:
 - preserve meaning and constraints
@@ -14,7 +14,7 @@ The core defaults still apply:
 
 Default mode: `mode=default`
 
-Escalate to `mode=strict` when the user asks for STE-style discipline or the text is high-consequence and tightly controlled.
+Escalate to `mode=strict` when the user asks for STE-style discipline or when the text is high-consequence and tightly controlled.
 
 Use:
 - direct wording
@@ -81,7 +81,7 @@ Use:
 
 Default mode: `mode=default`
 
-Use this for writing that must be technically clear but still needs persuasion, trust, or brand fit.
+Use this section for writing that must be technically clear but still needs persuasion, trust, or brand fit.
 
 Examples:
 - RFC summaries

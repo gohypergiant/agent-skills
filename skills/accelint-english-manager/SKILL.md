@@ -4,14 +4,14 @@ description: Use when drafting, rewriting, simplifying, reviewing, editing, poli
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.3.2"
 ---
 
 # English Manager
 
-Write in plain, direct English that is easy to read, easy to scan, and easy to act on.
+Use plain, direct English that is easy to read, easy to scan, and easy to act on.
 
-The goal is not to make everything shorter. The goal is to preserve the user's intended meaning, audience, tone, and explicit constraints while making the text clearer, steadier, and harder to misread.
+Do not optimize for brevity alone. Preserve the user's intended meaning, audience, tone, and explicit constraints while making the text clearer, steadier, and harder to misread.
 
 This skill uses one default writing system:
 - **plain-language discipline** for direct, concrete wording
@@ -54,6 +54,7 @@ For audit-only requests, you MAY proceed without asking for a mode if the user c
 - **Audit plus rewrite** — give findings first, then the rewrite.
 
 If the user asks for only the rewrite, return only the rewrite.
+Do not return audit notes unless the user asked for them.
 
 ### 3. Preserve the constraints
 
@@ -74,7 +75,7 @@ Let the mode set your default rewrite scope.
 - **`mode=default`** — do a **local rewrite** by default. Tighten or clarify the given text only. Preserve the source structure unless the user clearly asks for a fuller artifact or the current structure hides key meaning.
 - **`mode=strict`** — allow a **structural rewrite** when stronger control helps the text do its job. Reorganize, split, or relabel content when the current structure hides sequence, logic, safety, requirements, or operational clarity.
 
-Do not treat `mode=strict` as permission to expand scope casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asks for a broader rewrite.
+Do not treat `mode=strict` as permission to broaden the task casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asks for a broader rewrite.
 
 ## Default writing method
 
@@ -241,6 +242,7 @@ Before you deliver, confirm:
 3. Obligation, permission, capability, and uncertainty did not drift.
 4. Untouchables stayed exact.
 5. The final answer matches the requested output mode.
+6. The final answer matches the requested rewrite mode.
 
 For a deeper mechanical pass, load `references/checklist.md`.
 

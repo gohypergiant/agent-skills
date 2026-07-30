@@ -4,6 +4,18 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
+## [1.3.2] - 2026-07-30
+
+### Changed
+- Tightened local sentence structure in `references/examples.md`, `references/use-cases.md`, and `references/checklist.md` so the guidance is easier to scan without changing behavior.
+- Clarified a stale-phrase explanation in `references/substitutions.md` so the reason for the rule is more explicit without changing the rule itself.
+
+## [1.3.1] - 2026-07-30
+
+### Changed
+- Tightened `SKILL.md` wording in strict mode to make output-mode, rewrite-scope, and self-check rules easier to follow without changing trigger coverage or workflow behavior.
+- Clarified that `mode=strict` does not broaden task scope, that rewrite-only output excludes audit notes unless requested, and that final self-check must verify both output mode and rewrite mode.
+
 ## [1.3.0] - 2026-07-30
 
 ### Added

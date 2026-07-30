@@ -2,7 +2,7 @@
 
 Use this reference when a concrete pattern will help before drafting, rewriting, or auditing text.
 
-These examples are intentionally short. Use them to anchor judgment, not to force a template onto unrelated prose. Favor the core default method first: state the point early, use direct wording, keep terms stable, and apply stronger structure only when it helps the reader.
+These examples are intentionally short. Use them to anchor judgment. Do not force a template onto unrelated prose. Favor the core default method first: state the point early, use direct wording, keep terms stable, and apply stronger structure only when it helps the reader.
 
 ## Procedural rewrite
 
@@ -139,18 +139,18 @@ Why this helps:
 - make the point easier to scan
 - do not force numbered steps unless the text is actually procedural
 
-This reminder helps avoid over-applying technical or ADHD-oriented structure to simple human communication.
+This reminder helps you avoid over-applying technical or ADHD-oriented structure to simple human communication.
 
 ## Reusable example patterns
 
-Patterns that work well in this reference:
+Use these patterns in this reference:
 - before/after pairs for the same sentence or paragraph
 - one instruction per step
 - condition first, then action
 - state the failure, the cause, and the next action
 - show why a rewrite is better, not just that it is shorter
 
-Avoid copying examples too literally when they depend on:
+Do not copy examples too literally when they depend on:
 - product-specific names
 - commands or file paths from another project
 - timestamps, metrics, or incidents from another system
@@ -159,7 +159,7 @@ Avoid copying examples too literally when they depend on:
 ## When to use this file
 
 Use this file when:
-- the request is ambiguous and a concrete pattern will help select the right mode
+- the request is ambiguous and a concrete pattern will help you choose the right mode
 - the text mixes clarity goals with voice-sensitive constraints
 - a procedural or support rewrite needs a quick anchor before drafting
 - the model is over-correcting toward rigidity and needs examples of when to stay light

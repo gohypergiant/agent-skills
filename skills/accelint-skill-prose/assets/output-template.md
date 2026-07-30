@@ -9,7 +9,7 @@ Keep the report factual. Do not imply that a file was reviewed, changed, or left
 - Report what changed and why.
 - Report what did not change and why when that file was in the artifact set.
 - Keep paths exact.
-- Keep reasons tied to behavior safety, clarity, consistency, trigger coverage, workflow semantics, guardrail strength, or exact technical meaning.
+- Keep reasons tied to behavior safety, clarity, consistency, local sentence-structure quality, trigger coverage, workflow semantics, guardrail strength, or exact technical meaning.
 - If discovery was incomplete, say so explicitly.
 - If no other artifact-set files changed, say that directly.
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.6] - 2026-07-30
+
+### Fixed
+- Clarified in `SKILL.md` that folder-level artifact-set review must evaluate local sentence structure in each behavior-bearing file, not only cross-file consistency.
+- Tightened the required self-check so unchanged artifact-set files must be defensible on local prose quality as well as behavioral alignment.
+- Updated `assets/output-template.md` so report reasons can explicitly cite local sentence-structure quality when explaining why a file changed or stayed unchanged.
+
+### Version
+- Patch release at `0.7.6`.
+
 ## [0.7.5] - 2026-07-30
 
 ### Changed

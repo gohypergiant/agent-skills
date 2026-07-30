@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.5"
+  version: "0.7.6"
 ---
 
 # Skill Prose
@@ -424,7 +424,7 @@ When the user asks you to work on a skill, crawl the skill folder first so you k
 
 For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
-When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite any artifact-set files that need updates so terminology, severity language, examples, workflow wording, and progressive-disclosure handoffs stay internally consistent. If you leave a behavior-bearing file unchanged, be able to explain why it did not need an edit.
+When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite any artifact-set files that need updates so terminology, severity language, examples, workflow wording, progressive-disclosure handoffs, and local sentence structure stay internally consistent and easy to follow. If you leave a behavior-bearing file unchanged, be able to explain why it did not need an edit, including why its local prose is already near the minimum safe form.
 
 Load references only when needed:
 
@@ -463,7 +463,7 @@ This step is not optional.
 4. Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
 5. Re-check every exact token, command, path, field name, identifier, example, and behavior-bearing verb that the source relied on.
 6. Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS.md`, and any inspected instruction files before deciding the artifact set was complete.
-7. Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract. If any behavior-bearing file stayed unchanged, confirm you can explain why.
+7. Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract. If any behavior-bearing file stayed unchanged, confirm you can explain why, including why its local sentence structure did not need tightening.
 8. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
 9. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
 10. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
@@ -475,7 +475,7 @@ This skill is not a full Simplified Technical English enforcement pass, and it i
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
 
-When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, or broken progressive-disclosure handoffs. Edit those files when needed so the folder remains internally consistent before you deliver the work.
+When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or sentence structures that make the behavior harder to follow than necessary. Edit those files when needed so the folder remains internally consistent and locally clear before you deliver the work.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 
