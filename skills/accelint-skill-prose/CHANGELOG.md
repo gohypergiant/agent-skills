@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.6.0] - 2026-07-30
+
+### Added
+- Added explicit `mode=default` and `mode=strict` rewrite-mode control to `SKILL.md`, alongside the existing output-mode distinctions.
+- Added a positive default writing method for behavior-defining prose so the skill teaches how to shape descriptions, workflows, guardrails, rationale, and examples rather than only what to avoid.
+- Added `references/artifact-patterns.md` with artifact-specific shaping guidance for descriptions, workflows, guardrails, rationale, examples, and audit findings.
+- Added new worked examples covering positive guardrail rewrites, workflow shaping, and local-versus-structural rewrite choices.
+
+### Changed
+- Rebalanced `SKILL.md` toward constructive instruction while preserving the existing safety model, hard stops, and exactness rules.
+- Clarified that rewrite mode controls scope while output mode controls the deliverable.
+- Tightened RFC 2119 guidance so normalization happens when it clarifies true normative force, not mechanically or just for formality.
+- Tightened the reference set to reduce duplication: `artifact-patterns.md` now focuses on artifact-specific shaping, `ste-compatible-rules.md` defers broad final verification to `checklist.md`, and `rfc-2119.md` now matches the root skill's more selective normalization framing.
+- Expanded the checklist to verify constructive rewrite quality, including early rule visibility, instruction-versus-explanation separation, and mode-aware output compliance.
+
+### Version
+- Minor release at `0.6.0`.
+
 ## [0.5.4] - 2026-07-29
 
 ### Fixed

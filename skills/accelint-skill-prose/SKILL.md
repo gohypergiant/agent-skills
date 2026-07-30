@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.5.3"
+  version: "0.6.0"
 ---
 
 # Skill Prose
@@ -14,6 +14,8 @@ Edit behavior-defining prose carefully.
 This skill is for text that does more than sound good. It defines when a skill triggers, what it promises, what order work happens in, and what must stay exact.
 
 Use plain, direct English, but do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
+
+Teach the reader how to act, not just what to avoid. When you rewrite, preserve behavior and also make the prose easier to follow, easier to audit, and harder to misread.
 
 Keep the same term for the same concept. Do not rotate terms just to avoid repetition. In skill prose, consistent wording is part of the behavior contract.
 
@@ -30,8 +32,6 @@ This skill extends general English editing with extra safety for:
 - exact technical references inside prose
 
 The goal is: **improve clarity without changing trigger coverage, workflow semantics, guardrail strength, or exact technical meaning.**
-
-Default to the **smallest safe rewrite**. If the safest edit is to leave wording alone, say so.
 
 Behavioral drift is not limited to paths, fields, and quoted tokens. If verb choice changes what an agent is allowed to do, when it does it, or how strongly a rule applies, that verb is behavior-bearing and must be preserved or replaced with wording that keeps the same behavior.
 
@@ -94,11 +94,18 @@ When goals conflict, use this order:
 5. Improve clarity, consistency, and actionability
 6. Improve brevity
 
-## Start by classifying the task
+## Start here
 
-Choose the primary mode before editing.
+Choose two controls before you edit:
 
-### 1. Audit only
+1. the **output mode** — what you will deliver
+2. the **rewrite mode** — how far you may reshape the prose
+
+Keep these separate. Output mode controls the answer format. Rewrite mode controls the rewrite scope.
+
+### 1. Choose the output mode
+
+#### Audit only
 
 Use when the user wants review, risk analysis, or a check for ambiguity, drift, or weak wording.
 
@@ -108,27 +115,56 @@ Do not include replacement wording, "safer" rewrites, or suggested revised sente
 
 A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary as evidence for why the source is risky. In those cases, keep it fragment-level, not sentence-level, and do not let it become a stealth rewrite of the passage.
 
-### 2. Rewrite only
+#### Rewrite only
 
-Use when the user wants a cleaner version and asks for final text directly.
+Use when the user wants cleaner final text directly.
 
-### 3. Audit plus rewrite
+#### Audit plus rewrite
 
 Use when the user wants both findings and a safer revision.
 
-### 3a. Minimal-touch rewrite
+### 2. Choose the rewrite mode
 
-Use by default when the user asks for a narrow cleanup, typo fix, safer tightening, or exactness-preserving clarification. Preserve structure, examples, and phrasing that already carry behavior.
+For rewrite tasks, ask the user which rewrite mode they want unless they already made the scope clear.
 
-### 3b. Full rewrite
+Offer these choices:
 
-Use only when the user asks for broader restructuring or when the text has repeated clarity failures that cannot be fixed locally. Preserve behavior, but you may reorganize prose when the structure itself causes ambiguity.
+- **`mode=default`** — local rewrite by default
+- **`mode=strict`** — structural rewrite allowed when needed
 
-### 4. Frontmatter description tightening
+For audit-only requests, you may proceed without asking for a rewrite mode. If the task expands into a rewrite, ask for the rewrite mode before you rewrite.
+
+### 3. Apply the rewrite mode
+
+#### `mode=default`
+
+Use this by default for narrow cleanup, exactness-preserving clarification, typo fixes, or local tightening.
+
+Behavior:
+- preserve the source structure unless the structure itself hides behavior
+- preserve examples, labels, and section order when they already carry behavior
+- prefer phrase-level and sentence-level repairs over reorganization
+- prefer the smallest local rewrite that makes the rule easier to follow
+
+#### `mode=strict`
+
+Use this when the user wants stronger control, stricter standardization, or when local edits cannot fix repeated ambiguity, mixed severity language, buried workflow logic, or unstable terminology.
+
+Behavior:
+- preserve behavior, but allow structural rewrite when the structure itself causes ambiguity
+- separate instructions, rationale, warnings, and examples when that improves control
+- normalize terminology and obligation language more deliberately across the edited artifact set
+- reorganize only as far as needed to make trigger scope, workflow order, and guardrail force easier to follow
+
+Strict mode is not permission to broaden scope casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asked for a broader rewrite.
+
+### 4. Identify the artifact focus
+
+#### Frontmatter description tightening
 
 Use when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
 
-### 5. Workflow or guardrail tightening
+#### Workflow or guardrail tightening
 
 Use when the prose defines step order, approval dependencies, decision points, safety limits, or exact execution rules.
 
@@ -154,6 +190,63 @@ Look for:
 - quoted wording that must stay exact
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
+
+## Default writing method
+
+Use this method whenever you rewrite behavior-defining prose.
+
+### 1. State the operational point early
+
+Lead with the rule, action, boundary, or decision that the reader must understand.
+
+- In descriptions, surface the scope logic early.
+- In workflow prose, surface the action and sequence early.
+- In guardrails, surface the requirement or prohibition early.
+- In rationale, make the protected risk visible early.
+
+Do not add a preamble when the instruction works better without one.
+
+### 2. Keep one term for one concept
+
+Pick one term for each repeated behavior-bearing concept and keep it stable.
+
+Do not rotate synonyms for style if those synonyms could suggest different scope, timing, or force.
+
+### 3. Match the sentence shape to the job
+
+Choose the clearest accurate sentence shape for the artifact.
+
+- **Descriptions** — keep the trigger family, boundary, and artifact scope explicit.
+- **Procedures** — keep one action or decision per step when possible.
+- **Guardrails** — keep the prohibition or requirement direct, then explain the risk if needed.
+- **Rationale** — explain why the rule exists without burying the rule itself.
+- **Examples** — keep only examples that anchor scope, edge cases, or expected behavior.
+
+### 4. Separate instruction from explanation when it helps
+
+Procedural text tells the agent what to do. Descriptive text explains what something means, why a rule exists, or when a rule applies.
+
+Separate them when that makes the behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
+
+### 5. Put conditions before commands when the logic gets clearer
+
+If a rule depends on a condition, put the condition first when doing so makes the logic easier to follow and does not change timing or emphasis.
+
+### 6. Preserve exact obligation strength
+
+Keep requirement, recommendation, permission, and prohibition at the same level.
+
+Use RFC 2119 terms when they genuinely clarify normative force. Do not normalize severity labels mechanically or just to sound more formal.
+
+### 7. Keep the action path easy to scan
+
+Use short paragraphs, clean lists, and bounded sentences when they make the behavior easier to audit.
+
+Do not reshape source text just to make it feel lighter. Scanability is useful only when it preserves the same behavior.
+
+### 8. Prefer the smallest structure that makes the rule clear
+
+Do not over-edit. Improve the prose enough that the intended behavior is easier to follow and harder to misread.
 
 ## Core operating rules
 
@@ -208,7 +301,7 @@ If the source names a specific token like `specs_touched/decisions`, keep that t
 
 If the source contains words like `must`, `do not`, `never`, `required`, `critical`, or `important`, preserve the same obligation level.
 
-When rewriting behavior-defining prose, normalize informal severity labels to RFC 2119 terms when possible. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Apply this to heading-level or banner-level labels like `MANDATORY CHECKPOINT`, `CRITICAL STEP`, or `IMPORTANT` too, not only sentence-level prose. Do not apply this mechanically to quoted text, exact tokens, or other untouchables that must stay exact. If you preserve an informal severity label, do so for an exactness reason, not just because the original wording feels emphatic.
+When rewriting behavior-defining prose, normalize informal severity labels to RFC 2119 terms when that clarification improves control and matches the real requirement level. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Apply this to heading-level or banner-level labels like `MANDATORY CHECKPOINT`, `CRITICAL STEP`, or `IMPORTANT` too, not only sentence-level prose. Do not apply this mechanically to quoted text, exact tokens, or other untouchables that must stay exact. Do not normalize just for tone or formality. If you preserve an informal severity label, do so for an exactness reason, not just because the original wording feels emphatic.
 
 A clearer version must preserve the same obligation level.
 
@@ -261,6 +354,8 @@ If the text is already compact, exact, and behaviorally clear, prefer an explici
 
 ## Output rules by mode
 
+Rewrite mode controls how far you may reshape the source. Output mode controls what you return to the user.
+
 For your own responses, you may borrow lightweight cognitive-load reduction patterns when they help the user act on the result. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries. Do not let response-formatting choices override audit accuracy, and do not reshape source text just to make it feel more ADHD-friendly unless the user explicitly asked for that delivery style.
 
 ### Audit only
@@ -307,6 +402,7 @@ Load references only when needed:
 - `references/ste-compatible-rules.md` — selective Simplified Technical English patterns adapted for behavior-preserving prompt editing
 - `references/rfc-2119.md` — normalize informal severity labels into RFC 2119 obligation terms without changing behavior strength
 - `references/examples.md` — before/after examples for audit-only, no-rewrite, guardrails, and frontmatter-safe tightening
+- `references/artifact-patterns.md` — positive rewrite patterns for descriptions, workflows, guardrails, rationale, examples, and audit findings
 
 ## Quick decision tests
 

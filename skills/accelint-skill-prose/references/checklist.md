@@ -52,8 +52,11 @@ Check that these stayed exact unless the user asked otherwise:
 ## 7. Clarity and tightening
 
 - Is the rewrite clearer, not just shorter?
+- Did you state the rule, action, boundary, or decision early enough?
 - Did you remove filler without removing behavior?
 - Did you split overloaded sentences without changing order?
+- Did you separate instruction from explanation when that made the behavior easier to follow?
+- Did you keep one term for one concept across the edited files?
 - Did you keep examples that define scope?
 - Did you preserve rationale sentences that explain a guardrail, checkpoint, or timing rule?
 - If the user asked for a note, checklist, banner, or other compact format, did you preserve that format instead of expanding it into procedure or policy prose?
@@ -68,8 +71,11 @@ Check that these stayed exact unless the user asked otherwise:
 
 ## 9. Output-mode compliance
 
+- Did you keep output mode separate from rewrite mode?
 - If the request was audit-only, did you avoid rewriting the full passage?
 - If the request was rewrite-only, did you avoid prepending audit notes?
+- If the rewrite used `mode=default`, did you keep the structure local unless structure itself hid behavior?
+- If the rewrite used `mode=strict`, did you reorganize only as far as needed to clarify behavior?
 - If the safest result was no rewrite, did you say so explicitly instead of forcing a cosmetic edit?
 
 ## 10. Final question

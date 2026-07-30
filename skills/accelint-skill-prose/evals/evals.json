@@ -238,16 +238,17 @@
     {
       "id": 24,
       "prompt": "You've completed a rewrite of a skill description. What must you do before delivering it to the user?",
-      "expected_output": "A concise description of the required self-check, including trigger-scope verification and exact-token review before delivery.",
+      "expected_output": "A concise description of the required self-check, including trigger-scope verification, exact-token review, and mode-aware output compliance before delivery.",
       "files": [
+        "SKILL.md",
         "references/checklist.md",
         "references/frontmatter-descriptions.md"
       ],
       "expectations": [
-        "Mentions running the self-check or loading references/checklist.md.",
+        "Mentions running the required self-check or loading references/checklist.md.",
         "Mentions verifying trigger-scope preservation.",
         "Mentions checking exact tokens or exact references.",
-        "Mentions output-format compliance where relevant.",
+        "Mentions confirming output mode and rewrite mode were handled correctly where relevant.",
         "Does not say to deliver immediately without verification."
       ]
     },
@@ -323,6 +324,7 @@
       "expected_output": "An audit-only response that identifies vocabulary drift where the rewrite rotates behavior-bearing terms instead of preserving the original concept terms.",
       "files": [
         "SKILL.md",
+        "references/checklist.md",
         "references/ste-compatible-rules.md"
       ],
       "expectations": [
@@ -388,6 +390,7 @@
       "expected_output": "A tighter rewrite that preserves React-specific trigger scope and strong obligation semantics, optionally normalized into RFC-2119 language without broadening scope.",
       "files": [
         "../accelint-react-best-practices/SKILL.md",
+        "references/frontmatter-descriptions.md",
         "references/rfc-2119.md"
       ],
       "expectations": [
@@ -396,6 +399,23 @@
         "Preserves the strong obligation semantics of ALWAYS use this skill.",
         "Does not broaden into generic frontend or JavaScript guidance.",
         "Returns only the revised text."
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "The user says: 'Audit this wording for ambiguity, but do not rewrite it.' Which mode or modes apply, and what must you avoid including in the deliverable?",
+      "expected_output": "A concise audit-only answer that keeps output mode separate from rewrite mode and states that sentence-level replacement text must not be included unless the user explicitly asked for examples.",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md",
+        "references/examples.md"
+      ],
+      "expectations": [
+        "Identifies Audit only as the output mode.",
+        "Does not require a rewrite mode before auditing.",
+        "States that full rewritten passages should not be included.",
+        "States that sentence-level replacement text should be avoided unless the user explicitly asked for examples.",
+        "Keeps audit findings separate from rewrite delivery."
       ]
     }
   ]

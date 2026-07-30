@@ -127,3 +127,36 @@ It escalates a simple note into a more procedural, policy-like instruction and a
 
 **Why the unsafe version drifts:**
 It drops the rationale that explains what risk the timing rule prevents. That reason is part of the operational meaning.
+
+## 9. Positive rewrite method for guardrails
+
+**Before:**
+> Never weaken approval gates during cleanup.
+
+**Safer rewrite:**
+> Do not weaken approval gates during cleanup. Approval gates control when work may proceed.
+
+**Why this is useful:**
+The rewrite keeps the prohibition, then makes the protected behavior explicit. It teaches the reader what the rule preserves, not only what to avoid.
+
+## 10. Positive rewrite method for workflow prose
+
+**Before:**
+> If the support files appear relevant, review them before revising the root file.
+
+**Safer rewrite:**
+> Before you revise the root file, review the support files that complete the workflow contract.
+
+**Why this is useful:**
+The rewrite leads with timing and action, keeps the dependency explicit, and makes the operational sequence easier to scan without changing behavior.
+
+## 11. Local rewrite versus structural rewrite
+
+**Local rewrite (`mode=default`):**
+> Preserve the checklist format. Tighten each item without changing order.
+
+**Structural rewrite (`mode=strict`):**
+> Preserve the checklist logic, but group the items into trigger safety, workflow safety, and exact-reference safety if the current order hides the control points.
+
+**Why this distinction matters:**
+Default mode keeps the structure local. Strict mode allows reorganization only when structure itself is the clarity problem.

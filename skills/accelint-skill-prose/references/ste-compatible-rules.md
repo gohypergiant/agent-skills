@@ -189,12 +189,10 @@ Relax or adapt these rules when:
 
 ## Final check
 
-Before you deliver:
+Before you deliver, run the fuller verification in `checklist.md`.
 
-1. Would the same requests still trigger?
-2. Would the workflow run the same way?
-3. Did any requirement get softer?
-4. Did any exact token disappear?
-5. Did any sentence get shorter but less precise?
-6. Did you turn explanation into instruction by accident?
-7. Is the rewrite truly clearer, or just tighter?
+For this reference, confirm these sentence-level checks:
+
+1. Did any sentence get shorter but less precise?
+2. Did you turn explanation into instruction by accident?
+3. Did you use STE-like discipline to clarify the prose rather than flatten it mechanically?
