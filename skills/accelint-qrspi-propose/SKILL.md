@@ -156,7 +156,11 @@ Execute these steps in order without stopping between them:
 
    Note questions you were unable to empirically answer.
 
-   Do NOT critique code quality, editorialize or suggest changes or implementation approaches.
+   /opsx:explore
+
+   [paste ONLY the research questions from step 12]
+
+   Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
    ```
 
 15. Wait for the sub-agent to complete and return the research document
