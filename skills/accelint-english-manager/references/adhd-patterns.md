@@ -1,8 +1,18 @@
 # ADHD-friendly output patterns
 
-Use this reference when the user explicitly asks for ADHD-friendly output, when the reader needs highly actionable formatting, or when a response will be used under stress, low focus, or high task-switching.
+Use this reference when the reader explicitly asks for ADHD-friendly output, when a response must be highly actionable under low focus or stress, or when the default scanability rules are not enough.
 
-These patterns shape delivery. They do not override the user's meaning or explicit tone constraints.
+These patterns extend the default writing method. They do not replace it, and they do not override the user's meaning or tone constraints.
+
+## What this layer adds
+
+The core skill already favors:
+- direct openings
+- bounded sentences and paragraphs
+- visible action paths when action matters
+- fewer tangents
+
+Load this file when the response needs stronger execution shaping.
 
 ## Why this works
 
@@ -14,7 +24,7 @@ Assume these reader constraints:
 4. Tangents compete with the main task.
 5. Visible progress increases follow-through.
 
-## Core patterns
+## Stronger shaping patterns
 
 ### 1. Lead with the next action
 
@@ -35,7 +45,9 @@ When the reader must do more than one thing:
 - keep each step bounded
 - avoid stacking many actions into one step
 
-### 3. Restate current state
+Use only as much structure as the work needs.
+
+### 3. Restate current state across turns
 
 Across turns, restate what is done and what is next.
 
@@ -77,44 +89,26 @@ Use concrete ranges when estimates help execution.
 - "about 20 minutes if tests already exist"
 - "an afternoon if the schema also changes"
 
-Avoid:
-
-- "some work"
-- "a bit"
-- "should be quick"
+Avoid vague estimates.
 
 ### 8. Use matter-of-fact error language
 
 State:
-
 1. what failed
 2. why, if known
 3. what to do next
 
-Avoid:
+Avoid apology filler or dramatic wording that hides the fix.
 
-- "Uh oh"
-- apology filler
-- vague sympathy that hides the fix
+## When to relax this layer
 
-## Turn-shaping rules
-
-Default response shape for operational help:
-
-1. next action
-2. numbered steps if needed
-3. only the context required to act safely
-4. visible result or one remaining next action
-
-## When to relax these patterns
-
-Relax or adapt them when:
+Relax or adapt these patterns when:
 
 - the user asked for a full explanation or walkthrough
 - the text is creative or rhetorical by design
 - a warm tone is an explicit requirement
 - a destructive action needs confirmation first
-- the real answer is a ranked option set, not one action path
+- the real answer is a ranked option set rather than one action path
 
 ## Pre-send cleanup
 

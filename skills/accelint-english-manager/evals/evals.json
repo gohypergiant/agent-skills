@@ -165,6 +165,53 @@
         "The rewrite preserves some confidence or persuasive momentum rather than flattening into a dry manual sentence.",
         "The rewrite does not add broader product claims, examples, or implementation detail not present in the source."
       ]
+    },
+    {
+      "id": 26,
+      "prompt": "Rewrite this quick teammate note so it is easier to scan, but keep it as a note rather than turning it into numbered steps: 'The script finished, but the backfill still needs a rerun after the cache clears, so check the dashboard again around 2 PM and then post the final count in Slack.' Return only the revised note in final output.",
+      "expected_output": "A concise note in final output that improves scanability and action visibility without turning the message into a checklist or procedure.",
+      "files": [
+        "references/adhd-patterns.md"
+      ],
+      "assertions": [
+        "The final output returns only the revised note.",
+        "The rewrite improves scanability and makes the next action easier to spot.",
+        "The rewrite stays a note rather than becoming numbered steps or a checklist.",
+        "The rewrite preserves the timing detail about checking the dashboard around 2 PM.",
+        "The rewrite preserves the instruction to post the final count in Slack."
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "Audit this short policy sentence for obligation drift, then rewrite it if needed: 'Important: reviewers should document any manual production fix in the incident log within one business day.'",
+      "expected_output": "A compact audit plus rewrite that identifies whether the severity wording hides a true requirement and clarifies it without changing the intended obligation.",
+      "files": [
+        "references/rfc-2119.md"
+      ],
+      "assertions": [
+        "The response includes an audit before any rewrite.",
+        "The audit addresses whether 'Important' and 'should' reflect a recommendation or a requirement.",
+        "The rewrite preserves the requirement or recommendation level rather than strengthening it by accident.",
+        "The rewrite preserves the incident-log destination and the one-business-day timing.",
+        "The response stays compact rather than expanding into policy commentary."
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "Review this two-paragraph LLM-written documentation draft and rewrite it for clarity without changing scope or turning it into a checklist: 'This page is intended to provide users with a helpful overview of how project access works. In most cases, people will be able to request access through the admin panel, although there are some exceptions for legacy environments.\n\nIf a workspace is still using the older provisioning flow, approvals may need to be coordinated with operations before access can be granted. This is designed to ensure that the correct controls are in place and that requests are handled appropriately.' Return the revised two-paragraph version only.",
+      "expected_output": "A clearer two-paragraph rewrite in final output that keeps the original scope, preserves the legacy-environment exception and operations-approval condition, and improves plain-language readability without switching to checklist form.",
+      "files": [
+        "references/use-cases.md",
+        "references/substitutions.md"
+      ],
+      "assertions": [
+        "The final output returns only the revised two-paragraph text.",
+        "The rewrite preserves the overview scope instead of expanding into a policy or procedure.",
+        "The rewrite preserves the exception for legacy environments.",
+        "The rewrite preserves the condition that some approvals may need coordination with operations before access is granted.",
+        "The rewrite does not convert the content into bullets, numbered steps, or a checklist.",
+        "The rewrite is plainer and more direct than the source."
+      ]
     }
   ]
 }

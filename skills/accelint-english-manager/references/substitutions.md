@@ -3,6 +3,7 @@
 Use this reference during rewrite passes when the draft contains filler, inflated diction, term drift, or vague modality.
 
 These are context-sensitive editing moves, not automatic replacements.
+Use them to support the core default writing method: direct wording, stable terms, bounded sentences, and preserved nuance.
 Preserve requirement strength, permission, capability, uncertainty, and official technical terminology.
 If a direct swap changes the meaning, broadens the scope, or sounds unnatural, rewrite the sentence instead.
 

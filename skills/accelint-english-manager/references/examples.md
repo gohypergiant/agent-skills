@@ -2,7 +2,7 @@
 
 Use this reference when a concrete pattern will help before drafting, rewriting, or auditing text.
 
-These examples are intentionally short. Use them to anchor judgment, not to force a template onto unrelated prose.
+These examples are intentionally short. Use them to anchor judgment, not to force a template onto unrelated prose. Favor the core default method first: state the point early, use direct wording, keep terms stable, and apply stronger structure only when it helps the reader.
 
 ## Procedural rewrite
 
@@ -136,6 +136,7 @@ Why this helps:
 **Good response shape:**
 - keep the warmth
 - remove filler and repetition
+- make the point easier to scan
 - do not force numbered steps unless the text is actually procedural
 
 This reminder helps avoid over-applying technical or ADHD-oriented structure to simple human communication.
@@ -162,3 +163,4 @@ Use this file when:
 - the text mixes clarity goals with voice-sensitive constraints
 - a procedural or support rewrite needs a quick anchor before drafting
 - the model is over-correcting toward rigidity and needs examples of when to stay light
+- you want examples of the difference between the core default method and stronger structure

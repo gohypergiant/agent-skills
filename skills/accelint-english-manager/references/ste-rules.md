@@ -1,6 +1,8 @@
 # STE-style rules for technical clarity
 
-Use this reference when the request is technical, procedural, instructional, or explicitly asks for STE or ASD-STE100-style writing.
+Use this reference when the request is technical, procedural, instructional, or explicitly asks for STE or ASD-STE100-style writing. It is the main overlay for `mode=strict`.
+
+Load only the section or rule group that the current request needs. You do not need to load this whole file for every strict request.
 
 This is a software-oriented, STE-inspired synthesis for technical clarity and LLM-output cleanup. It is not an official copy of the ASD dictionary and does not claim compliance.
 
@@ -251,9 +253,9 @@ These extra rules are practical software-documentation and LLM-cleanup adaptatio
 - preserve code-like untouchables exactly
 - relax for explicitly requested warmth, brand tone, or dialogue realism
 
-## 14. When strictness should relax
+## 14. How this overlay fits the core skill
 
-Use these rules strongly for:
+Use this overlay strongly for:
 
 - procedures
 - runbooks
@@ -262,8 +264,9 @@ Use these rules strongly for:
 - product and process documentation
 - release and migration notes
 - LLM-generated technical drafts that need stabilization
+- explicit `mode=strict` requests
 
-Relax them when the user explicitly wants:
+Stay in the core default method, or relax this overlay, when the user explicitly wants:
 
 - creative voice
 - brand tone

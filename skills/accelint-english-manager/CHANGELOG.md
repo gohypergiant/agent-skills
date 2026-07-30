@@ -4,10 +4,26 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
-## [1.2.2] - 2026-07-29
+## [1.3.0] - 2026-07-30
+
+### Added
+- Added `RESEARCH_01.md` to preserve the multi-pass audit, evidence base, and approved implementation direction for future maintenance.
+- Added explicit `mode=default` and `mode=strict` behavior so strict plain-language and STE-leaning work can be requested without weakening the default editorial path.
 
 ### Changed
-- Renamed the skill from `accelint-english-manager` to `accelint-english-manager` and updated repository references to the new skill name.
+- Refactored `SKILL.md` around a shorter, more prescriptive default writing method that emphasizes how to write well before enumerating what to avoid.
+- Integrated light ADHD-friendly scanability and actionability principles into the core writing system by default instead of treating them as a separate trigger-only path.
+- Reframed STE-style structure, plain-language discipline, and ADHD-friendly shaping as one coordinated writing system with scoped overlays.
+- Simplified routing and delivery workflow so the skill chooses output mode, preserves constraints, then applies the mode-selected default scope and discipline level.
+- Tied rewrite scope more explicitly to the mode model so `mode=default` stays local by default and `mode=strict` permits structural rewrites when stronger control is needed.
+- Made mode selection explicit in the workflow so drafting and rewriting tasks now require the skill to ask the user for `mode=default` or `mode=strict` up front unless the user already specified one, using RFC 2119 wording for consistency.
+- Clarified STE-checking behavior so the skill loads only the relevant part of `references/ste-rules.md` before citing rule numbers, instead of implying the whole STE reference must be loaded.
+- Tightened reference boundaries so `rfc-2119.md` is loaded only for genuinely normative text and `adhd-patterns.md` is reserved for stronger action-oriented shaping.
+- Aligned the previously untouched reference files with the new operating model so `ste-rules.md`, `checklist.md`, `substitutions.md`, and `examples.md` reinforce the default-vs-strict mode split and the lighter default ADHD-friendly scanability layer.
+- Updated trigger description to explicitly cover LLM-written documentation and LLM-generated responses that need tone-preserving cleanup.
+
+### Fixed
+- Fixed the misleading `1.2.2` changelog note so the history reflects real content changes instead of a no-op rename.
 
 ## [1.2.1] - 2026-07-29
 

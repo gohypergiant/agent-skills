@@ -29,9 +29,10 @@ Search the draft for these patterns outside code and quoted text.
 
 ## 3. Structure checks
 
+- Is the point, result, or next action visible early enough?
 - Are long sentences split?
 - Does each sentence carry one main action or fact?
-- Are multi-step instructions numbered?
+- Are multi-step instructions numbered when numbering makes the work easier to follow?
 - Are paragraphs limited to one topic?
 - Do conditions come before commands in procedures?
 - Are warnings phrased as command first, risk second?
@@ -67,11 +68,11 @@ Verify that these stayed exact unless the user asked otherwise:
 
 If the output is supposed to help someone act:
 
-- Does the first line tell them what to do?
+- Does the first line tell them what to do, or make the next action obvious?
 - If there are multiple steps, are they numbered?
-- Is the next action obvious?
+- Is the action path easy to scan?
 - Is unrelated advice deferred until the main task is complete?
-- Is visible progress stated clearly?
+- Is visible progress stated clearly when the exchange spans multiple turns?
 
 ## 8. Final question
 
@@ -86,13 +87,13 @@ If all three are true, deliver it.
 
 ## STE-specific audit note
 
-If the user asked for strict STE-style review, use `ste-rules.md` and report:
+If the user asked for strict STE-style review, load only the relevant part of `ste-rules.md` that you need and report:
 
 - rule number
 - offending text
 - compliant rewrite
 
-Do not invent rule numbers. Use only the rule numbers present in the loaded STE reference.
+Do not invent rule numbers. Use only the rule numbers present in the part of the reference that you actually loaded.
 
 ## Multi-pass editing note
 

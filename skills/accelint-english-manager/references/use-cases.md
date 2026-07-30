@@ -1,13 +1,22 @@
 # Use cases and adaptation notes
 
-Use this reference to adapt the core discipline to different writing contexts without flattening everything into the same style.
+Use this reference to adapt the core writing method to different contexts without flattening everything into the same style.
+
+The core defaults still apply:
+- preserve meaning and constraints
+- state the point early
+- use direct concrete wording
+- keep terms stable
+- keep the text easy to scan
+- preserve real nuance
 
 ## Technical documentation
 
-Default mode: Technical
+Default mode: `mode=default`
+
+Escalate to `mode=strict` when the user asks for STE-style discipline or the text is high-consequence and tightly controlled.
 
 Use:
-
 - direct wording
 - stable terminology
 - short sentences
@@ -15,7 +24,6 @@ Use:
 - exact preservation of commands and identifiers
 
 Best for:
-
 - READMEs
 - setup guides
 - architecture docs
@@ -24,50 +32,46 @@ Best for:
 
 ## Runbooks and operational procedures
 
-Default mode: Technical, often STE-leaning
+Default mode: often `mode=strict`
 
 Use:
-
 - imperative steps
 - one action per step
 - condition before command
 - warning before risk
 - numbered procedures
 
-This context benefits strongly from the discipline.
+This context benefits strongly from stronger STE-style structure and stronger ADHD-friendly shaping.
 
 ## Error messages and support answers
 
-Default mode: Technical or conversational / operational
+Default mode: `mode=default`
 
 Pattern:
-
 1. state what happened
 2. state the cause if known
 3. state the next action
 
-Avoid apology filler and vague reassurance.
+Preserve warmth when the user wants it. Keep the answer easy to act on.
 
 ## Incident reports and status updates
 
-Default mode: Descriptive
+Default mode: `mode=default`
 
 Use:
-
 - time-bounded facts
-- simple past or simple present
+- simple present or simple past
 - one main fact per sentence
 - direct wording instead of hedged corporate phrasing
 
 **Before:** "We have identified an issue that may have impacted some users."
-**After:** "Between 14:02 and 14:31 UTC, 12% of requests failed."
+**After:** "Some users could not complete requests during the deployment window."
 
 ## Emails and internal communication
 
-Default mode: Plain
+Default mode: `mode=default`
 
 Use:
-
 - direct ask or update early
 - remove throat-clearing
 - keep tone appropriate to the relationship
@@ -75,12 +79,11 @@ Use:
 
 ## Persuasive or hybrid technical writing
 
-Default mode: Hybrid
+Default mode: `mode=default`
 
 Use this for writing that must be technically clear but still needs persuasion, trust, or brand fit.
 
 Examples:
-
 - RFC summaries
 - architecture overviews
 - design proposals
@@ -88,7 +91,6 @@ Examples:
 - onboarding copy for developer tools
 
 Use:
-
 - direct claims supported by facts
 - stable technical terms
 - plain wording for the recommendation or benefit
@@ -98,10 +100,9 @@ Do not flatten these texts into dry manuals unless the user asked for strict tec
 
 ## UI copy and empty states
 
-Default mode: Plain or Technical
+Default mode: `mode=default`
 
 Use:
-
 - short body copy
 - one action per line
 - concrete labels
@@ -111,12 +112,11 @@ Use:
 
 ## Creative or voice-sensitive writing
 
-Default mode: Voice-preserving
+Default mode: `mode=default`
 
 Use the discipline as a filter, not a mold.
 
 Keep:
-
 - deliberate rhythm
 - character voice
 - meaningful ambiguity
@@ -124,7 +124,6 @@ Keep:
 - warmth, humor, or persuasion when intentionally requested
 
 Still remove:
-
 - inherited clichés
 - evasive padding
 - fake sophistication
@@ -132,20 +131,18 @@ Still remove:
 
 ## ADHD-friendly chat or coaching output
 
-Default mode: Plain or conversational / operational
+Default mode: `mode=default`, plus `references/adhd-patterns.md` when the reader needs stronger execution shaping
 
 Use:
-
 - action first
-- numbered steps
-- visible progress
-- one concrete next action
-- short lists, ideally no more than five items
+- numbered steps when the task is genuinely multi-step
+- visible progress when the exchange spans multiple turns
+- one concrete next action when something remains open
+- short lists
 
 ## Where not to force strictness
 
-Do not force strict technical discipline onto:
-
+Do not force `mode=strict` onto:
 - poetry
 - fiction
 - marketing pages
