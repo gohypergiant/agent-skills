@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.7] - 2026-07-30
+
+### Fixed
+- Clarified in `SKILL.md` that strict folder-level audits and rewrites must judge local sentence-structure quality inside each behavior-bearing file, not only cross-file alignment.
+- Tightened `references/checklist.md` and `references/workflow-guardrails.md` so unchanged artifact-set files must be defensible on local prose clarity as well as behavioral consistency.
+- Split a few dense passages in `SKILL.md` and converted the artifact-focus lenses into a compact list so strict-mode guidance is easier to scan without changing behavior.
+
+### Version
+- Patch release at `0.7.7`.
+
 ## [0.7.6] - 2026-07-30
 
 ### Fixed

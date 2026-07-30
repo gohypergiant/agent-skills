@@ -13,6 +13,7 @@ Ask:
 - If an agent followed only the rewritten text, would it behave the same way?
 - Did the rewrite preserve order, gates, conditions, and rationale?
 - Did you update every artifact-set file that needed changes, rather than checking support files without rewriting them?
+- Did you judge each behavior-bearing file on its own local clarity, not only on whether it stayed aligned with the rest of the folder?
 
 ## Preserve exactly when important
 

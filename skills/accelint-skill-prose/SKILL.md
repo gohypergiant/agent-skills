@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.6"
+  version: "0.7.7"
 ---
 
 # Skill Prose
@@ -177,13 +177,8 @@ Strict mode is not permission to broaden scope casually. In both modes, keep the
 
 Use these lenses when they match the text:
 
-#### Frontmatter description tightening
-
-Use this focus when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
-
-#### Workflow or guardrail tightening
-
-Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, or exact execution rules.
+- **Frontmatter description tightening** — Use this focus when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
+- **Workflow or guardrail tightening** — Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, or exact execution rules.
 
 ## Before you edit
 
@@ -379,7 +374,9 @@ If the text is already compact, exact, and behaviorally clear, prefer an explici
 
 Rewrite mode controls how far you may reshape the source. Output mode controls what you return to the user.
 
-For your own responses, you may borrow lightweight cognitive-load reduction patterns when they help the user act on the result. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries. Do not let response-formatting choices override audit accuracy, and do not reshape source text just to make it feel more ADHD-friendly unless the user explicitly asked for that delivery style.
+For your own responses, you may borrow lightweight cognitive-load reduction patterns when they help the user act on the result. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries.
+
+Do not let response-formatting choices override audit accuracy. Do not reshape source text just to make it feel more ADHD-friendly unless the user explicitly asked for that delivery style.
 
 ### Audit only
 
@@ -420,11 +417,13 @@ Give the risk summary first, then the rewrite, then the completed report.
 
 Load references only when needed.
 
-When the user asks you to work on a skill, crawl the skill folder first so you know what behavior-defining prose exists beyond the current excerpt. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
+When the user asks you to work on a skill, crawl the skill folder first. This tells you what behavior-defining prose exists beyond the current excerpt. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
 
 For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
 When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite any artifact-set files that need updates so terminology, severity language, examples, workflow wording, progressive-disclosure handoffs, and local sentence structure stay internally consistent and easy to follow. If you leave a behavior-bearing file unchanged, be able to explain why it did not need an edit, including why its local prose is already near the minimum safe form.
+
+Treat local sentence-structure quality as part of the decision, not as a cosmetic afterthought. A file can be behaviorally aligned across the folder and still need a rewrite if its own prose makes the contract harder to follow than necessary.
 
 Load references only when needed:
 
@@ -476,6 +475,8 @@ This skill is not a full Simplified Technical English enforcement pass, and it i
 This skill improves behavior-defining prose safely. It does not replace domain review.
 
 When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or sentence structures that make the behavior harder to follow than necessary. Edit those files when needed so the folder remains internally consistent and locally clear before you deliver the work.
+
+Cross-file alignment is necessary, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

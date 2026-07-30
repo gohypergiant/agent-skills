@@ -67,7 +67,8 @@ Check that these stayed exact unless the user asked otherwise:
 - Did you follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
 - Did you audit the full behavior-bearing artifact set rather than only the quoted excerpt, and were those files eligible for edit when consistency required it?
 - Did you rewrite any artifact-set files that needed updates so terminology, severity language, workflow wording, examples, and progressive-disclosure handoffs stayed aligned?
-- If any behavior-bearing file stayed unchanged, can you explain why it did not need an edit?
+- Did you also check local sentence-structure quality in each behavior-bearing file, rather than treating cross-file alignment as the only rewrite criterion?
+- If any behavior-bearing file stayed unchanged, can you explain why it did not need an edit, including why its local prose was already near the minimum safe form?
 - If discovery was inconclusive, did you retry with a simpler listing method or direct directory inspection instead of treating the crawl as complete?
 - Did you preserve consistency between the root instructions and the linked files that complete the workflow or examples?
 
