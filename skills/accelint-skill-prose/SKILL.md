@@ -4,12 +4,12 @@ description: Use when creating, auditing, tightening, simplifying, de-slopping, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.7"
+  version: "0.7.8"
 ---
 
 # Skill Prose
 
-Use this skill to edit behavior-defining prose without changing behavior.
+Use this skill to edit behavior-defining prose while preserving behavior.
 
 ## Core contract
 
@@ -138,7 +138,7 @@ Use this mode when the user wants both findings and a safer revision.
 
 ### Rewrite mode
 
-For rewrite tasks, ask the user which rewrite mode they want unless they already made the scope clear.
+For rewrite tasks, ask the user which rewrite mode they want unless the user already made the scope clear.
 
 Offer these choices:
 
@@ -201,9 +201,9 @@ If the request says to preserve trigger coverage, exact meaning, or specific tok
 
 ### 2. Define the artifact set when the task covers a skill folder
 
-Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`, then add other linked instruction files only when they complete the contract.
+Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Add other linked instruction files only when they complete the contract.
 
-Start by reading the root `SKILL.md`. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
+Read the root `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before you broaden to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
 
 Do not assume the visible excerpt is the full contract.
 
@@ -419,9 +419,18 @@ Load references only when needed.
 
 When the user asks you to work on a skill, crawl the skill folder first. This tells you what behavior-defining prose exists beyond the current excerpt. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
 
-For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md`, then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before broadening to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
+For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md` first. Then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
-When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite any artifact-set files that need updates so terminology, severity language, examples, workflow wording, progressive-disclosure handoffs, and local sentence structure stay internally consistent and easy to follow. If you leave a behavior-bearing file unchanged, be able to explain why it did not need an edit, including why its local prose is already near the minimum safe form.
+When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite any artifact-set files that need updates so terminology, severity language, examples, workflow wording, progressive-disclosure handoffs, and local sentence structure stay internally consistent and easy to follow.
+
+If you changed any file in the artifact set, run a dedicated local-tightening sweep across the other inspected behavior-bearing files before you conclude that they should stay unchanged. This sweep is separate from cross-file alignment. Check each unchanged file for low-risk sentence-structure, scanability, terminology, and wording improvements that preserve behavior exactly.
+
+If you leave an inspected behavior-bearing file unchanged, classify the reason explicitly as one of these:
+- `Already near minimum safe form`
+- `Rewrite would add drift risk without meaningful clarity gain`
+- `Local-tightening sweep incomplete`
+
+Do not collapse these into a generic `No edit needed`.
 
 Treat local sentence-structure quality as part of the decision, not as a cosmetic afterthought. A file can be behaviorally aligned across the folder and still need a rewrite if its own prose makes the contract harder to follow than necessary.
 
@@ -462,11 +471,13 @@ This step is not optional.
 4. Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
 5. Re-check every exact token, command, path, field name, identifier, example, and behavior-bearing verb that the source relied on.
 6. Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS.md`, and any inspected instruction files before deciding the artifact set was complete.
-7. Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract. If any behavior-bearing file stayed unchanged, confirm you can explain why, including why its local sentence structure did not need tightening.
-8. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
-9. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
-10. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
-11. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
+7. Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract.
+8. If you changed any file in a folder-level rewrite, confirm that you ran a dedicated local-tightening sweep across the other inspected behavior-bearing files before you left them unchanged.
+9. If any inspected behavior-bearing file stayed unchanged, confirm that you can classify the reason exactly as `Already near minimum safe form`, `Rewrite would add drift risk without meaningful clarity gain`, or `Local-tightening sweep incomplete`. Do not use a generic `No edit needed` classification.
+10. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
+11. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
+12. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
+13. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
 
 ## Limits
 
@@ -474,9 +485,9 @@ This skill is not a full Simplified Technical English enforcement pass, and it i
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
 
-When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or sentence structures that make the behavior harder to follow than necessary. Edit those files when needed so the folder remains internally consistent and locally clear before you deliver the work.
+When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or sentence structures that make the behavior harder to follow than necessary. If you changed any file in the artifact set, do a dedicated local-tightening sweep of the other inspected behavior-bearing files before you leave them unchanged. Edit those files when needed so the folder remains internally consistent and locally clear before you deliver the work.
 
-Cross-file alignment is necessary, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
+Cross-file alignment is REQUIRED, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

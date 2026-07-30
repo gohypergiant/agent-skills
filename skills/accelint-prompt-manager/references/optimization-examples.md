@@ -4,11 +4,11 @@ Before/after transformations showing how to optimize vague prompts into clear, a
 
 ## What
 
-Real-world examples of prompt optimization across different task types. Each example shows the original vague prompt, analysis of issues, and the optimized version with rationale.
+These are real-world examples of prompt optimization across different task types. Each example shows the original vague prompt, the analysis of issues, and the optimized version with rationale.
 
 ## Why It Matters
 
-Seeing concrete transformations builds intuition faster than abstract principles. These examples demonstrate optimization techniques in action.
+Concrete transformations build intuition faster than abstract principles. These examples demonstrate optimization techniques in action.
 
 ---
 
@@ -190,7 +190,7 @@ Success criteria:
 - **No prioritization:** What's most important?
 - **Better as sequence:** Some reviews depend on others
 
-### ✅ After (Split & Prioritized)
+### ✅ After (Split and Prioritized)
 ```
 [First review pass - Critical issues]
 Review this PR for critical issues that would block merging:
@@ -462,4 +462,4 @@ Across all examples, successful optimization follows patterns:
 
 ## Key Principle
 
-Optimization transforms guesswork into clarity. Every vague term is an opportunity to align with user intent. Every ambiguity is a chance to prevent misalignment. Good optimization makes implicit assumptions explicit and unmeasurable goals measurable.
+Optimization transforms guesswork into clarity. Every vague term is an opportunity to align with user intent. Every ambiguity is a chance to prevent misalignment. Good optimization makes implicit assumptions explicit and makes unmeasurable goals measurable.

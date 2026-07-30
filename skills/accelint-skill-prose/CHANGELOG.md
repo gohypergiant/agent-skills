@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.8] - 2026-07-30
+
+### Fixed
+- Tightened `SKILL.md` wording around artifact-set discovery and progressive disclosure so the action path reads more directly in strict folder-level audits without changing the required crawl order or rewrite scope.
+- Clarified in `SKILL.md` that cross-file alignment is `REQUIRED`, making the obligation level explicit while preserving the existing hard requirement.
+- Removed the stale `No edit needed` example from `assets/output-template.md` so the template no longer contradicts the root skill's required unchanged-file classifications.
+
+### Version
+- Patch release at `0.7.8`.
+
 ## [0.7.7] - 2026-07-30
 
 ### Fixed

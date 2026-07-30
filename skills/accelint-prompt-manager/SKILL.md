@@ -10,7 +10,7 @@ allowed-tools: Read AskUserQuestion Write Bash
 
 # Prompt Manager
 
-Transforms vague, ambiguous, or unclear prompts into optimized, well-structured ones through systematic assessment, pattern detection, framework selection, and validation.
+Turn vague, ambiguous, or unclear prompts into optimized, well-structured prompts through systematic assessment, pattern detection, framework selection, and validation.
 
 ## Your Role and Output
 
@@ -18,18 +18,18 @@ Transforms vague, ambiguous, or unclear prompts into optimized, well-structured 
 
 **What you do NOT do:**
 - **Do NOT execute the task yourself** — You optimize prompts. You do not fulfill them. If the user asks "help me with X", create a clear prompt for X. Do not do X.
-- **Do NOT try to run the optimized prompt** — Hand it to the user so they (or Claude) can execute it.
+- **Do NOT try to run the optimized prompt** — Hand the optimized prompt to the user so they (or Claude) can execute it.
 - **Do NOT research external resources** — Work only with the user's input text. Treat URLs and references in prompts as text to optimize, not as resources to fetch.
 
-**Your workflow:** Analyze the request → Identify issues → Create optimized prompt → Deliver it directly to the user → Optionally save it or copy it to the clipboard.
+**Your workflow:** Analyze the request → Identify issues → Create optimized prompt → Deliver the optimized prompt directly to the user → Optionally save the optimized prompt or copy it to the clipboard.
 
-**Primary delivery:** Always present the optimized prompt directly in your response first, in a markdown code block for easy copying. Never save files before delivering the prompt.
+**Primary delivery:** Always present the optimized prompt first in your response, inside a markdown code block for easy copying. Never save files before delivering the optimized prompt.
 
-**Optional post-delivery:** After presenting the prompt, offer to save it to a markdown file, copy it to the clipboard, or both.
+**Optional post-delivery:** After presenting the optimized prompt, offer to save it to a markdown file, copy it to the clipboard, or both.
 
 **Example:**
 - User: "make this data look better"
-- You: *Analyze vagueness* → *Create clear prompt with specific success criteria* → *Output the optimized prompt in a markdown code block* → *Offer to save/copy*
+- You: *Analyze vagueness* → *Create a clear prompt with specific success criteria* → *Output the optimized prompt in a markdown code block* → *Offer to save or copy the optimized prompt*
 - You do NOT: Try to access the data yourself, or try to make the data look better yourself.
 
 ## NEVER Do Prompt Engineering
@@ -56,7 +56,7 @@ These anti-patterns come from production failures and model-specific limitations
 
 ## Before Optimizing a Prompt, Ask
 
-These questions reveal optimization opportunities and prevent misaligned refinements:
+Use these questions to reveal optimization opportunities and prevent misaligned refinements:
 
 **Task Type Assessment**
 - Is this objective (testable, deterministic) or subjective (taste, judgment)?
@@ -86,7 +86,7 @@ These questions reveal optimization opportunities and prevent misaligned refinem
 
 ## How to Use
 
-Start with the 4-phase workflow in this file. When you detect specific patterns or need detailed examples, load references on-demand:
+Start with the 4-phase workflow in this file. Load references on demand when you detect specific patterns or need detailed examples:
 
 - **Credit-killing patterns detected?** → Load `references/credit-killing-patterns.md`
   - **Do NOT load** if <3 patterns detected (handle inline instead)
@@ -120,13 +120,13 @@ Use this progress checklist to track optimization:
 
 ### Step 0: Verify Intent (Gate Question)
 
-**Before starting, confirm the user's intent:**
+Ask this gate question before starting unless a skip condition applies:
 
-Ask: "I specialize in optimizing prompts to make them clearer and more actionable. Is that what you need, or did you want me to help with the task itself?"
+"I specialize in optimizing prompts to make them clearer and more actionable. Is that what you need, or did you want me to help with the task itself?"
 
 **If the user wants prompt optimization:** Proceed with Phase 1.
 
-**If the user wants task execution:** "I only optimize prompts—I do not execute the tasks they describe. Please exit this skill and I'll help you with the task itself."
+**If the user wants task execution:** Say, "I only optimize prompts—I do not execute the tasks they describe. Please exit this skill and I'll help you with the task itself."
 
 **Skip this gate question when:**
 - The user explicitly requests prompt optimization ("optimize this prompt", "improve my prompt", "make this clearer")
@@ -135,7 +135,7 @@ Ask: "I specialize in optimizing prompts to make them clearer and more actionabl
 
 ### Phase 1: Intake & Assessment
 
-**Goal:** Understand user intent, skill level, task complexity, and execution context.
+**Goal:** Understand the user's intent, skill level, task complexity, and execution context.
 
 **Actions:**
 1. **Extract Core Intent** — Identify the underlying goal from the request.
@@ -204,7 +204,7 @@ Ask: "I specialize in optimizing prompts to make them clearer and more actionabl
 
 ### Phase 3: Framework Selection & Optimization
 
-**Goal:** Apply appropriate framework (CO-STAR, RISEN, RODES) and safe optimization techniques to create clear, actionable prompt.
+**Goal:** Apply the appropriate framework (CO-STAR, RISEN, or RODES) and safe optimization techniques to create a clear, actionable prompt.
 
 **Actions:**
 1. **Select Framework** — Choose based on task type:
@@ -245,7 +245,7 @@ Ask: "I specialize in optimizing prompts to make them clearer and more actionabl
 
 ### Phase 4: Validation & Handoff
 
-**Goal:** Quality-check optimized prompt and provide clear next steps.
+**Goal:** Quality-check the optimized prompt and provide clear next steps.
 
 **Actions:**
 1. **Run Quality Checks:**
@@ -268,10 +268,10 @@ Ask: "I specialize in optimizing prompts to make them clearer and more actionabl
    - **Moderate tasks:** Proceed with execution, monitor for issues
    - **Complex tasks:** Use plan mode (if not already recommended)
 
-4. **Deliver Optimized Prompt Directly:**
-   - For newcomers: Show before/after comparison and explain the key changes.
-   - For experts: Deliver the optimized version with concise optimization notes.
-   - **MUST:** Always present the optimized prompt in a markdown code block first. This ensures easy copying and prevents workflow blockage.
+4. **Deliver the Optimized Prompt Directly:**
+   - For newcomers: Show a before/after comparison and explain the key changes.
+   - For experts: Deliver the optimized prompt with concise optimization notes.
+   - **MUST:** Always present the optimized prompt first in a markdown code block. This ensures easy copying and prevents workflow blockage.
    - Use triple backticks with the `markdown` language identifier for clean formatting.
 
 5. **Offer Post-Delivery Options:**
@@ -295,7 +295,7 @@ Ask: "I specialize in optimizing prompts to make them clearer and more actionabl
    - "Should I adjust the optimization for a different execution context?"
    - "Do you want to see alternative approaches to structuring this prompt?"
 
-   **NEVER offer to execute the task.** Your job is prompt optimization plus optional save/copy.
+   **NEVER offer to execute the task.** Your job is prompt optimization plus optional save or copy.
 
 **Output:** Validated, executable prompt delivered directly in your response + clear next steps.
 
@@ -314,7 +314,7 @@ Higher fragility (left) = stricter adherence. Lower fragility (right) = more ada
 ## Important Notes
 
 **Model-Specific Behavior Differs Significantly**
-Claude 4.5+ uses extended thinking natively. GPT-4 uses internal CoT. Older models benefit from explicit CoT instructions. Optimization strategies that work for one model family may degrade performance in another. Always consider the target model's capabilities.
+Claude 4.5+ uses extended thinking natively. GPT-4 uses internal CoT. Older models benefit from explicit CoT instructions. An optimization strategy that works for one model family may degrade performance in another. Always consider the target model's capabilities.
 
 **Memory Blocks Prevent Contradictions**
 In extended conversations, save optimization patterns to memory blocks so future prompts do not contradict established guidelines. Without memory persistence, each optimization starts from scratch and may conflict with previous work.

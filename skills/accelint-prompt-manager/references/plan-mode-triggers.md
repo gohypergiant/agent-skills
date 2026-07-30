@@ -4,7 +4,7 @@ When to recommend plan mode before proceeding with execution. Getting this decis
 
 ## What
 
-Specific criteria that indicate a task needs design-before-execution approach. Plan mode lets you explore, research, and design before committing to implementation.
+These are specific criteria that indicate a task needs a design-before-execution approach. Plan mode lets you explore, research, and design before committing to implementation.
 
 ## Why It Matters
 
@@ -30,7 +30,7 @@ Five minutes of planning prevents hours of rework.
 - Scalability approach affects infrastructure needs
 - Infrastructure needs affect cost and complexity
 
-**Why plan mode:** Need to see full decision tree before committing to path.
+**Why plan mode:** You need to see the full decision tree before committing to a path.
 
 ---
 
@@ -47,7 +47,7 @@ Five minutes of planning prevents hours of rework.
 - Phase 6: Switch read traffic
 - Phase 7: Decommission MySQL
 
-**Why plan mode:** Each phase depends on previous, wrong approach early cascades.
+**Why plan mode:** Each phase depends on the previous phase. A wrong early approach cascades.
 
 ---
 
@@ -180,7 +180,7 @@ If this is user's first significant change to unfamiliar codebase:
 - All decisions already made
 - Just needs execution
 
-**Why not:** Planning already done.
+**Why not:** The planning is already done.
 
 ---
 
@@ -190,7 +190,7 @@ If this is user's first significant change to unfamiliar codebase:
 - Not building anything
 - Just investigating
 
-**Why not:** Use explore agent instead, plan mode is for implementation design.
+**Why not:** Use the explore agent instead. Plan mode is for implementation design.
 
 ---
 
@@ -261,10 +261,10 @@ Just proceed. Mentioning plan mode adds unnecessary complexity to simple tasks.
 
 ### What to Avoid
 
-- Don't make user feel stupid for asking
-- Don't overstate complexity (fear-mongering)
-- Don't decide unilaterally (always offer choice)
-- Don't make plan mode sound bureaucratic
+- Do not make the user feel stupid for asking.
+- Do not overstate complexity (fear-mongering).
+- Do not decide unilaterally (always offer a choice).
+- Do not make plan mode sound bureaucratic.
 
 ---
 

@@ -26,7 +26,7 @@ Keep the report factual. Do not imply that a file was reviewed, changed, or left
 - `[exact/path/to/file]`
   - Changed: [yes/no]
   - Why: [behavior-preserving reason for the change, or `Not changed` reason if this file belongs in the artifact set]
-  - Notes: [brief description of what changed, such as terminology normalization, structure tightening, guardrail clarification, example preservation, or `No edit needed`]
+  - Notes: [brief description of what changed, such as terminology normalization, structure tightening, guardrail clarification, or example preservation]
 
 ## Other artifact-set files
 - `[exact/path/to/file]`

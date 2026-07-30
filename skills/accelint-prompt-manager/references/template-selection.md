@@ -4,11 +4,11 @@ Guide for choosing the right prompt template based on task type. Each template o
 
 ## What
 
-12 pre-built prompt templates organized by common software engineering task types. Each template includes structure, tone, and quality criteria tuned for its domain.
+These are 12 pre-built prompt templates organized by common software-engineering task types. Each template includes structure, tone, and quality criteria tuned for its domain.
 
 ## Why It Matters
 
-Different tasks need different prompt structures. Code review prompts differ from debugging prompts differ from creative writing prompts. Templates accelerate optimization by starting from proven patterns.
+Different tasks need different prompt structures. Code-review prompts differ from debugging prompts, and debugging prompts differ from creative-writing prompts. Templates accelerate optimization by starting from proven patterns.
 
 ---
 
@@ -625,7 +625,7 @@ Templates are starting points, not rigid formulas:
 - User explicitly wants informal approach
 - Template would add complexity without benefit
 
-Templates optimize unclear prompts. Don't force structure onto clarity.
+Templates optimize unclear prompts. Do not force structure onto a prompt that is already clear.
 
 ---
 
@@ -649,4 +649,4 @@ Load full template only if detailed guidance needed.
 
 ## Key Principle
 
-Templates accelerate optimization by providing proven patterns. They're tools for clarity, not bureaucratic requirements. Use when helpful, skip when not.
+Templates accelerate optimization by providing proven patterns. They are tools for clarity, not bureaucratic requirements. Use them when helpful, and skip them when they are not.
