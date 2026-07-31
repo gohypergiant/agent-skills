@@ -1,0 +1,33 @@
+// Example deterministic metric for __SKILL_NAME__.
+// A metric is a PURE function: it takes the SUT output (already parsed into
+// whatever shape is convenient) and returns a score, a pass flag, and a
+// human-readable reason. Keep scoring OUT of the test so the same metric runs
+// across many fixtures.
+//
+// Replace this with a real metric derived from the skill's output shape.
+// See references/test-design.md for the output-shape -> metric mapping.
+
+export interface MetricResult {
+  score: number; // 0..1
+  passed: boolean;
+  reason: string;
+}
+
+/**
+ * Recall of a detection skill: of the defects PLANTED in a fixture, how many did
+ * the skill report? Swap this for the metric your skill actually needs.
+ */
+export function exampleRecall(
+  reported: ReadonlySet<string>,
+  planted: ReadonlySet<string>,
+): MetricResult {
+  const missed = [...planted].filter((v) => !reported.has(v));
+  const score = planted.size === 0 ? 1 : (planted.size - missed.length) / planted.size;
+  return {
+    score,
+    passed: score >= 1,
+    reason: missed.length
+      ? `Missed ${missed.length}/${planted.size} planted: ${missed.join(", ")}`
+      : `All ${planted.size} planted items caught`,
+  };
+}

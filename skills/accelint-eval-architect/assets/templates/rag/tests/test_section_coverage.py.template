@@ -1,0 +1,10 @@
+"""Ingest pass case: every expected section is indexed (offline, deterministic)."""
+
+from metrics.section_coverage import SectionCoverageMetric
+
+
+def test_all_sections_indexed(expected_sections, indexed_sections):
+    metric = SectionCoverageMetric(threshold=1.0)
+    score = metric.measure(indexed_sections, expected_sections)
+    assert metric.is_successful(), metric.reason
+    assert score == 1.0

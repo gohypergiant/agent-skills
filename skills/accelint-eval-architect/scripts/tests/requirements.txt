@@ -1,0 +1,4 @@
+# Test deps for the skill's own scripts (scripts/tests/).
+# Run from the skill root:  uv run --with-requirements scripts/tests/requirements.txt pytest scripts/tests
+pytest>=8.3
+pyyaml>=6.0

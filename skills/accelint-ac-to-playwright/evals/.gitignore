@@ -1,0 +1,9 @@
+.env
+.deepeval/
+__pycache__/
+.venv/
+.pytest_cache/
+
+# Run artifacts — regenerated every run, never committed (calibration
+# baselines live in local checkouts; the expected/ goldens are the source).
+results/

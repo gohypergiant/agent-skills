@@ -1,0 +1,62 @@
+"""Generate metric: faithfulness (answer grounded in retrieved context).
+
+GATED — uses a judge LLM via Ragas. Lazily imports ragas so the deterministic
+(offline) test run never needs it installed. Swap to a DeepEval GEval metric here
+if your answer rubric is bespoke (see references/frameworks/ragas.md).
+
+Uses the Ragas 0.2+ API (SingleTurnSample / class metrics / retrieved_contexts);
+the 0.1 API ("contexts" column, lowercase metric singletons) fails under the
+ragas>=0.2 pin in pyproject.toml.
+
+`judge_model` must be a Ragas-compatible LLM (e.g. a LangchainLLMWrapper around
+your proxy-backed chat model — wiring snippet in references/frameworks/ragas.md).
+Faithfulness needs no embeddings; only metrics like answer_relevancy do.
+
+Threshold ships RECORD-ONLY (0.0): faithfulness is judge-scored and noisy —
+calibrate from a baseline before gating on it (references/calibration.md).
+"""
+
+from typing import Optional
+
+# Recalibration tripwire (audit check #12). The judged rubric here is NOT local
+# text — it is Ragas's internal faithfulness prompts, which change via package
+# upgrades. RUBRIC_HASH therefore fingerprints the INSTALLED ragas version:
+# sha256(version).hexdigest()[:16]. Compute after `uv sync`:
+#   python3 -c "import hashlib, importlib.metadata as md; print(hashlib.sha256(md.version('ragas').encode()).hexdigest()[:16])"
+# The self-check in tests/test_faithfulness_regression.py enforces the literal;
+# record it via record_metric(..., rubric_hash=RUBRIC_HASH,
+# rubric_source="metrics/faithfulness_ragas.py") so the audit can compare.
+RUBRIC_HASH = "0000000000000000"  # PLACEHOLDER - compute and replace
+
+
+class FaithfulnessMetric:
+    def __init__(self, judge_model, threshold: float = 0.0):
+        # threshold 0.0 = record-only until calibrated
+        self.judge_model = judge_model
+        self.threshold = threshold
+        self.score = 0.0
+        self.success = False
+        self.reason: Optional[str] = None
+
+    def measure(self, question: str, answer: str, retrieved_contexts: list[str]) -> float:
+        # Lazy import: keeps `uv run pytest` (deterministic) free of a ragas dep.
+        from ragas import SingleTurnSample
+        from ragas.metrics import Faithfulness
+
+        sample = SingleTurnSample(
+            user_input=question,
+            response=answer,
+            retrieved_contexts=retrieved_contexts,
+        )
+        scorer = Faithfulness(llm=self.judge_model)
+        self.score = float(scorer.single_turn_score(sample))
+        self.success = self.score >= self.threshold
+        self.reason = f"faithfulness={self.score:.2f} (record-only until calibrated)"
+        return self.score
+
+    def is_successful(self) -> bool:
+        return self.success
+
+    @property
+    def __name__(self):
+        return "Faithfulness"

@@ -1,0 +1,43 @@
+"""LiteLLM judge factory for __SKILL_NAME__ DeepEval metrics.
+
+Hard-fails if required env vars are missing to prevent silent fallback to an
+OpenAI default. See references/frameworks/deepeval.md for why the `openai/`
+prefix is mandatory with a Bedrock-fronted proxy.
+"""
+
+import os
+from typing import Optional
+
+from deepeval.models import LiteLLMModel
+
+
+class ConfigurationError(Exception):
+    pass
+
+
+_judge: Optional[LiteLLMModel] = None
+
+
+def build_judge() -> LiteLLMModel:
+    global _judge
+    if _judge is not None:
+        return _judge
+
+    base_url = os.getenv("LITELLM_BASE_URL")
+    api_key = os.getenv("LITELLM_API_KEY")
+    alias = os.getenv("JUDGE_MODEL_ALIAS")
+    missing = [n for n, v in
+               [("LITELLM_BASE_URL", base_url), ("LITELLM_API_KEY", api_key),
+                ("JUDGE_MODEL_ALIAS", alias)] if not v]
+    if missing:
+        raise ConfigurationError(
+            f"Missing env vars: {', '.join(missing)}. See .env.example."
+        )
+
+    # The `openai/` prefix makes LiteLLM treat the custom proxy as
+    # OpenAI-compatible. Without it, LiteLLMModel.get_model_name() raises
+    # BadRequestError for non-standard aliases during GEval.__init__.
+    # `base_url=` (not the deprecated `api_base=` alias, which warns on every
+    # judge build and is slated for removal in deepeval).
+    _judge = LiteLLMModel(model=f"openai/{alias}", base_url=base_url, api_key=api_key)
+    return _judge
