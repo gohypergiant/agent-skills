@@ -2,7 +2,7 @@
 
 ## HydrationBoundary Pattern
 
-Prefetch data in server components, dehydrate the cache, and pass to client components:
+Prefetch data in server components, dehydrate the cache, and pass it to client components:
 
 ```typescript
 // features/tracks/server.tsx
@@ -61,7 +61,7 @@ export function prefetchAll(queryClient: QueryClient) {
 
 ## Streaming Without Await
 
-With `shouldDehydrateQuery` configured to include pending queries, you can skip await:
+With `shouldDehydrateQuery` configured to include pending queries, you can skip `await`:
 
 **❌ Incorrect: blocking server render**
 ```typescript
@@ -107,8 +107,8 @@ export function prefetchAll(queryClient: QueryClient) {
 ```
 
 Two-layer caching:
-1. `use cache` reduces database load (server-side, cross-request)
-2. TanStack Query provides client-side state management (per-tab, with refetching)
+1. `use cache` reduces database load (server-side, cross-request).
+2. TanStack Query provides client-side state management (per tab, with refetching).
 
 ## Client Component Usage
 
@@ -130,12 +130,12 @@ export function TracksClient() {
 }
 ```
 
-If `prefetchAll` was called in the server component, `useAllTracks` returns immediately with cached data. No duplicate request.
+If `prefetchAll` was called in the server component, `useAllTracks` returns immediately with cached data. There is no duplicate request.
 
 ## Important Notes
 
-- `HydrationBoundary` must wrap components that use the prefetched queries
-- `dehydrate(queryClient)` serializes cache state to pass through React's component boundary
-- Each server component should create its own `queryClient` via `getQueryClient()`
-- Prefetch functions don't need `await` when `shouldDehydrateQuery` includes pending status
-- Client components using hydrated queries should use `useSuspenseQuery` to work with Suspense boundaries
+- `HydrationBoundary` must wrap components that use the prefetched queries.
+- `dehydrate(queryClient)` serializes cache state so it can cross React's component boundary.
+- Each server component should create its own `queryClient` via `getQueryClient()`.
+- Prefetch functions do not need `await` when `shouldDehydrateQuery` includes pending status.
+- Client components that use hydrated queries should use `useSuspenseQuery` so they work with Suspense boundaries.

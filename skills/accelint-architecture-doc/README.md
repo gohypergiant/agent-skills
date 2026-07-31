@@ -1,6 +1,6 @@
 # accelint-architecture-doc
 
-Generate or update a living ARCHITECTURE.md document that gives agents and engineers a clear picture of how your system works.
+Generate or update a living ARCHITECTURE.md document that gives agents and engineers a clear picture of the system structure, tech stack, and deployment model.
 
 ## Table of Contents
 
@@ -26,17 +26,17 @@ Once installed, invoke it in Claude Code with `/accelint-architecture-doc`.
 
 ## Quick Start
 
-The simplest use case - creating a new ARCHITECTURE.md:
+The simplest use case is creating a new ARCHITECTURE.md:
 
 ```bash
 /accelint-architecture-doc
 ```
 
-That's it. The skill detects whether you need to create a new file, refresh an existing one, or restructure non-standard documentation. It scans your codebase, asks targeted questions about what it couldn't infer, shows you a preview, and writes the file only after confirmation.
+The skill detects whether you need to create a new file, refresh an existing one, or restructure non-standard documentation. It scans the codebase, asks targeted questions about what it could not infer, shows you a preview, and writes the file only after confirmation.
 
 ## What is accelint-architecture-doc?
 
-This skill generates ARCHITECTURE.md files. Think of them as living documents that capture:
+This skill generates ARCHITECTURE.md files. They are living documents that capture:
 
 - Project structure and directory layout
 - Tech stack (frameworks, languages, key libraries)
@@ -50,7 +50,7 @@ This skill generates ARCHITECTURE.md files. Think of them as living documents th
 
 Two groups benefit from this:
 
-**AI agents** get context about the codebase without scanning hundreds of files. **Engineers** get onboarding material and a single source of truth for architectural decisions.
+**AI agents** get codebase context without scanning hundreds of files. **Engineers** get onboarding material and a single source of truth for architectural decisions.
 
 ## How It Works
 
@@ -60,8 +60,8 @@ The skill operates in three phases:
 
 Before scanning anything, the skill checks:
 
-1. **Monorepo detection** - figures out if you're at the repo root or inside a package, then adjusts scope
-2. **File state** - checks if ARCHITECTURE.md exists and whether it follows the standard template
+1. **Monorepo detection** — determines whether you are at the repo root or inside a package, then adjusts scope.
+2. **File state** — checks whether ARCHITECTURE.md exists and whether it follows the standard template.
 
 Based on what it finds, it picks one of three modes:
 
@@ -85,7 +85,7 @@ Each agent scans specific files (package.json, docker-compose.yml, IaC configs, 
 
 ### Phase 2: Targeted Interview
 
-The skill only asks about `UNKNOWN` fields. Questions come in groups:
+The skill asks only about `UNKNOWN` fields. Questions come in groups:
 
 1. Gaps in components (if the service list looks incomplete)
 2. Infrastructure and deployment (if cloud provider or deployment model isn't clear)
@@ -93,11 +93,11 @@ The skill only asks about `UNKNOWN` fields. Questions come in groups:
 4. Roadmap and future plans (always asked, since code can't tell us this)
 5. Identity and glossary (if not found in README or package.json)
 
-Well-documented codebases: 2-3 questions. Fresh projects with minimal config: 6-8 questions.
+Well-documented codebases usually need 2 to 3 questions. Fresh projects with minimal config may need 6 to 8 questions.
 
 ### Phase 3: Preview and Write
 
-You see the complete ARCHITECTURE.md before anything gets written. Inference sources are marked inline:
+You see the complete ARCHITECTURE.md before anything is written. Inference sources are marked inline:
 
 ```markdown
 **Cloud Provider:** AWS # inferred from Dockerfile base image and .aws/ directory
@@ -150,7 +150,7 @@ Does this look right?
 4. Shows preview with changes highlighted
 5. Writes after you confirm
 
-**Takes about:** 1-2 minutes
+**Typical time:** 1 to 2 minutes
 
 **Example:**
 ```bash
@@ -180,8 +180,8 @@ I'll update sections 3, 4, and 8. Sections 1, 2, 5, 6, 7, 9, 10, 11 appear accur
    - **(a) Restructure** - import existing content into the template and fill gaps
    - **(b) Append** - add missing template sections below what's already there
    - **(c) Dry run** - preview what the restructured doc would look like
-3. If you choose restructure, it maps existing content to the right template sections
-4. Flags any content that doesn't fit cleanly and asks where it should go
+3. If you choose restructure, it maps existing content to the correct template sections.
+4. It flags any content that does not fit cleanly and asks where it should go.
 5. Fills gaps through scanning and interview
 6. Shows preview before writing
 
@@ -220,7 +220,7 @@ The skill generates an 11-section ARCHITECTURE.md following this structure:
 10. **Project Identification** — name, repo URL, primary contact, last update date
 11. **Glossary / Acronyms** — project-specific terms
 
-Each section includes guidance comments in the template (loaded via `references/template.md`). The skill fills these sections through a combination of automated inference and targeted questions.
+Each section includes guidance comments in the template, loaded via `references/template.md`. The skill fills these sections through automated inference and targeted questions.
 
 ## Advanced Features
 
@@ -253,17 +253,19 @@ When refreshing an existing document, the skill scans for:
 | **Testing updates** | New test configs, added E2E framework |
 | **Monitoring additions** | New observability deps or configs |
 
-For each detected change, the skill asks questions to understand the context instead of blindly updating.
+For each detected change, the skill asks questions to understand the context instead of updating blindly.
 
 ### Agent Behavior Doc Integration
 
-If the skill finds `AGENTS.md` or `CLAUDE.md` during discovery, it adds a reference block at the top of ARCHITECTURE.md:
+If the skill finds `AGENTS.md` or `CLAUDE.md` during discovery, it checks whether the agent behavior file already references ARCHITECTURE.md. If not, it adds this block near the top of that agent behavior file:
 
 ```markdown
-> **Agent Behavior:** See [AGENTS.md](./AGENTS.md) for how AI agents should behave when working in this codebase.
+## System Architecture
+
+For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
 ```
 
-This connects architectural context with behavioral instructions.
+This connects architectural context with behavioral instructions without adding agent-behavior guidance to ARCHITECTURE.md itself.
 
 ### Inference Source Annotations
 
@@ -275,11 +277,11 @@ During preview, the skill marks how each field was determined:
 **Monitoring:** Datadog # from user interview
 ```
 
-These annotations help you verify accuracy before the skill writes anything. The final file doesn't include them.
+These annotations help you verify accuracy before the skill writes anything. The final file does not include them.
 
 ### Preservation of Human-Authored Content
 
-In refresh mode, the skill won't silently remove content. If it finds sections that look human-written and can't verify their accuracy, it asks before changing them.
+In refresh mode, the skill does not silently remove content. If it finds sections that look human-written and cannot verify their accuracy, it asks before changing them.
 
 ## Examples
 
@@ -393,7 +395,7 @@ Updated ARCHITECTURE.md:
 **Output:**
 ```
 ARCHITECTURE.md exists but doesn't follow the standard template structure.
-I recommend restructuring it — this makes it consistent for agents.
+I recommend restructuring it — this makes it consistent for agents and engineers.
 
 (a) Restructure (recommended)
 (b) Append

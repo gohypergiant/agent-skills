@@ -2,7 +2,7 @@
 
 ## What is React Compiler?
 
-React Compiler is an automatic optimization tool that transforms React code at build time to improve performance. It automatically memoizes components and values, reducing the need for manual optimization with `memo()`, `useMemo()`, and `useCallback()`.
+React Compiler is a build-time optimization tool for React. It automatically memoizes components and values, which reduces the need for manual optimization with `memo()`, `useMemo()`, and `useCallback()`.
 
 Learn more: [React Compiler Documentation](https://react.dev/learn/react-compiler)
 
@@ -92,21 +92,21 @@ cat next.config.js | grep -i compiler
 
 ### Step 2: Apply the Right Strategy
 
-**If React Compiler is ENABLED:**
-- Skip manual `memo()`, `useMemo()`, `useCallback()` - compiler handles it
-- Skip hoisting static JSX/RegExp - compiler handles it
-- Still apply all other optimizations from this guide
+**If React Compiler is enabled:**
+- Skip manual `memo()`, `useMemo()`, and `useCallback()`. The compiler handles them.
+- Skip hoisting static JSX or RegExp values. The compiler handles that.
+- Still apply the other optimizations from this guide.
 
-**If React Compiler is NOT enabled:**
-- Apply all optimizations from this guide as needed
-- Manual memoization is necessary and beneficial
+**If React Compiler is not enabled:**
+- Apply the optimizations from this guide as needed.
+- Manual memoization is still useful.
 
 ### Step 3: When in Doubt
 
-If you're unsure whether a project uses React Compiler:
-1. Ask the user
-2. Check the build configuration files
-3. Assume it's NOT enabled and apply manual optimizations (safer default)
+If you are unsure whether a project uses React Compiler:
+1. Ask the user.
+2. Check the build configuration files.
+3. Assume it is not enabled and apply manual optimizations. This is the safer default.
 
 ---
 
@@ -194,7 +194,7 @@ startTransition(() => {
 ## When to Reference This Guide
 
 Load this reference when:
-- Determining which optimizations to apply
-- Project has React Compiler and you're unsure what's still needed
-- Migrating to/from React Compiler
-- User asks "Do I need to memoize this with React Compiler?"
+- Determining which optimizations to apply.
+- The project has React Compiler and you are unsure what still needs manual work.
+- Migrating to or from React Compiler.
+- The user asks, "Do I need to memoize this with React Compiler?"

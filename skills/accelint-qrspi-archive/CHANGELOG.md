@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.3.3] - 2026-07-30
+
+### Changed
+- Rewrote `README.md` to match the current skill contract more closely
+  - Rationale: The README still described obsolete phase-based structure, subagent usage for archive itself, and wholesale specs index rebuilds, which no longer matched the actual skill behavior in `SKILL.md`
+- Tightened README terminology around inline archive execution, additive linking, targeted specs-index patching, and append-only archive-index updates
+  - Rationale: Keeps the artifact set internally consistent and reduces the risk that readers follow outdated operational guidance
+
+### Version
+- Bumped from 1.3.2 → 1.3.3
+
+## [1.3.2] - 2026-07-30
+
+### Changed
+- Refined the frontmatter description to better match the generated eval set's trigger language and boundaries
+  - Rationale: Makes archive-plus-bookkeeping requests more likely to trigger while more clearly excluding propose/apply/synthesis work
+- Clarified that this skill owns native archive execution plus follow-on linking and index maintenance
+  - Rationale: Improves boundary precision for requests focused on post-archive cross-linking, specs index updates, and archive index appends
+
+### Version
+- Bumped from 1.3.1 → 1.3.2
+
+## [1.3.1] - 2026-07-30
+
+### Changed
+- Tightened the skill description to start with "Use when," clarify trigger phrases, and define the archive-plus-bookkeeping boundary more explicitly
+  - Rationale: The skill manager guidance requires a clearer WHAT/WHEN/KEYWORDS description so activation is easier and false positives are less likely
+- Added a short `How to Use` section ahead of the workflow
+  - Rationale: The skill had strong procedural detail but lacked a concise operator-oriented entry point, which made safe usage harder to scan quickly
+- Corrected stale step references in out-of-scope, error-handling, and NEVER sections
+  - Rationale: The numbering had drifted after prior structural edits, which created internal inconsistency and maintenance risk
+
+### Version
+- Bumped from 1.3.0 → 1.3.1
+
 ## [1.3.0] - 2026-07-24
 
 ### Changed

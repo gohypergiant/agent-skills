@@ -4,11 +4,11 @@ How to assess whether a task is simple (execute directly), moderate (proceed wit
 
 ## What
 
-These are systematic criteria for categorizing task complexity before execution. Complexity determines the optimization strategy and whether plan mode should be recommended.
+These are systematic criteria for categorizing task complexity before execution. The complexity level determines the optimization strategy and whether plan mode should be recommended.
 
 ## Why It Matters
 
-Executing complex tasks without planning causes rework, missed requirements, and suboptimal architectures. Simple tasks do not need elaborate planning. The skill is to distinguish between them.
+Executing complex tasks without planning causes rework, missed requirements, and suboptimal architectures. Simple tasks do not need elaborate planning. The key is to distinguish between them.
 
 ---
 
@@ -84,7 +84,7 @@ Executing complex tasks without planning causes rework, missed requirements, and
 **Optimization Strategy:**
 - ALWAYS recommend plan mode
 - Do not proceed with execution until the plan is approved
-- Explain the reasoning: "This task involves [X dependencies and Y phases]. Plan mode will help design the approach before execution, preventing costly rework."
+- Explain why: "This task involves [X dependencies and Y phases]. Plan mode will help design the approach before execution, preventing costly rework."
 
 **Plan Mode:** REQUIRED
 
@@ -268,7 +268,7 @@ Build pattern recognition for common complex task indicators:
 - "Write function to [single action]"
 - "Extract [data] from [source]"
 
-**Caution:** Keywords are hints, not deterministic. Always count decisions/phases/dependencies.
+**Caution:** Keywords are hints, not rules. Always count decisions, phases, and dependencies.
 
 ---
 
@@ -287,4 +287,4 @@ If you recommend plan mode but user wants to proceed immediately:
 - Making major architectural decisions without user input
 - Assuming answers to ambiguous questions
 
-**Key principle:** User has final say, but you must transparently communicate the risks.
+**Key principle:** The user has final say, but you must communicate the risks transparently.

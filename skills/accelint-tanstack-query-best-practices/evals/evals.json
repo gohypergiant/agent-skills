@@ -1,0 +1,195 @@
+{
+  "skill_name": "accelint-tanstack-query-best-practices",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our Next.js App Router app creates a new QueryClient() at module scope and reuses it inside server components before wrapping client islands in HydrationBoundary. Sometimes one user's dashboard data shows up for another user for a split second. What is wrong with this setup and what should the fix look like?",
+      "expected_output": "Identifies the server-side singleton QueryClient as a request-isolation and data-leakage bug, recommends a per-request factory on the server plus a browser singleton on the client, and explains how HydrationBoundary should use the request-scoped client.",
+      "files": [],
+      "expectations": [
+        "The response identifies a singleton QueryClient on the server as the root problem.",
+        "The response explains request isolation, user-data leakage, or cache race concerns across concurrent requests.",
+        "The response recommends a factory pattern that creates a new QueryClient per server request and only reuses a singleton in the browser.",
+        "The response keeps HydrationBoundary tied to the request-scoped query client rather than the shared singleton."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm wiring TanStack Query into a plain React SPA, not Next.js. We need a solid QueryClient baseline for normal CRUD screens and a few detail pages. What defaults would you start with, and what server-specific advice should I ignore here?",
+      "expected_output": "Branches correctly for a client-only React app, recommends sensible QueryClient defaults without Next.js hydration/server-cache advice, and explicitly says to skip App Router or HydrationBoundary guidance when the app is not using them.",
+      "files": [],
+      "expectations": [
+        "The response recognizes that this is a client-only React application rather than a Next.js App Router setup.",
+        "The response provides reasonable QueryClient defaults such as staleTime, gcTime, retry, or refetchOnWindowFocus guidance.",
+        "The response explicitly says to skip or ignore Next.js-specific server rendering or hydration guidance in this scenario.",
+        "The response does not invent HydrationBoundary, use cache, or server-action requirements for a plain SPA."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Please review this query key design. We cache search results with ['flights', selectedAirports, Date.now()] and detail views with ['flight', flightId] in some places but ['flights', 'detail', String(flightId)] in others. Users report duplicate requests and weird cache misses. What should we change?",
+      "expected_output": "Calls out unstable temporal keys and inconsistent key hierarchies, recommends a deterministic hierarchical key factory, and explains why consistent types and serialization matter for deduplication and invalidation.",
+      "files": [],
+      "expectations": [
+        "The response flags Date.now() or other temporal values in query keys as unstable.",
+        "The response identifies inconsistent key shapes or mixed type usage as a cause of cache misses or duplicate entries.",
+        "The response recommends a centralized hierarchical key factory for lists and details.",
+        "The response explains deterministic serialization, stable ordering, or type consistency as part of the fix."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "This TanStack Query list page feels noisy on the network tab. Every row component calls useQuery(['asset', id], ...) inside a 180-row table, and edits to one row make the page sluggish. I want an architecture review, not just a tiny patch.",
+      "expected_output": "Recognizes the observer and per-row query anti-pattern, explains the performance impact of many observers and requests, and recommends hoisting queries or otherwise restructuring data flow instead of leaving queries inside each row.",
+      "files": [],
+      "expectations": [
+        "The response identifies queries inside each list or table row as the core anti-pattern.",
+        "The response mentions observer-count or N-request performance costs, not just generic slowness.",
+        "The response recommends hoisting the query to a parent component or consolidating data fetching.",
+        "The response respects that the user asked for an architecture review rather than only a one-line local patch."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I fetch a profile with useQuery, then copy data into local state so the form can render from useState. After a successful mutation and invalidateQueries, the screen still shows the old name until I refresh. Is syncing query data into state the problem? What's the TanStack Query-safe pattern?",
+      "expected_output": "Identifies copying query data into local state as a two-sources-of-truth problem, explains why invalidations and refetches no longer update the rendered state, and recommends using query data directly or deriving form state carefully instead of mirroring the cache wholesale.",
+      "files": [],
+      "expectations": [
+        "The response identifies synchronized local state as the root cause of stale UI after invalidation.",
+        "The response explains the two-sources-of-truth problem between TanStack Query cache and useState.",
+        "The response recommends using query data directly or deriving data instead of copying the full server state into local state.",
+        "The response ties the bug to background refetches, invalidations, or optimistic updates no longer affecting the copied state."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "We have a dependent query for account projects. It runs before accountId exists, so the cache fills with keys like ['projects', undefined] and we hit the API with bad requests. What's the right fix in TanStack Query if I'm using Suspense in some places but not all?",
+      "expected_output": "Identifies the missing dependent-query guard, recommends enabled-based gating for non-Suspense flows or component composition for Suspense flows, and explains why undefined cache entries are garbage state that should not be created.",
+      "files": [],
+      "expectations": [
+        "The response identifies a missing enabled guard or equivalent dependent-query gating as the issue.",
+        "The response explains why queries firing with undefined parameters create wasted requests or garbage cache entries.",
+        "The response recommends useQuery with enabled for conditional fetching when needed.",
+        "The response also mentions component composition or mounting the dependent component only after data exists as the preferred Suspense-friendly pattern."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Can you audit this hook? We use useSuspenseQuery for reports, but the queryFn ignores the AbortController signal. When users change filters quickly, old requests keep running and sometimes win the race. I want the TanStack Query-specific fix and why it matters.",
+      "expected_output": "Explains that the queryFn should accept and forward the provided signal, ties it to cancellation on unmount or query-key changes, and frames it as proper TanStack Query integration rather than generic fetch cleanup.",
+      "files": [],
+      "expectations": [
+        "The response states that the TanStack Query queryFn should receive and pass through the AbortController signal.",
+        "The response connects signal handling to filter changes, unmounts, cancellations, or stale in-flight requests.",
+        "The response explains why ignoring cancellation wastes bandwidth or can surface stale results.",
+        "The response frames this as a TanStack Query best-practice issue rather than only generic React effect cleanup."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "We're using HydrationBoundary in Next.js App Router, but page.tsx awaits every prefetchQuery before rendering. First byte is slow. Is that the right pattern, or can TanStack Query stream better than this?",
+      "expected_output": "Explains that with appropriate dehydration configuration pending queries can be streamed without awaiting each prefetch, recommends non-blocking prefetch when the app is set up for it, and keeps the answer grounded in App Router hydration behavior.",
+      "files": [],
+      "expectations": [
+        "The response identifies sequential or awaited prefetching as a source of unnecessary blocking.",
+        "The response mentions dehydration support for pending queries or streaming-friendly configuration.",
+        "The response recommends a non-blocking prefetch pattern when using HydrationBoundary in App Router.",
+        "The response keeps the advice specific to server hydration and streaming rather than generic client fetching."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Our analytics screen uses useQuery with refetchInterval: 1000 on a 12,000-row payload, plus a select that reshapes the entire dataset every tick. CPU usage is awful. What parts of the TanStack Query configuration should we revisit first?",
+      "expected_output": "Treats this as a structural-sharing and transformation-overhead problem, discusses large frequently changing datasets, and recommends revisiting select cost, structuralSharing behavior, payload size, or polling strategy rather than only memoizing components.",
+      "files": [],
+      "expectations": [
+        "The response recognizes the combination of large payloads, frequent polling, and select-based transformation as a TanStack Query performance issue.",
+        "The response mentions structural sharing cost, including why it can become expensive on large frequently updated datasets.",
+        "The response addresses select transformation overhead or double work in this scenario.",
+        "The response recommends configuration or architecture changes such as structuralSharing: false, reduced polling, pagination, or smaller payloads."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "I'm reviewing a custom hook that does useQuery({ queryKey: ['todos'], queryFn: fetchTodos, select: (data) => data.filter(t => t.status === status) }). The status comes from props. Is this select usage stable enough, or can it cause extra work?",
+      "expected_output": "Identifies the inline select function as a changing reference, explains that TanStack Query may rerun select when the selector identity changes, and recommends a stable selector strategy such as module-level extraction or useCallback when runtime values are involved.",
+      "files": [],
+      "expectations": [
+        "The response identifies inline select as a potentially unstable function reference.",
+        "The response explains that selector identity changes can trigger extra select executions even when underlying data is unchanged.",
+        "The response recommends a stable selector approach such as extraction to module scope or useCallback when it closes over runtime values.",
+        "The response keeps the discussion centered on TanStack Query select behavior rather than generic React style advice only."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Can you review this mutation strategy? We optimistically toggle a deployment flag, but we never call cancelQueries before setQueryData. Random background refetches sometimes overwrite the optimistic value before the mutation settles. Why does that happen and what is the proper pattern?",
+      "expected_output": "Explains the race between background refetches and optimistic cache writes, recommends cancelQueries in onMutate plus snapshot/rollback handling, and describes the full optimistic update lifecycle including onError and onSettled.",
+      "files": [],
+      "expectations": [
+        "The response identifies missing cancelQueries in onMutate as a cause of optimistic-update races.",
+        "The response explains how an in-flight refetch can overwrite the optimistic cache change before mutation completion.",
+        "The response recommends the full optimistic pattern with snapshotting previous data and rollback on error.",
+        "The response mentions onSettled invalidation or reconciliation after success or failure."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "We use optimistic updates for a medication-dispense action in a clinical dashboard because it feels faster. I am uncomfortable with that. From a TanStack Query perspective, is optimistic UI actually the wrong pattern here?",
+      "expected_output": "States that this is a poor optimistic-update fit because the action is high-stakes and safety-sensitive, recommends a pessimistic mutation flow, and explains why UI must reflect server truth for critical operations.",
+      "files": [],
+      "expectations": [
+        "The response identifies the clinical or safety-critical context as a reason not to use optimistic UI.",
+        "The response recommends a pessimistic mutation pattern instead of optimistic updates.",
+        "The response explains that temporary incorrect UI state is unacceptable for high-stakes operations.",
+        "The response keeps the reasoning tied to TanStack Query mutation strategy selection."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "After a Server Action updates a product in our Next.js 16 app, the client invalidates queryClient.invalidateQueries({ queryKey: productKeys.detail(id) }), but the next server-rendered navigation still shows stale product data. We also use 'use cache' on the server. What's missing?",
+      "expected_output": "Explains the split between client and server caches, says client invalidation alone is insufficient when server use-cache entries remain stale, and recommends matching server-side updateTag or revalidateTag usage with the same key hierarchy.",
+      "files": [],
+      "expectations": [
+        "The response identifies multiple cache layers rather than treating TanStack Query as the only cache.",
+        "The response states that invalidating the client query cache does not invalidate Next.js server cache entries by itself.",
+        "The response recommends updateTag or revalidateTag on the server mutation path.",
+        "The response emphasizes using the same shared key hierarchy or tags across server and client invalidation."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "I need a design review for caching, not just one query hook. Our app uses browser HTTP caching, Next.js server caching, and TanStack Query on the client. The team keeps arguing that TanStack Query makes the other layers redundant. Is that actually true?",
+      "expected_output": "Explains the three-layer cache model, distinguishes the purpose and scope of each layer, and rejects the idea that TanStack Query alone replaces server cache or browser cache responsibilities.",
+      "files": [],
+      "expectations": [
+        "The response describes multiple caching layers with different scopes or purposes.",
+        "The response explains that TanStack Query handles client-side server state but does not replace server-side cache reduction or browser HTTP caching.",
+        "The response describes how the layers complement rather than duplicate each other.",
+        "The response frames the answer as a design review rather than a one-hook fix."
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "My Vite app has a React component with stale closures in useEffect and a nested component that remounts on every keystroke. There's no TanStack Query involved. Please optimize the React code.",
+      "expected_output": "Acts as a non-trigger boundary case: the answer should stay focused on generic React behavior and should not invent TanStack Query clients, query keys, invalidation, or hydration patterns when the task is unrelated to TanStack Query.",
+      "files": [],
+      "expectations": [
+        "The response does not frame the task as a TanStack Query issue when the user says TanStack Query is not involved.",
+        "The response avoids recommending query keys, QueryClient setup, invalidateQueries, or HydrationBoundary.",
+        "The response stays focused on generic React rendering, effects, or stale-closure behavior."
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Can you write an Express route that validates a JWT, checks authorization, and updates a PostgreSQL row safely? We are not using React Query or Next.js for this service.",
+      "expected_output": "Acts as a non-trigger boundary case: the answer should remain backend/security focused and should not force TanStack Query or App Router guidance onto a plain Express route task.",
+      "files": [],
+      "expectations": [
+        "The response does not redirect the task into TanStack Query architecture when the service is plain Express.",
+        "The response avoids client-cache, hydration, or mutation-hook advice.",
+        "The response stays focused on backend authorization, validation, and database-update safety."
+      ]
+    }
+  ]
+}

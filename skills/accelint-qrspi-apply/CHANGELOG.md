@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0] - 2026-07-30
+
+### Changed
+- **Audit-driven execution-safety refinements** — tightened orchestration guidance after a full skill audit
+  - Expanded the trigger description to better cover resume/apply/verify workflows for existing QRSPI change packages
+  - Added explicit sanity checks before injecting `openspec/config.yaml` context into sub-agent prompts
+  - Added pre-parallelization overlap checks so slices that likely touch the same files or tightly coupled code paths are slowed down or regrouped
+  - Added post-level collision review guidance before moving to the next dependency level
+  - Expanded human-in-the-loop handling for ambiguous slice boundaries and integration-risk cases
+  - Tightened README wording to align with the current apply-through-verify flow and safer sequential fallback behavior
+
+### Added
+- **Default eval coverage** — added a generated non-interactive eval set for orchestration guardrails and routing behavior
+  - Covers preflight selection, invalid task formats, resume behavior, config-context loading, overlap-risk detection, living-document ordering, verification enforcement, and edge-case failures
+
+### Version
+- Bumped from 1.5.0 → 1.6.0
+
 ## [1.5.0] - 2026-07-10
 
 ### Changed

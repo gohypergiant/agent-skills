@@ -12,8 +12,8 @@
 
 - Cache frequently accessed properties once
 - Eliminate single-use aliases
-- Direct property access when clearer
-- Avoid destructuring for single property access
+- Use direct property access when it is clearer
+- Avoid destructuring for single-property access
 
 ## Examples
 

@@ -1,39 +1,39 @@
 ---
 name: accelint-architecture-doc
-description: Generate or update an ARCHITECTURE.md living document for any codebase. Use this skill whenever a user mentions "architecture.md", "ARCHITECTURE.md", "document my architecture", "architecture overview", "system architecture", "generate architecture doc", "create architecture file", "update architecture", "architecture diagram", or wants a technical overview of how their project is structured. Make sure to use this skill whenever users want to document how their system works — even if they phrase it as "write up the system", "document the tech stack", "create a technical overview", or "help me describe the architecture". Always prefer this skill over ad-hoc architecture documentation.
+description: Generate or update an ARCHITECTURE.md living document for a codebase. Use this skill when the user wants to create, refresh, restructure, or maintain an ARCHITECTURE.md file; document how their system is structured; capture the tech stack, deployment model, services, or data stores; or turn codebase findings into a durable architecture document for engineers or agents. Trigger on requests like "write an architecture doc," "document the system," "create/update ARCHITECTURE.md," "give me a technical overview of this repo," or "map out how this app is put together," even when the user does not name the file explicitly. Prefer this skill for file-producing architecture documentation, not for generic architecture advice, implementation planning, or diagram-only brainstorming unless those are clearly part of updating the document.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Architecture Doc
 
-Generate or update a living `ARCHITECTURE.md` for the current codebase — a document that gives agents and engineers an instant, complete picture of how the system is structured, what it uses, and how it deploys.
+Generate or update a living `ARCHITECTURE.md` for the current codebase. The document should give agents and engineers a fast, complete picture of the system structure, tech stack, and deployment model.
 
 ## NEVER Do When Writing Architecture Docs
 
-- **NEVER overwrite ARCHITECTURE.md without reading it first** — existing sections contain human-authored context (deployment specifics, security decisions, roadmap notes) that codebase scanning cannot recover. Always read before touching.
+- **NEVER overwrite ARCHITECTURE.md without reading it first** — existing sections may contain human-authored context such as deployment specifics, security decisions, and roadmap notes that codebase scanning cannot recover. Always read the file before you touch it.
 - **NEVER fabricate infrastructure details** — if you cannot determine the cloud provider, deployment model, or data store from the codebase, mark it `<!-- TODO: fill in -->` rather than guessing. Wrong infrastructure docs cause real confusion during incidents.
 - **NEVER paste the entire directory tree verbatim** — the Project Structure section should show meaningful architectural layers, not every file. Collapse noisy directories (`node_modules`, `dist`, `.git`, `__pycache__`) and annotate each entry with its architectural role.
-- **NEVER skip drift detection in refresh mode** — scan the codebase for changed signals before running any interview. Asking questions about unchanged sections wastes the user's time.
-- **NEVER leave all 11 sections as `<!-- TODO -->`** — scan aggressively first. Most sections can be at least partially filled through inference. A document full of TODOs appears complete but misleads every reader.
+- **NEVER skip drift detection in refresh mode** — scan the codebase for changed signals before you run any interview. Questions about unchanged sections waste the user's time.
+- **NEVER leave all 11 sections as `<!-- TODO -->`** — scan aggressively first. Most sections can be filled at least partially through inference. A document full of TODOs appears complete but misleads every reader.
 - **NEVER document internal implementation details in the System Diagram (Section 2)** — that section is a 10,000-foot view of components and data flow. Database schemas, function signatures, and module internals belong elsewhere.
-- **NEVER run discovery serially when subagents are available** — Phase 1 spawns parallel subagents for different discovery domains. Serial scanning wastes time on codebases with many config files spread across directories.
+- **NEVER choose a slower discovery approach without reason** — when subagents are available and the repo is large or multi-domain enough to benefit, Phase 1 should use parallel discovery by domain. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
 
 ## Before Writing, Ask
 
 ### Is this root or package level?
-- **Are we at the repo root or inside a monorepo package?** Check for `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, or `workspaces` field in `package.json`. If inside a package, check whether a root-level ARCHITECTURE.md already exists.
-- **Root-level docs** cover the whole system — all services, shared infra, top-level architecture. Package-level docs focus on that package and reference the root.
+- **Are we at the repo root or inside a monorepo package?** Check for `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, or a `workspaces` field in `package.json`. If you are inside a package, check whether a root-level ARCHITECTURE.md already exists.
+- **Root-level docs** cover the whole system: all services, shared infrastructure, and top-level architecture. **Package-level docs** focus on that package and reference the root.
 
 ### Is this a create, restructure, or refresh?
-- **Does ARCHITECTURE.md already exist?** If yes, read it before scanning — understand what's accurate vs. drifted.
-- **Does it follow the template?** If not, proactively offer to restructure it before doing anything else.
+- **Does ARCHITECTURE.md already exist?** If yes, read it before scanning so you understand what is accurate and what has drifted.
+- **Does it follow the template?** If not, proactively offer to restructure it before you do anything else.
 
 ### What can I infer vs. what must I ask?
-- **Use parallel subagents for discovery.** Spawn them simultaneously across discovery domains — don't scan serially.
-- **Reserve questions for genuine gaps** — deployment specifics, roadmap items, and security decisions that aren't in the code.
+- **Use parallel subagents for discovery** when they are available and the repo is large or multi-domain enough to benefit. Spawn them simultaneously across discovery domains instead of scanning serially.
+- **Reserve questions for genuine gaps** such as deployment specifics, roadmap items, and security decisions that are not in the code.
 
 ---
 
@@ -41,7 +41,7 @@ Generate or update a living `ARCHITECTURE.md` for the current codebase — a doc
 
 ### Phase 0 — Scope and File State Detection
 
-Run both steps before any scanning or interview. Announce findings and confirm mode with the user.
+Run both steps before any interview. First detect scope and file state. Then, if refresh mode applies, complete drift detection and merge any external findings before you announce the scoped update plan and ask targeted questions.
 
 ---
 
@@ -78,6 +78,8 @@ Determine whether the current working directory is a monorepo root or a package 
 
 **If not a monorepo:** proceed normally — ARCHITECTURE.md covers the whole project.
 
+**Default scope rule:** if you are invoked from inside a package directory and the user did not explicitly ask for repo-wide architecture, default to a package-level doc. If both root and package docs are missing, proceed with the local package scope unless the user clearly asked for a repo-wide document.
+
 ---
 
 #### Step 1.5 — Check for Related Documents
@@ -107,10 +109,11 @@ Does ARCHITECTURE.md exist at the target location?
           ├── Empty or near-blank (< ~10 meaningful lines)?
           │     → MODE 1: Create (confirm first)
           │
-          ├── Follows the template structure?
-          │   (Has ≥3 of: ## 1. Project Structure, ## 2. High-Level
-          │    System Diagram, ## 3. Core Components, ## 4. Data Stores,
-          │    ## 6. Deployment & Infrastructure)
+          ├── Clearly follows the template as an architecture doc?
+          │   (Recognisable top-level architecture sections, with multiple
+          │    headings that align to the template such as Project Structure,
+          │    High-Level System Diagram, Core Components, Data Stores, or
+          │    Deployment & Infrastructure)
           │     → MODE 2: Refresh
           │       Extract external findings from invoking prompt (if any) +
           │       drift detection + merge findings + targeted questions for
@@ -120,7 +123,7 @@ Does ARCHITECTURE.md exist at the target location?
                 → MODE 3: Restructure (offer proactively — see below)
 ```
 
-**MODE 3: Restructure** — When the file has real content in an unrecognised shape, surface this immediately and offer options before doing anything else:
+**MODE 3: Restructure** — When the file has real content in an unrecognised shape and restructuring would materially improve usability, surface this immediately and require an explicit user choice before you modify that structure:
 
 > "ARCHITECTURE.md exists but doesn't follow the standard template structure. I recommend restructuring it — this makes it consistent for agents and engineers onboarding to the codebase. How would you like to proceed?
 >
@@ -153,11 +156,11 @@ If **(a)** is chosen: carry all existing content forward into the appropriate te
 
 ---
 
-### Phase 1 — Parallel Discovery via Subagents
+### Phase 1 — Discovery
 
-Spawn discovery subagents in parallel — don't scan serially. Each agent focuses on one domain and returns structured findings. Wait for all agents to complete, then merge results before Phase 2.
+Use parallel discovery subagents when they are available and the repo is large or multi-domain enough to benefit. If subagents are unavailable, the environment is constrained, or the repo is small, do focused inline discovery across the same domains. In either case, collect structured findings across the discovery domains below, then merge the results before Phase 2.
 
-**Spawn these agents simultaneously:**
+**Discovery domains to cover, preferably simultaneously when parallel execution is available:**
 
 **Agent A — Project Identity & Structure**
 - Read README.md, package.json / pyproject.toml / go.mod / Cargo.toml for project name and description
@@ -199,7 +202,7 @@ Spawn discovery subagents in parallel — don't scan serially. Each agent focuse
 
 ### Phase 2 — Targeted Interview
 
-Ask only about what discovery couldn't determine. Group related questions into natural conversational turns — never dump all questions at once.
+Ask only about what discovery could not determine. Group related questions into natural conversational turns. Never dump all questions at once.
 
 **Turn 1 — Gaps in Components** *(if services or components were unclear)*
 - Any services or components the directory structure doesn't make obvious?
@@ -233,24 +236,24 @@ Ask only about what discovery couldn't determine. Group related questions into n
 
 2. Ask: *"Does this look right? Any sections to correct before I write?"*
 
-3. After confirmation, write to ARCHITECTURE.md at the target location (root or package dir), **stripping inference source comments** — they are for review only, not the final file. **For openspec/config.yml references:** only include them if the file actually exists (checked in Step 1.5). Do not add references to files that don't exist.
+3. After confirmation, write to ARCHITECTURE.md at the target location (root or package dir). **Strip inference source comments** because they are for review only, not for the final file. **For openspec/config.yml references:** include them only if the file actually exists, as checked in Step 1.5. Do not add references to files that do not exist.
 
-4. **Update agent behavior doc if present** — if Agent A found AGENTS.md or CLAUDE.md, check whether it references ARCHITECTURE.md. If not, append a reference block to help agents understand the system structure (see instructions below).
+4. **Update the agent behavior doc if present** — if Agent A found AGENTS.md or CLAUDE.md, check whether it references ARCHITECTURE.md. If not, append a reference block to help agents understand the system structure. Treat this as a secondary follow-up edit after the architecture document itself is ready, as described below.
 
-5. Print a brief summary: what was inferred, what was answered directly, which `<!-- TODO -->` sections still need human input.
+5. Print a brief summary of what was inferred, what was answered directly, and which `<!-- TODO -->` sections still need human input.
 
 ---
 
 ## Interaction Principles
 
-- **Parallel discovery.** Spawn subagents for Phase 1 simultaneously — don't scan config files one-by-one.
-- **Scan first, ask second.** Reserve interview questions for genuine gaps that subagents couldn't fill.
-- **Restructure by default.** When a file doesn't follow the template, recommend restructuring and make it the easy choice — not option (c) buried at the bottom.
+- **Parallel discovery.** Spawn subagents for Phase 1 simultaneously. Do not scan config files one by one when parallel discovery is available and beneficial.
+- **Scan first, ask second.** Reserve interview questions for genuine gaps that subagents could not fill.
+- **Restructure by default.** When a file does not follow the template, recommend restructuring and make it the easy choice, not option (c) buried at the bottom.
 - **Monorepo awareness.** Root docs and package docs serve different audiences. Keep them scoped appropriately and reference each other.
-- **Announce what you found.** In refresh mode, tell the user what drifted before asking anything.
-- **Preview before writing.** Always show the full generated document and get confirmation before touching the filesystem.
+- **Announce what you found.** In refresh mode, tell the user what drifted before you ask anything.
+- **Preview before writing.** Always show the full generated document and get confirmation before you touch the filesystem.
 - **Infer before asking, ask before omitting.** A doc with explicit `<!-- TODO -->` markers is actionable. A doc with missing sections silently misleads.
-- **Preserve human-authored content.** In refresh mode, never silently remove content — surface it and confirm whether it's still accurate.
+- **Preserve human-authored content.** In refresh mode, never silently remove content. Surface it and confirm whether it is still accurate.
 - **Date every write.** Set "Date of Last Update" in Section 10 to today's date on every write.
 
 ---
@@ -271,12 +274,12 @@ Adjust the relative path to point at the actual root ARCHITECTURE.md.
 
 ## Updating Agent Behavior Documents
 
-ARCHITECTURE.md is a pure technical document about system structure and should not reference agent behavior files. However, agent behavior files (AGENTS.md or CLAUDE.md) should reference ARCHITECTURE.md since understanding system architecture may inform agent behavior.
+ARCHITECTURE.md is a pure technical document about system structure and should not reference agent behavior files. However, agent behavior files such as AGENTS.md or CLAUDE.md should reference ARCHITECTURE.md because understanding system architecture may inform agent behavior.
 
-After writing ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md (check in that order):
+After you write ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md, check in that order:
 
-1. **Read the agent behavior file** to check whether it already mentions ARCHITECTURE.md
-2. **If no reference exists,** add this block near the top of the file (after any existing title/header, before main content):
+1. **Read the agent behavior file** to check whether it already mentions ARCHITECTURE.md.
+2. **If no reference exists,** add this block near the top of the file, after any existing title or header and before the main content:
 
 ```markdown
 ## System Architecture
@@ -284,4 +287,4 @@ After writing ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md (check in
 For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
 ```
 
-3. **If using CLAUDE.md** and it simply points to AGENTS.md (e.g., `@AGENTS.md`), update AGENTS.md instead — don't modify the pointer file.
+3. **If using CLAUDE.md** and it simply points to AGENTS.md, for example `@AGENTS.md`, update AGENTS.md instead. Do not modify the pointer file.

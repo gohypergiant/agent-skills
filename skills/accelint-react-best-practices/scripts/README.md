@@ -1,6 +1,6 @@
 # React Best Practices - Automation Scripts
 
-This directory contains helper scripts to automatically detect common React anti-patterns and optimization opportunities.
+This directory contains helper scripts that detect common React anti-patterns and optimization opportunities.
 
 ## Available Scripts
 
@@ -77,7 +77,7 @@ Identifies potentially hoistable static JSX elements in React components.
 
 **Related pattern:** [2.3 Hoist Static JSX](../references/hoist-static-jsx.md)
 
-**Important:** Only hoist JSX that doesn't depend on props or state. If React Compiler is enabled, manual hoisting is unnecessary.
+**Important:** Only hoist JSX that does not depend on props or state. If React Compiler is enabled, manual hoisting is unnecessary.
 
 **Example:**
 ```bash
@@ -155,7 +155,7 @@ echo "✅ Pre-commit checks passed"
 
 ## Limitations
 
-These scripts use simple pattern matching and may produce:
+These scripts use simple pattern matching and can produce:
 
 - **False positives** - Code that looks like an anti-pattern but is actually fine
 - **False negatives** - Missed issues due to complex code patterns
@@ -169,11 +169,11 @@ Always manually review findings before making changes.
 
 When adding new automation scripts:
 
-1. **Name clearly** - Use verb-noun format (e.g., `check-imports.sh`)
-2. **Add help text** - Include usage and examples in script header
-3. **Use colors** - Make output easy to scan (red=error, yellow=warning, green=success)
-4. **Exit codes** - Return 0 for success, 1 for failures
-5. **Document here** - Add to this README with usage examples
+1. **Name clearly** - Use verb-noun format, for example `check-imports.sh`.
+2. **Add help text** - Include usage and examples in the script header.
+3. **Use colors** - Make output easy to scan: red for errors, yellow for warnings, green for success.
+4. **Use exit codes** - Return `0` for success and `1` for failures.
+5. **Document here** - Add the script to this README with usage examples.
 
 ---
 

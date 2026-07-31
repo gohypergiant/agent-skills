@@ -69,7 +69,7 @@ Good uses:
 - separate rationale from the command it supports
 - separate two different obligations into two sentences
 
-Do not shorten mechanically. If a longer sentence is carrying a necessary boundary, keep it or rewrite it carefully.
+Do not shorten mechanically. If a longer sentence carries a necessary boundary, keep it or rewrite it carefully.
 
 ## 4. Do not omit words just to sound concise
 

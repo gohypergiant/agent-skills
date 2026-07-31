@@ -1,10 +1,10 @@
 # Documentation Skill
 
-Expert-level JavaScript/TypeScript documentation auditing skill with comprehensive guidance on JSDoc, comments, anti-patterns, and judgment frameworks.
+This skill audits JavaScript/TypeScript documentation and provides guidance on JSDoc, comments, anti-patterns, and documentation judgment.
 
 ## Design Philosophy
 
-This skill combines **focused activation** with **expert judgment frameworks**:
+This skill combines focused activation with expert judgment frameworks:
 
 1. **Enhanced activation** - Triggers on specific keywords (@param, @returns, @template, @example, JSDoc, TODO, FIXME)
 2. **Expert anti-patterns** - 6 critical "NEVER do this" patterns with examples
@@ -88,18 +88,15 @@ The skill provides structured audit reports:
 
 ## How It Works
 
-### Activation & Loading (Drift-Resilient)
+### Activation and Loading
 
-1. **Verify Current Structure** - Reads parent SKILL.md to confirm current file organization
-2. **Load Documentation References** - Loads 5 expected files with fallback discovery if reorganized:
+1. **Verify current structure** - Read the parent `SKILL.md` to confirm the current file organization.
+2. **Load documentation references** - Load the expected reference files, with fallback discovery if the structure changes:
    - `jsdoc.md` - JSDoc syntax and tag requirements
-   - `comment-markers.md` - TODO, FIXME, HACK markers
-   - `comments-to-remove.md` - What to delete
-   - `comments-to-preserve.md` - What to keep
-   - `comments-placement.md` - Where to put comments
-3. **Apply Audit Workflow** - Uses thinking frameworks and decision trees
+   - `comments.md` - Comment markers, removal rules, preservation rules, and placement rules
+3. **Apply the audit workflow** - Use the thinking frameworks and decision trees.
 
-**Hybrid approach** provides specific file list for clarity while verifying against parent SKILL.md for drift-resilience.
+This approach keeps the expected file list clear while still verifying the current structure before loading references.
 
 ### Audit Process
 
@@ -130,9 +127,9 @@ The skill provides structured audit reports:
 
 ## Key Features
 
-### 🚫 Anti-Patterns (6 Critical Mistakes)
+### Anti-Patterns
 
-Visual ❌/✅ examples of common documentation mistakes:
+Visual ❌/✅ examples show common documentation mistakes:
 - Approving @example without code fences
 - Over-documenting internal code vs under-documenting public APIs
 - Leaving commented-out code
@@ -140,7 +137,7 @@ Visual ❌/✅ examples of common documentation mistakes:
 - Using @returns for void functions
 - Adding TODO without context
 
-### 🧠 Thinking Frameworks
+### Thinking Frameworks
 
 **Two-Tier Approach:**
 - Public API → Always comprehensive (no exceptions)
@@ -149,7 +146,7 @@ Visual ❌/✅ examples of common documentation mistakes:
   - Maintenance Burden
   - Value vs Noise
 
-### 🌲 Decision Trees
+### Decision Trees
 
 Clear sufficiency evaluation for:
 - Functions/Methods (exported vs internal requirements)
@@ -157,7 +154,7 @@ Clear sufficiency evaluation for:
 - Classes (constructor, methods, examples)
 - Constants/Variables (when documentation is needed)
 
-### 🔀 Conflict Resolution
+### Conflict Resolution
 
 Principles for resolving common dilemmas:
 - Comprehensive vs Concise (favor comprehensive for public APIs)
@@ -165,7 +162,7 @@ Principles for resolving common dilemmas:
 - Stable API vs Changing Requirements (document current, note future with @remarks)
 - Multiple Valid Approaches (consistency > perfection)
 
-### 🎯 Edge Cases
+### Edge Cases
 
 Handling for special scenarios:
 - Deprecated APIs (@deprecated, @see, migration paths)
@@ -175,37 +172,37 @@ Handling for special scenarios:
 - Builder patterns (chain examples)
 - Event emitters (event-specific payloads)
 
-### 📚 Quality Examples
+### Quality Examples
 
 Side-by-side comparison of excellent vs poor documentation with annotated explanations showing why each approach succeeds or fails.
 
 ## Benefits of Hybrid Design
 
 **Expert knowledge layer**:
-- Anti-patterns, thinking frameworks, and decision trees are unique to this skill
-- Provides audit-specific expertise beyond general documentation rules
-- ~640 lines of focused documentation guidance
+- Anti-patterns, thinking frameworks, and decision trees are unique to this skill.
+- The skill adds audit-specific expertise beyond general documentation rules.
+- It provides about 640 lines of focused documentation guidance.
 
 **Smart delegation**:
-- Implementation details (JSDoc syntax, comment rules) come from parent skill
-- Avoids duplicating content that changes frequently
-- Hybrid verification approach handles parent skill reorganization
+- Implementation details such as JSDoc syntax and comment rules come from the parent skill.
+- This avoids duplicating content that changes frequently.
+- The verification step handles parent-skill reorganization.
 
 **Activation specificity**:
-- Enhanced description with specific JSDoc tags (@param, @returns, @template, @example)
-- Triggers on documentation-specific phrases users actually say
-- Higher activation accuracy than general-purpose parent skill
+- The description includes specific JSDoc tags such as `@param`, `@returns`, `@template`, and `@example`.
+- It triggers on documentation-specific phrases users actually say.
+- This improves activation accuracy over a general-purpose parent skill.
 
 **Comprehensive coverage**:
-- Standard cases (decision trees for all code element types)
-- Edge cases (deprecated, overloads, generics, callbacks, builders, events)
-- Conflicts (resolution principles for common dilemmas)
-- Quality benchmarks (excellent vs poor examples)
+- Standard cases: decision trees for all code-element types.
+- Edge cases: deprecated APIs, overloads, generics, callbacks, builders, and events.
+- Conflicts: resolution principles for common dilemmas.
+- Quality benchmarks: excellent and poor examples.
 
 **Drift-resilient integration**:
-- Verifies parent structure before loading
-- Fallback discovery if files reorganized
-- Clear expected file list with pattern-based alternatives
+- The skill verifies the parent structure before loading.
+- It can fall back to discovery if files are reorganized.
+- It keeps the expected file list clear.
 
 ## Integration
 

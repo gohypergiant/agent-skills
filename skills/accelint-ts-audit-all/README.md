@@ -27,7 +27,7 @@ pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelin
 
 ## Usage
 
-This is a command-only skill with no natural triggers. Invoke explicitly with a file or directory path:
+This is a command-only skill with no natural triggers. Invoke it explicitly with a file or directory path:
 
 ```bash
 /skill accelint-ts-audit-all path/to/file.ts
@@ -43,7 +43,7 @@ If you don't provide a path, the skill will ask for one.
 
 ## What It Does
 
-For each TypeScript file (excluding `.test.ts`, `.spec.ts`, `.bench.ts`), the skill runs this 9-step process:
+For each auditable TypeScript file (excluding generated outputs, declaration files, `.test.ts`, `.spec.ts`, and `.bench.ts`), the skill runs this process:
 
 ### Phase 1: Initial Test Coverage
 1. Run `accelint-ts-testing` to check test quality
@@ -64,6 +64,7 @@ For each TypeScript file (excluding `.test.ts`, `.spec.ts`, `.bench.ts`), the sk
 **Progress Tracking:**
 - Creates `.agents/audit/audit-process-{date}-{time}.md` to track in-progress work
 - Creates `.agents/audit/audit-history-{date}-{time}.md` to archive completed files
+- Keeps execution work inside an isolated `.agents/worktrees/audit-{timestamp}` worktree
 - Survives context window limits by saving after each step
 
 ## Example Session
@@ -127,6 +128,12 @@ This skill embodies these principles:
 3. **Parallel Analysis** - Running quality + performance skills together prevents contradictory recommendations on the same code
 4. **Verification First** - Test coverage check before refactoring, verification after changes, ensures safety
 5. **Complete or In-Progress** - Files are either fully audited (all 9 steps) or marked in-progress, never partially done with no record
+
+## Guardrails
+
+- If multiple audit-process files exist, resume only the one that matches the requested path and is still in progress.
+- If the target path resolves to zero auditable files after exclusions, stop and explain why.
+- Tracking files stay in the original repository root under `.agents/audit/`; code changes happen in the isolated worktree.
 
 ## Common Scenarios
 

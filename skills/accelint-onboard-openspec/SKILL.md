@@ -1,33 +1,25 @@
 ---
 name: accelint-onboard-openspec
-description: Interactively onboard a project to OpenSpec by running a structured interview and generating a complete QRSPI-configured openspec/config.yaml. Use this skill whenever a user mentions "openspec config", "config.yaml for openspec", "set up openspec", "onboard to openspec", "generate openspec config", "QRSPI config", or asks how to configure OpenSpec for their project — even if they just say "help me set up openspec" or "I want to use openspec". Always prefer this skill over ad-hoc config generation.
+description: Create, import, append to, dry-run, or refresh an `openspec/config.yaml` for a project by running the OpenSpec onboarding interview and producing a complete QRSPI-configured config file. Use this skill whenever the user wants to set up OpenSpec, generate or update `openspec/config.yaml`, onboard a repo to OpenSpec, restructure an existing custom OpenSpec config into the `context:`/`rules:` schema, append the standard sections without overwriting existing content, refresh a previously generated config based on repo drift or unresolved `# TODO: fill in` markers, or asks how to configure OpenSpec for their project. Also use it when the user mentions OpenSpec config, `config.yaml for openspec`, QRSPI config, project DNA, refresh findings, or wants the config updated from existing repo facts. Do not use it for `AGENTS.md` / `CLAUDE.md` behavior guidance, generic architecture documentation, or ad-hoc coding help that does not produce or revise `openspec/config.yaml`. Prefer this skill over ad-hoc OpenSpec config generation.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.5.0"
+  version: "1.6.0"
 ---
 
 # Onboard OpenSpec
 
-Guide the user through a conversational interview to produce a complete,
-project-specific `openspec/config.yaml` configured for the QRSPI methodology.
+Guide the user through a conversational interview to produce a complete, project-specific `openspec/config.yaml` configured for the QRSPI methodology.
 
-## NEVER Do When Onboarding OpenSpec
+## Never do this when onboarding OpenSpec
 
-- **NEVER run codebase inference serially when subagents are available** — Phase 3 spawns parallel subagents for different discovery domains. Serial scanning wastes time on codebases with many config files spread across directories. Spawn all 4 discovery agents simultaneously.
+- NEVER run codebase inference serially when subagents are available. Phase 3 spawns parallel subagents for different discovery domains. Serial scanning wastes time on codebases with many config files spread across directories. Spawn all 4 discovery agents simultaneously.
 
-## Companion Skill
+## Companion skill
 
-This skill produces the **project DNA layer** of the agent instruction stack:
-structural facts about what the project is. It is the companion to the
-`accelint-onboard-agents` skill, which produces the **behavior layer** (`AGENTS.md` /
-`CLAUDE.md`): how the agent acts, communicates, and makes decisions.
+This skill produces the project DNA layer of the agent instruction stack: structural facts about what the project is. It is the companion to the `accelint-onboard-agents` skill, which produces the behavior layer (`AGENTS.md` / `CLAUDE.md`): how the agent acts, communicates, and makes decisions.
 
-If during this interview the user volunteers behavioral content (commit
-conventions, workflow steps, decision heuristics, tool preferences), acknowledge
-it and redirect: *"That's behavioral — it belongs in AGENTS.md. I'll note it
-here for reference, but the `accelint-onboard-agents` skill is the right place to
-capture it."* Do not write behavioral content into `config.yaml`.
+If the user volunteers behavioral content during this interview (commit conventions, workflow steps, decision heuristics, tool preferences), acknowledge it and redirect: *"That's behavioral — it belongs in AGENTS.md. I'll note it here for reference, but the `accelint-onboard-agents` skill is the right place to capture it."* Do not write behavioral content into `config.yaml`.
 
 ```
 AGENTS.md / CLAUDE.md  → accelint-onboard-agents skill  → HOW the agent behaves
@@ -36,26 +28,21 @@ openspec/config.yaml   → this skill             → WHAT the project is
 
 ---
 
-## Mental Model
+## Mental model
 
 The config has two jobs:
-1. **`context:`** — Objective facts about the codebase injected into every AI
-   artifact. Think of it as the "DNA" that makes AI suggestions feel native to
-   the project. Facts only, no opinions.
-2. **`rules:`** — Per-artifact checkpoints (proposal / design / tasks / spec)
-   that encode the team's quality bar.
+1. **`context:`** — Objective facts about the codebase injected into every AI artifact. Think of it as the "DNA" that makes AI suggestions feel native to the project. Facts only, no opinions.
+2. **`rules:`** — Per-artifact checkpoints (proposal / design / tasks / spec) that encode the team's quality bar.
 
 ## Phases
 
-### Phase 0 — File State Detection
+### Phase 0 — File state detection
 
-Before any interview question is asked, check whether `openspec/config.yaml`
-exists and assess its state. Never silently pick a mode — always announce the
-detected mode to the user and confirm before proceeding.
+Before you ask any interview question, check whether `openspec/config.yaml` exists and assess its state. Never silently pick a mode. Always announce the detected mode to the user and confirm before proceeding.
 
-**Step 1 — Check for Related Documents**
+**Step 1 — Check for related documents**
 
-Before detecting config.yaml state, check for related onboarding documents:
+Before you detect `config.yaml` state, check for related onboarding documents:
 
 1. **Check for ARCHITECTURE.md**
    - If exists: Read it to understand deployment and infrastructure
@@ -67,9 +54,9 @@ Before detecting config.yaml state, check for related onboarding documents:
 Note: AGENTS.md and README.md should NOT influence config.yml generation since
 they contain behavioral/usage info, not project DNA.
 
-**Step 2 — Detect Config State**
+**Step 2 — Detect config state**
 
-After checking related documents, assess the config file state:
+After you check related documents, assess the config file state:
 
 ```
 Does openspec/config.yaml exist?
@@ -196,11 +183,9 @@ previous run. Run an abbreviated interview covering only:
 
 ---
 
-### Phase 1 — Discovery Interview
+### Phase 1 — Discovery interview
 
-Run the interview conversationally. Don't dump all questions at once. Group them
-into natural topic turns. If the user mentions a stack, infer related tooling and
-confirm rather than asking again.
+Run the interview conversationally. Do not dump all questions at once. Group them into natural topic turns. If the user mentions a stack, infer related tooling and confirm it instead of asking again.
 
 **Turn 1 — Project Identity**
 - What is the project name and its primary purpose?
@@ -280,10 +265,9 @@ Project-specific design concerns to encode? Good prompts:
 
 ---
 
-### Phase 2 — Smart Defaults
+### Phase 2 — Smart defaults
 
-After each stack answer, surface relevant conventions to confirm. Use these
-examples as a pattern; extend to other stacks as appropriate.
+After each stack answer, surface relevant conventions to confirm. Use these examples as a pattern. Extend them to other stacks when appropriate.
 
 **Next.js + TypeScript + Tailwind → suggest confirming:**
 - App Router vs Pages Router and which patterns apply
@@ -309,15 +293,18 @@ examples as a pattern; extend to other stacks as appropriate.
 
 ---
 
-### Phase 3 — Parallel Codebase Inference
+### Phase 3 — Parallel codebase inference
 
-After the interview, spawn parallel discovery subagents to fill remaining config
-gaps. All config sections are load-bearing — a missing field degrades every
-downstream AI artifact, so inference is always preferable to omission.
+After the interview, spawn parallel discovery subagents to fill remaining config gaps. All config sections are load-bearing. A missing field degrades every downstream AI artifact, so inference is always preferable to omission.
 
 Spawn discovery subagents in parallel — don't scan serially. Each agent focuses
 on one inference domain and returns structured findings. Wait for all agents to
 complete, then merge results before Phase 4.
+
+If subagents are genuinely unavailable in the current environment, say so
+explicitly and do the same discovery inline with direct tools instead of
+pretending the parallel step happened. Keep the same four-domain structure in
+your notes so the eventual config still reflects a complete pass.
 
 **Spawn these agents simultaneously:**
 
@@ -376,10 +363,7 @@ is an invisible gap.
 
 ### Phase 4 — Generation
 
-1. **Show a labeled preview** of the full config before writing anything.
-   Inferred values carry their source comment; unresolved fields carry
-   `# TODO: fill in`. This gives the user a complete picture of confidence level
-   across every field.
+1. **Show a labeled preview** of the full config before you write anything. Inferred values carry their source comment. Unresolved fields carry `# TODO: fill in`. This gives the user a complete picture of confidence level across every field.
 2. Ask: *"Does this look right? Any sections to correct or expand before I write
    the file?"*
 3. After confirmation, write to `openspec/config.yaml` (create directory if
@@ -395,6 +379,10 @@ is an invisible gap.
    If validation reveals issues, fix them immediately and rewrite the file.
 5. Print a brief summary of what was configured, what was inferred vs answered
    directly, and which `# TODO` fields still need human input.
+6. If you were in Refresh mode, remind the user to review any still-relevant
+   `findings:` items that could not be encoded cleanly into `context:` or
+   `rules:` so they can decide whether follow-up changes belong in specs,
+   docs, or AGENTS.md instead.
 
 ---
 
@@ -688,20 +676,12 @@ rules:
 
 ---
 
-## Interaction Principles
+## Interaction principles
 
-- **Conversational, not interrogative.** Bundle related questions into a single
-  turn. Use natural language, not bullet-dump forms.
-- **Infer and confirm.** "You mentioned Vitest — I'll assume you're using
-  `@testing-library/react` for component tests; correct?" is better than asking
-  from scratch.
-- **Examples reduce ambiguity.** When asking about naming conventions, give an
-  example first so the user can pattern-match.
-- **Iterative.** Let the user amend answers. Don't lock them into the first
-  response.
-- **Preview before writing.** Always show the full generated config and get
-  explicit confirmation before touching the filesystem.
-- **Infer before asking, ask before omitting.** Always attempt codebase
-  inference for any unanswered field. If inference fails, surface a `# TODO`
-  rather than dropping the section. A config with explicit TODOs is actionable;
-  a config with missing sections silently degrades every artifact it drives.
+- **Conversational, not interrogative.** Bundle related questions into one turn. Use natural language, not bullet-dump forms.
+- **Infer and confirm.** "You mentioned Vitest — I'll assume you're using `@testing-library/react` for component tests; correct?" is better than asking from scratch.
+- **Examples reduce ambiguity.** When you ask about naming conventions, give an example first so the user can pattern-match.
+- **Iterative.** Let the user amend answers. Do not lock them into the first response.
+- **Preview before writing.** Always show the generated config preview and get explicit confirmation before you touch the filesystem. In Refresh mode, the preview can be diff-style and limited to changed sections. In Create and Import modes, show the full generated output.
+- **Infer before asking, ask before omitting.** Always attempt codebase inference for any unanswered field. If inference fails, surface a `# TODO: fill in` marker rather than dropping the section. A config with explicit TODOs is actionable. A config with missing sections silently degrades every artifact it drives.
+- **Separate fact from behavior.** When a user answer mixes project DNA with workflow preferences, keep the factual portion for `config.yaml` and call out the behavioral remainder for `AGENTS.md` / `CLAUDE.md` rather than silently blending them together.

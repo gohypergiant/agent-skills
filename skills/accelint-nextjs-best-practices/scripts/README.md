@@ -1,6 +1,6 @@
 # Next.js Best Practices - Automation Scripts
 
-This directory contains helper scripts to automatically detect common Next.js anti-patterns and optimization opportunities.
+This directory contains helper scripts that detect common Next.js anti-patterns and optimization opportunities.
 
 ## Available Scripts
 
@@ -35,7 +35,7 @@ Validates that Server Actions include authentication checks.
 
 ### detect-barrel-imports.sh
 
-Finds barrel file imports from large libraries that cause slow dev server startup.
+Finds barrel-file imports from large libraries that can slow dev-server startup.
 
 **Usage:**
 ```bash
@@ -63,7 +63,7 @@ Finds barrel file imports from large libraries that cause slow dev server startu
 
 ### find-waterfall-chains.sh
 
-Detects potential waterfall chains where independent operations are awaited sequentially.
+Detects potential waterfall chains where independent operations are awaited in sequence.
 
 **Usage:**
 ```bash
@@ -155,11 +155,11 @@ echo "✅ Pre-commit checks passed"
 
 ## Limitations
 
-These scripts use simple pattern matching and may produce:
+These scripts use simple pattern matching and can produce:
 
-- **False positives** - Code that looks like an anti-pattern but is actually fine
-- **False negatives** - Missed issues due to complex code patterns
-- **Context-unaware** - Scripts don't understand code semantics
+- **False positives** - Code that looks like an anti-pattern but is actually acceptable
+- **False negatives** - Missed issues caused by complex code patterns
+- **Context-unaware** - The scripts do not understand code semantics
 
 Always manually review findings before making changes.
 
@@ -169,11 +169,11 @@ Always manually review findings before making changes.
 
 When adding new automation scripts:
 
-1. **Name clearly** - Use verb-noun format (e.g., `check-auth.sh`)
-2. **Add help text** - Include usage and examples in script header
-3. **Use colors** - Make output easy to scan (red=error, yellow=warning, green=success)
-4. **Exit codes** - Return 0 for success, 1 for failures
-5. **Document here** - Add to this README with usage examples
+1. **Name clearly** - Use verb-noun format such as `check-auth.sh`.
+2. **Add help text** - Include usage and examples in the script header.
+3. **Use colors** - Make output easy to scan (`red=error`, `yellow=warning`, `green=success`).
+4. **Use exit codes** - Return `0` for success and `1` for failures.
+5. **Document here** - Add the script to this README with usage examples.
 
 ---
 

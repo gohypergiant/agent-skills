@@ -1,16 +1,16 @@
 ---
 name: accelint-ts-testing
-description: Comprehensive vitest testing guidance for TypeScript projects. Use when (1) Writing new tests with AAA pattern, parameterized tests, or async/await, (2) Reviewing test code for anti-patterns like loose assertions (toBeTruthy), over-mocking, or nested describe blocks, (3) Optimizing slow test suites, (4) Implementing property-based testing with fast-check - especially for encode/decode pairs, roundtrip properties, validators, normalizers, and idempotence checks. Covers test organization, assertions, test doubles hierarchy (fakes/stubs/mocks), async testing, performance patterns, and property-based testing patterns. Trigger keywords on vitest, *.test.ts, describe, it, expect, vi.mock, fast-check, fc.property, roundtrip, idempotence.
+description: Use when writing, reviewing, refactoring, or auditing TypeScript tests that use Vitest or Vitest-style patterns, especially when the request mentions `describe`, `it`/`test`, `expect`, `vi.fn`, `vi.mock`, `*.test.ts`, `*.spec.ts`, `fast-check`, flaky async tests, loose assertions, over-mocking, parameterized cases, or property-based testing opportunities. Prefer this skill for Vitest unit and integration testing guidance, test-quality audits, and fast-check opportunities. Do not use it for Jest-only requests, Playwright end-to-end coverage, or TypeScript documentation work unless the main problem is still Vitest test quality.
 compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "3.1.0"
+  version: "3.1.1"
 ---
 
 # Vitest Best Practices
 
-Comprehensive patterns for writing maintainable, effective vitest tests. Focused on expert-level guidance for test organization, clarity, and performance.
+Use this skill for maintainable, effective Vitest tests. It focuses on expert-level guidance for test organization, clarity, and performance.
 
 ## NEVER Do When Writing Vitest Tests
 
@@ -31,7 +31,7 @@ Comprehensive patterns for writing maintainable, effective vitest tests. Focused
 
 ## Before Writing Tests, Ask
 
-Apply these expert thinking patterns before implementing tests:
+Use these checks before you implement tests:
 
 ### Should This File Be Tested?
 - **Does this file contain behavior to test?** Files that only declare constants, types, or data structures without logic don't need tests. Constants files (`export const X = 42`), type definition files (`type User = {...}`), GLSL uniform declarations, configuration objects, and pure data files have no behavior to verify. If the file contains no functions, no logic, no transformations - skip testing it. Test behavior, not data.
@@ -54,7 +54,7 @@ Apply these expert thinking patterns before implementing tests:
 
 ## What This Skill Covers
 
-Expert guidance on vitest testing patterns:
+This skill covers these Vitest testing patterns:
 
 1. **Organization** - File placement, naming, describe block structure
 2. **AAA Pattern** - Arrange, Act, Assert for instant clarity
@@ -70,78 +70,49 @@ Expert guidance on vitest testing patterns:
 
 ## How to Use
 
-This skill uses a **progressive disclosure** structure to minimize context usage:
+This skill uses **progressive disclosure** to minimize context usage:
 
 ### 1. Start with the Overview (AGENTS.md)
-Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries and the workflow for discovering existing test configuration.
+Read [AGENTS.md](AGENTS.md) first for the concise rule index and the required pre-write, pre-complete, and audit workflows.
 
-### 2. Check for Existing Test Configuration
-Before writing tests:
-- First check `vitest.config.ts` for global mock cleanup settings (`clearMocks`, `mockReset`, `restoreMocks`)
-- Then search for setup files (`test/setup.ts`, `vitest.setup.ts`, etc.) and analyze their configuration
-- See the workflow in [AGENTS.md](AGENTS.md#workflow-before-writing-tests)
+### 2. Follow the matching workflow
+Choose the lightest path that fits the task:
+- **Writing or refactoring tests**: verify the target file has behavior worth testing, then inspect `vitest.config.*` and setup files before adding mocks or cleanup.
+- **Auditing existing tests**: load [property-based-testing.md](references/property-based-testing.md) up front, then inspect only the references needed for the problems you find.
+- **Marking test work complete**: run direct TypeScript type checking against the touched test files using the package's actual package manager.
 
-### 3. Load Specific Rules as Needed
-Use these explicit triggers to know when to load each reference file:
+### 3. Load specific references only when triggered
 
-**MANDATORY Loading (load entire file):**
-- **Writing async tests with promises/timers** → [async-testing.md](references/async-testing.md)
-- **Working with mocks, stubs, spies, or fakes** → [test-doubles.md](references/test-doubles.md)
-- **Auditing/reviewing existing test files** → [property-based-testing.md](references/property-based-testing.md) (to identify PBT opportunities)
+**Always load for these tasks:**
+- **Async tests with promises, timers, polling, or fake timers** → [async-testing.md](references/async-testing.md)
+- **Mocks, spies, stubs, fakes, or interaction-heavy tests** → [test-doubles.md](references/test-doubles.md)
+- **Any audit or review of existing test code** → [property-based-testing.md](references/property-based-testing.md)
 
-**Load When You See These Patterns:**
-- **Nested describe blocks >2 levels deep** → [organization.md](references/organization.md)
-- **Test files not co-located with implementation** → [organization.md](references/organization.md)
-- **Tests without clear Arrange/Act/Assert structure** → [aaa-pattern.md](references/aaa-pattern.md)
-- **Duplicate test code with slight variations** → [parameterized-tests.md](references/parameterized-tests.md)
-- **Missing error case tests or inadequate edge case coverage** → [error-handling.md](references/error-handling.md)
-- **Loose assertions like `toBeTruthy()` or `toBeDefined()`** → [assertions.md](references/assertions.md)
-- **Tests running slow (>100ms per test)** → [performance.md](references/performance.md)
-- **Need coverage, watch mode, or vitest-specific features** → [vitest-features.md](references/vitest-features.md)
-- **Considering or reviewing snapshot tests** → [snapshot-testing.md](references/snapshot-testing.md)
-- **Encode/decode pairs, validators, normalizers, or pure functions** → [property-based-testing.md](references/property-based-testing.md)
-- **Code with invariants, mathematical properties, or data transformations** → [property-based-testing.md](references/property-based-testing.md)
-- **Existing fast-check or property-based tests** → [property-based-testing.md](references/property-based-testing.md)
+**Load when these signals appear:**
+- **Nested describe blocks, poor co-location, weak naming** → [organization.md](references/organization.md)
+- **Missing or blurry Arrange / Act / Assert separation** → [aaa-pattern.md](references/aaa-pattern.md)
+- **Repeated cases with small input/output changes** → [parameterized-tests.md](references/parameterized-tests.md)
+- **Missing failure paths, edge cases, or fault injection** → [error-handling.md](references/error-handling.md)
+- **Loose assertions such as `toBeTruthy()` or `toBeDefined()`** → [assertions.md](references/assertions.md)
+- **Slow tests, repeated setup, or manual mock cleanup hooks** → [performance.md](references/performance.md)
+- **Coverage, setup files, `expectTypeOf`, watch mode, or Vitest-specific APIs** → [vitest-features.md](references/vitest-features.md)
+- **Snapshot tests or requests about snapshots** → [snapshot-testing.md](references/snapshot-testing.md)
+- **Encode/decode, normalize/sanitize, validators, sorters, or pure transforms** → [property-based-testing.md](references/property-based-testing.md)
 
-**Do NOT Load Unless Specifically Needed:**
-- Do NOT load [performance.md](references/performance.md) if tests are fast (<50ms)
-- Do NOT load [snapshot-testing.md](references/snapshot-testing.md) unless snapshots are mentioned
-- Do NOT load [vitest-features.md](references/vitest-features.md) for basic test writing
+**Do not load unless needed:**
+- Skip [performance.md](references/performance.md) when performance is not part of the problem.
+- Skip [snapshot-testing.md](references/snapshot-testing.md) unless snapshots are present or requested.
+- Skip [vitest-features.md](references/vitest-features.md) for straightforward unit-test authoring.
 
-### 4. Apply the Pattern
-Each reference file contains:
-- ❌ Incorrect examples showing the anti-pattern
-- ✅ Correct examples showing the optimal implementation
-- Explanations of why the pattern matters
+### 4. Apply only the relevant pattern
+Each reference file should give enough detail to fix the issue directly with concrete good and bad examples.
 
-### 5. Use the Report Template
-When this skill is invoked for test code review, use the standardized report format:
+### 5. Use the report template only for audits
+For file or package test audits, use [`assets/output-report-template.md`](assets/output-report-template.md).
+Do not force the template for direct implementation or one-off debugging.
 
-**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
-
-The report format provides:
-- Executive Summary with test quality impact assessment
-- Severity levels (Critical, High, Medium, Low) for prioritization
-- Impact analysis (test reliability, maintainability, performance, clarity)
-- Categorization (Test Organization, Assertions, Test Doubles, Async Testing, Performance)
-- Pattern references linking to detailed guidance in references/
-- Summary table for tracking all issues
-
-**When to use the report template:**
-- Skill invoked directly via `/accelint-ts-testing <path>`
-- User asks to "review test code" or "audit tests" across file(s), invoking skill implicitly
-
-**When NOT to use the report template:**
-- User asks to "write a test for this function" (direct implementation)
-- User asks "what's wrong with this test?" (answer the question)
-- User requests specific test fixes (apply fixes directly without formal report)
-
-**IMPORTANT: When auditing tests, ALWAYS check for property-based testing opportunities**
-- Load [property-based-testing.md](references/property-based-testing.md) during every audit
-- Follow the "Workflow: Test Code Review/Audit" in [AGENTS.md](AGENTS.md)
-- Check for high-value PBT patterns: encode/decode pairs, normalizers, validators, pure functions, sorting functions
-- Include PBT opportunities in the audit report even if no other issues are found
+**Audit requirement:** always document property-based testing opportunities when reviewing test code, even if you do not add fast-check in that stage.
 
 ## Quick Example
 
-See [quick-start.md](references/quick-start.md) for a complete before/after example showing how this skill transforms unclear tests into clear, maintainable ones.
+See [quick-start.md](references/quick-start.md) for a before-and-after example that shows how this skill turns unclear Vitest tests into clear, maintainable ones.

@@ -46,4 +46,4 @@ When updating this skill, add a new version section above this one:
 - **Minor (1.0 → 1.1):** New sections, significant additions, refinements
 - **Patch (1.0.0 → 1.0.1):** Bug fixes, typo corrections, minor clarifications
 
-**Important:** Ensure the version here matches `metadata.version` in SKILL.md frontmatter.
+**REQUIRED:** Ensure the version here matches `metadata.version` in `SKILL.md` frontmatter.

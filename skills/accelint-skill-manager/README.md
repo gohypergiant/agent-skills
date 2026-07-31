@@ -16,14 +16,14 @@ pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelin
 
 ## Overview
 
-This skill provides structured guidance for skill creation and management, covering:
+This skill provides structured guidance for skill creation and management, including:
 - 4-step skill creation workflow
 - Skill architecture and file structure
 - Progressive disclosure patterns
 - Best practices for reusable resources
 - Examples and templates
 
-Think of this as a "meta-skill" - a skill for building skills. It provides the methodology, conventions, and structural guidelines needed to develop high-quality agent skills.
+Think of this as a "meta-skill": a skill for building skills. It provides the methodology, conventions, and structure guidelines needed to develop high-quality agent skills.
 
 **Note:** This skill is optimized for AI agents creating other skills, but humans may find it useful for understanding skill architecture and contributing to skill development.
 
@@ -42,14 +42,14 @@ Think of this as a "meta-skill" - a skill for building skills. It provides the m
 
 ### For Agents/LLMs
 
-1. **Read [SKILL.md](SKILL.md)** - Understand the 4-step workflow for creating skills
-2. **Reference [AGENTS.md](AGENTS.md)** - Browse detailed implementation rules and conventions
-3. **Load specific guidelines** - Access detailed examples in `references/` as needed
-4. **Follow the workflow** - Apply the systematic approach to skill creation
+1. **Read [SKILL.md](SKILL.md)** - Understand the 4-step workflow for creating skills.
+2. **Reference [AGENTS.md](AGENTS.md)** - Browse detailed implementation rules and conventions.
+3. **Load specific guidelines** - Access detailed examples in `references/` only as needed.
+4. **Follow the workflow** - Apply the structured approach to skill creation.
 
 ### For Humans
 
-This skill is optimized for AI agents but humans may find it useful for:
+This skill is optimized for AI agents, but humans may also find it useful for:
 - Understanding how agent skills are structured
 - Learning best practices for skill architecture
 - Contributing to existing skills
@@ -67,7 +67,7 @@ Gather real examples of how the skill will be used. Ask questions to understand:
 - Can you give examples of how this skill would be used?
 - What would a user say that should trigger this skill?
 
-This ensures the skill solves actual problems rather than hypothetical ones.
+This keeps the skill grounded in actual problems instead of hypothetical ones.
 
 ### Step 2: Planning Reusable Contents
 
@@ -146,7 +146,7 @@ Skills act as "onboarding guides" that transform agents into specialized problem
 
 ## Usage
 
-This skill is designed to be used with environments such as Claude Code. It automatically activates when creating, refactoring, or auditing agent skills.
+This skill is designed for environments such as Claude Code. It automatically activates when creating, refactoring, or auditing agent skills.
 
 ### Auditing an Existing Skill
 
@@ -197,12 +197,12 @@ See [SKILL.md](SKILL.md) for complete activation criteria and detailed workflow.
 
 When creating or updating skills:
 
-1. **Follow the 4-step workflow** - Don't skip steps
-2. **Start with concrete examples** - Real usage patterns, not hypothetical scenarios
-3. **Structure for progressive disclosure** - Keep SKILL.md under 500 lines, move details to references
-4. **Use consistent formatting** - Follow naming conventions and directory structure
-5. **Include both ❌ and ✅ examples** - Show anti-patterns and correct implementations
-6. **Document for agents** - Focus on non-obvious procedural knowledge
+1. **Follow the 4-step workflow** - Do not skip steps without a clear reason.
+2. **Start with concrete examples** - Use real usage patterns, not hypothetical scenarios.
+3. **Structure for progressive disclosure** - Keep `SKILL.md` under 500 lines and move details to `references/`.
+4. **Use consistent formatting** - Follow naming conventions and directory structure.
+5. **Include both ❌ and ✅ examples** - Show anti-patterns and correct implementations.
+6. **Document for agents** - Focus on non-obvious procedural knowledge.
 
 See [AGENTS.md](AGENTS.md) for detailed implementation guidelines.
 

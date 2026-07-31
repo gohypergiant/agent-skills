@@ -3,7 +3,7 @@
 ## Terminology
 
 ### staleTime
-Duration until a query transitions from fresh to stale. Fresh queries never trigger network requests.
+Duration until a query transitions from fresh to stale. Fresh queries do not trigger network requests.
 
 - **Fresh query**: Within staleTime window, returns cached data immediately, no network request
 - **Stale query**: Past staleTime window, returns cached data but triggers background refetch
@@ -11,7 +11,7 @@ Duration until a query transitions from fresh to stale. Fresh queries never trig
 Default: `0` (immediately stale)
 
 ### gcTime
-Duration until inactive queries are removed from cache. Previously called `cacheTime` in v4.
+Duration until inactive queries are removed from the cache. It was previously called `cacheTime` in v4.
 
 - **Active query**: Has at least one observer (component using the query)
 - **Inactive query**: No observers, countdown to garbage collection starts
@@ -19,7 +19,7 @@ Duration until inactive queries are removed from cache. Previously called `cache
 Default: `5 minutes`
 
 ### Observers
-Internal subscribers that watch for query state changes. Think event listeners. Each `useQuery` or `useSuspenseQuery` call registers an observer.
+Internal subscribers that watch for query state changes. Think of them as event listeners. Each `useQuery` or `useSuspenseQuery` call registers an observer.
 
 When data updates, TanStack Query iterates through all registered observers for that cache entry to determine which components need to re-render.
 
@@ -61,9 +61,9 @@ idle → pending → success/error
 
 ## Structural Sharing
 
-TanStack Query uses structural sharing to prevent unnecessary re-renders. After refetch, performs deep equality check:
-- If data is referentially different but structurally identical (same values, different object instances), returns previous reference
-- Prevents downstream re-renders when API returns fresh data with identical values
+TanStack Query uses structural sharing to prevent unnecessary re-renders. After a refetch, it performs a deep equality check:
+- If the data is referentially different but structurally identical (same values, different object instances), it returns the previous reference.
+- This prevents downstream re-renders when the API returns fresh data with identical values.
 
 **Complexity:** O(n) where n = number of fields in data structure
 
@@ -263,16 +263,16 @@ TanStack Query automatically deduplicates identical queries. When three componen
 - Second and third hooks register observers on existing cache entry
 - All three hooks receive same data when fetch completes
 
-**No action needed** - automatic behavior. Just ensure consistent query keys across components.
+**No action needed** - this behavior is automatic. Just ensure query keys stay consistent across components.
 
 ## Important Notes
 
-- Fresh queries (within staleTime) never trigger network requests
-- Stale queries return cached data immediately, then trigger background refetch
-- gcTime countdown starts when last observer unmounts
-- Structural sharing is O(n) - disable for datasets >5000 items with frequent updates
-- `select` option doubles structural sharing overhead - disable sharing for large datasets
-- Observer counts >50 indicate architectural issues requiring refactoring
-- Query deduplication is automatic - focus on consistent query keys
-- Tune staleTime/refetchInterval based on data freshness requirements, not one-size-fits-all
-- Use TanStack Query DevTools to diagnose observer count and cache issues
+- Fresh queries (within `staleTime`) do not trigger network requests.
+- Stale queries return cached data immediately, then trigger a background refetch.
+- The `gcTime` countdown starts when the last observer unmounts.
+- Structural sharing is O(n). Disable it for datasets >5000 items with frequent updates.
+- The `select` option doubles structural sharing overhead. Disable sharing for large datasets.
+- Observer counts above 50 indicate architectural issues that require refactoring.
+- Query deduplication is automatic. Focus on consistent query keys.
+- Tune `staleTime` and `refetchInterval` to data freshness requirements. Do not use one-size-fits-all defaults.
+- Use TanStack Query DevTools to diagnose observer count and cache issues.

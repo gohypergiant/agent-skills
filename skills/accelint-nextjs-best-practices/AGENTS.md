@@ -7,7 +7,7 @@
 
 ## Abstract
 
-Comprehensive performance optimization guide for Next.js applications, designed for AI agents and LLMs. Each rule includes one-line summaries with links to detailed examples in `references/`. Load reference files only when implementing a specific pattern.
+Comprehensive performance optimization guidance for Next.js applications, written for agents and LLMs. Each rule includes a short summary with links to detailed examples in `references/`. Load reference files only when you need a specific pattern.
 
 **Focus:** Next.js App Router patterns including Server Components, Server Actions, RSC serialization, and server-side optimization.
 
@@ -20,9 +20,9 @@ Comprehensive performance optimization guide for Next.js applications, designed 
 ## How to Use This Guide
 
 **For agents/LLMs:**
-1. Scan rule summaries below to identify relevant optimizations
-2. Load reference files only when implementing a specific pattern
-3. Each reference is self-contained with ❌/✅ examples
+1. Scan the rule summaries below to identify the relevant pattern.
+2. Load reference files only when you need implementation details.
+3. Treat each reference as self-contained, with ❌/✅ examples.
 
 **Quick shortcuts:**
 - Security issues? → 2.1 (Server Actions authentication)
@@ -41,7 +41,7 @@ Comprehensive performance optimization guide for Next.js applications, designed 
 
 Use this guide to quickly identify which optimization applies based on symptoms:
 
-**Symptom → Solution:**
+**Symptom -> Solution:**
 - API route or Server Action is slow → 1.1 Prevent Waterfall Chains, 1.2 Parallelize Operations
 - Entire page waits for data → 1.3 Strategic Suspense Boundaries
 - Server Action can be called without login → 2.1 Authenticate Server Actions
@@ -109,7 +109,7 @@ Schedule logging, analytics, and side effects to run after response is sent usin
 
 ---
 
-## 3. Misc
+## 3. Miscellaneous
 
 Additional optimization patterns for Next.js applications.
 
@@ -129,48 +129,48 @@ Decision tree: Server Components are DEFAULT. Only use 'use client' when you nee
 
 When writing or reviewing Next.js code, prioritize in this order:
 
-**1. Security First (Critical)**
+**1. Security First**
 - ✅ Authenticate all Server Actions (2.1)
 - ✅ Validate all Server Action inputs with schemas
 - ✅ Check authorization before mutations
 
-**2. Eliminate Waterfalls (High Impact)**
+**2. Eliminate Waterfalls**
 - ✅ Start independent operations immediately (1.1)
 - ✅ Use Promise.allSettled() for parallel operations (1.2)
 - ✅ Restructure with component composition (2.4)
 
-**3. Optimize Serialization (High Impact)**
+**3. Optimize Serialization**
 - ✅ Pass only necessary fields to client (2.3)
 - ✅ Avoid duplicate serialization (2.2)
 - ✅ Share object references when possible
 
-**4. Strategic Suspense (Medium Impact)**
+**4. Strategic Suspense**
 - ✅ Use Suspense boundaries to prevent blocking (1.3)
 - ✅ Pass promises to components with `use()` hook
 - ✅ Show wrapper UI while data loads
 
-**5. Caching & Non-Blocking (Medium Impact)**
+**5. Caching and Non-Blocking Work**
 - ✅ Use React.cache() for deduplication (2.5)
 - ✅ Use after() for non-blocking operations (2.6)
 - ✅ Avoid inline objects in cache keys
 
-**6. Import Optimization (Low Impact, High Frequency)**
+**6. Import Optimization**
 - ✅ Avoid barrel file imports (3.1)
 - ✅ Import directly from source files
 
-**7. Component Decisions (As Needed)**
+**7. Component Decisions**
 - ✅ Use Server Components by default (3.2)
 - ✅ Only add 'use client' when necessary
 - ✅ Preserve Server/Client boundaries with composition
 
 ### Key Principles
 
-1. **Security** - Server Actions are public endpoints, always authenticate
-2. **Parallelization** - Start independent operations immediately
-3. **Minimization** - Only serialize what the client uses
-4. **Streaming** - Use Suspense boundaries strategically
-5. **Caching** - Deduplicate with React.cache()
-6. **Default to Server** - Only use Client Components when needed
+1. **Security** - Treat Server Actions as public endpoints. Always authenticate.
+2. **Parallelization** - Start independent operations immediately.
+3. **Minimization** - Serialize only what the client uses.
+4. **Streaming** - Use Suspense boundaries strategically.
+5. **Caching** - Deduplicate with React.cache().
+6. **Default to Server** - Use Client Components only when needed.
 
 ### Related Skills
 

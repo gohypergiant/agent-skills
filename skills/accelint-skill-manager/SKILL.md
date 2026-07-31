@@ -1,10 +1,10 @@
 ---
 name: accelint-skill-manager
-description: Use when users say "create a skill", "make a new skill", "build a skill", "skill for X", "audit this skill", "review this skill", "check skill quality", "fix this skill", "improve this skill", "refactor this skill", "update this skill", "optimize this skill", or when creating, refactoring, or auditing domain expertise into agent skills with specialized knowledge, workflows, or tool integrations.
+description: Use when creating, auditing, refactoring, evaluating, or improving an agent skill package itself, including `SKILL.md`, `AGENTS.md`, `references/`, `scripts/`, `assets/`, `evals/`, and `CHANGELOG.md`. Trigger on requests like "create a skill," "make a new skill," "build a skill package," "audit this skill package," "review skill quality," "fix this SKILL.md," "refactor this skill," "optimize skill triggering," "improve eval coverage," "check version/changelog alignment," or "review consistency across skill files." Do not use for generic prompt polishing, prose-only cleanup, or README/docs work when the real task is not skill-package architecture, quality, or governance.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.1.1"
+  version: "2.1.2"
 ---
 
 # Skill Manager
@@ -12,19 +12,19 @@ metadata:
 ## NEVER Do When Creating Skills
 
 - **NEVER write tutorials explaining basics** - Assume Claude knows standard concepts, libraries, and patterns. Focus on expert-only knowledge.
-- **NEVER put triggering information in body** - "When to use" guidance belongs ONLY in the description field. The body is loaded after activation decision.
-- **NEVER dump everything in SKILL.md** - Use progressive disclosure: core workflow in SKILL.md (<500 lines ideal), detailed content in references/, loaded on-demand.
+- **NEVER put triggering information in the body** - "When to use" guidance belongs ONLY in the description field. The body is loaded after the activation decision.
+- **NEVER dump everything in SKILL.md** - Use progressive disclosure: keep the core workflow in `SKILL.md` and move detailed content to `references/` for on-demand loading.
 - **NEVER use generic warnings** - "Be careful" and "avoid errors" are useless. Provide specific anti-patterns with concrete reasons.
-- **NEVER use same freedom level for all tasks** - Creative domains (design, architecture) need high freedom with principles. Fragile operations (file formats, APIs) need low freedom with exact scripts.
-- **NEVER explain standard operations** - Assume Claude knows how to read files, write code, use common libraries. Focus on non-obvious decisions and edge cases.
-- **NEVER include obvious procedures** - "Step 1: Open file, Step 2: Edit, Step 3: Save" wastes tokens. Include only domain-specific workflows Claude wouldn't know.
-- **NEVER skip the anti-patterns section** — It's half of expert knowledge. A skill without "NEVER Do" is missing what makes it valuable: the mistakes experts learned the hard way.
-- **NEVER write a vague description** — "A skill for X" causes false positives and missed activations. The description must include concrete trigger phrases users actually say.
-- **NEVER mix creation and audit concerns** — Creating a skill, refactoring a skill, and auditing a skill are distinct workflows. Each has different inputs, outputs, and success criteria.
+- **NEVER use the same freedom level for all tasks** - Creative domains (design, architecture) need high freedom with principles. Fragile operations (file formats, APIs) need low freedom with exact scripts.
+- **NEVER explain standard operations** - Assume Claude knows how to read files, write code, and use common libraries. Focus on non-obvious decisions and edge cases.
+- **NEVER include obvious procedures** - "Step 1: Open file, Step 2: Edit, Step 3: Save" wastes tokens. Include only domain-specific workflows Claude would not already know.
+- **NEVER skip the anti-patterns section** - It is half of the expert knowledge. A skill without "NEVER Do" misses the mistakes experts learned the hard way.
+- **NEVER write a vague description** - "A skill for X" causes false positives and missed activations. The description MUST include concrete trigger phrases users actually say.
+- **NEVER mix creation and audit concerns** - Creating a skill, refactoring a skill, and auditing a skill are distinct workflows. Each has different inputs, outputs, and success criteria.
 
 ## Before Creating a Skill, Ask
 
-Apply these tests to ensure the skill provides genuine value:
+Apply these tests to make sure the skill provides genuine value:
 
 ### Knowledge Delta Test
 - **Does this capture what takes experts years to learn?** If explaining basics or standard library usage, it's redundant.
@@ -51,7 +51,7 @@ This skill uses **progressive disclosure** to minimize context usage:
 Follow the 4-step workflow below for skill creation or refactoring.
 
 ### 2. Reference Implementation Details (AGENTS.md)
-Load [AGENTS.md](AGENTS.md) for file system conventions, naming patterns, and structural rules.
+Load [AGENTS.md](AGENTS.md) for file system conventions, naming patterns, and structure rules.
 
 ### 3. Load Specific References as Needed
 Each workflow step below notes which reference files to load. Only load what you need for the current step:
@@ -68,15 +68,25 @@ Each workflow step below notes which reference files to load. Only load what you
 
 ## Which Workflow Should You Follow?
 
-Choose based on your task:
+Choose the workflow that matches the task:
 
 - **Creating a new skill from scratch** → Follow Skill Creation Workflow (Steps 1-4)
 - **Improving an existing skill** → Jump to Step 4 (Edit the Skill)
 - **Auditing a skill for quality** → Follow Skill Audit Workflow
 
+## Default execution paths
+
+Use the lightest workflow that satisfies the request:
+
+- **Quick audit** — audit frontmatter, trigger quality, structure, version/changelog alignment, eval presence, and direct usability. Do not draft a replacement skill unless the user asks for proposed rewrites.
+- **Targeted refinement** — for requests like "tighten this SKILL.md" or "fix the description," load only the references needed for the touched area, make the localized improvements, and update version/changelog accordingly.
+- **Full skill creation or large refactor** — use the full creation workflow when the user wants a new skill, a substantial structural rewrite, or new bundled resources.
+
+If the request is only about prompt wording or prose cleanup and not about the skill package itself, prefer a prose or prompt-focused skill instead of this one.
+
 ## Skill Creation Workflow
 
-To create or refactor a skill, follow the "Skill Creation Workflow" in order, skipping steps only if there is a clear reason why they are not applicable.
+To create or refactor a skill, follow the Skill Creation Workflow in order. Skip a step only when there is a clear reason that it does not apply.
 
 **Copy this checklist to track progress:**
 
@@ -120,7 +130,7 @@ Analyze each concrete example to create a list of reusable resources: scripts, r
 
 ### Step 3: Initializing the Skill
 
-**MANDATORY**: Load [references/file-system.md](references/file-system.md) before creating directory structure.
+**REQUIRED**: Load [references/file-system.md](references/file-system.md) before creating the directory structure.
 
 **For new skills:** Copy the template in [assets/skill-template/](assets/skill-template/) as a starting point and customize it.
 
@@ -139,7 +149,7 @@ Follow the conventions in [AGENTS.md](AGENTS.md) and reference files for directo
 
 ### Step 4: Edit the Skill
 
-**MANDATORY**: Load [references/skill.md](references/skill.md) for description field conventions and frontmatter rules.
+**REQUIRED**: Load [references/skill.md](references/skill.md) for description field conventions and frontmatter rules.
 
 When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of an agent to use. Focus on including information that would be beneficial and non-obvious to an agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively.
 
@@ -156,14 +166,14 @@ When editing the (newly-generated or existing) skill, remember that the skill is
 - Medium consequence (suboptimal code, style issues) → Medium freedom with examples
 - Low consequence (aesthetic choices, multiple valid approaches) → High freedom with principles
 
-If you are updating an existing skill you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is imperative so lean towards aggressive reformatting to achieve adherence.
+If you are updating an existing skill, you can use the templates in [assets/skill-template/](assets/skill-template/) as a reference for larger structural changes and alignment. Consistency is REQUIRED, so lean toward aggressive reformatting when needed to achieve adherence.
 
-When updating an existing skill, ensure that the frontmatter `metadata.version` value is bumped. If the scope of the change is substantial do a major change 1.0 to 2.0, otherwise minor 1.0 to 1.1.
+When updating an existing skill, ensure that the frontmatter `metadata.version` value is bumped using consistent semantic-version logic.
 
 **Version Control:**
-- **Major (1.0 → 2.0):** Substantial rewrites, breaking changes, complete restructuring
-- **Minor (1.0 → 1.1):** New sections, significant additions, refinements
-- **Patch (1.0.0 → 1.0.1):** Bug fixes, typo corrections (optional third digit)
+- **Major (1.0.0 → 2.0.0):** Substantial rewrites, breaking changes, complete restructuring, or meaningfully different trigger/behavior expectations
+- **Minor (1.0.0 → 1.1.0):** New sections, significant additions, stronger eval coverage, or meaningful refinements without breaking the skill's contract
+- **Patch (1.0.0 → 1.0.1):** Small fixes, localized wording corrections, artifact consistency fixes, or other non-breaking maintenance updates
 
 **CHANGELOG Maintenance:**
 After updating a skill, update or create `CHANGELOG.md` using "Keep a Changelog" format:
@@ -190,7 +200,7 @@ Document what changed and **why** — the rationale is critical for future maint
 
 ## Skill Audit Workflow
 
-When auditing or reviewing an existing skill (not creating from scratch), follow this structured approach:
+When auditing or reviewing an existing skill, and not creating one from scratch, follow this structured approach:
 
 ### 1. Frontmatter Audit
 Check each field against requirements:
@@ -215,5 +225,5 @@ For each content block, ask: "Does Claude already know this?" Mark as REDUNDANT 
 
 ### 5. Produce Actionable Output
 - Provide specific improvement recommendations ranked by priority
-- Include a concrete improved description (not just criticism)
-- Provide an improved SKILL.md alongside the audit report
+- Include a concrete improved description, not just criticism
+- Provide proposed replacement text or an improved `SKILL.md` only when the user asks for rewrite help or patch-ready changes, not for every audit-only request

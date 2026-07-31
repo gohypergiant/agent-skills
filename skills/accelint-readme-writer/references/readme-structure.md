@@ -1,12 +1,12 @@
 # README Structure
 
-Detailed guide for README section ordering, content requirements, and formatting.
+Detailed guide for README section order, content requirements, and formatting.
 
 ---
 
 ## Section Order
 
-READMEs must follow this section order. Users expect to find information in predictable places.
+READMEs MUST follow this section order. Users expect to find information in predictable places.
 
 ```
 1.  Heading Area
@@ -29,12 +29,12 @@ READMEs must follow this section order. Users expect to find information in pred
 
 The heading area establishes the package identity at a glance.
 
-### Required Elements
+### Required elements
 
 - **Package title** as H1 heading
 - Brief tagline (one sentence describing what it does)
 
-### Optional Elements
+### Optional elements
 
 - Banner image
 - Badges (npm version, build status, coverage, license)
@@ -56,17 +56,17 @@ Parse configuration files with schema validation.
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ```
 
-### Badge Guidelines
+### Badge guidelines
 
-- Keep badges to 3-4 maximum
-- Most useful: npm version, license, build status
-- Avoid: download counts, star counts, redundant badges
+- Keep badges to 3-4 at most.
+- Most useful: npm version, license, build status.
+- Avoid: download counts, star counts, and redundant badges.
 
 ---
 
 ## 2. Table of Contents
 
-Include only for READMEs over ~200 lines. Place after heading area.
+Include this section only for READMEs over about 200 lines. Place it after the heading area.
 
 **✅ Correct format**
 ```markdown
@@ -83,15 +83,15 @@ Include only for READMEs over ~200 lines. Place after heading area.
 - [License](#license)
 ```
 
-Keep the TOC to 2 levels deep maximum.
+Keep the TOC to 2 levels deep at most.
 
 ---
 
 ## 3. Installation
 
-How to add this package to a project.
+Explain how to add this package to a project.
 
-### Required Content
+### Required content
 
 - Install command with correct package manager
 - Any peer dependencies
@@ -120,7 +120,7 @@ TypeScript types are included — no separate `@types` package needed.
 
 ## 4. Quick Start
 
-Minimal working example. Help users reach a working result quickly.
+Provide a minimal working example. Help users reach a working result quickly.
 
 ### Requirements
 
@@ -167,7 +167,7 @@ console.log(config);
 
 ## 5. What Section
 
-Explain what this package is in 2-4 sentences.
+Explain what this package is in 2 to 4 sentences.
 
 ### Requirements
 
@@ -353,7 +353,7 @@ MIT - see [LICENSE](./LICENSE) for details.
 
 ## 11. Architecture & Development Guides (Optional)
 
-<!-- Include this section only if any of these files exist: openspec/config.yml, ARCHITECTURE.md, AGENTS.md -->
+<!-- Include this section only if any of these files exist: openspec/config.yml, openspec/config.yaml, ARCHITECTURE.md, AGENTS.md, CLAUDE.md -->
 
 Links to deeper technical and behavioral documentation that complements the README.
 
@@ -370,7 +370,7 @@ For deeper technical and behavioral context:
 These documents form a layered guidance system: config.yml defines what the project is, ARCHITECTURE.md explains how it's structured and deployed, and AGENTS.md governs how agents collaborate on it.
 ```
 
-**Note:** Include only files that actually exist. Check for openspec/config.yml or `config.yaml`, `ARCHITECTURE.md`, and `AGENTS.md` or `CLAUDE.md` before you add this section. If none exist, omit this section entirely.
+Note: include only files that actually exist. Check for `openspec/config.yml` or `openspec/config.yaml`, `ARCHITECTURE.md`, and `AGENTS.md` or `CLAUDE.md` before you add this section. If none exist, omit this section entirely.
 
 ---
 

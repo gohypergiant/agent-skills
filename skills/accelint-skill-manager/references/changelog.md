@@ -2,7 +2,7 @@
 
 ## Purpose
 
-CHANGELOG.md tracks version history and the rationale behind skill changes. Unlike git history (which shows individual commits), a CHANGELOG provides a curated, human-readable summary of what changed and **why** — critical for future maintainers understanding design decisions.
+CHANGELOG.md tracks version history and the rationale behind skill changes. Unlike git history, which shows individual commits, a CHANGELOG provides a curated, human-readable summary of what changed and **why**. That context is critical for future maintainers who need to understand design decisions.
 
 ## When to Update
 
@@ -182,7 +182,7 @@ When changes stem from testing or user feedback, reference the source:
 
 ## Version Consistency
 
-**Critical:** CHANGELOG version must match `metadata.version` in SKILL.md frontmatter.
+**REQUIRED:** CHANGELOG version MUST match `metadata.version` in SKILL.md frontmatter.
 
 **Verification checklist:**
 - [ ] Latest CHANGELOG entry version matches frontmatter
@@ -218,7 +218,7 @@ metadata:
 - Bumped from 1.1 → 1.2
 ```
 
-**Why weak:** No rationale, no specifics, future maintainer can't understand WHY changes happened.
+**Why weak:** There is no rationale and no specifics, so a future maintainer cannot understand why the changes happened.
 
 ### ✅ Strong Entry (Clear Rationale)
 ```markdown
@@ -239,7 +239,7 @@ metadata:
 - Bumped from 1.1 → 1.2
 ```
 
-**Why strong:** Clear rationale, links to testing/feedback, explains trade-offs, future maintainer understands context.
+**Why strong:** It provides clear rationale, links to testing or feedback, explains trade-offs, and gives a future maintainer the needed context.
 
 ## Template
 

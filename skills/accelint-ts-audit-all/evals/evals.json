@@ -1,0 +1,333 @@
+{
+  "skill_name": "accelint-ts-audit-all",
+  "evals": [
+    {
+      "id": 1,
+      "name": "explicit-single-file-new-audit-with-worktree-and-tracking",
+      "prompt": "Use /skill accelint-ts-audit-all on packages/core/src/formatMoney.ts. This is a brand-new audit, not a resume. The repo uses pnpm and the exact verification commands should be `cd packages/core && pnpm test`, `cd packages/core && pnpm run build`, and `cd packages/core && pnpm run lint`. Walk the audit exactly the way this skill requires.",
+      "expected_output": "Starts a new audit for one file, validates the path, creates an isolated worktree plus timestamped audit-process and audit-history files in the original repo, records the exact verification commands, and begins the documented audit workflow instead of jumping straight into code edits.",
+      "files": [],
+      "expectations": [
+        "The response treats the request as an explicit command-skill invocation rather than a generic code review.",
+        "The response validates the target path and treats this as a new audit instead of assuming resume state.",
+        "The response includes creation or use of an isolated git worktree for the audit.",
+        "The response records or commits to recording exact verification commands in the audit-process file.",
+        "The response begins with audit initialization and tracking setup rather than skipping directly to implementation changes."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "directory-audit-builds-auditable-file-list-with-exclusions",
+      "prompt": "Run /skill accelint-ts-audit-all on packages/web/src. That folder contains normal source files, but also `dist/`, `coverage/`, `.next/`, `storybook-static/`, a `types.d.ts`, a generated client folder, and some `*.test.ts` and `*.bench.ts` files. Initialize the audit and make sure only the right files go into the todo list.",
+      "expected_output": "Builds the audit file list from the directory while excluding declaration files, generated outputs, build artifacts, test files, spec files, and benchmark files, then writes only auditable source files into the tracking plan.",
+      "files": [],
+      "expectations": [
+        "The response excludes `.d.ts` files from the auditable file list.",
+        "The response excludes generated or build-output directories such as `dist`, `coverage`, `.next`, and `storybook-static`.",
+        "The response excludes `*.test.ts`, `*.spec.ts`, and `*.bench.ts` files from the audit list.",
+        "The response explains or shows that the todo list contains only auditable TypeScript source files.",
+        "The response does not proceed as if generated or test artifacts should be audited like production source files."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "invalid-or-missing-target-path-stops-before_setup",
+      "prompt": "Use /skill accelint-ts-audit-all on packages/missing/src/not-real.ts. If the path does not exist, just create the tracking files anyway and we'll sort it out later.",
+      "expected_output": "Refuses to initialize the audit when the target path is invalid or inaccessible, reports the problem clearly, and avoids creating worktrees or tracking files for a nonexistent target.",
+      "files": [],
+      "expectations": [
+        "The response validates path existence before creating tracking files or todo lists.",
+        "The response stops when the path is invalid instead of proceeding optimistically.",
+        "The response explains why the audit cannot start with the missing path.",
+        "The response does not create or imply creation of audit tracking artifacts for a nonexistent target."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "zero-auditable-files_after_exclusions_stops_cleanly",
+      "prompt": "Run /skill accelint-ts-audit-all on packages/generated-only. That directory only contains `index.d.ts`, `api-client.test.ts`, `perf.bench.ts`, and files under `dist/` and `coverage/`. Still set up the audit scaffolding so we can fill it in later.",
+      "expected_output": "Checks exclusions, discovers that zero auditable files remain, explains why, and stops without creating or populating audit tracking files.",
+      "files": [],
+      "expectations": [
+        "The response applies the audit exclusions before deciding whether work exists.",
+        "The response recognizes that zero auditable files remain after exclusions.",
+        "The response stops and tells the user why instead of creating an empty audit.",
+        "The response does not pretend that declaration, test, benchmark, or generated files are acceptable audit targets."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "resume_matching_in_progress_audit_instead_of_starting_new_one",
+      "prompt": "Use /skill accelint-ts-audit-all on packages/core/src again. There is already an in-progress `.agents/audit/audit-process-20260214-143022.md` for that same path with two files completed and `validation.ts` marked as the current file at Step 5. Resume from there instead of starting over.",
+      "expected_output": "Locates the matching in-progress audit-process file, reads its status and resume instructions, switches back into the documented worktree if present, and resumes from the recorded current file and step rather than creating a new audit.",
+      "files": [],
+      "expectations": [
+        "The response searches for existing audit-process files before initializing a new audit.",
+        "The response matches the existing audit to the requested path and in-progress state.",
+        "The response resumes from the recorded current file and step rather than restarting from the first file.",
+        "The response references the documented worktree or legacy branch mode appropriately when resuming."
+      ]
+    },
+    {
+      "id": 6,
+      "name": "multiple_audit_files_require_precise_resume_selection",
+      "prompt": "Run /skill accelint-ts-audit-all on packages/shared/src. There are three audit-process files under `.agents/audit/`: one for packages/shared/src that is complete, one for packages/shared/src that is still in progress, and one for packages/api/src. Pick the right one and continue.",
+      "expected_output": "Compares multiple audit-process files by target path and completion status, resumes only the matching in-progress audit for the requested path, and does not merge or guess across unrelated audit states.",
+      "files": [],
+      "expectations": [
+        "The response distinguishes audits by requested path rather than choosing arbitrarily.",
+        "The response ignores completed audits when an in-progress audit exists for the same target.",
+        "The response does not merge multiple audit histories or progress files together.",
+        "The response makes the resume decision explicit instead of silently guessing."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "legacy_resume_without_worktree_support_uses_current_branch",
+      "prompt": "Resume /skill accelint-ts-audit-all for packages/utils/src. The old audit-process file predates worktree support and has no Worktree Information section, but it is still in progress at Step 3 for `parseDate.ts`. Continue safely.",
+      "expected_output": "Recognizes the legacy audit format, avoids trying to recreate or require a missing worktree section, and continues the in-progress audit in the current branch while preserving the rest of the resume workflow.",
+      "files": [],
+      "expectations": [
+        "The response detects that the audit-process file has no Worktree Information section.",
+        "The response treats the audit as a legacy resume case rather than a broken new audit.",
+        "The response continues in the current branch without inventing missing worktree state.",
+        "The response still uses the saved current-file and step progress from the audit-process file."
+      ]
+    },
+    {
+      "id": 8,
+      "name": "large_directory_sets_multi_session_expectation",
+      "prompt": "Use /skill accelint-ts-audit-all on packages/big-lib/src. It has about 40 auditable TypeScript files. Start the audit, but be realistic about whether this fits in one session.",
+      "expected_output": "Acknowledges the large scope, initializes the tracking files, and explicitly sets expectations that the audit will span multiple sessions rather than implying it can finish all files in one pass.",
+      "files": [],
+      "expectations": [
+        "The response estimates or acknowledges that a 40-file audit is likely multi-session work.",
+        "The response sets user expectations about resumption and context limits.",
+        "The response still initializes the audit process rather than refusing solely because the scope is large.",
+        "The response does not promise unrealistic single-session completion for the full directory."
+      ]
+    },
+    {
+      "id": 9,
+      "name": "missing_verification_commands_requires_collection_before_progress",
+      "prompt": "Run /skill accelint-ts-audit-all on packages/data/src. I have not told you the exact test, build, or lint commands yet. Please just improvise with `npm test` and `npm run build` if needed.",
+      "expected_output": "Pushes back on improvising verification commands, asks for or discovers the exact documented commands first, and records them in the audit-process file before relying on any verification step.",
+      "files": [],
+      "expectations": [
+        "The response does not accept vague substitute verification commands when exact commands are unknown.",
+        "The response asks for or inspects project scripts to determine exact commands before continuing.",
+        "The response ties those exact commands to the audit-process file as durable workflow state.",
+        "The response avoids saying it will just use generic `npm test` or similar one-off commands by default."
+      ]
+    },
+    {
+      "id": 10,
+      "name": "step_order_starts_with_ts_testing_before_refactor_advice",
+      "prompt": "Use /skill accelint-ts-audit-all on src/computeTotals.ts. I mostly care about cleanup and performance, so feel free to skip the testing pass and jump straight into best practices if that is faster.",
+      "expected_output": "Refuses to skip the initial testing step, starts with accelint-ts-testing first, and explains that the skill must establish test coverage before refactoring or performance changes.",
+      "files": [],
+      "expectations": [
+        "The response explicitly preserves the required first step of running `accelint-ts-testing`.",
+        "The response does not agree to begin with best-practices or performance analysis first.",
+        "The response explains the risk of refactoring before test coverage or verification is in place.",
+        "The response keeps the workflow aligned with the documented phase ordering."
+      ]
+    },
+    {
+      "id": 11,
+      "name": "parallel_best_practices_and_performance_not_sequential",
+      "prompt": "Audit src/renderRows.ts with /skill accelint-ts-audit-all, but run best-practices first and performance later so the recommendations stay simpler.",
+      "expected_output": "Rejects sequential execution for those two audit skills, runs accelint-ts-best-practices and accelint-ts-performance in parallel for the same file, and frames the reason as avoiding contradictory or duplicated recommendations.",
+      "files": [],
+      "expectations": [
+        "The response does not accept a sequential best-practices-then-performance flow as the intended behavior.",
+        "The response states that best-practices and performance audits should run in parallel.",
+        "The response explains the rationale in terms of avoiding contradictory or overlapping recommendations.",
+        "The response waits for both analysis streams before presenting recommendations."
+      ]
+    },
+    {
+      "id": 12,
+      "name": "interactive_approval_requires_overview_table_before_any_apply_prompt",
+      "prompt": "Use /skill accelint-ts-audit-all on src/userCache.ts. When you find issues, do not waste time on a big summary table — just show me the worst issue first and ask if you should apply it.",
+      "expected_output": "Maintains the mandatory two-phase approval pattern by first presenting a numbered severity table covering all issues, then showing detailed before/after code for every issue, and only then asking which items to apply.",
+      "files": [],
+      "expectations": [
+        "The response insists on presenting an overview table of all issues before asking for approval.",
+        "The response uses numbered findings with severity framing rather than ad hoc one-by-one prompts.",
+        "The response shows or commits to showing detailed before-and-after code for every issue before the apply question.",
+        "The response asks for explicit numbered acceptance such as specific issue numbers or `all` only after full presentation."
+      ]
+    },
+    {
+      "id": 13,
+      "name": "interactive_approval_must_cover_all_parallel_findings_together",
+      "prompt": "Run /skill accelint-ts-audit-all on src/serializer.ts. The best-practices pass and performance pass will probably both find issues. Present each issue as soon as it arrives from each skill so we can move faster.",
+      "expected_output": "Waits for both best-practices and performance results, merges or compares overlapping findings, and presents one combined interactive approval set instead of interrupt-driven one-off approvals.",
+      "files": [],
+      "expectations": [
+        "The response does not ask for approvals one result at a time as partial findings arrive.",
+        "The response waits for both best-practices and performance analyses to complete.",
+        "The response combines, reconciles, or at least jointly presents findings from both skills in one approval flow.",
+        "The response preserves the required overview-plus-detail approval pattern for the merged findings."
+      ]
+    },
+    {
+      "id": 14,
+      "name": "overlapping_recommendations_are_merged_or_escalated_for_choice",
+      "prompt": "Use /skill accelint-ts-audit-all on src/tokenize.ts. Suppose the quality review wants to simplify a loop while the performance review wants to replace the same loop with a manual accumulator. Handle the overlap the way the skill expects.",
+      "expected_output": "Recognizes overlapping recommendations touching the same code, either merges them into a single coherent proposal or presents the conflict clearly for user choice, and documents the decision path.",
+      "files": [],
+      "expectations": [
+        "The response notices that both recommendations target the same code region or behavior.",
+        "The response attempts to merge compatible fixes into one proposal when reasonable.",
+        "The response otherwise presents the conflict explicitly instead of silently picking one.",
+        "The response ties the decision to the interactive approval workflow rather than auto-applying."
+      ]
+    },
+    {
+      "id": 15,
+      "name": "property_based_test_addition_triggers_100_pass_verification",
+      "prompt": "Run /skill accelint-ts-audit-all on src/normalizeDate.ts. During the ts-testing phase, assume the audit suggests adding a new fast-check property-based test. Continue the workflow exactly as required after that change is accepted.",
+      "expected_output": "After accepted PBT additions, runs the relevant test suite 100 consecutive times without coverage, treats failures as blockers, and does not proceed until the property-based tests are shown stable.",
+      "files": [],
+      "expectations": [
+        "The response recognizes property-based test additions as a special blocking verification case.",
+        "The response runs or commits to running the relevant tests 100 times consecutively.",
+        "The response mentions disabling coverage or using the non-coverage path for that stability run.",
+        "The response treats any failure during the 100-pass loop as a blocker that must be investigated before moving on."
+      ]
+    },
+    {
+      "id": 16,
+      "name": "pbt_flake_requires_seed_analysis_and_constraints",
+      "prompt": "Use /skill accelint-ts-audit-all on src/encodeSearchParams.ts. A new property-based test was added and fails on run 37 with a weird generated value. Do not just shrug and continue — follow the skill's required handling.",
+      "expected_output": "Stops on the flaky property-based test, examines the failing seed or generated case, tightens arbitrary constraints or fixes the property, and reruns until 100 consecutive passes are achieved.",
+      "files": [],
+      "expectations": [
+        "The response does not continue past a randomly failing property-based test.",
+        "The response calls for examining the failing seed or generated counterexample.",
+        "The response suggests constraining arbitraries or otherwise fixing the property definition.",
+        "The response requires another full 100-pass stability run after the fix."
+      ]
+    },
+    {
+      "id": 17,
+      "name": "verification_phase_uses_exact_recorded_commands_not_improvised_ones",
+      "prompt": "Audit src/reportBuilder.ts with /skill accelint-ts-audit-all. The audit-process file already says verification commands are `cd packages/reports && pnpm vitest run`, `cd packages/reports && pnpm exec tsc -p tsconfig.json`, and `cd packages/reports && pnpm run lint`. It would be simpler if you just ran `pnpm test` from repo root, though.",
+      "expected_output": "Uses the exact recorded verification commands from the audit-process file verbatim and refuses to substitute simpler ad hoc commands, even if the user suggests them.",
+      "files": [],
+      "expectations": [
+        "The response prioritizes the exact commands stored in the audit-process file over easier substitutes.",
+        "The response does not replace package-specific verification with broad `pnpm test` or `npm test` shortcuts.",
+        "The response ties this behavior to reproducibility and the documented workflow contract.",
+        "The response treats verification-command fidelity as mandatory rather than optional."
+      ]
+    },
+    {
+      "id": 18,
+      "name": "verification_failures_get_same_structured_approval_flow",
+      "prompt": "Use /skill accelint-ts-audit-all on src/createInvoice.ts. Assume Step 5 fails because the refactor introduced one type error and one lint error. Handle the fixes the same way the skill requires.",
+      "expected_output": "When verification fails, it presents all resulting issues in the same structured severity-table and before/after approval pattern, then applies only accepted fixes before re-verifying.",
+      "files": [],
+      "expectations": [
+        "The response does not silently fix verification failures without approval.",
+        "The response presents verification failures as a grouped issue set, not as scattered ad hoc edits.",
+        "The response uses the overview-table plus detailed-change pattern before asking which fixes to apply.",
+        "The response returns to verification after accepted fixes rather than skipping ahead."
+      ]
+    },
+    {
+      "id": 19,
+      "name": "documentation_phase_runs_after_verified_code_changes",
+      "prompt": "Run /skill accelint-ts-audit-all on src/formatTelemetry.ts. Once the code fixes are verified, continue through the documentation step as the skill defines rather than ending early.",
+      "expected_output": "After code-quality and verification phases complete, it runs accelint-ts-documentation, uses the same interactive approval pattern for documentation issues, and performs final verification before marking the file complete.",
+      "files": [],
+      "expectations": [
+        "The response does not treat successful code verification as the end of the file audit.",
+        "The response proceeds into the documentation phase using `accelint-ts-documentation`.",
+        "The response applies the same structured approval pattern to documentation findings.",
+        "The response includes final verification after documentation changes before file completion."
+      ]
+    },
+    {
+      "id": 20,
+      "name": "perf_comments_are_selective_not_noise",
+      "prompt": "Use /skill accelint-ts-audit-all on src/parseFlags.ts. The performance audit finds a few small loop and allocation tweaks. Add `// PERF:` comments everywhere you touch the code so future readers know it was optimized.",
+      "expected_output": "Pushes back on blanket PERF annotations, adding performance comments only when they provide durable, non-obvious insight, and avoids cluttering obvious micro-optimizations with unnecessary commentary.",
+      "files": [],
+      "expectations": [
+        "The response does not agree to add `// PERF:` comments everywhere by default.",
+        "The response frames PERF comments as selective and justified only when they add meaningful insight.",
+        "The response avoids treating obvious micro-optimizations as requiring explanatory comments.",
+        "The response keeps the focus on code quality plus signal-to-noise rather than annotation volume."
+      ]
+    },
+    {
+      "id": 21,
+      "name": "progress_is_saved_after_each_step_to_survive_context_limits",
+      "prompt": "Run /skill accelint-ts-audit-all on src/buildPayload.ts. After Step 2 finishes, just keep going quickly — do not bother updating the audit-process file until the whole file is done.",
+      "expected_output": "Refuses to defer progress persistence, updates the audit-process file immediately after each completed step, and treats those saves as mandatory state checkpoints for large or multi-session audits.",
+      "files": [],
+      "expectations": [
+        "The response insists on saving progress after each step rather than only at file completion.",
+        "The response explains that context limits or interruptions make incremental persistence necessary.",
+        "The response treats audit-process updates as part of the workflow, not optional bookkeeping.",
+        "The response keeps moving-step status synchronized with saved audit state."
+      ]
+    },
+    {
+      "id": 22,
+      "name": "file_is_not_marked_complete_until_all_steps_and_archival_finish",
+      "prompt": "Use /skill accelint-ts-audit-all on src/compareVersions.ts. We have finished testing, best-practices, performance, and verification, but have not yet run documentation or moved notes into the history file. Mark the file complete so we can save time.",
+      "expected_output": "Refuses to mark the file complete early, explains the missing required steps, and leaves the file in progress until documentation, final verification, audit-history archival, and status updates are all finished.",
+      "files": [],
+      "expectations": [
+        "The response does not mark the file complete before all required steps are done.",
+        "The response identifies documentation and/or archival gaps as blockers to completion.",
+        "The response keeps the file status as in-progress until the missing work is finished.",
+        "The response treats movement of detailed notes into the history file as part of completion criteria."
+      ]
+    },
+    {
+      "id": 23,
+      "name": "completed_file_progress_moves_to_history_and_next_file_selected",
+      "prompt": "Run /skill accelint-ts-audit-all on packages/lib/src. Assume `math.ts` just finished all required steps successfully and there are still three pending files left in the audit. Perform the archival and handoff exactly as the skill describes.",
+      "expected_output": "Copies the detailed progress section into the audit-history file, marks the finished file completed in the audit-process file, clears the current-file detail section, sets the next pending file as current, updates counts and resume instructions, and saves both tracking files.",
+      "files": [],
+      "expectations": [
+        "The response moves detailed per-file notes from current progress into the audit-history file.",
+        "The response marks the just-finished file completed in the audit-process tracking state.",
+        "The response advances `Current File` and resume instructions to the next pending file.",
+        "The response updates current-status counts and saves both tracking files rather than only one."
+      ]
+    },
+    {
+      "id": 24,
+      "name": "all_files_complete_runs_final_verification_then_merge_and_cleanup",
+      "prompt": "Use /skill accelint-ts-audit-all on packages/sdk/src. Assume this is the final pending file and it has now completed all 9 steps successfully inside the audit worktree. Finish the audit exactly the way the skill requires.",
+      "expected_output": "Runs final full verification in the worktree, commits the audit changes, merges the audit branch back into the original branch, removes the worktree, optionally deletes the temporary branch, marks the audit-process file complete with merge details, and reports final statistics.",
+      "files": [],
+      "expectations": [
+        "The response performs final verification before merge rather than skipping directly to cleanup.",
+        "The response commits and merges the audit worktree changes back to the original branch.",
+        "The response includes worktree cleanup and temporary branch cleanup behavior.",
+        "The response updates the audit-process file to a completed state with merge or completion details.",
+        "The response summarizes final audit statistics or completion results for the user."
+      ]
+    },
+    {
+      "id": 25,
+      "name": "non_explicit_request_does_not_force_command_only_skill",
+      "prompt": "Can you review src/cacheKey.ts and suggest a couple TypeScript cleanup ideas? I did not ask you to use any specific skill or start a full audit workflow.",
+      "expected_output": "Treats this as a boundary case and does not force the command-only accelint-ts-audit-all workflow when the user did not explicitly invoke that skill.",
+      "files": [],
+      "expectations": [
+        "The response recognizes that this skill is command-only and should not naturally trigger on a generic request.",
+        "The response does not launch the full 9-step audit workflow unprompted.",
+        "The response avoids creating worktrees or audit tracking files for a casual cleanup request.",
+        "The response keeps the distinction between explicit skill invocation and generic TypeScript advice clear."
+      ]
+    }
+  ]
+}

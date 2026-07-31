@@ -1,6 +1,6 @@
 # Skill prose checklist
 
-Run this before you deliver an audit or rewrite.
+Run this checklist before you deliver an audit or rewrite.
 
 ## 1. Trigger safety
 
@@ -77,7 +77,7 @@ Check that these stayed exact unless the user asked otherwise:
 - Did you keep output mode separate from rewrite mode?
 - If the request was audit-only, did you avoid rewriting the full passage?
 - If the request was rewrite-only, did you avoid prepending audit notes?
-- If the rewrite used `mode=default`, did you keep the structure local unless structure itself hid behavior?
+- If the rewrite used `mode=default`, did you keep the structure local unless the structure itself hid behavior?
 - If the rewrite used `mode=strict`, did you reorganize only as far as needed to clarify behavior?
 - If the safest result was no rewrite, did you say so explicitly instead of forcing a cosmetic edit?
 
@@ -85,4 +85,3 @@ Check that these stayed exact unless the user asked otherwise:
 
 - Is this behaviorally safer than an ordinary prose edit?
 - If risk remains, should you revise less or recommend no rewrite?
-

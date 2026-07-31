@@ -2,17 +2,17 @@
 
 ## Abstract
 
-Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs. This guide focuses on **code correctness, type safety, and defensive programming**. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+Comprehensive coding standards for JavaScript and TypeScript applications for AI agents and LLMs. This guide focuses on code correctness, type safety, and defensive programming. Each rule includes a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
-**Note:** For performance optimization tasks, use the `accelint-ts-performance` skill instead. For documentation tasks, use the `accelint-ts-documentation` skill.
+For performance optimization tasks, use the `accelint-ts-performance` skill instead. For documentation tasks, use the `accelint-ts-documentation` skill.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant patterns
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+1. Start here: scan the rule summaries to identify relevant patterns.
+2. Load references as needed: open detailed examples only when implementing.
+3. Use progressive loading: each reference file is self-contained with ❌/✅ examples.
 
 This structure minimizes context usage while providing complete implementation guidance when needed.
 
@@ -21,32 +21,32 @@ This structure minimizes context usage while providing complete implementation g
 ## Loading Strategy
 
 **When writing new code:**
-- **MANDATORY**: Read [quick-start.md](references/quick-start.md) for complete workflow examples
-- Load specific pattern files only as you encounter relevant scenarios
-- Start with the pattern, then check related safety rules
+- REQUIRED: Read [quick-start.md](references/quick-start.md) for complete workflow examples.
+- Load specific pattern files only when you encounter relevant scenarios.
+- Start with the pattern, then check related safety rules.
 
 **When reviewing existing code:**
-- Start with the rule summaries below to identify anti-patterns
-- Load corresponding reference files for detailed fixes
-- **Do NOT load all references at once** - use progressive loading
+- Start with the rule summaries below to identify anti-patterns.
+- Load the corresponding reference files for detailed fixes.
+- Do NOT load all references at once. Use progressive loading.
 
 **When fixing type errors:**
-- Read [any.md](references/any.md) if encountering `any` types
-- Read [enums.md](references/enums.md) if replacing `enum`
-- Read [type-vs-interface.md](references/type-vs-interface.md) for declaration choices
+- Read [any.md](references/any.md) if you encounter `any` types.
+- Read [enums.md](references/enums.md) if you are replacing `enum`.
+- Read [type-vs-interface.md](references/type-vs-interface.md) for declaration choices.
 
 **When implementing safety features:**
-- **MANDATORY**: Read [input-validation.md](references/input-validation.md) for external data
-- Read [bounded-iteration.md](references/bounded-iteration.md) for any loops or queues
-- Read [error-handling.md](references/error-handling.md) for proper error patterns
+- REQUIRED: Read [input-validation.md](references/input-validation.md) for external data.
+- Read [bounded-iteration.md](references/bounded-iteration.md) for any loops or queues.
+- Read [error-handling.md](references/error-handling.md) for proper error patterns.
 
-**General rule:** Load reference files on-demand based on the specific pattern you're implementing. Each reference is self-contained with ❌/✅ examples.
+**General rule:** Load reference files on demand based on the specific pattern you are implementing. Each reference is self-contained with ❌/✅ examples.
 
 ---
 
 ## Critical Anti-Patterns
 
-**NEVER** do these - they appear in codebases frequently but significantly degrade code quality, safety, or maintainability:
+NEVER do these. They appear in codebases frequently and significantly degrade code quality, safety, or maintainability:
 
 - **NEVER** use `any` type - use `unknown` for truly unknown types or generics for flexible types
 - **NEVER** use `enum` keyword - use `as const` objects to avoid extra JavaScript output and runtime overhead

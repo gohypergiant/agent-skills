@@ -41,7 +41,7 @@ function randomInt(min: number, max: number): number {
 }
 ```
 
-The `range` variable creates an allocation that provides no semantic value. When called frequently, these allocations create GC pressure.
+The `range` variable adds work without adding semantic value. When this function is called frequently, extra intermediates increase GC pressure.
 
 ### Avoid Allocations in Loops
 
@@ -75,11 +75,11 @@ function calculatePrice(quantity: number, basePrice: number): number {
 }
 ```
 
-Variables are warranted when:
-- Expression is complex and inlining hurts readability
-- Value is used multiple times
-- Expression has side effects that shouldn't repeat
-- Debugging would benefit from named intermediate values
+Use variables when:
+- the expression is complex and inlining hurts readability
+- the value is used multiple times
+- the expression has side effects that must not repeat
+- debugging benefits from named intermediate values
 
 **✅ Good: semantic value in business logic**
 ```ts
@@ -186,13 +186,13 @@ Avoids allocating the full `validItems` array when you only need three elements.
 ## When to Optimize
 
 Optimize allocations when:
-- Function is called thousands+ times per second
-- Profiling shows GC pressure
-- Running in memory-constrained environments
-- Inside tight loops or hot paths
+- the function is called thousands of times per second or more
+- profiling shows GC pressure
+- the code runs in memory-constrained environments
+- the code runs inside tight loops or hot paths
 
-Don't optimize when:
-- Function is called infrequently
-- Readability significantly suffers
-- No measurable performance impact
-- Premature optimization in cold paths
+Do not optimize allocations when:
+- the function is called infrequently
+- readability would suffer significantly
+- there is no measurable performance impact
+- the change would be premature optimization in a cold path

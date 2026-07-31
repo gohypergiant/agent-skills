@@ -1,6 +1,6 @@
 # SSRF Prevention
 
-Never fetch user-provided URLs without validation. Server-Side Request Forgery (SSRF) allows attackers to make requests from your server to internal resources or external targets.
+Never fetch user-provided URLs without validation. Server-Side Request Forgery (SSRF) lets attackers make requests from your server to internal resources or external targets.
 
 ## Why This Matters
 
@@ -11,7 +11,7 @@ SSRF attacks enable:
 - **Data Exfiltration**: Read internal files or database contents via internal APIs
 - **Bypass Firewall**: Use server as proxy to access restricted resources
 
-For cloud-hosted applications, SSRF to `http://169.254.169.254/latest/meta-data/iam/security-credentials/` returns AWS credentials with full account access. A single unvalidated URL fetch can compromise entire infrastructure.
+For cloud-hosted applications, SSRF to `http://169.254.169.254/latest/meta-data/iam/security-credentials/` returns AWS credentials with full account access. A single unvalidated URL fetch can compromise the entire infrastructure.
 
 ## Anti-Patterns to Avoid
 

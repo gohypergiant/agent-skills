@@ -12,7 +12,7 @@
      Only include non-obvious trade-offs, edge cases, and expert decisions.
 -->
 
-Brief explanation of what this rule covers and why it matters (expert knowledge only).
+Briefly explain what this rule covers and why it matters. Keep it focused on expert knowledge only.
 
 ## Key Principles
 
@@ -38,14 +38,14 @@ Brief explanation of what this rule covers and why it matters (expert knowledge 
 Example of what NOT to do
 ```
 
-**Why this is wrong:** Explanation of the problem (focus on consequences: bugs, inefficiency, confusion)
+**Why this is wrong:** Explain the problem and focus on consequences such as bugs, inefficiency, or confusion.
 
 **✅ Correct: [description of why]**
 ```
 Example of the right approach
 ```
 
-**Why this is better:** Explanation of the improvement (focus on benefits: clarity, performance, correctness)
+**Why this is better:** Explain the improvement and focus on benefits such as clarity, performance, or correctness.
 
 ### Pattern 2: [Description]
 
@@ -54,14 +54,14 @@ Example of the right approach
 Another example of what NOT to do
 ```
 
-**Why this is wrong:** Explanation of the problem
+**Why this is wrong:** Explain the problem.
 
 **✅ Correct: [description of why]**
 ```
 Correct approach
 ```
 
-**Why this is better:** Explanation of the improvement
+**Why this is better:** Explain the improvement.
 
 ## Additional Guidelines
 

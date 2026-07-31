@@ -1,31 +1,38 @@
 ---
 name: accelint-design-foundation
-description: Use when styling components or elements with @accelint/design-foundation or @accelint/design-toolkit packages, or when users say "style this", "add styling", "theme this component", "add colors", "add spacing", "CSS modules", "setup design foundation", "@variant", or when working with .module.css files. Provides opinionated Tailwind conventions including semantic tokens, custom spacing scale, outline-based borders, variant system, and CSS module setup guidance.
+description: Use when styling or reviewing components that use @accelint/design-foundation or @accelint/design-toolkit, especially when the user asks to style or theme a component, convert vanilla Tailwind to design foundation conventions, fix design foundation CSS module or PostCSS setup, choose semantic tokens or spacing, work with @variant or React Aria state styling, or troubleshoot .module.css issues in this stack. Prefer this skill whenever the codebase uses these packages or the user mentions design foundation, design toolkit, semantic tokens, @variant, CSS modules, or setup/build errors tied to this styling system.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Accelint Design Foundation
 
 Expert knowledge for styling with `@accelint/design-foundation` and `@accelint/design-toolkit` — opinionated Tailwind conventions that differ from vanilla implementations.
 
+## Primary Responsibilities
+
+- Translate generic styling requests into design foundation conventions rather than vanilla Tailwind habits.
+- Check setup first when the user mentions build errors, missing tokens, broken `@variant`, or CSS module issues.
+- Prefer the smallest reference load that answers the task. Read only the relevant reference file unless setup is in doubt.
+- Preserve the design system intent: semantic tokens, semantic spacing, outlines, layered CSS modules, and supported variants.
+
 ## NEVER Do When Styling with Design Foundation
 
-- **NEVER use numeric spacing classes as first choice** - Strongly prefer the semantic scale: `p-xxs`, `gap-m`, `m-l`. Numeric classes like `p-4`, `gap-6` work with a 1:1 relationship (`p-1` = 1px, NOT 4px like vanilla Tailwind), but should only be used for rare cases where implementing non-conforming designs. The semantic scale provides design system consistency.
-- **NEVER use manual theme handling with raw color values** - Avoid `dark:bg-gray-900` or `className={theme === 'dark' ? 'bg-black' : 'bg-white'}`. Use semantic color classes like `bg-surface-default` and `fg-primary-bold` that automatically adapt to light/dark themes.
-- **NEVER use borders for sizing elements** - Use `outline` instead of `border` classes. Borders add to element dimensions (breaks layouts), while outlines overlay without affecting size. Elements should size consistently based on content and padding only.
+- **NEVER use numeric spacing classes as the first choice** - Strongly prefer the semantic scale: `p-xxs`, `gap-m`, `m-l`. Numeric classes like `p-4` and `gap-6` use a 1:1 relationship (`p-1` = 1px, not 4px like vanilla Tailwind), but only use them for rare non-conforming designs. The semantic scale preserves design system consistency.
+- **NEVER use manual theme handling with raw color values** - Avoid `dark:bg-gray-900` or `className={theme === 'dark' ? 'bg-black' : 'bg-white'}`. Use semantic color classes like `bg-surface-default` and `fg-primary-bold`, which adapt automatically to light and dark themes.
+- **NEVER use borders for sizing elements** - Use `outline` instead of `border` classes. Borders add to element dimensions and can break layouts. Outlines overlay without affecting size. Elements should size consistently from content and padding only.
 - **NEVER use arbitrary Tailwind variants** - Arbitrary values like `hover:[&>svg]:opacity-50` break the design system. Use supported React Aria variants or conditional class rendering with `clsx`.
-- **NEVER bypass CSS layers when styling components** - Use `@layer components.l1`, `@layer components.l2` for cascade hierarchy. Bypassing layers causes specificity wars and makes overrides unpredictable.
-- **NEVER use primitive/domain tokens as first choice** - Strongly prefer semantic tokens (`bg-surface-default`, `fg-primary-bold`) in components. The utility classes (`bg-*`, `fg-*`, `icon-*`, `outline-*`) provide fallback access to `domain-*` and `primitive-*` tokens for rare cases where designs go beyond the design system, but this should be exceptional. Semantic tokens provide theming flexibility and design system consistency.
-- **NEVER use inline Tailwind classes for component styling** - Component styles belong in CSS modules, not inline className props. Inline Tailwind should only be used for minor one-off overrides. Using inline classes for all component styling creates unmaintainable code and loses the benefits of CSS modules (scoping, organization, reusability).
-- **NEVER use multiple @apply directives in a single CSS rule** - Group all Tailwind classes into a single `@apply` statement. Multiple `@apply` directives prevent Tailwind IDE plugins from sorting classes and identifying issues. Write `@apply bg-surface-default outline-1 outline-interactive p-m;` not separate `@apply` lines.
-- **NEVER use attribute selectors for variants in CSS modules** - Use `@variant` directive blocks, not attribute selectors like `[data-size="small"]`. Write `@variant size-small { @apply p-s; }` not `.button[data-size="small"] { @apply p-s; }`. The `@variant` directive automatically applies styles when the matching data attribute is present.
-- **NEVER use Tailwind's default theme values** - The design foundation removes and replaces Tailwind defaults. Relying on default shadows, font sizes, or colors will break. Use only the semantic classes provided by the design system.
-- **NEVER omit @reference directive in CSS modules** - Every CSS module file must include `@reference '#globals';` (if custom entrypoint exists) or `@reference '@accelint/design-foundation/styles';` at the top. Without this, semantic tokens and @variant blocks are undefined, causing build errors.
-- **NEVER skip PostCSS configuration** - The `@accelint/postcss-tailwind-css-modules` plugin is required in `postcss.config.mjs`. Without it, named group selectors (like `group-hover/button:`) and @variant selectors fail to resolve in CSS modules.
-- **NEVER import clsx directly from 'clsx' package** - Always import from `@accelint/design-foundation/lib/utils` instead: `import { clsx } from '@accelint/design-foundation/lib/utils';`. The design foundation re-exports clsx with additional type support and design system integration. Importing directly bypasses these enhancements.
+- **NEVER bypass CSS layers when styling components** - Use `@layer components.l1` and `@layer components.l2` for cascade hierarchy. Bypassing layers causes specificity wars and makes overrides unpredictable.
+- **NEVER use primitive or domain tokens as the first choice** - Strongly prefer semantic tokens (`bg-surface-default`, `fg-primary-bold`) in components. The utility classes (`bg-*`, `fg-*`, `icon-*`, `outline-*`) provide fallback access to `domain-*` and `primitive-*` tokens for rare cases where designs go beyond the design system, but this should be exceptional. Semantic tokens preserve theming flexibility and design system consistency.
+- **NEVER use inline Tailwind classes for component styling** - Component styles belong in CSS modules, not inline `className` props. Inline Tailwind should only be used for minor one-off overrides. Using inline classes for all component styling makes code harder to maintain and loses the benefits of CSS modules: scoping, organization, and reusability.
+- **NEVER use multiple `@apply` directives in one CSS rule** - Group all Tailwind classes into one `@apply` statement. Multiple `@apply` directives prevent Tailwind IDE plugins from sorting classes and identifying issues. Write `@apply bg-surface-default outline-1 outline-interactive p-m;`, not separate `@apply` lines.
+- **NEVER use attribute selectors for variants in CSS modules** - Use `@variant` directive blocks, not attribute selectors like `[data-size="small"]`. Write `@variant size-small { @apply p-s; }`, not `.button[data-size="small"] { @apply p-s; }`. The `@variant` directive applies styles automatically when the matching data attribute is present.
+- **NEVER use Tailwind's default theme values** - Design foundation removes and replaces Tailwind defaults. Relying on default shadows, font sizes, or colors will break. Use only the semantic classes provided by the design system.
+- **NEVER omit the `@reference` directive in CSS modules** - Every CSS module file must include `@reference '#globals';` (if a custom entrypoint exists) or `@reference '@accelint/design-foundation/styles';` at the top. Without this, semantic tokens and `@variant` blocks are undefined, which causes build errors.
+- **NEVER skip PostCSS configuration** - The `@accelint/postcss-tailwind-css-modules` plugin is required in `postcss.config.mjs`. Without it, named group selectors like `group-hover/button:` and `@variant` selectors fail to resolve in CSS modules.
+- **NEVER import `clsx` directly from the `clsx` package** - Always import from `@accelint/design-foundation/lib/utils` instead: `import { clsx } from '@accelint/design-foundation/lib/utils';`. Design foundation re-exports `clsx` with additional type support and design system integration. Importing it directly bypasses those enhancements.
 
 ## Before Styling a Component, Ask
 
@@ -40,11 +47,12 @@ Apply these tests to ensure styling aligns with the design system:
 - **Is there a semantic token for this?** Check the token catalog first. If no semantic token exists and the design genuinely requires it, fallback to `domain-*` or `primitive-*` is acceptable but rare.
 
 ### Token Selection Framework
+
 When choosing a token, follow this decision tree:
 1. **Identify element purpose** - Is this a surface, text, icon, or outline?
 2. **Determine hierarchy** - Primary, secondary, or tertiary emphasis?
-3. **Consider state** - Default, hover, active, disabled?
-4. **Check status** - Info, success, warning, danger?
+3. **Consider state** - Default, hover, active, or disabled?
+4. **Check status** - Info, success, warning, or danger?
 
 **Example:** "I need text color for a primary heading"
 → Purpose: text (`fg-*`)
@@ -78,7 +86,7 @@ When choosing a token, follow this decision tree:
 
 ## Setup Requirements
 
-**CRITICAL: Design foundation requires specific PostCSS and CSS module configuration to work correctly.**
+Design foundation requires specific PostCSS and CSS module configuration to work correctly.
 
 ### PostCSS Configuration
 
@@ -107,11 +115,11 @@ If the project implements a custom CSS entrypoint for token/utility configuratio
 }
 ```
 
-**Purpose:** Allows CSS modules to reference the custom entrypoint via `@reference '#globals';`
+**Purpose:** This allows CSS modules to reference the custom entrypoint through `@reference '#globals';`
 
 ### CSS Module Reference Pattern
 
-**Every CSS module file must include a reference directive:**
+**Every CSS module file must include an `@reference` directive:**
 
 ```css
 /* If project has custom CSS entrypoint (defined in package.json imports): */
@@ -135,7 +143,7 @@ If the project implements a custom CSS entrypoint for token/utility configuratio
 }
 ```
 
-**Why:** The @reference directive imports the design system's tokens, utilities, and variant definitions. Without it, semantic tokens and @variant blocks are undefined.
+**Why:** The `@reference` directive imports the design system's tokens, utilities, and variant definitions. Without it, semantic tokens and `@variant` blocks are undefined.
 
 ### Custom CSS Entrypoint (Optional)
 
@@ -174,31 +182,31 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
 
 ### 3. Load Detailed References as Needed
 
-**MANDATORY loading triggers** - Load these references in specific scenarios:
+Load these references only in the matching scenarios:
 
 **Setting up design foundation for the first time:**
-- **MANDATORY**: Load [references/setup.md](references/setup.md) (~8.9K) completely when user says "setup design foundation", "configure design foundation", "install design foundation", or encounters build errors like "undefined variable" or "@variant not found"
-- **Do NOT Load**: token-reference.md, variant-system.md, spacing-scale.md, migration-guide.md
+- Load [references/setup.md](references/setup.md) (~8.9K) completely when the user says "setup design foundation", "configure design foundation", or "install design foundation", or when the user encounters build errors like "undefined variable" or "@variant not found".
+- Do not load `token-reference.md`, `variant-system.md`, `spacing-scale.md`, or `migration-guide.md` for this scenario.
 
 **Choosing tokens or understanding token hierarchy:**
-- **MANDATORY**: Load [references/token-reference.md](references/token-reference.md) (~6.5K) when uncertain which semantic token to use or when user needs complete token catalog
-- **Do NOT Load**: setup.md (unless build errors), migration-guide.md (unless migrating)
+- Load [references/token-reference.md](references/token-reference.md) (~6.5K) when you are unsure which semantic token to use or when the user needs the complete token catalog.
+- Do not load `setup.md` unless there are build errors. Do not load `migration-guide.md` unless the task is a migration.
 
-**Working with @variant system or component variants:**
-- **MANDATORY**: Load [references/variant-system.md](references/variant-system.md) (~5.8K) when implementing data attribute variants or working with React Aria states
-- **Do NOT Load**: setup.md (unless build errors), migration-guide.md (unless migrating)
+**Working with the `@variant` system or component variants:**
+- Load [references/variant-system.md](references/variant-system.md) (~5.8K) when implementing data attribute variants or working with React Aria states.
+- Do not load `setup.md` unless there are build errors. Do not load `migration-guide.md` unless the task is a migration.
 
-**Understanding spacing scale or numeric fallbacks:**
-- **MANDATORY**: Load [references/spacing-scale.md](references/spacing-scale.md) (~8.5K) when confused about semantic vs numeric spacing or need complete spacing catalog
-- **Do NOT Load**: token-reference.md (unless also working with colors), setup.md (unless build errors)
+**Understanding the spacing scale or numeric fallbacks:**
+- Load [references/spacing-scale.md](references/spacing-scale.md) (~8.5K) when semantic versus numeric spacing is unclear or when the user needs the complete spacing catalog.
+- Do not load `token-reference.md` unless the task also needs color guidance. Do not load `setup.md` unless there are build errors.
 
 **Migrating from vanilla Tailwind:**
-- **MANDATORY**: Load [references/migration-guide.md](references/migration-guide.md) (~4.2K) when converting existing Tailwind code to design foundation conventions
-- **Do NOT Load**: Other references unless specific issues arise after migration
+- Load [references/migration-guide.md](references/migration-guide.md) (~4.2K) when converting existing Tailwind code to design foundation conventions.
+- Do not load other references unless specific issues appear after migration.
 
 **Troubleshooting build errors or setup issues:**
-- **MANDATORY**: Load [references/setup.md](references/setup.md) completely when encountering errors like "undefined variable", "@variant not found", "group-hover/button: not working"
-- **Do NOT Load**: Other references until setup is confirmed working
+- Load [references/setup.md](references/setup.md) completely when the user encounters errors like "undefined variable", "@variant not found", or "group-hover/button: not working".
+- Do not load other references until setup is confirmed to work.
 
 ## Styling Patterns
 
@@ -208,6 +216,8 @@ Load [AGENTS.md](AGENTS.md) for quick reference of available tokens, spacing sca
 
 **user-card.module.css:**
 ```css
+@reference '@accelint/design-foundation/styles';
+
 @layer components.l1 {
   /* ✅ Single @apply per rule - enables IDE plugin support */
   .card {
@@ -443,6 +453,16 @@ export function Button({ children, color = 'primary', size = 'medium' }) {
 }
 ```
 
+## Response Pattern
+
+When applying this skill, structure the answer around the user's actual request:
+
+1. Briefly state the design foundation concern you are addressing.
+2. If setup might be broken, verify or fix setup before you propose token-level changes.
+3. Show the concrete code or class changes.
+4. Briefly explain the design foundation reason for the change only when it helps the user avoid the same mistake again.
+5. Mention any required follow-up checks, such as `@reference`, PostCSS plugin presence, root CSS import order, or the `data-*` attributes needed for variants.
+
 **Common variants:**
 - `data-color`: `info`, `success`, `warning`, `danger`
 - `data-size`: `small`, `medium`, `large`
@@ -577,10 +597,10 @@ import './styles/globals.css'; // Too late
 
 ## Important Notes
 
-- **Tailwind defaults are removed** - The design foundation resets Tailwind's default theme. Don't rely on any default values for colors, spacing, shadows, or typography. Only use what's explicitly defined in the design system.
-- **Semantic tokens are CSS variables** - All semantic tokens compile to CSS custom properties like `var(--bg-surface-default)`. They can be used in custom CSS when utilities aren't sufficient, but prefer utilities.
-- **Token fallback chain exists** - Utility classes (`bg-*`, `fg-*`, `icon-*`, `outline-*`) check semantic tokens first, then fall back to `domain-*` and `primitive-*` tokens. This fallback is intentional for rare cases where designs exceed the design system, but semantic tokens should be the default choice for consistency and theming.
-- **Spacing scale is semantic, not pixel-mapped** - Don't think "m = 16px". Think "m = medium spacing for this context". The scale adapts to different contexts (button padding vs section margin). Numeric classes work with 1:1 relationship (p-1 = 1px, NOT 4px), but are fallbacks for non-conforming designs only.
-- **Theme variants use @ directives** - The `@theme static` and `@variant light/dark` syntax is custom. Don't confuse with standard CSS media queries. Themes are applied via class/attribute on root element.
-- **Design Toolkit components are React Aria** - They use React Aria for accessibility. Don't fight the React Aria state management or variants. Work with `className` and `classNames` props.
-- **Setup is NOT optional** - The PostCSS plugin and @reference directives are required, not conveniences. Missing setup causes cryptic build errors ("undefined variable", "@variant not found"). Always verify setup before debugging styling issues.
+- **Tailwind defaults are removed** - Design foundation resets Tailwind's default theme. Do not rely on default colors, spacing, shadows, or typography. Use only what the design system defines explicitly.
+- **Semantic tokens are CSS variables** - All semantic tokens compile to CSS custom properties like `var(--bg-surface-default)`. You can use them in custom CSS when utilities are not sufficient, but prefer utilities.
+- **Token fallback chain exists** - Utility classes (`bg-*`, `fg-*`, `icon-*`, `outline-*`) check semantic tokens first, then fall back to `domain-*` and `primitive-*` tokens. This fallback is intentional for rare cases where designs exceed the design system, but semantic tokens should stay the default for consistency and theming.
+- **Spacing scale is semantic, not pixel-mapped** - Do not think "m = 16px". Think "m = medium spacing for this context". The scale adapts to different contexts, such as button padding versus section margin. Numeric classes use a 1:1 relationship (`p-1` = 1px, not 4px) but are fallbacks for non-conforming designs only.
+- **Theme variants use `@` directives** - The `@theme static` and `@variant light/dark` syntax is custom. Do not confuse it with standard CSS media queries. Themes are applied through a class or attribute on the root element.
+- **Design Toolkit components are React Aria** - They use React Aria for accessibility. Do not fight React Aria state management or variants. Work with `className` and `classNames` props.
+- **Setup is not optional** - The PostCSS plugin and `@reference` directives are required, not conveniences. Missing setup causes cryptic build errors like "undefined variable" and "@variant not found". Always verify setup before debugging styling issues.

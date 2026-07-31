@@ -10,7 +10,7 @@
 
 ## Optimizations
 
-- Convert switch/if-chains to object/Map lookups
+- Convert switch statements and `if` chains to object or `Map` lookups
 - Hoist invariant conditions
 - Use early returns to reduce nesting
 - Replace runtime type checks with compile-time guarantees

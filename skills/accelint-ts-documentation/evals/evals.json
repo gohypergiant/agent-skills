@@ -1,0 +1,258 @@
+{
+  "skill_name": "accelint-ts-documentation",
+  "evals": [
+    {
+      "id": 1,
+      "name": "exported-function-jsdoc-completeness-audit",
+      "prompt": "Please audit the JSDoc on this exported TypeScript helper and tell me exactly what is missing or incorrect. I want a documentation-focused review, not a general TypeScript critique.\n\n```ts\nexport function clamp(min: number, max: number, value: number): number {\n  if (min > max) throw new RangeError('bad range');\n  return Math.max(min, Math.min(max, value));\n}\n```",
+      "expected_output": "Recognizes this as a JSDoc documentation audit, calls out missing exported-function requirements such as description, all @param tags, @returns, @throws, and at least one fenced @example, and stays within the documentation skill's scope.",
+      "expectations": [
+        "The response treats the request as a documentation audit rather than a generic TypeScript code review.",
+        "The response identifies that exported functions require comprehensive documentation rather than minimal internal docs.",
+        "The response calls out missing @param, @returns, and @throws tags.",
+        "The response mentions the need for a fenced @example with the proper language identifier."
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "internal-helper-minimal-docs-judgment",
+      "prompt": "Do these docs look sufficient for an internal helper, or are they overkill?\n\n```ts\n/** Checks if a value is not null or undefined. */\nfunction isDefined<T>(value: T | null | undefined): value is T {\n  return value != null;\n}\n```\n\nAnswer with the repo's documentation standards in mind.",
+      "expected_output": "Applies the export-vs-internal decision rule, judges the brief internal documentation as potentially sufficient, and avoids demanding public-API-level tags such as examples or throws for a simple internal helper.",
+      "expectations": [
+        "The response explicitly distinguishes internal code from exported API documentation requirements.",
+        "The response uses judgment rather than mechanically requiring every possible JSDoc tag.",
+        "The response does not insist on @example or @throws for this simple internal helper.",
+        "The response may mention @template because the helper is generic, but should keep the recommendation proportionate."
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "generic-function-requires-template-tag",
+      "prompt": "Review this JSDoc and tell me what is wrong with it:\n\n```ts\n/**\n * Returns the first item in an array.\n * @param items - Input array.\n * @returns The first item or undefined.\n */\nexport function first<T>(items: T[]): T | undefined {\n  return items[0];\n}\n```",
+      "expected_output": "Flags the missing @template tag for the generic type parameter, keeps the review centered on JSDoc completeness for a generic exported function, and may also note the need for an exported-function example.",
+      "expectations": [
+        "The response identifies that generic type parameters require @template documentation.",
+        "The response keeps focus on documentation syntax and sufficiency rather than algorithmic concerns.",
+        "The response treats this as exported API and therefore higher documentation bar.",
+        "The response does not ignore the generic nature of the function."
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "void-function-returns-tag-should-be-removed",
+      "prompt": "Can you audit this JSDoc for correctness?\n\n```ts\n/**\n * Logs an audit event.\n * @param message - Event description.\n * @returns Nothing.\n */\nfunction logAudit(message: string): void {\n  console.log(message);\n}\n```",
+      "expected_output": "Identifies that void functions should not have an @returns tag and keeps the advice narrowly focused on JSDoc correctness.",
+      "expectations": [
+        "The response explicitly states that @returns should be omitted for void functions.",
+        "The response treats this as a documentation syntax/correctness issue.",
+        "The response does not drift into general logging or implementation advice."
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "example-must-use-fenced-code-with-language",
+      "prompt": "What's wrong with this exported function's example block?\n\n```ts\n/**\n * Formats a username for display.\n * @param value - Raw username.\n * @returns Formatted username.\n * @example\n * formatUser('sam');\n */\nexport function formatUser(value: string): string {\n  return value.trim();\n}\n```",
+      "expected_output": "Calls out that the @example is invalid because it lacks a fenced code block with the correct language identifier, and keeps the response grounded in the reference guidance.",
+      "expectations": [
+        "The response identifies missing fenced code block syntax inside @example.",
+        "The response mentions the need for the correct language identifier for a TypeScript file.",
+        "The response does not approve the current inline example format."
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "destructured-object-parameters-need-dot-notation",
+      "prompt": "Please review this documentation and tell me whether it is complete enough for an exported function:\n\n```tsx\n/**\n * Renders a card list.\n * @param title - Section title.\n * @param items - Items to render.\n * @returns The rendered card list.\n */\nexport function CardList({ title, items, isCompact = false }: {\n  title: string;\n  items: string[];\n  isCompact?: boolean;\n}) {\n  return null;\n}\n```",
+      "expected_output": "Explains that destructured object parameters should be documented as a single object parameter with nested property docs using dot notation, and treats the exported function as requiring comprehensive docs.",
+      "expectations": [
+        "The response identifies the destructured-parameter documentation pattern as incorrect.",
+        "The response recommends documenting the object parameter and its properties with dot notation.",
+        "The response keeps the guidance centered on JSDoc structure rather than JSX implementation details."
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "interface-property-descriptions-audit",
+      "prompt": "Audit this interface documentation using the repo's TS documentation standards:\n\n```ts\n/**\n * Configuration for the API client.\n */\nexport interface ApiConfig {\n  baseUrl: string;\n  timeout: number;\n  retries: number;\n}\n```",
+      "expected_output": "Recognizes that interface properties should be documented, especially for exported/public surface area, and reports the missing property descriptions rather than treating the top-level description as sufficient.",
+      "expectations": [
+        "The response identifies missing property-level descriptions on the interface.",
+        "The response treats exported/public types as requiring fuller documentation than internal code.",
+        "The response stays focused on documentation sufficiency for interfaces."
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "constant-docs-units-and-constraints",
+      "prompt": "I want a documentation review of these exported constants:\n\n```ts\nexport const REQUEST_TIMEOUT = 5000;\nexport const MAX_RETRIES = 3;\n```\n\nTell me what the docs should communicate, especially if units or constraints matter.",
+      "expected_output": "Explains that constants need descriptions and should document units or operational meaning where relevant, such as milliseconds for timeout values or retry semantics for limits.",
+      "expectations": [
+        "The response calls out that constants still need documentation.",
+        "The response mentions units or constraints for values like timeout and retry limits.",
+        "The response frames the advice as documentation-quality guidance, not a runtime-config redesign."
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "comment-markers-vague-todo-fixme-rewrite",
+      "prompt": "Please audit these comments and tell me which ones should be rewritten or removed:\n\n```ts\n// TODO: fix this\n// TODO: improve performance\n// FIXME(alice): Throws on empty input\n// NOTE: Keep in sync with billing export format\n```",
+      "expected_output": "Uses the comment-quality standards to flag vague TODOs as low-quality and recommends more specific marker comments with context or ownership, while preserving already useful FIXME/NOTE comments.",
+      "expectations": [
+        "The response identifies vague TODO markers as needing more context.",
+        "The response preserves useful marker comments like the specific FIXME and NOTE.",
+        "The response does not propose converting marker comments into JSDoc."
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "remove-commented-out-code-and-edit-history",
+      "prompt": "Review these comments for documentation hygiene:\n\n```ts\nfunction process(data: Input) {\n  // const oldWay = transform(data);\n  // return oldWay.map(x => x * 2);\n  return newWay(data);\n}\n\n// Added 2024-01-15: Support new API\n// Changed by John: use async/await\n```",
+      "expected_output": "Recommends removing commented-out code and edit-history comments, citing documentation/comment-quality standards rather than source-control philosophy in the abstract.",
+      "expectations": [
+        "The response flags commented-out dead code for removal.",
+        "The response flags edit-history comments for removal.",
+        "The response keeps the reasoning tied to the comment-audit standards and version-control-backed history."
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "preserve-tool-directives-unchanged",
+      "prompt": "I'm cleaning up comments in this file. Should these be rewritten into nicer documentation comments?\n\n```ts\n// eslint-disable-next-line @typescript-eslint/no-explicit-any\nconst payload: any = getLegacyPayload();\n\n// @ts-expect-error - Testing fallback path\nconst result = maybeThrows();\n```",
+      "expected_output": "Explicitly says directive comments are exempt, should be preserved unchanged, and should not be reformatted into JSDoc or ordinary comment prose.",
+      "expectations": [
+        "The response identifies linter and type-checker directives as tool comments with required syntax.",
+        "The response says they should be preserved unchanged.",
+        "The response does not suggest rewriting them into JSDoc."
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "preserve-business-logic-why-comments",
+      "prompt": "In this comment-cleanup pass, should I delete this because the code is short?\n\n```ts\n// Cache must be invalidated after 5 minutes due to API rate limits\nconst CACHE_TTL = 5 * 60 * 1000;\n```",
+      "expected_output": "Preserves the comment because it explains non-obvious business or operational rationale, distinguishing why-comments from noisy restatements of code.",
+      "expectations": [
+        "The response preserves the comment rather than removing it as noise.",
+        "The response explains that the value lies in documenting why, not merely what.",
+        "The response does not treat short code alone as a reason to delete rationale comments."
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "move_end_of_line_comments_above_code",
+      "prompt": "Audit these comments for placement quality:\n\n```ts\nconst MAX_RETRIES = 3; // Maximum number of retry attempts\nconst TIMEOUT = 5000; // Request timeout in milliseconds\n```",
+      "expected_output": "Recommends moving these descriptive end-of-line comments above the code, while recognizing that only brief inline clarifications are acceptable exceptions.",
+      "expectations": [
+        "The response identifies the end-of-line comment placement issue.",
+        "The response recommends moving explanatory comments above the relevant declarations.",
+        "The response acknowledges that only short inline clarifications may remain inline as exceptions."
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "jsdoc-reference-loading-for-implementation-request",
+      "prompt": "Add correct JSDoc to the exported helpers in src/lib/normalizeSlug.ts. Make sure the tags and @example syntax are right.",
+      "expected_output": "Indicates that the JSDoc reference should be loaded before implementing because this is a JSDoc addition request, and keeps the work scoped to JSDoc rather than comment-marker cleanup.",
+      "expectations": [
+        "The response recognizes this as an implementation request rather than answer-only guidance.",
+        "The response implies or states that jsdoc.md should be read before making JSDoc changes.",
+        "The response does not claim comments.md is necessary unless comment-marker issues are also present."
+      ],
+      "files": [
+        "src/lib/normalizeSlug.ts"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "comments-reference-loading-for-comment-audit",
+      "prompt": "Please clean up the TODO/FIXME/HACK comments in src/jobs/reconcile.ts and remove any dead comments. Do not touch function JSDoc unless absolutely necessary.",
+      "expected_output": "Recognizes this as a comment-quality implementation request, loads the comment guidance rather than the JSDoc reference by default, and keeps the scope centered on markers, dead comments, and comment hygiene.",
+      "expectations": [
+        "The response recognizes that comments.md is the relevant reference for this task.",
+        "The response does not default to loading jsdoc.md when the task is specifically about comment markers and cleanup.",
+        "The response stays within comment-quality scope and respects the request not to broaden into JSDoc work."
+      ],
+      "files": [
+        "src/jobs/reconcile.ts"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "answer_only-question-should-skip-reference-loading",
+      "prompt": "Quick question only: should internal helper functions always get @example tags in this repo, or do we use judgment? I do not need edits, just the rule.",
+      "expected_output": "Answers the policy question directly, states that internal code uses judgment and usually does not require exhaustive tags like @example, and does not overstate the need to load references for a non-implementation answer-only request.",
+      "expectations": [
+        "The response answers the question directly without turning it into an edit workflow.",
+        "The response states that internal documentation is judgment-based rather than always exhaustive.",
+        "The response does not insist on loading references for a simple answer-only question."
+      ],
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "formal-audit-request-uses-report-template",
+      "prompt": "Use /accelint-ts-documentation on src/api/client.ts and produce a formal documentation audit report with findings I can hand to another engineer. I want categories and before/after examples, not direct edits.",
+      "expected_output": "Recognizes an explicit audit invocation and uses the standardized audit-report format with categorized findings, before/after examples, and references, instead of silently rewriting the file.",
+      "expectations": [
+        "The response recognizes this as a formal audit request rather than a direct implementation request.",
+        "The response uses or follows the documented report-template structure.",
+        "The response includes categorized findings with before/after examples.",
+        "The response does not skip straight to patching the file."
+      ],
+      "files": [
+        "src/api/client.ts"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "near-miss-generic-ts-best-practices-not-docs",
+      "prompt": "Please review this TypeScript module for unsafe any usage, implicit return types, mutation, and defensive programming gaps. I am not asking about comments or JSDoc.",
+      "expected_output": "Acts as a boundary case by not forcing the documentation skill onto a generic TypeScript quality review, recognizing that the request belongs to a TS best-practices workflow instead.",
+      "expectations": [
+        "The response recognizes that this is not primarily a documentation task.",
+        "The response does not center the answer on JSDoc or comment-marker standards.",
+        "The response preserves the boundary between documentation work and general TypeScript code-quality review."
+      ],
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "mixed-task-load-both-references-when-needed",
+      "prompt": "Please fix the documentation in src/cache/fetchProfile.ts. It has incomplete JSDoc on exported functions, several vague TODO comments, and one block of commented-out code. I want the file cleaned up comprehensively.",
+      "expected_output": "Recognizes that both JSDoc and comment-quality concerns are in scope, so both references are relevant, and covers exported-doc completeness plus marker and dead-comment cleanup without drifting into unrelated refactors.",
+      "expectations": [
+        "The response recognizes both JSDoc and comment-quality work in the same request.",
+        "The response implies or states that both jsdoc.md and comments.md are relevant here.",
+        "The response covers exported-doc completeness as well as vague markers and commented-out code cleanup.",
+        "The response keeps the cleanup documentation-focused rather than turning into a full code refactor."
+      ],
+      "files": [
+        "src/cache/fetchProfile.ts"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "edge-case-generic-utility-type-prefers-reference-not-guessing",
+      "prompt": "I need JSDoc for a complex exported generic utility type with conditional types and overloaded callbacks. If the exact tag syntax is unclear, what should this skill do?",
+      "expected_output": "States that complex edge cases require loading the JSDoc reference, should not be guessed from memory, and should fall back to clear natural-language descriptions or explicit uncertainty only when the reference still does not resolve the case.",
+      "expectations": [
+        "The response identifies this as an edge case where syntax details matter.",
+        "The response says to load the JSDoc reference instead of guessing.",
+        "The response mentions fallback behavior such as clear natural-language documentation or asking for clarification if ambiguity remains."
+      ],
+      "files": []
+    }
+  ]
+}

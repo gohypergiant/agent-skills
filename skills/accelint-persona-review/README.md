@@ -1,6 +1,6 @@
 # Persona-Based Design Review
 
-Evaluate Figma designs from the perspective of specific operator personas, surfacing UX insights that generic reviews miss.
+Evaluate Figma designs from the perspective of specific operator personas and surface role-specific UX insights that generic reviews miss.
 
 ## Usage
 
@@ -15,15 +15,16 @@ Evaluate Figma designs from the perspective of specific operator personas, surfa
 ## What It Does
 
 1. Loads the operator persona profile (responsibilities, pain points, systems, workflows)
-2. Fetches the Figma design (URL or desktop selection)
-3. Searches Outline docs for relevant guidelines and standards
-4. Provides structured critique covering:
-   - Cognitive load assessment
-   - Communication pattern alignment
-   - Pain point mitigation
-   - Context awareness (rank, experience, schedule)
-   - System visibility
-   - Communication support
+2. Fetches the Figma design from a URL or desktop selection, or falls back to screenshots when MCP access is unavailable
+3. Searches Outline docs for the most relevant guidelines, requirements, and prior review context
+4. Produces a persona-grounded critique that prioritizes operational impact across:
+   - cognitive load
+   - workflow and communication fit
+   - pain point mitigation
+   - context awareness (rank, experience, schedule)
+   - system visibility
+   - communication support
+5. Calls out evidence gaps when the review is limited by missing design context or supporting documentation
 
 ## Available Personas
 
@@ -71,9 +72,23 @@ Create a new file in `references/personas/{persona-id}.md` following this struct
 [Known frustrations and challenges]
 ```
 
-Then update `references/personas/_index.md` to include the new persona.
+Then update `references/personas/_index.md` to include the new persona ID and summary.
 
 ## Requirements
 
-- **Figma MCP**: For accessing designs (desktop or URL)
-- **Outline MCP**: For searching supporting documentation
+- **Figma MCP**: Preferred for accessing designs from desktop or URL
+- **Outline MCP**: Preferred for searching supporting documentation
+
+## Version history
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
+
+Current version: 1.3.0
+- Audit-driven trigger and workflow clarity improvements
+- Default eval coverage for persona selection, fallbacks, and boundary validation
+- Stronger evidence-versus-inference guidance in reviews
+
+## Fallbacks
+
+- If Figma MCP is unavailable, review screenshots and state the resulting scope limits clearly.
+- If Outline MCP is unavailable, proceed with the persona profile plus design context and note that supporting-document evidence was unavailable.

@@ -2,7 +2,7 @@
 
 Never accept state-changing operations without CSRF tokens. Cross-Site Request Forgery (CSRF) tricks authenticated users into performing unwanted actions without their knowledge.
 
-**Framework Examples**: This document uses common CSRF protection patterns. Apply to your framework: csurf/csrf-csrf (Express), @fastify/csrf-protection (Fastify), built-in protection (Nest.js), or framework-specific CSRF middleware. Some frameworks (Next.js) may require custom implementation.
+**Framework Examples**: This document uses common CSRF protection patterns. Apply them to your framework: csurf/csrf-csrf (Express), @fastify/csrf-protection (Fastify), built-in protection (Nest.js), or framework-specific CSRF middleware. Some frameworks, including Next.js, may require custom implementation.
 
 ## Why This Matters
 
@@ -12,7 +12,7 @@ CSRF attacks enable:
 - **Malicious Actions**: Post spam, delete data, change settings as the victim
 - **Privilege Escalation**: Perform admin actions if victim is administrator
 
-An attacker embeds a malicious form in their website. When an authenticated user visits, the form auto-submits to your application using the victim's cookies. Without CSRF protection, the request appears legitimate.
+An attacker embeds a malicious form on their website. When an authenticated user visits, the form auto-submits to your application with the victim's cookies. Without CSRF protection, the request appears legitimate.
 
 ## Anti-Patterns to Avoid
 

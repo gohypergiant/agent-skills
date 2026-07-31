@@ -1,0 +1,87 @@
+{
+  "skill_name": "accelint-ac-to-playwright",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this login acceptance-criteria markdown file and tell me if it is ready for Playwright conversion. Each bullet uses explicit area.component.intent targets, quoted fill values, and measurable outcomes.",
+      "expected_output": "Assessment mode only. Returns a conversion-ready verdict with the validated checklist and does not generate plans or test files.",
+      "files": [
+        "login-ac.md"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can these acceptance criteria be converted as-is? The file includes steps like 'interact with the email field' and 'enter a valid email' without quoted literals.",
+      "expected_output": "Assessment mode failure report that flags vague verbs and missing exact literal values, with concrete fixes.",
+      "files": [
+        "ambiguous-login-ac.md"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Validate this feature file for automation readiness. One scenario mixes Then before When and another uses incomplete selector targets.",
+      "expected_output": "Assessment mode failure report that identifies Gherkin step-order violations and missing area.component.intent specificity.",
+      "files": [
+        "broken-order.feature"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Convert these acceptance criteria into Playwright tests. Save plans to ./plans, tests to ./tests, and summaries to ./summaries. The batch includes two valid files and one invalid file.",
+      "expected_output": "Runs assessment across all files first and stops the entire conversion workflow when one file fails, without generating partial artifacts.",
+      "files": [
+        "valid-checkout.md",
+        "valid-profile.feature",
+        "invalid-settings.md"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Generate Playwright tests from this checkout markdown AC file.",
+      "expected_output": "Chooses full conversion intent but requests explicit output directories for plans, tests, and summaries before writing files.",
+      "files": [
+        "checkout.md"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Convert checkout.md to Playwright tests. Plans: ./plans Tests: ./tests Summaries: ./summaries. Each bullet is already automation-ready.",
+      "expected_output": "Successful markdown conversion: one suite for the file, one test per bullet, validated JSON plan, translated spec, and summary output.",
+      "files": [
+        "checkout.md"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Turn this Gherkin .feature file with Feature tags, Scenario tags, and a Scenario Outline into Playwright specs. Use ./plans, ./tests, and ./summaries.",
+      "expected_output": "Successful Gherkin conversion with correct suite/test tag handling, one test per scenario/example row, and stable parameter suffix naming.",
+      "files": [
+        "subscription.feature"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Convert these requirements to Playwright tests. The AC includes selecting 'Premium Plan' from a dropdown, a navigation change after clicking Continue, and a modal that appears after submit. Output directories are provided.",
+      "expected_output": "Generated plan/spec uses label-based dropdown selection, adds URL assertions for navigation, and adds explicit visibility assertions only where stated.",
+      "files": [
+        "plan-selection.md"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Create Playwright automation from this AC where the user presses Shift+g to open the global command palette. Use ./plans, ./tests, and ./summaries.",
+      "expected_output": "Generated plan translates the key combination into keyDown -> press -> keyUp rather than a single combined press action.",
+      "files": [
+        "keyboard-shortcuts.md"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Make tests from these acceptance criteria. One step says 'select the first option' and another says 'click the button' without identifying which button. Use ./plans, ./tests, and ./summaries.",
+      "expected_output": "The skill refuses to guess, surfaces the ambiguities through assessment failure or clarification guidance, and does not emit unsafe generic selectors.",
+      "files": [
+        "ambiguous-actions.md"
+      ]
+    }
+  ]
+}

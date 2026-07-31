@@ -2,15 +2,16 @@
 
 ## Abstract
 
-Comprehensive performance optimization guide for JavaScript and TypeScript applications, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+Comprehensive performance optimization guidance for JavaScript and TypeScript applications, designed for AI agents and LLMs. Each rule includes a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant optimizations
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+1. **Start here:** Scan the rule summaries to identify relevant optimization categories.
+2. **Prefer evidence first:** Use profiler output when it is available before you choose a category.
+3. **Load references as needed:** Open only the detailed examples needed for the issues at hand.
+4. **Progressive loading:** Each reference file is self-contained and includes ❌/✅ examples.
 
 This structure minimizes context usage while providing complete implementation guidance when needed.
 
@@ -18,11 +19,11 @@ This structure minimizes context usage while providing complete implementation g
 
 ## Critical Performance Anti-Patterns
 
-**NEVER** do these - they appear in codebases frequently but significantly degrade performance:
+**NEVER** do these. They appear frequently in codebases and significantly degrade performance:
 
 - **NEVER** chain array methods (.filter().map().reduce()) - creates intermediate arrays and multiple iterations; use single `reduce` pass (2-5x faster)
 - **NEVER** use `Array.includes()` for repeated lookups - O(n) linear search; use `Set.has()` instead for O(1) hash lookup (10-100x faster)
-- **NEVER** await before checking if you need the result - suspends execution unnecessarily; defer `await` into branches that actually use the value
+- **NEVER** await before checking if you need the result - this suspends execution unnecessarily; defer `await` into branches that actually use the value
 - **NEVER** recompute constants inside loops - wastes CPU in every iteration; hoist invariants outside loops or curry functions to precompute
 - **NEVER** create unbounded loops or queues - prevents runaway resource consumption; set explicit limits to prevent DoS and crashes
 - **NEVER** place `try/catch` in hot paths - V8 cannot inline functions with try-catch (3-5x slowdown); validate inputs before loops
@@ -35,9 +36,9 @@ See individual reference files for detailed alternatives and ✅ correct pattern
 
 ## Performance Optimization Categories
 
-**Before optimizing**: Profile first to identify actual bottlenecks. Premature optimization wastes effort on code that doesn't impact user experience.
+**Before optimizing:** Profile first to identify actual bottlenecks when runtime data is available. If you are doing static review only, label findings as likely opportunities rather than proven hotspots.
 
-Design for performance from the start. Optimize slowest resources first: `network >> disk >> memory >> cpu`
+Design for performance from the start. Optimize the slowest resources first: `network >> disk >> memory >> cpu`
 
 ---
 
@@ -137,11 +138,11 @@ Batch string operations; compile regex once; avoid async overhead for synchronou
 
 ## Quick Reference for Bottleneck Mapping
 
-For systematic bottleneck identification and categorization, load [references/quick-reference.md](references/quick-reference.md) which provides:
-- Bottleneck symptom → Category mapping
-- Profiler output → Optimization category lookup
-- Anti-pattern detection with concrete code examples
-- Decision matrix for when to optimize
+For systematic bottleneck identification and categorization, load [references/quick-reference.md](references/quick-reference.md). It provides:
+- bottleneck symptom → category mapping
+- profiler output → optimization category lookup
+- anti-pattern detection with concrete code examples
+- decision matrix for when to optimize
 
 ---
 
@@ -157,14 +158,14 @@ For systematic bottleneck identification and categorization, load [references/qu
 | Bounded Execution | Prevents DoS | All user-controlled iterations |
 | Micro-optimizations | 1.05-2x | Hot paths only, after profiling |
 
-**Priority order:** Fix algorithm first, then cache, then I/O, then allocations, then micro-optimize hot paths.
+**Priority order:** Fix the algorithm first, then cache, then I/O, then allocations, then micro-optimize hot paths.
 
 ---
 
 ## Important Notes
 
-- **Profile before optimizing** - Use Chrome DevTools (browser) or `node --prof` (Node.js). Target functions consuming >5% runtime.
+- **Profile before optimizing** - Use Chrome DevTools (browser) or `node --prof` (Node.js). Target functions that consume >5% of runtime when measurements are available.
 - **Hot path definition** - Code executed >1000 times per user interaction or >100 times per second in server contexts.
 - **Real-time systems** - For 60fps rendering (16.67ms frame budget), even 1.05x improvements in critical paths matter. Profile with frame timing.
-- **Correctness is mandatory** - Run tests before and after. Performance bugs are still bugs.
+- **Correctness is mandatory** - Run tests before and after optimizing. Performance bugs are still bugs.
 - **Memory vs CPU trade-offs** - Caching trades memory for speed. Monitor memory usage in production.

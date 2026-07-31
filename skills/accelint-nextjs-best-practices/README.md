@@ -1,10 +1,10 @@
 # Next.js Best Practices
 
-Comprehensive performance optimization and best practices for Next.js applications, designed for AI agents and LLMs working with Next.js code.
+Comprehensive performance, architecture, and security guidance for Next.js applications, written for agents and LLMs working with Next.js code.
 
 ## Overview
 
-This skill provides structured guidance for Next.js performance optimization and security, covering:
+This skill provides structured Next.js performance and security guidance covering:
 - Server-side waterfall prevention
 - Server Actions authentication and security
 - RSC serialization optimization
@@ -20,13 +20,15 @@ This skill provides structured guidance for Next.js performance optimization and
 
 ### For Agents/LLMs
 
-1. **Read [SKILL.md](SKILL.md)** - Understand when to activate this skill and how to use it
-2. **Reference [AGENTS.md](AGENTS.md)** - Browse all patterns with detailed examples
-3. **Apply patterns** - Each section contains ❌ incorrect and ✅ correct examples
+1. **Read [SKILL.md](SKILL.md)** to understand activation criteria and workflow.
+2. **Start with [AGENTS.md](AGENTS.md)** for the condensed rule map and diagnostic guide.
+3. **Use [references/quick-checklist.md](references/quick-checklist.md)** to triage common scenarios quickly.
+4. **Load only the needed reference file(s)** because each detailed reference covers one pattern.
+5. **Use [scripts/README.md](scripts/README.md)** when a quick heuristic scan would help confirm likely issues.
 
 ### For Humans
 
-This skill is optimized for AI agents but humans may find it useful for:
+This skill is optimized for AI agents, but humans may also use it for:
 - Learning Next.js App Router performance patterns
 - Reviewing code for security issues in Server Actions
 - Understanding RSC serialization optimization
@@ -51,7 +53,7 @@ Patterns for optimizing server-side rendering and data fetching:
 - Per-request deduplication with React.cache()
 - Use after() for non-blocking operations
 
-### 3. Misc
+### 3. Miscellaneous
 Additional optimization patterns:
 - Avoid barrel file imports
 - Server vs Client Component decision tree
@@ -104,7 +106,7 @@ This skill primarily covers the **Next.js App Router** (Next.js 13+):
 
 ## Usage in Claude Code
 
-This skill is designed to be used with environments such as Claude Code and automatically activates when:
+This skill is designed for agentic coding environments and should activate when:
 - Writing Server Components or Client Components
 - Implementing Server Actions
 - Optimizing data fetching
@@ -116,24 +118,31 @@ See [SKILL.md](SKILL.md) for complete activation criteria and trigger phrases.
 
 ---
 
+## Maintenance Notes
+
+- `SKILL.md` is the canonical activation and workflow file.
+- `AGENTS.md` is the fast-reference overview agents should read first after activation.
+- `references/` contains the detailed pattern guidance that should be loaded on demand.
+- `scripts/` contains optional heuristic checks; they support audits but do not replace judgment.
+
 ## Performance Philosophy
 
 This skill follows these principles:
 
-1. **Security first** - Always authenticate and validate Server Actions
-2. **Eliminate waterfalls** - Start independent operations immediately
-3. **Parallelize everything** - Use Promise.allSettled() liberally
-4. **Minimize serialization** - Only send what the client needs
-5. **Strategic Suspense** - Show wrapper UI while data loads
-6. **Cache intelligently** - Use React.cache() for server-side deduplication
+1. **Security first** - Always authenticate and validate Server Actions.
+2. **Eliminate waterfalls** - Start independent operations immediately.
+3. **Parallelize independent operations** - Use Promise.allSettled() when tasks do not depend on each other.
+4. **Minimize serialization** - Send only what the client needs.
+5. **Strategic Suspense** - Show wrapper UI while data loads.
+6. **Cache intelligently** - Use React.cache() for server-side deduplication.
 
 ---
 
 ## Related Skills
 
-- **react-best-practices** - For React-specific optimizations (hooks, memoization, re-renders)
-- **typescript-best-practices** - For TypeScript type safety patterns
-- **security-best-practices** - For general security patterns beyond Server Actions
+- **accelint-react-best-practices** - For React-specific optimizations such as hooks, memoization, and re-renders.
+- **accelint-ts-best-practices** - For TypeScript type-safety and correctness patterns.
+- **accelint-security-best-practices** - For security guidance beyond Server Actions.
 
 ---
 

@@ -1,6 +1,6 @@
 # Vitest Best Practices
 
-Expert patterns for writing maintainable, effective vitest tests. This skill provides comprehensive guidance on test organization, assertions, mocking, async testing, and performance optimization.
+Expert patterns for writing maintainable, effective Vitest tests. This skill gives practical guidance on test organization, assertions, mocking, async testing, and performance optimization.
 
 **For complete guidance, see [SKILL.md](SKILL.md)**
 
@@ -23,9 +23,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    clearMocks: true // Clear call history before each test     
-    mockReset: true // Reset implementation before each test     
-    restoreMocks: true // Restore original implementation before each test   
+    clearMocks: true,
+    mockReset: true,
+    restoreMocks: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
@@ -33,6 +33,8 @@ export default defineConfig({
   },
 });
 ```
+
+Keep these three mock-cleanup settings in config instead of repeating them in `beforeEach` or `afterEach` hooks.
 
 ### Your First Test
 
@@ -73,15 +75,16 @@ vitest --ui         # Visual UI
 
 ## What You'll Learn
 
-This skill covers expert-level guidance on:
+This skill covers expert guidance on:
 - Test organization and AAA pattern
 - Strict assertions to catch bugs
-- Test doubles hierarchy (fakes > stubs > mocks)
+- Test doubles hierarchy (real code > fakes > stubs > spies > mocks)
 - Async testing and timer mocking
 - Performance optimization and global configuration
 - Vitest-specific features and setup file discovery
+- Property-based testing opportunities with fast-check
 
-**See [SKILL.md](SKILL.md) for complete patterns and examples.**
+**See [SKILL.md](SKILL.md) for the full patterns and examples.**
 
 ## Learn More
 

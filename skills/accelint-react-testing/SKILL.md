@@ -1,11 +1,11 @@
 ---
 name: accelint-react-testing
-description: Use when writing, reviewing, or refactoring React component tests with Testing Library. Load when you see render(), screen, fireEvent, userEvent, waitFor, or *.test.tsx files. Covers query priority (getByRole > getByLabelText > getByText), user-centric testing patterns, async utilities, custom renders with providers, and accessibility-first assertions. Keywords include RTL, Testing Library, screen, getByRole, findBy, queryBy, userEvent, waitFor, toBeInTheDocument, testing-library/react, testing-library/user-event, jest-dom.
-compatibility: Requires @testing-library/react, works with vitest or jest
+description: Use when writing, reviewing, refactoring, or auditing React component tests that use React Testing Library or Testing Library patterns. Load when you see render(), screen, within(), waitFor, waitForElementToBeRemoved, getBy*/findBy*/queryBy*, fireEvent, userEvent, @testing-library/react, @testing-library/user-event, jest-dom matchers, or React test files such as *.test.tsx, *.test.jsx, *.spec.tsx, and *.spec.jsx. Covers query priority (getByRole > getByLabelText > getByText > getByTestId), query-variant selection (getBy vs findBy vs queryBy), scoped queries, user-centric interaction testing, async utilities, custom render helpers for providers, accessibility-first assertions, and common RTL anti-patterns. Do not use for non-React unit tests or Playwright end-to-end testing unless the question is specifically about React Testing Library behavior.
+compatibility: Requires @testing-library/react, works with Vitest or Jest
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.2.1"
 ---
 
 # React Testing Best Practices
@@ -48,38 +48,38 @@ Apply these thinking patterns before implementing React component tests:
 
 ## How to Use
 
-This skill uses **progressive disclosure** to minimize context usage:
+This skill uses progressive disclosure to minimize context usage.
 
-### 1. Start with the Overview (AGENTS.md)
-Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries.
+### 1. Start with the overview
+Read [AGENTS.md](AGENTS.md) first. It provides a concise overview of the rules with one-line summaries.
 
-### 2. Load Specific Rules as Needed
-Use these explicit triggers to know when to load each reference file:
+### 2. Load specific references only when needed
+Use these triggers to decide which reference file to load:
 
-**MANDATORY Loading (load entire file):**
-- **Writing any query (getBy*, findBy*, queryBy*)** → [query-priority.md](references/query-priority.md)
-- **Simulating user interactions (clicks, typing, etc.)** → [user-events.md](references/user-events.md)
+**Always load the full file for these cases:**
+- **Writing any query (`getBy*`, `findBy*`, `queryBy*`)** → [query-priority.md](references/query-priority.md)
+- **Simulating user interactions (clicks, typing, keyboard input, selection)** → [user-events.md](references/user-events.md)
 
-**Load When You See These Patterns:**
-- **Confusion about getBy vs findBy vs queryBy** → [query-variants.md](references/query-variants.md)
-- **waitFor, async queries, or "act" warnings** → [async-testing.md](references/async-testing.md)
-- **Components using Context, Redux, Router** → [custom-render.md](references/custom-render.md)
+**Load when you see these patterns:**
+- **Confusion about `getBy` vs `findBy` vs `queryBy`** → [query-variants.md](references/query-variants.md)
+- **`waitFor`, async queries, or `act` warnings** → [async-testing.md](references/async-testing.md)
+- **Components using Context, Redux, Router, or other providers** → [custom-render.md](references/custom-render.md)
 - **Testing accessibility or ARIA attributes** → [accessibility-queries.md](references/accessibility-queries.md)
-- **Using container, wrapper, or rerender extensively** → [anti-patterns.md](references/anti-patterns.md)
-- **Queries failing or can't find right selector** → [query-variants.md](references/query-variants.md) for screen.debug() usage
+- **Using `container`, wrapper queries, or `rerender` heavily** → [anti-patterns.md](references/anti-patterns.md)
+- **Queries failing or no clear selector** → [query-variants.md](references/query-variants.md) for `screen.debug()` and `screen.logTestingPlaygroundURL()` usage
 
-**Do NOT Load Unless Specifically Needed:**
-- Do NOT load [custom-render.md](references/custom-render.md) for simple components without providers
-- Do NOT load [async-testing.md](references/async-testing.md) for synchronous tests
-- Do NOT load [accessibility-queries.md](references/accessibility-queries.md) unless testing ARIA or a11y concerns
+**Do not load unless the case needs it:**
+- Do not load [custom-render.md](references/custom-render.md) for simple components without providers
+- Do not load [async-testing.md](references/async-testing.md) for synchronous tests
+- Do not load [accessibility-queries.md](references/accessibility-queries.md) unless the task involves ARIA or accessibility concerns
 
-### 3. Apply the Pattern
+### 3. Apply the pattern
 Each reference file contains:
-- ❌ Incorrect examples showing the anti-pattern
-- ✅ Correct examples showing the optimal implementation
-- Explanations of why the pattern matters
+- Incorrect examples that show the anti-pattern
+- Correct examples that show the preferred pattern
+- Brief explanations of why the pattern matters
 
-### 4. Audit Existing Tests (Optional)
+### 4. Audit existing tests when needed
 Use the provided scripts to audit existing test suites:
 ```bash
 # Check query priority (testId usage, container.querySelector)
@@ -92,7 +92,7 @@ Use the provided scripts to audit existing test suites:
 ./scripts/detect-wrapper-queries.sh
 ```
 
-### 5. Use the Report Template
+### 5. Use the report template for audits
 When this skill is invoked for test code review, use the standardized report format:
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
@@ -125,7 +125,7 @@ Expert guidance on React Testing Library patterns:
 5. **Custom Render** - Setting up providers (Context, Redux, Router) for complex components
 6. **Accessibility Queries** - Testing with roles, labels, and ARIA attributes
 7. **Anti-patterns** - Avoiding implementation details, container usage, excessive snapshots
-9. **Audit Scripts** - Automated detection of suboptimal patterns in existing tests
+8. **Audit Scripts** - Automated detection of suboptimal patterns in existing tests
 
 ## Query Selection Decision Tree
 
@@ -163,9 +163,9 @@ Use this hierarchy when selecting queries - try options from top to bottom:
 
 ## Important Notes
 
-- **The `screen` export is not magic** - It's just `getQueriesForElement(document.body)`. Using `screen.getByRole()` is identical to destructured `getByRole()` from render, but screen never goes stale after re-renders.
-- **Testing Library encourages accessibility by making accessible elements easiest to query** - If queries are hard, your UI is hard to use. Query difficulty is a UX code smell.
-- **Use screen.debug() or screen.logTestingPlaygroundURL() when queries fail** - When getByRole fails, run `screen.debug()` to see the current DOM or `screen.logTestingPlaygroundURL()` to get an interactive tool showing what queries work. Don't guess at selectors - let Testing Library show you what's available.
-- **queryBy returns null silently - use getBy for better errors** - When an element should exist, `getBy*` throws with helpful suggestions about similar elements and available roles. `queryBy*` returns null, requiring you to add your own assertion with less helpful error output. Use queryBy only when asserting absence with .not.toBeInTheDocument().
-- **Act warnings mean React state updates happened outside Testing Library's awareness** - Usually caused by promises resolving after test completion or missing `await` on async queries. Not caused by correct use of findBy or waitFor.
-- **userEvent methods are async (return promises), fireEvent methods are sync** - Forgetting `await userEvent.click()` causes "act" warnings and flaky tests as state updates happen after assertions run.
+- **The `screen` export is not magic.** It is `getQueriesForElement(document.body)`. Prefer `screen.*` consistently because it queries the current DOM and makes tests easier to maintain.
+- **Testing Library encourages accessibility by making accessible elements easiest to query.** If queries are hard, the UI is hard to use. Query difficulty is a UX smell.
+- **Use `screen.debug()` or `screen.logTestingPlaygroundURL()` when queries fail.** Inspect the rendered DOM or let Testing Playground suggest better queries instead of guessing selectors.
+- **`queryBy*` returns `null` silently; use `getBy*` for presence.** When an element should exist, `getBy*` gives better errors and role suggestions. Reserve `queryBy*` for absence assertions.
+- **Act warnings usually mean a missing `await` or async work finishing after the assertion.** Check un-awaited `userEvent` calls, async queries, and state updates before adding manual `act(...)`.
+- **`userEvent` methods are async; `fireEvent` is mostly a fallback for non-user events.** Always `await` `userEvent` calls, and prefer them over `fireEvent` for clicks, typing, selection, keyboard input, hover, and tabbing.

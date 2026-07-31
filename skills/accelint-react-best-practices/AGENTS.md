@@ -1,13 +1,13 @@
 # React Best Practices
 
-> **Note:**
-> This document is mainly for agents and LLMs to follow when maintaining, generating, or refactoring React code at Accelint. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
+> Note:
+> This document is primarily for agents and LLMs that maintain, generate, or refactor React code at Accelint. Humans may also find it useful, but the guidance is optimized for AI-assisted workflows.
 
 ---
 
 ## Abstract
 
-Comprehensive performance optimization guide for React applications, designed for AI agents and LLMs. Each rule includes one-line summaries with links to detailed examples in `references/`. Load reference files only when implementing a specific pattern.
+This is a React performance and correctness guide for AI agents and LLMs. Each rule includes a one-line summary and a link to detailed examples in `references/`. Load reference files only when you need to apply a specific pattern.
 
 ---
 
@@ -29,10 +29,10 @@ See [react-compiler-guide.md](references/react-compiler-guide.md) for details on
 
 ## How to Use This Guide
 
-**For agents/LLMs:**
-1. Scan rule summaries below to identify relevant optimizations
-2. Load reference files only when implementing a specific pattern
-3. Each reference is self-contained with ❌/✅ examples
+**For agents and LLMs:**
+1. Scan the rule summaries below to identify the relevant pattern.
+2. Load reference files only when you need to apply that pattern.
+3. Treat each reference as self-contained guidance with `❌` and `✅` examples.
 
 **Quick shortcuts:**
 - Re-render issues? → Section 1 (Re-render Optimizations)
@@ -48,7 +48,7 @@ See [react-compiler-guide.md](references/react-compiler-guide.md) for details on
 
 ## Quick Diagnostic Guide
 
-Use this guide to quickly identify which optimization applies based on symptoms:
+Use this guide to identify which pattern applies based on the symptom:
 
 **Symptom → Solution:**
 - Component re-renders on every parent render → 1.2 Extract to Memoized Components
@@ -75,7 +75,7 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 ---
 
 ## 1. Re-render Optimizations
-Reducing unnecessary re-renders minimizes wasted computation and improves UI responsiveness.
+Reduce unnecessary re-renders to cut wasted computation and improve UI responsiveness.
 
 ### 1.1 Defer State Reads
 Read searchParams/localStorage directly in callbacks instead of subscribing.
@@ -140,7 +140,7 @@ Keep user input responsive while deferring expensive computations or renders.
 ---
 
 ## 2. Rendering Performance
-Optimizing the rendering process reduces the work the browser needs to do.
+Optimize rendering to reduce the work the browser must do.
 
 ### 2.1 Animate SVG Wrapper Instead of SVG Element
 Wrap SVG in a div and animate the wrapper for GPU acceleration.
@@ -167,7 +167,7 @@ Use `<Activity mode="visible|hidden">` to preserve state when toggling visibilit
 [View detailed examples](references/activity-component-show-hide.md)
 
 ### 2.7 Hoist RegExp Creation
-Create RegExp at module scope or memoize with useMemo to avoid re-creation.
+Create RegExp at module scope or memoize it with `useMemo()` to avoid re-creation.
 [View detailed examples](references/hoist-regexp-creation.md)
 
 ### 2.8 Use useTransition Over Manual Loading States
@@ -195,7 +195,7 @@ Use module-level guards for app-wide initialization instead of component useEffe
 [View detailed examples](references/initialize-app-once.md)
 
 ### 3.5 Do Not Put Effect Events in Dependency Arrays
-Never include useEffectEvent functions in dependency arrays — depend on reactive values instead.
+Never include `useEffectEvent` functions in dependency arrays. Depend on reactive values instead.
 [View detailed examples](references/effect-event-deps.md)
 
 ---

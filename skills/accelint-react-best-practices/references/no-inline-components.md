@@ -1,8 +1,8 @@
 ## Don't Define Components Inside Components
 
-Defining a component inside another component creates a new component type on every render. React sees a different component each time and fully remounts it, destroying all state and DOM.
+Defining a component inside another component creates a new component type on every render. React treats it as a different component each time and fully remounts it, which destroys state and recreates DOM.
 
-A common reason developers do this is to access parent variables without passing props. Always pass props instead.
+A common reason developers do this is to access parent variables without passing props. Pass props instead.
 
 **❌ Incorrect: remounts on every render**
 ```tsx
@@ -32,7 +32,7 @@ function UserProfile({ user, theme }) {
 }
 ```
 
-Every time `UserProfile` renders, `Avatar` and `Stats` are new component types. React unmounts the old instances and mounts new ones, losing any internal state, running effects again, and recreating DOM nodes.
+Every time `UserProfile` renders, `Avatar` and `Stats` become new component types. React unmounts the old instances and mounts new ones, which loses internal state, reruns effects, and recreates DOM nodes.
 
 **✅ Correct: pass props instead**
 ```tsx

@@ -36,7 +36,7 @@ const key = ['tracks', id]; // Type: string[]
 const key = ['tracks', id] as const; // Type: readonly ['tracks', string]
 ```
 
-TypeScript catches typos at compile time instead of runtime cache misses.
+TypeScript catches typos at compile time instead of letting them become runtime cache misses.
 
 ## Reusability Across Layers
 
@@ -63,7 +63,7 @@ export function useTrack(id: string) {
 
 ## Cache Invalidation Patterns
 
-Hierarchical keys enable surgical invalidation:
+Hierarchical keys enable targeted invalidation:
 
 ```typescript
 // Invalidate all track-related queries
@@ -98,11 +98,11 @@ queryKey: ['tracks', String(id)]
 
 ## Best Practices
 
-1. **Use factories, not inline keys** - Centralized definitions prevent typos and enable refactoring
-2. **Spread array hierarchies** - `[...keys.all(), 'detail']` maintains invalidation hierarchy
-3. **Match server and client keys** - Same factories for both layers enable unified invalidation
-4. **Document key segments** - Comment what each level represents for maintainability
-5. **Validate key stability** - Test that keys don't change between renders with same props
+1. **Use factories, not inline keys** - centralized definitions prevent typos and enable refactoring.
+2. **Spread array hierarchies** - `[...keys.all(), 'detail']` maintains invalidation hierarchy.
+3. **Match server and client keys** - the same factories for both layers enable unified invalidation.
+4. **Document key segments** - comment on what each level represents for maintainability.
+5. **Validate key stability** - test that keys do not change between renders with the same props.
 
 ## Example: Complete Domain Keys
 

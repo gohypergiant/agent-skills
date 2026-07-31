@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.9] - 2026-07-30
+
+### Fixed
+- Tightened `assets/output-template.md` so unchanged behavior-bearing artifact-set files must use the exact unchanged-file classifications required by the root skill, and clarified that the template `Why:` field must carry that classification.
+- Applied a strict-mode prose pass across `SKILL.md` and the behavior-bearing `references/*.md` files to improve scanability, local sentence structure, and repeated phrasing without changing trigger coverage, workflow semantics, guardrail strength, or exact technical references.
+- Expanded `evals/evals.json` with additional cases for audit-only output-mode violations, `mode=default` local rewrite limits, folder-level artifact discovery, frontmatter boundary drift, exact verb preservation in workflow warnings, and unchanged-file classification checks.
+
+### Version
+- Patch release at `0.7.9`.
+
 ## [0.7.8] - 2026-07-30
 
 ### Fixed

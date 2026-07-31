@@ -1,6 +1,6 @@
 # 4.9 Cache Storage API Calls
 
-`localStorage`, `sessionStorage`, and `document.cookie` are synchronous and expensive. Cache reads in memory.
+`localStorage`, `sessionStorage`, and `document.cookie` are synchronous and expensive. Cache reads in memory when repeated access is likely.
 
 **❌ Incorrect: reads storage on every call**
 ```ts
@@ -60,4 +60,4 @@ document.addEventListener('visibilitychange', () => {
 });
 ```
 
-If storage can change externally (another tab, server-set cookies), invalidate cache:
+If storage can change externally (another tab, server-set cookies), invalidate the cache:

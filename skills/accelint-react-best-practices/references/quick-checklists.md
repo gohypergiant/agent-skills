@@ -1,12 +1,12 @@
 # Quick Reference Checklists
 
-Use these checklists to quickly audit React code for common patterns and optimizations. Each checklist links to the relevant detailed reference file.
+Use these checklists to audit React code for common patterns and optimizations. Each checklist links to the relevant detailed reference file.
 
 ---
 
 ## New Component Checklist
 
-Use when creating a new React component from scratch:
+Use this checklist when creating a new React component from scratch:
 
 - [ ] Using named imports from 'react'? → [4.1 Named Imports](named-imports.md)
 - [ ] Using `ref` prop instead of forwardRef? → [4.2 No forwardRef](no-forwardref.md)
@@ -24,7 +24,7 @@ Use when creating a new React component from scratch:
 
 ## Performance Review Checklist
 
-Use when reviewing React code for performance issues:
+Use this checklist when reviewing React code for performance issues:
 
 - [ ] Components re-rendering unnecessarily? → [1.2 Extract Memoized Components](extract-memoized-components.md)
 - [ ] Subscribing to state that's only read in callbacks? → [1.1 Defer State Reads](defer-state-reads.md)
@@ -123,12 +123,12 @@ Use when implementing advanced optimization patterns:
 
 ## React Compiler Checklist
 
-Use when working with React Compiler enabled projects:
+Use this checklist when working in projects that have React Compiler enabled:
 
 - [ ] Confirmed React Compiler is enabled? → [React Compiler Guide](react-compiler-guide.md)
-- [ ] Removed manual memo() wrapping? (compiler handles it)
-- [ ] Removed unnecessary useMemo() for simple values? (compiler handles it)
-- [ ] Removed unnecessary useCallback()? (compiler handles it)
+- [ ] Removed manual `memo()` wrapping? The compiler handles it.
+- [ ] Removed unnecessary `useMemo()` for simple values? The compiler handles it.
+- [ ] Removed unnecessary `useCallback()`? The compiler handles it.
 - [ ] Still applying state management patterns? → [Section 1](../AGENTS.md#1-re-render-optimizations)
 - [ ] Still applying effect patterns? → [Section 1.3](narrow-effect-dependencies.md), [3.1](store-event-handlers-refs.md)
 - [ ] Still applying CSS optimizations? → [Section 2](../AGENTS.md#2-rendering-performance)
@@ -137,7 +137,7 @@ Use when working with React Compiler enabled projects:
 
 ## Code Review Quick Audit
 
-Use when doing a quick code review of React components:
+Use this checklist when doing a quick code review of React components:
 
 **High Priority (Fix These):**
 - [ ] forwardRef usage → [4.2 No forwardRef](no-forwardref.md)

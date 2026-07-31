@@ -36,7 +36,7 @@ const result = arr.reduce((acc, curr) =>
 // Single pass: test and transform in one iteration
 ```
 
-**Why this matters**: Each array method creates a new array and iterates all elements. For large arrays, this means:
+**Why this matters:** Each array method creates a new array and iterates over all elements. For large arrays, this means:
 - Extra memory allocation for intermediate arrays
 - Cache misses from jumping between arrays
 - Double the loop overhead (iterator setup, bounds checks)
@@ -67,7 +67,7 @@ for (const id of userIds) {    // n iterations
 }
 ```
 
-**Why this matters**: `Array.includes()` scans the entire array linearly. For 100 items and 100 lookups, that's 10,000 comparisons. `Set.has()` uses hashing for O(1) lookups: 100 items and 100 lookups = 200 operations (100 to build Set, 100 to lookup). That's a **50x speedup**.
+**Why this matters:** `Array.includes()` scans the entire array linearly. For 100 items and 100 lookups, that is 10,000 comparisons. `Set.has()` uses hashing for O(1) lookups: 100 items and 100 lookups = 200 operations (100 to build the `Set`, 100 to do the lookups). That is a **50x speedup**.
 
 ### Array Methods in Loops
 
@@ -176,10 +176,10 @@ const activeUsers = users
   .sort();
 ```
 
-**When to keep chained methods**:
-- Non-performance-critical code (configuration, initialization)
-- Small datasets (< 100 items)
-- Readability is more valuable than microsecond gains
+**When to keep chained methods:**
+- non-performance-critical code (configuration, initialization)
+- small datasets (< 100 items)
+- cases where readability is more valuable than microsecond gains
 
 **Why**: Single-pass reduce is harder to read. In cold paths with small data, clarity trumps optimization.
 
@@ -280,10 +280,10 @@ if (ALLOWED_METHODS.includes(method)) {
 }
 ```
 
-**When Array.includes() is acceptable**:
-- Array has < 10 items
-- Array is constant (not built dynamically)
-- Lookup happens infrequently
+**When `Array.includes()` is acceptable:**
+- the array has < 10 items
+- the array is constant (not built dynamically)
+- the lookup happens infrequently
 
 **Why**: Set overhead (construction, memory) exceeds benefit for small constant arrays. Linear search of 10 items is faster than Set construction.
 

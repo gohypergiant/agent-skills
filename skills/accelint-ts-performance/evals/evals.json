@@ -1,0 +1,341 @@
+{
+  "skill_name": "accelint-ts-performance",
+  "evals": [
+    {
+      "id": 1,
+      "name": "audit-mode-explicit-performance-audit-uses-report-structure",
+      "prompt": "Use /accelint-ts-performance on services/reporting/src/buildCustomerSummary.ts and produce a formal performance audit only. I want findings, issue categories, expected gain ranges, and references to the exact optimization patterns another engineer should apply later. Do not patch the file yet.",
+      "expected_output": "Recognizes an explicit skill invocation and audit-only request, stays in audit mode, and produces a structured findings-oriented report with categorized issues, expected gain ranges, and reference-file guidance instead of silently applying edits.",
+      "expectations": [
+        "The response recognizes this as audit mode rather than implementation mode.",
+        "The response uses or closely follows the skill's formal report structure for explicit audits.",
+        "The response distinguishes categories such as algorithmic, caching, I/O, memory, locality, safety, or micro-opt.",
+        "The response references the relevant reference files instead of giving generic performance advice.",
+        "The response does not jump straight to rewriting code because the user asked for findings only."
+      ],
+      "files": [
+        "services/reporting/src/buildCustomerSummary.ts"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "implementation-mode-direct-fix-request",
+      "prompt": "This TypeScript parser is too slow in production. Please optimize it directly, keep behavior the same, and verify the improvements. It repeatedly filters the same arrays, builds temporary objects in loops, and awaits each lookup one by one. I want actual fixes, not just a review.",
+      "expected_output": "Chooses implementation mode, prioritizes algorithmic and I/O improvements before micro-optimizations, applies or proposes concrete changes, and includes verification guidance for performance and correctness.",
+      "expectations": [
+        "The response chooses implementation mode because the user explicitly asks for fixes.",
+        "The response prioritizes algorithmic and I/O fixes before smaller micro-optimizations.",
+        "The response addresses repeated filtering, temporary allocations, and sequential awaits as distinct categories.",
+        "The response preserves correctness rather than framing speed as an excuse to change behavior.",
+        "The response includes verification such as profiling, benchmarks, or tests after the optimization."
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "profiling-first-when-runtime-data-is-provided",
+      "prompt": "Here is the Node profile summary for our TypeScript worker: `Array.prototype.filter` is 28% self time, `Array.prototype.includes` is 17%, and a nested reconciliation loop is the hottest stack. Use that data to recommend what we should optimize first and why.",
+      "expected_output": "Uses the supplied profiling evidence to prioritize measured hotspots, maps them to algorithmic optimization guidance, and recommends fixing nested looping and repeated linear lookups before lower-impact tweaks.",
+      "expectations": [
+        "The response treats the provided profile data as the primary prioritization input.",
+        "The response maps hot filter/includes usage to algorithmic problems such as multiple passes or repeated linear searches.",
+        "The response prioritizes the nested hot loop over incidental lower-signal tweaks.",
+        "The response references reduce-looping or related algorithmic guidance.",
+        "The response does not ignore the evidence in favor of generic advice."
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "static-review-without-profiler-labels-findings-as-hypotheses",
+      "prompt": "I cannot get profiler output from this browser-only widget yet, but can you still do a performance review of the TypeScript code? It chains `.filter().map().reduce()`, clones objects inside loops, and reads `localStorage` on every render. Please call out likely hotspots without pretending they are measured bottlenecks.",
+      "expected_output": "Performs a static performance pass, identifies likely anti-patterns, and clearly labels them as hypothesis-level opportunities rather than proven bottlenecks because profiling data is unavailable.",
+      "expectations": [
+        "The response explicitly distinguishes static opportunities from measured bottlenecks.",
+        "The response still audits broad performance anti-patterns even without profiler data.",
+        "The response identifies chained array methods, per-iteration cloning, and uncached storage access as relevant findings.",
+        "The response avoids overstating certainty when runtime evidence is missing.",
+        "The response remains performance-focused rather than redirecting away just because profiling is unavailable."
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "algorithmic-nested-loops-and-repeated-lookups",
+      "prompt": "Review this code for performance issues:\n\n```ts\nfor (const order of orders) {\n  const customer = customers.find((c) => c.id === order.customerId);\n  const items = lineItems.filter((item) => item.orderId === order.id);\n  renderRow(order, customer, items);\n}\n```\n\nI want the repo's TypeScript performance guidance, especially what category this falls into and what fix pattern to use.",
+      "expected_output": "Classifies the pattern as algorithmic optimization, explains the O(n²)-style repeated lookup problem, and recommends building lookups once with Map-based or grouped-pass patterns from the reduce-looping guidance.",
+      "expectations": [
+        "The response identifies repeated find/filter inside a loop as an algorithmic anti-pattern.",
+        "The response explains the complexity issue rather than only calling it 'slow'.",
+        "The response recommends building lookups once, such as with Map or grouped arrays.",
+        "The response references reduce-looping guidance rather than drifting into unrelated categories.",
+        "The response does not lead with micro-optimizations before the algorithmic fix."
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "array-includes-repeated-lookups-use-set",
+      "prompt": "This helper checks every incoming ID against an allowlist array using `allowedIds.includes(id)` inside a loop over 20k records. Is that a meaningful performance issue, and what does this skill recommend instead?",
+      "expected_output": "Calls out repeated Array.includes as an O(n) lookup anti-pattern in a loop, recommends constructing a Set once and using Set.has, and frames it as an algorithmic optimization with materially better scale behavior.",
+      "expectations": [
+        "The response identifies Array.includes in repeated lookups as the core issue.",
+        "The response recommends Set.has after building the Set once.",
+        "The response frames this as an algorithmic lookup improvement rather than a trivial style change.",
+        "The response communicates the scale benefit for large iteration counts.",
+        "The response stays within the skill's performance scope."
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "branch-heavy-code-maps-to-reduce-branching",
+      "prompt": "We have a hot formatting function with a long `if / else if / else if` chain on the same status code for every row we render. Would the performance skill treat that as branching overhead, and what kind of rewrite does it prefer?",
+      "expected_output": "Recognizes a repeated branch-heavy hot path, maps it to the reduce-branching guidance, and recommends a lookup-table or early-return style rewrite when appropriate instead of keeping a long repeated conditional chain.",
+      "expectations": [
+        "The response recognizes branch-heavy logic as a performance concern in a hot path.",
+        "The response maps the issue to reduce-branching guidance.",
+        "The response suggests a table lookup or other branch-reduction pattern when appropriate.",
+        "The response does not confuse this with unrelated caching or I/O concerns.",
+        "The response ties the advice to hot-path execution frequency."
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "caching-expensive-computation-and-loop-invariants",
+      "prompt": "Can you review this code for repeated computation?\n\n```ts\nfor (let i = 0; i < rows.length; i++) {\n  const exchange = getExchangeRate(baseCurrency, quoteCurrency);\n  totals[i] = convert(rows[i].amount, exchange);\n}\n```\n\nAssume `getExchangeRate` is expensive and the currencies do not change during the loop.",
+      "expected_output": "Identifies the repeated invariant computation as a caching or memoization opportunity, recommends hoisting the expensive call out of the loop, and frames the change as evidence-based repeated-work elimination rather than a random micro-tweak.",
+      "expectations": [
+        "The response identifies the loop-invariant expensive computation as the main issue.",
+        "The response recommends computing the exchange rate once before the loop.",
+        "The response maps the fix to memoization or caching guidance.",
+        "The response does not overcomplicate the solution when simple hoisting is sufficient.",
+        "The response explains why the optimization matters across repeated iterations."
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "cache-property-access-in-hot-loop",
+      "prompt": "Our server loop repeatedly reads `config.features.pricing.tiers.default.currency` and `items.length` for every iteration. Does this skill consider that worth addressing, and under what conditions?",
+      "expected_output": "Treats repeated deep property access and repeated loop metadata access as a cache-property-access or hot-loop optimization, recommends caching only in demonstrated hot paths, and keeps the advice proportional to the expected gain.",
+      "expectations": [
+        "The response identifies deep property access and repeated length/property reads as cacheable loop concerns.",
+        "The response references cache-property-access guidance.",
+        "The response calibrates the recommendation as a smaller-gain hot-path optimization rather than a universal rule.",
+        "The response does not present this as more important than algorithmic fixes.",
+        "The response mentions execution frequency or hot-path evidence as the deciding factor."
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "storage-api-caching-browser-hot-path",
+      "prompt": "In a React-adjacent TypeScript utility, we call `JSON.parse(localStorage.getItem('prefs') || '{}')` every time a formatter runs. Audit this from the performance angle only.",
+      "expected_output": "Flags repeated Storage API reads and repeated JSON parsing as a caching issue, recommends caching the value in memory with an invalidation strategy, and keeps the review scoped to performance rather than React architecture.",
+      "expectations": [
+        "The response identifies localStorage access in a frequently called path as expensive I/O or caching work.",
+        "The response mentions repeated JSON.parse on the same storage value as part of the cost.",
+        "The response recommends in-memory caching with some thought to invalidation or freshness.",
+        "The response references cache-storage-api guidance.",
+        "The response avoids drifting into unrelated framework advice."
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "sequential-awaits-and-batching",
+      "prompt": "Please review this async code for performance:\n\n```ts\nasync function loadDashboard(userId: string) {\n  const profile = await fetchProfile(userId);\n  const alerts = await fetchAlerts(userId);\n  const activity = await fetchActivity(userId);\n  return { profile, alerts, activity };\n}\n```\n\nThe calls are independent.",
+      "expected_output": "Identifies independent sequential awaits as I/O optimization opportunities, recommends parallelization or batching, and references defer-await or batching guidance rather than treating the problem as CPU-bound code style.",
+      "expectations": [
+        "The response identifies the awaits as independent and unnecessarily sequential.",
+        "The response recommends Promise.all or another parallelization pattern.",
+        "The response maps the issue to I/O optimization guidance such as batching or defer-await.",
+        "The response explains the latency impact of serialized network work.",
+        "The response does not misclassify this primarily as an allocation or typing concern."
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "defer-await-into-conditional-branch",
+      "prompt": "What does the performance skill say about this pattern?\n\n```ts\nconst preview = await fetchPreview(url);\nif (!shouldShowPreview) {\n  return null;\n}\nreturn preview.title;\n```",
+      "expected_output": "Flags the premature await as wasted I/O when the branch often exits early, recommends moving the await into the branch that actually needs the result, and frames it using the defer-await guidance.",
+      "expectations": [
+        "The response identifies the await as happening before the need for the result is confirmed.",
+        "The response recommends deferring the fetch until after the branch check when behavior allows.",
+        "The response references defer-await guidance.",
+        "The response explains the benefit as avoiding unnecessary async work rather than merely changing syntax.",
+        "The response preserves semantic correctness constraints."
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "allocation-heavy-object-spread-in-loop",
+      "prompt": "Audit this code for allocation pressure:\n\n```ts\nconst next = [];\nfor (const item of items) {\n  next.push({ ...item, score: score(item) });\n}\n```\n\nThis runs in a hot batch-processing path.",
+      "expected_output": "Identifies per-iteration object spreading as an allocation-heavy pattern, explains the GC cost trade-off, and recommends safer lower-allocation alternatives grounded in object-operations or avoid-allocations guidance.",
+      "expectations": [
+        "The response identifies the object spread inside the loop as the performance concern.",
+        "The response frames the issue as allocation and GC pressure, not only syntax style.",
+        "The response references object-operations or avoid-allocations guidance.",
+        "The response offers an optimization pattern while acknowledging correctness or immutability trade-offs.",
+        "The response keeps the recommendation proportional to the stated hot path."
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "string-concatenation-loop-micro-opt-boundary",
+      "prompt": "In a very hot log-formatting path we build a large string with `output += piece` inside a loop. Is that something this skill would flag, and how strongly?",
+      "expected_output": "Recognizes repeated string concatenation in loops as a performance-misc micro-optimization or allocation issue, recommends batching string pieces when the path is truly hot, and calibrates the advice based on measured hot-path evidence rather than treating it as a universal rewrite.",
+      "expectations": [
+        "The response identifies repeated concatenation in loops as a performance concern.",
+        "The response references performance-misc or allocation guidance.",
+        "The response calibrates urgency based on whether the path is truly hot.",
+        "The response does not oversell the issue when no evidence suggests it is significant.",
+        "The response suggests an appropriate batching or join-based pattern when warranted."
+      ],
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "memory-locality-and-predictable-execution",
+      "prompt": "We process a very large numeric dataset with irregular index jumps across multiple arrays, and the profiler suggests cache misses. How should the TypeScript performance skill categorize that, and what kind of guidance should it surface?",
+      "expected_output": "Recognizes the issue as memory locality or predictable-execution work, explains sequential-access and cache-friendly data-layout concerns, and points to the predictable-execution guidance instead of forcing a generic algorithmic answer.",
+      "expectations": [
+        "The response identifies the problem as memory locality or cache-friendliness.",
+        "The response references predictable-execution guidance.",
+        "The response discusses sequential access or layout improvements rather than only loop counts.",
+        "The response distinguishes this from simpler array-method or Set/Map advice.",
+        "The response ties the recommendation to large-dataset processing characteristics."
+      ],
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "bounded-iteration-safety-and-performance",
+      "prompt": "Please review this queue processor from a performance and resilience perspective:\n\n```ts\nasync function drain(queue: JobQueue) {\n  while (true) {\n    const job = queue.pop();\n    if (!job) break;\n    await process(job);\n  }\n}\n```\n\nThe queue may be user-influenced.",
+      "expected_output": "Flags the unbounded loop as a bounded-iteration and safety concern, explains that preventing runaway work is part of the skill's scope, and recommends explicit limits or guardrails rather than treating the code as merely a style issue.",
+      "expectations": [
+        "The response identifies the unbounded queue-processing loop as a safety/performance concern.",
+        "The response maps the issue to bounded-iteration guidance.",
+        "The response recommends explicit bounds, quotas, or time/size limits.",
+        "The response frames the impact in terms of runaway resource use or pathological cases.",
+        "The response does not reduce the issue to generic defensive programming only."
+      ],
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "try-catch-in-hot-loop-v8-deoptimization",
+      "prompt": "Does this skill care about `try/catch` inside a hot loop?\n\n```ts\nfor (const record of records) {\n  try {\n    total += parseAmount(record.value);\n  } catch {\n    invalidCount++;\n  }\n}\n```",
+      "expected_output": "Explicitly flags try/catch in a hot path as a V8 deoptimization risk, recommends moving error handling out of the hot loop or validating before the loop where possible, and frames the issue as micro-opt guidance that matters when the path is hot.",
+      "expectations": [
+        "The response identifies try/catch in the hot loop as the relevant anti-pattern.",
+        "The response mentions V8 optimization or inlining/deoptimization implications.",
+        "The response suggests restructuring error handling or validation around the loop.",
+        "The response calibrates the importance to hot-path execution frequency.",
+        "The response references performance-misc or the skill's explicit try/catch rule."
+      ],
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "micro-optimization-should-not-outrank-algorithmic-fix",
+      "prompt": "A reviewer wants to cache `array.length` and replace `let` with `const`, but the same function also does nested `find()` calls across two 50k-item arrays. Using this skill's priorities, what should we do first?",
+      "expected_output": "De-prioritizes the micro-optimizations, explains that algorithmic complexity dominates, and recommends fixing the nested repeated lookups first before considering smaller hot-path tweaks.",
+      "expectations": [
+        "The response explicitly prioritizes the algorithmic nested-lookups issue.",
+        "The response explains why micro-optimizations are lower leverage here.",
+        "The response preserves the skill's priority order of algorithmic before micro-opt.",
+        "The response does not present the minor loop tweaks as the main solution.",
+        "The response frames expected gains proportionally."
+      ],
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "verification-after-optimization-measure-and-test",
+      "prompt": "We already rewrote the slow path. According to this skill, how should we verify the optimization was actually worth keeping and did not break anything?",
+      "expected_output": "Calls for before/after measurement plus correctness verification, including re-running profilers or benchmarks, running tests, and weighing speedup against maintainability thresholds before deciding to keep or revert the change.",
+      "expectations": [
+        "The response requires measuring before/after impact rather than assuming success.",
+        "The response includes correctness verification such as tests or manual validation.",
+        "The response mentions thresholds or decision criteria for keeping small speedups.",
+        "The response preserves the 'performance bugs are still bugs' stance.",
+        "The response reflects the skill's evidence-based keep-or-revert guidance."
+      ],
+      "files": []
+    },
+    {
+      "id": 20,
+      "name": "memory-vs-cpu-tradeoff-unbounded-cache-risk",
+      "prompt": "I sped up a hot formatter by memoizing every distinct input in a plain Map, but the service is long-lived and sees unbounded user data. Would this skill consider that a complete win?",
+      "expected_output": "Pushes back on naive memoization as a complete win, explains the memory-versus-CPU trade-off and leak risk for unbounded caches, and recommends bounded or lifecycle-aware caching strategies with measurement.",
+      "expectations": [
+        "The response identifies the unbounded cache growth risk.",
+        "The response frames caching as a memory-versus-CPU trade-off rather than a free optimization.",
+        "The response recommends bounds, eviction, WeakMap, or another lifecycle-aware strategy when appropriate.",
+        "The response mentions monitoring memory or GC effects alongside CPU improvements.",
+        "The response stays grounded in the skill's caution against memory regressions."
+      ],
+      "files": []
+    },
+    {
+      "id": 21,
+      "name": "environment-specific-performance-caution",
+      "prompt": "We saw a 3x speedup from a V8-oriented optimization in Chrome on an M2 Mac. Should we ship it immediately to all environments?",
+      "expected_output": "Warns against assuming performance portability across runtimes or architectures, recommends profiling in target environments, and notes that environment-specific gains can regress elsewhere.",
+      "expectations": [
+        "The response warns that performance gains may vary across Node versions, browsers, or architectures.",
+        "The response recommends validating in the actual target environments.",
+        "The response does not treat one benchmark on one machine as sufficient evidence for universal rollout.",
+        "The response stays focused on performance validation rather than product rollout process.",
+        "The response reflects the skill's environment-specific caution."
+      ],
+      "files": []
+    },
+    {
+      "id": 22,
+      "name": "hot-path-warning-calibration-for-cold-code",
+      "prompt": "This helper technically does `.filter().map()` and deep property reads, but it only runs once during app startup. Should we still force all performance rewrites?",
+      "expected_output": "Acknowledges the skill's broad anti-pattern audit stance but calibrates action to hot-path context, explaining that cold-path code may not warrant complex micro-optimizations even if patterns are recognizable.",
+      "expectations": [
+        "The response distinguishes cold-path context from genuinely hot code.",
+        "The response does not insist on every possible micro-optimization for startup-only code.",
+        "The response may still note the patterns, but calibrates urgency and trade-offs.",
+        "The response preserves the skill's caution that obvious anti-patterns can matter in reused utilities while respecting stated cold-path knowledge.",
+        "The response balances performance with maintainability."
+      ],
+      "files": []
+    },
+    {
+      "id": 23,
+      "name": "near-miss-general-typescript-style-not-performance",
+      "prompt": "Please review this TypeScript module for unsafe any usage, implicit return types, enum usage, and null returns. I care about maintainability and type safety, not speed.",
+      "expected_output": "Acts as a boundary case by recognizing that the request is primarily about TypeScript correctness and maintainability, so the TypeScript best-practices workflow is a better fit than the performance skill.",
+      "expectations": [
+        "The response does not force a performance audit onto a non-performance request.",
+        "The response recognizes the focus on type safety and maintainability rather than runtime speed.",
+        "The response avoids centering the answer on profiling, hot paths, or allocation tuning.",
+        "The response preserves the boundary between TS best-practices and TS performance work."
+      ],
+      "files": []
+    },
+    {
+      "id": 24,
+      "name": "near-miss-jsdoc-or-comment-cleanup-not-performance",
+      "prompt": "Can you add JSDoc to these exported helpers and clean up the TODO comments? That is the whole task; I am not asking for any optimization review.",
+      "expected_output": "Recognizes that this is a documentation-focused request and avoids invoking the performance skill as the primary path because the task is about JSDoc and comments, not runtime behavior.",
+      "expectations": [
+        "The response does not treat the request as a performance task.",
+        "The response recognizes documentation and comment cleanup as the main job.",
+        "The response avoids introducing profiling or optimization guidance that the user did not ask for.",
+        "The response preserves the boundary with the TypeScript documentation skill."
+      ],
+      "files": []
+    }
+  ]
+}

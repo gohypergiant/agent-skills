@@ -2,7 +2,7 @@
 
 ## Scope
 
-All functions, type aliases, interfaces, constants, and classes (both exported and internal) must have well-formed JSDoc comments.
+All functions, type aliases, interfaces, constants, and classes, whether exported or internal, must have well-formed JSDoc comments.
 
 ## Directive Comments Are Exempt
 
@@ -12,11 +12,11 @@ All functions, type aliases, interfaces, constants, and classes (both exported a
 - Tool-specific comments: `// biome-ignore-all assist/source/organizeImports: reason`
 - Type checker directives: `// @ts-expect-error`, `// @ts-ignore`
 
-These comments have specific syntaxes required by their respective tools and **must not be modified or reformatted** to follow JSDoc conventions. They serve a different purpose than documentation comments.
+These comments have tool-specific syntax and **must not be modified or reformatted** to follow JSDoc conventions. They serve a different purpose than documentation comments.
 
 **Exported code** requires comprehensive documentation with all applicable tags.
 
-**Internal code** may use reduced documentation: description, `@template`, `@param`, and `@returns` only (can omit `@example` and `@throws`).
+**Internal code** may use reduced documentation: description, `@template`, `@param`, and `@returns` only. It may omit `@example` and `@throws`.
 
 ## @example Code Fence Requirement
 
@@ -176,7 +176,7 @@ function log(message: string): void {
 
 ### Object Parameters with Destructuring
 
-When a function accepts an object parameter that is destructured, document the object properties using nested `@param` tags with dot notation. This provides developers with clear understanding of the expected object structure.
+When a function accepts a destructured object parameter, document the object properties with nested `@param` tags that use dot notation. This gives developers a clear view of the expected object structure.
 
 **❌ Incorrect: Single @param without property details**
 ```tsx

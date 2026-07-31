@@ -2,7 +2,7 @@
 
 Never skip authorization checks. Authentication verifies identity; authorization verifies permission. Attackers will manipulate IDs, skip authentication, or guess URLs to access unauthorized resources.
 
-**Framework Examples**: This document uses generic middleware patterns. Apply to your framework's authorization system: middleware (Express, Fastify), guards (Nest.js), server actions (Next.js), or custom authorization hooks. Principles apply universally.
+**Framework Examples**: This document uses generic middleware patterns. Apply them to your framework's authorization system: middleware (Express, Fastify), guards (Nest.js), server actions (Next.js), or custom authorization hooks. The principles apply universally.
 
 ## Why This Matters
 
@@ -12,7 +12,7 @@ Broken access control is the #1 OWASP vulnerability because:
 - **Horizontal Privilege Escalation**: Users access other users' data at the same privilege level
 - **Missing Function Level Access Control**: Protected UI but unprotected API endpoints
 
-For an application with 50,000 users, missing authorization on `/api/users/:id` means any authenticated user can view all 50,000 user profiles. A single missing ownership check exposes all user data.
+For an application with 50,000 users, missing authorization on `/api/users/:id` means that any authenticated user can view all 50,000 user profiles. A single missing ownership check exposes all user data.
 
 ## Anti-Patterns to Avoid
 

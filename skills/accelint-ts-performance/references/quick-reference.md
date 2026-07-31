@@ -219,6 +219,6 @@ for (const item of items) {
 ```
 
 **When you see these patterns:**
-1. Identify the category from the comments
-2. Load the reference files listed for that category
-3. Find optimization patterns in the reference files
+1. Identify the category from the comments.
+2. Load the reference files listed for that category.
+3. Find the matching optimization patterns in those reference files.

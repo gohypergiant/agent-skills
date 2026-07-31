@@ -1,7 +1,7 @@
 # React Testing Library
 
-> **Note:**
-> This document is mainly for agents and LLMs to follow when writing or reviewing React component tests with Testing Library. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
+> Note:
+> This document is mainly for agents and LLMs that write or review React component tests with Testing Library. Humans may also find it useful, but the guidance is optimized for automation and consistency in AI-assisted workflows.
 
 ---
 
@@ -15,11 +15,11 @@ Comprehensive guide for React Testing Library best practices, designed for AI ag
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant optimizations
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+1. **Start here:** Scan the rule summaries to identify the relevant guidance.
+2. **Load references as needed:** Open detailed examples only when the task needs them.
+3. **Use progressive loading:** Each reference file is self-contained and includes incorrect and correct examples.
 
-This structure minimizes context usage while providing complete implementation guidance when needed.
+This structure minimizes context usage while still providing complete implementation guidance when needed.
 
 ---
 
@@ -62,5 +62,5 @@ Query by semantic roles and labels; test ensures accessibility by design.
 [View detailed examples](references/accessibility-queries.md)
 
 ### 1.7 Anti-patterns
-Never test implementation details, use container queries, rely on excessive snapshots, use queryBy for presence, or put side effects in waitFor.
+Do not test implementation details, use `container` queries, rely on excessive snapshots, use `queryBy*` for presence, or put side effects inside `waitFor`.
 [View detailed examples](references/anti-patterns.md)

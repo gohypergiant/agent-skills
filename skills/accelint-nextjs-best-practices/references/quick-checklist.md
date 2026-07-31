@@ -1,6 +1,6 @@
 # Quick Reference Checklists
 
-Quick checklists for common Next.js scenarios. Use these for systematic reviews and new code creation.
+Quick checklists for common Next.js scenarios. Use them for systematic reviews and new code creation.
 
 ---
 
@@ -175,13 +175,13 @@ export function SearchForm({ children }: { children: React.ReactNode }) {
 When reviewing existing Next.js code:
 
 **Security:**
-- [ ] All Server Actions have authentication
+- [ ] All Server Actions authenticate the caller
 - [ ] All Server Actions validate inputs
-- [ ] Authorization checks before mutations
+- [ ] Authorization checks happen before mutations
 
 **Waterfalls:**
 - [ ] Independent operations start immediately
-- [ ] Use `Promise.allSettled()` for parallel ops
+- [ ] Use `Promise.allSettled()` for parallel operations
 - [ ] No sequential awaits for independent data
 
 **Serialization:**

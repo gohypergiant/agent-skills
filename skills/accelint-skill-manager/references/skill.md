@@ -2,7 +2,7 @@
 
 ## Overview
 
-General rule of thumb is to follow guidance from [Agent Skills](https://agentskills.io/). Since the overview and references table of contents is contained in the `AGENTS.md` file the content for this `AGENTS.md` file should be optimized towards adding any additional context, hints, or suggestions that help an agent more accurately determine if this skill is relevant. The persona and target audience for this document is an AI Agent or LLM.
+As a general rule, follow guidance from [Agent Skills](https://agentskills.io/). Because the overview and reference table of contents live in `AGENTS.md`, this file should focus on additional context, hints, and suggestions that help an agent determine whether the skill is relevant. The target audience for this document is an AI agent or LLM.
 
 Do not link to other skills' files directly. Use skill name references instead.
 
@@ -12,15 +12,15 @@ Do not link to other skills' files directly. Use skill name references instead.
 
 **Format:** Start with "Use when..." to focus on triggering conditions
 
-**CRITICAL: Description = When to Use, NOT What the Skill Does**
+**REQUIRED: Description = When to Use, NOT What the Skill Does**
 
 The description should ONLY describe triggering conditions. Do NOT summarize the skill's process or workflow in the description.
 
-**Why this matters:** Testing revealed that when a description summarizes the skill's workflow, an agent may follow the description instead of reading the full skill content. A description saying "code review between tasks" caused an agent to do ONE review, even though the skill's flowchart clearly showed TWO reviews (spec compliance then code quality).
+**Why this matters:** Testing showed that when a description summarizes the skill's workflow, an agent may follow the description instead of reading the full skill content. A description saying "code review between tasks" caused an agent to do ONE review, even though the skill's flowchart clearly showed TWO reviews: spec compliance, then code quality.
 
-When the description was changed to just "Use when executing implementation plans with independent tasks" (no workflow summary), the agent correctly read the flowchart and followed the two-stage review process.
+When the description changed to "Use when executing implementation plans with independent tasks" with no workflow summary, the agent correctly read the flowchart and followed the two-stage review process.
 
-**The trap:** Descriptions that summarize workflow create a shortcut an agent will take. The skill body becomes documentation that an agent skips.
+**The trap:** A description that summarizes workflow creates a shortcut an agent may take. The skill body then becomes documentation the agent skips.
 
 **❌ Incorrect: summarizes workflow - agent may follow this instead of reading skill**
 ```

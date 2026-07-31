@@ -1,6 +1,6 @@
 # Examples by writing type
 
-Use this reference when a concrete pattern will help before drafting, rewriting, or auditing text.
+Use this reference when a concrete pattern will help before you draft, rewrite, or audit text.
 
 These examples are intentionally short. Use them to anchor judgment. Do not force a template onto unrelated prose. Favor the core default method first: state the point early, use direct wording, keep terms stable, and apply stronger structure only when it helps the reader.
 
@@ -143,7 +143,7 @@ This reminder helps you avoid over-applying technical or ADHD-oriented structure
 
 ## Reusable example patterns
 
-Use these patterns in this reference:
+Use these patterns from this reference:
 - before/after pairs for the same sentence or paragraph
 - one instruction per step
 - condition first, then action
@@ -154,7 +154,6 @@ Do not copy examples too literally when they depend on:
 - product-specific names
 - commands or file paths from another project
 - timestamps, metrics, or incidents from another system
-
 
 ## When to use this file
 

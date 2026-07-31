@@ -23,13 +23,13 @@ export function useTrack(id: string) {
 ```
 
 Benefits over `useQuery`:
-- Throws promises that Suspense boundaries catch
-- No undefined states - data always exists when component renders
-- Works seamlessly with server-side prefetching
+- Throws promises that Suspense boundaries catch.
+- Has no undefined state, so data always exists when the component renders.
+- Works seamlessly with server-side prefetching.
 
 ### Query Cancellation with AbortController
 
-Pass signal to fetch requests for proper cleanup:
+Pass the signal to fetch requests for proper cleanup:
 
 ```typescript
 export function useData() {
@@ -43,9 +43,9 @@ export function useData() {
 ```
 
 TanStack Query aborts in-flight requests when:
-- Component unmounts
-- Query key changes
-- Query manually cancelled
+- the component unmounts
+- the query key changes
+- the query is cancelled manually
 
 Without signal support, unmounted components leave requests running, wasting bandwidth and potentially updating stale cache entries. See [patterns-and-pitfalls.md#query-cancellation](patterns-and-pitfalls.md#query-cancellation) for anti-patterns.
 
@@ -63,11 +63,11 @@ function Component() {
 }
 ```
 
-`select` only runs when data exists (no undefined checks) and sits next to query definition. See [patterns-and-pitfalls.md#data-transformation](patterns-and-pitfalls.md#data-transformation) for comparison with useMemo.
+`select` only runs when data exists, so there are no undefined checks here, and it stays next to the query definition. See [patterns-and-pitfalls.md#data-transformation](patterns-and-pitfalls.md#data-transformation) for comparison with `useMemo`.
 
 ## Mutation Patterns Overview
 
-Mutations modify server state and update client cache. Two primary patterns:
+Mutations modify server state and update the client cache. Two primary patterns:
 
 | Pattern | When to Use | Examples |
 |---------|-------------|----------|
@@ -188,22 +188,22 @@ export function useUpdateTrack(id: string) {
 ### Critical Implementation Details
 
 #### onMutate Phase
-- Runs synchronously before mutation starts
-- Cancel in-flight queries with `cancelQueries` to prevent race conditions where background refetch overwrites optimistic update
-- Snapshot previous state via `getQueryData`
-- Apply optimistic update via `setQueryData`
-- Return context object containing snapshot - TanStack Query passes this to `onError` and `onSettled`
+- Runs synchronously before the mutation starts.
+- Cancel in-flight queries with `cancelQueries` to prevent race conditions where a background refetch overwrites the optimistic update.
+- Snapshot the previous state via `getQueryData`.
+- Apply the optimistic update via `setQueryData`.
+- Return a context object that contains the snapshot. TanStack Query passes this to `onError` and `onSettled`.
 
 #### onError Phase
-- Receives the context from `onMutate`
-- Rolls back cache to the snapshot
-- Without this, failed mutation leaves UI showing data that doesn't exist on server
+- Receives the context from `onMutate`.
+- Rolls the cache back to the snapshot.
+- Without this step, a failed mutation leaves the UI showing data that does not exist on the server.
 
 #### onSettled Phase
-- Runs after both success and failure
-- Use `invalidateQueries` to refetch from server
-- Reconciles any drift between client and server state
-- Critical for ensuring eventual consistency
+- Runs after both success and failure.
+- Use `invalidateQueries` to refetch from the server.
+- Reconciles any drift between client and server state.
+- This is required for eventual consistency.
 
 ### Validation Before Mutation
 
@@ -294,11 +294,11 @@ function TrackView({ trackId }) {
 ```
 
 Benefits:
-- Prevents closure bugs where queryFn captures stale variables
-- Centralized query configuration
-- Consumers don't need to know query keys
-- Easy to update query options in one place
-- Better testability
+- Prevents closure bugs where `queryFn` captures stale variables.
+- Centralizes query configuration.
+- Consumers do not need to know query keys.
+- Makes it easy to update query options in one place.
+- Improves testability.
 
 ## Configured Fetch Instance
 
@@ -327,19 +327,19 @@ export function useAllTracks() {
 }
 ```
 
-Why `throw: true`? TanStack Query's error boundaries expect thrown errors. Without it, you'd need manual `response.ok` checks.
+Why `throw: true`? TanStack Query error boundaries expect thrown errors. Without it, you would need manual `response.ok` checks.
 
 Why `retry: 0`? Let TanStack Query handle retries with its configurable retry logic.
 
 ## Important Notes
 
-- Always validate payloads before mutations with Zod schemas
-- Use `useSuspenseQuery` for server-hydrated data
-- Configure `@better-fetch/fetch` with `throw: true` for error boundary integration
-- Set `retry: 0` in fetch config - let TanStack Query handle retries
-- Pass AbortController signal through to fetch for proper cleanup
-- `cancelQueries` is critical in optimistic updates - prevents background refetches from overwriting optimistic updates
-- Context returned from `onMutate` is passed to `onError` and `onSettled` for rollback state
-- `onSettled` runs after both success AND failure - use for final reconciliation
-- For high-stakes or audit-trail systems, use pessimistic updates instead
-- Multiple cache entries require coordinated snapshot and rollback
+- Always validate payloads before mutations with Zod schemas.
+- Use `useSuspenseQuery` for server-hydrated data.
+- Configure `@better-fetch/fetch` with `throw: true` for error boundary integration.
+- Set `retry: 0` in the fetch config. Let TanStack Query handle retries.
+- Pass the AbortController signal through to fetch for proper cleanup.
+- `cancelQueries` is critical in optimistic updates because it prevents background refetches from overwriting optimistic updates.
+- The context returned from `onMutate` is passed to `onError` and `onSettled` for rollback state.
+- `onSettled` runs after both success and failure. Use it for final reconciliation.
+- For high-stakes or audit-trail systems, use pessimistic updates instead.
+- Multiple cache entries require coordinated snapshot and rollback.

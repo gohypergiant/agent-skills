@@ -12,7 +12,7 @@ Understanding when to use getBy*, findBy*, or queryBy* is critical for reliable 
 
 ---
 
-## Rule: Use getBy* for Immediate Presence
+## Rule: Use `getBy*` for immediate presence
 
 **Principle:** When element should already be in DOM, use getBy* for immediate failure feedback.
 
@@ -55,7 +55,7 @@ const title = screen.getByText('Dashboard');
 
 ---
 
-## Rule: Use findBy* for Async Appearance
+## Rule: Use `findBy*` for async appearance
 
 **Principle:** Elements loaded via useEffect, API calls, or timers need async queries.
 
@@ -101,7 +101,7 @@ const message = await screen.findByText(/saved successfully/i);
 
 ---
 
-## Rule: Use queryBy* to Assert Absence
+## Rule: Use `queryBy*` to assert absence
 
 **Principle:** To verify element is NOT present, queryBy returns null instead of throwing.
 
@@ -151,7 +151,7 @@ expect(screen.queryByText('Details')).toBeNull();
 
 ---
 
-## Rule: waitForElementToBeRemoved for Disappearance
+## Rule: Use `waitForElementToBeRemoved` for disappearance
 
 **Principle:** When element should disappear after action, waitForElementToBeRemoved is clearer than queryBy.
 
@@ -237,7 +237,7 @@ expect(errors).toHaveLength(0);
 
 ---
 
-## Rule: Prefer getBy Over queryBy for Better Errors
+## Rule: Prefer `getBy*` over `queryBy*` for better errors
 
 **Principle:** getBy throws immediately with helpful suggestions. queryBy returns null with no hints.
 
@@ -282,7 +282,7 @@ expect(screen.queryByText(/error/i)).toBeNull();
 
 ---
 
-## Rule: Use screen.debug() When Queries Fail
+## Rule: Use `screen.debug()` when queries fail
 
 **Principle:** When you can't figure out the right query, let Testing Library show you what's available.
 

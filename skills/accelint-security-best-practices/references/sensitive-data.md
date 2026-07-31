@@ -11,7 +11,7 @@ Sensitive data exposure occurs when:
 - **Debug Mode**: Development mode enabled in production leaks internal details
 - **Backups**: Database backups copied to insecure locations contain plaintext data
 
-A single `console.log(user)` statement logging passwords persists in log files forever. Logs are accessible to more people than the application itself (ops teams, contractors, log aggregation services).
+A single `console.log(user)` statement that logs passwords persists in log files forever. Logs are accessible to more people than the application itself, including ops teams, contractors, and log aggregation services.
 
 ## Anti-Patterns to Avoid
 

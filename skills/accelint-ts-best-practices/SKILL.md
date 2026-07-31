@@ -1,34 +1,34 @@
 ---
 name: accelint-ts-best-practices
-description: Comprehensive TypeScript/JavaScript coding standards focusing on type safety, defensive programming, and code correctness. Use when (1) Writing or reviewing TS/JS code, (2) Fixing type errors or avoiding any/enum/null, (3) Implementing control flow, state management, or error handling, (4) Applying zero-value pattern or immutability, (5) Code review for TypeScript anti-patterns. Covers naming conventions, function design, return values, bounded iteration, input validation. For performance optimization, use accelint-ts-performance skill. For documentation, use accelint-ts-documentation skill.
+description: Use this skill for TypeScript/JavaScript code-health work: a review, audit, or refactor whose goal is safer, more predictable, more maintainable code. Invoke it when the user wants a “look over,” “scan,” “clean up,” or best-practices pass on TS/JS modules, helpers, utilities, or packages, or when type errors after a refactor point to weak code patterns rather than framework behavior. It is the right fit for issues around unsafe `any`, weak union narrowing, null/undefined hazards, inconsistent return values, `enum` replacement, `type` vs `interface`, mutation/state handling, loop or control-flow mistakes, incomplete error paths, duplication, naming, and external-input validation. Prefer this skill when the user cares more about correctness and maintainability than speed. Do not use it for performance tuning, tests, security review, docs/JSDoc, or framework-specific debugging.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.1"
+  version: "1.2.2"
 ---
 
 # JavaScript and TypeScript Best Practices
 
-Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
+Comprehensive coding standards for JavaScript and TypeScript applications for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
 
-**Note:** This skill focuses on general best practices, TypeScript patterns, and safety. For performance optimization, use the `accelint-ts-performance` skill instead.
+This skill focuses on general best practices, TypeScript patterns, and safety. For performance optimization, use the `accelint-ts-performance` skill instead.
 
 ## When to Use This Skill
 
-This skill provides expert-level patterns for JavaScript and TypeScript code. Load [AGENTS.md](AGENTS.md) to scan rule summaries and identify relevant optimizations for your task.
+Use this skill for JavaScript or TypeScript coding work where the right answer depends on type safety, defensive programming, error handling, return-value design, control flow, state management, or common TS anti-patterns. This includes writing new code, reviewing existing code, fixing type errors, refactoring unsafe patterns, and running code-quality audits. Start by loading [AGENTS.md](AGENTS.md) to scan rule summaries and identify the narrowest relevant references for the task.
 
 ## How to Use
 
-This skill uses a **progressive disclosure** structure to minimize context usage:
+This skill uses a progressive disclosure structure to minimize context usage.
 
-### 1. Start with the Overview (AGENTS.md)
-Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries organized by category.
+### 1. Start with the overview (`AGENTS.md`)
+Read [AGENTS.md](AGENTS.md) for a concise overview of all rules, organized by category with one-line summaries.
 
-### 2. Load Specific Rules as Needed
+### 2. Load specific rules as needed
 When you identify a relevant pattern or issue, load the corresponding reference file for detailed implementation guidance:
 
 **Quick Start:**
-- [quick-start.md](references/quick-start.md) - Complete workflow examples with before/after code
+- [quick-start.md](references/quick-start.md) - Complete workflow examples showing how to identify a pattern, load the right reference, and apply a fix
 
 **General Best Practices:**
 - [naming-conventions.md](references/naming-conventions.md) - Descriptive names, qualifier ordering, boolean prefixes
@@ -52,10 +52,10 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 - [error-messages.md](references/error-messages.md) - User-friendly vs developer-specific messages
 
 **Performance:**
-- **For performance optimization tasks**, use the `accelint-ts-performance` skill for comprehensive profiling workflows and optimization patterns
+- If the main task is speed, allocations, algorithmic complexity, caching, profiling, or runtime bottlenecks, use the `accelint-ts-performance` skill instead of this one
 
 **Documentation:**
-- **For documentation tasks**, use the `accelint-ts-documentation` skill for comprehensive JSDoc and comment guidance
+- If the main task is JSDoc, comments, TODO/FIXME markers, or documentation audits, use the `accelint-ts-documentation` skill instead of this one
 
 ### 3. Apply the Pattern
 Each reference file contains:
@@ -63,8 +63,8 @@ Each reference file contains:
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
 
-### 4. Use the Report Template
-When this skill is invoked, use the standardized report format:
+### 4. Use the report template when auditing
+When the task is an audit or code-quality review, use the standardized report format:
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
@@ -73,7 +73,7 @@ The report format provides:
 - Severity levels (Critical, High, Medium, Low) for prioritization
 - Impact analysis (potential bugs, type safety, maintainability, runtime failures)
 - Categorization (Type Safety, Safety, State Management, Return Values, Code Quality)
-- Pattern references linking to detailed guidance in references/
+- Pattern references linking to detailed guidance in `references/`
 - Phase 2 summary table for tracking all issues
 
 **When to use the audit template:**

@@ -30,7 +30,7 @@ function Component() {
 }
 ```
 
-**When to Use:** Always use query data directly or derive with `useMemo`. Never copy to `useState`.
+**When to Use:** Always use query data directly or derive from it with `useMemo`. Never copy it to `useState`.
 
 ## Observer Optimization
 
@@ -67,7 +67,7 @@ function TrackItem({ track }) {
 }
 ```
 
-**When to Use:** Hoist queries to parent components and pass data as props. One query with one observer is almost always better than N queries with N observers when data comes from same source. See [fundamentals.md#observer-performance-impact](fundamentals.md#observer-performance-impact) for detailed thresholds.
+**When to Use:** Hoist queries to parent components and pass data as props. One query with one observer is almost always better than N queries with N observers when the data comes from the same source. See [fundamentals.md#observer-performance-impact](fundamentals.md#observer-performance-impact) for detailed thresholds.
 
 ## Query Key Stability
 
@@ -101,7 +101,7 @@ queryKey: ['events', { since: lastEventId }]
 queryKey: ['items', JSON.stringify(filters)]
 ```
 
-**When to Use:** Always ensure query keys are deterministic. Sort arrays before joining, use stable identifiers instead of temporal values, serialize objects consistently. See [query-keys.md](query-keys.md) for factory patterns.
+**When to Use:** Always ensure query keys are deterministic. Sort arrays before joining, use stable identifiers instead of temporal values, and serialize objects consistently. See [query-keys.md](query-keys.md) for factory patterns.
 
 ## Dependent Queries
 
@@ -203,7 +203,7 @@ export function useData() {
 }
 ```
 
-**When to Use:** Always pass AbortController signal to fetch requests. TanStack Query provides the signal and aborts when component unmounts, query key changes, or query is manually cancelled.
+**When to Use:** Always pass the AbortController signal to fetch requests. TanStack Query provides the signal and aborts when the component unmounts, the query key changes, or the query is cancelled manually.
 
 ## Custom Hooks and Closures
 
@@ -286,7 +286,7 @@ function Component() {
 }
 ```
 
-**When to Use:** `select` only runs when data exists (no undefined checks with `useSuspenseQuery`) and sits next to query definition.
+**When to Use:** `select` only runs when data exists, so `useSuspenseQuery` does not need undefined checks here, and it stays next to the query definition.
 
 **Warning:** For datasets >1000 items with frequent updates, `select` causes double structural sharing overhead. See [fundamentals.md#select-option-double-overhead](fundamentals.md#select-option-double-overhead).
 
@@ -405,7 +405,7 @@ export function useRadarContacts() {
 }
 ```
 
-**When to Use:** Match staleTime to business requirements. Lookup tables can have 1-hour staleTime. Real-time tracking needs 5-second staleTime with refetchInterval. See SKILL.md for decision matrix.
+**When to Use:** Match `staleTime` to business requirements. Lookup tables can have a 1-hour `staleTime`. Real-time tracking needs a 5-second `staleTime` with `refetchInterval`. See `SKILL.md` for the decision matrix.
 
 ## Query Key Dependencies
 
@@ -459,12 +459,12 @@ export function useItems(filters: Filters) {
 
 ## Important Notes
 
-- Query data is the source of truth - don't copy to useState
-- Hoist queries to parent when list items need same data
-- Query keys must be deterministic and stable
-- Dependent queries need `enabled` guards or component composition
-- Always pass AbortController signal to fetch
-- Custom hooks prevent closure bugs and provide encapsulation
-- Use component composition with `useSuspenseQuery` for cleaner dependent queries
-- Tune staleTime/gcTime based on data characteristics, not one-size-fits-all
-- Observer counts >50 indicate architectural issues requiring refactoring
+- Query data is the source of truth. Do not copy it to `useState`.
+- Hoist queries to the parent when list items need the same data.
+- Query keys must be deterministic and stable.
+- Dependent queries need `enabled` guards or component composition.
+- Always pass the AbortController signal to fetch.
+- Custom hooks prevent closure bugs and provide encapsulation.
+- Use component composition with `useSuspenseQuery` for cleaner dependent queries.
+- Tune `staleTime` and `gcTime` based on data characteristics. Do not use one-size-fits-all defaults.
+- Observer counts above 50 indicate architectural issues that require refactoring.

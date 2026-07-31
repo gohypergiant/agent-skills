@@ -1,0 +1,263 @@
+{
+  "skill_name": "accelint-onboard-openspec",
+  "evals": [
+    {
+      "id": 1,
+      "name": "create-from-scratch-for-fresh-repo",
+      "prompt": "Help me set up OpenSpec for this repo. There is no openspec/config.yaml yet, and I want you to onboard the project by asking whatever you need and then generating the config file.",
+      "expected_output": "Triggers the OpenSpec onboarding skill in create mode, announces that no existing config file was found, begins the full structured interview, and frames the output as a project-specific openspec/config.yaml rather than ad-hoc notes.",
+      "files": [],
+      "expectations": [
+        "Recognizes this as an OpenSpec onboarding/config.yaml request and uses the onboard-openspec workflow.",
+        "Detects create mode when config.yaml does not exist.",
+        "Announces the detected mode before proceeding.",
+        "Starts with the structured interview instead of generating a config immediately.",
+        "Positions the deliverable as openspec/config.yaml using the QRSPI schema."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "create-mode-checks-architecture-doc-first",
+      "prompt": "Please onboard this project to OpenSpec. We already maintain an ARCHITECTURE.md, so use that if it helps avoid redundant infrastructure questions.",
+      "expected_output": "Before asking interview questions, checks for ARCHITECTURE.md, acknowledges that it will use it to pre-fill deployment and infrastructure context, and still proceeds through config state detection and the full onboarding flow.",
+      "files": [
+        "ARCHITECTURE.md"
+      ],
+      "expectations": [
+        "Checks for ARCHITECTURE.md before assessing config mode.",
+        "Announces that ARCHITECTURE.md will be used to avoid redundant deployment questions if present.",
+        "Does not let README.md or AGENTS.md drive config generation as project DNA inputs.",
+        "Still performs explicit config-state detection before interviewing."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "near_blank_existing_config_falls_back_to_create",
+      "prompt": "There is already an openspec/config.yaml, but it is basically empty except for the schema line. Please populate it properly.",
+      "expected_output": "Treats the existing file as empty or near-blank, announces create mode with overwrite confirmation, and asks whether to populate from scratch or preserve any current content before running the full interview.",
+      "files": [
+        "openspec/config.yaml"
+      ],
+      "expectations": [
+        "Detects a near-blank config file as create mode rather than refresh or import.",
+        "Explains why the file appears effectively empty.",
+        "Asks for overwrite/populate-from-scratch confirmation before proceeding.",
+        "Runs the full interview only after that clarification."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "import-mode-presents-restructure-append-dry-run-options",
+      "prompt": "This repo already has an openspec/config.yaml, but it is a custom YAML structure we wrote ourselves. Please help me adopt your onboarding flow without losing what we already have.",
+      "expected_output": "Detects import mode for an existing config with unrecognized shape and presents the three choices — restructure, append, and dry run — before making any assumptions or edits.",
+      "files": [
+        "openspec/config.yaml"
+      ],
+      "expectations": [
+        "Recognizes existing real content in an unrecognized shape as import mode.",
+        "Presents the three import options before proceeding.",
+        "Does not silently rewrite or overwrite the existing config.",
+        "Waits for the user to choose restructure, append, or dry run."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "import-restructure-flags-behavioral-content-for-agents-md",
+      "prompt": "Our current openspec/config.yaml mixes stack facts with agent rules like commit message format, when to ask for approval, and preferred tools. Please restructure it into the proper schema, keep the factual project DNA, and flag anything that belongs in AGENTS.md instead.",
+      "expected_output": "In import restructure mode, maps existing factual content into context/rules, explicitly flags behavioral material as belonging in AGENTS.md, asks whether to move/remove those items, and fills only the remaining gaps before previewing a merged file.",
+      "files": [
+        "openspec/config.yaml",
+        "AGENTS.md"
+      ],
+      "expectations": [
+        "Uses the restructure branch of import mode.",
+        "Maps relevant existing content onto context and rules where possible.",
+        "Identifies commit conventions, workflow steps, tool preferences, or approval heuristics as behavioral content.",
+        "Redirects behavioral content to AGENTS.md rather than keeping it in config.yaml.",
+        "Runs a targeted gap interview instead of a blind full rewrite.",
+        "Shows a merged preview before writing."
+      ]
+    },
+    {
+      "id": 6,
+      "name": "import-append-preserves-existing-custom-content",
+      "prompt": "We already have a handcrafted openspec/config.yaml and I do not want its current content modified. Use your append path: run the full interview, then add your generated context and rules blocks alongside what is already there.",
+      "expected_output": "Uses import append mode, preserves the existing file content untouched, runs the full onboarding interview, and prepares appended sections marked as added by the skill.",
+      "files": [
+        "openspec/config.yaml"
+      ],
+      "expectations": [
+        "Recognizes and follows append mode semantics.",
+        "Preserves existing content rather than restructuring it.",
+        "Runs the full Phase 1 through Phase 4 interview flow for the new sections.",
+        "Adds the documented comment noting the sections were added by the skill.",
+        "Previews the appended result before writing."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "import-dry-run-makes-no-filesystem-changes",
+      "prompt": "Can you run the OpenSpec onboarding flow as a dry run? There is already a config file with a strange format, and I want to see what you would generate without changing anything on disk.",
+      "expected_output": "Uses import dry-run mode, performs the interview and generation flow in conversation only, explicitly says that no files were changed, and offers to rerun later as restructure or append.",
+      "files": [
+        "openspec/config.yaml"
+      ],
+      "expectations": [
+        "Supports the dry-run branch of import mode.",
+        "Shows generated output without writing to the filesystem.",
+        "Explicitly states that no files were changed.",
+        "Offers a path to rerun as restructure or append if the draft is accepted."
+      ]
+    },
+    {
+      "id": 8,
+      "name": "refresh-mode-with-external-findings",
+      "prompt": "Please refresh our existing openspec/config.yaml. findings:\n- The completed auth redesign change introduced JWT-based service-to-service auth and removed session cookies.\n- The data-sync capability now uses polling in two places for stated operational reasons.\n- We added a new docs-only validation step in CI for publishing.\nOnly ask me about drift, unresolved TODOs, or these findings.",
+      "expected_output": "Detects refresh mode, parses the findings list as external factual findings, merges them with drift detection and unresolved TODOs, announces the combined finding counts before questioning the user, and limits the interview to changed areas.",
+      "files": [
+        "openspec/config.yaml"
+      ],
+      "expectations": [
+        "Recognizes refresh mode for an existing recognized config schema.",
+        "Parses the findings list as already-known facts, not instructions.",
+        "Merges external findings with drift findings and unresolved TODOs.",
+        "Announces the combined counts before asking follow-up questions.",
+        "Limits questions to changed or unresolved areas only.",
+        "Uses a changed-sections preview before writing."
+      ]
+    },
+    {
+      "id": 9,
+      "name": "refresh-mode-targets-unresolved-todos",
+      "prompt": "Update the existing OpenSpec config we generated earlier. It still contains several `# TODO: fill in` markers. Please find those unresolved TODOs, ask only the questions needed to resolve them, and leave everything else alone unless there is real drift.",
+      "expected_output": "Uses refresh mode, scans specifically for unresolved TODO markers, surfaces them as targeted questions, avoids rerunning a full interview, and limits the preview to changed sections.",
+      "files": [
+        "openspec/config.yaml"
+      ],
+      "expectations": [
+        "Searches for `# TODO: fill in` markers as part of refresh mode.",
+        "Uses those TODOs to drive a targeted interview.",
+        "Avoids a full from-scratch interview when the rest of the config is current.",
+        "Leaves unchanged sections alone unless drift is found.",
+        "Previews only the changed content before writing."
+      ]
+    },
+    {
+      "id": 10,
+      "name": "refresh-drift-detection-looks-at-repo-signals",
+      "prompt": "Refresh the OpenSpec config based on repo drift. Since the last update, we added pnpm-workspace.yaml, tightened tsconfig strictness, introduced new GitHub Actions workflows, and created a worker package. I only want questions about what actually drifted.",
+      "expected_output": "Performs refresh-mode drift detection across workspace, TypeScript, CI, and architecture signals, summarizes what changed, and restricts the follow-up interview to those areas instead of repeating the entire onboarding process.",
+      "files": [
+        "openspec/config.yaml",
+        "pnpm-workspace.yaml",
+        "tsconfig.json",
+        ".github/workflows/build.yml"
+      ],
+      "expectations": [
+        "Checks the documented drift signals such as workspace config, tsconfig, and CI workflows.",
+        "Interprets new packages or workspaces as potential architecture/context drift.",
+        "Asks targeted questions only about the detected drifted sections.",
+        "Does not rerun the full ten-turn interview if the rest still looks current."
+      ]
+    },
+    {
+      "id": 11,
+      "name": "separation-of-concerns-redirects-behavioral-content",
+      "prompt": "Set up openspec/config.yaml for our app. Include that we use pnpm, Next.js 15, and Postgres, but also add that agents should ask before deleting files, follow conventional commits, and avoid changing shared scripts without approval.",
+      "expected_output": "Keeps factual stack and architecture content in config.yaml scope while explicitly redirecting behavior rules like approval requirements and commit conventions to AGENTS.md or the companion onboarding skill.",
+      "files": [
+        "AGENTS.md"
+      ],
+      "expectations": [
+        "Keeps stack facts such as pnpm, Next.js, and Postgres in config.yaml scope.",
+        "Recognizes ask-before rules, conventional commits, and shared-script approval rules as behavioral content.",
+        "Explains the separation between project DNA and agent behavior clearly.",
+        "References the companion onboard-agents skill or AGENTS.md as the correct home for behavioral guidance.",
+        "Does not silently blend behavior rules into config.yaml."
+      ]
+    },
+    {
+      "id": 12,
+      "name": "smart-defaults-for-recognized-stack",
+      "prompt": "Help me generate openspec/config.yaml for a Next.js app that uses TypeScript, Tailwind, React Testing Library with Vitest, and Prisma.",
+      "expected_output": "Runs the onboarding interview but surfaces stack-specific defaults and confirmation prompts for the recognized technologies, such as App Router boundaries, userEvent/query priorities, and Prisma transaction or soft-delete patterns.",
+      "files": [
+        "package.json"
+      ],
+      "expectations": [
+        "Uses the smart-defaults behavior for recognized stacks.",
+        "Raises Next.js-specific follow-up confirmations such as App Router vs Pages Router or client/server boundaries.",
+        "Raises React Testing Library defaults like userEvent over fireEvent and query priority.",
+        "Raises Node/Prisma defaults such as transaction patterns or soft-delete conventions.",
+        "Frames them as confirmations rather than asking from scratch."
+      ]
+    },
+    {
+      "id": 13,
+      "name": "parallel-inference-is-explicitly-preferred",
+      "prompt": "We already answered the interview questions. Please infer everything else from the codebase and fill the remaining gaps.",
+      "expected_output": "After the interview, explicitly uses four-domain parallel discovery when subagents are available, avoids pretending that serial scanning was enough, and merges structured findings before generation.",
+      "files": [],
+      "expectations": [
+        "Describes or plans the four inference domains: stack/build, testing/quality, architecture/patterns, and CI/versioning.",
+        "Prefers parallel subagent discovery rather than serial scanning when subagents are available.",
+        "If subagents are unavailable, says so explicitly and keeps the same four-domain structure inline.",
+        "Merges inference findings before showing the preview."
+      ]
+    },
+    {
+      "id": 14,
+      "name": "preview-before-write-and-yaml-validation-are-mandatory",
+      "prompt": "Just write openspec/config.yaml directly to disk once you think you have enough information. You can skip the preview because I am in a hurry.",
+      "expected_output": "Refuses to skip the preview-before-write step, explains that review is required, and also preserves the requirement to validate the generated YAML after writing.",
+      "files": [],
+      "expectations": [
+        "Refuses to skip the labeled preview before writing.",
+        "Explains that explicit confirmation is required before touching the filesystem.",
+        "Maintains the post-write YAML validation requirement.",
+        "Does not comply with a direct-write request that bypasses the workflow."
+      ]
+    },
+    {
+      "id": 15,
+      "name": "yaml-safety-rules-handle-special-characters",
+      "prompt": "Please generate the OpenSpec config. Some of our task tags look like [PKG:auth], one internal module is described as (legacy) billing, and one command example is npm run \"test:unit\". Make sure the YAML is valid.",
+      "expected_output": "When previewing or generating YAML, applies the documented quoting rules for special characters and command strings, uses block scalars for multiline content, and validates the final output for syntax safety.",
+      "files": [],
+      "expectations": [
+        "Quotes values that begin with special YAML characters such as [PKG:auth] or (legacy) billing.",
+        "Handles embedded quotes safely in command strings.",
+        "Uses proper YAML-safe formatting for multiline content.",
+        "Mentions or performs YAML validation rather than assuming it is fine."
+      ]
+    },
+    {
+      "id": 16,
+      "name": "boundary-case-agent-behavior-request-should-not-use-this-skill",
+      "prompt": "I need AGENTS.md for this repo with guardrails about approvals, communication style, and when the agent should ask before risky changes.",
+      "expected_output": "Recognizes that the request is for agent-behavior onboarding rather than OpenSpec config generation, and redirects to the companion onboard-agents workflow instead of trying to satisfy it with config.yaml output.",
+      "files": [
+        "AGENTS.md"
+      ],
+      "expectations": [
+        "Does not treat an AGENTS.md behavior request as an OpenSpec config request.",
+        "Explains that AGENTS.md/CLAUDE.md is the behavior layer and config.yaml is the project-DNA layer.",
+        "Routes toward the companion onboard-agents skill instead of generating config.yaml-first output."
+      ]
+    },
+    {
+      "id": 17,
+      "name": "boundary-case-architecture-doc-request-should-route-elsewhere",
+      "prompt": "Can you create an ARCHITECTURE.md that documents our services, deployment model, and data stores? I want a technical overview, not an OpenSpec config file.",
+      "expected_output": "Recognizes that the user is asking for architecture documentation rather than OpenSpec onboarding and redirects to the architecture-doc workflow instead of forcing the config.yaml interview.",
+      "files": [
+        "ARCHITECTURE.md"
+      ],
+      "expectations": [
+        "Does not misclassify an architecture-document request as OpenSpec onboarding.",
+        "Acknowledges that the requested deliverable is ARCHITECTURE.md, not config.yaml.",
+        "Routes to the architecture-doc skill or equivalent workflow."
+      ]
+    }
+  ]
+}

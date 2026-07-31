@@ -13,11 +13,11 @@ Server-side architecture combines three distinct caching mechanisms:
 | **Browser HTTP cache** | Eliminate network requests | `Cache-Control` headers | Per-browser |
 
 Each layer serves a distinct purpose:
-- `use cache` reduces database load by caching server computations
-- TanStack Query provides instant UI feedback with cached data while fetching fresh updates
-- Browser cache eliminates network requests for static resources
+- `use cache` reduces database load by caching server computations.
+- TanStack Query provides instant UI feedback with cached data while it fetches fresh updates.
+- The browser cache eliminates network requests for static resources.
 
-These layers are complementary, not redundant. `use cache` runs server-side before TanStack Query fires. TanStack Query provides client features (`staleTime`, `refetchInterval`, optimistic updates) that server caching can't replicate.
+These layers are complementary, not redundant. `use cache` runs server-side before TanStack Query runs. TanStack Query provides client features (`staleTime`, `refetchInterval`, optimistic updates) that server caching cannot replicate.
 
 ## Unified Invalidation with Shared Keys
 
@@ -106,7 +106,7 @@ export async function updateTrack(id: string, formData: FormData) {
 }
 ```
 
-The client-side mutation wrapper calls the Server Action and then invalidates TanStack Query cache in `onSuccess`.
+The client-side mutation wrapper calls the Server Action and then invalidates the TanStack Query cache in `onSuccess`.
 
 ## revalidateTag vs updateTag
 
@@ -125,11 +125,11 @@ Use `updateTag` when users need to see their own mutations reflected immediately
 3. User sees stale data flash, then fresh data (layout shift)
 
 **Solution: Unified invalidation**
-1. Mutation updates database
-2. `updateTag(keys.detail(id).tag)` busts server cache
-3. `queryClient.invalidateQueries({ queryKey: keys.detail(id) })` busts client cache
-4. Next render hits database for both server and client
-5. Both caches repopulate with same fresh data
+1. The mutation updates the database.
+2. `updateTag(keys.detail(id).tag)` invalidates the server cache.
+3. `queryClient.invalidateQueries({ queryKey: keys.detail(id) })` invalidates the client cache.
+4. The next render hits the database for both server and client.
+5. Both caches repopulate with the same fresh data.
 
 The shared key factory (`keys.ts`) makes this work. One mutation, one key hierarchy, both caches invalidated atomically.
 
@@ -177,7 +177,7 @@ export async function TrackDetailServer({ id }: { id: string }) {
 }
 ```
 
-Server calls `getOne(id)` which uses `use cache`. TanStack Query on client receives prefetched data and populates its cache. Both caches have same data, keyed the same way, invalidated the same way.
+The server calls `getOne(id)`, which uses `use cache`. TanStack Query on the client receives the prefetched data and populates its cache. Both caches hold the same data, use the same keys, and are invalidated the same way.
 
 ## Cache Key Stability
 
@@ -201,8 +201,8 @@ return getUsers(filters);
 
 ## Important Notes
 
-- `revalidateTag` uses stale-while-revalidate (current request sees old data)
-- `updateTag` invalidates immediately (current request sees fresh data after refetch)
-- Shared key factories prevent server/client cache desync
-- `use cache` with `cacheTag` provides server-side caching before TanStack Query runs
-- Both layers need invalidation on mutations to prevent UI showing stale data flash
+- `revalidateTag` uses stale-while-revalidate, so the current request sees old data.
+- `updateTag` invalidates immediately, so the current request sees fresh data after refetch.
+- Shared key factories prevent server/client cache desync.
+- `use cache` with `cacheTag` provides server-side caching before TanStack Query runs.
+- Both layers need invalidation on mutations to prevent a stale-data flash in the UI.

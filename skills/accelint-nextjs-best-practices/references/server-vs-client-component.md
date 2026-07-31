@@ -1,6 +1,6 @@
 # 3.2 Server vs Client Component
 
-**Server Components are the DEFAULT in Next.js App Router.** All components are Server Components by default unless you add the `'use client'` directive. DO NOT add `'use client'` unless you specifically need client-side features.
+**Server Components are the default in Next.js App Router.** All components are Server Components by default unless you add the `'use client'` directive. Do not add `'use client'` unless you specifically need client-side features.
 
 Server Components provide significant benefits:
 - **Zero client-side JavaScript by default** - reduces bundle size
@@ -10,7 +10,7 @@ Server Components provide significant benefits:
 - **Better initial page load** - HTML is rendered on the server
 - **SEO benefits** - content is available immediately
 
-Client Components increase bundle size, require hydration, and add runtime overhead. Only use them when you need client-side interactivity.
+Client Components increase bundle size, require hydration, and add runtime overhead. Use them only when you need client-side interactivity.
 
 ## The Pattern
 
@@ -71,24 +71,24 @@ export default function Page() {
 
 ```
 Need interactivity? (onClick, onChange, etc.)
-├─ Yes → Client Component ('use client')
-└─ No → Continue...
+├─ Yes -> Client Component ('use client')
+└─ No -> Continue
 
 Need React hooks? (useState, useEffect, etc.)
-├─ Yes → Client Component ('use client')
-└─ No → Continue...
+├─ Yes -> Client Component ('use client')
+└─ No -> Continue
 
 Need browser APIs? (window, localStorage, etc.)
-├─ Yes → Client Component ('use client')
-└─ No → Continue...
+├─ Yes -> Client Component ('use client')
+└─ No -> Continue
 
 Need to fetch data?
-├─ Yes → Server Component (default)
-└─ No → Continue...
+├─ Yes -> Server Component (default)
+└─ No -> Continue
 
 Need cookies/headers/searchParams?
-├─ Yes → Server Component (default)
-└─ No → Server Component (default, unless specific need)
+├─ Yes -> Server Component (default)
+└─ No -> Server Component (default, unless there is a specific need)
 ```
 
 ## Common Mistakes

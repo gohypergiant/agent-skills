@@ -13,7 +13,7 @@ Without rate limiting, attackers can:
 - **API Abuse**: Consume expensive operations (AI API calls, database queries)
 - **Credential Stuffing**: Test millions of leaked credentials rapidly
 
-For a login endpoint, no rate limiting means attacker tries 10,000 passwords in minutes. With rate limiting (5 attempts per 15 minutes), attacker needs 500 hours for same attempts.
+For a login endpoint, no rate limiting means that an attacker can try 10,000 passwords in minutes. With rate limiting (5 attempts per 15 minutes), the attacker needs 500 hours for the same number of attempts.
 
 ## Anti-Patterns to Avoid
 

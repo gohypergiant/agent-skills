@@ -2,8 +2,8 @@
 name: skill-name
 description: Use when users say "[trigger phrase 1]", "[trigger phrase 2]", or when [specific scenario]. [WHAT this skill does]. [Additional trigger keywords for searchability].
 #
-# CRITICAL: The description field determines if this skill gets activated.
-# Must answer THREE questions:
+# REQUIRED: The description field determines whether this skill gets activated.
+# It MUST answer THREE questions:
 #   1. WHAT: What does this skill do? (functionality)
 #   2. WHEN: In what situations should it be used? (trigger scenarios with "Use when...")
 #   3. KEYWORDS: What terms should trigger this skill? (action verbs, file types, domain terms)
@@ -46,7 +46,7 @@ Brief introduction to what this skill provides (1-2 sentences maximum).
 
 ## Before [Domain Action], Ask
 
-<!-- CRITICAL: Teach THINKING PATTERNS, not just procedures.
+<!-- REQUIRED: Teach THINKING PATTERNS, not just procedures.
      This transforms agents from "following steps" to "making expert decisions".
 
      Format: "Before [action], ask yourself:"
@@ -54,7 +54,7 @@ Brief introduction to what this skill provides (1-2 sentences maximum).
      These should shape HOW agents think about the problem.
 -->
 
-Apply these tests before [performing key domain action]:
+Apply these tests before [performing the key domain action]:
 
 ### [Expert Thinking Framework 1]
 - **[Key Question]?** [Guidance on what to consider]. [Consequence if ignored].
@@ -91,7 +91,7 @@ Apply these tests before [performing key domain action]:
      NEVER mix both - either direct instructions OR progressive disclosure.
 -->
 
-This skill uses **progressive disclosure** to minimize context usage:
+This skill uses **progressive disclosure** to minimize context use:
 
 ### 1. Start with the Workflow (SKILL.md)
 Follow the [workflow/decision tree/process] below for [domain task].
@@ -156,7 +156,7 @@ When [specific scenario], load corresponding reference files for ❌/✅ example
 
 <!-- Only include NON-OBVIOUS critical considerations.
      NEVER include obvious reminders like "test your code" or "handle errors".
-     Think: "What do experts know that isn't written elsewhere?"
+     Ask: "What do experts know that is not written elsewhere?"
 -->
 
 - [Critical non-obvious consideration that affects success]

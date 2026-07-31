@@ -24,7 +24,7 @@
 
 ### String Building with Array Join
 
-String concatenation creates new strings on each operation. Use array join for building strings in loops.
+String concatenation creates a new string on each operation. Use array join when you build strings in loops.
 
 **❌ Incorrect: repeated string concatenation**
 ```ts
@@ -218,4 +218,4 @@ function buildHTML(items) {
 }
 ```
 
-**Note**: For small iterations (<100 items) or simple concatenations, template literals are fine and more readable.
+**Note:** For small iterations (<100 items) or simple concatenations, template literals are fine and easier to read.

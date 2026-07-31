@@ -1,6 +1,6 @@
 # 4.6 Bounded Iteration
 
-NEVER create unbounded loops, queues, or recursive calls. Always set explicit limits to prevent runaway resource consumption.
+NEVER create unbounded loops, queues, or recursive calls. Always set explicit limits so runaway resource consumption fails fast.
 
 ## Loop Limits
 
@@ -200,11 +200,11 @@ for (const item of items) {
 | Array length | 10,000 - 1,000,000 | Depends on element size and available memory |
 | String length | 1MB - 100MB | Prevents memory issues from pathological inputs |
 
-**Adjust limits based on**:
-- Available system resources (memory, CPU)
-- Expected data sizes in production
-- Performance requirements
-- Error recovery strategy
+**Adjust limits based on:**
+- available system resources (memory, CPU)
+- expected data sizes in production
+- performance requirements
+- error recovery strategy
 
 ## When to Use Each Pattern
 

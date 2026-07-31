@@ -1,6 +1,6 @@
 # XSS Prevention
 
-Never render user input without sanitization. Cross-Site Scripting (XSS) allows attackers to inject malicious scripts that steal credentials, perform actions as the victim, or redirect to phishing sites.
+Never render user input without sanitization. Cross-Site Scripting (XSS) lets attackers inject malicious scripts that steal credentials, perform actions as the victim, or redirect users to phishing sites.
 
 **Framework Examples**: This document uses React patterns for illustration (dangerouslySetInnerHTML). Apply to your framework's rendering: Vue (v-html), Angular (innerHTML), Svelte (@html), or vanilla JavaScript (innerHTML). Sanitization libraries: DOMPurify, sanitize-html, isomorphic-dompurify.
 
@@ -13,7 +13,7 @@ XSS attacks enable:
 - **Defacement**: Alter page content to damage reputation
 - **Keylogging**: Capture all user input including sensitive data
 
-A single XSS vulnerability on a page with 10,000 daily visitors can steal 10,000 session tokens. Stored XSS in comments persists indefinitely, attacking every user who views the page.
+A single XSS vulnerability on a page with 10,000 daily visitors can steal 10,000 session tokens. Stored XSS in comments persists indefinitely and attacks every user who views the page.
 
 ## Anti-Patterns to Avoid
 

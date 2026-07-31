@@ -1,19 +1,19 @@
 ---
 name: accelint-react-best-practices
-description: React performance optimization and best practices. ALWAYS use this skill when working with any React code - writing components, hooks, JSX; refactoring; optimizing re-renders, memoization, state management; reviewing for performance; fixing hydration mismatches; debugging infinite re-renders, stale closures, input focus loss, animations restarting; preventing remounting; implementing transitions, lazy initialization, effect dependencies. Even simple React tasks benefit from these patterns. Covers React 19+ (useEffectEvent, Activity, ref props). Triggers - useEffect, useState, useMemo, useCallback, memo, inline components, nested components, components inside components, re-render, performance, hydration, SSR, Next.js, useDeferredValue, combined hooks.
+description: Use when the task involves React code and the right answer depends on React rendering, state, effects, hydration, or React 19 behavior. Trigger on writing, reviewing, refactoring, debugging, optimizing, or auditing React components, hooks, or JSX; fixing re-renders, stale closures, remounting, hydration mismatches, or effect dependency issues; or advising on transitions, lazy initialization, useDeferredValue, useTransition, useEffectEvent, Activity, ref-as-prop, React Compiler, or combined-hook patterns. Also use for React-focused performance reviews in any React app, including Vite or Next.js. Do not use for backend, database, auth, or generic API work unless the problem is specifically about React behavior.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.8.0"
+  version: "1.8.3"
 ---
 
 # React Best Practices
 
-Comprehensive performance optimization and best practices for React applications, designed for AI agents and LLMs working with React code.
+React-specific performance and correctness guidance for agents working with components, hooks, JSX, hydration, and React 19 patterns.
 
 ## NEVER Do React
 
-These are the most critical anti-patterns that cause real production issues. Experts learned these the hard way through debugging sessions and performance investigations.
+These anti-patterns regularly cause production bugs, avoidable re-renders, or broken user interactions.
 
 **NEVER define components inside components** — creates new component type on every render, causing full remount with state loss and DOM recreation. Results in input fields losing focus on keystroke, animations restarting unexpectedly, and useEffect cleanup/setup running on every parent render.
 
@@ -33,7 +33,7 @@ These are the most critical anti-patterns that cause real production issues. Exp
 
 ## Before Optimizing Performance, Ask
 
-Before suggesting memo/useMemo/useCallback optimizations, determine if they're needed:
+Before suggesting `memo()`, `useMemo()`, or `useCallback()` optimizations, confirm that they are needed:
 
 1. **Does this project use React Compiler?**
    - Search for `babel-plugin-react-compiler` or `react-compiler-webpack-plugin` in package.json/config files
@@ -53,8 +53,8 @@ Before suggesting memo/useMemo/useCallback optimizations, determine if they're n
 
 This skill uses a **progressive disclosure** structure to minimize context usage:
 
-### 1. Start with the Overview (AGENTS.md)
-Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries.
+### 1. Start with the Overview (`AGENTS.md`)
+Read [AGENTS.md](AGENTS.md) for a concise rule index with one-line summaries.
 
 ### 2. Load Specific Rules as Needed
 When you identify a relevant optimization, load the corresponding reference file for detailed implementation guidance:
@@ -111,27 +111,28 @@ Each reference file contains:
 - ✅ Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
 
-### 4. Use the Report Template
-When this skill is invoked, use the standardized report format:
+### 4. Use the Report Template for Audits
+Use the standardized report format only for audits or multi-issue reviews.
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
 The report format provides:
 - Executive Summary with impact assessment
 - Severity levels (Critical, High, Medium, Low) for prioritization
-- Impact analysis (potential bugs, type safety, maintainability, runtime failures)
-- Categorization (Type Safety, Safety, State Management, Return Values, Code Quality)
+- Impact analysis (potential bugs, maintainability, runtime failures, or user-visible issues)
 - Pattern references linking to detailed guidance in references/
-- Phase 2 summary table for tracking all issues
+- Summary table for tracking all findings
 
-**When to use the audit template:**
-- Skill invoked directly via `/accelint-react-best-practices <path>`
-- User asks to "review code quality" or "audit code" across file(s), invoking skill implicitly
+**Use the audit template when:**
+- Skill invoked directly via `/accelint-react-best-practices <path>` for a review
+- User asks to audit, review, or assess React code across one or more files
 
-**When NOT to use the report template:**
-- User asks to "fix this type error" (direct implementation)
-- User asks "what's wrong with this code?" (answer the question)
-- User requests specific fixes (apply fixes directly without formal report)
+**Do not use the audit template when:**
+- User asks to fix a specific bug or type error
+- User asks what is wrong with a single snippet
+- User requests direct implementation changes
+
+Answer directly in those cases, and only load the reference files needed for the issue at hand.
 
 ## Examples
 
@@ -193,10 +194,11 @@ This skill covers React 19 features including:
 - Named imports only (no default import of React)
 
 ### Performance Philosophy
-- Start with correct code, then optimize
-- Measure before optimizing
-- Optimize slowest operations first (network > rendering > computation)
-- Avoid premature optimization of trivial operations
+- Start with correct code, then optimize.
+- Check for React Compiler before suggesting manual memoization or hoisting.
+- Measure before optimizing.
+- Optimize the real bottleneck first. Network or data-volume issues often matter more than render micro-optimizations.
+- Avoid premature optimization of trivial operations.
 
 ### Code Quality Principles
 - Prefer simple, readable code over clever optimizations

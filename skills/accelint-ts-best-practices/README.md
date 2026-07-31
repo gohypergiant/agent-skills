@@ -1,15 +1,14 @@
 # JavaScript and TypeScript Best Practices
 
-Comprehensive coding standards and performance optimization guide for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
+Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern JavaScript/TypeScript codebases.
 
 ## Overview
 
-This skill provides structured guidance for JavaScript and TypeScript development across five categories:
+This skill provides structured guidance for JavaScript and TypeScript development across four categories:
 - **General Best Practices**: Naming, control flow, state management, functions
 - **TypeScript**: Avoid any/enum, prefer type over interface
-- **Safety**: Input validation, assertions, error handling
-- **Performance**: Reduce branching/looping, memoization, caching, deferred await
-- **Documentation**: JSDoc, comment markers, code clarity
+- **Safety**: Input validation, assertions, error handling, bounded iteration
+- **Audit Workflow**: Standardized reporting for code-quality reviews
 
 Based on ["HyperStyle"](https://docs.accelint.dev/doc/hyperstyle-javascript-urdYtXRUfn), a coding philosophy that prioritizes **safety**, **performance**, and **developer experience**, in that order. Inspired by [TigerBeetle's](https://github.com/tigerbeetle/tigerbeetle/blob/main/docs/TIGER_STYLE.md) practices, it aims to build robust, efficient, and maintainable software through disciplined engineering.
 
@@ -31,11 +30,10 @@ See [references/quick-start.md](references/quick-start.md) for complete workflow
 ### For Humans
 
 This skill is optimized for AI agents but humans may find it useful for:
-- Learning JavaScript/TypeScript performance optimization
-- Reviewing code for common anti-patterns
+- Reviewing code for common JavaScript/TypeScript anti-patterns
 - Understanding safety-first programming principles
 - Systematic code quality improvement
-- Writing better documentation
+- Learning consistent TypeScript coding conventions
 
 ---
 
@@ -54,13 +52,9 @@ Design for correctness before performance:
 - Assertions for programmer errors (crash on corrupted state)
 - Explicit error handling (no silent failures)
 - Zero values (eliminate downstream null checks)
+- Bounded iteration (prevent runaway loops, queues, and recursion)
 
-### Performance Optimization Hierarchy
-Optimize slowest resources first:
-```
-network >> disk >> memory >> cpu
-```
-Always benchmark assumptions. Profile to identify real bottlenecks before optimizing.
+If the primary goal becomes profiling or runtime optimization, switch to the `accelint-ts-performance` skill.
 
 ---
 
@@ -74,8 +68,9 @@ When adding new patterns:
    - ✅ Correct example(s) showing the optimal implementation
    - Explanation of why the pattern matters
 2. **Add to AGENTS.md** with one-line summary and link
-3. **Update SKILL.md** if adding new categories
-4. **Consider real-world usage** - Ensure patterns solve actual problems, not hypothetical ones
+3. **Update SKILL.md** if adding new categories or changing routing guidance
+4. **Keep README and AGENTS.md aligned** when category descriptions or workflow expectations change
+5. **Consider real-world usage** - Ensure patterns solve actual problems, not hypothetical ones
 
 ---
 

@@ -1,10 +1,10 @@
 ---
 name: accelint-ts-performance
-description: "Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling and runtime patterns. Use when (1) Users say 'optimize performance', 'audit performance', 'this is slow', 'reduce allocations', 'improve speed', 'check performance', (2) Analyzing code for performance anti-patterns (O(n²) complexity, excessive allocations, I/O blocking, template literal waste), (3) Optimizing functions regardless of current usage context - utilities, formatters, parsers are often called in hot paths even when they appear simple, (4) Fixing V8 deoptimization (monomorphic/polymorphic issues, inline caching). Audits ALL code for anti-patterns and reports findings with expected gains. Covers loops, caching, batching, memory locality, algorithmic complexity fixes with ❌/✅ patterns."
+description: "Performance audit and optimization guidance for JavaScript/TypeScript code when the main problem is runtime speed, hot-path inefficiency, or throughput. Use for explicit performance reviews, slow code, profiling follow-up, repeated linear lookups, nested loops, avoidable allocations, sequential awaits, cache/memoization opportunities, memory-locality issues, or V8 hot-path concerns such as try/catch in loops. Also use to classify findings by optimization category and expected gain, or to produce a formal audit without patching yet. Do not use for general TypeScript maintainability, type-safety, JSDoc/comment cleanup, or non-performance code review work."
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # TypeScript Performance Optimization
@@ -13,7 +13,7 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 
 ## NEVER Do When Optimizing Performance
 
-**Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `accelint-ts-best-practices` skill instead. This section focuses exclusively on performance-specific anti-patterns.
+Use `accelint-ts-best-practices` for general best practices such as type safety with `any`/`enum`, avoiding `null`, and not mutating parameters. This section covers only performance-specific anti-patterns.
 
 - **NEVER assume code is cold path** - Utility functions, formatters, parsers, and validators appear simple but are frequently called in loops, rendering pipelines, or real-time systems. Always audit ALL code for performance anti-patterns. Do not make assumptions about usage frequency or skip auditing based on perceived simplicity.
 
@@ -43,52 +43,52 @@ Systematic performance optimization for JavaScript/TypeScript codebases. Combine
 
 ## Before Optimizing Performance, Ask
 
-Apply these tests to focus optimization efforts effectively:
+Use these checks to focus optimization work:
 
 ### Impact Assessment
-- **Is this code actually slow?** When profiling data is available, use it to inform prioritization. When unavailable, audit all code for anti-patterns.
-- **What percentage of runtime does this represent?** When profiling data is available, flame graphs help identify the highest-impact issues. When unavailable, report all anti-patterns found.
-- **Raw performance matters** - Audit ALL code for performance anti-patterns regardless of current usage context. Utility functions, formatters, parsers, and data transformations are frequently called in loops, rendering pipelines, or real-time systems even when they appear simple.
+- **Is this code actually slow?** Use profiling data to set priorities when it is available. When it is unavailable, audit all code for anti-patterns.
+- **What percentage of runtime does this represent?** Use flame graphs to find the highest-impact issues when profiling data is available. When it is unavailable, report all anti-patterns found.
+- **Raw performance matters** - Audit ALL code for performance anti-patterns regardless of current usage context. Utility functions, formatters, parsers, and data transformations are often called in loops, rendering pipelines, or real-time systems even when they appear simple.
 
 ### Correctness Verification
-- **Do I have tests covering this code?** Performance bugs are subtle. Comprehensive tests catch regressions from optimizations. Add tests before optimizing.
-- **What are the edge cases?** Off-by-one errors, empty arrays, null/undefined values become more likely with manual loop optimizations. Test exhaustively.
+- **Do I have tests covering this code?** Performance bugs are subtle. Add tests before optimizing so regressions are easier to catch.
+- **What are the edge cases?** Manual loop optimizations increase the risk of off-by-one errors, empty-array bugs, and null/undefined handling mistakes. Test thoroughly.
 
 ### Complexity vs Benefit
-- **Is the algorithmic complexity optimal?** O(n) → O(1) is 1000x speedup. Micro-optimizations are 1.1-2x at best. Fix algorithm first.
-- **Will this optimization persist?** If the code changes frequently, optimization may be discarded soon. Optimize stable code first.
-- **What's the readability cost?** Manual loops are faster but harder to maintain than `.map()`. Balance performance with team velocity.
+- **Is the algorithmic complexity optimal?** O(n) → O(1) can yield a 1000x speedup. Micro-optimizations usually yield 1.1-2x at best. Fix the algorithm first.
+- **Will this optimization persist?** If the code changes frequently, the optimization may be discarded soon. Optimize stable code first.
+- **What is the readability cost?** Manual loops are faster but harder to maintain than `.map()`. Balance performance with team velocity.
 
 ## How to Use
 
 This skill uses **progressive disclosure** to minimize context usage:
 
-### 1. Start with the Workflow (SKILL.md)
-Follow the 4-phase audit workflow below for systematic performance analysis.
+### 1. Start with the Workflow (`SKILL.md`)
+Follow the 4-phase workflow below. Choose Audit Mode or Implementation Mode before you load references.
 
-### 2. Reference Performance Rules Overview (AGENTS.md)
+### 2. Review the Performance Rules Overview (`AGENTS.md`)
 Load [AGENTS.md](AGENTS.md) to scan compressed rule summaries organized by category.
 
 ### 3. Load Specific Performance Patterns as Needed
-When you identify specific performance issues, load corresponding reference files for detailed ❌/✅ examples.
+Load only the category references that match the issues you found. Do not pre-load unrelated categories.
 
-### 4. Use the Report Template (For Explicit Audit Requests)
-When users explicitly request a performance audit, load the template for consistent reporting:
-- [assets/output-report-template.md](assets/output-report-template.md) - Structured template with guidance
+### 4. Use the Report Template for Explicit Audit Requests
+When users explicitly request a performance audit, or invoke the skill directly, load the template for consistent reporting:
+- [assets/output-report-template.md](assets/output-report-template.md) - structured template with guidance
 
 ## Performance Optimization Workflow
 
 **Two modes of operation:**
 
-1. **Audit Mode** - Skill invoked directly (`/accelint-ts-performance <path>`) or user explicitly requests performance audit
-   - Generate a structured audit report using the template (Phases 1-2 only)
-   - Report findings for user review before implementation
-   - User decides which optimizations to apply
+1. **Audit Mode** - The skill is invoked directly (`/accelint-ts-performance <path>`) or the user explicitly requests a performance audit.
+   - Generate a structured audit report with the template. Use Phases 1-2 only.
+   - Report findings for user review before implementation.
+   - The user decides which optimizations to apply.
 
-2. **Implementation Mode** - Skill triggers automatically during feature work
-   - Identify and apply optimizations directly (all 4 phases)
-   - No formal report needed
-   - Focus on fixing issues inline
+2. **Implementation Mode** - The skill triggers automatically during feature work.
+   - Identify and apply optimizations directly. Use all 4 phases.
+   - No formal report is needed.
+   - Focus on fixing issues inline.
 
 **Copy this checklist to track progress:**
 
@@ -101,29 +101,30 @@ When users explicitly request a performance audit, load the template for consist
 
 ### Phase 1: Profile to Identify Bottlenecks
 
-**CRITICAL: Audit ALL code for performance anti-patterns.** Do not skip code based on assumptions about usage frequency. Utility functions, formatters, parsers, validators, and data transformations are frequently called in loops, rendering pipelines, or real-time systems even if their implementation appears simple.
+**Profile first when runtime data is available.** Prefer measured hotspots to guesswork.
 
-**When profiling tools are available**, use them to establish baseline measurements:
+Use profiling tools to establish baseline measurements:
 - **Browser**: Chrome DevTools Performance tab
 - **Node.js**: `node --prof script.js && node --prof-process isolate-*.log`
 
-**Whether profiling data is available or not**: Perform systematic static code analysis to identify ALL performance anti-patterns:
+If profiling is unavailable, do a static pass to identify likely performance anti-patterns without claiming they are proven bottlenecks yet:
 - O(n²) complexity (nested loops, repeated searches)
-- Excessive allocations (template literals, object spreads, array methods)
-- Template literal allocation when String() would suffice
+- Excessive allocations (object spreads, intermediate arrays, needless temporaries)
 - Array method chaining (.filter().map())
 - Blocking async operations
-- Try/catch in loops
+- Try/catch in hot loops
 
-**Output**: Complete list of ALL identified anti-patterns with their locations and expected performance impact. Do not filter based on "severity" or "priority" - report everything found.
+**Output:**
+- With profiling: measured bottlenecks plus supporting static findings.
+- Without profiling: likely hotspots and anti-patterns, clearly labeled as hypothesis-level findings.
 
-**When generating audit reports** (when skill is invoked directly via `/accelint-ts-performance <path>` or user explicitly requests performance audit), use the structured template:
-1. Load [assets/output-report-template.md](assets/output-report-template.md) for the report structure
-2. Follow the template's guidance for consistent formatting and issue grouping
+**When generating audit reports** (when the skill is invoked directly via `/accelint-ts-performance <path>` or the user explicitly requests a performance audit), use the structured template:
+1. Load [assets/output-report-template.md](assets/output-report-template.md) for the report structure.
+2. Follow the template guidance for consistent formatting and issue grouping.
 
 ### Phase 2: Analyze and Categorize Issues
 
-For EVERY issue identified in Phase 1, categorize by optimization type:
+Categorize every finding from Phase 1 by optimization type. When profiling data is absent, distinguish measured bottlenecks from static opportunities.
 
 **Categorize ALL issues by optimization type:**
 
@@ -141,13 +142,13 @@ For EVERY issue identified in Phase 1, categorize by optimization type:
 
 Load [references/quick-reference.md](references/quick-reference.md) for detailed issue-to-category mapping and anti-pattern detection.
 
-**Output:** Categorized list of ALL issues with their optimization categories. Do not filter or prioritize - list everything found in Phase 1.
+**Output:** categorized findings with optimization categories, expected gain ranges, and confidence level (measured bottleneck vs static opportunity).
 
 ### Phase 3: Optimize Using Performance Patterns
 
-**Step 1: Identify your bottleneck category** from Phase 2 analysis.
+**Step 1:** Identify the bottleneck category from the Phase 2 analysis.
 
-**Step 2**: Load MANDATORY references for your category. Read each file completely with no range limits.
+**Step 2:** Load the required references for the relevant category. Read each selected file completely with no range limits.
 
 | Category | MANDATORY Files | Optional | Do NOT Load |
 |----------|----------------|----------|-------------|
@@ -159,22 +160,22 @@ Load [references/quick-reference.md](references/quick-reference.md) for detailed
 | **Safety** (unbounded loops, runaway queues) | bounded-iteration.md | — | all others |
 | **Micro-opt** (hot path fine-tuning, 1.1-2x improvements) | currying.md<br>performance-misc.md | — | all others (apply only after algorithmic fixes) |
 
-**Notes**:
-- If bottleneck spans multiple categories, load references for all relevant categories
-- Only apply micro-optimizations if: bottleneck is in hot path, algorithmic optimization already applied, need additional 1.1-2x performance
+**Notes:**
+- If the bottleneck spans multiple categories, load references for all relevant categories.
+- Apply micro-optimizations only if the bottleneck is in a hot path, algorithmic optimization is already applied, and you still need an additional 1.1-2x improvement.
 
 ---
 
-**Step 3: Scan for quick reference during optimization**
+**Step 3:** Scan for quick reference during optimization.
 
 Load [AGENTS.md](AGENTS.md) to see compressed rule summaries organized by category. Use as a quick lookup while implementing patterns from the detailed reference files above.
 
 **Apply patterns systematically:**
 
-1. **Load the reference file** for the identified issue category
-2. **Scan the ❌/✅ examples** to find matching patterns
-3. **Apply the optimization** with minimal changes to preserve correctness
-4. **Add comments** explaining the optimization and referencing the pattern
+1. **Load the reference file** for the identified issue category.
+2. **Scan the ❌/✅ examples** to find matching patterns.
+3. **Apply the optimization** with minimal changes to preserve correctness.
+4. **Add comments** explaining the optimization and referencing the pattern.
 
 **Example optimization:**
 ```typescript
@@ -203,16 +204,16 @@ for (const user of users) {
 ### Phase 4: Verify Improvements
 
 **Measure performance gain:**
-1. Re-run profiler with same inputs
-2. Compare before/after runtime percentages
-3. Document speedup factor (e.g., "2.3x faster")
+1. Re-run the profiler with the same inputs.
+2. Compare before/after runtime percentages.
+3. Document the speedup factor, for example `2.3x faster`.
 
 **Verify correctness:**
-1. Run existing test suite - all tests must pass
-2. Add new tests for edge cases affected by optimization
-3. Manual testing for user-facing functionality
+1. Run the existing test suite. All tests must pass.
+2. Add new tests for edge cases affected by the optimization.
+3. Do manual testing for user-facing functionality.
 
-**Document optimization:**
+**Document optimization when the surrounding codebase benefits from it:**
 ```typescript
 // Performance optimization applied: 2026-01-28
 // Issue: Nested iteration causing O(n²) complexity with 10k items
@@ -220,22 +221,23 @@ for (const user of users) {
 // Speedup: 145x faster (5200ms → 36ms)
 // Verified: All tests pass, manual QA complete
 ```
+Prefer PR descriptions, commit messages, or audit reports when inline comments would add noise or duplicate obvious code intent.
 
 **Deciding whether to keep the optimization:**
-- **>10x speedup:** Always keep if tests pass
-- **2-10x speedup:** Keep if tests pass and code remains maintainable
-- **1.2-2x speedup:** Keep for hot paths (>1000 executions/sec) or real-time systems
-- **1.05-1.2x speedup:** Keep only if trivial change or critical rendering/animation loop
-- **<1.05x speedup:** Revert unless it also improves readability
+- **>10x speedup:** Always keep it if tests pass.
+- **2-10x speedup:** Keep it if tests pass and the code remains maintainable.
+- **1.2-2x speedup:** Keep it for hot paths (>1000 executions/sec) or real-time systems.
+- **1.05-1.2x speedup:** Keep it only if the change is trivial or the code is in a critical rendering/animation loop.
+- **<1.05x speedup:** Revert it unless it also improves readability.
 
 **Real-time systems (60fps rendering, live data visualization):**
-Even 1.05x improvements matter in critical hot paths. Use frame timing profiler to verify impact on frame budget (16.67ms for 60fps).
+Even 1.05x improvements matter in critical hot paths. Use a frame-timing profiler to verify the impact on the frame budget (16.67ms for 60fps).
 
-**If tests fail:** Fix the optimization or revert. Performance bugs are still bugs.
+**If tests fail:** Fix the optimization or revert it. Performance bugs are still bugs.
 
 ## Freedom Calibration
 
-**Calibrate guidance specificity to optimization impact:**
+Use guidance that matches the optimization impact:
 
 | Optimization Type | Freedom Level | Guidance Format | Example |
 |------------------|---------------|-----------------|---------|
@@ -243,21 +245,21 @@ Even 1.05x improvements matter in critical hot paths. Use frame timing profiler 
 | **Caching (2-10x gain)** | Medium freedom | Pattern with examples, cache invalidation strategy | "Memoize with WeakMap if lifecycle matches source objects" |
 | **Micro-optimization (1.1-2x)** | Low freedom | Exact pattern from reference, measure first | "Cache array.length in loop: `for (let i = 0, len = arr.length; ...)`" |
 
-**The test:** "What's the speedup and maintenance cost?"
-- 10x+ speedup → Worth complexity, medium freedom with patterns
-- 2-10x speedup → Justify with measurements, medium freedom
-- 1.2-2x speedup → Valuable for hot paths and real-time systems, low freedom with exact patterns
-- 1.05-1.2x speedup → Only if trivial change or critical hot path (60fps rendering, etc.)
+**The test:** `What's the speedup and maintenance cost?`
+- 10x+ speedup → Worth the complexity. Use medium freedom with patterns.
+- 2-10x speedup → Justify it with measurements. Use medium freedom.
+- 1.2-2x speedup → Valuable for hot paths and real-time systems. Use low freedom with exact patterns.
+- 1.05-1.2x speedup → Keep it only for a trivial change or a critical hot path such as 60fps rendering.
 
 ## Important Notes
 
-- **Audit everything philosophy** - Audit ALL code for performance anti-patterns. Utility functions, formatters, parsers, and validators are frequently called in loops or real-time systems even when they appear simple. Do not make assumptions about usage frequency.
-- **Report all findings** - Whether profiling data is available or not, perform systematic static analysis to identify and report ALL anti-patterns with their expected gains. Do not filter based on "severity" or "priority."
-- **Reference files are authoritative** - The patterns in references/ have been validated. Follow them exactly unless measurements prove otherwise.
-- **Hot path definition** - Code executed >1000 times per user interaction or >100 times per second in server contexts. For real-time systems (60fps rendering, live visualization), hot paths are functions in the critical rendering loop consuming >1ms per frame.
-- **Real-time systems have stricter requirements** - 60fps = 16.67ms frame budget. 120fps = 8.33ms. Even 1.05x improvements in hot paths are valuable. Profile with frame timing, not just total execution time.
-- **Regression testing** - Performance optimizations frequently introduce subtle bugs in edge cases. Add tests before optimizing.
-- **Memory profiling matters** - Some optimizations (memoization, caching) trade memory for speed. Monitor memory usage in production, especially for long-running real-time applications.
+- **Start with evidence when possible** - Prefer profiler-backed hotspots to intuition. If you only have static review, label findings accordingly.
+- **Static review still has value** - Utility functions, formatters, parsers, and validators can end up on hot paths. Audit broadly, but do not overstate certainty without measurements.
+- **Reference files are authoritative defaults** - Follow the patterns in `references/` unless measurements or surrounding code constraints justify a different choice.
+- **Hot path definition** - Code executed >1000 times per user interaction or >100 times per second in server contexts. For real-time systems (60fps rendering, live visualization), hot paths are functions in the critical rendering loop that consume >1ms per frame.
+- **Real-time systems have stricter requirements** - 60fps = 16.67ms frame budget. 120fps = 8.33ms. Even 1.05x improvements in hot paths are valuable. Profile with frame timing, not only total execution time.
+- **Regression testing** - Performance optimizations often introduce subtle edge-case bugs. Add or run tests before and after optimizing.
+- **Memory profiling matters** - Some optimizations, such as memoization and caching, trade memory for speed. Monitor memory usage in production, especially for long-running real-time applications.
 
 ## Quick Decision Tree
 
@@ -286,7 +288,7 @@ Use this table to rapidly identify which optimization category applies.
 | String concatenation in loop with `+` | Quadratic string copying | Micro-opt (performance-misc) | 2-10x |
 
 **How to use this table:**
-1. Identify the pattern from profiler bottleneck
-2. Find matching row in "If You See..." column
-3. Jump to corresponding Optimization Category in Phase 3
-4. Load MANDATORY reference files for that category
+1. Identify the pattern from the profiler bottleneck.
+2. Find the matching row in the `If You See...` column.
+3. Jump to the corresponding optimization category in Phase 3.
+4. Load the MANDATORY reference files for that category.

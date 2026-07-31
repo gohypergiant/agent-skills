@@ -1,11 +1,11 @@
 ---
 name: generate-docs
-description: Generate fumadocs MDX documentation for agent skills. Use when users say "generate docs", "document this skill", "create fumadocs for X", "update skill docs", "validate docs", or when working with docs/content/docs directory. Handles initial generation, smart updates preserving manual edits, and validation. Uses SHA tracking for three-way merge logic.
+description: Use when creating, refreshing, or validating published Fumadocs MDX pages for skill packages in this repository, especially for requests about skill docs under `docs/content/docs/`, generating a page from `skills/<name>/SKILL.md`, checking whether a published skill page is stale, or updating a published page while preserving manual edits with source/doc SHA tracking. Do not use for editing `SKILL.md` prose itself, generic README or architecture docs, or broad markdown housekeeping outside the skill-doc workflow.
 license: Apache-2.0
 metadata:
   internal: true
   author: "accelint"
-  version: "1.0"
+  version: "1.0.1"
 ---
 
 # Generate Docs
@@ -17,11 +17,28 @@ Generate fumadocs MDX documentation for agent skills with SHA tracking and smart
 **Engineers maintain the documentation. You assist.**
 
 Your role:
-1. **Draft initial content** from source code
-2. **Suggest updates** when code changes
-3. **Validate quality** (links, structure, freshness)
+1. **Draft initial content** from source code.
+2. **Suggest updates** when code changes.
+3. **Validate quality** such as links, structure, and freshness.
 
-All generated content is editable markdown. Engineers can freely customize—adapt to their patterns rather than enforcing rigid templates.
+All generated content is editable markdown. Engineers can customize it freely. Adapt to their patterns instead of enforcing rigid templates.
+
+## NEVER Do
+
+- Do not mirror the source skill's internal execution plan into the published doc.
+- Do not expose maintainer-only scaffolding unless it changes the reader's expectations.
+- Do not bloat pages with repeated trigger lists, duplicated summaries, or transcript-style examples.
+- Do not infer capabilities that are not grounded in `skills/<name>/SKILL.md` or the existing doc.
+- Do not overwrite manually edited docs as if they were generated-only content.
+
+## Before You Start
+
+Before you generate or update docs, confirm the minimum missing context:
+- Which skill or skills are in scope?
+- Are you generating new docs, refreshing stale docs, or validating existing docs?
+- Are there user priorities such as brevity, examples, prerequisites, or preserving custom prose?
+
+Skip these questions only when the request already answers them clearly.
 
 ## Target Audience
 
@@ -31,32 +48,32 @@ Write for someone trying to understand whether a skill is useful, what it helps 
 
 ## Writing Style Rules
 
-Prose should be to the point—help folks understand what the skill is for, when to reach for it, and what value it provides. Follow these patterns:
+Keep the prose direct. Help the reader understand what the skill is for, when to use it, and what value it provides.
 
-1. **Lead with what it helps a human do** - Start from user outcomes, not internal implementation
-2. **Prefer human-facing explanation over agent-facing instructions** - Describe behavior and value before invocation mechanics
-3. **Name examples by use case** - "Example: Auditing a weak skill description" not "Example 1"
-4. **Translate internals into benefits** - If the source describes internal orchestration, explain why that matters to the user instead of copying the instruction literally
-5. **Summarize patterns, do not restate every rule** - Explain the skill's shape and behavior at a useful level of abstraction instead of enumerating every nitpick from SKILL.md
-6. **Standard markdown only** - Must work in fumadocs
-7. **Use callouts only for user-relevant gotchas** - Use `> **Good to know:**` only when it helps a human choose, use, or not misuse the skill
-8. **Compress aggressively** - Prefer short, information-dense summaries over walkthroughs, transcripts, or exhaustive inventories
-9. **Avoid duplication across sections** - Each section should add new information rather than restating the same point in different words
-10. **Default to a short page** - Most pages should feel skimmable in one pass rather than like internal design docs
+1. **Lead with what it helps a human do** — Start from user outcomes, not internal implementation.
+2. **Prefer human-facing explanation over agent-facing instructions** — Describe behavior and value before invocation mechanics.
+3. **Name examples by use case** — Use `Example: Auditing a weak skill description`, not `Example 1`.
+4. **Translate internals into benefits** — If the source describes internal orchestration, explain why that matters to the user instead of copying the instruction literally.
+5. **Summarize patterns, do not restate every rule** — Explain the skill's shape and behavior at a useful level of abstraction instead of enumerating every detail from `SKILL.md`.
+6. **Use standard markdown only** — It MUST work in Fumadocs.
+7. **Use callouts only for user-relevant gotchas** — Use `> **Good to know:**` only when it helps a human choose, use, or not misuse the skill.
+8. **Compress aggressively** — Prefer short, information-dense summaries over walkthroughs, transcripts, or exhaustive inventories.
+9. **Avoid duplication across sections** — Each section should add new information instead of restating the same point.
+10. **Default to a short page** — Most pages should feel skimmable in one pass, not like internal design docs.
 
-Remove AI-sounding phrasing like "leverages", "streamlines", "comprehensive", "robust". Keep it direct and human.
+Remove AI-sounding phrasing such as `leverages`, `streamlines`, `comprehensive`, and `robust`. Keep it direct and human.
 
 ## Compression Heuristics
 
 Use these as strong defaults:
 
-- Aim for roughly **500–900 words** for most pages
-- Prefer **4–6 total sections** on most pages
-- Prefer **3–6 bullets per section**
-- Default `## How It Works` to **3–5 bullets** or **3–4 short subsections**
-- Keep examples short: **one command + one outcome summary** beats transcript-style walkthroughs
+- Aim for roughly **500–900 words** for most pages.
+- Prefer **4–6 total sections** on most pages.
+- Prefer **3–6 bullets per section**.
+- Default `## How It Works` to **3–5 bullets** or **3–4 short subsections**.
+- Keep examples short: **one command + one outcome summary** is better than a transcript-style walkthrough.
 
-Longer pages are justified only when the skill has multiple genuinely distinct user-facing modes or deliverables.
+Use a longer page only when the skill has multiple genuinely distinct user-facing modes or deliverables.
 
 ## Audience Filter
 
@@ -79,17 +96,18 @@ Before including any detail, classify it:
 - Internal architecture or implementation mechanics such as progressive disclosure, reference-loading strategy, file traversal order, hidden orchestration, subagent coordination, or context-management tactics unless they materially affect the user's interaction, deliverable, or expectations
 - Low-value operational notes that do not help a human decide whether to use the skill
 
-### Consumer relevance test
+### Consumer Relevance Test
 
-Before including any detail, ask:
+Before you include any detail, ask:
 1. Does this help a user decide whether to use the skill?
-2. Does this help them understand what kind of behavior or output to expect?
-3. Would this still make sense if the reader never saw the underlying SKILL.md?
+2. Does this help them understand what behavior or output to expect?
+3. Would this still make sense if the reader never saw the underlying `SKILL.md`?
 
 If the answer is no, omit it.
 
-### Translate instead of copying
-If the source contains agent-operational guidance with user-facing significance, convert it into human language. Never describe how the skill is implemented when you can describe what the user experiences or receives instead.
+### Translate Instead of Copying
+
+If the source contains agent-operational guidance with user-facing significance, convert it into human language. Do not describe how the skill is implemented when you can describe what the user experiences or receives instead.
 
 Examples:
 - Internal: "Load references only when needed"
@@ -131,9 +149,9 @@ updated: YYYY-MM-DD
 - `## Degrees of Freedom` - How prescriptive vs flexible the skill is, when relevant
 - `## Related` - Links to related skills
 
-Do not add sections just because the source contains them. Start with the three core sections and keep the page tight unless extra structure clearly improves consumer understanding.
+Do not add sections just because the source contains them. Start with the three core sections. Keep the page tight unless extra structure clearly improves consumer understanding.
 
-Prefer **4–6 total sections** on most pages. If `## Good to Know` exists, do not also create extra boundary/gotcha sections such as `## Common Issues`, `## Critical Setup Rules`, `## Review Format`, or `## Key Behaviors` unless they are truly distinct and essential.
+Prefer **4–6 total sections** on most pages. If `## Good to Know` exists, do not also create extra boundary or gotcha sections such as `## Common Issues`, `## Critical Setup Rules`, `## Review Format`, or `## Key Behaviors` unless they are truly distinct and essential.
 
 When in doubt, use a short `## Good to Know` section instead of inventing a specialized heading.
 
@@ -141,24 +159,25 @@ Avoid `## Common Pitfalls` as a default catch-all. If the content is not actuall
 
 Avoid `## Key Patterns` and `## Anti-Patterns` as default generated sections. These often balloon into a restatement of the SKILL.md internals. Only surface that material indirectly through concise behavior summaries in `## How It Works`, or through a short `## Good to Know` / `## Limits` section when it materially changes user expectations.
 
-**IMPORTANT**: 
-- Body starts with `##`, NOT `#` (frontmatter title becomes page H1)
-- Do NOT duplicate description paragraph after frontmatter (it's rendered in page header)
-- Code fences need language tags
+## Required Structure Checks
+
+- Body starts with `##`, NOT `#` because the frontmatter title becomes the page H1.
+- Do NOT duplicate the description paragraph after frontmatter because the page header already renders it.
+- Code fences need language tags.
 
 ## SHA Tracking System
 
 The dual-SHA system enables smart updates that preserve manual edits.
 
-**source_sha**: Hash of source file at time docs were generated
-- Tracks which version of code was documented
-- Run: `git hash-object <source-file>`
-- Enables staleness detection
+**`source_sha`** — Hash of the source file at the time the docs were generated.
+- Tracks which version of the source was documented.
+- Run: `git hash-object <source-file>`.
+- Enables staleness detection.
 
-**doc_sha**: Hash of documentation content (excluding frontmatter)
-- Tracks whether docs were manually edited
-- Generate from markdown content only
-- Enables three-way merge
+**`doc_sha`** — Hash of the documentation content, excluding frontmatter.
+- Tracks whether the docs were manually edited.
+- Generate it from markdown content only.
+- Enables three-way merge.
 
 ### Three-Way Merge Logic
 
@@ -170,16 +189,16 @@ ELSE:
 ```
 
 **When updating:**
-1. Compare `source_sha` to current HEAD → what changed in code
-2. Compare `doc_sha` to current doc → whether user edited docs
-3. If user edited: preserve their prose, only update code-related changes
-4. If user didn't edit: regenerate affected sections from code
+1. Compare `source_sha` to current HEAD to see what changed in the source.
+2. Compare `doc_sha` to the current doc to see whether the user edited the docs.
+3. If the user edited the docs, preserve their prose and update only the code-related changes.
+4. If the user did not edit the docs, regenerate the affected sections from the source.
 
 ## Step-by-Step Process
 
 ### 1. Read and Analyze Source
 
-Read the skill's SKILL.md completely from `skills/` directory only (ignore .agent/skills, .claude/skills, .pi/skills). Look for:
+Read the skill's `SKILL.md` completely from the `skills/` directory only. Ignore `.agent/skills`, `.claude/skills`, and `.pi/skills`. Look for:
 - Frontmatter (name, description, metadata)
 - Main workflow sections
 - Anti-patterns ("NEVER Do X")
@@ -190,7 +209,7 @@ Exclude test files from documentation output:
 - Skip `*.test.ts`, `*.test.tsx` files
 - Skip `__tests__/`, `__mocks__/` directories
 
-Read existing documentation if present to understand current state.
+If existing documentation is present, read it to understand the current state.
 
 ### 2. Compute source_sha
 
@@ -204,7 +223,7 @@ Store this value for frontmatter.
 
 Extract information from source—don't infer or hallucinate. Focus on:
 
-**Opening section**: Start with user-facing outcomes and include a short invocation block so every skill doc shows the slash command near the top. Keep it brief.
+**Opening section**: Start with user-facing outcomes. Include a short invocation block so every skill doc shows the slash command near the top. Keep it brief.
 ```markdown
 ## What It Helps You Do
 
@@ -221,7 +240,7 @@ It is especially useful when you need to:
 - [Outcome 3]
 ```
 
-Keep the invocation block to 2–3 bullets max. The goal is discoverability, not a long trigger list.
+Keep the invocation block to 2–3 bullets maximum. The goal is discoverability, not a long trigger list.
 
 For tool-like skills, concrete invocation examples are useful. For process, audit, or judgment skills, spend more space on outcomes and behavior than on command syntax.
 
@@ -268,7 +287,7 @@ Default this section to **3–5 bullets** or **3–4 short subsections**. Do not
 
 Only add `### Intelligent Discovery Process` when the section contains concrete, user-visible behavior such as phased scanning, targeted interviews, preview/approval checkpoints, or other workflow stages that change the user's experience. Do not include it for generic statements like "the skill adapts its guidance" or "the skill goes deeper where needed."
 
-If the explanation reads like instructions for the agent rather than expectations for the human reader, compress it.
+If the explanation reads like instructions for the agent instead of expectations for the human reader, compress it.
 
 This section should NOT list internal file reads, traversal order, hidden resource names, long lists of anti-patterns / rules copied from SKILL.md, or internal implementation mechanics that do not change the user's experience.
 
@@ -286,7 +305,7 @@ This section should NOT list internal file reads, traversal order, hidden resour
 [One short sentence about what the user gets back]
 ```
 
-Examples should demonstrate use cases, not simulate the entire internal workflow. Prefer one command + one outcome summary over transcript-style step-by-step narration. If two examples teach the same thing, keep the clearer one.
+Examples should demonstrate use cases, not simulate the entire internal workflow. Prefer one command plus one outcome summary over transcript-style step-by-step narration. If two examples teach the same thing, keep the clearer one.
 
 **Good to Know** (optional): User-facing scope boundaries, prerequisites, limitations, expected outputs, or sibling-skill distinctions. This section is not for maintainer notes or internal implementation details.
 ```markdown
@@ -317,7 +336,7 @@ Examples should demonstrate use cases, not simulate the entire internal workflow
 - [What the user can review, edit, or approve]
 ```
 
-Do NOT use this section for advisory or best-practice skills when the content would just restate the guidance already described in `## What It Helps You Do`. If the "output" is merely recommendations, guidance, or help, fold that into `## What It Helps You Do` and omit `## What You Get`.
+Do NOT use this section for advisory or best-practice skills when the content would only restate the guidance already described in `## What It Helps You Do`. If the "output" is merely recommendations, guidance, or help, fold that into `## What It Helps You Do` and omit `## What You Get`.
 
 Do not turn this section into an exhaustive inventory of every subsection or internal artifact unless that detail materially helps the user decide whether to use the skill.
 
@@ -359,11 +378,11 @@ For example:
 - Bad: `Loads project context into subagent prompts`
   - Good: `Uses project conventions so implementation stays aligned with the repo.`
 
-Keep prose concise. Prefer user outcomes and behavior first. Show commands or internal steps only when they help the human apply the skill.
+Keep the prose concise. Prefer user outcomes and behavior first. Show commands or internal steps only when they help the human apply the skill.
 
 ## Final Style Check
 
-Before writing or saving, verify:
+Before you write or save, verify:
 - Is the page primarily about user outcomes?
 - Are any sections duplicating points already made elsewhere?
 - Does `## How It Works` read like a workflow summary rather than an implementation manual?
@@ -371,6 +390,7 @@ Before writing or saving, verify:
 - Could a specialized heading be folded into `## Good to Know`?
 - Is any phrase only useful to a skill maintainer rather than a user?
 - Would a normal user care about this detail if they never read the underlying `SKILL.md`?
+
 ### 4. Add Frontmatter
 
 ```yaml
@@ -388,11 +408,11 @@ updated: YYYY-MM-DD
 ### 5. Validate Markdown Quality
 
 Check:
-- Body starts with H2 (##), NOT H1 (#)
-- No duplicate description paragraph after frontmatter
-- Code fences have language tags
-- Examples have descriptive names (not "Example 1")
-- Links use markdown format, not bare URLs
+- Body starts with H2 (`##`), NOT H1 (`#`).
+- No duplicate description paragraph appears after frontmatter.
+- Code fences have language tags.
+- Examples have descriptive names, not `Example 1`.
+- Links use markdown format, not bare URLs.
 - **MDX special characters are escaped:**
   - `<` followed by numbers → use `&lt;` (e.g., "&lt;500 lines" not "<500 lines")
   - `>` followed by numbers → use `&gt;` (e.g., "&gt;50%" not ">50%")
@@ -414,10 +434,10 @@ Update frontmatter: replace `doc_sha: pending` with computed hash.
 
 ### 7. Write Output
 
-**IMPORTANT - Path Construction:**
-- Strip `accelint-` prefix from skill name for docs path
-- Example: `skills/accelint-ac-to-playwright/` → `docs/content/docs/ac-to-playwright/index.mdx`
-- Example: `skills/skill-creator/` → `docs/content/docs/skill-creator/index.mdx` (no prefix to strip)
+**Path construction rules:**
+- Strip the `accelint-` prefix from the skill name for the docs path.
+- Example: `skills/accelint-ac-to-playwright/` → `docs/content/docs/ac-to-playwright/index.mdx`.
+- Example: `skills/skill-creator/` → `docs/content/docs/skill-creator/index.mdx` and there is no prefix to strip.
 
 Write to `docs/content/docs/{skill-name-without-accelint-prefix}/index.mdx`.
 
@@ -464,22 +484,21 @@ fi
 
 ### 3. Apply Merge Logic
 
-**If no manual edits** (doc_sha matches):
-- Regenerate affected sections from updated source
-- Update source_sha and doc_sha
-- Update `updated` date
+**If no manual edits** (`doc_sha` matches):
+- Regenerate the affected sections from the updated source.
+- Update `source_sha` and `doc_sha`.
+- Update the `updated` date.
 
-**If manual edits detected** (doc_sha doesn't match):
-- Read both old source and new source to identify changes
-- Preserve user's prose structure
-- Update only code examples or references that changed
-- Ask user to review before overwriting
-- Update source_sha, recompute doc_sha
-- Update `updated` date
+**If manual edits are detected** (`doc_sha` does not match):
+- Read both the old source and the new source to identify changes.
+- Preserve the user's prose structure.
+- Update only the code examples or references that changed.
+- Ask the user to review before overwriting.
+- Update `source_sha`, recompute `doc_sha`, and update the `updated` date.
 
 ## Validation
 
-Run these checks on command or when user asks to "validate docs":
+Run these checks on command or when the user asks to `validate docs`:
 
 ### 1. SHA Staleness
 
@@ -499,14 +518,14 @@ fi
 
 ### 2. Broken Cross-References
 
-Parse markdown links: `[text](../path/to/file.mdx)`
-Verify linked files exist. Report broken links.
+Parse markdown links such as `[text](../path/to/file.mdx)`.
+Verify that the linked files exist. Report broken links.
 
 ### 3. Missing Frontmatter
 
-Required fields: `title`, `description`, `source`, `source_sha`, `doc_sha`, `updated`
+Required fields: `title`, `description`, `source`, `source_sha`, `doc_sha`, `updated`.
 
-Error if any missing.
+Report an error if any required field is missing.
 
 ### 4. Structural Issues
 
@@ -520,19 +539,12 @@ Error if any missing.
 List skills in `skills/` that have no corresponding docs.
 List docs that reference non-existent source files.
 
-## Before You Start
-
-Ask the user:
-1. **Which skill(s)?** - Specific skill name or "all skills"?
-2. **Generate or update?** - Creating new docs or updating existing?
-3. **Focus areas?** - If unsure what to include, ask what matters most to them
-
 ## Important Notes
 
-- Extract from source, don't infer behavior
-- Match the direct, concise voice of the reference examples
-- Preserve manual edits when updating (three-way merge)
-- Be specific in examples—show realistic use cases
-- Ask when uncertain about what to include
-- Default to human-facing relevance over internal execution details
-- Do not surface agent-operational scaffolding unless it materially changes user expectations or outcomes
+- Extract from the source. Do not infer behavior.
+- Match the direct, concise voice of the reference examples.
+- Preserve manual edits when updating through the three-way merge flow.
+- Be specific in examples. Show realistic use cases.
+- Ask when you are uncertain what to include.
+- Default to human-facing relevance over internal execution details.
+- Do not surface agent-operational scaffolding unless it materially changes user expectations or outcomes.

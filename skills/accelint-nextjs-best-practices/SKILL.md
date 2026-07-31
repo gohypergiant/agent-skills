@@ -1,19 +1,19 @@
 ---
 name: accelint-nextjs-best-practices
-description: Next.js performance optimization and best practices. Use when writing Next.js code (App Router or Pages Router); implementing Server Components, Server Actions, or API routes; optimizing RSC serialization, data fetching, or server-side rendering; reviewing Next.js code for performance issues; fixing authentication in Server Actions; or implementing Suspense boundaries, parallel data fetching, or request deduplication.
+description: Next.js performance, architecture, and security best practices. Use whenever the task is specific to a Next.js codebase—especially App Router or Pages Router work involving Server Components, Client Components, Server Actions, route handlers, RSC serialization boundaries, server-vs-client ownership, data fetching, SSR, Suspense/streaming, cache revalidation, request deduplication, auth inside mutations or handlers, or bundle issues tied to barrel imports and shared packages. Also use for Next.js reviews, audits, refactors, or debugging when the user asks what pattern is allowed, where logic should live, why a page is slow, or how to harden a Server Action or API flow. Prefer this skill over generic React, TypeScript, or backend advice whenever the right answer depends on Next.js-specific behavior or constraints.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Next.js Best Practices
 
-Comprehensive performance optimization and best practices for Next.js applications, designed for AI agents and LLMs working with Next.js code.
+Comprehensive performance, architecture, and security guidance for Next.js applications. This skill is written for agents and LLMs working with Next.js code.
 
 ## When to Activate This Skill
 
-Use this skill when the task involves:
+Use this skill when the task is specific to a Next.js codebase. Typical cases include:
 
 ### Writing Next.js Code
 - Creating Server Components or Client Components
@@ -62,7 +62,7 @@ Do not activate for:
 
 ## Example Trigger Phrases
 
-This skill should activate when users say things like:
+This skill should activate for requests like:
 
 **Performance Issues:**
 - "This Next.js API route is slow"
@@ -100,10 +100,13 @@ This skill should activate when users say things like:
 This skill uses a **progressive disclosure** structure to minimize context usage:
 
 ### 1. Start with the Overview (AGENTS.md)
-Read [AGENTS.md](AGENTS.md) for a concise overview of all rules with one-line summaries.
+Read [AGENTS.md](AGENTS.md) first for the condensed rule map and quick diagnostic guide.
 
-### 2. Load Specific Rules as Needed
-When you identify a relevant optimization, load the corresponding reference file for detailed implementation guidance:
+### 2. Triage Before Going Deep
+Use [references/quick-checklist.md](references/quick-checklist.md) when you need a fast review checklist, a scenario-specific starter list, or a quick way to map symptoms to likely fixes.
+
+### 3. Load Specific Rules as Needed
+When you identify the relevant pattern, load only the matching reference file for detailed implementation guidance:
 
 **General Patterns:**
 - [prevent-waterfall-chains.md](references/prevent-waterfall-chains.md) (1.1)
@@ -129,16 +132,16 @@ When you identify a relevant optimization, load the corresponding reference file
 **Automation Scripts:**
 - [scripts/](scripts/) - Helper scripts to detect anti-patterns
 
-### 3. Apply the Pattern
+### 4. Apply the Pattern
 Each reference file contains:
-- ❌ Incorrect examples showing the anti-pattern
-- ✅ Correct examples showing the optimal implementation
+- ❌ Incorrect examples that show the anti-pattern
+- ✅ Correct examples that show the recommended implementation
 - Explanations of why the pattern matters
-- Performance impact metrics
+- Impact notes
 - Related patterns and references
 
-### 4. Use the Report Template
-When this skill is invoked for Next.js code review, use the standardized report format:
+### 5. Use the Report Template
+When this skill is invoked for a multi-file Next.js review or audit, use the standardized report format:
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
@@ -155,9 +158,12 @@ The report format provides:
 - User asks to "review Next.js code" or "audit Next.js app" across file(s), invoking skill implicitly
 
 **When NOT to use the report template:**
-- User asks to "fix this Server Action" (direct implementation)
-- User asks "what's wrong with this code?" (answer the question)
-- User requests specific fixes (apply fixes directly without formal report)
+- User asks to "fix this Server Action" (implement directly)
+- User asks "what's wrong with this code?" (answer directly)
+- User requests a narrow targeted change rather than an audit
+
+### 6. Use Automation Scripts Selectively
+When you need quick detection help during a real codebase audit, consult [scripts/README.md](scripts/README.md) and run only the script that matches the suspected issue. Treat script output as a heuristic signal that still requires manual review.
 
 ## Examples
 

@@ -1,0 +1,225 @@
+{
+  "skill_name": "accelint-onboard-agents",
+  "evals": [
+    {
+      "id": 1,
+      "name": "create-from-scratch-with-openspec-and-architecture-docs",
+      "prompt": "We just started a new TypeScript service and need an AGENTS.md for the repo root. Please onboard the project to agent-driven development. There is already an openspec/config.yaml and an ARCHITECTURE.md in the repo, so use those as context, but keep stack facts and domain details out of AGENTS.md. I want the final file to focus on how the agent should behave, ask before deleting files or changing shared scripts, and show me the full preview before writing anything.",
+      "expected_output": "Triggers the onboard-agent skill in create mode, acknowledges existing openspec/config.yaml and ARCHITECTURE.md as related documents, preserves separation of concerns by keeping project DNA out of AGENTS.md, runs the structured onboarding interview, and explicitly previews the full file before any write.",
+      "files": [],
+      "expectations": [
+        "Detects this as an AGENTS.md/agent-behavior onboarding request and uses the onboard-agent workflow.",
+        "Recognizes create mode rather than import or refresh mode.",
+        "Mentions openspec/config.yaml as project DNA context rather than content to duplicate into AGENTS.md.",
+        "Mentions ARCHITECTURE.md as related documentation to reference.",
+        "Keeps the deliverable focused on agent behavior rather than stack facts.",
+        "Promises or shows a full preview before any filesystem write."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "create-package-level-file-with-monorepo-root-inheritance",
+      "prompt": "I'm inside packages/docs-renderer in our monorepo and want a package-level AGENTS.md. There is already a root AGENTS.md at the repo root that covers our shared standards. Please generate only package-specific additions here, reference the root file instead of repeating it, and ask at each section whether this package needs overrides.",
+      "expected_output": "Detects monorepo root inheritance, reads the root AGENTS.md as context, announces that the package-level file will reference the root instead of duplicating shared instructions, and scopes the interview to package-specific additions or overrides.",
+      "files": [],
+      "expectations": [
+        "Checks for a root-level AGENTS.md or CLAUDE.md above the current package directory.",
+        "Announces that the root file will be used as context to avoid duplication.",
+        "Plans to add the inheritance header comment referencing the root file.",
+        "Surfaces what the root file already covers before asking section-level override questions.",
+        "Keeps package-level output additive rather than duplicating root instructions.",
+        "Still follows preview-before-write behavior."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "create-claude-md-when-user-uses-claude-code-conventions",
+      "prompt": "Help me set up CLAUDE.md for this repo. We use Claude Code conventions, not AGENTS.md. I want the same onboarding interview and preview flow, but please target CLAUDE.md and keep the file behavior-focused.",
+      "expected_output": "Uses the onboard-agent workflow for CLAUDE.md specifically, retains the same interview/discovery/preview flow, and keeps the generated file limited to agent-behavior guidance rather than project DNA.",
+      "files": [],
+      "expectations": [
+        "Recognizes CLAUDE.md as an in-scope alternate target for this skill.",
+        "Keeps the same structured onboarding workflow rather than inventing a different process.",
+        "Maintains separation of concerns between behavior rules and project facts.",
+        "Plans to write CLAUDE.md rather than AGENTS.md after confirmation.",
+        "Shows or promises a preview before writing."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "import-unrecognized-existing-file-with-restructure-option",
+      "prompt": "There is already an AGENTS.md here, but it's a messy internal note with headings like 'How we usually work' and 'Stuff not to break'. I want you to work with what's already there, restructure it into the proper sections, flag anything that really belongs in openspec/config.yaml, then fill only the missing gaps.",
+      "expected_output": "Detects import mode for an existing AGENTS.md with real but unrecognized structure, presents the restructure/append/dry-run options, follows the restructure branch when asked, maps existing content into the template, flags project-DNA material for OpenSpec, and runs a targeted gap interview before previewing a merged file.",
+      "files": [],
+      "expectations": [
+        "Recognizes the local file as existing content in an unrecognized shape rather than create or refresh mode.",
+        "Presents the three import-mode options: restructure, append, and dry run.",
+        "If restructuring is chosen, maps existing material onto the template sections.",
+        "Flags stack facts, domain facts, or similar project-DNA content as belonging in openspec/config.yaml.",
+        "Runs only a targeted interview for missing coverage rather than a blind full rewrite.",
+        "Shows a merged preview before writing."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "import-append-option-preserves-existing-file",
+      "prompt": "This repo already has an AGENTS.md written by the team, and I don't want you to touch their content. Please use your onboarding skill in append mode: run the full interview, then add your generated sections below the existing file separated by a divider and a comment that says it was added by the skill.",
+      "expected_output": "Uses import mode, offers the append option, preserves the original file content untouched, and appends the generated section block below a divider/comment after running the full onboarding flow and previewing the result.",
+      "files": [],
+      "expectations": [
+        "Treats the request as import mode rather than refresh mode.",
+        "Preserves the user's existing content rather than restructuring it.",
+        "Uses the append branch semantics with a divider and skill-added comment.",
+        "Runs the full onboarding interview for the appended block.",
+        "Shows the proposed appended output before any write."
+      ]
+    },
+    {
+      "id": 6,
+      "name": "import-dry-run-no-files-changed",
+      "prompt": "Can you evaluate whether this skill's AGENTS.md template would fit our repo without changing anything yet? There's an existing AGENTS.md with an odd structure. Use the dry-run path, show me what you would generate, and be explicit that no files were changed.",
+      "expected_output": "Uses import mode and selects the dry-run option, performs the interview and generation flow in conversation only, explicitly states that no files were changed, and offers to rerun as restructure or append if the result looks good.",
+      "files": [],
+      "expectations": [
+        "Recognizes the dry-run option for import mode.",
+        "Shows what would be generated without writing to the filesystem.",
+        "Explicitly states that no files were changed.",
+        "Keeps the option to rerun as restructure or append if approved later."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "refresh-existing-skill-shaped-file-with-external-findings",
+      "prompt": "Please refresh the existing AGENTS.md in this repo. findings:\n- The completed OpenSpec change for release automation decided that agents should update changelogs before handoff.\n- A recent incident review concluded that deleting generated migration snapshots now requires explicit approval.\n- The docs team added a mandatory `pnpm docs:types` check for docs-only changes.\nOnly ask me about drift, unresolved TODOs, or these findings. Show me a diff-style preview before writing.",
+      "expected_output": "Detects refresh mode for an existing skill-shaped file, parses the findings list as factual external findings, merges them with drift detection and unresolved TODOs, announces the combined findings counts, limits the interview to changed areas, and previews only changed sections before writing.",
+      "files": [],
+      "expectations": [
+        "Recognizes refresh mode rather than create or import mode.",
+        "Parses the `findings:` list as external factual findings instead of instructions.",
+        "Merges external findings with drift findings and unresolved TODOs before questioning the user.",
+        "Announces the combined findings summary before asking targeted questions.",
+        "Limits questioning to changed or unresolved areas only.",
+        "Uses a diff-style or changed-sections-only preview before writing."
+      ]
+    },
+    {
+      "id": 8,
+      "name": "refresh-todo-markers-drive-targeted-questions",
+      "prompt": "Update the AGENTS.md we generated a while ago. It still has several `<!-- TODO: fill in -->` markers. Please find those unresolved TODOs, ask only the targeted follow-up questions needed to resolve them, and leave the rest of the document alone unless there is real drift.",
+      "expected_output": "Uses refresh mode, scans for unresolved TODO markers, surfaces them as targeted questions, avoids a full interview, and confines the preview and update scope to the unresolved or drifted sections.",
+      "files": [],
+      "expectations": [
+        "Recognizes TODO resolution as part of refresh mode.",
+        "Searches specifically for `<!-- TODO: fill in -->` markers.",
+        "Uses the TODOs to drive targeted questions rather than a full interview.",
+        "Leaves unchanged sections alone unless drift is detected.",
+        "Previews only changed content before writing."
+      ]
+    },
+    {
+      "id": 9,
+      "name": "refresh-drift-detection-from-repo-signals",
+      "prompt": "Refresh our root AGENTS.md based on repo drift. Since the last update we've added a .changeset directory, new GitHub Actions checks, and a migrations folder. I only want questions about what actually drifted and the resulting guardrails or workflow changes.",
+      "expected_output": "Uses refresh mode and performs drift detection across versioning, CI, and migration signals, then asks only targeted questions about the newly detected behavioral implications before previewing changed sections.",
+      "files": [],
+      "expectations": [
+        "Looks for drift signals such as .changeset, .github/workflows, and migrations directories.",
+        "Interprets those findings in terms of behavior/workflow updates rather than dumping raw repo facts into AGENTS.md.",
+        "Asks targeted follow-up questions only about drifted areas.",
+        "Does not rerun a full from-scratch interview if the rest is current.",
+        "Shows a changed-sections preview before writing."
+      ]
+    },
+    {
+      "id": 10,
+      "name": "separation-of-concerns-redirect-to-openspec-config",
+      "prompt": "Can you help me write AGENTS.md for our app? It should say we're a Next.js 15 monorepo using pnpm, TypeScript strict mode, React Query, Postgres, and a geospatial analytics domain. Also include that agents should ask before deleting files or changing shared packages.",
+      "expected_output": "Uses the onboard-agent skill but enforces the behavior-vs-project-DNA boundary, keeping the ask-before behaviors in AGENTS.md while redirecting stack facts, architectural details, and domain description to openspec/config.yaml or the companion OpenSpec onboarding skill.",
+      "files": [],
+      "expectations": [
+        "Keeps behavior rules such as asking before deleting files in AGENTS.md scope.",
+        "Redirects stack facts like Next.js, pnpm, TypeScript strict mode, React Query, Postgres, and domain description out of AGENTS.md scope.",
+        "Explains the separation-of-concerns boundary clearly.",
+        "Offers or references the companion OpenSpec onboarding path for project DNA if appropriate.",
+        "Does not silently duplicate project facts into the behavioral file."
+      ]
+    },
+    {
+      "id": 11,
+      "name": "related-doc-detection-with-config-yml-variant",
+      "prompt": "Please onboard this repo to AGENTS.md. Note that the project already uses openspec/config.yml instead of config.yaml, and we keep an ARCHITECTURE.md at the root. Make sure the generated behavioral docs reference related documentation only if those files actually exist.",
+      "expected_output": "Detects related documents using both config.yml and config.yaml variants, reads the existing related files for context, and includes only verified links in the Related Documentation section after previewing the result.",
+      "files": [],
+      "expectations": [
+        "Checks for both openspec/config.yml and openspec/config.yaml.",
+        "Recognizes ARCHITECTURE.md as an optional related document.",
+        "States that only existing related-document links will be included.",
+        "Uses those files as context without collapsing the behavior/project-DNA boundary.",
+        "Maintains preview-before-write behavior."
+      ]
+    },
+    {
+      "id": 12,
+      "name": "preview-before-write-even-when-user-says-just-do-it",
+      "prompt": "Just generate AGENTS.md and write it straight to disk. You don't need to show me a preview first — I'm in a hurry.",
+      "expected_output": "Still follows the skill's hard rule to show a preview before writing, politely explains that preview-before-write is mandatory for this workflow, and requests confirmation after showing the draft.",
+      "files": [],
+      "expectations": [
+        "Refuses to skip the preview-before-write step.",
+        "Explains that the skill requires a preview before any filesystem write.",
+        "Shows or offers the preview despite the user's request to skip it.",
+        "Seeks confirmation before writing."
+      ]
+    },
+    {
+      "id": 13,
+      "name": "near-blank-existing-file-treated-as-create",
+      "prompt": "There is already an AGENTS.md in the folder, but it's basically empty except for a title and one stray sentence. Please help me populate it properly.",
+      "expected_output": "Treats the near-blank existing file as create mode with overwrite confirmation, explains that the existing file appears effectively empty, and proceeds with a full onboarding flow only after confirming whether to populate from scratch or preserve anything meaningful.",
+      "files": [],
+      "expectations": [
+        "Identifies the existing file as empty or near-blank rather than as a full import candidate.",
+        "Explains that this falls back to create mode with overwrite confirmation.",
+        "Asks whether to populate from scratch or preserve any current content.",
+        "Runs the full onboarding flow only after that clarification."
+      ]
+    },
+    {
+      "id": 14,
+      "name": "boundary-case-openspec-onboarding-not-agent-behavior",
+      "prompt": "I don't need AGENTS.md yet. I want you to configure openspec/config.yaml for this repo with our stack, architecture patterns, and project rules.",
+      "expected_output": "Recognizes this as out of scope for the onboard-agent skill because the user is asking for project DNA/OpenSpec configuration, and redirects to the companion OpenSpec onboarding skill instead of trying to satisfy it with AGENTS.md guidance.",
+      "files": [],
+      "expectations": [
+        "Does not incorrectly use the onboard-agent workflow as the primary solution.",
+        "Explains that openspec/config.yaml is the project-DNA layer, not AGENTS.md behavior guidance.",
+        "Redirects to the accelint-onboard-openspec or equivalent companion workflow.",
+        "Avoids producing AGENTS.md-first output for a config.yaml-only request."
+      ]
+    },
+    {
+      "id": 15,
+      "name": "boundary-case-architecture-doc-request-not-agent-onboarding",
+      "prompt": "Can you create an ARCHITECTURE.md that explains our services, deployment, and data stores? I want a technical overview of the codebase, not agent instructions.",
+      "expected_output": "Recognizes that the request belongs to the architecture-documentation workflow rather than the agent-onboarding skill, and redirects or chooses the architecture-doc skill instead of trying to generate AGENTS.md guidance.",
+      "files": [],
+      "expectations": [
+        "Does not misclassify an architecture-document request as agent onboarding.",
+        "Acknowledges that the user wants system documentation, not agent behavior instructions.",
+        "Routes toward the architecture-doc workflow instead of generating AGENTS.md content."
+      ]
+    },
+    {
+      "id": 16,
+      "name": "boundary-case-single-policy-edit-not-full-onboarding",
+      "prompt": "Please add one line to our AGENTS.md saying the agent should never run `git push --force`. Don't run a whole onboarding workflow; I just need that small edit.",
+      "expected_output": "Handles the request as a small direct AGENTS.md edit rather than forcing the full onboarding interview workflow, because the user is asking for a narrow existing-file change rather than project onboarding.",
+      "files": [],
+      "expectations": [
+        "Recognizes that this is a narrow edit request rather than a request to onboard a project.",
+        "Avoids launching the full discovery interview unnecessarily.",
+        "Treats the task as an AGENTS.md content edit path rather than full onboarding generation."
+      ]
+    }
+  ]
+}

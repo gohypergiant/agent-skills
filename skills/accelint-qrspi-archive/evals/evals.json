@@ -1,0 +1,211 @@
+{
+  "skill_name": "accelint-qrspi-archive",
+  "evals": [
+    {
+      "id": 1,
+      "name": "single-change-happy-path-end-to-end",
+      "prompt": "Archive the add-live-sync change with the full QRSPI archive workflow. Run the native archive step, then do the related-spec linking and both index updates.",
+      "expected_output": "Recognizes an explicit single-change archive request, runs the full archive-plus-bookkeeping workflow, uses /opsx:archive rather than a raw CLI shortcut, answers the routine sync prompt yes, and continues through validation, cross-linking, spec updates, specs index patching, archive index append, and final reporting without stopping early.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "bulk-archive-happy-path-with-bookkeeping",
+      "prompt": "Run bulk archive on the pending OpenSpec changes and keep the specs index and archive index up to date afterward.",
+      "expected_output": "Triggers on an explicit bulk-archive request, runs /opsx:bulk-archive itself, waits for the whole batch to resolve before validation through reporting, computes cross-links across all archived changes in the batch, and updates the additive related data plus both index files exactly once for the batch.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "trigger-on-cross-link-and-index-bookkeeping-language",
+      "prompt": "I already know I need to archive this change, but I specifically want the skill that also cross-links touched specs, patches openspec/specs/INDEX.md, and appends openspec/changes/archive/INDEX.md.",
+      "expected_output": "Selects accelint-qrspi-archive based on the archive-plus-bookkeeping wording, treating cross-linking and both index updates as in-scope rather than generic archive advice.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "non-trigger-propose-new-change",
+      "prompt": "Please start a QRSPI change for adding live sync. I want the proposal, design, and task plan before anyone writes code.",
+      "expected_output": "Does not trigger this archive skill for a proposal/planning request and instead routes to the propose-oriented workflow.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "non-trigger-implement-existing-change",
+      "prompt": "Apply the add-live-sync OpenSpec change now. The tasks are already written, so go implement it.",
+      "expected_output": "Does not trigger this archive skill for implementation work and instead routes to the apply-oriented workflow.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "non-trigger-prune-related-entries",
+      "prompt": "Please clean up stale related: entries across the archived specs and remove anything that no longer makes sense.",
+      "expected_output": "Does not treat pruning related entries as in-scope for this skill, because the archive skill is additive-only and pruning belongs to archive synthesis with human confirmation.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "non-trigger-change-existing-status-values",
+      "prompt": "Update openspec/changes/archive/INDEX.md so older decisions that no longer apply are marked superseded.",
+      "expected_output": "Does not use this skill for changing existing Status values in the archive index and instead treats that as synthesis work, not per-archive bookkeeping.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "task-a-derive-candidate-and-confirm",
+      "prompt": "Archive the enhance-mock-consistency-rule change. Its design.md is missing specs_touched and decisions frontmatter, but proposal.md and the delta spec folders should be enough to recover a candidate.",
+      "expected_output": "Runs preflight Task A, derives a candidate from the change's own files, presents the candidate for explicit confirmation rather than silently writing it, and only proceeds once the user confirms or edits it.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "task-a-stop-when-no-derivable-candidate-exists",
+      "prompt": "Archive the draft-cleanup change. design.md is missing specs_touched and decisions, and proposal.md plus the change's specs folder are basically empty. Just guess and keep moving if you need to.",
+      "expected_output": "Refuses to guess missing design frontmatter when nothing derivable exists, reports exactly which fields are missing, and stops preflight for that change instead of fabricating archive inputs.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "task-b-missing-purpose-heading-blocks-before-spec-write",
+      "prompt": "Run bulk archive on the pending changes. One touched capability is missing a ## Purpose or ### Purpose heading in its spec, but keep going as far as the workflow safely allows.",
+      "expected_output": "Allows archive, extraction, validation, and cross-link computation to proceed, but stops before spec writing reaches the capability missing a Purpose heading and asks the user whether to add a placeholder or fix the spec first.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "brand-new-capability-path-is-handled",
+      "prompt": "Archive the add-new-capability change. It introduces openspec/specs/runtime-telemetry/ for the first time, so there is no existing spec.md yet.",
+      "expected_output": "Notes the brand-new capability in preflight, treats missing prior spec.md as expected rather than an error, has spec writing start from empty frontmatter for that capability, and inserts the new capability into openspec/specs/INDEX.md in sorted position.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "single-capability-change-produces-zero-pairs-but-still-writes",
+      "prompt": "Archive the testing-cleanup change. Its specs_touched list has only one capability, so there should not be any cross-links.",
+      "expected_output": "Treats a one-capability specs_touched list as valid, computes zero co-touch pairs without error, still writes last_touched metadata and regenerates the capability's Related Specs section, and still appends one archive index row.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "always-answer-routine-sync-prompt-yes",
+      "prompt": "Archive add-live-sync. If the archive command asks whether to sync, just handle that routine prompt yourself and keep going.",
+      "expected_output": "Answers the routine sync prompt yes automatically and does not bounce that routine question back to the user.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "surface-non-routine-bulk-archive-prompt-to-user",
+      "prompt": "Run /opsx:bulk-archive for the pending changes. If it asks whether overlapping changes should be merged in chronological order, do not guess.",
+      "expected_output": "Recognizes the non-routine overlap or ordering prompt as user-owned, surfaces it to the user, and waits for the answer before continuing.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "mid-run-branch-is-not-treated-as-finished",
+      "prompt": "Archive the add-live-sync change. If /opsx:archive branches into its own sync workflow partway through, stay with it and finish the archive rather than stopping after sync.",
+      "expected_output": "Treats a mid-run branch into sync or another internal workflow as part of the native archive command, resumes the remaining archive steps after the branch completes, and does not report completion prematurely.",
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "unresolved-conflict-stops-entire-batch",
+      "prompt": "Run bulk archive on the pending changes. If any merge reports unresolved conflicts, stop cleanly instead of trying to salvage the rest of the batch.",
+      "expected_output": "Stops immediately on unresolved conflicts, reports the conflict verbatim, and does not proceed to extraction, validation, linking, or index updates for any change in that batch.",
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "validate-extracted-records-before-linking",
+      "prompt": "Archive the add-live-sync change and sanity-check the extracted record before you compute any related-spec pairs. If specsTouched or decisions is empty after extraction, do not continue.",
+      "expected_output": "Performs the post-archive structural validation of extracted records, requires non-empty specsTouched and populated decisions.choice data, and blocks cross-linking if the extracted record is incomplete.",
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "bulk-cross-links-are-computed-per-change-not-across-unrelated-changes",
+      "prompt": "Bulk archive two unrelated changes that happen to land in the same run. Do not infer that a capability from change A is related to a capability from change B unless a single change actually touched both.",
+      "expected_output": "Keeps records grouped by change, computes pairs only within each change's own specs_touched list, and avoids inventing cross-change relationships merely because the changes were archived together.",
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "spec-writing-uses-subagents-unconditionally",
+      "prompt": "Archive the add-live-sync change even though it only touches two capabilities. Still use the normal spec-writing isolation pattern rather than editing those spec.md files inline.",
+      "expected_output": "Delegates spec writing to one subagent per touched capability even for a small batch, because that isolation is the normal behavior and not a threshold-based optimization.",
+      "files": []
+    },
+    {
+      "id": 20,
+      "name": "no-subagent-support-falls-back-for-spec-writing-only",
+      "prompt": "Run the archive workflow in an environment without sub-agent support. I still want the operation completed if possible.",
+      "expected_output": "Warns that spec writing will fall back to direct in-context edits as a degraded mode, keeps archive and extraction inline as usual, and does not present the fallback as the preferred normal path.",
+      "files": []
+    },
+    {
+      "id": 21,
+      "name": "do-not-use-raw-openspec-cli-instead-of-archive-skill",
+      "prompt": "Skip the slash command and just shell out to openspec bulk-archive directly. That should be simpler than going through /opsx:bulk-archive.",
+      "expected_output": "Pushes back on replacing the native archive skill with the raw openspec CLI command and explains that the archive workflow must go through /opsx:archive or /opsx:bulk-archive because that is where the merge judgment and conflict behavior live.",
+      "files": []
+    },
+    {
+      "id": 22,
+      "name": "specs-index-patch-existing-rows-only",
+      "prompt": "Archive add-live-sync and update openspec/specs/INDEX.md, but do it as a targeted patch rather than a full rebuild because the file already exists.",
+      "expected_output": "Treats existing openspec/specs/INDEX.md as the common case, patches only the rows for touched capabilities, uses exact capability-cell matching rather than loose substring matching, and leaves untouched rows unread and unmodified.",
+      "files": [
+        "openspec/specs/INDEX.md"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "specs-index-bootstrap-full-build-when-missing",
+      "prompt": "This is the first archive in the repo, so openspec/specs/INDEX.md does not exist yet. Build it correctly after archive completes.",
+      "expected_output": "Recognizes the bootstrap case, scans all capability directories under openspec/specs, builds openspec/specs/INDEX.md fresh from full project state once, and uses row-level patching only on later runs.",
+      "files": [
+        "openspec/specs/INDEX.md"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "archive-index-append-before-trailing-content",
+      "prompt": "Append the archived change rows to openspec/changes/archive/INDEX.md, but that file has a status legend and a generated summary after the table. Keep the new rows inside the table.",
+      "expected_output": "Finds the end of the existing table's data rows and inserts new rows immediately there, preserving any trailing non-table content exactly as written rather than appending to end-of-file.",
+      "files": [
+        "openspec/changes/archive/INDEX.md"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "archive-index-status-is-written-current-once-only",
+      "prompt": "Archive the add-live-sync change and add its row to openspec/changes/archive/INDEX.md. The row should start as current, but do not rewrite older statuses while you are there.",
+      "expected_output": "Writes current for each newly appended archive row and does not change the Status value of any existing row in the file.",
+      "files": [
+        "openspec/changes/archive/INDEX.md"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "date-comes-from-archive-folder-not-design-frontmatter",
+      "prompt": "Archive the add-live-sync change. Its design.md still has an older planning date in it, so make sure the archive index row uses the archive folder date instead.",
+      "expected_output": "Uses the YYYY-MM-DD prefix from the archived folder path as the authoritative Date value and does not read Date from design.md.",
+      "files": [
+        "openspec/changes/archive/INDEX.md"
+      ]
+    },
+    {
+      "id": 27,
+      "name": "report-calls-out-placeholder-or-skipped-purpose-resolution",
+      "prompt": "Run the archive workflow where one touched capability had to use a placeholder Purpose heading or was skipped because Task B never got resolved. Make sure the final report highlights that clearly.",
+      "expected_output": "Includes an explicit note in the final report when a capability was left with a placeholder purpose or skipped because the Purpose-heading prerequisite was not resolved, instead of letting that risk disappear into a generic success summary.",
+      "files": []
+    },
+    {
+      "id": 28,
+      "name": "do-not-stop-after-native-archive-step",
+      "prompt": "Run /opsx:archive add-live-sync and, once the merge completes, continue automatically through the rest of the archive bookkeeping without waiting for me unless there is an actual error.",
+      "expected_output": "Does not treat native archive completion as the end of the job, and proceeds directly into extraction, validation, linking, writes, index maintenance, and reporting unless blocked by an error.",
+      "files": []
+    }
+  ]
+}

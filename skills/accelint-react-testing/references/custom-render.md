@@ -8,7 +8,7 @@ Don't repeat provider setup in every test. Create custom render utilities that w
 
 ---
 
-## Rule: Create Custom Render for Providers
+## Rule: Create a custom render helper for providers
 
 **Principle:** Centralize provider setup in test utils instead of duplicating in every test file.
 
@@ -228,7 +228,7 @@ export function renderWithAllProviders(
 
 ---
 
-## Rule: Export Custom Render with Screen
+## Rule: Export the custom render helper with `screen`
 
 **Principle:** Re-export Testing Library utilities from test-utils for consistent imports.
 
@@ -359,8 +359,8 @@ test('full app integration', async () => {
 
 ## Key Takeaways
 
-- **Centralize provider setup** in test-utils.tsx
-- **Accept options** for customizing providers per test
-- **Re-export Testing Library** utilities for consistent imports
-- **Return useful objects** (store, queryClient) for assertions
-- **Include userEvent.setup()** in render result for convenience
+- **Centralize provider setup** in `test-utils.tsx`
+- **Accept options** to customize providers per test
+- **Re-export Testing Library utilities** for consistent imports
+- **Return useful objects** such as `store` and `queryClient` for assertions
+- **Include `userEvent.setup()`** in the render result for convenience

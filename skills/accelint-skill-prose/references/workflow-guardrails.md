@@ -4,7 +4,7 @@ Use this reference when editing skill prose that controls execution order, appro
 
 ## Treat workflow prose as executable guidance
 
-When the user is editing a skill folder, do not assess a workflow passage in isolation if other files finish the workflow contract. Treat the folder as one behavior contract distributed across an artifact set. Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and relevant behavior-bearing `references/*.md`, then add other linked instruction files as needed. Read the root `SKILL.md`, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before broadening to the relevant behavior-bearing support files so you preserve cross-file order, gates, and exact references.
+When the user is editing a skill folder, do not assess a workflow passage in isolation if other files finish the workflow contract. Treat the folder as one behavior contract distributed across an artifact set. Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and relevant behavior-bearing `references/*.md`, then add other linked instruction files as needed. Read the root `SKILL.md`, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before you broaden to the relevant behavior-bearing support files so you preserve cross-file order, gates, and exact references.
 
 If discovery is inconclusive, retry with a simpler listing method or direct directory inspection. Do not treat an incomplete crawl as evidence that no linked support files exist.
 
@@ -37,7 +37,7 @@ Keep these exact unless the user explicitly asks otherwise:
 
 - moving a step earlier because it sounds cleaner
 - merging two steps that carry different decisions
-- dropping "not before" or similar timing boundaries
+- dropping `not before` or similar timing boundaries
 
 ### Guardrail weakening
 
@@ -63,6 +63,7 @@ Keep these exact unless the user explicitly asks otherwise:
 ## Verb-sensitivity quick check
 
 Before you deliver, ask:
+
 - Did `stop`, `wait`, `skip`, `proceed`, or similar verbs change to a softer or different action?
 - Did a requirement verb like `must` become advice like `should`?
 - Would the rewritten version let the agent act earlier, later, or more optionally than before?

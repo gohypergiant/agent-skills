@@ -1,0 +1,243 @@
+{
+  "skill_name": "accelint-qrspi-propose",
+  "evals": [
+    {
+      "id": 1,
+      "name": "happy-path-explicit-qrspi-planning-request",
+      "prompt": "Use QRSPI to plan this feature before we write code: ATI-12 smart-ls CLI tool. I want the proposal, design, specs, and tasks, then stop before implementation.",
+      "expected_output": "Triggers the QRSPI planning workflow, checks OpenSpec configuration first, keeps the work in planning scope only, uses the staged Questions → Research → Design → Specs/Tasks flow, and stops after approved planning artifacts instead of implementing anything.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "trigger-on-openspec-change-planning-language",
+      "prompt": "Create an OpenSpec change for improving search latency. I want the formal planning workflow with review checkpoints before anyone codes.",
+      "expected_output": "Triggers on explicit OpenSpec change planning language, selects the propose-oriented workflow, and includes mandatory review checkpoints rather than generic brainstorming or direct implementation.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "trigger-on-scope-and-breakdown-request",
+      "prompt": "Help me scope and break down this bug fix using QRSPI. I want a structured change package and task plan, not code yet.",
+      "expected_output": "Recognizes a formal scope-and-breakdown request as in-scope, routes to QRSPI planning, and emphasizes planning artifacts and no-code execution boundaries.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "empty-invocation-requires-ticket-input",
+      "prompt": "/accelint-qrspi-propose",
+      "expected_output": "Detects that no ticket, feature request, or problem statement was provided, asks for concrete planning input using the skill's guidance, and exits without inventing placeholder content or starting the workflow.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "configuration-missing-required-workflows",
+      "prompt": "Plan ATI-145 with QRSPI. If the repo setup is incomplete, tell me what to fix.",
+      "expected_output": "Runs the OpenSpec configuration check first, verifies that explore, new, and continue are all enabled, and if any are missing, reports the missing workflows, shows the expanded-profile commands, and exits instead of continuing.",
+      "files": ["openspec/config.yaml"]
+    },
+    {
+      "id": 6,
+      "name": "configuration-valid-continues-after-check",
+      "prompt": "Use the formal QRSPI workflow to plan adding audit exports. The repo should already be configured.",
+      "expected_output": "Tells the user it is checking OpenSpec configuration, validates the required workflows, and only then proceeds into the planning stages rather than skipping configuration validation.",
+      "files": ["openspec/config.yaml"]
+    },
+    {
+      "id": 7,
+      "name": "questions-stage-stays-solution-free",
+      "prompt": "Plan this feature with QRSPI: add SSO login for enterprise customers.",
+      "expected_output": "In the Questions stage, asks a sub-agent for research questions only, without proposing solutions, implementation steps, or architecture choices at that stage.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "research-stage-uses-questions-only-context",
+      "prompt": "Use QRSPI to plan a new notifications digest feature. Be careful not to let the original ticket bias the research step.",
+      "expected_output": "Uses a fresh context for research that includes only the generated questions, not the original ticket text, and asks for factual current-state findings plus relevant spec-of-record content.",
+      "files": ["openspec/specs/INDEX.md"]
+    },
+    {
+      "id": 9,
+      "name": "design-stage-keeps-ticket-out-of-context",
+      "prompt": "Run the QRSPI planning flow for adding a new report export command, and follow the context isolation rules strictly.",
+      "expected_output": "Reads openspec/config.yaml design rules and AGENTS.md or CLAUDE.md, then generates proposal.md and design.md from questions plus research only, without reintroducing the original ticket into the design-generation context.",
+      "files": ["openspec/config.yaml", "AGENTS.md"]
+    },
+    {
+      "id": 10,
+      "name": "design-stage-must-stop-after-proposal-and-design",
+      "prompt": "Use QRSPI to plan a feature for pruning old cache entries. Generate the design artifacts first and stop for review.",
+      "expected_output": "Uses /opsx:new and /opsx:continue to generate only proposal.md and design.md, explicitly stops before specs or tasks, reports the change name, and moves to the design checkpoint rather than continuing automatically.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "missing-design-artifact-blocks-checkpoint",
+      "prompt": "Plan the stale-session cleanup change with QRSPI. If the design artifact is missing after generation, handle that safely.",
+      "expected_output": "Verifies that design.md exists at the reported path before presenting the checkpoint, and if it is missing, stops and follows the missing-artifact handling instead of assuming success.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "design-checkpoint-requires-explicit-approval",
+      "prompt": "Plan ATI-202 with QRSPI, but after you generate design.md, do not continue until I approve it.",
+      "expected_output": "Reads and presents design.md with the required review framing and options, then pauses for explicit approval instead of proceeding directly to specs/tasks.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "design-edits-loop-shows-diff-and-represents",
+      "prompt": "Use QRSPI to plan a rate-limit tuning change. After design generation, assume I request edits and expect an in-place revision workflow.",
+      "expected_output": "Handles the request-edits path by modifying design.md in place, showing the diff, and re-presenting the design for review until approval rather than skipping the loop.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "manual-design-edit-path-rereads-final-file",
+      "prompt": "Plan a webhook retry policy update with QRSPI. If I choose to edit design.md myself, handle that path correctly.",
+      "expected_output": "Supports the manual-edit path by waiting for the user's confirmation, re-reading the final design.md, and only then continuing to the frontmatter capture step.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "frontmatter-capture-happens-only-after-approval",
+      "prompt": "Use QRSPI to plan a schema drift alerting change. Make sure specs_touched and decisions metadata is captured at the right time.",
+      "expected_output": "Captures specs_touched and decisions frontmatter only after design approval or confirmed manual edits, not earlier during draft review, to avoid stale metadata.",
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "frontmatter-uses-inline-specs-array-and-merges-existing-block",
+      "prompt": "Plan the usage-metrics cleanup change with QRSPI. The generated design may already have frontmatter metadata.",
+      "expected_output": "When writing or updating frontmatter, merges into an existing frontmatter block rather than adding a second one, and formats specs_touched as an inline array such as [cap-a, cap-b].",
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "missing-specs-touched-or-decisions-is-flagged-not-guessed",
+      "prompt": "Use QRSPI to plan a change where design.md may not clearly state affected capabilities or decisions. Do not invent anything.",
+      "expected_output": "If specs_touched or a reliable decisions list cannot be confidently derived from approved design.md or proposal.md, it tells the user what is missing and asks them to add it directly instead of guessing or fabricating content.",
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "missing-frontmatter-does-not-block-later-stages",
+      "prompt": "Plan the console-copy-refresh change with QRSPI. If frontmatter capture is incomplete, keep the later planning stages unblocked unless something else fails.",
+      "expected_output": "Reports missing specs_touched or decisions metadata clearly but does not treat that bookkeeping gap as a blocker for generating specs and tasks, matching the skill's error-handling guidance.",
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "specs-and-tasks-stage-loads-approved-design-and-rules",
+      "prompt": "Use QRSPI to plan a new audit trail feature after design approval. Make sure the task stage uses the approved design and OpenSpec rules.",
+      "expected_output": "Reads the final design.md plus openspec/config.yaml spec and task rules and AGENTS.md or CLAUDE.md before delegating specs and tasks generation through /opsx:continue.",
+      "files": ["openspec/config.yaml", "AGENTS.md"]
+    },
+    {
+      "id": 20,
+      "name": "missing-specs-or-tasks-artifacts-stop-safely",
+      "prompt": "Plan a file-retention policy change with QRSPI. If specs or tasks files are missing after generation, do not plow ahead.",
+      "expected_output": "Verifies that delta specs and tasks.md exist at the reported paths and stops with the missing-artifact handling if any are absent, rather than reading or editing non-existent files.",
+      "files": []
+    },
+    {
+      "id": 21,
+      "name": "horizontal-slicing-is-detected-and-converted",
+      "prompt": "Use QRSPI to plan a complex auth cleanup. If tasks.md comes out layer-based, fix it before showing it to me.",
+      "expected_output": "Reads tasks.md, detects horizontal or mixed slicing, restructures it into vertical end-to-end slices with Deliverable and Test fields plus checklist subtasks, writes the file in place, and explains the conversion to the user.",
+      "files": []
+    },
+    {
+      "id": 22,
+      "name": "checklist-format-is-preserved-during-task-restructure",
+      "prompt": "Plan the API normalization change with QRSPI. If you have to rewrite task slices, keep the task tracking format compatible with qrspi-apply.",
+      "expected_output": "Preserves or converts all subtasks to markdown checklist format using - [ ] entries, and does not leave numbered lists or plain bullets in tasks.md after restructuring.",
+      "files": []
+    },
+    {
+      "id": 23,
+      "name": "parallelization-strategy-added-when-missing",
+      "prompt": "Use QRSPI to plan the access-log export change. If tasks.md is missing a Parallelization Strategy section, add one.",
+      "expected_output": "Checks for a ## Parallelization Strategy section after validating or correcting slice structure and appends a concise dependency and implementation-order section when it is missing or incomplete.",
+      "files": []
+    },
+    {
+      "id": 24,
+      "name": "parallelization-strategy-updated-after-slice-conversion",
+      "prompt": "Plan the bulk import workflow with QRSPI. If you have to convert tasks from horizontal to vertical slices, make sure the parallelization guidance matches the new structure.",
+      "expected_output": "Updates any existing Parallelization Strategy section to reflect the new vertical slices after conversion, instead of leaving stale dependency guidance behind.",
+      "files": []
+    },
+    {
+      "id": 25,
+      "name": "tasks-checkpoint-requires-explicit-approval",
+      "prompt": "Use QRSPI to plan a new reconciliation report feature, but stop after tasks.md until I explicitly approve the task breakdown.",
+      "expected_output": "Presents tasks.md with the required approval framing, notes whether slicing was already vertical or auto-corrected, and pauses for explicit user approval rather than declaring planning complete immediately.",
+      "files": []
+    },
+    {
+      "id": 26,
+      "name": "task-review-request-edits-loop",
+      "prompt": "Plan the email-template cleanup change with QRSPI. Assume I ask for task breakdown edits after you show tasks.md.",
+      "expected_output": "Supports the tasks review request-edits path by modifying tasks.md in place, then re-presenting the updated task structure for approval instead of bypassing the checkpoint.",
+      "files": []
+    },
+    {
+      "id": 27,
+      "name": "manual-task-edit-path-waits-for-confirmation",
+      "prompt": "Use QRSPI to plan a notification digest refinement. If I edit tasks.md manually, wait for me to confirm before finishing.",
+      "expected_output": "Handles the manual task-edit path by waiting for user confirmation after external edits and does not auto-complete the skill while approval is still pending.",
+      "files": []
+    },
+    {
+      "id": 28,
+      "name": "completion-stops-before-implementation-and-points-to-apply",
+      "prompt": "Use QRSPI to plan a search facets feature and then tell me what to do next once planning is approved.",
+      "expected_output": "After approved tasks, announces planning completion, lists the generated artifacts, tells the user to clear context if desired, and points them to /accelint-qrspi-apply <change-name> instead of invoking implementation automatically.",
+      "files": []
+    },
+    {
+      "id": 29,
+      "name": "openspec-command-failure-stops-and-asks-retry-or-abort",
+      "prompt": "Plan a cache-key rotation change with QRSPI. If any OpenSpec command fails, handle that failure explicitly.",
+      "expected_output": "Surfaces OpenSpec command failures to the user, asks whether to retry or abort, and does not continue to the next workflow stage after a failed command.",
+      "files": []
+    },
+    {
+      "id": 30,
+      "name": "subagent-failure-allows-manual-fallback-only-for-research-stages",
+      "prompt": "Use QRSPI to plan a report cleanup change. If one of the delegated stages fails, follow the allowed fallback rules exactly.",
+      "expected_output": "Reports sub-agent failures clearly, allows manual fallback only for the Questions or Research stages, and refuses to manually synthesize proposal.md, design.md, specs, or tasks outside the /opsx workflow.",
+      "files": []
+    },
+    {
+      "id": 31,
+      "name": "non-trigger-implementation-request-routes-away",
+      "prompt": "Apply the existing auth-refactor change now. The planning is done, so go implement it.",
+      "expected_output": "Does not trigger the propose skill for implementation work and instead routes to the apply-oriented workflow.",
+      "files": []
+    },
+    {
+      "id": 32,
+      "name": "non-trigger-archive-request-routes-away",
+      "prompt": "Archive the add-live-sync OpenSpec change and update the archive indexes.",
+      "expected_output": "Does not trigger the propose skill for archive work and instead routes to the archive-oriented workflow.",
+      "files": []
+    },
+    {
+      "id": 33,
+      "name": "non-trigger-generic-architecture-doc-request",
+      "prompt": "Write an architecture doc for this repository and map out the main services.",
+      "expected_output": "Does not trigger the propose skill for a generic architecture-documentation request because that is outside the formal QRSPI change-planning scope.",
+      "files": []
+    },
+    {
+      "id": 34,
+      "name": "non-trigger-artifact-polish-only-request",
+      "prompt": "I already have proposal.md and design.md for this change. Just rewrite the prose and tighten the docs without changing the plan.",
+      "expected_output": "Does not trigger the propose skill for artifact-polish-only work because the request is editing existing planning prose rather than running the formal planning workflow.",
+      "files": []
+    }
+  ]
+}

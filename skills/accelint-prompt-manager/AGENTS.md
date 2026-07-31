@@ -1,12 +1,12 @@
 # Prompt Manager — Quick Reference
 
-Use this guide to turn vague prompts into optimized, actionable prompts. It focuses on non-obvious patterns, hard-won insights, and systematic optimization techniques.
+Use this guide to turn vague prompts into optimized, actionable prompts. It highlights non-obvious patterns, hard-won insights, and systematic optimization techniques.
 
 ## How to Use This Guide
 
 1. **Start with `SKILL.md`** — Run the 4-phase workflow for any prompt optimization.
-2. **Use this guide for quick lookup** — Check patterns, frameworks, and techniques.
-3. **Load details on demand** — Read specific `references/` files when needed.
+2. **Use this guide for quick lookup** — Check patterns, frameworks, and techniques here first.
+3. **Load details on demand** — Read specific `references/` files only when needed.
 
 ## Quick Reference
 
@@ -35,7 +35,7 @@ Use this guide to turn vague prompts into optimized, actionable prompts. It focu
 - **RISEN** → Multi-step procedures, workflows (process-driven)
 - **RODES** → Needs examples for clarity, style matching (example-driven)
 
-**Application Rule:** Route user intent through the framework structure silently. Never expose methodology in the output.
+**Application Rule:** Route user intent through the framework structure silently. Never expose the methodology in the output.
 
 → Full details: `references/frameworks.md`
 
@@ -76,7 +76,7 @@ Use this guide to turn vague prompts into optimized, actionable prompts. It focu
 - "Simple" → Minimal code, easy to understand, or few dependencies?
 - "Clean" → Follows standards, minimal complexity, or well-documented?
 
-**Resolution Pattern:** Present 2-3 interpretation options with implications, then let the user decide.
+**Resolution Pattern:** Present 2-3 interpretation options with implications. Then let the user decide.
 
 → Full catalog: `references/ambiguity-examples.md`
 
@@ -130,4 +130,4 @@ Phase 4: Validation & Handoff
 
 **Security:** Validate user inputs, use delimiters, and never allow user content to override system instructions.
 
-**Memory Persistence:** Save optimization patterns to memory blocks to prevent contradictions in extended conversations.
+**Conversation Continuity:** Keep optimization guidance internally consistent across extended conversations so later prompt revisions do not contradict earlier decisions.

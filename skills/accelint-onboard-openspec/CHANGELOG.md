@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.6.0] - 2026-07-30
+
+### Changed
+- **Audit-driven clarity and trigger improvements** — tightened the skill contract and supporting docs after a full skill audit
+  - Expanded the trigger description to cover create, import, append, dry-run, and refresh workflows more explicitly
+  - Clarified Refresh-mode handling for drift, unresolved `# TODO: fill in` markers, and external `findings:` inputs
+  - Made the fallback expectation explicit when subagents are unavailable so the skill discloses inline discovery instead of implying parallel agents ran
+  - Aligned preview guidance so Create/Import still show full previews while Refresh may show changed sections only
+  - Reinforced the separation between project DNA in `openspec/config.yaml` and behavioral guidance that belongs in `AGENTS.md` / `CLAUDE.md`
+  - Tightened README prose to match the skill contract and current workflow semantics
+
+### Added
+- **Default eval coverage** — added a generated eval set for non-interactive auditing and trigger validation
+  - Covers create, import, append, dry-run, and refresh flows
+  - Includes boundary cases for adjacent skills and workflow guardrails like preview-before-write and YAML safety
+
+### Version
+- Bumped from 1.5.0 → 1.6.0
+
 ## [1.5.0] - 2026-07-10
 
 ### Added

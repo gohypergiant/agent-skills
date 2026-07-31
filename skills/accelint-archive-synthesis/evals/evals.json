@@ -1,0 +1,99 @@
+{
+  "skill_name": "accelint-archive-synthesis",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "accelint-qrspi-archive suggested a synthesis run after 18 archived changes. Yes, run archive synthesis now.",
+      "expected_output": "Starts only because the human explicitly accepted the suggestion, performs preflight, and proceeds through report generation without auto-writing anything.",
+      "files": [
+        "openspec/changes/archive/INDEX.md",
+        "openspec/specs/INDEX.md"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "If archive-synthesis is due, just run it automatically and fix whatever you find.",
+      "expected_output": "Refuses automatic execution and automatic fixing, making clear that explicit human invocation or approval is required and writes must wait for review.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Run archive synthesis and check whether older polling-based sync decisions still hold now that later archived changes adopted a broker or websocket approach in related capabilities.",
+      "expected_output": "Performs decision-drift clustering and targeted verification, then reports contradiction candidates as findings without assuming resolution.",
+      "files": [
+        "openspec/changes/archive/INDEX.md",
+        "openspec/specs/INDEX.md"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run synthesis. If you find contradictions, mark the older one superseded unless it's obvious both still apply.",
+      "expected_output": "Does not guess which change stands, asks the required follow-up question, and leaves the finding unresolved if the human answer is ambiguous or absent.",
+      "files": [
+        "openspec/changes/archive/INDEX.md"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Run archive synthesis again. Last quarter we dismissed the add-live-sync vs adopt-notification-gateway contradiction as not real.",
+      "expected_output": "Loads dismissed-pair history from SYNTHESIS-LOG.md and suppresses only the exact dismissed decision-drift pair.",
+      "files": [
+        "openspec/changes/archive/SYNTHESIS-LOG.md"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Audit the archive and reconcile openspec/specs/INDEX.md against live spec files. Assume one indexed capability was deleted or renamed outside the archive workflow.",
+      "expected_output": "Reports a CRITICAL reconciliation finding for the missing spec file and, after confirmation, removes only the single stale row without guessing a replacement capability.",
+      "files": [
+        "openspec/specs/INDEX.md"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Run archive synthesis and look for any specs index rows that no longer match the current spec.md purpose or related frontmatter.",
+      "expected_output": "Performs bounded reconciliation reads, reports WARNING mismatches, and patches only Purpose/related cells after confirmation while leaving last_touched_by unchanged.",
+      "files": [
+        "openspec/specs/INDEX.md"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Run archive synthesis and tell me whether any capability has become structurally over-coupled based on the current related-count distribution.",
+      "expected_output": "Uses the fixed floor and median-multiplier threshold, emits SUGGESTION-level coupling findings, and routes confirmed ones to architecture debt handling instead of contradiction handling.",
+      "files": [
+        "openspec/specs/INDEX.md"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Run archive synthesis on this repo even though we only have 6 archived changes so far.",
+      "expected_output": "Warns that the corpus is low-signal, asks before proceeding, and avoids overstating conclusions if the human still wants the run.",
+      "files": [
+        "openspec/changes/archive/INDEX.md"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Run synthesis and route any confirmed architecture findings, but assume the target writer skill does not support findings: yet.",
+      "expected_output": "Still produces the report and gives manual paste-ready findings text instead of failing or silently dropping the handoff.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "Run archive synthesis in an environment without subagent support.",
+      "expected_output": "Falls back to bounded parent-context reads for targeted files only and warns about degraded raw-context behavior instead of refusing to run.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "Run archive synthesis, show me findings, and only apply the first one I confirm. Leave the rest for later.",
+      "expected_output": "Applies per-finding confirmation correctly, treats every unaddressed finding as deferred, and avoids writes for anything not explicitly reviewed.",
+      "files": [
+        "openspec/changes/archive/INDEX.md",
+        "openspec/specs/INDEX.md",
+        "openspec/changes/archive/SYNTHESIS-LOG.md"
+      ]
+    }
+  ]
+}

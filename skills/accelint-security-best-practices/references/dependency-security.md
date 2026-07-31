@@ -2,7 +2,7 @@
 
 Never deploy with known vulnerabilities in dependencies. Outdated packages contain exploitable security flaws that attackers actively target.
 
-**Package Manager Examples**: This document uses npm commands for illustration. Apply these principles to your package manager: npm, yarn, pnpm, or bun. Each has equivalent audit and security scanning capabilities.
+**Package Manager Examples**: This document uses npm commands for illustration. Apply these principles to your package manager: npm, yarn, pnpm, or bun. Each package manager has equivalent audit and security scanning capabilities.
 
 ## Why This Matters
 
@@ -12,7 +12,7 @@ Vulnerable dependencies enable:
 - **Supply Chain Attacks**: Compromised packages inject malicious code
 - **Known Exploits**: Public CVEs have documented attack vectors
 
-A single outdated package with a critical vulnerability exposes your entire application. Attackers scan for known vulnerabilities using automated tools. The Log4j vulnerability (CVE-2021-44228) affected millions of applications worldwide.
+A single outdated package with a critical vulnerability can expose your entire application. Attackers scan for known vulnerabilities with automated tools. The Log4j vulnerability (CVE-2021-44228) affected millions of applications worldwide.
 
 ## Anti-Patterns to Avoid
 

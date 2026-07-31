@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.4] - 2026-07-30
+
+### Changed
+- Expanded README-skill trigger coverage and workflow boundaries in `SKILL.md`
+  - Added stronger trigger phrasing for README audits, stale-doc refreshes, refactor-driven updates, and monorepo package paths
+  - Added capability-boundary guidance for library/package, app/service, CLI, and monorepo-root README strategies
+  - Clarified update-mode decisions, preservation rules for intentional custom content, and fallback behavior when `accelint-english-manager` is unavailable
+- Refreshed the skill artifact set for consistency with the current workflow
+  - Updated `README.md` to reflect scope-aware README strategy, optional `Architecture & Development Guides`, and the required final prose-polish dependency
+  - Updated `AGENTS.md` and reference files to tighten behavior-defining prose, normalize terminology, and align related-doc handling
+- Replaced the eval set in `evals/evals.json` with broader coverage
+  - Added cases for monorepo scoping, library-vs-app strategy, external `findings:` merging, preserving custom content, missing prose-polish dependency handling, invented-command avoidance, and conditional related-doc sections
+
+### Version
+- Bumped from 1.2.3 → 1.2.4
+
 ## [1.2.3] - 2026-07-30
 
 ### Changed

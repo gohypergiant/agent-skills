@@ -10,10 +10,10 @@
 
 ## Optimizations
 
-- Mutate when safe (function owns object, local scope, not returned/exposed)
-- Use Object.assign for shallow updates when immutability required
-- Preallocate objects with known shape
-- Direct property assignment over spreading when object is owned
+- Mutate when safe (the function owns the object, the scope is local, and the object is not returned or exposed)
+- Use `Object.assign` for shallow updates when immutability is required
+- Preallocate objects with a known shape
+- Prefer direct property assignment to spreading when the object is owned
 
 ## Examples
 

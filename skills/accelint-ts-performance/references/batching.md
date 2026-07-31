@@ -1,3 +1,3 @@
 # 4.4 Batching
 
-Batch operations to amortize costly processes, especially for I/O-bound operations.
+Batch operations to amortize costly work, especially for I/O-bound operations.

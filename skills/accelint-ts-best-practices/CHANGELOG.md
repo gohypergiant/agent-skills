@@ -5,6 +5,17 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2026-07-30
+
+### Fixed
+- Tightened `SKILL.md` trigger and routing language so the skill more clearly targets TS/JS code-health work and redirects performance-heavy and documentation-heavy tasks to the adjacent specialized skills.
+- Updated `README.md` and `references/quick-start.md` to remove stale performance-oriented framing and broken references to non-existent files, replacing them with examples grounded in the current reference set.
+- Added `evals/evals.json` with coverage for the skill's core rule areas plus boundary cases that should redirect to `accelint-ts-performance` or `accelint-ts-documentation`.
+- Applied a behavior-preserving prose pass across `SKILL.md`, `AGENTS.md`, and selected `references/*.md` files to improve scanability, clarify explicit error-handling expectations, fix boundary-validation examples, repair malformed inline-code tokens, and remove stale cross-references.
+
+### Version
+- Bumped from 1.2.1 → 1.2.2
+
 ## [1.2.1] - 2026-05-18
 
 ### Fixed

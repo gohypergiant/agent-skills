@@ -1,6 +1,6 @@
 # 4.7 Defer Await
 
-Move `await` operations into the branches where they're actually used to avoid blocking code paths that don't need them.
+Move `await` operations into the branches where they are actually used so you do not block code paths that do not need them.
 
 **❌ Incorrect: blocks both branches**
 ```ts
@@ -31,4 +31,4 @@ async function handleRequest(userId: string, skipProcessing: boolean) {
 }
 ```
 
-This optimization is especially valuable when the skipped branch is frequently taken, or when the deferred operation is expensive.
+This optimization is especially valuable when the skipped branch is common, or when the deferred operation is expensive.

@@ -5,6 +5,27 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2026-07-30
+
+### Changed
+- Tightened the skill-manager trigger description and routing boundaries in `SKILL.md`
+  - Expanded trigger coverage for skill-package maintenance work such as `SKILL.md` fixes, eval coverage improvements, version/changelog alignment, and cross-file consistency review
+  - Added the explicit trigger phrase `build a skill package` to reduce undertriggering for package-creation requests
+  - Clarified that prose-only cleanup, prompt polishing, and README/docs work should route to other skills when the real task is not skill-package architecture or governance
+- Added a `Default execution paths` section to make direct use lighter and more predictable
+  - Clarified when to use quick audit, targeted refinement, or full skill creation / large refactor
+  - Reduced the chance of overproducing full rewrites for audit-only or localized requests
+- Reconciled versioning guidance and tightened audit output expectations
+  - Replaced mixed bump examples with consistent major/minor/patch semver rules
+  - Made patch-ready replacement text conditional on user intent instead of required for every audit-only run
+- Tightened prose across the artifact set without changing behavior
+  - Updated `README.md`, `AGENTS.md`, `references/*`, and `assets/skill-template/*` for clearer wording, consistent requirement labels, and better scanability
+- Expanded eval coverage boundaries in `evals/evals.json`
+  - Added cases for targeted refinement, audit-only behavior, description optimization, changelog/version checks, cross-file consistency review, and should-not-trigger near misses for prose-only and docs-focused work
+
+### Version
+- Bumped from 2.1.1 → 2.1.2
+
 ## [2.1.1] - 2026-03-18
 
 ### Changed

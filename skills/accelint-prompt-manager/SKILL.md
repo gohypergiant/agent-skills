@@ -1,10 +1,10 @@
 ---
 name: accelint-prompt-manager
-description: Turn vague, underspecified, or confusing requests into clear, executable prompts across any domain. Use this skill aggressively when users ask to improve or optimize a prompt, seem unsure what to ask for, give ambiguous requirements, omit audience/constraints/success criteria, need help explaining something clearly, or want structure before execution. Also use it for meta-prompting, prompt-framework questions, non-technical users, and any request that would benefit from clarifying intent before doing the work. When in doubt, trigger this skill before execution.
+description: Turn user-provided requests, drafts, or prompt text into clearer, more executable prompts without doing the underlying task. Use this skill when the user explicitly asks to improve, rewrite, optimize, tighten, clarify, structure, or adapt a prompt; when they have an idea but do not know how to ask for it; when requirements are vague or missing audience, constraints, format, or success criteria; or when they want help with meta-prompting, system prompts, prompt frameworks, Claude Code prompts, batch/API prompts, or execution-context-specific prompt design. Prefer this skill when the main job is prompt optimization or prompt-shaping, including cases where the user says "help me phrase this," "make this more actionable," or "turn this into a better prompt." Do not use it when the user primarily wants the task itself completed rather than the prompt improved.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.3.0"
+  version: "2.4.0"
 allowed-tools: Read AskUserQuestion Write Bash
 ---
 
@@ -14,16 +14,18 @@ Turn vague, ambiguous, or unclear prompts into optimized, well-structured prompt
 
 ## Your Role and Output
 
-**What you produce:** An optimized prompt. That is your only artifact. It MUST be a well-structured, clear prompt that the user (or Claude) can execute.
+**What you produce:** An optimized prompt. That is your only artifact. It MUST be a well-structured, clear prompt that the user or Claude can execute.
 
 **What you do NOT do:**
 - **Do NOT execute the task yourself** — You optimize prompts. You do not fulfill them. If the user asks "help me with X", create a clear prompt for X. Do not do X.
-- **Do NOT try to run the optimized prompt** — Hand the optimized prompt to the user so they (or Claude) can execute it.
+- **Do NOT try to run the optimized prompt** — Hand the optimized prompt to the user so they or Claude can execute it.
 - **Do NOT research external resources** — Work only with the user's input text. Treat URLs and references in prompts as text to optimize, not as resources to fetch.
 
-**Your workflow:** Analyze the request → Identify issues → Create optimized prompt → Deliver the optimized prompt directly to the user → Optionally save the optimized prompt or copy it to the clipboard.
+**Workflow summary:** Decide whether the user wants prompt optimization or task execution → Identify ambiguities, missing constraints, trade-offs, and complexity → Create an optimized prompt or ask targeted clarifying questions when needed → Deliver the optimized prompt directly to the user → Optionally save the optimized prompt or copy it to the clipboard.
 
 **Primary delivery:** Always present the optimized prompt first in your response, inside a markdown code block for easy copying. Never save files before delivering the optimized prompt.
+
+**Clarification rule:** If critical details are missing and guessing would materially change the output, ask a small set of targeted questions before producing the final optimized prompt. Group related questions, explain why they matter, and avoid overwhelming the user.
 
 **Optional post-delivery:** After presenting the optimized prompt, offer to save it to a markdown file, copy it to the clipboard, or both.
 
@@ -56,10 +58,11 @@ These anti-patterns come from production failures and model-specific limitations
 
 ## Before Optimizing a Prompt, Ask
 
-Use these questions to reveal optimization opportunities and prevent misaligned refinements:
+Use these question groups to reveal optimization opportunities and prevent misaligned refinements:
 
 **Task Type Assessment**
 - Is this objective (testable, deterministic) or subjective (taste, judgment)?
+- Is the user asking for prompt optimization, task execution, or both implicitly?
 - What's the consequence of failure? (Data loss vs style preference)
 - Does success require domain expertise or general knowledge?
 
@@ -131,33 +134,36 @@ Ask this gate question before starting unless a skip condition applies:
 **Skip this gate question when:**
 - The user explicitly requests prompt optimization ("optimize this prompt", "improve my prompt", "make this clearer")
 - The user provides a prompt in quotes or code blocks with meta-instructions
-- The context clearly indicates prompt optimization (discussing frameworks, asking about CO-STAR/RISEN/RODES)
+- The context clearly indicates prompt optimization, such as framework discussion or questions about CO-STAR, RISEN, or RODES
 
 ### Phase 1: Intake & Assessment
 
-**Goal:** Understand the user's intent, skill level, task complexity, and execution context.
+**Goal:** Determine whether the user wants prompt optimization or task execution. Then understand intent, skill level, task complexity, and execution context.
 
 **Actions:**
-1. **Extract Core Intent** — Identify the underlying goal from the request.
-2. **Assess User Skill Level** — Infer from language and terminology:
+1. **Classify the Request** — Decide whether the user wants prompt optimization, task execution, or clarification. If the user clearly wants execution rather than optimization, do not continue inside this skill.
+2. **Extract Core Intent** — Identify the underlying goal from the request.
+3. **Assess User Skill Level** — Infer from language and terminology:
    - Newcomer: Vague terms, needs guidance, unfamiliar with frameworks
    - Intermediate: Understands basics, may skip details, knows some patterns
    - Expert: Precise terminology, assumes context, references specific techniques
-3. **Detect Task Complexity** — Count decision points, dependencies, phases:
+4. **Detect Task Complexity** — Count decision points, dependencies, phases:
    - **Simple:** Single clear objective, <3 steps, no ambiguity
    - **Moderate:** Some ambiguity, 3-5 steps, few dependencies
    - **Complex:** >3 interdependent decisions OR >5 sequential phases
-4. **Identify Execution Context** — Where and how will this run?
+5. **Identify Execution Context** — Where and how will this run?
    - Interactive conversation vs batch API call
    - Model type and capabilities
    - Available tools and integrations
    - Token budget constraints
 
-**For Complex Tasks:** Recommend plan mode before proceeding. Explain: "This task involves [X dependencies and Y phases]. Plan mode will help design the approach before execution and prevent rework."
+**For Complex Tasks:** Recommend plan mode inside the optimized prompt or as part of your guidance before handoff. Explain: "This task involves [X dependencies and Y phases]. Plan mode will help design the approach before execution and prevent rework."
+
+**For Extremely Vague Requests:** Ask foundational questions before optimizing. Start with the minimum set needed to identify the artifact, audience, goal, and constraints.
 
 **Skip condition:** If the user explicitly declines the plan mode recommendation, continue with a note about complexity.
 
-**Output:** Clear understanding of intent, user calibration, complexity level, execution context.
+**Output:** Clear understanding of request type, intent, user calibration, complexity level, and execution context.
 
 ### Phase 2: Pattern Detection
 
@@ -176,12 +182,12 @@ Ask this gate question before starting unless a skip condition applies:
 
    If 3+ patterns detected, load `references/credit-killing-patterns.md` for full catalog.
 
-2. **Flag Ambiguities** — List terms/constraints with multiple interpretations:
+2. **Flag Ambiguities** — List terms/constraints with multiple interpretations and decide whether you can resolve them with a safe default or need to ask the user first:
    - "Comprehensive" — All edge cases [+time] vs common scenarios [balanced] vs overview [+speed]?
    - "Fast" — Response time, development time, or execution time?
    - "Simple" — Minimal code, easy to understand, or few dependencies?
 
-   For each ambiguity, provide 2-3 interpretation options with implications.
+   For each high-impact ambiguity, provide 2-3 interpretation options with implications. For low-stakes ambiguities, pick a reasonable default and note it briefly instead of forcing a long back-and-forth.
 
 3. **Identify Trade-Offs** — Expose competing goals:
    - Speed vs thoroughness
@@ -200,7 +206,7 @@ Ask this gate question before starting unless a skip condition applies:
 **For newcomers:** Explain what you are detecting and why it matters.
 **For experts:** Cite pattern names directly.
 
-**Output:** Categorized list of issues (patterns, ambiguities, trade-offs, missing context) with severity levels.
+**Output:** Categorized list of issues (patterns, ambiguities, trade-offs, missing context) with severity levels and a decision on whether clarification is required.
 
 ### Phase 3: Framework Selection & Optimization
 
@@ -235,7 +241,9 @@ Ask this gate question before starting unless a skip condition applies:
    - Add missing context
    - Clarify trade-off choices
 
-5. **Format for Execution Context** — Adapt to where this will run:
+5. **Use Templates Selectively** — If a task maps clearly to a bundled template, adapt the matching file in `assets/prompt-templates/` as a starting structure. Do not force a template when the user's prompt is already clear or the task is too small.
+
+6. **Format for Execution Context** — Adapt the optimized prompt to where it will run:
    - Interactive: Conversational tone, progressive disclosure
    - API/batch: Complete context, no assumptions of follow-up
    - System prompt: Permanent guidelines, avoid temporal references
@@ -257,11 +265,11 @@ Ask this gate question before starting unless a skip condition applies:
    - ✓ No fabrication techniques in single-prompt execution
    - ✓ Framework applied silently (no methodology exposed)
 
-2. **Flag Remaining Ambiguities** — If user decisions needed:
-   - Present options with clear implications
-   - Explain trade-offs
-   - Recommend default if applicable
-   - Get user confirmation before proceeding
+2. **Flag Remaining Ambiguities** — If user decisions are still needed:
+   - Present only the highest-impact options with clear implications
+   - Explain trade-offs briefly
+   - Recommend a default when reasonable
+   - Get user confirmation before proceeding when the choice materially changes the prompt
 
 3. **Recommend Execution Mode:**
    - **Simple tasks:** Execute directly with optimized prompt
@@ -269,9 +277,11 @@ Ask this gate question before starting unless a skip condition applies:
    - **Complex tasks:** Use plan mode (if not already recommended)
 
 4. **Deliver the Optimized Prompt Directly:**
-   - For newcomers: Show a before/after comparison and explain the key changes.
+   - If you already have enough information, present the optimized prompt first.
+   - If critical information is missing, ask targeted questions first instead of fabricating details.
+   - For newcomers: Keep questions and notes plain-language, and show a before/after comparison only when it helps.
    - For experts: Deliver the optimized prompt with concise optimization notes.
-   - **MUST:** Always present the optimized prompt first in a markdown code block. This ensures easy copying and prevents workflow blockage.
+   - **MUST:** Once you are ready to deliver, always present the optimized prompt first in a markdown code block. This ensures easy copying and prevents workflow blockage.
    - Use triple backticks with the `markdown` language identifier for clean formatting.
 
 5. **Offer Post-Delivery Options:**
@@ -314,13 +324,20 @@ Higher fragility (left) = stricter adherence. Lower fragility (right) = more ada
 ## Important Notes
 
 **Model-Specific Behavior Differs Significantly**
-Claude 4.5+ uses extended thinking natively. GPT-4 uses internal CoT. Older models benefit from explicit CoT instructions. An optimization strategy that works for one model family may degrade performance in another. Always consider the target model's capabilities.
-
-**Memory Blocks Prevent Contradictions**
-In extended conversations, save optimization patterns to memory blocks so future prompts do not contradict established guidelines. Without memory persistence, each optimization starts from scratch and may conflict with previous work.
+Claude 4.5+ uses extended thinking natively. GPT-4 uses internal CoT. Older models may benefit from explicit CoT instructions. An optimization strategy that works for one model family may degrade performance in another. Always consider the target model's capabilities.
 
 **Token Economy Matters in Production**
 Every word in a system prompt multiplies by the number of API calls. Verbose instructions become expensive at scale. Balance clarity with conciseness. Progressive disclosure, which loads detail on demand, reduces base token cost.
 
 **Security Implications of Prompt Injection**
 When optimizing prompts that handle user input, consider injection attacks. Validate and sanitize inputs, use delimiters to separate instructions from data, and never allow user content to override system instructions.
+
+## Response Patterns
+
+Use these defaults unless the user or context clearly calls for something else:
+
+- **Explicit optimization request:** Skip the gate question, optimize directly, and ask only the clarifying questions needed to avoid a bad prompt.
+- **Implicit or ambiguous request:** Use the gate question to separate prompt optimization from task execution.
+- **Extremely vague request:** Ask foundational questions such as artifact type, audience, purpose, constraints, and success criteria before drafting.
+- **High-complexity execution request:** Recommend plan mode in the optimized prompt or guidance because the downstream task needs design before execution.
+- **Prompt already strong:** Make only small, high-value edits rather than forcing a full framework rewrite.

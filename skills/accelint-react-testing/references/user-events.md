@@ -10,7 +10,7 @@ Real users trigger sequences of events (focus → mousedown → mouseup → clic
 
 ---
 
-## Rule: Use userEvent for All User Interactions
+## Rule: Use `userEvent` for all user interactions
 
 **Principle:** userEvent simulates how real users interact with your application.
 
@@ -58,7 +58,7 @@ await userEvent.hover(screen.getByRole('button'));
 
 ---
 
-## Rule: Always Await userEvent Calls
+## Rule: Always await `userEvent` calls
 
 **Principle:** userEvent methods are async and return promises. Forgetting await causes race conditions.
 
@@ -105,7 +105,7 @@ expect(screen.getByText('Both clicked')).toBeInTheDocument();
 
 ---
 
-## Rule: Use setup() for Test Isolation
+## Rule: Use `setup()` for test isolation
 
 **Principle:** Call userEvent.setup() per test for proper isolation and realistic delays. Always call setup() at the beginning of the test block, before render().
 
@@ -416,9 +416,8 @@ test('shows loading then success', async () => {
 
 ## Key Takeaways
 
-- **Always use userEvent for user interactions** (clicks, typing, selecting)
-- **Always await userEvent calls** - they return promises
-- **Call userEvent.setup() at the beginning of each test, before render()** - ensures proper isolation and trackingises
-- **Use userEvent.setup()** at the start of each test
-- **fireEvent only for non-user events** (scroll, resize, animation end)
-- **userEvent catches more bugs** by simulating complete interaction sequences
+- **Always use `userEvent` for user interactions** (clicks, typing, selecting)
+- **Always await `userEvent` calls** because they return promises
+- **Call `userEvent.setup()` at the beginning of each test, before `render()`** to ensure proper isolation and interaction tracking
+- **Use `fireEvent` only for non-user events** (scroll, resize, animation end)
+- **`userEvent` catches more bugs** because it simulates complete interaction sequences

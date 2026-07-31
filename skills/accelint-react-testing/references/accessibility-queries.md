@@ -8,7 +8,7 @@ If you can't query an element by its accessible properties (role, label, text), 
 
 ---
 
-## Rule: Query Interactive Elements by Role
+## Rule: Query interactive elements by role
 
 **Principle:** All interactive elements should have appropriate ARIA roles and accessible names.
 
@@ -50,7 +50,7 @@ const heading = screen.getByRole('heading', { name: /welcome/i, level: 1 });
 
 ---
 
-## Rule: Use getByLabelText for Form Inputs
+## Rule: Use `getByLabelText` for form inputs
 
 **Principle:** Form inputs must have associated labels for accessibility.
 
@@ -112,7 +112,7 @@ const input = screen.getByRole('searchbox', { name: /search products/i });
 
 ---
 
-## Rule: Test Accessible Names Match User Expectations
+## Rule: Test accessible names that match user expectations
 
 **Principle:** The accessible name should match what users see or what makes sense in context.
 
@@ -334,4 +334,4 @@ test('modal traps focus', async () => {
 - **Use within()** to scope queries to specific regions (dialogs, menus)
 - **Test keyboard navigation** to verify tab order and keyboard shortcuts
 - **Test focus management** especially for modals and dynamic content
-- Query difficulty = accessibility problem - fix the component, not the test
+- Query difficulty usually indicates an accessibility problem. Fix the component, not the test.

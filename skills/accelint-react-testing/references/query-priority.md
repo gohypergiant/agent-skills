@@ -16,7 +16,7 @@ The query hierarchy reflects how users and assistive technologies interact with 
 
 ---
 
-## Rule: Use getByRole as Default Query
+## Rule: Use `getByRole` as the default query
 
 **Principle:** Role queries verify both presence and accessibility in one assertion.
 
@@ -59,7 +59,7 @@ const modal = screen.getByRole('dialog', { name: /confirm delete/i });
 
 ---
 
-## Rule: Use getByLabelText for Form Fields
+## Rule: Use `getByLabelText` for form fields
 
 **Principle:** Form fields should always have associated labels for accessibility.
 
@@ -101,7 +101,7 @@ const input = screen.getByRole('searchbox', { name: /search products/i });
 
 ---
 
-## Rule: Reserve getByTestId for Truly Dynamic Content
+## Rule: Reserve `getByTestId` for truly dynamic content
 
 **Principle:** Test IDs should be last resort when semantic queries are impossible.
 
@@ -144,7 +144,7 @@ const avatar = screen.getByTestId(`user-avatar-${userId}`);
 
 ---
 
-## Rule: Query by Text for Static Content
+## Rule: Query by text for static content
 
 **Principle:** Text queries work well for non-interactive content when role isn't specific.
 
@@ -228,4 +228,4 @@ screen.getByText(/confirmation message/i)
 screen.getByTestId('dynamic-widget-123')
 ```
 
-**Each step down = less confidence in accessibility.**
+Each step down gives less confidence in accessibility.

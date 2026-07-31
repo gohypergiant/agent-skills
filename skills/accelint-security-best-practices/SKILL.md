@@ -1,23 +1,34 @@
 ---
 name: accelint-security-best-practices
-description: "Comprehensive security audit and vulnerability detection for JavaScript/TypeScript applications following OWASP Top 10. Use when (1) Users say 'audit security', 'check for vulnerabilities', 'security review', 'implement authentication', 'secure this code', (2) Adding authentication, API endpoints, file uploads, or handling user input, (3) Working with secrets, credentials, or sensitive data, (4) Implementing payment features or blockchain integrations, (5) Conducting pre-deployment security checks. Audits for: hardcoded secrets, injection vulnerabilities, XSS/CSRF, broken access control, insecure authentication, rate limiting, dependency vulnerabilities, sensitive data exposure."
+description: "Use for JavaScript/TypeScript security audits, vulnerability reviews, and secure implementation work focused on authentication, authorization, API endpoints, file uploads, outbound fetch/SSRF flows, secrets, dependency risk, user-input handling, or pre-deployment hardening. Trigger on requests like 'security review', 'audit for vulnerabilities', 'secure this code', 'review auth flow', 'check file upload security', 'assess SSRF risk', or 'harden this API'. Best for repo-, service-, or feature-scoped security work that identifies real risks, prioritizes critical/high issues, maps findings to OWASP categories and severity, and either reports findings or applies concrete fixes without drifting into generic non-security cleanup."
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Security Best Practices
 
-Systematic security auditing and vulnerability detection for JavaScript/TypeScript applications. Combines audit workflow with OWASP Top 10 security patterns for production-ready code.
+Systematic security auditing and vulnerability detection for JavaScript/TypeScript applications. This skill combines an audit workflow with OWASP Top 10 security patterns for production-ready code.
 
-**Framework-Agnostic Guidance**: This skill provides security principles applicable across frameworks (Express, Fastify, Nest.js, Next.js, etc.). Code examples illustrate concepts using common patterns—adapt them to your project's specific framework and package manager (npm, yarn, pnpm, bun).
+**Framework-Agnostic Guidance**: This skill gives security principles that apply across frameworks (Express, Fastify, Nest.js, Next.js, and others). Code examples illustrate common patterns. Adapt them to your project's framework and package manager (npm, yarn, pnpm, bun).
+
+## Start by scoping the security task
+
+Before you audit or edit anything, establish these boundaries:
+
+- **Target scope** — exact path, package, service, endpoint set, or feature area
+- **Execution mode** — audit-only findings or apply-fixes implementation
+- **Repo size** — small/localized, medium, or large/multi-surface
+- **Highest-risk surfaces** — auth, secrets, API handlers, file uploads, outbound fetches, dependency management, privileged actions
+
+If the user does not provide scope, infer the smallest credible scope from the request and state that assumption.
 
 ## NEVER Do When Implementing Security
 
 **Note:** For general best practices (type safety, code quality, documentation), use the respective accelint skills. This section focuses exclusively on security-specific anti-patterns.
 
-- **NEVER hardcode secrets** - API keys, tokens, passwords, or credentials in source code are immediately compromised when pushed to version control. Even private repositories leak secrets through employee turnover, third-party access, and git history. In 2024 breach analysis, 47% of exposed credentials came from `.env` files accidentally committed then 'deleted' (but preserved in git history). Attackers scan public GitHub commits within minutes of push. Use environment variables exclusively.
+- **NEVER hardcode secrets** - API keys, tokens, passwords, or credentials in source code are immediately compromised when pushed to version control. Even private repositories leak secrets through employee turnover, third-party access, and git history. In 2024 breach analysis, 47% of exposed credentials came from `.env` files accidentally committed then 'deleted' (but preserved in git history). Attackers scan public GitHub commits within minutes of push. Use environment variables or a dedicated secret manager, and keep secret material out of source control.
 
 - **NEVER trust user input** - Validate with schemas (Zod, Joi) covering type, format, size, and content.
 
@@ -29,7 +40,7 @@ Systematic security auditing and vulnerability detection for JavaScript/TypeScri
 
 - **NEVER expose detailed errors to users** - Log server-side, return generic messages. Stack traces leak architecture for reconnaissance.
 
-- **NEVER use Array.includes() for permission checks** - Permission arrays with 100+ roles suffer O(n) lookup time and type safety issues. Use `Set.has()` for O(1) lookup or role-based access control (RBAC) with proper type checking.
+- **NEVER rely on ad-hoc permission checks** - Permission logic scattered across arrays, string comparisons, or route handlers is easy to bypass or implement inconsistently. Prefer explicit ownership checks, well-defined RBAC/ABAC policies, and data structures that make permission checks hard to misuse.
 
 - **NEVER skip rate limiting on APIs** - Unlimited API requests enable brute force attacks (1000 password attempts/second), denial of service (exhaust server resources), or data scraping (enumerate all users/resources). Apply rate limits to all endpoints, with stricter limits on authentication and expensive operations.
 
@@ -39,7 +50,7 @@ Systematic security auditing and vulnerability detection for JavaScript/TypeScri
 
 ## Before Implementing Security, Ask
 
-Apply these tests to ensure comprehensive security coverage:
+Apply these tests to keep security coverage comprehensive:
 
 ### Threat Assessment
 - **What's the attack surface?** Identify all points where user input enters the system (forms, APIs, file uploads, URLs)
@@ -60,16 +71,16 @@ Apply these tests to ensure comprehensive security coverage:
 
 This skill uses **progressive disclosure** to minimize context usage:
 
-### 1. Start with the Workflow (SKILL.md)
+### 1. Start with the workflow (`SKILL.md`)
 Follow the 4-phase audit workflow below for systematic security analysis.
 
-### 2. Reference Security Rules Overview (AGENTS.md)
+### 2. Review the security rules overview (`AGENTS.md`)
 Load [AGENTS.md](AGENTS.md) to scan compressed security rule summaries organized by category.
 
-### 3. Load Specific Security Patterns as Needed
-When you identify specific security issues, load corresponding reference files for detailed ❌/✅ examples.
+### 3. Load specific security patterns as needed
+When you identify a specific security issue, load the corresponding reference file for detailed ❌/✅ examples.
 
-### 4. Use the Report Template
+### 4. Use the report template
 When this skill is invoked, use the standardized report format:
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
@@ -78,15 +89,15 @@ When this skill is invoked, use the standardized report format:
 
 **Two modes of operation:**
 
-1. **Audit Mode** - Skill invoked directly (`/accelint-security-best-practices <path>`) or user explicitly requests security audit
-   - Generate a structured audit report using the template (Phases 1-2 only)
+1. **Audit Mode** - The skill is invoked directly (`/accelint-security-best-practices <path>`) or the user explicitly requests a security audit, review, assessment, or findings report
+   - Generate a structured audit report using the template (Phases 1-2 only unless the user also asks for fixes)
    - Report findings for user review before implementation
-   - User decides which security fixes to apply
+   - Default to this mode when the user asks for analysis, risk review, or a pre-deploy check
 
-2. **Implementation Mode** - Skill triggers automatically during feature work
+2. **Implementation Mode** - The skill triggers during feature work or the user explicitly wants vulnerabilities fixed
    - Identify and apply security fixes directly (all 4 phases)
-   - No formal report needed
-   - Focus on fixing vulnerabilities inline
+   - No formal report needed unless the user asks for one
+   - Default to this mode when the user asks to secure or harden code, auth, uploads, endpoints, or other specific flows
 
 **Copy this checklist to track progress:**
 
@@ -99,9 +110,9 @@ When this skill is invoked, use the standardized report format:
 
 ### Phase 1: Discover Security Vulnerabilities
 
-**CRITICAL: Audit ALL code for security vulnerabilities.** Do not skip code based on assumptions about exposure. Internal utilities, helpers, and data transformations are frequently exposed through APIs, file uploads, or user interactions even if their implementation appears isolated.
+**CRITICAL: Audit all in-scope code for security vulnerabilities.** Do not skip code inside the chosen scope based on assumptions about exposure. Internal utilities, helpers, and data transformations are often exposed through APIs, file uploads, or user interactions even when the implementation looks isolated.
 
-**Perform systematic static code analysis to identify ALL security anti-patterns:**
+**Perform systematic static code analysis across the chosen scope to identify security anti-patterns:**
 - Hardcoded secrets (API keys, passwords, tokens)
 - Missing input validation (user data, file uploads, API responses)
 - Injection vulnerabilities (SQL, NoSQL, Command, XSS)
@@ -114,11 +125,11 @@ When this skill is invoked, use the standardized report format:
 - Missing CSRF protection (state-changing operations)
 - SSRF vulnerabilities (unvalidated URL fetching)
 
-**Output**: Complete list of ALL identified vulnerabilities with their locations, severity, and OWASP category. Do not filter based on "likelihood" - report everything found.
+**Output**: A complete list of verified vulnerabilities within scope, with locations, severity, and OWASP category. In large repos, report Critical and High findings first, then include Medium and Low findings as time and scope allow. Do not overclaim findings you did not verify.
 
 ### Phase 2: Categorize and Assess Risk
 
-For EVERY vulnerability identified in Phase 1, categorize by OWASP category and severity:
+For EVERY vulnerability identified in Phase 1, categorize it by OWASP category and severity:
 
 **Categorize ALL vulnerabilities by OWASP Top 10 category:**
 
@@ -153,13 +164,13 @@ For EVERY vulnerability identified in Phase 1, categorize by OWASP category and 
 
 Load [references/quick-reference.md](references/quick-reference.md) for detailed vulnerability-to-category mapping and anti-pattern detection.
 
-**Output:** Categorized list of ALL vulnerabilities with their OWASP categories and severity levels. Do not filter or prioritize - list everything found in Phase 1.
+**Output:** Categorized list of verified vulnerabilities with their OWASP categories and severity levels. Preserve full coverage for the chosen scope, but prioritize Critical and High items first when presenting results.
 
 ### Phase 3: Remediate Using Security Patterns
 
 **Step 1: Identify your vulnerability category** from Phase 2 analysis.
 
-**Step 2**: Load MANDATORY references for your category. Read each file completely with no range limits.
+**Step 2**: Load the MANDATORY references for the category. Read each file completely with no range limits.
 
 | Category | MANDATORY Files | Optional | Do NOT Load |
 |----------|----------------|----------|-------------|
@@ -177,22 +188,22 @@ Load [references/quick-reference.md](references/quick-reference.md) for detailed
 | **SSRF Prevention** | ssrf-prevention.md | — | injection, input validation |
 
 **Notes**:
-- If vulnerability spans multiple categories, load references for all relevant categories
-- Security patterns are cumulative - apply defense in depth by addressing all categories
-- Load optional files when implementing specific features (file uploads, MFA, etc.)
+- If a vulnerability spans multiple categories, load references for all relevant categories
+- Security patterns are cumulative. Apply defense in depth by addressing all relevant categories
+- Load optional files when implementing specific features (file uploads, MFA, and others)
 
 ---
 
 **Step 3: Scan for quick reference during remediation**
 
-Load [AGENTS.md](AGENTS.md) to see compressed security rule summaries organized by category. Use as a quick lookup while implementing patterns from the detailed reference files above.
+Load [AGENTS.md](AGENTS.md) to see compressed security rule summaries organized by category. Use it as a quick lookup while you implement patterns from the detailed reference files above.
 
 **Apply patterns systematically:**
 
 1. **Load the reference file** for the identified vulnerability category
 2. **Scan the ❌/✅ examples** to find matching patterns
 3. **Apply the security fix** ensuring defense in depth
-4. **Add comments** explaining the security consideration and referencing the pattern
+4. **Add comments only when helpful** to explain non-obvious security considerations or trade-offs; do not add noisy comments to obvious fixes
 
 **Example remediation:**
 ```typescript
@@ -211,12 +222,12 @@ const user = await db.query(
 ### Phase 4: Verify Security Fixes
 
 **Validate vulnerability closure:**
-1. Review code to confirm vulnerability is fully addressed
-2. Verify no new vulnerabilities introduced by the fix
-3. Check defense in depth - are multiple layers protecting critical resources?
+1. Review the code to confirm the vulnerability is fully addressed
+2. Verify that the fix did not introduce new vulnerabilities
+3. Check defense in depth. Confirm that multiple layers protect critical resources
 
 **Security testing:**
-1. Run existing test suite - all tests must pass
+1. Run the existing test suite. All tests must pass
 2. Add security-specific tests for the vulnerability
 3. Consider penetration testing for critical vulnerabilities
 
@@ -288,16 +299,16 @@ Security fixes sometimes conflict with existing functionality. Here are expert s
 
 ## Important Notes
 
-- **Audit everything philosophy** - Audit ALL code for security vulnerabilities. Internal utilities, helpers, and data transformations are frequently exposed through APIs or user interactions even when they appear isolated. Do not make assumptions about security boundaries.
-- **Report all findings** - Perform systematic static analysis to identify and report ALL vulnerabilities with their severity and OWASP category. Do not filter based on "likelihood" of exploitation.
-- **Reference files are authoritative** - The patterns in references/ follow OWASP best practices. Follow them exactly unless security requirements dictate otherwise.
-- **Defense in depth** - Layer security controls so single vulnerability doesn't compromise entire system. Authentication + authorization + input validation + rate limiting.
+- **Audit everything philosophy** - Audit ALL in-scope code for security vulnerabilities. Internal utilities, helpers, and data transformations are often exposed through APIs or user interactions even when they appear isolated. Do not assume security boundaries.
+- **Report all findings** - Perform systematic static analysis to identify and report ALL verified vulnerabilities with their severity and OWASP category. Do not filter based on "likelihood" of exploitation.
+- **Reference files are authoritative** - The patterns in `references/` follow OWASP best practices. Follow them exactly unless security requirements dictate otherwise.
+- **Defense in depth** - Layer security controls so a single vulnerability does not compromise the entire system. Authentication + authorization + input validation + rate limiting.
 - **Security testing** - Security fixes require testing with malicious inputs and edge cases. Add tests for attack scenarios before deploying.
-- **Incident response** - Security logging and monitoring enable detection and response to attacks. Log all security events with sufficient detail for investigation.
+- **Incident response** - Security logging and monitoring enable detection and response to attacks. Log all security events with enough detail for investigation.
 
 ## Quick Decision Tree
 
-Use this table to rapidly identify which security category applies and appropriate severity.
+Use this table to identify the security category and typical severity quickly.
 
 **Audit everything**: Identify ALL security vulnerabilities in the code regardless of current exposure. Report all findings with severity and OWASP category.
 

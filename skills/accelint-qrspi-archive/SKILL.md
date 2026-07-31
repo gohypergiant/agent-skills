@@ -1,11 +1,11 @@
 ---
 name: accelint-qrspi-archive
-description: Archive an OpenSpec change end-to-end. This skill invokes `/opsx:archive` or `/opsx:bulk-archive` itself to perform the native merge, then immediately follows up with the cross-capability linking and running indices OpenSpec doesn't build on its own — linking every capability a change touched via a shared `related:` frontmatter list, keeping `openspec/specs/INDEX.md` current, and appending a row to `openspec/changes/archive/INDEX.md`. Use this skill whenever the user wants to archive a change, says "archive this change", "bulk archive these changes", "run opsx:archive", "run opsx:bulk-archive", "update the specs index", "cross-link the specs", or wants the archived-change changelog kept current. This skill is purely additive on the linking side — it never prunes a `related:` entry and never changes a change's `Status` column after the initial write; that pruning/synthesis work belongs to `accelint-archive-synthesis`.
+description: Use when the user wants to archive one or more OpenSpec changes end-to-end and also complete the post-archive bookkeeping: running `/opsx:archive` or `/opsx:bulk-archive`, cross-linking touched specs via additive `related:` updates, patching `openspec/specs/INDEX.md`, and appending rows to `openspec/changes/archive/INDEX.md`. Trigger on requests like "archive this change," "bulk archive the pending changes," "run /opsx:archive," "run /opsx:bulk-archive," "cross-link the touched specs," "update the specs index after archive," or "keep the archive index current." Prefer this skill for the full archive-plus-bookkeeping workflow, including native archive execution plus follow-on linking and index maintenance. Do not use it for proposing a change, implementing an existing change, pruning stale `related:` entries, changing existing archive `Status` values, or general archive-synthesis cleanup; those belong to `accelint-qrspi-propose`, `accelint-qrspi-apply`, or `accelint-archive-synthesis`.
 license: Apache-2.0
-compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
+compatibility: Requires the OpenSpec CLI. Per-capability spec writes normally require sub-agent support — see Error Handling for the degraded inline fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.3.3"
 ---
 
 # Accelint QRSPI Archive
@@ -29,6 +29,13 @@ Cross-linking has to happen after the merge resolves, not before it, which is ex
 - Every capability named in any `specs_touched` list already has `openspec/specs/<capability>/spec.md` with a `## Purpose` or `### Purpose` heading in its body — this skill reads that heading rather than duplicating purpose text into frontmatter, and rewriting the correct behavior depends on that heading actually being there (verified in preflight checks, Task B).
 
 If any of these are missing, report the gap and guide the user to resolve it before proceeding — do not silently substitute a guessed default for a missing field. This applies as-is to spec writing's sub-agent support and a touched spec's missing `## Purpose` or `### Purpose` heading. A change's missing `specs_touched`/`decisions` frontmatter is handled differently: preflight Task A derives a candidate from the change's own files and gets the author's explicit confirmation before writing it, rather than stopping outright — see Task A below for why a hard stop isn't actually necessary here, and why it still isn't a silent guess.
+
+## How to Use
+
+- Run this skill for the entire archive workflow, from preflight through final report.
+- Use `/opsx:archive <change-name>` for a single change or `/opsx:bulk-archive` for all pending changes.
+- Let this skill answer the routine sync prompt with yes; surface any other prompt to the user.
+- Keep edits additive: never prune `related:` and never change an existing archive `Status` value.
 
 ## Workflow Overview
 
@@ -386,7 +393,7 @@ A quick-reference summary — each of these is explained in full where it's actu
 - **No automatic pruning of `related:`.** Only additive. Removal is `accelint-archive-synthesis`'s job, and only with human confirmation.
 - **No directionality in the relation.** Co-touch is inherently symmetric, so it's always computed as all-pairs, never as a dependency direction — "A depends on B" is a different kind of edge this skill doesn't model at all.
 - **No corpus-wide drift detection in `specs/INDEX.md`.** Index updates only ever patch the rows for capabilities this batch's changes declared in `specs_touched`. If some capability's `spec.md` was edited outside this skill and its `INDEX.md` row has gone stale as a result, this skill's hot path doesn't catch that — and neither, currently, does `accelint-archive-synthesis`: its decision-drift and structural-coupling checks both read `specs/INDEX.md` as ground truth rather than verifying it against `spec.md`. This is a real, accepted gap, not a job this skill should absorb into its own per-archive cost.
-- **No reconciling summary stats trailing `changes/archive/INDEX.md`.** If that file carries a total row count or similar after the table, the changelog append step preserves it untouched (see step 23 substep 2) rather than incrementing it — updating summary stats is corpus-wide bookkeeping in the same family as `specs/INDEX.md` drift above, not a per-archive job.
+- **No reconciling summary stats trailing `changes/archive/INDEX.md`.** If that file carries a total row count or similar after the table, the changelog append step preserves it untouched (see step 30) rather than incrementing it — updating summary stats is corpus-wide bookkeeping in the same family as `specs/INDEX.md` drift above, not a per-archive job.
 
 ## Error Handling
 
@@ -404,9 +411,9 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **No subagent support available for spec writing** (e.g. an environment without sub-agent support): fall back to performing spec-writing steps directly in this context instead of one subagent per capability. Warn the user explicitly that this run will hold full `spec.md` contents in context as a result — this is a degraded fallback for spec writing only, not the intended default there, and normal operation should always prefer subagents for spec writing. This has no bearing on the archive step, which already runs in this context unconditionally by design regardless of sub-agent availability — see the Archive and Extract section.
 
-**`specs/INDEX.md` or `changes/archive/INDEX.md` doesn't exist yet**: expected on a project's first-ever archive. Create `changes/archive/INDEX.md` fresh with a header row (step 23 substep 3); `specs/INDEX.md` is built fresh from every capability in the index update bootstrap case (step 20), and patched row-by-row on every archive after that.
+**`specs/INDEX.md` or `changes/archive/INDEX.md` doesn't exist yet**: expected on a project's first-ever archive. Create `changes/archive/INDEX.md` fresh with a header row (step 31); `specs/INDEX.md` is built fresh from every capability in the index update bootstrap case (step 27), and patched row-by-row on every archive after that.
 
-**`changes/archive/INDEX.md` has content after the table** (a total row count, a `Generated:` date, a status legend, or similar): insert new rows at the end of the table's existing data rows, immediately before that content — never after it. See step 23 substep 2. Do not edit the trailing content itself, and do not treat a stale count within it as something this run needs to fix.
+**`changes/archive/INDEX.md` has content after the table** (a total row count, a `Generated:` date, a status legend, or similar): insert new rows at the end of the table's existing data rows, immediately before that content — never after it. See step 30. Do not edit the trailing content itself, and do not treat a stale count within it as something this run needs to fix.
 
 ## NEVER Do This
 
@@ -430,7 +437,7 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **NEVER reorder or rewrite existing rows in `changes/archive/INDEX.md`** — append only. This file's value as an audit trail depends entirely on past rows staying exactly as they were written.
 
-**NEVER append a new row to `changes/archive/INDEX.md` by writing to the end of the file** — locate the end of the table's existing data rows (step 23 substep 2) and insert there. The file may carry content after the table — a total row count, a `Generated:` date, a status legend — and writing to end-of-file instead of end-of-table lands a data row in prose after that content instead of inside the table, corrupting it.
+**NEVER append a new row to `changes/archive/INDEX.md` by writing to the end of the file** — locate the end of the table's existing data rows (step 30) and insert there. The file may carry content after the table — a total row count, a `Generated:` date, a status legend — and writing to end-of-file instead of end-of-table lands a data row in prose after that content instead of inside the table, corrupting it.
 
 **NEVER unsort or use block-style YAML for `related:`** — flow style, single line, alphabetically sorted. This is what keeps a no-op run byte-identical and makes a genuine addition show up as a clean, reviewable diff.
 

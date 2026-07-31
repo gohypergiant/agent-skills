@@ -2,17 +2,17 @@
 
 ## Abstract
 
-Comprehensive guide for auditing and improving JavaScript/TypeScript documentation. Covers JSDoc standards, comment markers, and code comment quality. Each section includes one-line summaries here, with links to detailed examples in the `references/` folder.
+This skill audits and improves JavaScript/TypeScript documentation. It covers JSDoc standards, comment markers, and code-comment quality. Each section gives a short summary here and links to detailed examples in the `references/` folder.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify documentation issues
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+1. **Start here**: Scan the rule summaries to identify documentation issues.
+2. **Load references as needed**: Open detailed examples only when you are implementing changes.
+3. **Use progressive loading**: Each reference file is self-contained and includes ❌/✅ examples.
 
-This structure minimizes context usage while providing complete implementation guidance when needed.
+This structure reduces context use while still giving complete implementation guidance when needed.
 
 ---
 
@@ -34,15 +34,15 @@ This structure minimizes context usage while providing complete implementation g
 ## JSDoc Standards
 
 ### Functions
-All functions need: description, @param, @template (if generic), @returns (unless void). Exported functions also need @throws and @example.
+All functions need a description, `@param`, `@template` if generic, and `@returns` unless the return type is `void`. Exported functions also need `@throws` and `@example`.
 [View detailed examples](references/jsdoc.md#functions)
 
 ### Types and Interfaces
-All types/interfaces need: description, @template (if generic). Exported types also need property descriptions.
+All types and interfaces need a description and `@template` if generic. Exported types also need property descriptions.
 [View detailed examples](references/jsdoc.md#types-and-interfaces)
 
 ### Classes
-All classes need: description, @template (if generic). Exported classes also need @example.
+All classes need a description and `@template` if generic. Exported classes also need `@example`.
 [View detailed examples](references/jsdoc.md#classes)
 
 ### Constants
@@ -74,7 +74,7 @@ Always keep: marker comments, linter directives, business logic explanations, do
 [View detailed examples](references/comments.md#comments-to-preserve)
 
 ### Comment Placement
-Move end-of-line comments to their own line above the code (improves readability).
+Move end-of-line comments to their own line above the code. This improves readability.
 [View detailed examples](references/comments.md#comments-placement)
 
 ---

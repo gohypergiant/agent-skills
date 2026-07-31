@@ -1,10 +1,10 @@
 ---
 name: accelint-english-manager
-description: Use when drafting, rewriting, simplifying, reviewing, editing, polishing, humanizing, de-slopping, cleaning up, or checking written English that must become plainer, clearer, more direct, easier to scan, or easier to act on without changing the user's intended meaning, audience, tone, or explicit constraints. Also use when the user says "plain English", "simple English", "make this readable", "make this clearer", "make this direct", "make this sound better", "too wordy", "too formal", "edit this", "clean this up", "review this writing", "grammar check", "Orwell", "STE", "ASD-STE100", "ADHD-friendly", "shorter", "less fluffy", or asks for clearer docs, prompts, emails, UI copy, reports, support replies, release notes, or instructions. Make sure to use this skill for LLM-written documentation or LLM-generated responses that need stronger clarity, scanability, plain-language discipline, or tone-preserving cleanup.
+description: Use when the user wants writing rewritten, tightened, audited, simplified, polished, humanized, de-slopped, grammar-checked, or made plainer, clearer, shorter, easier to scan, or easier to act on without changing the intended meaning, audience, tone, or explicit constraints. Trigger on requests like "plain English," "simple English," "make this clearer," "make this easier to read," "make this more direct," "clean this up," "edit this," "review this writing," "grammar check," "too wordy," "too formal," "less fluffy," "friendlier," "shorter," "audit then rewrite," "keep the tone," "mode=strict," "STE," "ASD-STE100," or "ADHD-friendly." Also trigger on work involving docs, prompts, emails, UI copy, support replies, release notes, status updates, incident notes, procedural text, or other LLM-written prose. Prefer this skill whenever the main job is improving English prose or preserving tone while increasing clarity, including audit-only requests and exact-text-preservation constraints, but not when the real task is fact-checking, policy setting, or substantive content design.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.2"
+  version: "1.3.3"
 ---
 
 # English Manager
@@ -18,7 +18,7 @@ This skill uses one default writing system:
 - **STE-leaning structure** for technical clarity and stable terminology
 - **ADHD-friendly shaping** for scanability and actionability when the text helps someone do something
 
-Use these together. They are not competing modes.
+Use these together. They are not separate modes.
 
 ## Hard constraints
 
@@ -37,15 +37,15 @@ Choose the smallest fitting path before you edit.
 
 ### 1. Ask for the mode first
 
-For drafting or rewriting tasks, you MUST ask the user which mode they want before you edit, unless the user already specified the mode explicitly.
+For drafting or rewriting tasks, ask the user which mode they want before you edit, unless the user already specified the mode explicitly.
 
 Offer these choices:
 - **`mode=default`** — local rewrite by default, plain and direct
 - **`mode=strict`** — stricter technical control, structural rewrite allowed when needed
 
-If the user does not choose a mode, you SHOULD ask a short clarifying question instead of assuming.
+If the user did not choose a mode, ask a short clarifying question instead of assuming.
 
-For audit-only requests, you MAY proceed without asking for a mode if the user clearly wants review rather than a rewrite. If the audit later expands into a rewrite, you MUST ask for the mode before rewriting.
+For audit-only requests, you may proceed without asking for a mode if the user clearly wants review rather than a rewrite. If the audit later expands into a rewrite, ask for the mode before rewriting.
 
 ### 2. Choose the output mode
 
@@ -53,8 +53,7 @@ For audit-only requests, you MAY proceed without asking for a mode if the user c
 - **Rewrite only** — return cleaner final text directly.
 - **Audit plus rewrite** — give findings first, then the rewrite.
 
-If the user asks for only the rewrite, return only the rewrite.
-Do not return audit notes unless the user asked for them.
+If the user asks for only the rewrite, return only the rewrite. Do not return audit notes unless the user asked for them.
 
 ### 3. Preserve the constraints
 
@@ -144,14 +143,16 @@ Use these writing modes when they materially help.
 | Mode | When | Apply |
 |---|---|---|
 | **mode=default** | Most requests | Plain-language discipline, stable terminology, scanable structure, action-first shaping when useful, and local rewrites by default |
-| **mode=strict** | The user explicitly asks for STE, ASD-STE100-style writing, very strict plain language, or highly controlled technical wording | Default mode + stronger STE structure, stronger modality discipline, stronger procedural/descriptive separation, tighter terminology control, and structural rewrites when needed for clarity or control |
+| **mode=strict** | The user explicitly asks for STE, ASD-STE100-style writing, very strict plain language, highly controlled technical wording, or a stricter audit of technical prose | Default mode + stronger STE structure, stronger modality discipline, stronger procedural/descriptive separation, tighter terminology control, and structural rewrites when needed for clarity or control |
 
 If the user asks for strict STE-style review:
 1. Say that you can do a strict STE-leaning review.
 2. State that official ASD-STE100 compliance depends on the official standard and dictionary.
-3. Load only the relevant part of `references/ste-rules.md` that you need for the request.
+3. Load only the relevant part of `references/ste-rules.md` that the request needs.
 4. Cite rule numbers only from the part of `references/ste-rules.md` that you actually loaded.
 5. If you did not load the relevant rule text, do not cite rule numbers.
+
+If the user asks for "plain English," "simple English," "clean this up," or a similar generic cleanup request without naming a mode, treat that as a plain-language goal, not as implicit `mode=strict`.
 
 ## Output rules
 
@@ -207,7 +208,7 @@ Load references only when they materially help.
 3. Apply `mode=default` or `mode=strict`, and let that set the default scope.
 4. Tighten the wording with the smallest change that fixes the problem.
 5. Remove filler, stale phrasing, and avoidable abstraction.
-6. Split overloaded sentences or restructure when substitution alone will not work.
+6. Split overloaded sentences or restructure only when substitution alone will not work.
 7. Recheck pronouns, modality, and untouchables.
 8. Run the self-check before delivery.
 
@@ -249,5 +250,7 @@ For a deeper mechanical pass, load `references/checklist.md`.
 ## Limits
 
 This skill improves clarity and execution-readiness. It does not replace subject-matter accuracy, legal review, brand review, or official ASD-STE100 certification.
+
+It is also a writing skill, not a fact-checking or policy-setting skill. Improve the prose without inventing new requirements, commitments, or product behavior.
 
 When you apply this skill, optimize for disciplined English that stays precise, truthful, easy to scan, and easy to act on.

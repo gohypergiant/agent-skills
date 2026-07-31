@@ -4,6 +4,21 @@ All notable changes to the accelint-ac-to-playwright skill are documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.11] - 2026-07-30
+
+### Changed
+- Clarified assessment vs conversion mode selection, serial file-processing rules, and whole-workflow stop conditions
+  - Rationale: Reduces ambiguity during multi-file audits and conversion runs so the skill behaves consistently under batch inputs
+- Moved assessment output guidance closer to the assessment workflow and folded validation retry rules into the plan-generation step
+  - Rationale: Makes the execution path easier to scan and lowers the risk of skipping required reporting or retry constraints
+- Tightened wording across the skill while preserving behavior, and refined the frontmatter description for stronger requirement-to-Playwright triggering boundaries
+  - Rationale: Improves trigger quality and operational clarity without changing the skill's core contract
+- Added `evals/evals.json` with representative assessment and conversion eval prompts
+  - Rationale: Establishes a reusable default eval set for future skill-creator benchmarking and regression checks
+
+### Version
+- Bumped from 1.1.10 → 1.1.11
+
 ## [1.1.10] - 2026-06-11
 
 ### Changed

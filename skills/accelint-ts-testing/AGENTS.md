@@ -1,26 +1,26 @@
 # Vitest Best Practices
 
-> **Note:**
-> This document is mainly for agents and LLMs to follow when maintaining, generating, or refactoring vitest tests. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
+> Note:
+> This document is mainly for agents and LLMs that maintain, generate, or refactor Vitest tests. Humans can use it too, but the guidance is optimized for automation and consistency in AI-assisted workflows.
 
 ---
 
 ## Abstract
 
-Expert-level vitest testing guidance designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+This guide gives expert-level Vitest testing guidance for AI agents and LLMs. Each rule has a one-line summary here with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
-**Token efficiency principle:** This guide focuses on expert-level insights and non-obvious patterns. It assumes understanding of basic vitest concepts (`describe`, `it`, `expect`, `vi`) and focuses on decisions experts make: when to mock vs use real code, how to structure tests for maintainability, and performance optimization patterns.
+**Token efficiency principle:** This guide focuses on expert-level insights and non-obvious patterns. It assumes you already know basic Vitest concepts (`describe`, `it`, `expect`, `vi`). It focuses on expert decisions such as when to mock versus use real code, how to structure tests for maintainability, and how to optimize test performance.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant patterns
-2. **Check for existing setup files**: Before writing tests, look for setup files that configure global mocks and utilities
-3. **Load references as needed**: Click through to detailed examples only when implementing
-4. **Progressive loading**: Each reference file is self-contained with examples
+1. **Start here**: Scan the rule summaries to identify the relevant patterns.
+2. **Check for existing setup files**: Before you write tests, look for setup files that configure global mocks and utilities.
+3. **Load references as needed**: Open detailed examples only when you need them for implementation.
+4. **Use progressive loading**: Each reference file is self-contained and includes examples.
 
-This structure minimizes context usage while providing complete implementation guidance when needed.
+This structure minimizes context usage while still providing complete implementation guidance when needed.
 
 ## Workflow: Before Writing Tests
 
@@ -67,7 +67,7 @@ See [vitest-features.md](references/vitest-features.md#discovering-existing-setu
 
 ## Workflow: Before Marking Test Files Complete
 
-**CRITICAL: This workflow is MANDATORY. Never skip type checking test files.**
+**REQUIRED: This workflow is MANDATORY. Never skip type checking test files.**
 
 Before marking any test file as "complete" or "done", verify type correctness:
 
@@ -137,7 +137,7 @@ const mockGetUser = vi.fn<() => User>().mockReturnValue({ id: 1, name: 'Alice', 
 **Principle: Type-safe tests prevent silent failures**
 Type errors in tests are as critical as type errors in production code. Catch them before marking work complete.
 
-**CRITICAL REMINDER:** This workflow is NOT optional. Running `tsc --noEmit` against test files is a REQUIRED step before marking test work as complete. If you skip this step, you risk shipping broken tests that provide false confidence.
+**REQUIRED REMINDER:** This workflow is NOT optional. Running `tsc --noEmit` against test files is a REQUIRED step before marking test work as complete. If you skip this step, you risk shipping broken tests that provide false confidence.
 
 ## Workflow: Test Code Review/Audit
 

@@ -1,0 +1,195 @@
+{
+  "skill_name": "accelint-nextjs-best-practices",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm building a B2B dashboard in Next.js 15 App Router. My page.tsx currently awaits getCurrentUser(), then awaits getTeam(), then awaits getInvoices(), and only after that renders three sections. Can you refactor this page to eliminate the waterfall, keep auth on the server, and explain where Suspense boundaries should go?",
+      "expected_output": "Recommends App Router-specific parallel data fetching, preserving server-side auth, and introducing sensible Suspense boundaries for independently loading sections.",
+      "files": [],
+      "expectations": [
+        "The response clearly treats this as a Next.js App Router performance task.",
+        "The response recommends eliminating sequential awaits by fetching independent data in parallel.",
+        "The response keeps authentication or session checks on the server rather than moving them to the client.",
+        "The response discusses Suspense boundaries in relation to independently loading UI sections."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I have a Server Action called updateEmail that trusts a hidden form field for userId and then calls prisma.user.update. We use Next.js App Router with next-auth. Please harden this action and explain what should happen with auth, input validation, and cache revalidation.",
+      "expected_output": "Identifies the Server Action as a security-sensitive Next.js pattern, removes trust in client-provided identifiers, validates input, checks session/authorization server-side, and addresses revalidation behavior.",
+      "files": [],
+      "expectations": [
+        "The response recognizes this as a Server Action security and authorization task.",
+        "The response says not to trust the hidden userId from the client.",
+        "The response recommends deriving the acting user from the server session or auth context.",
+        "The response includes server-side input validation.",
+        "The response mentions appropriate cache revalidation or invalidation after mutation."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our Next.js route handler at app/api/reports/route.ts returns a huge JSON export for authenticated users, but right now it doesn't check auth consistently and it builds the full array in memory before responding. What's a better pattern here?",
+      "expected_output": "Provides route-handler-specific guidance covering authentication/authorization, memory-aware response patterns such as streaming or chunking when appropriate, and route handler best practices in App Router.",
+      "files": [],
+      "expectations": [
+        "The response explicitly frames the answer around a Next.js route handler in app/api.",
+        "The response recommends consistent server-side auth or authorization checks in the handler.",
+        "The response addresses the memory cost of building the full payload in memory before responding.",
+        "The response suggests a more scalable response pattern such as streaming, pagination, chunking, or another route-handler-appropriate alternative."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I'm passing a Prisma user record with Date fields, Decimal values, and a class instance into a Client Component from a Server Component in Next.js. It keeps getting weird serialization issues. Can you show me the right boundary here?",
+      "expected_output": "Explains React Server Component serialization constraints in Next.js, recommends passing only serializable plain data across the server/client boundary, and suggests transforming problematic values before crossing the boundary.",
+      "files": [],
+      "expectations": [
+        "The response identifies this as a Server Component to Client Component boundary issue in Next.js.",
+        "The response explains that only serializable data should cross the RSC boundary.",
+        "The response flags class instances or complex non-plain objects as problematic.",
+        "The response recommends mapping ORM records into plain objects or view models before passing them to the client."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "My App Router page renders a search box, filter pills, and a results table. Right now the whole page is marked 'use client' because the search params logic ended up in the top-level component. Can you help me split the client and server responsibilities better without breaking interactivity?",
+      "expected_output": "Recommends keeping the page and data-fetching path server-first where possible, moving only interactive controls into Client Components, and clarifying server/client boundaries for search params and interactivity.",
+      "files": [],
+      "expectations": [
+        "The response treats this as a server/client boundary design problem in Next.js App Router.",
+        "The response recommends avoiding an unnecessary top-level 'use client' page when only parts need client interactivity.",
+        "The response suggests isolating interactive widgets into smaller Client Components.",
+        "The response keeps data fetching or rendering of heavier non-interactive content on the server when possible."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I have a dashboard page where each card fetches its own data after mount with useEffect, so users see a blank shell and then everything pops in one by one. This is Next.js App Router. What's the modern approach to loading this page?",
+      "expected_output": "Shifts the solution toward App Router server-first data fetching, Suspense and streaming where appropriate, and reducing client-side fetch waterfalls caused by post-mount useEffect patterns.",
+      "files": [],
+      "expectations": [
+        "The response identifies the anti-pattern of client-side post-mount fetching for initial page content in App Router.",
+        "The response recommends server-side or RSC-based data fetching for initial render where appropriate.",
+        "The response discusses Suspense, streaming, or loading UI for progressive rendering.",
+        "The response aims to reduce or eliminate the one-by-one loading waterfall."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "In a Next.js App Router layout, nav, sidebar, and page content all call the same getCurrentWorkspace() helper and I'm worried we're duplicating work on every request. Does Next dedupe this automatically or should I change the pattern?",
+      "expected_output": "Explains request-level deduplication considerations in Next.js, distinguishes when identical fetches are deduped versus custom function calls that may need explicit caching, and recommends an appropriate shared data-access pattern.",
+      "files": [],
+      "expectations": [
+        "The response discusses deduplication in the context of Next.js App Router request rendering.",
+        "The response distinguishes built-in deduplication for fetch-based requests from custom helper functions or ORM calls.",
+        "The response suggests an appropriate caching or sharing pattern, such as React cache or centralizing the load.",
+        "The response avoids claiming that all repeated helper calls are automatically deduped without qualification."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Our Next.js app imports icons and utilities from a giant barrel file in a shared package, and bundle analysis suggests way too much code is getting pulled into some client bundles. Can you review this pattern and recommend what to change?",
+      "expected_output": "Addresses Next.js client bundle impact from barrel imports, explains how broad re-export surfaces can hurt tree-shaking or pull server-only code toward client boundaries, and recommends more selective import patterns.",
+      "files": [],
+      "expectations": [
+        "The response treats this as a Next.js performance or bundling concern rather than only generic TypeScript style advice.",
+        "The response mentions client bundle size or tree-shaking implications of barrel imports.",
+        "The response recommends narrower or direct imports where appropriate.",
+        "The response considers server/client boundary consequences when shared barrels mix server-safe and client-safe exports."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Can you audit this App Router flow? A Server Component reads cookies() and headers(), then passes a callback prop into a Client Component that submits a form, and later that client component tries to import a server-only helper. I need to know what is actually allowed here.",
+      "expected_output": "Covers multiple Next.js boundary rules: server-only APIs stay on the server, functions generally do not cross the RSC boundary except supported patterns like Server Actions references, and client components must not import server-only modules.",
+      "files": [],
+      "expectations": [
+        "The response identifies multiple Next.js boundary violations or risks.",
+        "The response states that client components must not import server-only helpers or modules.",
+        "The response explains that arbitrary callback props are not passed freely across the RSC boundary like normal functions.",
+        "The response distinguishes valid Server Action usage from invalid generic function passing."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "We're debating whether to fetch analytics data in a Client Component with SWR or directly in a Server Component in Next.js. The page is mostly read-only, but one small date-range picker is interactive. Which side should own the fetch and why?",
+      "expected_output": "Uses Next.js server-vs-client decision making to recommend a server-first fetch for mostly read-only initial content, while isolating interactivity to a smaller client island or layering client fetches only when the UX truly requires it.",
+      "files": [],
+      "expectations": [
+        "The response uses Next.js server-first reasoning rather than generic React data-fetching advice alone.",
+        "The response considers the page being mostly read-only as a reason to prefer server fetching for initial content.",
+        "The response keeps the interactive date-range picker isolated as a client concern.",
+        "The response explains tradeoffs rather than giving a blanket one-size-fits-all answer."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "I have a plain React component with useEffect and useMemo bugs causing repeated renders in Vite. There's no Next.js here. Can you help optimize it?",
+      "expected_output": "This is a near-boundary negative case that should be answered as generic React work rather than treated as Next.js-specific App Router guidance.",
+      "files": [],
+      "expectations": [
+        "The response does not frame the task as a Next.js App Router problem.",
+        "The response focuses on generic React rendering and hooks guidance.",
+        "The response avoids inventing Next.js-specific server or route-handler advice."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Can you write an Express route that checks a JWT, validates input with zod, and updates a MongoDB document safely? I'm not using Next.js.",
+      "expected_output": "This is a near-boundary negative case that should stay in generic backend or security guidance rather than invoking Next.js route-handler patterns.",
+      "files": [],
+      "expectations": [
+        "The response does not present Express code as if it were a Next.js route handler.",
+        "The response focuses on generic Node or Express auth and validation practices.",
+        "The response avoids App Router-specific APIs such as app/api or revalidatePath unless explicitly contrasted as not applicable."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Our repo has a package called next-utils but it's just shared TypeScript helpers for a CLI and a worker. I want a code quality review for null handling and typing. No framework-specific advice needed.",
+      "expected_output": "This should be treated as TypeScript best-practices review, not as a Next.js request merely because the package name contains 'next'.",
+      "files": [],
+      "expectations": [
+        "The response does not infer Next.js requirements from the package name alone.",
+        "The response focuses on TypeScript code quality concerns like typing and null handling.",
+        "The response avoids App Router, Server Components, or route-handler advice."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "I'm on Next.js Pages Router, not App Router. I have getServerSideProps and some API routes. Please review performance hotspots, but don't rewrite the app to App Router unless it's truly necessary.",
+      "expected_output": "This boundary case should still trigger Next.js-specific reasoning, but the response must respect the Pages Router context instead of assuming App Router-only features.",
+      "files": [],
+      "expectations": [
+        "The response recognizes this is still a Next.js task.",
+        "The response respects the Pages Router context rather than assuming the app already uses App Router.",
+        "The response avoids prescribing App Router-only features as mandatory for solving the stated problem.",
+        "The response discusses performance within the constraints of getServerSideProps or API routes when relevant."
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "I need help with a Next.js Server Action that creates an order, checks inventory, and then redirects. The bug is that unauthorized users can still hit it if they forge the POST. Also, the page sometimes shows stale order counts afterward.",
+      "expected_output": "Combines Server Action authorization hardening with mutation flow guidance, secure redirect handling, and post-mutation cache invalidation or revalidation concerns.",
+      "files": [],
+      "expectations": [
+        "The response treats forged POST access to a Server Action as a real authorization concern.",
+        "The response recommends server-side auth or permission checks inside the action itself.",
+        "The response discusses stale UI after mutation in terms of revalidation or cache invalidation.",
+        "The response keeps the solution grounded in Next.js Server Action behavior."
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "My Next.js route handler proxies requests to an internal upstream API. We currently forward every incoming header, including cookies and authorization, and cache the response aggressively. I want a safer design review.",
+      "expected_output": "Provides Next.js route-handler and security-aware guidance about least-privilege header forwarding, auth handling, sensitive data boundaries, and safe caching choices for proxied responses.",
+      "files": [],
+      "expectations": [
+        "The response frames this as a route-handler security and caching review in Next.js.",
+        "The response warns against blindly forwarding all incoming headers to the upstream service.",
+        "The response discusses cookies or authorization headers as sensitive values that need deliberate handling.",
+        "The response addresses caching strategy in light of authenticated or user-specific upstream responses."
+      ]
+    }
+  ]
+}

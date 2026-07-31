@@ -1,6 +1,6 @@
 # Multi-Factor Authentication (MFA)
 
-Implement multi-factor authentication for enhanced security. MFA adds a second verification factor beyond passwords, significantly reducing account takeover risk.
+Implement multi-factor authentication for enhanced security. MFA adds a second verification factor beyond passwords and significantly reduces account takeover risk.
 
 **MFA Library Examples**: This document uses common MFA patterns. Apply to your MFA solution: speakeasy (TOTP), otplib, @otplib/preset-default, or third-party services (Auth0, Clerk, AWS Cognito, Firebase Auth). Principles apply universally across MFA implementations.
 
@@ -13,7 +13,7 @@ MFA protects against:
 - **Keyloggers**: Malware capturing passwords cannot access accounts without second factor
 - **Social Engineering**: Attacker convincing user to reveal password still blocked by MFA
 
-Without MFA, a single leaked password compromises the account. With MFA, attacker needs both password AND physical device/authenticator app. Success rate of account compromise drops by 99.9% with MFA enabled.
+Without MFA, a single leaked password compromises the account. With MFA, an attacker needs both the password AND the physical device or authenticator app. The success rate of account compromise drops by 99.9% when MFA is enabled.
 
 ## Anti-Patterns to Avoid
 

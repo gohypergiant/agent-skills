@@ -13,7 +13,7 @@ Security headers protect against:
 - **Protocol Downgrade**: Strict-Transport-Security enforces HTTPS
 - **Referrer Leaks**: Referrer-Policy controls information disclosure
 
-Missing security headers leave applications vulnerable even with secure code. Headers are the first line of defense, enforced by the browser before any code executes.
+Missing security headers leave applications vulnerable even when the code is secure. Headers are the first line of defense, enforced by the browser before any code executes.
 
 ## Anti-Patterns to Avoid
 

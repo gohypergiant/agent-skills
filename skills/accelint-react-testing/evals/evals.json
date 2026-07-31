@@ -1,0 +1,270 @@
+{
+  "skill_name": "accelint-react-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need a test for this dialog component. Right now the test uses getByTestId for the open button and the confirm button. Can you rewrite it the React Testing Library way?\n\nrender(<DeleteDialog />)\nfireEvent.click(screen.getByTestId('open-delete'))\nfireEvent.click(screen.getByTestId('confirm-delete'))\nexpect(onDelete).toHaveBeenCalled()",
+      "expected_output": "Rewrites the test toward accessible role-based queries and userEvent interactions, replacing test IDs for buttons with role and name queries.",
+      "files": [],
+      "expectations": [
+        "The response prefers getByRole with accessible names over getByTestId for the buttons.",
+        "The response replaces fireEvent click usage with awaited userEvent interactions.",
+        "The response keeps the advice centered on user-observable behavior rather than DOM implementation details."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review this test and tell me if the query is right.\n\nrender(<LoginForm />)\nexpect(screen.getByText('Submit')).toBeInTheDocument()",
+      "expected_output": "Explains that interactive elements should usually be queried by role and accessible name, not plain text, and recommends getByRole for the submit button.",
+      "files": [],
+      "expectations": [
+        "The response identifies getByText on a button as lower-signal than getByRole.",
+        "The response recommends a role-based query such as getByRole('button', { name: /submit/i }).",
+        "The response ties the recommendation to accessibility confidence or semantic verification."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I am testing a form field and the current test does this: screen.getByPlaceholderText('Email'). Is that good enough?",
+      "expected_output": "Recommends label-first querying for form fields and explains that placeholder text is a weaker fallback than a real label.",
+      "files": [],
+      "expectations": [
+        "The response recommends getByLabelText or a role query with an accessible name for the field.",
+        "The response explains why placeholder text is a weaker accessibility signal than a label.",
+        "The response does not endorse placeholder queries as the default when a label should exist."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "We have a canvas chart with no stable text and the library output is mostly non-semantic wrappers. Is using getByTestId acceptable here?",
+      "expected_output": "Allows getByTestId as a last resort for non-semantic or third-party output while still framing it as lower confidence than semantic queries.",
+      "files": [],
+      "expectations": [
+        "The response does not ban getByTestId absolutely.",
+        "The response frames getByTestId as a last resort when semantic queries are not practical.",
+        "The response preserves the query-priority hierarchy rather than treating test IDs as equivalent to role queries."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "This test waits for data with queryByText plus toBeInTheDocument. Is that the right pattern?\n\nrender(<UserCard />)\nexpect(await screen.queryByText('Alice')).toBeInTheDocument()",
+      "expected_output": "Flags queryBy for presence as the wrong variant and recommends findBy for async appearance or getBy for synchronous presence.",
+      "files": [],
+      "expectations": [
+        "The response says queryBy is for absence checks, not presence assertions.",
+        "The response recommends findByText for async-loaded content in this example.",
+        "The response mentions better failure messages or clearer intent from the correct variant."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I have a component that renders a success toast immediately on first paint. Should the test use getByRole, findByRole, or queryByRole?",
+      "expected_output": "Chooses getByRole for synchronous presence and distinguishes it from findBy for async appearance and queryBy for absence.",
+      "files": [],
+      "expectations": [
+        "The response chooses getBy* for content that should already exist.",
+        "The response explains when findBy* would be appropriate instead.",
+        "The response explains that queryBy* is mainly for absence assertions."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "A spinner disappears after the request completes. Right now the test does await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()). Is there a clearer Testing Library pattern?",
+      "expected_output": "Recommends waitForElementToBeRemoved for disappearance checks and explains why it is clearer than a generic waitFor wrapper.",
+      "files": [],
+      "expectations": [
+        "The response recommends waitForElementToBeRemoved for the spinner removal case.",
+        "The response treats disappearance as distinct from async appearance.",
+        "The response avoids suggesting raw timeouts or manual polling."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Why is this flaky?\n\nawait waitFor(() => {\n  fireEvent.click(screen.getByRole('button', { name: /save/i }))\n  expect(screen.getByText('Saved')).toBeInTheDocument()\n})",
+      "expected_output": "Explains that side effects inside waitFor are retried repeatedly, causing multiple clicks, and moves the interaction outside the wait with userEvent plus a proper async assertion.",
+      "files": [],
+      "expectations": [
+        "The response identifies side effects inside waitFor as the root issue.",
+        "The response explains that waitFor retries the callback and may click multiple times.",
+        "The response moves the click outside waitFor and prefers awaited userEvent with findBy or a pure assertion wait."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "This test clicks a button with fireEvent and sometimes misses focus-related behavior. Should I keep fireEvent?\n\nfireEvent.click(screen.getByRole('button', { name: /open menu/i }))",
+      "expected_output": "Recommends userEvent for real user interactions because it simulates the fuller interaction sequence and catches focus-related issues fireEvent can miss.",
+      "files": [],
+      "expectations": [
+        "The response prefers userEvent over fireEvent for click interactions.",
+        "The response mentions fuller event sequences, focus handling, or realism as the reason.",
+        "The response does not frame fireEvent as the preferred default for user interactions."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Can you review this test?\n\nconst user = userEvent.setup()\nrender(<SearchBox />)\nuser.type(screen.getByRole('textbox'), 'react')\nexpect(screen.getByDisplayValue('react')).toBeInTheDocument()",
+      "expected_output": "Flags the missing await on userEvent and ties it to race conditions or act warnings.",
+      "files": [],
+      "expectations": [
+        "The response says userEvent methods are async and should be awaited.",
+        "The response links the missing await to flaky assertions or act warnings.",
+        "The response preserves userEvent rather than replacing it with fireEvent."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "I need to test a keyboard shortcut in a menu component. Should I use fireEvent.keyDown or something else?",
+      "expected_output": "Prefers userEvent keyboard support for realistic keyboard interaction while allowing fireEvent mainly for cases without a userEvent equivalent.",
+      "files": [],
+      "expectations": [
+        "The response recommends userEvent.keyboard or another userEvent-based keyboard interaction approach.",
+        "The response frames fireEvent as more appropriate for non-user or unsupported event cases.",
+        "The response keeps the advice grounded in realistic user interaction simulation."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "This component uses ThemeProvider and React Router. Every test manually wraps both providers inline. What Testing Library pattern should we use instead?",
+      "expected_output": "Recommends a centralized custom render utility in test utils for provider setup instead of repeating wrappers in each test.",
+      "files": [],
+      "expectations": [
+        "The response recommends a custom render helper or test-utils pattern for shared providers.",
+        "The response explains that repeated wrapper setup should be centralized.",
+        "The response keeps provider guidance scoped to test setup rather than application runtime code."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Our custom render helper wraps Redux, QueryClientProvider, and Router, but nobody knows when to use it and people still call plain render for connected components. What should the testing guidance say?",
+      "expected_output": "Explains that provider requirements should be centralized and documented, and that the shared render helper should be the default for components that depend on those providers.",
+      "files": [],
+      "expectations": [
+        "The response identifies undocumented provider requirements as a testing-maintenance problem.",
+        "The response recommends documenting or standardizing the custom render helper usage.",
+        "The response does not suggest repeating provider setup ad hoc in each test file."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Audit this test file for React Testing Library issues. I want findings and priorities, not just a rewritten file.\n\nimport { render, screen, fireEvent } from '@testing-library/react'\n\nit('submits', async () => {\n  const { container } = render(<LoginForm />)\n  fireEvent.change(container.querySelector('input[name=email]'), { target: { value: 'a@test.com' } })\n  fireEvent.click(screen.getByText('Submit'))\n  expect(await screen.findByText('Welcome')).toBeInTheDocument()\n})",
+      "expected_output": "Treats the request as an audit, reports prioritized findings, and covers container querying, fireEvent overuse, and lower-signal text queries for an interactive control.",
+      "files": [],
+      "expectations": [
+        "The response recognizes this as an audit or review request rather than only providing a patch.",
+        "The response identifies container or querySelector usage as an anti-pattern.",
+        "The response identifies fireEvent-based user interactions as lower fidelity than userEvent.",
+        "The response identifies getByText on the submit control as weaker than a role-based query."
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Please fix this test directly.\n\nrender(<Counter />)\nconst inc = screen.getByText('Increment')\nfireEvent.click(inc)\nexpect(screen.getByText('Count: 1')).toBeInTheDocument()",
+      "expected_output": "Treats the request as a direct fix rather than a formal audit report, while still applying role-first query and userEvent guidance.",
+      "files": [],
+      "expectations": [
+        "The response behaves like a direct fix request instead of forcing a long audit template.",
+        "The response improves the button query toward getByRole with a name.",
+        "The response replaces fireEvent click with awaited userEvent click."
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "I keep destructuring queries from render because it feels shorter: const { getByText } = render(<Banner />). Is that fine in React Testing Library?",
+      "expected_output": "Discourages destructured render queries in favor of screen, explaining maintainability and current-DOM querying benefits.",
+      "files": [],
+      "expectations": [
+        "The response recommends screen over destructured render queries as the default style.",
+        "The response explains maintainability or current-DOM benefits of screen.",
+        "The response does not encourage container-first or destructured-query patterns as best practice."
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "This test rerenders the component to simulate a tab toggle. Is that how we should test state changes in React Testing Library?",
+      "expected_output": "Explains that state changes should usually be driven through user interactions instead of rerender, except in true prop-change scenarios.",
+      "files": [],
+      "expectations": [
+        "The response discourages rerender as the default way to test state changes.",
+        "The response recommends triggering state changes through user interactions when possible.",
+        "The response allows rerender only for genuine parent-prop change scenarios or clearly bounded cases."
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "The team snapshots the entire rendered tree for every component test. Is that a good Testing Library pattern?",
+      "expected_output": "Warns against large snapshot-heavy tests and recommends targeted assertions for meaningful behavior and structure instead.",
+      "files": [],
+      "expectations": [
+        "The response discourages broad full-tree snapshot usage as a default testing strategy.",
+        "The response explains brittleness, low review value, or noisy diffs from large snapshots.",
+        "The response recommends targeted assertions or narrow snapshots for critical structures instead."
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "I added aria-label='save-button' to a div so my test could do getByRole('button', { name: /save/i }). Is that acceptable?",
+      "expected_output": "Pushes back on adding ARIA purely for tests, recommends fixing semantics first, and favors real button elements over div-plus-role workarounds.",
+      "files": [],
+      "expectations": [
+        "The response says not to add ARIA solely to satisfy tests.",
+        "The response recommends semantic HTML such as using a real button where appropriate.",
+        "The response frames tests as verifying accessibility, not manufacturing it for testability."
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "When queries fail, I usually start guessing selectors or switch to data-testid. Is there a better RTL debugging workflow?",
+      "expected_output": "Recommends using screen.debug or screen.logTestingPlaygroundURL to inspect the DOM and discover stronger queries instead of guessing.",
+      "files": [],
+      "expectations": [
+        "The response recommends screen.debug(), screen.logTestingPlaygroundURL(), or both.",
+        "The response frames debugging as discovering accessible queries rather than defaulting to test IDs.",
+        "The response does not encourage guessing CSS selectors as the first move."
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "The user asked: 'Please review our React Testing Library tests for accessibility confidence and query quality.' What kind of output should this skill produce?",
+      "expected_output": "Recognizes a test review invocation and uses an audit-style output with prioritized findings, category framing, and accessibility-focused reasoning rather than only rewriting code silently.",
+      "files": [],
+      "expectations": [
+        "The response recognizes this as a review or audit scenario.",
+        "The response uses structured findings or prioritization rather than a terse one-line answer.",
+        "The response focuses on accessibility confidence, query quality, or user-centric test coverage."
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "Can you help me write a Jest unit test for this Node utility that normalizes file paths? It does not render React and does not use Testing Library.",
+      "expected_output": "Acts as a non-trigger boundary case by not forcing React Testing Library advice onto a plain Node unit test request.",
+      "files": [],
+      "expectations": [
+        "The response does not frame the task as React component testing.",
+        "The response avoids unnecessary screen, render, role-query, or userEvent guidance.",
+        "The response stays focused on generic unit-test concerns appropriate for a Node utility."
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "I am debugging Playwright selectors in an end-to-end test. Should I use getByRole or data-testid there?",
+      "expected_output": "Treats this as a boundary case and avoids assuming the React Testing Library skill is the primary fit, since the request is about Playwright E2E testing rather than RTL component tests.",
+      "files": [],
+      "expectations": [
+        "The response does not answer as if this were necessarily a React Testing Library component-test request.",
+        "The response avoids centering render(), screen, or provider-wrapper advice that only applies to RTL tests.",
+        "The response keeps the distinction between component-test guidance and Playwright E2E guidance clear."
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "We are testing a React modal and need to assert content inside it without accidentally matching the rest of the page. How should we scope queries?",
+      "expected_output": "Recognizes a within()-style scoping scenario and recommends querying within the modal or dialog subtree while still using role-based selectors.",
+      "files": [],
+      "expectations": [
+        "The response recommends within() or an equivalent scoped-query pattern for the modal subtree.",
+        "The response still uses semantic queries such as role-based access within the scoped container.",
+        "The response does not fall back immediately to container.querySelector-based scoping."
+      ]
+    }
+  ]
+}

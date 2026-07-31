@@ -7,9 +7,9 @@ Contains executable code that agents can run. Scripts should:
 - Include helpful error messages
 - Handle edge cases gracefully
 
-**When to include**: When the same code is being rewritten repeatedly or deterministic reliability is needed
+**When to include**: Use scripts when the same code is being rewritten repeatedly or deterministic reliability is needed.
 
-**Benefits**: Token efficient, deterministic, may be executed without loading into context
+**Benefits**: Scripts are token efficient, deterministic, and may be executed without loading them into context.
 
 ### Recommendations
 

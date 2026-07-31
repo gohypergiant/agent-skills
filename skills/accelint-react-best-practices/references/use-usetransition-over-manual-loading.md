@@ -1,6 +1,6 @@
 # 2.8 Use useTransition Over Manual Loading States
 
-Use `useTransition` instead of manual `useState` for loading states. This provides built-in `isPending` state and automatically manages transitions.
+Use `useTransition` instead of manual `useState` for loading states. It provides built-in `isPending` state and automatically manages transitions.
 
 **❌ Incorrect: manual loading state**
 ```tsx
@@ -56,10 +56,10 @@ function SearchResults() {
 
 Benefits:
 
-- Automatic pending state: No need to manually manage `setIsLoading(true/false)`
-- Error resilience: Pending state correctly resets even if the transition throws
-- Better responsiveness: Keeps the UI responsive during updates
-= Interrupt handling: New transitions automatically cancel pending ones
+- Automatic pending state: No need to manually manage `setIsLoading(true/false)`.
+- Error resilience: Pending state resets correctly even if the transition throws.
+- Better responsiveness: Keeps the UI responsive during updates.
+- Interrupt handling: New transitions automatically cancel pending ones.
 
 Reference: https://react.dev/reference/react/useTransition
 
@@ -67,6 +67,6 @@ Reference: https://react.dev/reference/react/useTransition
 
 ## React Compiler Note
 
-❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use useTransition over manual loading states. The compiler cannot automatically refactor manual loading state patterns into transitions.
+❌ **Manual optimization required** - Even with [React Compiler](https://react.dev/learn/react-compiler) enabled, you must still use `useTransition` instead of manual loading states. The compiler cannot automatically refactor those patterns into transitions.
 
 See [react-compiler-guide.md](react-compiler-guide.md) for more details.

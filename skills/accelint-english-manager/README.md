@@ -22,7 +22,7 @@ This skill does not ship as a separate package with its own `package.json`.
 
 ## Quick Start
 
-This skill works best when you tell it both the job and the mode.
+This skill works best when you specify both the job and the mode.
 
 ```text
 /accelint-english-manager audit+rewrite in strict mode the following:
@@ -32,13 +32,13 @@ This page is intended to provide users with a helpful overview of how project ac
 "
 ```
 
-That prompt shape is already used elsewhere in this repo when another skill needs a final prose-polish pass.
+This prompt shape is already used elsewhere in this repo when another skill needs a final prose-polish pass.
 
 ## What is accelint-english-manager?
 
 `accelint-english-manager` is an editorial skill for rewriting English without drifting meaning, tone, audience, or required constraints. It is built for docs, prompts, support replies, release notes, UI copy, policy text, and other writing where clarity matters more than flourish.
 
-The skill combines plain-language discipline, STE-leaning structure, and ADHD-friendly shaping. It uses those together rather than treating them as separate modes.
+The skill combines plain-language discipline, STE-leaning structure, and ADHD-friendly shaping. It uses them together rather than treating them as separate modes.
 
 ## Why use it?
 

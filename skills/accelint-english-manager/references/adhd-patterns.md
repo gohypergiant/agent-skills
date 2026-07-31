@@ -45,11 +45,11 @@ When the reader must do more than one thing:
 - keep each step bounded
 - avoid stacking many actions into one step
 
-Use only as much structure as the work needs.
+Use only as much structure as the task needs.
 
 ### 3. Restate current state across turns
 
-Across turns, restate what is done and what is next.
+Across turns, restate what is done and what comes next.
 
 Good pattern:
 

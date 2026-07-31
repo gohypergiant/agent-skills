@@ -2,7 +2,7 @@
 
 ## Directory Structure
 
-A skill is a directory containing at minimum a SKILL.md file. You can optionally include additional directories such as `scripts/`, `references/`, and `assets/` to support your skill. A `README.md` file should be included with a general overview of the skill via content optimized for human consumption instead of agent consumption. Keep file references one level deep from SKILL.md. Avoid deeply nested reference chains.
+A skill is a directory that contains at minimum a `SKILL.md` file. You can optionally include additional directories such as `scripts/`, `references/`, and `assets/` to support the skill. Include a `README.md` file with a general overview optimized for human readers, not agent readers. Keep file references one level deep from `SKILL.md`. Avoid deeply nested reference chains.
 
 ### Naming Conventions
 
@@ -10,9 +10,9 @@ A skill is a directory containing at minimum a SKILL.md file. You can optionally
 - **SKILL.md**: Always uppercase, always this exact filename
 - **AGENTS.md**: Always uppercase, always this exact filename
 - **README.md**: Always uppercase, always this exact filename
-- **Scripts directory**: `scripts` Always this exact folder name
+- **Scripts directory**: `scripts` - use this exact folder name
 - **Scripts**: `kebab-case.sh` (e.g., `run.sh`, `fetch-logs.sh`)
-- **References directory**: `references` Always this exact folder name
+- **References directory**: `references` - use this exact folder name
 - **References**: `kebab-case.md` (e.g., `aaa-pattern.md`, `derive-state.md`)
 
 ### Local File References

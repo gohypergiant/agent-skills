@@ -1,19 +1,19 @@
 ---
 name: accelint-skill-prose
-description: Use when creating, auditing, tightening, simplifying, de-slopping, polishing, or reviewing `SKILL.md` files, agent-skill instructions, `CLAUDE.md`/`AGENTS.md`-style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Use this skill whenever the user wants clearer skill prose without changing behavior, asks for a safe skill-description rewrite, reviews prompt instructions for ambiguity, or needs to preserve exact paths, commands, fields, identifiers, or approval semantics while editing.
+description: Use when creating, auditing, tightening, simplifying, de-slopping, polishing, or reviewing `SKILL.md` files, agent-skill instructions, `CLAUDE.md`/`AGENTS.md`-style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Also use when the user wants clearer skill prose without changing behavior, wants a safe skill-description rewrite, audits prompt instructions for ambiguity, or must preserve exact paths, commands, fields, identifiers, or approval semantics while editing.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.8"
+  version: "0.7.9"
 ---
 
 # Skill Prose
 
-Use this skill to edit behavior-defining prose while preserving behavior.
+Use this skill to edit behavior-defining prose without changing behavior.
 
 ## Core contract
 
-This skill applies to text that does more than sound good. It controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
+This skill applies to text that does more than sound good. The wording controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
 
 Write in plain, direct English. Do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
 
@@ -26,7 +26,7 @@ Your job is to make the prose easier to follow, easier to audit, and harder to m
 
 Keep one term for one concept. Do not rotate terms just to avoid repetition. In skill prose, stable terminology is part of the behavior contract.
 
-Use compatible ideas from Simplified Technical English when they help, such as short explicit sentences, consistent terminology, active voice by default, and clear separation between instructions and explanation. Do not apply controlled-language rules mechanically if doing so would erase rationale, flatten scope, or weaken behavioral precision.
+Use compatible ideas from Simplified Technical English when they help, such as short explicit sentences, consistent terminology, active voice by default, and clear separation between instructions and explanation. Do not apply controlled-language rules mechanically if that would erase rationale, flatten scope, or weaken behavioral precision.
 
 This skill extends general English editing with extra safety for:
 
@@ -44,7 +44,7 @@ Use `assets/output-template.md` for all outputs.
 
 ### Behavioral drift
 
-Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it or replace it only with wording that keeps the same behavior.
+Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it, or replace it only with wording that keeps the same behavior.
 
 Rationale is not filler by default. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose.
 
@@ -124,9 +124,9 @@ Use this mode when the user wants review, risk analysis, or a check for ambiguit
 
 Do not rewrite the text unless the user explicitly asks for a rewrite.
 
-Do not include replacement wording, “safer” rewrites, or suggested revised sentences in the deliverable. If you need to point to a safer pattern, describe the risk in principle instead of drafting substitute text.
+Do not include replacement wording, "safer" rewrites, or suggested revised sentences in the deliverable. If you need to point to a safer pattern, describe the risk in principle instead of drafting substitute text.
 
-A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary evidence for why the source is risky. In those cases, keep it at fragment level, not sentence level, and do not let it become a stealth rewrite of the passage.
+A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary evidence for why the source is risky. In those cases, keep it at fragment level, not sentence level. Do not let it become a stealth rewrite of the passage.
 
 #### Rewrite only
 
@@ -143,7 +143,7 @@ For rewrite tasks, ask the user which rewrite mode they want unless the user alr
 Offer these choices:
 
 - **`mode=default`** — local rewrite by default.
-- **`mode=strict`** — structural rewrite allowed when needed.
+- **`mode=strict`** — structural rewrite is allowed when needed.
 
 For audit-only requests, you may proceed without asking for a rewrite mode. If the task expands into a rewrite, ask for the rewrite mode before you rewrite.
 
@@ -184,7 +184,7 @@ Use these lenses when they match the text:
 
 ### 1. Extract what must stay fixed
 
-First normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
+First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
 
 Look for:
 
@@ -264,7 +264,7 @@ Do not reshape source text just to make it feel lighter. Scanability helps only 
 
 ### 8. Use the smallest structure that makes the rule clear
 
-Do not over-edit. Improve the prose enough that the intended behavior is easier to follow and harder to misread.
+Do not over-edit. Improve the prose enough to make the intended behavior easier to follow and harder to misread.
 
 ## Core rules
 
@@ -280,7 +280,7 @@ When tightening a description:
 - do not add adjacent trigger families unless expansion was explicitly requested
 - do not convert a short description into a broad trigger inventory unless the user asked for that
 
-If a phrase does trigger work, keep it or replace it only with wording that preserves the same scope exactly.
+If a phrase does trigger work, keep it, or replace it only with wording that preserves the same scope exactly.
 
 ### 2. Treat workflow prose as executable guidance
 

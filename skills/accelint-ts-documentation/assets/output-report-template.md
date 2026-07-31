@@ -4,7 +4,7 @@
 
 <!-- Make sure to display this warning block to the user -->
 ┌─────────────────────────────────────────────────────┐
-│ ⚠️  WARNING: This skill does it's best to process   │
+│ ⚠️  WARNING: This skill does its best to process    │
 │ the context needed to suggest correct documentation │
 │ but it can make mistakes in large systems. Please   │
 │ verify the correctness of the documentation.        │
@@ -16,36 +16,36 @@
 <!--
 INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
 
-1. Replace [Target Name] with the file(s)/module being audited
+1. Replace [Target Name] with the file(s) or module being audited.
 
 2. FINDINGS STRUCTURE:
-   - Each finding should be numbered sequentially (1, 2, 3, etc.)
-   - Don't group issues - document each one individually
-   - Focus on showing the before/after clearly
+   - Number each finding sequentially (1, 2, 3, and so on).
+   - Do not group issues. Document each one individually.
+   - Show the before and after clearly.
 
 3. EACH FINDING MUST INCLUDE:
-   - Clear title describing the issue
-   - Location (file:line)
-   - Current code with ❌ marker
-   - Clear explanation of the issue (bullet points)
-   - Category (see categories below)
-   - Reference (which references/*.md file)
-   - Recommended Fix with ✅ marker
+   - A clear title that describes the issue.
+   - The location (`file:line`).
+   - The current code with a ❌ marker.
+   - A clear explanation of the issue in bullet points.
+   - The category (see categories below).
+   - The reference (`references/*.md` file).
+   - The recommended fix with a ✅ marker.
 
 4. CATEGORIES:
-   - Missing Documentation: Exported APIs with no JSDoc at all
-   - Incomplete Documentation: JSDoc missing @param, @returns, @example, @throws, etc.
-   - Incorrect Syntax: Wrong JSDoc syntax (@example without code fence, malformed tags)
-   - Quality Improvements: Comment markers, placement, removing obvious comments
-   - Internal Documentation: Non-obvious internal code needing explanation
+   - Missing Documentation: Exported APIs with no JSDoc at all.
+   - Incomplete Documentation: JSDoc missing `@param`, `@returns`, `@example`, `@throws`, or similar tags.
+   - Incorrect Syntax: Wrong JSDoc syntax, such as `@example` without a code fence or malformed tags.
+   - Quality Improvements: Comment markers, comment placement, or removing obvious comments.
+   - Internal Documentation: Non-obvious internal code that needs explanation.
 
 5. REFERENCES:
    - jsdoc.md - For JSDoc-related issues (missing, incomplete, incorrect syntax)
    - comments.md - For inline comments, markers (TODO/FIXME), comment quality
 
 6. SUMMARY TABLE:
-   - Keep it concise - one row per finding
-   - Should match the numbered findings above
+   - Keep it concise. Use one row per finding.
+   - Match the numbered findings above.
 
 See this file for a complete example of what a real audit looks like.
 -->

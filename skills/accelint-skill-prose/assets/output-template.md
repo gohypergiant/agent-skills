@@ -51,7 +51,9 @@ Keep the report factual. Do not imply that a file was reviewed, changed, or left
 ## Usage notes
 
 - For folder-level work, include the root `SKILL.md`, sibling `AGENTS.md` if present, relevant `references/*.md`, and any other linked instruction files you inspected.
-- If a file stayed unchanged because it was already aligned, say that directly.
+- When a behavior-bearing artifact-set file stays unchanged, use the `Why:` field to record the required unchanged-file classification exactly.
+- If a file stayed unchanged because it was already aligned, classify it explicitly as `Already near minimum safe form` or `Rewrite would add drift risk without meaningful clarity gain`, whichever is accurate.
+- If a file stayed unchanged because local-tightening follow-through is still pending, classify it explicitly as `Local-tightening sweep incomplete`.
 - If a file stayed unchanged because it was out of scope, say that directly.
 - If no `AGENTS.md` exists, do not fabricate an entry for it.
 - For audit-only outputs, give the audit findings first, then append this template.

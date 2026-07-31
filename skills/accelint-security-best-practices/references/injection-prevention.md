@@ -1,6 +1,6 @@
 # Injection Prevention
 
-Never concatenate untrusted input into queries, commands, or code. Use parameterized queries, prepared statements, and safe APIs to prevent SQL injection, NoSQL injection, and command injection attacks.
+Never concatenate untrusted input into queries, commands, or code. Use parameterized queries, prepared statements, and safe APIs to prevent SQL injection, NoSQL injection, and command injection.
 
 **Database & ORM Examples**: This document uses generic database patterns. Apply to your ORM/query builder: Prisma, TypeORM, Sequelize, Mongoose, Drizzle, Kysely, or raw SQL with parameterized queries. Principles apply universally across SQL and NoSQL databases.
 
@@ -13,7 +13,7 @@ Injection vulnerabilities allow attackers to execute arbitrary code or commands:
 - **Data Breach**: Stolen customer data, credentials, and business secrets
 - **Ransomware**: Encrypted systems held for ransom via injected commands
 
-A single injection vulnerability can compromise your entire infrastructure. Injection attacks consistently rank in OWASP Top 10 most critical security risks.
+A single injection vulnerability can compromise your entire infrastructure. Injection attacks consistently rank among the most critical OWASP Top 10 security risks.
 
 ## Anti-Patterns to Avoid
 

@@ -1,0 +1,89 @@
+{
+  "skill_name": "accelint-architecture-doc",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Please create an ARCHITECTURE.md for this Express + Postgres app. I want a durable technical overview of the system.",
+      "expected_output": "Chooses create mode, performs codebase-first discovery, generates the full architecture template, and asks only targeted follow-up questions for real unknowns.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Update our ARCHITECTURE.md to reflect the current codebase. We recently added Redis caching and GitHub Actions deploys.",
+      "expected_output": "Chooses refresh mode, reads the existing file first, performs drift detection, and previews changed sections before writing.",
+      "files": [
+        "ARCHITECTURE.md"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our ARCHITECTURE.md is messy and inconsistent. Please clean it up into a better structure without losing content.",
+      "expected_output": "Detects restructure mode, offers restructure/append/dry-run options, and does not silently rewrite meaningful existing content without explicit user choice.",
+      "files": [
+        "ARCHITECTURE.md"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Generate a root ARCHITECTURE.md for this monorepo so new engineers can understand all apps, packages, and shared infrastructure.",
+      "expected_output": "Detects monorepo root scope and produces a repo-wide architecture doc with package-aware component coverage.",
+      "files": [
+        "pnpm-workspace.yaml"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I'm inside packages/web. Create an ARCHITECTURE.md for this package only.",
+      "expected_output": "Defaults to package-level scope, detects any root ARCHITECTURE.md above, and references the root doc instead of duplicating shared infrastructure.",
+      "files": [
+        "packages/web/package.json",
+        "ARCHITECTURE.md"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Create architecture docs for this package. We're in a monorepo, but I only need this package documented for now.",
+      "expected_output": "Handles package-level documentation even when no root ARCHITECTURE.md exists, without wrongly expanding to repo-wide scope.",
+      "files": [
+        "packages/service-a/package.json"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Create ARCHITECTURE.md and use the project's existing OpenSpec setup if helpful.",
+      "expected_output": "Detects openspec/config.yml or config.yaml, uses it as stack context, and reduces redundant scanning where appropriate.",
+      "files": [
+        "openspec/config.yaml"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Document the architecture of this repo, but there may not be much deployment config checked in.",
+      "expected_output": "Does not fabricate infrastructure details, uses TODO markers for unresolved fields, and asks only the missing deployment questions.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "Generate a comprehensive ARCHITECTURE.md for this platform repo with frontend, backend, workers, and infra.",
+      "expected_output": "Covers all discovery domains, prefers parallel discovery when available, and merges findings into a coherent architecture document.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "Refresh ARCHITECTURE.md. Findings: - We migrated auth from session cookies to JWT. - The worker now consumes from Redis streams instead of BullMQ.",
+      "expected_output": "Parses the findings list, merges those facts with drift detection, announces both sources, and scopes questions to the remaining unknowns.",
+      "files": [
+        "ARCHITECTURE.md"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Create an ARCHITECTURE.md for this repo and make sure agent onboarding docs can find it.",
+      "expected_output": "Creates the architecture doc first, then updates AGENTS.md or CLAUDE.md only if the reference is missing and the pointer-file rule is respected.",
+      "files": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ]
+    }
+  ]
+}

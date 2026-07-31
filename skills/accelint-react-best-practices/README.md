@@ -1,30 +1,30 @@
 # React Best Practices
 
-Comprehensive performance optimization and best practices for React applications, designed for AI agents and LLMs working with React code.
+React-specific performance and correctness guidance for agents and LLMs working with React code.
 
 ## Overview
 
-This skill provides structured guidance for React performance optimization, covering:
+This skill provides structured React guidance for:
 - Re-render optimizations
 - Rendering performance improvements
 - Advanced patterns for state and effects
 - React 19+ migration guidance
 - React Compiler awareness
 
-A large number of these patterns were originally from [Vercel's Skill](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) and have been expanded with additional patterns, React Compiler guidance, and comprehensive examples.
+Many of these patterns originated in [Vercel's Skill](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices). This version extends them with additional patterns, React Compiler guidance, and broader examples.
 
-**Note:** This skill focuses on React-specific optimizations. Meta-framework specific optimizations (Next.js, Remix, etc.) are not included.
+**Note:** This skill focuses on React-specific optimizations. Framework-specific guidance for Next.js, Remix, and similar tools is out of scope unless the issue depends on React behavior.
 
 ---
 
 ## Quick Start
 
-### For Agents/LLMs
+### For Agents and LLMs
 
-1. **Read [SKILL.md](SKILL.md)** - Understand when to activate this skill and how to use it
-2. **Reference [AGENTS.md](AGENTS.md)** - Browse rule summaries with Quick Diagnostic Guide and Priority Matrix
-3. **Load specific patterns** - Access detailed examples in `references/` as needed
-4. **Use checklists** - Apply [quick-checklists.md](references/quick-checklists.md) for systematic reviews
+1. **Read [SKILL.md](SKILL.md)** - Understand when to trigger this skill and how to use it.
+2. **Reference [AGENTS.md](AGENTS.md)** - Browse the rule summaries and quick diagnostic guide.
+3. **Load specific patterns** - Open detailed examples in `references/` only as needed.
+4. **Use checklists** - Apply [quick-checklists.md](references/quick-checklists.md) for systematic reviews.
 
 ### For Humans
 
@@ -161,12 +161,13 @@ When adding new patterns:
 
 This skill follows these principles:
 
-1. **Correctness first** - Avoid bugs before optimizing performance
-2. **Measure before optimizing** - Profile to identify real bottlenecks
-3. **Optimize slowest operations first** - Network > rendering > computation
-4. **Avoid premature optimization** - Don't optimize trivial operations
-5. **Prefer simplicity** - Simple, readable code over clever optimizations
-6. **Document non-obvious patterns** - Explain why optimizations exist
+1. **Correctness first** - Avoid bugs before optimizing performance.
+2. **Check React Compiler first** - Do not suggest manual memoization or hoisting until you know whether the compiler is enabled.
+3. **Measure before optimizing** - Profile to identify real bottlenecks.
+4. **Optimize the slowest operations first** - Network and data-volume issues often matter more than render micro-optimizations.
+5. **Avoid premature optimization** - Do not optimize trivial operations.
+6. **Prefer simplicity** - Choose simple, readable code over clever optimizations.
+7. **Document non-obvious patterns** - Explain why an optimization exists.
 
 ---
 

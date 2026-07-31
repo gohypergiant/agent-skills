@@ -8,7 +8,7 @@ React state updates are asynchronous. Tests must wait for updates to complete be
 
 ---
 
-## Rule: Use findBy* for Elements That Appear Asynchronously
+## Rule: Use `findBy*` for elements that appear asynchronously
 
 **Principle:** findBy* queries wait for elements loaded via useEffect, API calls, or timers.
 
@@ -37,7 +37,7 @@ test('loads user data', async () => {
 
 ---
 
-## Rule: Use waitFor for Complex Assertions
+## Rule: Use `waitFor` for complex assertions
 
 **Principle:** waitFor retries callback until it succeeds or times out. Use for assertions that can't be expressed as findBy queries.
 
@@ -69,7 +69,7 @@ await screen.findByText('Success');
 
 ---
 
-## Rule: Avoid Act Warnings with Proper Awaiting
+## Rule: Avoid act warnings with proper awaiting
 
 **Principle:** Act warnings mean state updates happened outside Testing Library's awareness.
 
@@ -98,7 +98,7 @@ await screen.findByText('Data');
 
 ---
 
-## Rule: Use waitForElementToBeRemoved for Disappearance
+## Rule: Use `waitForElementToBeRemoved` for disappearance
 
 **Principle:** When elements should disappear, waitForElementToBeRemoved is more explicit than queryBy.
 
@@ -194,7 +194,7 @@ test('retries failed request', async () => {
 
 ---
 
-## Rule: Never Put Side Effects in waitFor Callbacks
+## Rule: Never put side effects in `waitFor` callbacks
 
 **Principle:** waitFor retries its callback multiple times. Side effects inside get executed repeatedly.
 
@@ -257,7 +257,7 @@ await waitFor(() => {
 
 ---
 
-## Rule: Prefer findBy Over waitFor + getBy
+## Rule: Prefer `findBy*` over `waitFor` + `getBy*`
 
 **Principle:** findBy queries are specifically designed for waiting. waitFor + getBy is verbose and less clear.
 

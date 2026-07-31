@@ -10,9 +10,9 @@
 - **Responsibility:** [Primary responsibilities, comma-separated]
 
 **About them:**
-- [Bullet point describing key responsibility or activity]
-- [Bullet point describing key responsibility or activity]
-- [Bullet point describing key responsibility or activity]
+- [Bullet point that describes a key responsibility or activity]
+- [Bullet point that describes a key responsibility or activity]
+- [Bullet point that describes a key responsibility or activity]
 - [Add more as needed]
 
 **Hears:**

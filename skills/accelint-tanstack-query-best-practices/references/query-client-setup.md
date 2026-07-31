@@ -2,7 +2,7 @@
 
 ## Factory Pattern with Request Isolation
 
-Configure a query client factory that creates a new instance per request on the server, and a singleton in the browser.
+Configure a query client factory that creates a new instance per request on the server and a singleton in the browser.
 
 ```typescript
 // configs/query-client/index.ts
@@ -44,16 +44,16 @@ export function getQueryClient() {
 ## Why This Pattern?
 
 ### Request Isolation
-Each server request gets its own query client, preventing data leakage between users. Server components can execute concurrently for multiple users - a shared query client would:
-- Leak cached data between users (security risk)
-- Create race conditions in the cache
-- Cause memory leaks as the cache grows indefinitely
+Each server request gets its own query client, which prevents data leakage between users. Server components can execute concurrently for multiple users. A shared query client would:
+- leak cached data between users (security risk)
+- create race conditions in the cache
+- cause memory leaks as the cache grows indefinitely
 
 ### Streaming Support
-Setting `shouldDehydrateQuery` to include pending queries enables React to stream promises to the client. You can call prefetch functions without `await`, and the queries will resolve during streaming.
+Setting `shouldDehydrateQuery` to include pending queries lets React stream promises to the client. You can call prefetch functions without `await`, and the queries will resolve during streaming.
 
 ### Browser Optimization
-Reuses a single client on the browser to maintain cache across navigations. Client-side navigation should preserve cached data for instant back-button responses.
+Reuse a single client in the browser to maintain cache across navigations. Client-side navigation should preserve cached data for instant back-button responses.
 
 ## Critical Anti-Pattern
 
@@ -122,4 +122,4 @@ export async function ServerComponent() {
 }
 ```
 
-React will stream the pending promises to the client, and they'll resolve during hydration. The client component will receive either completed data or suspending promises.
+React will stream the pending promises to the client, and they will resolve during hydration. The client component will receive either completed data or suspending promises.

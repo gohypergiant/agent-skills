@@ -2,7 +2,7 @@
 
 Avoid these common mistakes that make tests brittle, hard to maintain, or provide false confidence.
 
-## Rule: Never Test Implementation Details
+## Rule: Never test implementation details
 
 **Principle:** Test what users experience (outputs, rendered content), not how components achieve it internally (state, function calls, private methods).
 
@@ -75,7 +75,7 @@ test('shows validation error', async () => {
 
 ---
 
-## Rule: Always Use screen, Never container
+## Rule: Always use `screen`, never `container`
 
 **Principle:** The `screen` export never goes stale after re-renders. Destructured queries from render() can miss updates.
 
@@ -119,7 +119,7 @@ expect(button).toBeEnabled();
 
 ---
 
-## Rule: Don't Use rerender() for State Changes
+## Rule: Do not use `rerender()` for state changes by default
 
 **Principle:** Update state through user actions, not by forcing re-renders.
 
@@ -173,7 +173,7 @@ test('toggle switch', async () => {
 
 ---
 
-## Rule: Don't Mock Your Own Components
+## Rule: Do not mock your own components
 
 **Principle:** Mocking internal components hides integration bugs and reduces test value.
 
@@ -229,7 +229,7 @@ vi.mock('./api', () => ({
 
 ---
 
-## Rule: Avoid Testing Library Internal APIs
+## Rule: Avoid Testing Library internal APIs
 
 **Principle:** If you're importing from `@testing-library/react/internal` or using `debug()` in production tests, you're doing it wrong.
 
@@ -261,7 +261,7 @@ test('example', () => {
 
 ---
 
-## Rule: Use getBy for Better Error Messages, Not queryBy
+## Rule: Use `getBy*` for better error messages, not `queryBy*`
 
 **Principle:** queryBy returns null silently. getBy throws with helpful suggestions about what's actually in the DOM.
 
@@ -298,7 +298,7 @@ expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
 ---
 
-## Rule: Never Perform Side Effects Inside waitFor
+## Rule: Never perform side effects inside `waitFor`
 
 **Principle:** waitFor retries its callback multiple times. Side effects get executed repeatedly, causing unpredictable behavior.
 
@@ -354,7 +354,7 @@ await waitFor(() => {
 
 ---
 
-## Rule: Don't Add ARIA Attributes Just for Tests
+## Rule: Do not add ARIA attributes just for tests
 
 **Principle:** If you need to add aria-label or role to make tests pass, the component has an accessibility problem.
 

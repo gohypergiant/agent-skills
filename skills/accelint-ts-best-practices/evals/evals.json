@@ -1,0 +1,109 @@
+{
+  "skill_name": "accelint-ts-best-practices",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need a TypeScript review of src/parsers/customer-import.ts. The file ingests CSV rows from a vendor feed, uses `any` all over, and directly trusts parsed values before writing to our domain objects. Please audit the file for type-safety and boundary-validation issues, explain the concrete risks, and point me to the exact best-practice guidance I should apply.",
+      "expected_output": "Identifies `any` misuse and missing external input validation at the system boundary, explains the risks, and references the skill guidance for `any` and input validation rather than drifting into unrelated advice.",
+      "files": [
+        "src/parsers/customer-import.ts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you review this TS utility and suggest a safer rewrite? It returns `null` in several places when arrays are empty or lookups fail, which is forcing null checks all over the call sites. I want guidance grounded in the repo's TypeScript standards, not generic JS opinions.",
+      "expected_output": "Recommends returning zero values instead of null/undefined, explains downstream simplification benefits, and keeps the review anchored to the skill's return-value guidance.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Please audit packages/ui/src/theme/loadTheme.ts. It uses `enum ThemeMode`, dynamically builds import paths from strings, and the team keeps hitting bundling weirdness in Vite. I want a code-quality review that focuses on the TypeScript patterns and the likely root causes.",
+      "expected_output": "Flags enum usage and non-statically analyzable import/file paths, explains why `as const` objects and explicit import maps are preferred, and references the enum and bundler-path guidance.",
+      "files": [
+        "packages/ui/src/theme/loadTheme.ts"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Review this function for defensive-programming issues:\n\n```ts\nasync function processAllJobs(queue: JobQueue) {\n  while (true) {\n    if (queue.isEmpty()) break;\n    const job = queue.pop();\n    if (!job) continue;\n    await processJob(job);\n  }\n}\n```\n\nI care less about performance and more about correctness and production safety.",
+      "expected_output": "Highlights the unbounded loop risk, recommends explicit iteration and/or timeout limits, and frames the advice as defensive coding guidance rather than performance tuning.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "I'm cleaning up a React+TypeScript service layer and found a lot of functions without explicit return types, several default parameters that hide business behavior, and a few long functions with nested conditionals. Can you do a best-practices audit and prioritize the biggest correctness and maintainability issues?",
+      "expected_output": "Surfaces explicit return types, avoiding default parameters, function-size concerns, and early-return/block-style control flow as the main issues, with concrete prioritization and relevant references.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Please review this helper and tell me what's wrong with the state management approach:\n\n```ts\nfunction addDefaults(options: RequestOptions) {\n  options.timeout = options.timeout ?? 5000;\n  options.retries = options.retries ?? 3;\n  return options;\n}\n```\n\nAssume this lives in a TypeScript backend service where predictability matters.",
+      "expected_output": "Calls out mutation of function parameters, recommends returning a new object and preferring immutable patterns, and explains why hidden side effects are risky.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "I want a repo-style TypeScript audit for a validation module. It currently uses `interface` for simple object aliases, throws vague errors like `Type error`, and has assertions that don't show actual runtime values. Please review for standards violations and give me a structured findings list.",
+      "expected_output": "Flags unnecessary interface usage, weak developer-facing error messages, and low-quality assertions; recommends `type` aliases where appropriate and specific messages with values.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Use /accelint-ts-best-practices on services/billing/src/reconcileInvoices.ts and produce a formal audit report. I need severity levels, impact analysis, and references to the relevant guidance so another engineer can fix the file later.",
+      "expected_output": "Produces or follows the standardized audit-report structure with executive summary, severity-based findings, impact discussion, and pattern references, because the request explicitly asks for a formal audit report.",
+      "files": [
+        "services/billing/src/reconcileInvoices.ts"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "What's the cleanest way to rewrite this nested function into flatter control flow?\n\n```ts\nfunction getDisplayName(user?: User): string {\n  if (user) {\n    if (user.profile) {\n      if (user.profile.name) {\n        return user.profile.name;\n      }\n    }\n  }\n\n  return 'Unknown user';\n}\n```\n\nPlease answer using the TypeScript best-practices guidance this repo prefers.",
+      "expected_output": "Rewrites the function using early returns and block-style guard clauses, explicitly aligning the explanation with the skill's control-flow guidance.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "Audit this code for dangerous type patterns, but stay focused on general TypeScript best practices instead of performance or docs work:\n\n```ts\nconst queue: any[] = [];\n\nexport function drain(queueName = 'default') {\n  while (queue.length) {\n    const item = queue.shift();\n    if (!item) continue;\n    handle(item.payload);\n  }\n\n  return undefined;\n}\n```",
+      "expected_output": "Identifies `any`, default parameter opacity, missing explicit return type, unbounded looping concerns, and undefined return anti-patterns while staying within the skill's scope.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "I have a small TypeScript cleanup task: add JSDoc comments to exported helpers in lib/date/formatRange.ts and make sure the comments are consistent. That's the whole job.",
+      "expected_output": "Recognizes that this request belongs to the TypeScript documentation skill rather than this best-practices skill, or at minimum explicitly redirects documentation-specific work instead of over-applying general TS code-style rules.",
+      "files": [
+        "lib/date/formatRange.ts"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "This Node script is chewing CPU in production. Please profile it, find allocation hot spots, and optimize throughput. It's written in TypeScript but the problem is clearly speed.",
+      "expected_output": "Recognizes this as a performance-focused request and redirects to the accelint-ts-performance skill instead of treating it as a generic code-style audit.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "prompt": "Can you review our TS constants module? It has several `enum`s, some duplicated string unions, and a few places where we widened values accidentally during refactors. I want recommendations that fit a defensive, type-safe codebase.",
+      "expected_output": "Covers replacing enums with `as const` objects, preserving narrow literal unions, and reducing type-widening risks in a type-safe codebase.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "prompt": "Review this error handling code for correctness and maintainability:\n\n```ts\nasync function saveProfile(input: unknown) {\n  try {\n    const data = input as any;\n    return await api.save(data);\n  } catch {\n    return null;\n  }\n}\n```\n\nPlease keep the feedback grounded in our TypeScript best-practice rules.",
+      "expected_output": "Flags unsafe cast/`any` usage, silent or overly broad error handling, and null-return behavior; recommends explicit validation, explicit error handling, and zero-value or clearer result patterns.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "prompt": "I need a concise audit of a TS module that builds up arrays inside loops, uses mutable `let` variables for values that never really change, and repeats almost identical normalization logic in three branches. Focus on correctness and maintainability problems, not micro-optimization.",
+      "expected_output": "Highlights unnecessary `let`, immutability/state-management concerns, and code-duplication opportunities while avoiding a performance-optimization framing.",
+      "files": []
+    },
+    {
+      "id": 16,
+      "prompt": "Use the repo's TypeScript best-practices skill to review an API boundary function that parses JSON, assumes shape correctness, and immediately accesses nested properties. I want a findings-oriented review that tells me which standards are being violated and why those violations matter in production.",
+      "expected_output": "Centers the review on boundary validation, unsafe assumptions about unknown data, and production risk, using the skill's audit-oriented framing and references.",
+      "files": []
+    }
+  ]
+}

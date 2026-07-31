@@ -201,6 +201,5 @@ const result = counter + 1;
 
 ## Related Patterns
 
-- See [1.2 Functions](functions.md) for function size and structure guidelines
-- See [4.13 Currying](currying.md) for precomputing constant parameters
-- See [1.6 Misc](misc.md) for zero technical debt principle
+- See [1.2 Functions](functions.md) for function size and structure guidelines.
+- See [1.6 Misc](misc.md) for zero technical debt guidance.

@@ -16,7 +16,7 @@
      README is purely for human discovery and installation.
 -->
 
-Brief description of what this skill does and who it's for.
+Brief description of what this skill does and who it is for.
 
 ## Installation
 
@@ -32,7 +32,7 @@ pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill skill-n
 
 ## Usage
 
-Describe how users interact with this skill either via a prompt, command, or explicit skill invocation:
+Describe how users interact with this skill through a prompt, command, or explicit skill invocation:
 
 
 **prompt**
@@ -106,19 +106,19 @@ Expected result: [description]
 
 Contributions are welcome! When contributing to this skill:
 
-1. **CRITICAL**: Ensure description field in SKILL.md answers WHAT/WHEN/KEYWORDS - this determines if skill gets activated
-2. Follow the skill structure guidelines in the accelint-skill-manager skill
-3. Ensure all examples use ❌/✅ format for clarity
-4. Keep SKILL.md under 500 lines (move details to references/)
-5. Focus on expert-only knowledge - assume Claude knows basics
-6. Test changes with actual use cases
+1. **REQUIRED**: Ensure the description field in `SKILL.md` answers WHAT, WHEN, and KEYWORDS. This determines whether the skill gets activated.
+2. Follow the skill structure guidelines in the `accelint-skill-manager` skill.
+3. Ensure all examples use the ❌/✅ format for clarity.
+4. Keep `SKILL.md` under 500 lines and move details to `references/`.
+5. Focus on expert-only knowledge and assume Claude knows the basics.
+6. Test changes with actual use cases.
 
 **Maintain CHANGELOG.md:**
 - Use "Keep a Changelog" format with semantic versioning
 - Update after each skill iteration with Added/Changed/Fixed/Version sections
 - Always include rationale (WHY changes were made)
 - Link to evaluation results when changes stem from testing
-- Ensure version matches `metadata.version` in SKILL.md frontmatter
+- Ensure the version matches `metadata.version` in `SKILL.md` frontmatter
 
 **NEVER create:**
 - CONTRIBUTING.md - Keep contribution guide in README only

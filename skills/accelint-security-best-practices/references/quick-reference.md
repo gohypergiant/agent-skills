@@ -1,6 +1,6 @@
 # Quick Reference: Vulnerability Detection and Mapping
 
-This reference provides rapid vulnerability identification and categorization for security audits.
+This reference provides fast vulnerability identification and categorization for security audits.
 
 ## Vulnerability Detection Table
 
@@ -193,7 +193,7 @@ localStorage.setItem('token', ...) // XSS vulnerable
 sessionStorage.setItem('token', ...) // XSS vulnerable
 ```
 
-**Risk:** Broken access control (Critical-High), token theft (High)
+**Risk:** Broken access control (Critical-High) and token theft (High)
 
 **Fix:** Add authentication middleware, verify ownership, use httpOnly cookies
 
@@ -278,7 +278,7 @@ app.get('/api/search', ...) // Expensive operation without rate limit
 
 ## Audit Checklist
 
-Use this checklist to ensure comprehensive coverage:
+Use this checklist to keep coverage comprehensive:
 
 ### Authentication & Authorization
 - [ ] All protected routes have authentication middleware

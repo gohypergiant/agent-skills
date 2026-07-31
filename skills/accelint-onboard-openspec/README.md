@@ -1,6 +1,6 @@
 # OpenSpec Onboarding Skill
 
-Generates `openspec/config.yaml` files through a conversational interview. The skill asks questions about your tech stack, architecture, and domain concepts, then runs parallel codebase inference to fill gaps. The output is a complete configuration file for the QRSPI (Question, Research, Spec, Plan, Implement) methodology.
+This skill generates `openspec/config.yaml` through a conversational interview. It asks about the tech stack, architecture, and domain concepts, then runs parallel codebase inference to fill gaps. The output is a complete configuration file for the QRSPI (Question, Research, Spec, Plan, Implement) methodology.
 
 ## Overview
 
@@ -15,7 +15,7 @@ The configuration gets injected into every AI-generated proposal, design documen
 
 ## When to use
 
-Use this skill when starting a new project with OpenSpec, migrating an existing project to the OpenSpec workflow, updating configuration after tech stack changes, onboarding team members, or refreshing stale configuration.
+Use this skill when you start a new project with OpenSpec, migrate an existing project to the OpenSpec workflow, update configuration after tech stack changes, onboard team members, or refresh stale configuration.
 
 The skill detects the current state and adapts.
 
@@ -23,7 +23,7 @@ The skill detects the current state and adapts.
 
 ### Prerequisites
 
-You need Claude Code with agent spawning for parallel inference. A git repository is recommended but not required.
+You need an environment that can spawn agents for parallel inference. A git repository is recommended but not required.
 
 ### Basic usage
 
@@ -104,7 +104,7 @@ The interview covers 10 topics:
 | 9 | Design Rules | Docker/K8s changes, performance implications, diagram styles |
 | 10 | Task Rules | Tagging conventions, rollback requirements, test gates |
 
-Questions within each topic are bundled. The skill infers related tooling from stack answers (mention Vitest and it assumes testing-library for React components).
+Questions within each topic are bundled. The skill infers related tooling from stack answers. For example, if you mention Vitest, it assumes testing-library for React components.
 
 ## Parallel codebase inference
 
@@ -145,7 +145,7 @@ Analyzes:
 - Versioning strategy (`.changeset/`, `commitlint.config.*`)
 - Anti-patterns (ESLint rule overrides, `@deprecated` annotations)
 
-All agents run concurrently. The skill merges their findings before showing you the preview.
+All agents run concurrently. The skill merges their findings before it shows you the preview.
 
 ## Configuration schema
 
@@ -193,7 +193,7 @@ rules:
     - Edge case documentation
 ```
 
-Every section matters. Missing fields degrade the AI artifacts that use this config. Unresolved fields get marked `# TODO: fill in` rather than omitted.
+Every section matters. Missing fields degrade the AI artifacts that use this config. Unresolved fields get marked `# TODO: fill in` instead of being omitted.
 
 The complete template structure is defined in the skill and includes:
 
@@ -210,8 +210,9 @@ The interview follows conversational design:
 - **Bundle questions** - Group related questions into natural turns, not bullet-dump forms
 - **Infer and confirm** - "You mentioned Vitest — I'll assume testing-library for React; correct?" beats asking from scratch
 - **Examples reduce ambiguity** - When asking about conventions, provide examples for pattern-matching
-- **Preview before writing** - Show full config with confirmation before touching filesystem
+- **Preview before writing** - Show a full preview in Create/Import modes and a changed-sections preview in Refresh mode before touching filesystem
 - **Infer before asking, ask before omitting** - Attempt codebase inference for all fields; mark unresolved as `# TODO:` rather than dropping sections
+- **Keep fact and behavior separate** - Put project DNA in `config.yaml`, and redirect workflow preferences or agent-behavior guidance to `AGENTS.md` / `CLAUDE.md`
 
 ## YAML safety features
 
@@ -292,7 +293,7 @@ It reads the file back after writing to catch any parse errors.
 
 The skill suggests stack-specific conventions. Next.js + TypeScript + Tailwind gets questions about App Router vs Pages Router, Server Component boundaries, and `"use client"` directive placement. React + Vitest assumes `userEvent` over `fireEvent` and role-based queries. Python + FastAPI asks about Pydantic v1 vs v2 and dependency injection. Node.js + Prisma asks about transaction patterns and soft-delete conventions.
 
-This reduces open-ended questions.
+This reduces open-ended questions without changing the interview scope.
 
 ## Companion skill: `accelint-onboard-agents`
 
@@ -302,7 +303,7 @@ If you volunteer behavioral content during the OpenSpec interview (commit conven
 
 > "That's behavioral - it belongs in AGENTS.md. I'll note it here for reference, but the `accelint-onboard-agents` skill is where to capture it."
 
-The two skills don't overlap.
+The two skills do not overlap.
 
 ## Best practices
 
@@ -340,7 +341,7 @@ After generation, the skill:
 2. Asks for confirmation before writing to disk
 3. Writes the file without inference comment clutter
 4. Validates the YAML by reading it back
-5. Reports what was configured, what was inferred vs answered, and which TODOs remain
+5. Reports what was configured, what was inferred versus answered directly, and which TODOs remain
 
 This catches syntax errors before they hit disk.
 
@@ -354,9 +355,13 @@ The skill found content that doesn't match the expected schema. Choose (a) Restr
 
 The validation caught a parse error. It's automatically fixed before the final write. If you see this, the safety checks worked.
 
-### "Agent spawning failed"
+### "Subagents aren't available in this environment"
 
-Parallel inference needs Claude Code agent support. Without it, the skill falls back to serial discovery (slower, same output).
+Parallel inference is the preferred path. If subagents are genuinely unavailable, the skill should say so explicitly, keep the same four discovery domains, and perform the scan inline with direct tools instead of implying that parallel agents ran.
+
+### "Refresh mode found drift I don't want to encode yet"
+
+That's acceptable. The skill should show the changed sections first, leave unresolved items as `# TODO: fill in` when needed, and call out findings that may belong in specs, docs, or `AGENTS.md` instead of forcing them into `config.yaml`.
 
 ### "Inference marked too many fields as TODO"
 
@@ -366,10 +371,10 @@ This happens when the project has unconventional structure or the skill can't fi
 
 See [CHANGELOG.md](CHANGELOG.md) for details.
 
-Current version: 1.3.0
-- Parallel sub-agent discovery (4x faster inference)
-- Anti-pattern warning for serial scanning
-- Performance improvements for large codebases
+Current version: 1.6.0
+- Audit-driven trigger, prose, and workflow-clarity improvements
+- Default eval coverage for create/import/refresh and boundary validation
+- Explicit inline-discovery fallback when subagents are unavailable
 
 ## License
 

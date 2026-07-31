@@ -7,9 +7,9 @@
 │ ⚠️  WARNING: Security is highly context-dependent.   │
 │ This skill provides general security guidance but    │
 │ cannot know your application's threat model, risk    │
-│ tolerance, or deployment context. Please evaluate    │
-│ each finding against your specific security          │
-│ requirements. Not all identified issues may be       │
+│ tolerance, or deployment context. Evaluate each      │
+│ finding against your specific security requirements. │
+│ Not all identified issues may be                     │
 │ relevant or critical for your use case.              │
 └──────────────────────────────────────────────────────┘
 
@@ -18,7 +18,7 @@
 <!--
 INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
 
-1. Replace [Target Name] with the specific file/module being audited (e.g., "Authentication API", "User Management Service")
+1. Replace [Target Name] with the specific file or module being audited (for example, "Authentication API" or "User Management Service")
 
 2. EXECUTIVE SUMMARY: Provide a high-level overview
    - Summarize what was audited and the workflow used
@@ -31,7 +31,7 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
    - Example: Different types of injection vulnerabilities → separate issues
    - Use subsections (4-8) for grouped issues, individual numbers (1, 2, 3) for unique issues
 
-4. PHASE 1 - EACH VULNERABILITY/GROUP MUST INCLUDE:
+4. PHASE 1 - EACH VULNERABILITY OR GROUP MUST INCLUDE:
    - Location (file:line or file:line-range)
    - Current code with ❌ marker
    - Clear explanation of the vulnerability
@@ -46,14 +46,14 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
    - Medium: Exploitable with conditions or when chained (missing rate limiting, weak CORS, insufficient logging)
    - Low: Defense-in-depth improvements, best practices (missing security headers, detailed error messages)
 
-6. PHASE 2: Generate summary table from Phase 1 findings
+6. PHASE 2: Generate the summary table from the Phase 1 findings
    - Include all vulnerabilities with their numbers
    - Keep it concise - one row per vulnerability/group
 -->
 
 ## Executive Summary
 
-Completed systematic security audit of [file/module path] following accelint-security-best-practices workflow. Identified [N] security vulnerabilities across [N] OWASP categories. [Brief description of what this code does and why security matters].
+Completed a systematic security audit of [file/module path] using the accelint-security-best-practices workflow. Identified [N] security vulnerabilities across [N] OWASP categories. [Brief description of what this code does and why security matters].
 
 **Key Findings:**
 - **Critical**: [N] vulnerabilities (immediate data breach/RCE risk)
@@ -253,7 +253,7 @@ After implementing fixes, perform the following security tests:
 
 ### Security Headers
 - [ ] Verify CSP is configured and blocks inline scripts
-- [ ] Verify HSTS is enabled with appropriate max-age
+- [ ] Verify HSTS is enabled with an appropriate max-age
 - [ ] Check all security headers with securityheaders.com
 
 ---

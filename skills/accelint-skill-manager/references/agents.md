@@ -2,7 +2,7 @@
 
 ## Overview
 
-General rule of thumb is to follow guidance from [Agents.md](https://agents.md/). At minimum try and provide concise and descriptive examples of what incorrect and correct. Consolidate examples as reasonably as possible to reduce token usage. The persona and target audience for this document is an AI Agent or LLM.
+As a general rule, follow guidance from [Agents.md](https://agents.md/). Provide concise, descriptive incorrect and correct examples. Consolidate examples when reasonable to reduce token usage. The target audience for this document is an AI agent or LLM.
 
 ### Token Efficiency (Critical)
 

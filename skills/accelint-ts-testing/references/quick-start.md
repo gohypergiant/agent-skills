@@ -2,7 +2,7 @@
 
 ## Overview
 
-This example demonstrates how to transform an unclear test into a clear, maintainable one following vitest best practices.
+This example shows how to turn an unclear test into a clear, maintainable one by following Vitest best practices.
 
 ## Before and After
 
@@ -22,7 +22,7 @@ test('product test', () => {
 - No describe blocks for organization
 - Abbreviated variable names
 
-**✅ Correct: optimized with vitest best practices**
+**✅ Correct: improved with Vitest best practices**
 ```ts
 describe('ProductService', () => {
   describe('Add new product', () => {
@@ -56,7 +56,7 @@ describe('ProductService', () => {
 4. **Variables**: `p` → `newProduct`
 5. **Assertions**: `toBe()` → `toEqual()`
 
-This example applies principles from:
+This example applies these principles:
 - [organization.md](organization.md) - Describe block structure
 - [aaa-pattern.md](aaa-pattern.md) - Arrange-Act-Assert separation
 - [assertions.md](assertions.md) - Strict assertions

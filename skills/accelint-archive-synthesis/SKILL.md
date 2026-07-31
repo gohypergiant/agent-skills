@@ -1,25 +1,43 @@
 ---
 name: accelint-archive-synthesis
-description: Periodically lint the full OpenSpec archive for cross-change decision drift, index/spec reconciliation, and structural over-coupling, the gap nothing else in the QRSPI/OpenSpec stack covers, since every other drift check (accelint-onboard-openspec, accelint-architecture-doc, accelint-qrspi-apply Phase 4) only looks forward from a single change's own artifacts. Use this skill when the user wants to "run archive synthesis," "lint the openspec archive," "check for decision drift," "audit the spec archive for contradictions," "find stale specs," "reconcile the specs index," "check capability coupling," or when accelint-qrspi-archive has surfaced its own suggestion that 15+ changes have archived since the last synthesis run. Also use when the user asks whether an old design decision still holds given everything decided since, whether specs/INDEX.md still matches the actual spec.md files on disk, or whether some capability has become an over-coupled refactor candidate. This skill never runs automatically and never blocks another skill — it is always either a human-invoked audit or an offered suggestion the human accepts explicitly.
+description: Periodically audit the full OpenSpec archive for cross-change decision drift, stale or contradictory archived decisions, `openspec/specs/INDEX.md` drift, and capability over-coupling that only becomes visible across many archived changes. Use this skill when the user asks to run archive synthesis, audit the OpenSpec archive, check whether older decisions still hold, look for contradictions across archived changes, reconcile `openspec/specs/INDEX.md` against live `spec.md` files, find stale capability summaries, or review whether a capability has become too interconnected. Also use it when `accelint-qrspi-archive` suggests a synthesis run after enough new archives and the human explicitly agrees. Do not use it for proposing a new change, implementing a change, archiving a change, or single-change verification; this skill is for periodic, corpus-wide, human-approved archive audits that stop at findings until the human confirms any action.
 license: Apache-2.0
 compatibility: Requires the OpenSpec CLI, sub-agent support, and a project already onboarded with accelint-qrspi-archive so that openspec/changes/archive/INDEX.md and openspec/specs/INDEX.md exist and are populated. Routing confirmed findings requires the shared findings - interface (Mode 3 Refresh support) in whichever writer skill(s) a given finding targets; without it, this skill still produces its report but degrades to manual guidance for that step.
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # Accelint Archive Synthesis
 
-Read backward across the entire archived-change history to check whether it still agrees with itself, check the running index itself against the live files it claims to summarize, and surface any capability whose accumulated relationships suggest it has outgrown its own boundaries. This is the "lint" operation in Karpathy's LLM Wiki pattern: `ingest` already exists as `accelint-qrspi-archive`, `query` already exists as artifact loading at propose/apply time, but nothing periodically re-reads the whole corpus to check it is still internally consistent. Every existing drift check in this stack, including `accelint-qrspi-apply` Step 5's own hub-doc refresh, is forward-looking and scoped to one change's own proposal and design. This skill is the only one that looks the other direction — and, since `accelint-qrspi-archive` moved to row-level index patching for its own efficiency, the only one that ever re-checks `specs/INDEX.md` against the `spec.md` files it summarizes at all.
+Use this skill to read backward across the archived-change history, check whether the archive still agrees with itself, reconcile the running indexes against the live files they summarize, and surface capabilities whose accumulated relationships suggest they have outgrown their boundaries. In Karpathy's LLM Wiki pattern, this is the `lint` operation: `ingest` already exists as `accelint-qrspi-archive`, and `query` already exists as artifact loading at propose/apply time, but nothing else periodically re-reads the whole corpus to check internal consistency. Every other drift check in this stack, including `accelint-qrspi-apply` Step 5's hub-doc refresh, is forward-looking and scoped to one change's own proposal and design. This skill is the only one that looks the other direction and, since `accelint-qrspi-archive` moved to row-level index patching for efficiency, the only one that re-checks `specs/INDEX.md` against the `spec.md` files it summarizes.
 
-That backward-looking scope is also what keeps this skill's footprint small and deliberate. It reads two indexes and, for genuine candidates only, a handful of `design.md` files and, for the reconciliation check, a lightweight top-of-file read of every `spec.md`. It never rewrites a hub doc directly, and every write it does make — on either index — is a single targeted line, gated behind an explicit human confirmation of that specific finding, and never runs on its own initiative. A human always decides which findings get acted on.
+That backward-looking scope also keeps this skill's footprint small and deliberate. It reads two indexes and, only for genuine candidates, a handful of `design.md` files. For the reconciliation check, it reads only the top of each `spec.md`. It never rewrites a hub doc directly, and every write it does make on either index is a single targeted line, gated behind explicit human confirmation of that specific finding. It never runs on its own initiative. A human always decides which findings get acted on.
+
+
+## Interaction Contract
+
+- This skill is always human-in-the-loop. It may scan and compile a report autonomously, but it must stop for human review before any write, routing handoff, or `Status` change.
+- This skill never auto-runs. It starts only from a direct human request or from a suggestion the human explicitly accepts.
+- If the user does not answer review questions, treat every unresolved finding as deferred. Do not write anything for those findings.
+- If a contradiction is confirmed but the human does not clearly say which change stands, leave it unresolved rather than guessing.
+
+## Degraded-Mode Rules
+
+Use these fallback rules consistently instead of improvising:
+
+- **No subagent support**: fall back to parent-context reads for the targeted files only, and warn that raw file content will remain in context.
+- **Writer skill missing or lacking `findings:` support**: keep the finding in the report and hand the user a paste-ready manual `findings:` block.
+- **Small corpus**: if the archive has fewer than roughly 10 rows, ask before proceeding with the low-signal run.
+- **Large candidate volume**: verify the newest or highest-value candidates first, note how many others were left unchecked, and leave them unresolved rather than silently dropping them.
+- **Partial human response**: treat every unaddressed finding as deferred.
 
 ## What This Skill Does
 
-**Automates**: a periodic, corpus-wide consistency check across every archived OpenSpec change, surfacing contradictions between past decisions, flagging capabilities that have become structurally over-coupled, and flagging `specs/INDEX.md` rows that have drifted from the `spec.md` files they summarize.
-**Scope**: `openspec/changes/archive/INDEX.md`, `openspec/specs/INDEX.md`, and — for the reconciliation check only — a lightweight read of each `spec.md`'s `## Purpose` heading and `related:` frontmatter. This skill never originates a change, never implements a fix, and never edits a hub doc itself.
-**Output**: a CRITICAL / WARNING / SUGGESTION report in the same register as `/opsx:verify`, plus, only after a human confirms a specific finding, a `Status` column update on the relevant archive row, a single-row patch or removal on `specs/INDEX.md`, and/or an independent invocation of the affected writer skill(s) via the shared `findings:` interface — see Step 8 for which finding types get which.
-**Does NOT**: run automatically, run as a blocking step inside any other skill's workflow, rewrite any document directly, write any `archive/INDEX.md` column other than `Status`, write to `specs/INDEX.md` beyond a single confirmed row's patch or removal, introduce any severity or status state beyond CRITICAL/WARNING/SUGGESTION and current/superseded, or reconcile a contradiction on its own judgment without a human confirming which side of it stands.
+- **Automates**: a periodic, corpus-wide consistency check across every archived OpenSpec change. It surfaces contradictions between past decisions, flags capabilities that have become structurally over-coupled, and flags `specs/INDEX.md` rows that have drifted from the `spec.md` files they summarize.
+- **Scope**: `openspec/changes/archive/INDEX.md`, `openspec/specs/INDEX.md`, and, for the reconciliation check only, a lightweight read of each `spec.md`'s `## Purpose` heading and `related:` frontmatter. This skill never originates a change, never implements a fix, and never edits a hub doc itself.
+- **Output**: a CRITICAL / WARNING / SUGGESTION report in the same register as `/opsx:verify`, plus, only after a human confirms a specific finding, a `Status` column update on the relevant archive row, a single-row patch or removal on `specs/INDEX.md`, and/or an independent invocation of the affected writer skill(s) via the shared `findings:` interface. See Step 8 for which finding types get which.
+- **Does NOT**: run automatically, run as a blocking step inside any other skill's workflow, rewrite any document directly, write any `archive/INDEX.md` column other than `Status`, write to `specs/INDEX.md` beyond a single confirmed row's patch or removal, introduce any severity or status state beyond CRITICAL/WARNING/SUGGESTION and current/superseded, or reconcile a contradiction on its own judgment without a human confirming which side of it stands.
 
 ## Prerequisites
 
@@ -94,6 +112,8 @@ This skill borrows `/opsx:verify`'s CRITICAL/WARNING/SUGGESTION register deliber
 
 ## Workflow Overview
 
+Use the workflow table as the canonical execution order. If a background explanation elsewhere is longer or richer than the table, follow the table plus the numbered implementation steps, not the narrative wording.
+
 ```
 ┌───────────────────────────────────────────────────────────────────────────────┐
 │  Step             Action                                            Output    │
@@ -121,17 +141,13 @@ This skill borrows `/opsx:verify`'s CRITICAL/WARNING/SUGGESTION register deliber
 │  9 Log + report   Append run checkpoint + any new dismissed:        Summary   │
 │                   pairs to SYNTHESIS-LOG.md, summarize                        │
 └───────────────────────────────────────────────────────────────────────────────┘
-
-Step 3's design.md reads and Step 4's spec.md reads both always delegate to
-a subagent, one per candidate, regardless of how many candidates surface. This
-keeps raw design.md and spec.md contents out of the parent's context on every
-run, the same discipline accelint-qrspi-archive applies to its own Step 2
-and Step 5.
 ```
+
+When subagent support is available, prefer one subagent per candidate for Step 3's targeted `design.md` reads and Step 4's targeted `spec.md` content checks. If subagent support is not available, use the degraded-mode fallback above and keep the reads bounded to the specific candidates being verified.
 
 ## Implementation Steps
 
-Execute these steps in order without stopping between them unless an error occurs:
+Execute these steps in order without stopping between them unless an error occurs or a human decision is required. The first mandatory stop is Step 7.
 
 1. **Preflight — confirm this run has something to check and that its two reasoned-default thresholds still look reasonable, before reading anything else.**
 
@@ -151,9 +167,9 @@ Read `archive/INDEX.md` in full: every row's `Change`, `Date`, `Decision` summar
 
 3. **Decision Drift Detection — find archived decisions that no longer cohere with each other, without opening every `design.md` in the corpus to do it.**
 
-**Step 1 — group by shared or related capability.** Using `Specs touched` from `archive/INDEX.md` and `related:` from `specs/INDEX.md`, cluster archived changes that touched the same capability directly, or touched capabilities each other's `related:` lists connect.
+**Decision Drift / Group by capability.** Using `Specs touched` from `archive/INDEX.md` and `related:` from `specs/INDEX.md`, cluster archived changes that touched the same capability directly, or touched capabilities each other's `related:` lists connect.
 
-**Step 2 — coarse scan.** Before comparing anything, drop any pair already present in Step 2's dismissed-pair set (loaded during the Scan Indexes step) — a human already looked at that exact pair and judged it not real, and that judgment doesn't expire. For everything else, within each cluster, compare `Decision` one-liners for signals of tension. A starter list of opposing-choice pairs worth pattern-matching on (extend it as a project's own vocabulary reveals its own oppositions — this isn't exhaustive):
+**Decision Drift / Coarse scan.** Before comparing anything, drop any pair already present in Step 2's dismissed-pair set (loaded during the Scan Indexes step) — a human already looked at that exact pair and judged it not real, and that judgment doesn't expire. For everything else, within each cluster, compare `Decision` one-liners for signals of tension. A starter list of opposing-choice pairs worth pattern-matching on (extend it as a project's own vocabulary reveals its own oppositions — this isn't exhaustive):
 
 - polling vs. push/websocket
 - synchronous vs. asynchronous
@@ -165,7 +181,7 @@ Read `archive/INDEX.md` in full: every row's `Change`, `Date`, `Decision` summar
 
 Beyond direct opposing pairs, also flag a stated rationale later contradicted by a rationale in a more recent change touching a related capability, and a capability with several changes clustered nearby in time while its own spec's `Last touched by` date sits conspicuously earlier. This step works entirely off the index text already in memory — no file I/O. A coarse-scan hit is cheap to be wrong about: it costs one subagent call in Step 3, not a bad finding in the final report, so this list is intentionally biased toward over-flagging rather than under-flagging.
 
-**Step 3 — targeted verification.** For each candidate the coarse scan flags, spawn one subagent per candidate pair to open the full `design.md` for each change involved and confirm or dismiss the contradiction using the complete `choice`/`rationale`/`alternatives` fields, not just the index's compressed summary. For example, given these two frontmatter blocks:
+**Decision Drift / Targeted verification.** For each candidate the coarse scan flags, spawn one subagent per candidate pair to open the full `design.md` for each change involved and confirm or dismiss the contradiction using the complete `choice`/`rationale`/`alternatives` fields, not just the index's compressed summary. For example, given these two frontmatter blocks:
 
 ```yaml
 # openspec/changes/archive/2026-03-02-add-live-sync/design.md
@@ -195,7 +211,7 @@ decisions:
 
 the subagent reads both `choice`/`rationale` pairs directly and confirms a genuine contradiction candidate: `add-live-sync`'s stated constraint ("no infra budget for a message broker") is now in tension with a later change clearing exactly that obstacle for a different capability. Whether this actually rises to a finding, and at what severity, is settled by the rule below — not by this step alone. Return only a structured verdict (confirmed / dismissed, plus a supporting quote-free summary) to the parent — never the raw `design.md` contents.
 
-**Step 4 — staleness flag.** Separately, flag any capability where `specs/INDEX.md`'s `Last touched by` date is old relative to a cluster of recent, related activity nearby (per Step 1's grouping) — this doesn't require opening any `design.md`, since it's a pure date comparison already available from the index data already loaded in Step 2.
+**Decision Drift / Staleness flag.** Separately, flag any capability where `specs/INDEX.md`'s `Last touched by` date is old relative to a cluster of recent, related activity nearby (per Step 1's grouping) — this doesn't require opening any `design.md`, since it's a pure date comparison already available from the index data already loaded in Step 2.
 
    **Classification rule.** A confirmed contradiction is CRITICAL if the affected capability's `specs/INDEX.md` `Last touched by` date falls *after* the earlier of the two contradicting changes' dates — meaning something was built or touched on top of a decision that may no longer hold. Otherwise it's WARNING: the contradiction is real, but nothing has actively depended on the resolved version since. Both halves of this comparison come straight from the index model Step 2 already built, so the rule needs no new lookup and produces the same classification on a re-run given the same data. Staleness flags (Step 4) are always SUGGESTION-level, since they're a signal to look, not a confirmed contradiction.
 
@@ -273,7 +289,7 @@ openspec/specs/cache/layer/spec.md, which no longer exists.
 
    Only confirmed findings proceed to Step 8, and for a decision-drift finding, "Confirm" is the start of a decision, not the end of one — it only tells this skill the contradiction is real; Step 8 still has to ask which side of it stands before anything gets written (see Step 8 and Error Handling). Defer never writes anything — a deferred finding resurfaces on the next run exactly as before, since nothing about the underlying index data changed to stop Step 3, Step 4, or Step 5 from re-detecting the same pattern. Dismiss behaves differently depending on the finding type, which is exactly why its label above isn't the same across all three: dismissing a **decision-drift finding** persists — Step 9 records that specific pair's identity to `SYNTHESIS-LOG.md`, and Step 3 will skip it on every future run. Dismissing a **structural coupling** or **index reconciliation finding** does not persist — either resurfaces next run like a defer would, because both are live snapshots of current state (a `related:` count, or whether a `spec.md` still matches its index row) rather than fixed historical facts (see "The Log This Skill Owns" for the full reasoning).
 
-   If the human stops reviewing partway through the list — ends the session, or moves on without responding to every finding — treat every unaddressed finding as deferred by default, never as confirmed. Step 9 still logs the run and reports what was confirmed so far; whatever wasn't reached simply resurfaces next time, same as an explicit defer.
+   If the human stops reviewing partway through the list — ends the session, or moves on without responding to every finding — treat every unaddressed finding as deferred by default, never as confirmed. Step 9 still logs the run and reports what was confirmed so far; whatever was not reached simply resurfaces next time, same as an explicit defer.
 
 8. **Route Confirmed Findings — hand off confirmed findings to wherever they can actually change something, using the shared `findings:` interface, and, for the narrow set of writes this skill is ever allowed to make, make them.**
 
@@ -312,6 +328,16 @@ Append one line to `openspec/changes/archive/SYNTHESIS-LOG.md` (created fresh on
    This log is a new, standalone file this skill owns entirely — it is not a column of either index, so writing it never conflicts with the single-write-permission rule on `archive/INDEX.md`. It exists purely so Step 1's next run can compute "changes since last run" without guessing, and so Step 3 can skip pairs a human has already ruled out, since neither index records either of those things on its own. Every run only ever appends a new line — an existing `dismissed:` entry is never edited or removed by this skill; a human wanting to reconsider a dismissed pair does so by editing the log file directly, not through this skill.
 
    Close with a short summary: how many findings of each type, how many confirmed/dismissed/deferred, and which writer skill(s) were invoked as a result.
+
+## Final Summary Template
+
+End every completed run with a short summary that covers:
+- corpus checked: archived changes, capabilities, and synthesis checkpoint used
+- findings by severity: CRITICAL / WARNING / SUGGESTION counts
+- human dispositions: confirmed / dismissed / deferred counts
+- writes made: any `Status` updates, `specs/INDEX.md` row patches, or row removals
+- handoffs: which writer skills were invoked, and whether any failed
+- threshold notes: any informational Task A or Task C observations
 
 ## Explicitly Out of Scope
 

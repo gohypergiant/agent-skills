@@ -2,7 +2,7 @@
 
 ## Overview
 
-Convert functions to curried form when parameters are constant across many calls. Precompute expensive operations (exponentiation, regex compilation, lookups) and cache them in closures to eliminate repeated work in loops and hot paths.
+Convert functions to curried form when some parameters stay constant across many calls. Precompute expensive operations such as exponentiation, regex compilation, and lookups, then capture them in closures to eliminate repeated work in loops and hot paths.
 
 ## Examples
 
@@ -279,20 +279,20 @@ const doubled2 = double([4, 5, 6]);
 ## When to Use Currying
 
 Curry functions when:
-- Parameters include expensive computations (exponentiation, regex, lookup tables)
-- Some parameters are constant across hundreds/thousands of calls
-- Function is in a hot path (loop, render, event handler)
-- Setup/validation cost is significant
-- Creating specialized versions improves API ergonomics
+- parameters include expensive computations (exponentiation, regex, lookup tables)
+- some parameters stay constant across hundreds or thousands of calls
+- the function is in a hot path (loop, render, event handler)
+- setup or validation cost is significant
+- creating specialized versions improves API ergonomics
 
 ## When NOT to Use Currying
 
 Avoid currying when:
-- All parameters vary on every call
-- Function is called infrequently
-- Setup cost is trivial (simple primitives)
-- Currying complexity outweighs performance gain
-- Premature optimization in cold paths
+- all parameters vary on every call
+- the function is called infrequently
+- setup cost is trivial (simple primitives)
+- currying complexity outweighs the performance gain
+- the change would be premature optimization in a cold path
 
 ## Fallback Patterns
 

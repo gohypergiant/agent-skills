@@ -1,76 +1,94 @@
 ---
 name: accelint-persona-review
-description: Evaluate Figma designs from operator persona perspectives through design critique and user experience evaluation. Use when reviewing UX for specific user roles (e.g., air-surveillance-tech, weapons-director), conducting design reviews, or evaluating operator interfaces. Analyzes cognitive load, communication patterns, pain points, and system visibility. Works with Figma MCP (desktop/URL) and Outline docs.
+description: Evaluate operator-facing interfaces from a specific persona perspective through design critique and workflow-fit analysis. Use when the user wants a persona-based UX review, a role-specific interface assessment, an operator-workflow critique, or feedback on whether a Figma flow, dashboard, screen, or control panel supports a documented operator role such as air-surveillance-tech, surveillance-tech, weapons-director, senior-director, or mission-crew-commander. Also use for requests about cognitive load, system visibility, communication patterns, decision support, coordination, context switching, pain-point alignment, or whether an interface matches a given operator's tempo and responsibilities. This skill is for persona-grounded design review, including Figma URL reviews, desktop-selection reviews, and screenshot-only fallback when MCP access is unavailable. Do not use it for generic visual-polish feedback, broad product strategy, or non-design writing tasks such as SOPs.
 compatibility: Works best with the outline mcp server and figma mcp server
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # Persona-Based Design Review
 
-Evaluate Figma designs from the perspective of specific operator personas. Generic UX advice ("make it more intuitive") misses insights that emerge from the persona's documented profile - their responsibilities, pain points, systems they monitor, and operational context.
+Evaluate Figma designs from the perspective of specific operator personas. Generic UX advice ("make it more intuitive") misses insights grounded in the persona's documented profile: responsibilities, pain points, systems they monitor, and operational context.
 
 ## Workflow
 
-### 1. Load Persona Profile
+### 1. Load the Persona Profile
 
-Start by loading the persona index to find available personas:
+Start by loading the persona index to confirm the available personas and persona IDs:
 
 ```
 Read references/personas/_index.md
 ```
 
-Then load the specific persona requested by the user:
+Then load only the persona the user requested:
 
 ```
 Read references/personas/{persona-id}.md
 ```
 
-**Do NOT load multiple persona files** - only load the one requested by the user.
+If the user names a role loosely instead of giving an exact persona ID, map it to the closest entry in the index. Confirm only when the match is ambiguous.
 
-**Do NOT load evaluation-examples.md yet** - wait until Step 4.
+Do not load multiple persona files for a single review unless the user explicitly asks for a comparison.
 
-If the persona doesn't exist, list available options from the index and ask the user to choose.
+Do not load `references/evaluation-examples.md` yet. Wait until Step 4, when you are ready to critique the design.
+
+If the persona does not exist, list the available options from the index and ask the user to choose one.
 
 ### 2. Gather Design Context
 
-**Figma URL provided:**
-Use appropriate Figma MCP tool to fetch the design (e.g., `mcp__figma-desktop__get_design_context` with extracted node ID from URL pattern `node-id=1-2` → `1:2`).
+Collect enough design context to tie the critique to the persona's actual workflow.
 
-**No URL (default):**
-Use Figma MCP desktop to get current file/selection. If nothing selected, prompt user to select a frame or component.
+**Figma URL provided:**
+Use the appropriate Figma MCP tool to fetch the design. If the URL includes `node-id=1-2`, convert it to the MCP node format `1:2`. Capture the frame or component name, visible states, surrounding workflow context, and any annotations the MCP returns.
+
+**No URL provided:**
+Use Figma MCP desktop to inspect the current file or selection. If nothing is selected, ask the user to select the frame, flow, or component they want reviewed.
 
 **Figma MCP unavailable:**
-Ask user to provide a screenshot of the design. Analyze the screenshot using visual inspection, but note that without full design context (component properties, layout constraints, interaction states), the review will be limited to visual elements only.
+Ask the user for one or more screenshots. Review the screenshots visually, but explicitly note that the critique is limited because interaction states, component properties, hidden variants, and layout constraints are unavailable.
+
+Before you continue, identify the review scope in one line for yourself: component, screen, workflow slice, or broader dashboard.
 
 ### 3. Search Supporting Documentation
 
-Use Outline MCP to find relevant context. Since Outline requires workspace selection, use this pattern:
+Use Outline MCP to gather only the supporting context that sharpens the review.
+
+Because Outline requires workspace selection, start with:
 
 ```
 ListMcpResourcesTool(server: "outline")
 ```
 
-Search for documents covering:
-- UI standards/guidelines for this operator role
-- Previous design reviews or feedback
+Then search for documents covering:
+- UI standards or guidelines for this operator role
+- Previous design reviews or feedback on the same workflow
 - System requirements or specifications
 - Training materials or user guides
 
-Prioritize documents mentioning the persona's role, responsibilities, or systems they interact with.
+Prioritize documents that mention the persona's role, responsibilities, communication channels, or the systems they interact with.
+
+Do not pad the review with weak references. Cite one clearly relevant document rather than several generic ones.
 
 **Outline MCP unavailable:**
-Proceed with the review based solely on the persona profile and design context. Note in your review that supporting documentation wasn't available, and recommend areas where organizational standards should be consulted.
+Proceed using the persona profile and design context alone. State that supporting documentation was unavailable, and mention which kinds of organizational standards or source material would strengthen the review.
 
-### 4. Analyze & Critique
+### 4. Analyze and Critique
 
-Load evaluation examples to calibrate your approach:
+Load the evaluation examples to calibrate the depth and style of the critique:
 
 ```
 Read references/evaluation-examples.md
 ```
 
-Use the evaluation framework below, but **adapt structure to findings** - don't force insights into rigid sections.
+Use the evaluation framework below, but adapt the structure to the findings. Do not force the critique into rigid sections when another organization would make the operational risks clearer.
+
+As you analyze, keep these distinct:
+- evidence from the persona profile
+- evidence from the design itself
+- evidence from supporting docs
+- reasonable inferences where evidence is incomplete
+
+Label uncertainty plainly instead of overstating conclusions.
 
 ## Evaluation Framework
 
@@ -106,68 +124,73 @@ Use the evaluation framework below, but **adapt structure to findings** - don't 
 
 ## Output Structure
 
-Provide critique in this general format (adapt as needed):
+Provide the critique in a concise structure that makes the operational risks easy to scan. Use this general format unless another layout fits the findings better:
 
 ```
 ## Persona Review: [Persona Name]
 
-### Design Summary
-[1-2 sentence summary of what you reviewed]
+### Scope Reviewed
+[What you reviewed and what evidence was available: Figma context, screenshot-only, supporting docs]
 
-### Critical Findings
-[2-3 most important insights specific to this persona]
+### Operational Summary
+[1-2 sentence summary of the main fit or mismatch for this persona]
+
+### Highest-Impact Findings
+[2-4 prioritized findings tied to persona evidence]
 
 ### Detailed Evaluation
 
 **Cognitive Load**: [Assessment with specific examples from persona profile]
 
-**Communication Patterns**: [How well it supports their "Says & Does"]
+**Workflow & Communication Fit**: [How well it supports their "Says & Does" and "Hears"]
 
-**Pain Point Mitigation**: [Which pain points addressed/created]
+**Pain Point Mitigation**: [Which pain points are reduced, unchanged, or newly introduced]
 
-**Context Awareness**: [Appropriate for their experience/responsibilities]
+**Context & Experience Fit**: [Whether the design fits their rank, responsibility, and tempo]
 
-**System Visibility**: [Coverage of their "Sees" systems]
-
-**Communication Support**: [Integration with their "Hears" channels]
+**System Visibility**: [Coverage of their "Sees" systems and any integration gaps]
 
 ### Recommendations
 [Prioritized list of actionable improvements, grounded in persona profile]
 
 ### Supporting References
-[Links to relevant Outline docs found during research]
+[Relevant Outline docs or "None available"]
 ```
 
-**This is an example structure, not a rigid template.** Adapt based on:
-- Depth of findings in specific areas
-- Completeness of persona profile
-- Design scope (component vs. full dashboard)
+This is an example structure, not a rigid template. Adapt it based on:
+- the depth of findings in specific areas
+- the completeness of the persona profile
+- the review scope: component, screen, or full dashboard
 
-The critical elements are:
-1. Clear connection to persona's documented profile
-2. Specific, actionable recommendations
-3. Prioritization based on operational impact
-4. Evidence from supporting docs (when available)
+The review should always include:
+1. clear connection to the persona's documented profile
+2. specific, actionable recommendations
+3. prioritization by operational impact
+4. explicit scope limits or uncertainty when evidence is incomplete
+5. supporting-doc evidence when available
 
 ## Evaluation Principles
 
-**Be specific to the persona**: Generic UX advice helps no one. Ground every observation in the persona's documented profile (Profile, About, Hears, Sees, Says & Does, Pain Points).
+**Be specific to the persona**: Ground every observation in the documented profile (`Profile`, `About them`, `Hears`, `Sees`, `Says & Does`, `Pain Points`). If you cannot tie a point back to the persona, tighten it or drop it.
 
-**Prioritize operational impact**: A minor UI inconsistency that breaks muscle memory for a high-tempo operator matters more than major visual polish issues. Consider the stakes of their work.
+**Prioritize operational impact**: Focus first on what could slow, distract, confuse, or mislead the operator during real work. A small mismatch that breaks muscle memory can matter more than obvious visual polish issues.
 
-**Assume domain expertise**: These operators are experts in their field. Don't suggest "simplifications" that remove necessary complexity they need to do their jobs.
+**Assume domain expertise**: These operators are specialists. Do not recommend "simplifications" that remove complexity required for threat assessment, coordination, or mission execution.
 
-**Consider the full context**: Review their entire profile - insights often emerge from connections between sections. A pain point in one area may relate to systems they monitor or communication channels they use.
+**Consider the full context**: Read the whole profile before you conclude. Important insights often come from connecting responsibilities, systems, communication channels, and pain points.
 
-**Connect across profile sections**: The most valuable insights synthesize multiple parts of the persona profile (e.g., a pain point + systems they see + actions they take = integrated solution opportunity).
+**Connect across profile sections**: The strongest findings usually synthesize multiple profile sections, such as a pain point plus the systems they monitor plus the actions they routinely take.
 
-## NEVER Do When Reviewing
+**State evidence and uncertainty clearly**: Separate observed evidence from inference, especially when the review is based on screenshots or lacks supporting docs.
 
-- **NEVER give generic UX advice** like "make it more intuitive" or "improve the user experience" - these could apply to any interface. Ground every observation in the persona's specific profile.
-- **NEVER suggest simplifications that remove necessary complexity** - these operators are domain experts. Complexity that serves their documented responsibilities is valuable.
-- **NEVER ignore operational context** - a minor UI inconsistency that breaks muscle memory matters more than major visual polish issues for high-tempo operators.
-- **NEVER treat all personas as the same** - an E4 AST review should differ from an O4 MCC review for the same interface.
-- **NEVER skip loading the persona profile** - generic reviews without persona context miss the entire value of this skill.
+## Never Do When Reviewing
+
+- Do not give generic UX advice such as "make it more intuitive" or "improve the user experience." Ground every observation in the persona's documented profile.
+- Do not suggest simplifications that remove necessary operational complexity. Complexity that supports the persona's real responsibilities is often essential.
+- Do not ignore operational context. A small inconsistency that interrupts a high-tempo workflow can matter more than a larger visual-style issue.
+- Do not treat all personas as interchangeable. An E4 AST review should differ meaningfully from an O4 MCC review of the same interface.
+- Do not skip loading the persona profile. Without it, the review loses the skill's main value.
+- Do not present inference as fact when the evidence is partial.
 
 ## References
 
@@ -175,4 +198,4 @@ The critical elements are:
 - **Persona index**: `references/personas/_index.md`
 - **Evaluation examples**: `references/evaluation-examples.md`
 
-Load these on-demand to minimize context usage.
+Load these on demand to minimize context usage.

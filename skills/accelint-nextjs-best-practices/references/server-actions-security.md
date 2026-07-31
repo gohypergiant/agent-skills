@@ -5,10 +5,10 @@ Server Actions (functions with `"use server"`) are exposed as public endpoints, 
 Next.js documentation explicitly states: "Treat Server Actions with the same security considerations as public-facing API endpoints, and verify if the user is allowed to perform a mutation."
 
 Server Actions can be called:
-- Directly from client components
-- Via POST requests to the action endpoint
-- From browser DevTools or custom scripts
-- Bypassing page-level guards and middleware
+- directly from client components
+- via POST requests to the action endpoint
+- from browser DevTools or custom scripts
+- while bypassing page-level guards and middleware
 
 ## The Pattern
 
@@ -93,11 +93,11 @@ export async function updateProfile(data: unknown) {
 
 Every Server Action should have:
 
-1. **Input validation** - Use Zod or similar to validate all inputs
-2. **Authentication** - Verify the user is logged in
-3. **Authorization** - Check if the user is allowed to perform this action
-4. **Rate limiting** - Consider adding rate limits for sensitive actions
-5. **Audit logging** - Log security-relevant actions (use `after()` to avoid blocking)
+1. **Input validation** - Use Zod or a similar tool to validate all inputs.
+2. **Authentication** - Verify that the user is logged in.
+3. **Authorization** - Check that the user is allowed to perform the action.
+4. **Rate limiting** - Consider rate limits for sensitive actions.
+5. **Audit logging** - Log security-relevant actions. Use `after()` to avoid blocking the response.
 
 ## Common Patterns
 

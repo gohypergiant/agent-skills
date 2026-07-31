@@ -1,8 +1,8 @@
 # Authentication
 
-Never store JWT tokens in localStorage or use weak session management. Authentication must use secure token storage, strong password hashing, and proper session lifecycle management.
+Never store JWT tokens in localStorage or use weak session management. Authentication must use secure token storage, strong password hashing, and a proper session lifecycle.
 
-**Framework Examples**: This document uses common patterns with JWT and bcrypt for illustration. Apply these principles to your authentication strategy: session-based (Passport.js, NextAuth.js), token-based (JWT, OAuth), or framework-specific solutions. Password hashing libraries include bcrypt, argon2, or scrypt.
+**Framework Examples**: This document uses common JWT and bcrypt patterns for illustration. Apply these principles to your authentication strategy: session-based (Passport.js, NextAuth.js), token-based (JWT, OAuth), or a framework-specific solution. Password hashing libraries include bcrypt, argon2, and scrypt.
 
 ## Why This Matters
 

@@ -1,14 +1,14 @@
 # 1.5 References
 
-Contains additional documentation with detailed technical references that agents can read when needed. Keep individual reference files focused. Agents load these on demand, so smaller files mean less use of context. References should incorrect and correct examples of a rule to help reinforce context. Show the "Incorrect" version before the "Correct" version for better pedagogical flow. The persona and target audience for this document is an AI Agent or LLM. 
+Contains additional documentation with detailed technical references that agents can read when needed. Keep each reference file focused. Agents load these files on demand, so smaller files use less context. References should include incorrect and correct examples of a rule to reinforce the pattern. Show the incorrect version before the correct version for better learning flow. The target audience for this document is an AI agent or LLM.
 
-Follow the structure in the [reference template](../assets/skill-template/references/example.md) as closely as possible. If a different structure exists already you must prioritize alignment and consistency. Ask the user if it is okay to aggressively refactor the format of the document.
+Follow the structure in the [reference template](../assets/skill-template/references/example.md) as closely as possible. If a different structure already exists, you MUST prioritize alignment and consistency. Ask the user whether it is acceptable to aggressively refactor the document format.
 
-**When to include**: For documentation that an agent should reference while working
+**When to include**: Use references for documentation an agent should consult while working.
 
-**Use cases**: Database schemas, API documentation, domain knowledge, company policies, detailed workflow guides, best practices, code recipes
+**Use cases**: Database schemas, API documentation, domain knowledge, company policies, detailed workflow guides, best practices, and code recipes.
 
-**Avoid duplication**: Information should live in either `AGENTS.md`, or references files, not both. Prefer references files for detailed information unless it's truly core to the skill. This keeps `AGENTS.md` lean while making information discoverable without hogging the context window. Keep only essential procedural instructions and workflow guidance in `SKILL.md`; move detailed reference material, schemas, and examples to references files.
+**Avoid duplication**: Information should live in either `AGENTS.md` or reference files, not both. Prefer reference files for detailed information unless it is truly core to the skill. This keeps `AGENTS.md` lean while making information discoverable without consuming unnecessary context. Keep only essential procedural instructions and workflow guidance in `SKILL.md`; move detailed reference material, schemas, and examples to reference files.
 
 
 ---

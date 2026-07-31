@@ -451,6 +451,103 @@
         "Explains that support files are eligible for edit when consistency or contract preservation requires it.",
         "Does not limit editing to the pasted excerpt alone."
       ]
+    },
+    {
+      "id": 38,
+      "prompt": "Audit this response for output-mode violations. The user asked for audit only.\n\nResponse draft:\n1. Summary: The wording is ambiguous.\n2. Finding: 'mostly okay' is subjective.\n3. Suggested rewrite: 'Do not skip the detailed review unless the user explicitly approves that shortcut.'\n4. Completed report.\n\nDo not rewrite the source passage. Report only whether the response draft complies with the requested mode and why.",
+      "expected_output": "An audit-only compliance review that flags the included rewrite as an output-mode violation and explains why audit-only delivery must stop at findings unless examples were explicitly requested.",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md",
+        "references/examples.md"
+      ],
+      "expectations": [
+        "Identifies that the draft violates audit-only output mode.",
+        "Flags the sentence-level suggested rewrite as disallowed in this context.",
+        "Explains that findings are allowed but replacement wording is not unless explicitly requested.",
+        "Does not rewrite the source passage."
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "A user asks for a rewrite-only response in mode=default. The source text is a four-item checklist with correct order, but item 3 is wordy. What kind of rewrite is allowed, and what changes should you avoid?",
+      "expected_output": "A concise explanation that mode=default favors a local rewrite of the wordy item while preserving checklist structure, order, and behavior-bearing wording, without escalating into broader reorganization.",
+      "files": [
+        "SKILL.md",
+        "references/checklist.md",
+        "references/examples.md"
+      ],
+      "expectations": [
+        "States that mode=default favors local cleanup rather than structural rewrite.",
+        "Preserves checklist structure and item order.",
+        "Explains that only the wordy item should be tightened unless structure hides behavior.",
+        "Warns against broader reorganization or obligation drift."
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "You have already read `SKILL.md` for a skill folder. It links to `references/workflow-guardrails.md`, and the folder also has `references/examples.md`, `templates/review-note.md`, and `notes/brainstorm.md`. Which files should you inspect next before a folder-level rewrite, and why?",
+      "expected_output": "A file-discovery decision that follows linked behavior-bearing instruction files first, includes relevant templates when they complete the contract, and does not automatically treat brainstorming notes as part of the artifact set.",
+      "files": [
+        "SKILL.md",
+        "references/workflow-guardrails.md",
+        "references/examples.md"
+      ],
+      "expectations": [
+        "Prioritizes explicitly linked files such as `references/workflow-guardrails.md`.",
+        "Includes other behavior-bearing instruction files like `references/examples.md` when relevant to the contract.",
+        "Treats `templates/review-note.md` as eligible if it is an instruction-bearing template.",
+        "Does not automatically include `notes/brainstorm.md` as part of the artifact set.",
+        "Explains the decision using progressive disclosure or contract-completion logic."
+      ]
+    },
+    {
+      "id": 41,
+      "prompt": "Audit this frontmatter rewrite for boundary drift. Do NOT rewrite it.\n\nOriginal description boundary: planning-only, no implementation.\nCandidate rewrite: 'Use this skill to plan or implement OpenSpec changes, then carry them through validation.'",
+      "expected_output": "An audit-only response that identifies implementation-scope broadening as boundary drift against a planning-only description.",
+      "files": [
+        "SKILL.md",
+        "references/frontmatter-descriptions.md",
+        "references/checklist.md"
+      ],
+      "expectations": [
+        "Flags that 'plan or implement' broadens a planning-only boundary.",
+        "Identifies this as trigger-scope or boundary drift.",
+        "Explains why this would over-trigger the skill for implementation requests.",
+        "Produces findings only rather than a rewrite."
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "Tighten this workflow warning without losing the exact verb choice or the reason it matters. Return only the revised text in final output.\n\n\"Do not skip Step 14. Skipping it can bypass the approval gate and let the agent proceed before the user has confirmed the task breakdown.\"",
+      "expected_output": "A tighter warning that preserves the exact verb 'skip', the Step 14 reference, the approval-gate risk, and the premature-proceeding rationale.",
+      "files": [
+        "references/workflow-guardrails.md",
+        "references/examples.md"
+      ],
+      "expectations": [
+        "Preserves 'skip' rather than rotating to a softer or different verb.",
+        "Preserves 'Step 14' exactly.",
+        "Preserves the approval-gate risk.",
+        "Preserves the rationale about proceeding before user confirmation.",
+        "Returns only the revised text."
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "Audit this folder-level completion note for required unchanged-file classification. Do NOT rewrite the files themselves.\n\nCompletion note: 'SKILL.md changed. references/checklist.md unchanged. references/examples.md unchanged.'",
+      "expected_output": "An audit-only response that identifies the missing required unchanged-file classifications and explains what kind of justification is required for unchanged behavior-bearing files.",
+      "files": [
+        "SKILL.md",
+        "assets/output-template.md",
+        "references/checklist.md"
+      ],
+      "expectations": [
+        "Flags that unchanged files need explicit classification rather than bare unchanged status.",
+        "Mentions accepted classifications such as 'Already near minimum safe form' or 'Rewrite would add drift risk without meaningful clarity gain'.",
+        "Explains why generic 'unchanged' is insufficient for folder-level work.",
+        "Does not rewrite the underlying files."
+      ]
     }
   ]
 }

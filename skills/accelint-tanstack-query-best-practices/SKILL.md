@@ -1,15 +1,21 @@
 ---
 name: accelint-tanstack-query-best-practices
-description: Use when configuring QueryClient, implementing mutations, debugging performance, or adding optimistic updates with @tanstack/react-query in Next.js App Router. Covers factory patterns, query keys, cache invalidation, observer debugging, HydrationBoundary, multi-layer caching. Keywords TanStack Query, useSuspenseQuery, useQuery, useMutation, invalidateQueries, staleTime, gcTime, refetch, hydration.
+description: Use this skill when the user needs the right TanStack Query / React Query shape for an app: how server data should be fetched, keyed, cached, hydrated, invalidated, or updated in React or Next.js. Reach for it for setup, reviews, audits, migrations, and debugging when TanStack Query is the main server-state layer: QueryClient defaults, query-key structure, staleTime/gcTime policy, dependent queries, mutations, optimistic updates, stale data, duplicate requests, or refetch churn. It is especially relevant in Next.js App Router when the question is about server/client cache boundaries: prefetching, dehydrate/HydrationBoundary, per-request QueryClient setup, useSuspenseQuery, or keeping server actions and cache tags aligned with client invalidation. Skip it for SWR, plain fetch, Zustand, local UI state, or backend-only caching unless TanStack Query is central.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4.0"
+  version: "1.4.1"
 ---
 
 # TanStack Query Best Practices
 
 Expert patterns for TanStack Query in modern React applications with Next.js App Router and Server Components.
+
+## Scope
+
+Use this skill for TanStack Query guidance in React applications generally, with extra emphasis on Next.js App Router and server/client integration when that stack is present.
+
+Before applying Next.js-specific advice, confirm whether the codebase actually uses App Router, Server Components, Server Actions, `HydrationBoundary`, or `dehydrate`. If the project is a client-only React app, skip the Next.js server-cache guidance and focus on query keys, hook structure, invalidation, observer economics, and mutation correctness.
 
 ## NEVER Do With TanStack Query
 
@@ -45,31 +51,36 @@ Expert patterns for TanStack Query in modern React applications with Next.js App
 This skill uses **progressive disclosure** to minimize context usage. Load references based on your scenario:
 
 ### Scenario 1: Setting Up Query Client
-**MANDATORY - READ ENTIRE FILE**: Read [`query-client-setup.md`](references/query-client-setup.md) (~125 lines) and [`server-integration.md`](references/server-integration.md) (~151 lines) completely for server/client setup patterns.
-**Do NOT Load** other references for initial setup.
+1. REQUIRED: Read [`query-client-setup.md`](references/query-client-setup.md) completely.
+2. If the codebase uses Next.js App Router, server rendering, or hydration, read [`server-integration.md`](references/server-integration.md) completely.
+3. If the codebase is client-only React, skip `server-integration.md` and stay focused on client QueryClient setup.
+4. MUST NOT load other references for initial setup unless the task also involves mutations, key design, or caching strategy.
 
-Copy [assets/query-client.ts](assets/query-client.ts) for production-ready configuration.
+Copy [assets/query-client.ts](assets/query-client.ts) for a production-ready baseline, then adapt defaults to the app's freshness and retry needs.
 
 ### Scenario 2: Building Query Hooks
-1. **MANDATORY**: Read [`query-keys.md`](references/query-keys.md) (~151 lines) for key factory setup
-2. If using server components: Read [`server-integration.md`](references/server-integration.md)
-3. **Do NOT Load** mutations-and-updates.md unless implementing mutations
+1. REQUIRED: Read [`query-keys.md`](references/query-keys.md) for key factory setup.
+2. If the hooks participate in server hydration or App Router prefetching, read [`server-integration.md`](references/server-integration.md).
+3. If the problem involves dependent queries, query cancellation, `select`, or hook anti-patterns, also read [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md).
+4. MUST NOT load `mutations-and-updates.md` unless implementing or reviewing mutations.
 
-Use decision tables below for configuration values.
+Use the decision tables below for configuration defaults, but adapt them to actual data freshness and payload size.
 
 ### Scenario 3: Implementing Mutations
-**MANDATORY - READ ENTIRE FILE**: Read [`mutations-and-updates.md`](references/mutations-and-updates.md) (~345 lines) completely. Reference [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md) for rollback patterns.
-**Do NOT Load** caching-strategy.md for basic CRUD mutations.
+REQUIRED: Read [`mutations-and-updates.md`](references/mutations-and-updates.md) completely. Reference [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md) for rollback patterns.
+MUST NOT load `caching-strategy.md` for basic CRUD mutations.
 
 ### Scenario 4: Debugging Performance Issues
-1. First, check Observer Count Thresholds table below (lines 121-129)
-2. If observer count >50: Read [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md)
-3. If large dataset issues: Read [`fundamentals.md`](references/fundamentals.md) for structural sharing
-4. **Do NOT Load** all references - diagnose first, then load targeted content
+1. First, check the Observer Count Thresholds table below.
+2. If observer count is high or queries are duplicated across list items, read [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md).
+3. If the problem involves large payloads, frequent updates, `select`, or structural sharing, read [`fundamentals.md`](references/fundamentals.md).
+4. If the bug involves duplicate or unstable cache entries, read [`query-keys.md`](references/query-keys.md).
+5. MUST NOT load all references up front. Diagnose first, then load targeted content.
 
 ### Scenario 5: Multi-Layer Caching Strategy
-**MANDATORY**: Read [`caching-strategy.md`](references/caching-strategy.md) (~198 lines) for unified Next.js use cache + TanStack Query + HTTP cache patterns.
-**Do NOT Load** if only using client-side TanStack Query.
+REQUIRED: Read [`caching-strategy.md`](references/caching-strategy.md) for unified Next.js `use cache` + TanStack Query + HTTP cache patterns.
+Use this scenario only when the codebase actually has a server cache layer to coordinate with TanStack Query.
+MUST NOT load it if the app only uses client-side TanStack Query.
 
 ## Query Configuration Decision Matrix
 
@@ -144,10 +155,10 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 | 100+ | Critical impact | Immediate refactor: single query with props distribution |
 
 **Diagnosis:**
-1. Open TanStack Query DevTools in development
-2. Find cache entries with high observer counts
-3. Search codebase for useQuery calls with those keys
-4. Refactor to parent components or shared cache entries
+1. Open TanStack Query DevTools in development.
+2. Find cache entries with high observer counts.
+3. Search the codebase for `useQuery` calls with those keys.
+4. Refactor to parent components or shared cache entries.
 
 ## Query Hook Patterns
 
@@ -180,7 +191,7 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 
 ### Performance Issues
 
-**Step 1: Check observer count in DevTools** (use thresholds at lines 136-145)
+**Step 1: Check observer count in DevTools**
 - **>100 observers** → Immediate refactor: hoist queries to parent component, distribute data via props
 - **51-100 observers** → Refactor: hoist queries or use select to subscribe to data subsets
 - **<50 observers** → Issue is elsewhere, continue to Step 2
@@ -192,7 +203,7 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 
 **Step 3: Check React DevTools Profiler**
 - Look for unnecessary re-renders in components using query data
-- Verify select function isn't recreated on every render (use useCallback)
+- Verify the `select` function isn't recreated on every render. Prefer a stable module-level selector; use `useCallback` only when the selector must close over runtime values.
 - Check if derived data should use useMemo instead of inline transformation
 - Profile component render times to identify bottlenecks
 

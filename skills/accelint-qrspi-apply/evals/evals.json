@@ -1,0 +1,145 @@
+{
+  "skill_name": "accelint-qrspi-apply",
+  "evals": [
+    {
+      "id": 1,
+      "name": "apply-explicit-change-with-clear-parallel-strategy",
+      "prompt": "Apply the remove-security-ruleset change using QRSPI parallelization. The change already has a tasks.md with a clear Parallelization Strategy: Slice 1 must complete first, then Slices 2 and 3 can run in parallel, then verification. Please run the parallel slices instead of doing this serially.",
+      "expected_output": "Selects the named change, parses the dependency levels from tasks.md, announces an execution plan with parallel levels, delegates slice work through /opsx:apply rather than implementing directly, and completes with verification-oriented next steps.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "infer-change-name-from-context-then-apply",
+      "prompt": "Let's go ahead and implement the change we were just planning in QRSPI. It's the one about removing the security ruleset. Use the parallel slices from tasks.md and continue the apply workflow.",
+      "expected_output": "Infers the intended change from recent context when possible, confirms the selected change, and proceeds with QRSPI apply behavior instead of falling back to generic OpenSpec apply guidance.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "ambiguous-change-requires-selection",
+      "prompt": "Apply the QRSPI change now. I have a couple of open changes and don't care which command you need to use, just get started.",
+      "expected_output": "Does not guess when multiple changes may exist. It lists or retrieves candidate changes, asks the user to select one, and blocks execution until the ambiguity is resolved.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "blocked-change-missing-tasks-artifact",
+      "prompt": "Apply the auth-refactor change with QRSPI. If the task file is missing, figure it out and continue anyway.",
+      "expected_output": "Checks change status, detects the blocked or missing-tasks condition, refuses to continue without tasks.md, and tells the user to run /opsx:continue rather than inventing tasks or implementing directly.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "invalid-tasks-format-stops-early",
+      "prompt": "Run accelint-qrspi-apply on the billing-cleanup change. Its tasks.md is still in numbered-list format from an older draft, but please just work around that and start implementing.",
+      "expected_output": "Validates checklist format, reports the numbered-list format as invalid for progress tracking, exits early, and directs the user to regenerate or manually convert tasks.md instead of working around it.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "resume-after-partial-completion",
+      "prompt": "Resume the multi-stage-refactor QRSPI apply run. Slice 1 is already checked off in tasks.md from yesterday, so pick up from the next incomplete slice and keep the dependency order intact.",
+      "expected_output": "Detects partial completion from checklist state, announces the resumption point, skips completed slices, and continues from the next incomplete dependency level rather than rerunning finished work.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "no-parallelization-strategy-falls-back-to-sequential",
+      "prompt": "Apply the update-readme QRSPI change. It doesn't look like that tasks.md ever got a Parallelization Strategy section, but I still want the apply workflow run safely.",
+      "expected_output": "Reads tasks.md, detects no Parallelization Strategy section, explicitly tells the user it will run sequentially as the safe default, and still uses the OpenSpec apply workflow rather than abandoning the task.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "load-and-inject-config-context",
+      "prompt": "Apply the report-export-hardening change with QRSPI. This repo has important implementation guidance in openspec/config.yaml, so make sure that context is loaded before you delegate slices.",
+      "expected_output": "Checks for openspec/config.yaml, extracts the context block when present, tells the user it found and loaded config context, and uses that context as background guidance in delegated slice prompts.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "missing-or-malformed-config-context-degrades-safely",
+      "prompt": "Apply the usage-metrics change. The openspec/config.yaml file in this repo might be missing or malformed, so don't let that derail the apply run.",
+      "expected_output": "Attempts to load config context, warns if the file is missing or the context block cannot be isolated safely, and proceeds without injected context instead of passing corrupted guidance into sub-agents.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "parallel-slices-with-overlap-risk-trigger-caution",
+      "prompt": "Run the parallel slices for the api-consolidation change. The strategy says Slice 2 and Slice 3 are independent, but both descriptions mention editing src/api/router.ts and the auth middleware. Be aggressive if you can.",
+      "expected_output": "Does a quick conflict-risk check, notices likely shared-file or same-surface overlap, and does not blindly parallelize. It either regroups to serial execution for that level or asks the user how aggressive to be.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "unclear-slice-boundaries-require-clarification-or-serial",
+      "prompt": "Apply the cleanup-and-docs change with QRSPI. The slice sections in tasks.md are kind of vague, but maybe you can still split them up and run in parallel.",
+      "expected_output": "Assesses slice boundary clarity before delegation, recognizes ambiguity when the assigned work is not explicit enough, and asks whether to continue serially or clarify the slice boundaries instead of making unsafe assumptions.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "pause-clear-resume-decision-between-levels",
+      "prompt": "Apply the large data-pipeline-refactor QRSPI change. After each dependency level, give me a chance to clear context before starting the next level.",
+      "expected_output": "Runs level by level and, after a completed dependency level, offers the documented continue / clear-and-resume / pause options rather than silently pushing through the next level.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "living-docs-update-runs-before-verification-finish",
+      "prompt": "Apply the remove-security-ruleset change end to end. Make sure the skill doesn't stop after implementation — I want it to update any needed living docs and then verify before calling the work done.",
+      "expected_output": "After implementation, it processes living document checks and updates in sequence, then automatically proceeds into /opsx:verify instead of treating document work as an optional follow-up or stopping early.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "skip-doc-updates-when-change-does-not-affect-document-scope",
+      "prompt": "Apply the tiny-comment-fix change with QRSPI and be efficient about living docs. If a document clearly doesn't need updating, don't burn time on unnecessary edits.",
+      "expected_output": "Reads change artifacts to assess document scope, skips irrelevant living document updates for trivial or out-of-scope changes, summarizes the no-change decisions, and still proceeds to verification automatically.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "verification-is-mandatory-final-step",
+      "prompt": "Apply the auth-refactor change with QRSPI, but don't waste time on verify if the implementation looks obviously complete. Just finish and tell me it's ready.",
+      "expected_output": "Refuses to skip verification even if implementation appears complete, runs /opsx:verify as the mandatory final workflow step, and treats the verification report as the completion report.",
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "subagent-unavailable-falls-back-to-sequential",
+      "prompt": "Run accelint-qrspi-apply for the report-export-hardening change in an environment without sub-agent support.",
+      "expected_output": "Detects or acknowledges the lack of sub-agent support, informs the user that it will fall back to sequential execution, and continues through the apply workflow as safely as possible.",
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "subagent-failure-blocks-dependent-slices",
+      "prompt": "Apply the service-split change with QRSPI. If one slice agent fails halfway through, don't let the dependent slices keep going just because the rest looked independent.",
+      "expected_output": "Reports which slice failed, does not proceed to dependent levels until the blocking slice is resolved, and asks whether to retry or handle the failure manually.",
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "circular-dependency-in-strategy-rejected",
+      "prompt": "Apply the event-pipeline change. Its Parallelization Strategy currently says Slice 2 depends on Slice 3 and Slice 3 depends on Slice 2, but maybe you can still sort something out.",
+      "expected_output": "Detects the circular dependency in the strategy, reports it clearly as an error in tasks.md, and stops for user correction instead of inventing an execution order.",
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "missing-slice-reference-in-strategy-rejected",
+      "prompt": "Run the QRSPI apply flow for notifications-overhaul. The Parallelization Strategy references Slice 4, but the actual task list only defines Slices 1 through 3.",
+      "expected_output": "Checks that strategy references align with actual slices in tasks.md, reports the missing-slice mismatch as an error, and asks the user to fix the task file before execution.",
+      "files": []
+    },
+    {
+      "id": 20,
+      "name": "do-not-implement-directly-even-when-user-asks",
+      "prompt": "Can you just apply the profile-normalization QRSPI change directly yourself instead of routing through /opsx:apply? I want this faster than the usual workflow.",
+      "expected_output": "Pushes back on direct manual implementation, explains that the skill must delegate through /opsx:apply to preserve OpenSpec context and progress tracking, and keeps the workflow inside the intended orchestration path.",
+      "files": []
+    }
+  ]
+}

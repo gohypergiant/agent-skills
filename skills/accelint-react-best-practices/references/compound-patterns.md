@@ -1,6 +1,6 @@
 # Compound Pattern Examples
 
-Real-world scenarios often require multiple optimization patterns working together. This guide shows complete examples of how patterns combine to solve complex performance problems.
+Real-world React problems often require multiple patterns working together. This guide shows how those patterns combine to solve common performance and correctness issues.
 
 ---
 
@@ -15,7 +15,7 @@ Real-world scenarios often require multiple optimization patterns working togeth
 - [3.2 useLatest / useEffectEvent](uselatest-stable-callbacks.md) - Stable debounce callback (useEffectEvent for React 19.2+)
 - [1.1 Defer State Reads](defer-state-reads.md) - Read URL params on demand
 
-**Alternative Approach:** [1.15 useDeferredValue](use-deferred-value.md) can replace useTransition for this use case - see note at end of this example.
+**Alternative Approach:** [1.15 useDeferredValue](use-deferred-value.md) can replace `useTransition` for this use case. See the note at the end of this example.
 
 **❌ Before: Multiple Performance Issues**
 
@@ -129,8 +129,8 @@ function SearchComponent({ items }: { items: Item[] }) {
 ```
 
 **When to use which:**
-- `useDeferredValue`: When you have a single expensive computation/render driven by user input
-- `useTransition`: When you have multiple state updates that should be treated as non-urgent
+- `useDeferredValue`: Use this when a single expensive computation or render is driven by user input.
+- `useTransition`: Use this when multiple state updates should be treated as non-urgent.
 
 ---
 
@@ -716,16 +716,16 @@ function AnalyticsTracker({ onTrack, enabled = true }: Props) {
 
 ## Key Takeaways
 
-1. **Patterns often work together** - Real-world optimizations typically combine 3-5 patterns
-2. **Start with correctness** - Functional setState (1.5), narrow dependencies (1.3), and interaction logic in handlers (1.11) prevent bugs
-3. **Derive, don't sync** - Calculate derived state during render (1.8), don't use effects to synchronize it
-4. **Choose the right state storage** - Use useState for UI, useRef for transient values (1.12)
-5. **Then optimize rendering** - Memoization (1.2), transitions (1.7/2.8), and derived state (1.4)
-6. **Stable references matter** - Extract default parameters (1.10) to preserve memo() optimization
-7. **Initialize wisely** - App-level initialization once (3.4), component initialization lazily (1.6)
-8. **Finally, advanced patterns** - useEffectEvent/useLatest (3.2), caching (3.3), and Activity (2.6)
-9. **SSR requires special care** - Hydration mismatch prevention (2.5) is critical
-10. **React Compiler helps** - But state/effect patterns still need manual application
-11. **React 19.2+ advantages** - Use useEffectEvent instead of useLatest for cleaner stable event handlers
+1. **Patterns often work together** - Real-world optimizations typically combine three to five patterns.
+2. **Start with correctness** - Functional setState (1.5), narrow dependencies (1.3), and interaction logic in handlers (1.11) prevent bugs.
+3. **Derive, do not sync** - Calculate derived state during render (1.8). Do not use effects to synchronize it.
+4. **Choose the right state storage** - Use `useState` for UI and `useRef` for transient values (1.12).
+5. **Then optimize rendering** - Memoization (1.2), transitions (1.7/2.8), and derived state (1.4) reduce wasted work.
+6. **Stable references matter** - Extract default parameters (1.10) to preserve `memo()` optimization.
+7. **Initialize wisely** - Initialize app-level state once (3.4) and component state lazily (1.6).
+8. **Then use advanced patterns** - `useEffectEvent` or `useLatest` (3.2), caching (3.3), and `Activity` (2.6) solve more specialized cases.
+9. **SSR requires special care** - Hydration mismatch prevention (2.5) is critical.
+10. **React Compiler helps** - State and effect patterns still need manual application.
+11. **React 19.2+ has advantages** - Prefer `useEffectEvent` over `useLatest` for stable event handlers when available.
 
 Refer to the [Quick Checklists](quick-checklists.md) for systematic pattern application and [React Compiler Guide](react-compiler-guide.md) for compiler-specific guidance.

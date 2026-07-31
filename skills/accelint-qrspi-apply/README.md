@@ -1,10 +1,10 @@
 # Accelint QRSPI Apply
 
-Implement OpenSpec changes with intelligent parallelization. This skill orchestrates parallel execution of independently-sliced tasks from QRSPI-planned changes, dramatically reducing implementation time while maintaining correctness.
+Implement QRSPI-planned OpenSpec changes with dependency-aware parallelization. This skill orchestrates independently sliced task execution, living-document updates, and mandatory verification while preserving correctness.
 
 ## What This Does
 
-Takes a QRSPI-planned OpenSpec change (created via `accelint-qrspi-propose`) and implements it using parallel sub-agents when possible:
+This skill takes a QRSPI-planned OpenSpec change, usually created via `accelint-qrspi-propose`, and implements it with parallel sub-agents when possible:
 
 - Parses the parallelization strategy from tasks.md
 - Spawns sub-agents to implement independent slices in parallel
@@ -12,7 +12,7 @@ Takes a QRSPI-planned OpenSpec change (created via `accelint-qrspi-propose`) and
 - Verifies implementation matches specs before archival
 - Supports pause/resume workflow for context management
 
-The skill stops after verification. You manually archive when ready.
+The skill stops after verification. You archive the change manually when ready.
 
 ## When to Use This
 
@@ -64,12 +64,12 @@ openspec update
 ┌─────────────────────────────────────────────────────────────────┐
 │  Phase          Action                        Output            │
 ├─────────────────────────────────────────────────────────────────┤
+│  Preflight      Validate change + task shape  Ready to proceed  │
 │  Parse          Extract parallelization       Dependency graph  │
-│  Dependencies   Identify blocking tasks       Execution plan    │
+│  Load Context   Read config.yaml context      Project context   │
 │  Execute        Run slices (parallel/serial)  Implemented code  │
-│  Verify         Run opsx:verify               Verification rpt  │
 │  Update Docs    Sync living documents         Updated docs      │
-│  Report         Show results + next steps     Archive or fix    │
+│  Verify         Run opsx:verify               Verification rpt  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -101,7 +101,17 @@ Level 1 (can run in parallel after Level 0):
 
 If no strategy is found, falls back to sequential execution (safe default).
 
-### Phase 2: Execute Tasks
+### Phase 2: Load Project Context
+
+Before delegating slice work, the skill reads `openspec/config.yaml` when present and extracts the `context: |` block for sub-agent guidance.
+
+- Uses the context as background constraints only
+- Tells the user whether context was found and loaded
+- Falls back safely if the file is missing, the field is absent, or the block cannot be isolated cleanly
+
+This helps delegated `/opsx:apply` runs inherit project-specific coding and testing guidance that OpenSpec may not inject automatically.
+
+### Phase 3: Execute Tasks
 
 Implements tasks following the dependency graph:
 
@@ -111,8 +121,10 @@ Implements tasks following the dependency graph:
 - Each sub-agent invokes `/opsx:apply` with instructions to work only on its assigned slice
 
 **Parallel execution** (for independent slices):
-- Spawns all slice sub-agents simultaneously
+- Performs a quick overlap check before parallelizing
+- Spawns all slice sub-agents simultaneously only when the slice boundaries look safe
 - Tracks completion as each finishes
+- Reviews slice summaries for collisions before starting the next level
 - After each level completes, offers pause/clear/resume options
 
 **Slice isolation**: Each sub-agent receives:
@@ -122,9 +134,20 @@ Implements tasks following the dependency graph:
 
 This prevents sub-agents from stepping on each other's work while maintaining full visibility.
 
-### Phase 3: Verify Implementation
+### Phase 4: Update Living Documents
 
-**MANDATORY** verification before declaring ready to archive:
+Before verification, the skill checks living documents that may need to reflect the implemented change:
+
+- `openspec/config.yaml`
+- `ARCHITECTURE.md`
+- `AGENTS.md`
+- `README.md`
+
+It processes all applicable documents in sequence, uses specialized skills when available, and skips only when the change does not affect a document's scope.
+
+### Phase 5: Verify Implementation
+
+Verification is MANDATORY before the change is declared ready to archive:
 
 1. Calls `/opsx:verify <change-name>`
 2. Checks task completion, spec coverage, design adherence
@@ -132,24 +155,11 @@ This prevents sub-agents from stepping on each other's work while maintaining fu
 4. If CRITICAL issues exist, blocks archival and offers fix options
 5. If only warnings/suggestions, approves for archive
 
-### Phase 4: Update Living Documents
+### Reporting and Next Steps
 
-**Runs ONLY if verification passed** (no CRITICAL issues):
+The final `/opsx:verify` report is the completion report. It should include the status, issues, changed files, and next steps.
 
-Updates project documentation to reflect implemented changes:
-
-- **openspec/config.yaml**: Updates via `accelint-onboard-openspec` or manually (project DNA: tech stack, domain concepts, code patterns)
-- **ARCHITECTURE.md**: Updates via `accelint-architecture-doc` or manually (system structure: components, deployment, infrastructure)
-- **AGENTS.md**: Updates via `accelint-onboard-agent` or manually (agent behavior: workflows, tools, guardrails)
-- **README.md**: Updates via `accelint-readme-writer` or manually (user documentation: installation, features, usage)
-
-The skill detects which Accelint skills are available and uses them when possible, falling back to manual updates with boundary-respecting instructions for each document type.
-
-**Why this matters**: OpenSpec changes represent significant architectural decisions. Living documents provide human-readable context about the system's current state. Keeping them synchronized prevents documentation drift and ensures the next engineer (or Claude) has accurate context.
-
-### Phase 5: Report and Next Steps
-
-Presents completion report:
+Example:
 
 ```
 ✅ Implementation complete
@@ -185,7 +195,7 @@ The skill supports pause/clear/resume at dependency level boundaries:
 - **Resumption detection**: Re-invoking reads task checkboxes to detect completed slices and resumes from next incomplete level
 - **Progress tracking**: Task completion tracked in tasks.md via checkboxes, durable across context clears
 
-Long implementations with many slices can bloat context. By offering pause points between levels, you maintain flexibility to clear context while preserving work progress.
+Long implementations with many slices can bloat context. By offering pause points between levels, the skill preserves the option to clear context without losing progress.
 
 ### Intelligent Parallelization
 
@@ -199,9 +209,9 @@ The skill automatically detects parallelization opportunities from the "Parallel
 
 If no parallelization strategy is found, the skill runs tasks sequentially. This ensures correctness even for changes that weren't planned with parallelization in mind.
 
-### Validation Before Archive
+### Verification Before Archive
 
-The skill always runs `/opsx:verify` before declaring the change "ready to archive". This catches incomplete tasks, broken references, or schema violations before archival.
+The skill always runs `/opsx:verify` before declaring the change "ready to archive." This catches incomplete tasks, broken references, or schema violations before archival.
 
 ### Vertical Slicing Requirement
 
@@ -328,8 +338,8 @@ Ready to archive!
 - Reports error showing the circular dependency
 - Asks you to fix the parallelization strategy in tasks.md
 
-**If no sub-agent support** (e.g., Claude.ai):
-- Falls back to sequential execution (implements all tasks itself)
+**If no sub-agent support** (for example, Claude.ai):
+- Falls back to sequential execution through the normal apply workflow when possible
 - Informs you: "Sub-agents not available. Running tasks sequentially."
 
 ## Configuration Requirements
@@ -347,13 +357,15 @@ If any are missing, the skill reports the issue and guides you through setup.
 
 Review the parallelization strategy before running. Make sure slices are truly independent.
 
+Do a quick overlap check before parallelizing a level. If two slices seem likely to touch the same files or same narrow subsystem, run them more conservatively.
+
 Use pause points between levels to clear context on long implementations. Progress is saved in task checkboxes.
 
 The verification phase is mandatory. Don't skip it, even if you're confident in the implementation.
 
 If a slice fails, fix it and retry. The skill won't proceed past blocking slices.
 
-Trust the resumption detection. If you clear context mid-implementation, re-invoke the skill and it'll pick up where you left off.
+Trust the resumption detection. If you clear context mid-implementation, re-invoke the skill and it will resume where it left off.
 
 ## Related Skills
 

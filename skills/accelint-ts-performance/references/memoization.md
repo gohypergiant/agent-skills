@@ -12,7 +12,7 @@
 
 - Hoist loop-invariant code
 - Precompute constants at module load
-- Memoize pure functions with limited input domain
+- Memoize pure functions with a limited input domain
 - Cache results of expensive operations
 - Avoid memoizing trivial computations
 
@@ -184,11 +184,11 @@ function double(n: number): number {
 }
 ```
 
-**When to skip memoization**:
-- Simple arithmetic (addition, multiplication, modulo)
-- Property access on in-memory objects
-- String concatenation of short strings
-- Array index lookups
+**When to skip memoization:**
+- simple arithmetic (addition, multiplication, modulo)
+- property access on in-memory objects
+- string concatenation of short strings
+- array index lookups
 
 **Why**: Map overhead (hashing, storage, lookup) exceeds cost of trivial operations. Memoize only when computation cost significantly exceeds cache overhead.
 
@@ -323,10 +323,10 @@ function process(obj: ComplexObject): Result {
 }
 ```
 
-**When to skip memoization due to key complexity**:
-- Cache key requires serialization (JSON.stringify, hash computation)
-- Objects are large or deeply nested
-- Key generation cost approaches computation cost
+**When to skip memoization due to key complexity:**
+- the cache key requires serialization (`JSON.stringify`, hash computation)
+- the objects are large or deeply nested
+- key-generation cost approaches computation cost
 
 **Why**: If key generation (serialization, hashing) costs 80% of the computation, memoization provides minimal benefit. Only memoize when key generation is trivial compared to computation.
 
@@ -396,10 +396,10 @@ function factorial(n: number): number {
 }
 ```
 
-**When to precompute**:
-- Input space is small and finite (< 1000 values)
-- All inputs are known at compile time
-- Computation is expensive but only needs to run once
+**When to precompute:**
+- the input space is small and finite (< 1000 values)
+- all inputs are known at compile time
+- the computation is expensive but only needs to run once
 
 **Why**: Precomputation eliminates runtime overhead (cache checks, storage). Array lookup is faster than Map lookup. Memory cost is paid upfront and constant.
 ```

@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.8.3] - 2026-07-30
+
+### Changed
+- Tightened skill prose across the root artifact set for clearer React-only scope, cleaner audit instructions, and more consistent local wording
+  - Rationale: The skill already had the correct behavior, but several files still used uneven phrasing, inconsistent emphasis, or less direct local structure that made the guidance harder to scan than necessary.
+- Tightened local structure in behavior-bearing support files under `references/` and `scripts/README.md`
+  - Rationale: Folder-level prose cleanup should keep the inspected artifact set internally consistent, not only the root files.
+
+### Version
+- Bumped from 1.8.2 → 1.8.3
+
+## [1.8.2] - 2026-07-30
+
+### Changed
+- Refined the frontmatter description for tighter React-only triggering, broader React task coverage, and clearer non-React boundaries
+  - Rationale: The eval set emphasizes React-specific debugging, audits, React Compiler branching, React 19 patterns, and a strong non-trigger boundary for backend-only work. The previous description covered many triggers but was lighter on audit language, explicit optimization/debugging verbs, and non-React exclusions.
+
+### Version
+- Bumped from 1.8.1 → 1.8.2
+
+## [1.8.1] - 2026-07-30
+
+### Changed
+- Tightened the frontmatter description to follow skill-manager trigger guidance more closely
+  - Rationale: The prior description was broad and imperative ("ALWAYS use") but weaker on explicit use-when framing and trigger specificity, which makes activation quality harder to maintain.
+- Clarified the report-template section to scope it to audits and multi-issue reviews only
+  - Rationale: The previous wording mixed audit workflow with direct-fix requests and included categories that did not match this React-focused skill.
+- Refined the performance philosophy section to foreground React Compiler checks before manual memoization guidance
+  - Rationale: This keeps the top-level decision framework aligned with the skill's existing compiler-awareness guidance.
+
+### Version
+- Bumped from 1.8.0 → 1.8.1
+
 ## [1.8.0] - 2026-05-18
 
 ### Changed

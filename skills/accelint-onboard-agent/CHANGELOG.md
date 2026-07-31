@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.1] - 2026-07-30
+
+### Changed
+- Clarified related-document detection so the skill explicitly handles both `openspec/config.yml` and `openspec/config.yaml` during discovery and final link checks
+- Added a lightweight quality checklist to the skill instructions to reinforce complete-section coverage, monorepo inheritance, existing-link validation, and preview-before-write behavior
+- Refreshed README guidance and version history so the artifact set stays aligned with the published skill metadata
+
+### Version
+- Bumped from 1.4.0 → 1.4.1
+
 ## [1.4.0] - 2026-07-08
 
 ### Added

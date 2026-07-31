@@ -259,7 +259,7 @@ package-name serve --verbose
 
 ### For Monorepo Packages
 
-When you document a package within a monorepo, add this context:
+When you document a package in a monorepo, add this context:
 
 ```markdown
 ## Installation

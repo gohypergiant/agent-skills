@@ -4,14 +4,14 @@ Automate the planning phase of spec-driven development. This skill walks through
 
 ## What This Does
 
-Takes a ticket or feature request and produces a complete OpenSpec change:
+This skill takes a ticket or feature request and produces a complete OpenSpec change:
 
 - Research questions and answers (what we need to know before building)
 - Design document (decisions, trade-offs, architectural choices)
 - Delta specs (what changes in the system)
 - Task breakdown (vertical slices for implementation)
 
-The skill stops after planning. You run `/accelint-qrspi-apply <change-name>` when you are ready to implement.
+The skill stops after planning. Run `/accelint-qrspi-apply <change-name>` when you are ready to implement.
 
 ## When to Use This
 
@@ -55,7 +55,7 @@ The skill will check this before running and guide you if configuration is neede
 
 ## How It Works
 
-### The Five-Phase Workflow
+### Workflow Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -81,13 +81,13 @@ A fresh sub-agent (new context) sees only the questions and answers them with fa
 
 Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts under your project's `config.yaml` rules.
 
-Required checkpoint: You review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
+REQUIRED checkpoint: Review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
 
 #### Phase 4: Specs & Tasks
 
-Generate delta specs and task breakdown. A sub-agent receives questions + research + approved design (NO ticket) and creates remaining artifacts with emphasis on vertical slicing.
+Generate delta specs and task breakdown. A sub-agent receives questions + research + approved design (NO ticket) and creates the remaining artifacts with emphasis on vertical slicing.
 
-Required checkpoint: You review the task breakdown to ensure vertical slicing (not layer-by-layer).
+REQUIRED checkpoint: Review the task breakdown to ensure vertical slicing, not layer-by-layer slicing.
 
 #### Phase 5: Completion
 
@@ -115,7 +115,7 @@ Two required review gates:
 
 You can:
 - Approve and continue
-- Request edits (the agent modifies in place)
+- Request edits (the agent modifies the file in place)
 - Edit manually (you modify the file, then confirm when done)
 
 The skill will not proceed without your explicit approval.
@@ -149,7 +149,7 @@ The skill stops after planning. This allows:
 - Clearing context between planning and coding
 - User control over when implementation begins
 
-Run `/clear` and `/accelint-qrspi-apply <change-name>` when you are ready to start building.
+When you are ready to start building, run `/clear`, then run `/accelint-qrspi-apply <change-name>`.
 
 ## Example Usage
 
@@ -222,7 +222,7 @@ If anything is missing, the skill will guide you through setup.
 
 If OpenSpec commands fail, the skill surfaces the error and lets you retry or abort. It does not continue automatically.
 
-If a sub-agent fails, you will see the error and can retry that phase or provide manual input (you write the questions or research yourself).
+If a sub-agent fails, you will see the error and can retry that phase or provide manual input for the Questions or Research stages.
 
 If artifacts are missing after generation, the skill checks file paths and provides the expected locations for manual inspection.
 
@@ -230,7 +230,7 @@ If artifacts are missing after generation, the skill checks file paths and provi
 
 Start with clear tickets. The better the input, the better the questions. Include constraints, performance targets, and existing patterns to follow.
 
-The design checkpoint is your leverage point. A 5-minute review here prevents hours of rework later.
+The design checkpoint is your leverage point. A five-minute review here prevents hours of rework later.
 
 If the skill warns about horizontal slicing, listen. Layer-by-layer development hides integration issues until the end.
 

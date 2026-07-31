@@ -3,162 +3,178 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Hey, I'm having this weird issue where my SearchInput component loses focus every time I type a character. It's driving me crazy - I have to click back into the field after every keystroke. The component is defined inside my SearchBar parent component because I need access to the `theme` prop. Can you figure out what's wrong? Here's the relevant code:\n\nfunction SearchBar({ theme, onSearch }) {\n  const [query, setQuery] = useState('')\n  \n  const SearchInput = () => (\n    <input\n      value={query}\n      onChange={(e) => setQuery(e.target.value)}\n      className={theme === 'dark' ? 'input-dark' : 'input-light'}\n    />\n  )\n  \n  return (\n    <div>\n      <SearchInput />\n      <button onClick={() => onSearch(query)}>Search</button>\n    </div>\n  )\n}",
-      "expected_output": "Should identify inline component definition anti-pattern and refactor SearchInput to module scope with props",
+      "prompt": "My SearchBar input loses focus on every keystroke. The input component is declared inside the parent because it needs theme and value. What is wrong and how should I fix it?\n\nfunction SearchBar({ theme, onSearch }) {\n  const [query, setQuery] = useState('')\n\n  const SearchInput = () => (\n    <input\n      value={query}\n      onChange={(e) => setQuery(e.target.value)}\n      className={theme === 'dark' ? 'input-dark' : 'input-light'}\n    />\n  )\n\n  return (\n    <div>\n      <SearchInput />\n      <button onClick={() => onSearch(query)}>Search</button>\n    </div>\n  )\n}",
+      "expected_output": "Identifies the nested component anti-pattern, explains remount and focus-loss behavior, and moves SearchInput to module scope with props.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Component extracted to module scope",
-          "check": "SearchInput is defined outside the SearchBar function"
-        },
-        {
-          "name": "Props passed correctly",
-          "check": "SearchInput receives value, onChange, and theme as props"
-        },
-        {
-          "name": "Identifies anti-pattern",
-          "check": "Explanation mentions 'inline component', 'component inside component', 'nested component', or 'remount' issue"
-        }
+      "expectations": [
+        "The response identifies the component-inside-component anti-pattern.",
+        "The response explains remounting, state loss, focus loss, or recreated component type behavior.",
+        "The response moves SearchInput outside SearchBar and passes value, onChange, and theme as props."
       ]
     },
     {
       "id": 2,
-      "prompt": "My useEffect is running infinitely and I can't figure out why. I'm trying to fetch user data when the user object changes. Here's my code:\n\nfunction UserProfile({ userId }) {\n  const [user, setUser] = useState(null)\n  const [loading, setLoading] = useState(false)\n  \n  useEffect(() => {\n    setLoading(true)\n    fetch(`/api/users/${userId}`)\n      .then(r => r.json())\n      .then(data => setUser(data))\n      .finally(() => setLoading(false))\n  }, [user])\n  \n  if (loading) return <div>Loading...</div>\n  return <div>{user?.name}</div>\n}\n\nThe console is spamming fetch requests. What am I doing wrong?",
-      "expected_output": "Should identify effect dependency issue (user changes on every fetch), recommend using userId as dependency instead of user object",
+      "prompt": "This effect keeps refetching forever and I cannot see why. I fetch a user, store it in state, and the console floods with requests. Please fix the root cause.\n\nfunction UserProfile({ userId }) {\n  const [user, setUser] = useState(null)\n  const [loading, setLoading] = useState(false)\n\n  useEffect(() => {\n    setLoading(true)\n    fetch(`/api/users/${userId}`)\n      .then(r => r.json())\n      .then(data => setUser(data))\n      .finally(() => setLoading(false))\n  }, [user])\n\n  if (loading) return <div>Loading...</div>\n  return <div>{user?.name}</div>\n}",
+      "expected_output": "Finds the self-triggering effect dependency problem, recommends primitive dependencies such as userId, and explains why object/state dependencies caused the loop.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Correct dependency array",
-          "check": "useEffect dependency is [userId], not [user]"
-        },
-        {
-          "name": "Identifies dependency issue",
-          "check": "Explanation mentions dependency array, infinite loop, or effect triggering itself"
-        },
-        {
-          "name": "Explains primitive vs object",
-          "check": "Mentions primitive values vs object references or similar concept"
-        }
+      "expectations": [
+        "The response identifies the dependency array as the root cause of the loop.",
+        "The response changes the dependency from user to userId or another stable primitive.",
+        "The response explains the difference between reactive state updates and the intended fetch trigger."
       ]
     },
     {
       "id": 3,
-      "prompt": "I'm getting hydration mismatch errors in my Next.js app. I have a theme switcher that reads from localStorage but it keeps showing this warning about server/client mismatch and there's a flash of the wrong theme on page load. Here's my ThemeProvider:\n\nfunction ThemeProvider({ children }) {\n  const [theme, setTheme] = useState(\n    typeof window !== 'undefined' \n      ? localStorage.getItem('theme') || 'light'\n      : 'light'\n  )\n  \n  return (\n    <ThemeContext.Provider value={{ theme, setTheme }}>\n      <div className={theme}>{children}</div>\n    </ThemeContext.Provider>\n  )\n}\n\nHow do I fix the hydration error and the flash?",
-      "expected_output": "Should identify SSR hydration mismatch pattern and recommend synchronous inline script solution to sync state before React hydrates",
+      "prompt": "I am getting hydration mismatch warnings and a flash of the wrong theme in a server-rendered React app. The initial state reads localStorage inside useState. What is the React-safe fix?\n\nfunction ThemeProvider({ children }) {\n  const [theme, setTheme] = useState(\n    typeof window !== 'undefined'\n      ? localStorage.getItem('theme') || 'light'\n      : 'light'\n  )\n\n  return (\n    <ThemeContext.Provider value={{ theme, setTheme }}>\n      <div className={theme}>{children}</div>\n    </ThemeContext.Provider>\n  )\n}",
+      "expected_output": "Recognizes SSR/client mismatch, avoids client-only reads during server render, and recommends a hydration-safe approach such as a synchronous pre-hydration script or another explicitly tradeoff-aware client-only pattern.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Consistent initial state",
-          "check": "Initial useState value is consistent (no typeof window check in useState call)"
-        },
-        {
-          "name": "Client-side solution",
-          "check": "Uses mounted flag + useEffect OR synchronous script OR suppressHydrationWarning pattern"
-        },
-        {
-          "name": "Identifies hydration mismatch",
-          "check": "Explanation mentions 'hydration mismatch', 'SSR', or 'server/client mismatch'"
-        }
+      "expectations": [
+        "The response identifies hydration mismatch or server/client HTML mismatch.",
+        "The response removes direct localStorage reads from the initial server-rendered state path.",
+        "The response recommends the synchronous script approach for no flicker, or clearly frames mounted-flag style alternatives as tradeoff-based."
       ]
     },
     {
       "id": 4,
-      "prompt": "our analytics dashboard is super slow when rendering the chart with 5000+ data points. I'm using react-chartjs and the whole page freezes for like 2 seconds when you switch between different chart views. here's the component:\n\nfunction ChartView({ data, chartType }) {\n  const chartData = {\n    labels: data.map(d => d.date),\n    datasets: [{\n      label: 'Revenue',\n      data: data.map(d => d.revenue),\n      borderColor: '#3b82f6',\n      backgroundColor: 'rgba(59, 130, 246, 0.1)'\n    }]\n  }\n  \n  return (\n    <div>\n      <select onChange={(e) => /* switch chartType */}>\n        <option>Line</option>\n        <option>Bar</option>\n      </select>\n      <Chart type={chartType} data={chartData} />\n    </div>\n  )\n}\n\nany ideas on how to make this faster? the UI feels completely frozen when switching views.",
-      "expected_output": "Should identify inline object creation problem (chartData recreated every render) and recommend useMemo, also suggest useTransition for non-urgent updates during chart type switching",
+      "prompt": "Review this chart component for performance. Switching chart views freezes the UI and the data set has 5000 points. Assume React Compiler is not enabled.\n\nfunction ChartView({ data, chartType, setChartType }) {\n  const chartData = {\n    labels: data.map(d => d.date),\n    datasets: [{\n      label: 'Revenue',\n      data: data.map(d => d.revenue),\n      borderColor: '#3b82f6',\n      backgroundColor: 'rgba(59, 130, 246, 0.1)'\n    }]\n  }\n\n  return (\n    <div>\n      <select value={chartType} onChange={(e) => setChartType(e.target.value)}>\n        <option value=\"line\">Line</option>\n        <option value=\"bar\">Bar</option>\n      </select>\n      <Chart type={chartType} data={chartData} />\n    </div>\n  )\n}",
+      "expected_output": "Treats this as a measured performance issue without React Compiler, memoizes expensive derived chart props, and suggests a responsiveness pattern like useTransition for non-urgent view switches.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Memoizes chart data",
-          "check": "chartData wrapped in useMemo with appropriate dependencies"
-        },
-        {
-          "name": "Identifies inline object issue",
-          "check": "Explanation mentions inline object creation, recreation on every render, or reference stability"
-        },
-        {
-          "name": "Suggests transitions (bonus)",
-          "check": "Mentions useTransition or useDeferredValue for non-blocking updates"
-        }
+      "expectations": [
+        "The response acknowledges the explicit React Compiler = off condition.",
+        "The response recommends stabilizing the expensive chartData object with useMemo or another appropriate manual optimization.",
+        "The response mentions a non-urgent update strategy such as useTransition for chart view switching."
       ]
     },
     {
       "id": 5,
-      "prompt": "Review this TodoList component for performance issues. It's part of a task management app and users complain it feels sluggish when they have more than 100 todos. Can you audit it and tell me what optimizations would help?\n\nfunction TodoList({ todos, onToggle, onDelete }) {\n  const [filter, setFilter] = useState('all')\n  \n  const filteredTodos = todos.filter(todo => {\n    if (filter === 'active') return !todo.completed\n    if (filter === 'completed') return todo.completed\n    return true\n  })\n  \n  return (\n    <div>\n      <div>\n        <button onClick={() => setFilter('all')}>All</button>\n        <button onClick={() => setFilter('active')}>Active</button>\n        <button onClick={() => setFilter('completed')}>Completed</button>\n      </div>\n      <ul style={{ height: '600px', overflow: 'auto' }}>\n        {filteredTodos.map(todo => (\n          <li key={todo.id}>\n            <input\n              type=\"checkbox\"\n              checked={todo.completed}\n              onChange={() => onToggle(todo.id)}\n            />\n            <span>{todo.text}</span>\n            <button onClick={() => onDelete(todo.id)}>Delete</button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  )\n}",
-      "expected_output": "Should identify missing CSS content-visibility optimization for long scrollable list, inline event handler creation, and potential for extracting memoized TodoItem component",
+      "prompt": "Same chart problem as before, but this repo uses React Compiler. The UI feels frozen when switching large charts. What should I optimize and what should I skip?\n\nfunction ChartView({ data, chartType, setChartType }) {\n  const chartData = {\n    labels: data.map(d => d.date),\n    datasets: [{\n      label: 'Revenue',\n      data: data.map(d => d.revenue),\n      borderColor: '#3b82f6',\n      backgroundColor: 'rgba(59, 130, 246, 0.1)'\n    }]\n  }\n\n  return (\n    <div>\n      <select value={chartType} onChange={(e) => setChartType(e.target.value)}>\n        <option value=\"line\">Line</option>\n        <option value=\"bar\">Bar</option>\n      </select>\n      <Chart type={chartType} data={chartData} />\n    </div>\n  )\n}",
+      "expected_output": "Branches correctly for React Compiler, avoids reflexively recommending manual memo/useMemo-only fixes, and focuses on optimizations the compiler does not solve such as transitions, data volume, chart library cost, or CSS/render strategy.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Identifies inline functions",
-          "check": "Mentions inline function creation in map or event handlers being recreated"
-        },
-        {
-          "name": "Suggests list optimization",
-          "check": "Mentions content-visibility CSS, virtualization, or windowing for long lists"
-        },
-        {
-          "name": "Suggests component extraction",
-          "check": "Suggests extracting TodoItem component with memo() or similar optimization"
-        }
+      "expectations": [
+        "The response explicitly says React Compiler changes the recommendation set.",
+        "The response does not over-index on manual memoization as the primary fix when compiler coverage likely applies.",
+        "The response focuses on remaining bottlenecks such as non-urgent updates, expensive libraries, or data-size/rendering concerns."
       ]
     },
     {
       "id": 6,
-      "prompt": "I'm seeing a weird bug where my callback always has stale state. I have a real-time chat app and when a new message comes in via WebSocket, my handleNewMessage callback always uses the old `unreadCount` value, not the latest one. Here's the simplified code:\n\nfunction ChatRoom({ roomId }) {\n  const [messages, setMessages] = useState([])\n  const [unreadCount, setUnreadCount] = useState(0)\n  \n  const handleNewMessage = useCallback((msg) => {\n    setMessages([...messages, msg])\n    if (!document.hasFocus()) {\n      setUnreadCount(unreadCount + 1)  // This always uses the old value!\n    }\n  }, [roomId])\n  \n  useEffect(() => {\n    const ws = new WebSocket(`/ws/${roomId}`)\n    ws.onmessage = (e) => handleNewMessage(JSON.parse(e.data))\n    return () => ws.close()\n  }, [roomId, handleNewMessage])\n  \n  return <div>{/* render messages */}</div>\n}\n\nEven though unreadCount changes, the callback seems frozen with the old value. What's happening?",
-      "expected_output": "Should identify stale closure issue and recommend functional setState update pattern: setUnreadCount(curr => curr + 1) and fixing messages state update similarly",
+      "prompt": "Audit this TodoList for React-specific performance issues. Users say it gets sluggish with 100+ items. I want a review, not a direct patch.\n\nfunction TodoList({ todos, onToggle, onDelete }) {\n  const [filter, setFilter] = useState('all')\n\n  const filteredTodos = todos.filter(todo => {\n    if (filter === 'active') return !todo.completed\n    if (filter === 'completed') return todo.completed\n    return true\n  })\n\n  return (\n    <div>\n      <div>\n        <button onClick={() => setFilter('all')}>All</button>\n        <button onClick={() => setFilter('active')}>Active</button>\n        <button onClick={() => setFilter('completed')}>Completed</button>\n      </div>\n      <ul style={{ height: '600px', overflow: 'auto' }}>\n        {filteredTodos.map(todo => (\n          <li key={todo.id}>\n            <input\n              type=\"checkbox\"\n              checked={todo.completed}\n              onChange={() => onToggle(todo.id)}\n            />\n            <span>{todo.text}</span>\n            <button onClick={() => onDelete(todo.id)}>Delete</button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  )\n}",
+      "expected_output": "Uses audit-style output instead of diving straight into a patch, identifies list and handler hot spots, and suggests long-list strategies such as content-visibility, virtualization, or extracted memoized items.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Uses functional setState for unreadCount",
-          "check": "setUnreadCount uses functional update: (curr/prev => curr + 1)"
-        },
-        {
-          "name": "Uses functional setState for messages",
-          "check": "setMessages uses functional update: (prev => [...prev, msg])"
-        },
-        {
-          "name": "Identifies stale closure",
-          "check": "Explanation mentions 'stale closure', 'captured values', or 'callback dependencies'"
-        }
+      "expectations": [
+        "The response respects that the user asked for an audit or review rather than only a rewritten component.",
+        "The response identifies inline handlers created inside the list render path.",
+        "The response suggests long-list rendering strategies such as content-visibility, virtualization, or extracted memoized row components."
       ]
     },
     {
       "id": 7,
-      "prompt": "need to migrate this component to React 19 - I'm getting deprecation warnings about forwardRef. how do I fix this?\n\nconst TextInput = forwardRef(function TextInput({ label, ...props }, ref) {\n  return (\n    <div>\n      <label>{label}</label>\n      <input ref={ref} {...props} />\n    </div>\n  )\n})\n\nexport default TextInput\n\nAlso seeing warnings about default imports from React. What's the new pattern?",
-      "expected_output": "Should convert forwardRef to ref-as-prop pattern and change default export to named import from 'react'",
+      "prompt": "My chat callback always uses stale state. New WebSocket messages append using old values and unreadCount increments from stale state too. What is the React fix?\n\nfunction ChatRoom({ roomId }) {\n  const [messages, setMessages] = useState([])\n  const [unreadCount, setUnreadCount] = useState(0)\n\n  const handleNewMessage = useCallback((msg) => {\n    setMessages([...messages, msg])\n    if (!document.hasFocus()) {\n      setUnreadCount(unreadCount + 1)\n    }\n  }, [roomId])\n\n  useEffect(() => {\n    const ws = new WebSocket(`/ws/${roomId}`)\n    ws.onmessage = (e) => handleNewMessage(JSON.parse(e.data))\n    return () => ws.close()\n  }, [roomId, handleNewMessage])\n\n  return <div />\n}",
+      "expected_output": "Identifies stale closures and fixes them with functional state updates, reducing unnecessary callback dependency pressure.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Removes forwardRef",
-          "check": "No forwardRef usage in the code"
-        },
-        {
-          "name": "Ref as prop",
-          "check": "ref is accepted as a regular prop in function signature: { ref }"
-        },
-        {
-          "name": "Named imports",
-          "check": "Uses named imports from 'react' (import { ... } from 'react') or no import if not needed"
-        }
+      "expectations": [
+        "The response identifies stale closure or captured old state as the underlying issue.",
+        "The response uses functional state updates for both messages and unreadCount.",
+        "The response explains why functional updates reduce dependency and stale-state problems."
       ]
     },
     {
       "id": 8,
-      "prompt": "I have this subscription hook that's causing my component to re-subscribe to the WebSocket on every single render. The effect runs constantly and I see disconnect/reconnect spam in the console. Code:\n\nfunction useRealtimeData(userId) {\n  const [data, setData] = useState(null)\n  \n  const handleMessage = (msg) => {\n    setData(msg.data)\n    console.log('Received update for user', userId)\n  }\n  \n  useEffect(() => {\n    const ws = new WebSocket('/api/realtime')\n    ws.onmessage = handleMessage\n    console.log('Connected')\n    \n    return () => {\n      ws.close()\n      console.log('Disconnected')\n    }\n  }, [handleMessage])\n  \n  return data\n}\n\nThe logs show connect/disconnect cycling non-stop. I thought adding handleMessage to dependencies was the right thing to do?",
-      "expected_output": "Should identify unstable callback causing effect re-runs and recommend either useCallback with proper deps, store handler in ref, or useEffectEvent pattern (React 19.2+)",
+      "prompt": "This hook reconnects the WebSocket constantly. The effect depends on handleMessage because the linter told me so, but now it disconnects and reconnects on almost every render. How should this work in React 19.2?\n\nfunction useRealtimeData(userId) {\n  const [data, setData] = useState(null)\n\n  const handleMessage = (msg) => {\n    setData(msg.data)\n    console.log('Received update for user', userId)\n  }\n\n  useEffect(() => {\n    const ws = new WebSocket('/api/realtime')\n    ws.onmessage = handleMessage\n    console.log('Connected')\n\n    return () => {\n      ws.close()\n      console.log('Disconnected')\n    }\n  }, [handleMessage])\n\n  return data\n}",
+      "expected_output": "Identifies unstable handler references and effect churn, and for React 19.2 prefers useEffectEvent or another stable-callback pattern that avoids subscription thrash.",
       "files": [],
-      "assertions": [
-        {
-          "name": "Stabilizes callback",
-          "check": "handleMessage is either: moved inside effect, wrapped in useCallback, stored in ref, or uses useEffectEvent"
-        },
-        {
-          "name": "Correct effect dependencies",
-          "check": "Effect dependencies only include userId or stable values, not the unstable handleMessage"
-        },
-        {
-          "name": "Identifies function reference issue",
-          "check": "Explanation mentions function reference stability, recreated function, or dependency causing re-runs"
-        }
+      "expectations": [
+        "The response identifies recreated function references as the cause of effect re-subscription.",
+        "The response prefers a React 19.2-appropriate pattern such as useEffectEvent, or clearly presents a stable fallback if unavailable.",
+        "The response keeps effect dependencies tied to real reactive inputs instead of the unstable handler identity."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "I am migrating a shared input component to React 19 and getting warnings about forwardRef and default React imports. Show the modern pattern.\n\nimport React, { forwardRef } from 'react'\n\nconst TextInput = forwardRef(function TextInput({ label, ...props }, ref) {\n  return (\n    <div>\n      <label>{label}</label>\n      <input ref={ref} {...props} />\n    </div>\n  )\n})\n\nexport default TextInput",
+      "expected_output": "Updates the component to React 19 conventions by removing forwardRef, using ref as a prop, and preferring named React imports over default imports.",
+      "files": [],
+      "expectations": [
+        "The response removes forwardRef rather than preserving it.",
+        "The response uses ref as a normal prop in the component signature.",
+        "The response switches away from default React imports and reflects the named-import guidance."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "I am storing fullName in state and syncing it with an effect whenever firstName or lastName changes. Is that the right pattern in React?\n\nfunction ProfileForm({ firstName, lastName }) {\n  const [fullName, setFullName] = useState('')\n\n  useEffect(() => {\n    setFullName(`${firstName} ${lastName}`.trim())\n  }, [firstName, lastName])\n\n  return <h1>{fullName}</h1>\n}",
+      "expected_output": "Flags derived-state syncing as an anti-pattern and recommends calculating fullName during render instead of state plus effect.",
+      "files": [],
+      "expectations": [
+        "The response identifies this as derived state that should not be mirrored with useState plus useEffect.",
+        "The response recommends computing fullName directly during render.",
+        "The response explains extra renders, stale intermediates, or unnecessary complexity from syncing derived state."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "A submit button sets shouldSubmit in state, then a useEffect watches shouldSubmit and performs the form POST. It works, but it feels odd. Should React code be structured this way for user interactions?",
+      "expected_output": "Recognizes that user-triggered interaction logic belongs in the event handler rather than a state-plus-effect indirection, unless there is a true external synchronization need.",
+      "files": [],
+      "expectations": [
+        "The response states that button-click or submit-driven logic should usually live in the event handler.",
+        "The response distinguishes interaction logic from synchronization-with-external-system effects.",
+        "The response avoids endorsing the state-plus-effect pattern as the default for user actions."
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Typing in my search input is laggy because filtering and rendering a large result grid runs on every keystroke. I still need the input to feel instant. What React pattern fits best?",
+      "expected_output": "Suggests a responsiveness pattern such as useDeferredValue or useTransition for expensive derived rendering while preserving immediate input updates.",
+      "files": [],
+      "expectations": [
+        "The response recognizes the difference between urgent input updates and non-urgent expensive rendering.",
+        "The response recommends useDeferredValue, useTransition, or both in an appropriate way.",
+        "The response explains that the goal is to keep typing responsive while deferring heavier work."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "I have a dashboard widget hidden behind a tab. When users switch away and back, the widget loses local component state and refetches. In React 19, what should I consider for preserving hidden subtree state?",
+      "expected_output": "Mentions the React 19 Activity component as a relevant pattern for hide/show flows where state preservation matters, rather than always unmounting the subtree.",
+      "files": [],
+      "expectations": [
+        "The response identifies show-hide state preservation as the problem, not just generic rerendering.",
+        "The response mentions the Activity component as a React 19 pattern for preserving hidden state.",
+        "The response explains why unmounting causes state loss and repeated setup work."
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Can you audit this React file for hook and rendering issues? I want a prioritized review with findings and impact, not just a rewritten answer.",
+      "expected_output": "Uses the skill's audit-review behavior, produces a structured multi-issue review, and does not treat the request like a narrow one-off fix.",
+      "files": [],
+      "expectations": [
+        "The response recognizes this as an audit or multi-issue review request.",
+        "The response presents prioritized findings with impact or severity framing.",
+        "The response does not answer only with an unstructured patch as if this were a single bug fix."
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "My Vite app has a React component with re-render and stale closure bugs around useEffect and useCallback. Please optimize the React code.",
+      "expected_output": "Triggers the React skill even outside Next.js, focusing on React-specific render, effect, and closure behavior without inventing framework-specific advice.",
+      "files": [],
+      "expectations": [
+        "The response clearly treats this as React-specific work even though the app uses Vite.",
+        "The response focuses on rendering, state, effect, callback, or stale-closure guidance.",
+        "The response avoids inventing Next.js-specific server, routing, or RSC advice."
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Please write an Express route that validates a JWT, checks authorization, and updates a MongoDB document safely. I am not using React.",
+      "expected_output": "Acts as a non-trigger boundary case: the response should stay in backend/security guidance and not force React-specific patterns onto a non-React task.",
+      "files": [],
+      "expectations": [
+        "The response does not frame the task as React rendering or hooks work.",
+        "The response avoids inventing component, state, effect, or hydration advice.",
+        "The response stays focused on backend or security implementation concerns."
       ]
     }
   ]

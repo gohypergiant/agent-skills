@@ -1,6 +1,6 @@
 # English discipline checklist
 
-Run this checklist before you deliver a rewrite, a draft, or a style audit.
+Run this checklist before you deliver a rewrite, draft, or style audit.
 
 ## 1. Preserve the user's job to be done
 
@@ -11,7 +11,7 @@ Check first:
 - Did the requested tone stay intact?
 - Did any explicit format or wording constraints stay intact?
 
-If not, fix that first. No style improvement is worth breaking the user's intent.
+If not, fix that first. No style improvement is worth breaking user intent.
 
 ## 2. Mechanical checks
 
@@ -93,7 +93,7 @@ If the user asked for strict STE-style review, load only the relevant part of `s
 - offending text
 - compliant rewrite
 
-Do not invent rule numbers. Use only the rule numbers present in the part of the reference that you actually loaded.
+Do not invent rule numbers. Use only rule numbers from the part of the reference that you actually loaded.
 
 ## Multi-pass editing note
 
@@ -104,4 +104,4 @@ For long drafts or large rewrites, prefer multiple passes:
 3. standardize terminology and modality
 4. re-check tone, nuance, and actionability
 
-This reduces accidental meaning drift. It also works better in constrained tool contexts.
+This reduces accidental meaning drift and works better in constrained tool contexts.

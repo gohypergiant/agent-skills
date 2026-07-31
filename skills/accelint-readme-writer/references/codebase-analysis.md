@@ -1,12 +1,12 @@
 # Codebase Analysis
 
-How to parse and understand code for documentation purposes.
+How to parse and understand code for documentation.
 
 ---
 
 ## Scoping the Analysis
 
-### Starting Point
+### Starting point
 
 Always start from the directory that contains the README, not the repository root.
 
@@ -24,7 +24,7 @@ monorepo/
 └── README.md              ← Analysis covers entire monorepo
 ```
 
-### Package Boundaries
+### Package boundaries
 
 Respect `package.json` boundaries:
 
@@ -36,7 +36,7 @@ Respect `package.json` boundaries:
 
 ## Identifying Entry Points
 
-### Check package.json First
+### Check `package.json` first
 
 Look for entry point definitions:
 
@@ -64,7 +64,7 @@ This tells you:
 - `index.ts` is the main entry point.
 - `utils.ts` is a secondary entry point at `package-name/utils`.
 
-### Common Entry Point Patterns
+### Common entry point patterns
 
 Check these files in order:
 
@@ -77,7 +77,7 @@ Check these files in order:
 
 ## Mapping Public API
 
-### What Counts as Public
+### What counts as public
 
 Document only the exports that are accessible to package consumers:
 
@@ -112,7 +112,7 @@ export function parse(path: string): Promise<Config> {
 
 Document the function as it appears in `parser.ts`, but note that consumers access it through the main entry point.
 
-### Export Patterns to Recognize
+### Export patterns to recognize
 
 ```typescript
 // Named exports
@@ -163,7 +163,7 @@ Parse a configuration file.
 **Returns:** `Promise<T>` - Parsed configuration object
 ```
 
-### Overloaded Functions
+### Overloaded functions
 
 Document all overloads:
 
@@ -187,9 +187,9 @@ Format a value as a string. Accepts strings, numbers, or dates.
 | `format(value: Date, pattern?): string` | Format date with optional pattern |
 ```
 
-### Class Signatures
+### Class signatures
 
-Document constructor and public methods:
+Document the constructor and public methods:
 
 ```typescript
 // Source
@@ -222,7 +222,7 @@ new Parser(options?: ParserOptions)
 
 ## Finding Existing Documentation
 
-### JSDoc/TSDoc Comments
+### JSDoc/TSDoc comments
 
 Extract documentation from source:
 
@@ -248,16 +248,16 @@ Use JSDoc as the primary source for:
 - Thrown errors
 - Usage examples
 
-### Inline Examples
+### Inline examples
 
-Look for example usage in:
+Look for usage examples in:
 
 1. JSDoc `@example` tags
 2. Test files (`*.test.ts`, `*.spec.ts`)
 3. `examples/` directory
 4. `__examples__/` directory
 
-### Test Files as Documentation
+### Test files as documentation
 
 Tests often show real usage:
 
@@ -283,7 +283,7 @@ Extract usage patterns from tests for the Examples section.
 
 ## Comparing Code to Documentation
 
-### Building the Comparison
+### Building the comparison
 
 1. **Parse exports from code:**
    - List all exports from entry points
@@ -313,7 +313,7 @@ Extract usage patterns from tests for the Examples section.
 - Quick Start uses `parse()` without await (async function)
 ```
 
-### Staleness Indicators
+### Staleness indicators
 
 Flag documentation as potentially stale when:
 
@@ -327,7 +327,7 @@ Flag documentation as potentially stale when:
 
 ## Handling Common Patterns
 
-### Barrel Exports
+### Barrel exports
 
 When `index.ts` re-exports everything:
 
@@ -339,7 +339,7 @@ export * from './types';
 
 Trace each `export *` to find actual definitions.
 
-### Conditional Exports
+### Conditional exports
 
 When different entry points exist for different environments:
 
@@ -355,9 +355,9 @@ When different entry points exist for different environments:
 }
 ```
 
-Document the default behavior, note environment-specific differences.
+Document the default behavior. Note environment-specific differences.
 
-### Namespace Exports
+### Namespace exports
 
 When exports are grouped:
 

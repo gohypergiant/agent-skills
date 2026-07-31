@@ -1,6 +1,6 @@
 # File Upload Security
 
-Never accept file uploads without validation. Malicious file uploads enable remote code execution, XSS attacks, denial of service, and data breaches.
+Never accept file uploads without validation. Malicious file uploads enable remote code execution, XSS, denial of service, and data breaches.
 
 **File Upload Library Examples**: This document uses common patterns for file upload handling. Apply to your upload solution: multer, formidable, busboy, multer-s3, @fastify/multipart, Next.js file routes, or cloud storage SDKs (AWS S3, Google Cloud Storage, etc.).
 
@@ -13,7 +13,7 @@ Insecure file uploads enable:
 - **Denial of Service**: Upload massive files to exhaust disk space
 - **Malware Distribution**: Upload viruses that infect other users
 
-For web applications, uploading a PHP shell to a public directory grants attacker full server access. A single unvalidated file upload can compromise entire infrastructure.
+For web applications, uploading a PHP shell to a public directory gives an attacker full server access. A single unvalidated file upload can compromise the entire infrastructure.
 
 ## Anti-Patterns to Avoid
 

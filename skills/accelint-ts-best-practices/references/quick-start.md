@@ -2,149 +2,149 @@
 
 ## Overview
 
-This guide demonstrates the workflow for applying patterns from this skill: identify the issue, reference AGENTS.md, load the appropriate reference file, and implement the solution.
+This guide shows the workflow for applying patterns from this skill: identify the issue, check `AGENTS.md`, load the appropriate reference file, and implement the solution.
 
 ## Examples
 
-### Example 1: Optimizing Array Operations
+### Example 1: Replacing `any` at a Boundary
 
-**❌ Incorrect: chained array methods create multiple iterations**
+**❌ Incorrect: `any` disables type checking**
 ```ts
-const result = items.filter(x => x.active).map(x => x.id);
-```
-
-**Issue:** Multiple passes over the same array (O(2n)) with intermediate array allocations.
-
-**✅ Correct: single-pass reduce operation**
-```ts
-const result = items.reduce((acc, x) =>
-  x.active ? [...acc, x.id] : acc,
-  []
-);
-```
-
-**Why this is better:** Single iteration (O(n)), though still creates intermediate arrays. For very large arrays, consider using a for loop with pre-allocated array or filtering into a Set.
-
-**Reference:** [reduce-looping.md](reduce-looping.md)
-
-### Example 2: Avoiding Needless Allocations
-
-**❌ Incorrect: intermediate variable creates unnecessary allocation**
-```ts
-function randomInt(min: number, max: number): number {
-  const minCeil = Math.ceil(min);
-  const maxFloor = Math.floor(max);
-  const range = maxFloor - minCeil + 1;
-  return Math.floor(Math.random() * range + minCeil);
+function parseUser(payload: any) {
+  return {
+    id: payload.id,
+    email: payload.email,
+  };
 }
 ```
 
-**Issue:** The `range` variable is allocated on every call, creating GC pressure in hot paths.
+**Issue:** `any` bypasses type safety and lets unchecked external data flow deeper into the codebase.
 
-**✅ Correct: inline simple computation**
+**✅ Correct: validate unknown input at the boundary**
 ```ts
-function randomInt(min: number, max: number): number {
-  const minCeil = Math.ceil(min);
-  const maxFloor = Math.floor(max);
-  return Math.floor(Math.random() * (maxFloor - minCeil + 1) + minCeil);
+function parseUser(payload: unknown): User {
+  const parsed = userSchema.parse(payload);
+
+  return {
+    id: parsed.id,
+    email: parsed.email,
+  };
 }
 ```
 
-**Why this is better:** Eliminates allocation of intermediate variable, reducing GC pressure when called frequently.
+**Why this is better:** `unknown` forces validation before use, keeping unsafe data at the boundary instead of silently propagating it.
 
-**Reference:** [avoid-allocations.md](avoid-allocations.md)
+**References:** [any.md](any.md), [input-validation.md](input-validation.md)
 
-### Example 3: Currying for Performance
+### Example 2: Returning Zero Values Instead of Nullable Values
 
-**❌ Incorrect: recompute expensive operation every call**
+**❌ Incorrect: nullable return forces defensive checks everywhere**
 ```ts
-export function round(precision: number, value: number): number {
-  const multiplier = 10 ** precision;
-  return Math.round(value * multiplier) / multiplier;
-}
-
-// In hot path
-for (const price of prices) {
-  rounded.push(round(2, price)); // Recomputes 10 ** 2 every iteration
+function findActiveUsers(users: User[]): User[] | null {
+  const activeUsers = users.filter((user) => user.isActive);
+  return activeUsers.length > 0 ? activeUsers : null;
 }
 ```
 
-**Issue:** Expensive exponentiation (`10 ** precision`) is recomputed on every call even though precision is constant.
+**Issue:** Callers now need extra null handling before they can iterate, map, or compose the result.
 
-**✅ Correct: curry to precompute constant parameters**
+**✅ Correct: return the identity value for the collection**
 ```ts
-export function round(precision: number): (value: number) => number;
-export function round(precision: number, value: number): number;
-export function round(
-  precision: number,
-  value?: number,
-): number | ((value: number) => number) {
-  const multiplier = 10 ** precision;
+function findActiveUsers(users: User[]): User[] {
+  return users.filter((user) => user.isActive);
+}
+```
 
-  if (value === undefined) {
-    return (v: number) => Math.round(v * multiplier) / multiplier;
+**Why this is better:** Returning `[]` preserves type safety, simplifies call sites, and makes composition straightforward.
+
+**Reference:** [return-values.md](return-values.md)
+
+### Example 3: Bounded Queue Processing
+
+**❌ Incorrect: unbounded processing loop**
+```ts
+while (!queue.isEmpty()) {
+  const task = queue.pop();
+  if (!task) {
+    continue;
   }
 
-  return Math.round(value * multiplier) / multiplier;
-}
-
-// In hot path
-const roundTo2 = round(2); // Compute 10 ** 2 once
-for (const price of prices) {
-  rounded.push(roundTo2(price)); // Reuse precomputed multiplier
+  processTask(task);
 }
 ```
 
-**Why this is better:** Exponentiation computed once and captured in closure, eliminating repeated expensive operations. Supports both curried and direct-call patterns through function overloads.
+**Issue:** If queue state becomes corrupted or producers outpace consumers, this loop can run indefinitely.
 
-**Reference:** [currying.md](currying.md)
-
-### Example 4: Caching Storage API Calls
-
-**❌ Incorrect: repeated storage reads in loop**
+**✅ Correct: enforce an explicit iteration limit**
 ```ts
-for (const item of items) {
-  const theme = localStorage.getItem('theme');
-  applyTheme(theme, item);
-  // 100 iterations = 100 storage reads
-}
-```
+const MAX_ITERATIONS = 10000;
+let iterations = 0;
 
-**Issue:** `localStorage.getItem()` is synchronous but slow (disk I/O). Reading same key repeatedly wastes time.
-
-**✅ Correct: cache storage reads in memory**
-```ts
-const storageCache = new Map<string, string | null>();
-
-function getCached(key: string): string | null {
-  if (!storageCache.has(key)) {
-    storageCache.set(key, localStorage.getItem(key));
+while (!queue.isEmpty() && iterations < MAX_ITERATIONS) {
+  const task = queue.pop();
+  if (!task) {
+    continue;
   }
-  return storageCache.get(key)!;
+
+  processTask(task);
+  iterations += 1;
 }
 
-// Use cached version
-for (const item of items) {
-  const theme = getCached('theme');
-  applyTheme(theme, item);
-  // 100 iterations = 1 storage read
-}
-
-// Invalidate cache when storage changes
-function setAndInvalidate(key: string, value: string): void {
-  localStorage.setItem(key, value);
-  storageCache.delete(key);
+if (iterations >= MAX_ITERATIONS) {
+  throw new Error(`Queue processing exceeded ${MAX_ITERATIONS} iterations`);
 }
 ```
 
-**Why this is better:** Reduces disk I/O from O(n) to O(1). Critical for loops over large datasets.
+**Why this is better:** Explicit limits turn a silent hang into a fast, diagnosable failure.
 
-**Reference:** [cache-storage-api.md](cache-storage-api.md)
+**Reference:** [bounded-iteration.md](bounded-iteration.md)
+
+### Example 4: Flat Control Flow With Early Returns
+
+**❌ Incorrect: nested control flow hides the happy path**
+```ts
+function getDisplayName(user: User | undefined): string {
+  if (user) {
+    if (user.profile) {
+      if (user.profile.name) {
+        return user.profile.name;
+      }
+    }
+  }
+
+  return 'Unknown user';
+}
+```
+
+**Issue:** Deep nesting makes the main path harder to read and easier to break during edits.
+
+**✅ Correct: guard clauses keep the function flat**
+```ts
+function getDisplayName(user: User | undefined): string {
+  if (!user) {
+    return 'Unknown user';
+  }
+
+  if (!user.profile) {
+    return 'Unknown user';
+  }
+
+  if (!user.profile.name) {
+    return 'Unknown user';
+  }
+
+  return user.profile.name;
+}
+```
+
+**Why this is better:** Early returns make the failure cases obvious and keep the successful path easy to follow.
+
+**Reference:** [control-flow.md](control-flow.md)
 
 ## Workflow Summary
 
-1. **Identify the pattern** - Recognize anti-patterns (nested conditionals, chained array methods, repeated computations)
-2. **Check AGENTS.md** - Find the relevant category and reference file link
-3. **Load reference file** - Read detailed examples and explanations
-4. **Apply the pattern** - Implement the ✅ correct version
-5. **Verify improvement** - Benchmark if performance-related, test if safety-related
+1. **Identify the pattern** - Recognize anti-patterns such as nested conditionals, chained array methods, or repeated computations.
+2. **Check `AGENTS.md`** - Find the relevant category and reference file link.
+3. **Load the reference file** - Read the detailed examples and explanations.
+4. **Apply the pattern** - Implement the ✅ correct version.
+5. **Verify the improvement** - Benchmark if performance-related and test if safety-related.

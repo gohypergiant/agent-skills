@@ -18,19 +18,19 @@
 
 For each code file, you MUST follow this sequence:
 
-1. **Initial Test Coverage** - Run `accelint-ts-testing` to ensure good test coverage exists before refactoring
-2. **Interactive Changes** - Use two-phase pattern: show ALL issues in numbered table with emoji severity (🛑⚠️⚡🔵✅), display detailed before/after for each, accept via numbered list. If PBTs added, MUST run test suite 100 times and achieve 100 consecutive passes before proceeding. Run with tests with coverage disabled. **SAVE PROGRESS after this step.**
-3. **Code Quality Analysis** - Run `accelint-ts-best-practices` AND `accelint-ts-performance` in parallel to avoid contradictory suggestions
-4. **Interactive Changes** - Use two-phase pattern with numbered table. If quality and performance recommendations overlap: merge if possible, otherwise present both and let user choose. Include `// PERF:` comments only where they add genuine insight. **SAVE PROGRESS after this step.**
-5. **Verify Changes** - Run EXACT verification commands from "Verification Commands" section below (NEVER improvise)
-6. **Interactive Changes (if needed)** - Use two-phase pattern if verification fails. **SAVE PROGRESS after this step.**
-7. **Documentation Pass** - Run `accelint-ts-documentation` to complete the audit
-8. **Interactive Changes** - Use two-phase pattern with numbered table. **SAVE PROGRESS after this step before archiving.**
+1. **Initial Test Coverage** - Run `accelint-ts-testing` to ensure good test coverage exists before refactoring.
+2. **Interactive Changes** - Use the two-phase pattern: show ALL issues in a numbered table with emoji severity (🛑⚠️⚡🔵✅), show detailed before/after code for each issue, and accept changes through a numbered list. If PBTs are added, you MUST run the test suite 100 times and achieve 100 consecutive passes before you proceed. Run the tests with coverage disabled. **SAVE PROGRESS after this step.**
+3. **Code Quality Analysis** - Run `accelint-ts-best-practices` AND `accelint-ts-performance` in parallel to avoid contradictory suggestions.
+4. **Interactive Changes** - Use the two-phase pattern with a numbered table. If quality and performance recommendations overlap, merge them if possible. Otherwise, present both and let the user choose. Include `// PERF:` comments only where they add genuine insight. **SAVE PROGRESS after this step.**
+5. **Verify Changes** - Run the EXACT verification commands from the "Verification Commands" section below. NEVER improvise.
+6. **Interactive Changes (if needed)** - Use the two-phase pattern if verification fails. **SAVE PROGRESS after this step.**
+7. **Documentation Pass** - Run `accelint-ts-documentation` to complete the audit.
+8. **Interactive Changes** - Use the two-phase pattern with a numbered table. **SAVE PROGRESS after this step before archiving.**
 
 **Progress Tracking:**
-- After each step, save detailed progress to the "Current File - Detailed Progress" section in this file
-- When a file is complete (all 9 steps done), move its detailed progress to `audit-history-{same date as audit-process file}-{same time as audit-process file}.md`
-- Update the file status in the "Files to Audit" section (Pending → In Progress → Completed)
+- After each step, save detailed progress to the "Current File - Detailed Progress" section in this file.
+- When a file is complete (all 9 steps are done), move its detailed progress to `audit-history-{same date as audit-process file}-{same time as audit-process file}.md`.
+- Update the file status in the "Files to Audit" section (Pending → In Progress → Completed).
 
 ---
 
@@ -92,16 +92,16 @@ For each code file, you MUST follow this sequence:
 
 ### Audit Guidelines
 - Test files (*.test.ts) and benchmark files (*.bench.ts) are excluded from this audit
-- **ALWAYS use two-phase interactive pattern:** Show ALL issues in emoji severity table first, then detailed before/after for each, then accept via numbered list. NEVER present one-by-one.
-- Performance comments (`// PERF:`) should only be added when they provide meaningful insight
-- User must approve each change before applying (numbered list acceptance workflow)
-- **BLOCKING:** Save progress to this file after completing EACH step before continuing
-- This audit will require multiple sessions due to context window constraints
-- **BLOCKING:** If property-based tests are added, run test suite 100 times and achieve 100 consecutive passes before proceeding. Random failures are common with PBT.
-  - If ANY run fails, examine the seed that failed
-  - Fix test properties (add constraints to arbitraries: date ranges, filtered NaNs, safe strings)
-  - Re-run 100 times until 100 consecutive passes achieved
-- **Use EXACT verification commands from "Verification Commands" section - NEVER improvise or run one-off commands**
+- **ALWAYS use the two-phase interactive pattern:** Show ALL issues in the emoji severity table first, then show detailed before/after code for each issue, then accept changes through a numbered list. NEVER present issues one-by-one.
+- Performance comments (`// PERF:`) should be added only when they provide meaningful insight.
+- The user must approve each change before you apply it (numbered-list acceptance workflow).
+- **BLOCKING:** Save progress to this file after you complete EACH step and before you continue.
+- This audit will require multiple sessions because of context window constraints.
+- **BLOCKING:** If property-based tests are added, run the test suite 100 times and achieve 100 consecutive passes before you proceed. Random failures are common with PBT.
+  - If ANY run fails, examine the seed that failed.
+  - Fix test properties (add constraints to arbitraries: date ranges, filtered NaNs, safe strings).
+  - Re-run 100 times until 100 consecutive passes are achieved.
+- **Use EXACT verification commands from the "Verification Commands" section. NEVER improvise or run one-off commands.**
 
 ---
 

@@ -1,0 +1,395 @@
+{
+  "skill_name": "accelint-ts-testing",
+  "evals": [
+    {
+      "id": 1,
+      "name": "direct-vitest-test-writing-request-triggers-skill",
+      "prompt": "Please write a Vitest test for this TypeScript helper. I want the test to follow the repo's testing standards, use clear Arrange/Act/Assert structure, and avoid brittle patterns.\n\n```ts\nexport function sum(items: number[]): number {\n  return items.reduce((total, item) => total + item, 0);\n}\n```",
+      "expected_output": "Recognizes a direct Vitest unit-test authoring request, applies AAA structure, and stays focused on maintainable Vitest patterns rather than generic TypeScript commentary.",
+      "expectations": [
+        "The response recognizes this as a Vitest test-writing request within the skill's scope.",
+        "The response uses or recommends a clear Arrange / Act / Assert structure.",
+        "The response keeps the advice focused on maintainable Vitest tests rather than drifting into non-test code review."
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "aaa-pattern-audit-for-blurry-test-structure",
+      "prompt": "Can you review this Vitest test and tell me what is unclear about it?\n\n```ts\nit('should save order', async () => {\n  const repo = createRepo();\n  const service = new OrderService(repo);\n  await service.save({ id: 'o1', total: 10 });\n  expect(await repo.find('o1')).toEqual({ id: 'o1', total: 10 });\n});\n```\n\nI want feedback grounded in the repo's testing guidance.",
+      "expected_output": "Treats the request as a Vitest test-quality review, calls out blurred Arrange/Act/Assert boundaries, and suggests clearer structure without overcomplicating the test.",
+      "expectations": [
+        "The response identifies missing or blurry Arrange / Act / Assert separation as the core issue.",
+        "The response keeps the feedback centered on test clarity rather than unrelated production refactors.",
+        "The response recommends a clearer structure or spacing that makes the test readable in seconds."
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "parameterized-tests-replace-duplicated-cases",
+      "prompt": "I have four Vitest tests that all call the same formatter with different inputs and expected outputs. Should I keep them separate or convert them to `it.each()`? Please answer using this repo's testing conventions.",
+      "expected_output": "Recommends parameterized testing for repeated cases with the same structure, explains when `it.each()` improves clarity, and keeps the answer grounded in the skill's duplication-reduction guidance.",
+      "expectations": [
+        "The response recommends `it.each()` or parameterized tests for repeated input/output variations.",
+        "The response explains that the deciding factor is repeated structure with small data changes.",
+        "The response does not insist on separate copied tests when parameterization is clearer."
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "async-appearance-and-await-discipline",
+      "prompt": "Please review this Vitest test for async issues:\n\n```ts\nit('should load the user', () => {\n  renderUserCard('42');\n  expect(screen.findByText('Alice')).toBeTruthy();\n});\n```\n\nI care about async correctness, not just making the test pass.",
+      "expected_output": "Flags the missing async/await handling, rejects loose assertions, and explains the need to await async queries or promises in tests.",
+      "expectations": [
+        "The response identifies that the async query or promise is not being awaited.",
+        "The response flags `toBeTruthy()` as too loose for this assertion.",
+        "The response keeps the fix centered on async correctness and strong assertions."
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "fake-timers-and-polling-load-async-reference",
+      "prompt": "We have a flaky Vitest test that uses fake timers to test polling and retry behavior. What guidance from this skill should apply before rewriting the test?",
+      "expected_output": "Recognizes timers, polling, and async behavior as a case that should load the async-testing reference, and provides guidance specific to fake timers and deterministic async tests.",
+      "expectations": [
+        "The response identifies promises, timers, polling, or fake timers as an async-testing scenario.",
+        "The response says or implies that the async-testing reference is the relevant guidance to load.",
+        "The response keeps the advice focused on deterministic async testing rather than general code style."
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "strict-assertions-replace-truthy-and-defined",
+      "prompt": "Audit this test assertion:\n\n```ts\nexpect(result).toBeDefined();\nexpect(user.name).toBeTruthy();\n```\n\nShould this pass the repo's Vitest testing standards?",
+      "expected_output": "Rejects loose assertions like `toBeDefined()` and `toBeTruthy()` when stricter intent-revealing assertions are available, and explains the false-confidence risk.",
+      "expectations": [
+        "The response explicitly calls these loose assertions out as problems.",
+        "The response explains why they can pass for unintended values.",
+        "The response recommends stricter, intent-specific assertions instead of approving the current form."
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "type-of-assertion-is-not-classified-as-loose",
+      "prompt": "Our Vitest audit flagged `expect(payload).toBeTypeOf('string')` as a loose assertion. Does this skill agree?",
+      "expected_output": "Correctly preserves the boundary that `toBeTypeOf()` is not one of the skill's banned loose assertions, even though stronger value assertions may still be preferable in some cases.",
+      "expectations": [
+        "The response does not incorrectly classify `toBeTypeOf()` as one of the prohibited loose assertions.",
+        "The response keeps the distinction between truly loose assertions and type-level assertions clear.",
+        "The response may still recommend stronger assertions when behavior warrants them, but should not state the matcher is categorically forbidden."
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "test-doubles-hierarchy-prefers-fakes-over-mocks",
+      "prompt": "I am writing a Vitest unit test for a service that depends on a repository. Should I start with `vi.mock()` everywhere, or does this repo prefer a different test-double strategy?",
+      "expected_output": "Explains the repository preference order of real implementation > fake > stub > spy > mock, and recommends the simplest dependency that preserves clarity instead of reaching for broad mocks first.",
+      "expectations": [
+        "The response identifies the preferred hierarchy of test doubles.",
+        "The response advises against defaulting to broad mocks when a fake or stub would work.",
+        "The response keeps the guidance grounded in maintainability and brittleness concerns."
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "mocking-own-pure-function-is-a-smell",
+      "prompt": "Review this test strategy: we mock our own `normalizeSku()` helper so we can assert that `buildProductPayload()` calls it exactly once. Is that good Vitest practice here?",
+      "expected_output": "Pushes back on mocking an internal pure function, redirects the test toward behavior through the public API, and explains why interaction testing of internal helpers is brittle.",
+      "expectations": [
+        "The response says not to mock the team's own pure helper here.",
+        "The response frames the problem as testing implementation details instead of behavior.",
+        "The response suggests testing the public observable output instead of call counts on internal pure logic."
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "implementation-detail-call-count-versus-behavior",
+      "prompt": "This Vitest suite mostly checks `expect(cache.set).toHaveBeenCalledTimes(3)` and `expect(serializer.serialize).toHaveBeenCalledWith(...)`, but the user-visible outputs are never asserted. Would this skill consider that strong coverage?",
+      "expected_output": "Classifies the suite as overly implementation-focused, explains why interaction-only assertions punish safe refactors, and recommends shifting coverage toward behavior and outputs.",
+      "expectations": [
+        "The response identifies heavy call-count and collaborator assertions as implementation-detail testing.",
+        "The response explains that safe refactors can break such tests without breaking user-visible behavior.",
+        "The response recommends asserting outputs, state changes, or other observable behavior."
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "shared-mutable-state-between-tests-is-flaky",
+      "prompt": "Can you audit this Vitest file for isolation issues?\n\n```ts\nconst cart: string[] = [];\n\nit('adds an item', () => {\n  cart.push('a');\n  expect(cart).toEqual(['a']);\n});\n\nit('removes an item', () => {\n  cart.pop();\n  expect(cart).toEqual([]);\n});\n```",
+      "expected_output": "Flags the shared mutable module-level state as a test isolation problem and explains that each test must be able to run independently in any order.",
+      "expectations": [
+        "The response identifies shared mutable state across tests as the main issue.",
+        "The response explains the order-dependence or flakiness risk clearly.",
+        "The response recommends fresh setup per test rather than relying on previous test state."
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "global-mock-cleanup-belongs-in-vitest-config",
+      "prompt": "Our test files all have `afterEach(() => { vi.clearAllMocks(); vi.resetAllMocks(); vi.restoreAllMocks(); })`. Is that the best pattern, or does this skill want something else?",
+      "expected_output": "Rejects per-file manual mock cleanup as the preferred default, recommends global cleanup configuration in `vitest.config.ts`, and explains the order-dependent failure class it prevents.",
+      "expectations": [
+        "The response recommends `clearMocks`, `mockReset`, and `restoreMocks` in `vitest.config.ts`.",
+        "The response explains why pushing cleanup to configuration is preferable to repeating hooks in every file.",
+        "The response frames the issue as preventing mock leakage and action-at-a-distance failures."
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "test-descriptions-must-read-as-sentences",
+      "prompt": "Please review these Vitest test names for style:\n\n```ts\nit('Add item to cart', () => {})\nit('It should reject empty email', () => {})\nit('property: sanitize output is idempotent', () => {})\n```",
+      "expected_output": "Flags the first two descriptions as violating the sentence-style naming convention while preserving the property-test naming format as acceptable.",
+      "expectations": [
+        "The response identifies that example-based tests should read naturally after the word 'it'.",
+        "The response rejects capitalized or redundant 'It should' naming patterns for normal tests.",
+        "The response preserves `property: ...` as an allowed property-based naming format."
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "deeply-nested-describe-blocks-should-be-flattened",
+      "prompt": "Our Vitest file has four levels of nested `describe()` blocks to express context. Does that match the repo's testing guidance?",
+      "expected_output": "Rejects excessive nesting, recommends keeping nesting to at most two levels, and prefers descriptive test names over deeply indented structure.",
+      "expectations": [
+        "The response sets a maximum nesting guideline of no more than two describe levels.",
+        "The response recommends moving context into test names when possible.",
+        "The response explains the readability or cognitive-overhead cost of deep nesting."
+      ],
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "do-not-test-constants-or-type-only-files",
+      "prompt": "Should we add a Vitest file for this module so coverage stays high?\n\n```ts\nexport const REQUEST_TIMEOUT_MS = 5000;\nexport const MAX_RETRIES = 3;\n```",
+      "expected_output": "Explicitly says not to write tests for behaviorless constant/data declarations and explains why such tests add maintenance cost without protection.",
+      "expectations": [
+        "The response says this file does not contain behavior worth testing.",
+        "The response rejects coverage-padding tests for constants-only modules.",
+        "The response explains that such tests provide little or no protection against bugs."
+      ],
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "do-not-test-standard-library-internals",
+      "prompt": "Please review this Vitest case:\n\n```ts\nit('maps values', () => {\n  expect([1, 2, 3].map((n) => n * 2)).toEqual([2, 4, 6]);\n});\n```\n\nWould this skill consider it valuable?",
+      "expected_output": "Rejects the test as library-internal verification rather than business-logic coverage, and explains that the standard library already tests `Array.prototype.map`.",
+      "expectations": [
+        "The response identifies the test as verifying standard-library behavior rather than project logic.",
+        "The response says the test is low value and should not be written in this form.",
+        "The response keeps the reasoning focused on testing the right layer."
+      ],
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "do-not-export-internal-function-just-for-testing",
+      "prompt": "A teammate wants to export a private helper solely so our Vitest suite can call it directly. Does this repo's testing skill endorse that?",
+      "expected_output": "Pushes back on exporting internals only for tests, recommends testing via the public API or extracting a real module when the logic deserves its own boundary.",
+      "expectations": [
+        "The response says not to export internals solely to make them testable.",
+        "The response recommends public-API testing as the default.",
+        "The response allows extraction into a separate module if the logic truly merits its own public API."
+      ],
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "type-checking-test-files-requires-direct-tsc",
+      "prompt": "We finished a new `user-service.test.ts` file and ran `tsc` at the repo root. Is that enough to mark the test work complete under this skill?",
+      "expected_output": "Says no, explains that test files are often excluded from root compilation, and requires direct `tsc --noEmit` against the touched test file or package-specific equivalent before marking the work complete.",
+      "expectations": [
+        "The response says root-level type checking alone may be insufficient for test files.",
+        "The response requires direct type checking against the touched test file or package scope.",
+        "The response treats this as a completion requirement rather than optional extra polish."
+      ],
+      "files": [
+        "user-service.test.ts"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "avoid-any-and-ts-ignore-in-test-files",
+      "prompt": "Is this acceptable in a Vitest test?\n\n```ts\n// @ts-ignore\nconst user = { id: 1 } as any;\nexpect(buildGreeting(user)).toContain('hello');\n```",
+      "expected_output": "Rejects `as any` and `@ts-ignore` in tests, explains why they hide broken contracts, and recommends typed fixtures or builders instead.",
+      "expectations": [
+        "The response explicitly calls out both `@ts-ignore` and `as any` as problems in test code.",
+        "The response explains that tests should not bypass the type system to fake correctness.",
+        "The response recommends typed builders, helpers, or minimal valid fixtures instead."
+      ],
+      "files": []
+    },
+    {
+      "id": 20,
+      "name": "runtime-invalid-input-tests-still-matter-despite-types",
+      "prompt": "A function is typed as `parseProfile(input: Profile): ParsedProfile`. Do we still need Vitest cases for `null`, `undefined`, or malformed objects, or can TypeScript handle that for us?",
+      "expected_output": "Explains that TypeScript types do not exist at runtime, recommends defensive tests for invalid external data paths, and keeps the guidance grounded in real production inputs like JSON and user data.",
+      "expectations": [
+        "The response says TypeScript alone does not prevent runtime-invalid inputs.",
+        "The response recommends tests for `null`, `undefined`, or malformed runtime data when the code may receive external input.",
+        "The response ties the need to real runtime sources such as JSON, APIs, or user input."
+      ],
+      "files": []
+    },
+    {
+      "id": 21,
+      "name": "property-based-tests-for-encode-decode-roundtrip",
+      "prompt": "We have a `serializeQuery()` / `parseQuery()` pair. The current Vitest coverage only checks a few hand-picked examples. According to this skill, what stronger testing approach should we consider?",
+      "expected_output": "Recommends property-based testing with strong roundtrip properties, not merely 'does not throw', and frames it as a better fit for encode/decode pairs.",
+      "expectations": [
+        "The response identifies encode/decode pairs as strong candidates for property-based tests.",
+        "The response recommends a roundtrip property like `parse(serialize(x)) === x` where appropriate.",
+        "The response rejects weak properties like only verifying that parsing succeeds."
+      ],
+      "files": []
+    },
+    {
+      "id": 22,
+      "name": "property-based-tests-for-idempotent-normalizer",
+      "prompt": "Audit this test strategy for a string normalizer: 'we call `normalizeSlug()` once and assert it returns a string'. Would this skill consider that strong enough?",
+      "expected_output": "Rejects the weak property, recommends a stronger idempotence-oriented property for normalizers, and explains why simply returning a string is not meaningful coverage.",
+      "expectations": [
+        "The response identifies 'returns a string' as a weak property.",
+        "The response recommends an idempotence property such as `normalize(normalize(x)) === normalize(x)`.",
+        "The response explains why the stronger property provides more real confidence."
+      ],
+      "files": []
+    },
+    {
+      "id": 23,
+      "name": "audit-mode-must-document-property-based-opportunities",
+      "prompt": "Use /accelint-ts-testing on `src/lib/sanitizeSearch.ts` and give me a formal audit of the existing Vitest coverage. I want findings I can hand to another engineer, not direct edits.",
+      "expected_output": "Recognizes an explicit audit request, uses the audit report template style, and includes property-based testing opportunities as a required part of the findings even if no fast-check changes are made yet.",
+      "expectations": [
+        "The response recognizes this as an audit or review request rather than a direct patch request.",
+        "The response uses or follows the standardized audit-report structure.",
+        "The response includes property-based testing opportunities explicitly as part of the audit findings."
+      ],
+      "files": [
+        "src/lib/sanitizeSearch.ts"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "audit-of-existing-tests-loads-property-based-reference-up-front",
+      "prompt": "I want you to audit our existing `checkout.service.test.ts` file for missing edge cases, weak assertions, and bad mocking choices. Which reference guidance should this skill load first?",
+      "expected_output": "Correctly identifies this as an audit of existing tests and says the property-based-testing reference should be loaded up front, then supplemented by other references as needed.",
+      "expectations": [
+        "The response identifies this as an audit/review workflow rather than a greenfield authoring task.",
+        "The response says or implies that `property-based-testing.md` should be loaded up front for audits.",
+        "The response allows loading additional references like assertions or test doubles based on the specific findings."
+      ],
+      "files": [
+        "checkout.service.test.ts"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "mocks-and-spies-trigger-test-doubles-reference",
+      "prompt": "This Vitest file uses `vi.spyOn`, `vi.fn`, and a couple module mocks. Before changing it, which part of the skill should apply?",
+      "expected_output": "Recognizes mocks, spies, and interaction-heavy testing as a case that should load the test-doubles reference before editing.",
+      "expectations": [
+        "The response identifies spies, stubs, fakes, or mocks as the relevant signal.",
+        "The response says or implies that `test-doubles.md` should be loaded.",
+        "The response keeps the answer scoped to the test-doubles workflow rather than unrelated references."
+      ],
+      "files": []
+    },
+    {
+      "id": 26,
+      "name": "coverage-and-setup-file-question-triggers-vitest-features-reference",
+      "prompt": "We need guidance on Vitest setup files, `expectTypeOf`, and how coverage config should be discovered in this package. Is that inside this skill's scope, and which reference applies?",
+      "expected_output": "Keeps the request within scope and points to the Vitest-features reference for setup files, coverage, and Vitest-specific APIs.",
+      "expectations": [
+        "The response recognizes setup files, coverage, and `expectTypeOf` as Vitest-specific feature questions.",
+        "The response says or implies that `vitest-features.md` is the relevant reference.",
+        "The response does not misroute the question to unrelated testing guidance."
+      ],
+      "files": []
+    },
+    {
+      "id": 27,
+      "name": "snapshot-question-triggers-snapshot-reference",
+      "prompt": "Our team snapshots a huge JSON payload for every Vitest case. Does this skill have guidance on when snapshots help versus hurt?",
+      "expected_output": "Recognizes snapshot-specific concerns, routes to the snapshot-testing reference, and warns about low-signal or brittle snapshot overuse.",
+      "expectations": [
+        "The response identifies snapshots as the relevant topic.",
+        "The response says or implies that `snapshot-testing.md` should be loaded.",
+        "The response does not approve broad snapshot-heavy testing as automatically good practice."
+      ],
+      "files": []
+    },
+    {
+      "id": 28,
+      "name": "performance-reference-only-when-slow-tests-or-manual-cleanup-appear",
+      "prompt": "I am writing straightforward synchronous unit tests for a pure helper. There are no timing issues, no repeated setup problems, and no mock cleanup concerns. Should this skill load the performance testing reference by default?",
+      "expected_output": "Says no, because the performance reference should be skipped unless slow tests, repeated setup, or manual cleanup hooks are part of the problem.",
+      "expectations": [
+        "The response explicitly says the performance reference is not needed by default for straightforward unit-test authoring.",
+        "The response preserves the progressive-disclosure rule to avoid loading unnecessary material.",
+        "The response identifies the kinds of triggers that would justify loading the performance reference."
+      ],
+      "files": []
+    },
+    {
+      "id": 29,
+      "name": "near-miss-jest-request-without-vitest-signals",
+      "prompt": "Can you help me write a Jest test for a plain Node utility? It does not use Vitest, fast-check, or any of the repo's Vitest-specific patterns.",
+      "expected_output": "Acts as a boundary case by not forcing the Vitest-specific skill onto a generic Jest request that lacks Vitest signals.",
+      "expectations": [
+        "The response recognizes that the request is not clearly Vitest- or Vitest-style-specific.",
+        "The response does not center the answer on Vitest-only guidance as if it were mandatory here.",
+        "The response preserves the boundary between this skill's Vitest focus and generic test help."
+      ],
+      "files": []
+    },
+    {
+      "id": 30,
+      "name": "near-miss-playwright-e2e-is-not-vitest-unit-testing",
+      "prompt": "I need end-to-end Playwright coverage for a checkout flow with browser selectors and navigation assertions. Should this testing skill be the primary fit?",
+      "expected_output": "Recognizes that Playwright E2E work is outside this skill's primary Vitest-focused scope and does not treat it as the same problem as Vitest unit or property testing.",
+      "expectations": [
+        "The response does not conflate Playwright end-to-end testing with Vitest test-authoring guidance.",
+        "The response keeps the boundary between unit/integration Vitest work and browser E2E work clear.",
+        "The response avoids centering the answer on AAA, `vi.mock`, or direct Vitest config unless explicitly useful as contrast."
+      ],
+      "files": []
+    },
+    {
+      "id": 31,
+      "name": "near-miss-general-ts-docs-request-not-testing",
+      "prompt": "Please add JSDoc to these exported TypeScript helpers and clean up the TODO comments. I am not asking for tests or Vitest review.",
+      "expected_output": "Recognizes that the request is documentation-focused rather than test-focused and preserves the boundary with the TypeScript documentation workflow.",
+      "expectations": [
+        "The response recognizes that this is not primarily a testing task.",
+        "The response does not force Vitest guidance onto a JSDoc/comment-cleanup request.",
+        "The response preserves the boundary between test quality work and documentation work."
+      ],
+      "files": []
+    },
+    {
+      "id": 32,
+      "name": "formal-audit-versus-direct-fix-output-mode-boundary",
+      "prompt": "Please fix this Vitest file directly so the assertions are stricter and the mocks are less brittle. I do not need a long report — just apply the right testing patterns.",
+      "expected_output": "Treats the request as a direct implementation or refactor task, not a formal audit report, while still applying strong-assertion and test-double guidance.",
+      "expectations": [
+        "The response recognizes this as a direct fix request rather than a formal audit-only request.",
+        "The response applies relevant testing guidance such as stricter assertions and better mock strategy.",
+        "The response does not force the audit report template when the user explicitly wants direct fixes."
+      ],
+      "files": []
+    }
+  ]
+}

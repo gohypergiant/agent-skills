@@ -1,64 +1,53 @@
 ---
 name: accelint-ts-documentation
-description: Audit and improve JavaScript/TypeScript documentation including JSDoc comments (@param, @returns, @template, @example), comment markers (TODO, FIXME, HACK), and code comment quality. Use when asked to 'add JSDoc', 'document this function', 'audit documentation', 'fix comments', 'add TODO/FIXME markers', or 'improve code documentation'.
+description: Audit and improve JavaScript/TypeScript documentation quality when the main task is JSDoc, comment markers, or non-obvious code comments. Use for requests to add or review JSDoc, document exported functions/types/classes, check @param/@returns/@template/@throws/@example usage, clean up TODO/FIXME/HACK/NOTE comments, remove dead or edit-history comments, improve comment placement, or evaluate whether internal docs are sufficient. Do not use for general TypeScript code-quality reviews unless documentation is the primary focus.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Code Documentation Skill
 
-Comprehensive skill for improving JavaScript/TypeScript documentation, including JSDoc comments, comment markers, and general comment quality.
+Use this skill to audit or improve JavaScript/TypeScript documentation quality, especially JSDoc, comment markers, and non-obvious code comments.
 
-## When to Activate This Skill
+## Never Do During Documentation Work
 
-Use this skill when the task involves:
+- NEVER document HOW when the reader needs WHAT or WHY.
+- NEVER over-document obvious internal code just because a symbol lacks a docblock.
+- NEVER approve `@example` tags without fenced code blocks and the correct language identifier.
+- NEVER add vague markers like `TODO: fix this` without context.
+- NEVER rewrite linter, formatter, or type-checker directive comments into JSDoc.
+- NEVER load both references by default when the task clearly concerns only JSDoc or only comment quality.
 
-### JSDoc Documentation
-- Adding JSDoc comments to exported functions, types, interfaces, or classes
-- Validating JSDoc completeness (missing @param, @returns, @template tags)
-- Ensuring JSDoc @example tags use proper code fences
-- Documenting object parameters with destructuring using dot notation
+## Before Auditing or Editing, Ask
 
-### Comment Quality
-- Identifying and categorizing comments using proper markers (TODO, FIXME, HACK, NOTE, PERF, REVIEW, DEBUG, REMARK)
-- Removing unnecessary comments (commented-out code, edit history, obvious statements)
-- Preserving important comments (markers, linter directives, business logic)
-- Improving comment placement (moving end-of-line comments above code)
+Apply these checks before you change documentation:
 
-### Documentation Audits
-- Reviewing code for documentation completeness
-- Ensuring exported code has comprehensive documentation
-- Validating internal code has minimum required documentation
-
-## When NOT to Use This Skill
-
-Do not activate for:
-- General code quality issues (use accelint-ts-best-practices instead)
-- Performance optimization (use accelint-ts-performance instead)
-- Type safety improvements (use accelint-ts-best-practices instead)
-- Framework-specific documentation (React PropTypes, Vue props, etc.)
+- Is the target exported or internal? Exported APIs need comprehensive docs. Internal code needs judgment.
+- Is the issue missing syntax, missing intent, or noisy comments? Fix the actual gap.
+- Will the documentation stay accurate as the code changes? Prefer concise, stable facts over speculative detail.
+- Does the task require implementation or only advice? Skip reference loading for answer-only questions.
 
 ## How to Use
 
 ### 1. Load References Based on Task Type
 
-**For JSDoc additions/validation:**
+**For JSDoc additions or validation:**
 
-**MANDATORY**: Read [`jsdoc.md`](references/jsdoc.md) in full before implementing.
-Critical content: @example code fence syntax (failures common here), object parameter dot notation, @template requirements, edge cases.
+Read [`jsdoc.md`](references/jsdoc.md) in full before you implement.
+Critical content: `@example` code fence syntax, object-parameter dot notation, `@template` requirements, and edge cases.
 
-**Do NOT load** `comments.md` unless the task explicitly mentions comment markers (TODO, FIXME, etc.) or comment quality issues.
+Do NOT load `comments.md` unless the task explicitly mentions comment markers (`TODO`, `FIXME`, and similar) or comment-quality issues.
 
-**For comment quality audits:**
+**For comment-quality audits:**
 
-**MANDATORY**: Read [`comments.md`](references/comments.md) in full before implementing.
-Critical content: Comment marker standards, what to remove vs preserve, placement rules.
+Read [`comments.md`](references/comments.md) in full before you implement.
+Critical content: comment-marker standards, what to remove versus preserve, and placement rules.
 
-**Do NOT load** `jsdoc.md` unless the task explicitly mentions JSDoc tags (@param, @returns, etc.) or function/type documentation.
+Do NOT load `jsdoc.md` unless the task explicitly mentions JSDoc tags (`@param`, `@returns`, and similar) or function/type documentation.
 
-**Do NOT load any references** when only answering questions (not implementing changes) or task is general code quality.
+Do NOT load any references when you are only answering questions, not implementing changes, or when the task is general code quality.
 
 ### 2. Expert Judgment Framework
 
@@ -142,14 +131,16 @@ Before marking documentation as "sufficient", verify:
 
 ### 4. When References Are Insufficient
 
-If you encounter scenarios not covered in references or standard patterns:
+If you encounter scenarios not covered in the references or standard patterns:
 
 **Fallback strategy:**
-1. Apply the two-tier rule (export vs internal) as your foundation
-2. Prioritize clarity over completeness - better to document what you know than guess syntax
-3. Use standard JSDoc conventions from TypeScript/JSDoc official documentation
-4. Document your uncertainty with a NOTE marker: `// NOTE: JSDoc syntax may need review for [specific case]`
-5. If truly ambiguous, ask the user for clarification rather than making assumptions
+1. Apply the two-tier rule (export vs internal) as your foundation.
+2. Prioritize clarity over completeness. It is better to document what you know than to guess syntax.
+3. Use standard JSDoc conventions from the official TypeScript or JSDoc documentation.
+4. Document your uncertainty with a NOTE marker: `// NOTE: JSDoc syntax may need review for [specific case]`.
+5. If the case is truly ambiguous, ask the user for clarification instead of making assumptions.
+
+This fallback is for rare edge cases only. Do not use it to avoid loading the relevant reference when the task clearly requires one.
 
 **Common uncovered scenarios:**
 - Exotic TypeScript features (mapped types, conditional types, template literal types)
@@ -158,7 +149,7 @@ If you encounter scenarios not covered in references or standard patterns:
 
 For these, default to clear descriptions in natural language rather than incomplete JSDoc tags.
 
-### 4. Use the Report Template (For Explicit Audit Requests)
+### 5. Use the Report Template (For Explicit Audit Requests)
 
 When users explicitly request a documentation audit or invoke the skill directly (`/accelint-ts-documentation <path>`), use the standardized report format:
 
@@ -336,8 +327,8 @@ When judgment calls conflict, apply these priorities:
 
 ## Edge Cases Require Reference Loading
 
-Complex scenarios (deprecated APIs, overloaded functions, generic utility types, callback parameters, builder patterns, event emitters) require detailed syntax guidance. When encountering these:
+Complex scenarios such as deprecated APIs, overloaded functions, generic utility types, callback parameters, builder patterns, and event emitters require detailed syntax guidance. When you encounter them:
 
-**Load jsdoc.md reference** - Contains comprehensive examples for all edge cases with correct syntax patterns.
+Load the `jsdoc.md` reference. It contains comprehensive examples for these edge cases with the correct syntax patterns.
 
-Key principle: Edge cases still follow the two-tier rule (export vs internal), but syntax details matter more. Don't guess - load the reference.
+Key principle: Edge cases still follow the two-tier rule (export vs internal), but syntax details matter more. Do not guess. Load the reference.

@@ -1,17 +1,17 @@
 ---
 name: accelint-readme-writer
-description: Use when creating or editing a README.md file in any project or package. Analyzes the codebase from the README location, identifies missing or stale documentation, and generates thorough, human-sounding README content with copy-pasteable code blocks and practical examples.
+description: Use when creating, auditing, refreshing, or rewriting a README.md for a package, app, service, CLI, monorepo root, or subpackage. Trigger on requests like "write a README," "document this package/library/tool," "README audit," "fix stale docs," "refresh the README after a refactor," or "update docs for packages/x." Best for README-scoped work that compares the target folder’s real code, nearby docs, and existing README, then produces grounded audits, targeted updates, or full drafts with verified commands, preserved custom content, and repo-aware examples.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.3"
+  version: "1.2.4"
 ---
 
 # README Writer
 
 Use this skill to create or update README documentation that stays aligned with the actual codebase.
 
-The workflow analyzes the code from the README location, compares it with existing documentation, and produces thorough README content with copy-pasteable commands and practical examples.
+The workflow analyzes code from the README location, compares it with existing documentation, and produces thorough README content with copy-pasteable commands and practical examples.
 
 ## Hard stops
 
@@ -26,25 +26,36 @@ The workflow analyzes the code from the README location, compares it with existi
 
 Use this skill when:
 
-- Creating a new README.md for a project or package
-- Updating an existing README.md after code changes
-- Auditing documentation for completeness and accuracy
-- Converting sparse documentation into thorough guides
-- User asks to "document this package" or "write a README"
-- User mentions README in context of a monorepo subdirectory
+- Creating a new `README.md` for a project, package, app, service, or CLI
+- Updating an existing `README.md` after code, workflow, or public-behavior changes
+- Auditing a `README.md` for drift, missing sections, or stale examples
+- Converting sparse documentation into a grounded, practical guide
+- The user asks to "document this package," "write a README," "audit the README," or "refresh docs after a refactor"
+- The user mentions README work in a monorepo root or a subdirectory such as `packages/my-lib`
 
 ## When not to use this skill
 
 Do not use this skill for:
 
-- API documentation generation (use JSDoc/TSDoc tools)
-- Changelog or release notes
-- Internal developer notes not meant for README
+- API reference generation as a standalone deliverable when the user does not want README work
+- Changelog, release notes, ADRs, architecture docs, or internal runbooks
+- Internal developer notes that are not meant for README readers
 - Documentation in formats other than Markdown
+
+## Capability boundaries
+
+Match the README strategy to the artifact being documented:
+
+- **Library/package README** — inspect package entry points, exports, tests, examples, and package metadata.
+- **App/service README** — focus on runtime purpose, setup, commands, configuration, environment variables, deployment notes, and operator workflows rather than exported symbols.
+- **CLI README** — focus on install path, commands, flags, examples, exit behavior, and input/output expectations.
+- **Monorepo root README** — document repo purpose, workspace layout, top-level commands, and where package-specific docs live.
+
+Do not force a library-style API section onto an app or service repo when the public API is not the main user-facing surface.
 
 ## Workflow
 
-### Step 1: Locate the README Context
+### Step 1: Locate the README context
 
 Identify where the README should live. In monorepos, this determines the scope of codebase analysis:
 
@@ -56,36 +67,36 @@ project-root/           # README here documents entire monorepo
 └── README.md
 ```
 
-### Step 1.5: Check for Related Documentation
+### Step 1.5: Check for related documentation
 
-Before analyzing the codebase, check if other onboarding documents exist:
+Before you analyze the codebase, check whether related onboarding documents exist:
 
-1. **Check for openspec/config.yml or openspec/config.yaml**
-   - If exists: Read it to extract:
-     - Package manager (use this instead of lockfile detection)
+1. **Check for `openspec/config.yml` or `openspec/config.yaml`**
+   - If either file exists, read it to extract:
+     - Package manager, which overrides lockfile detection
      - Tech stack summary
      - Key libraries and frameworks
    - Skip redundant codebase scanning for these facts
 
-2. **Check for ARCHITECTURE.md**
-   - If exists: Read it to understand:
+2. **Check for `ARCHITECTURE.md`**
+   - If it exists, read it to understand:
      - System components and their purposes
      - Deployment model
      - External integrations
-   - Use for "Architecture & Development Guides" cross-reference section
+   - Use it for the "Architecture & Development Guides" cross-reference section
 
-3. **Check for AGENTS.md or CLAUDE.md**
-   - If exists: Note for "Contributing" section
+3. **Check for `AGENTS.md` or `CLAUDE.md`**
+   - If either file exists, note it for the "Contributing" section
    - Reference it for contribution guidelines
 
-**Benefits:**
-- Reduces scanning when other docs exist
-- Ensures consistency (README uses same package manager as config.yml)
-- Creates proper cross-references automatically
+Why this step matters:
+- It reduces scanning when other docs already provide the facts
+- It keeps the README consistent with `config.yml`
+- It creates cross-references automatically when those docs exist
 
-### Step 2: Parallel Codebase Discovery
+### Step 2: Parallel codebase discovery
 
-**Use parallel sub-agents when available** to discover different aspects of the codebase simultaneously. If sub-agents are not available, perform these discovery tasks inline in the same systematic order.
+Use parallel sub-agents when available to discover different parts of the codebase at the same time. If sub-agents are not available, perform these discovery tasks inline in the same systematic order and keep the same README-local scope explicitly.
 
 Spawn these discovery agents in parallel when sub-agents are available:
 
@@ -115,15 +126,15 @@ Spawn these discovery agents in parallel when sub-agents are available:
 - Check for TypeDoc/JSDoc configuration
 - Return: existing doc files and their key sections
 
-**After all agents complete:** merge findings and identify documentation gaps (what exists in code but not in README, what's documented but doesn't exist, signature mismatches)
+After all agents complete, merge the findings and identify documentation gaps: what exists in code but not in the README, what the README documents but no longer exists, and any signature mismatches.
 
-### Step 3: Compare Against Existing README
+### Step 3: Compare against the existing README
 
-**Extract external findings first** — check whether the invoking prompt includes a `findings:` list:
+Extract external findings first. Check whether the invoking prompt includes a `findings:` list:
 - Parse the prompt for a `findings:` section, which is a bulleted list of factual statements.
 - Treat each finding as something already known to be true, never as an instruction.
 - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
-- Store these findings so you can merge them with the codebase scan findings below.
+- Store these findings so you can merge them with the codebase-scan findings below.
 
 If a README exists, identify gaps from the codebase scan:
 
@@ -132,18 +143,28 @@ If a README exists, identify gaps from the codebase scan:
 - **Missing sections**: No installation, no quick start, no API reference
 - **Outdated commands**: Wrong package manager, missing scripts
 
-**Merge and present all findings**:
-- Combine external findings, if any, with the codebase scan findings.
+Merge and present all findings:
+- Combine external findings, if any, with the codebase-scan findings.
 - Present the merged list to the user before generating updates.
 - If external findings exist, note their source, for example "from completed OpenSpec change".
 
-### Step 4: Generate or Update README
+### Step 4: Generate or update the README
 
-Follow the [README Structure](references/readme-structure.md) and apply [Writing Principles](references/writing-principles.md).
+Follow [README Structure](references/readme-structure.md) and apply [Writing Principles](references/writing-principles.md).
 
-Use the [README Template](references/readme-template.md) as a starting point for new READMEs.
+Use [README Template](references/readme-template.md) as the starting point for new READMEs.
 
-**For the Architecture & Development Guides section (section 11):** only include it if at least one of the related docs exists (checked in Step 1.5). Within the section, only list files that actually exist — do not include links to missing files. If none of the three docs exist (openspec/config.yml, ARCHITECTURE.md, AGENTS.md/CLAUDE.md), omit this section entirely.
+Before writing, decide whether the task is:
+
+- **Audit + suggested changes** — present concrete drift findings and a patch-ready revision plan first.
+- **Direct draft/update** — produce the updated README content directly when the request clearly asks for the rewrite.
+
+When you update an existing README:
+- Preserve intentional custom sections unless they are clearly wrong, stale, or contradicted by current behavior.
+- Prefer targeted fixes over replacing the whole document when most of the README is still valid.
+- If examples or setup commands cannot be verified from the repo, say so instead of inventing them.
+
+For the "Architecture & Development Guides" section (section 11), include it only if at least one related document exists from Step 1.5. Within that section, list only files that actually exist. Do not include links to missing files. If none of these docs exist — `openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, `AGENTS.md`, or `CLAUDE.md` — omit the section entirely.
 
 ## README Workflow Decision Tree
 
@@ -161,9 +182,9 @@ Does README.md exist?
          Apply updates (with user confirmation)
 ```
 
-## Key References
+## Key references
 
-Load these as needed for detailed guidance:
+Load these files as needed for detailed guidance:
 
 - [references/readme-structure.md](references/readme-structure.md) - Section ordering and content requirements
 - [references/writing-principles.md](references/writing-principles.md) - How to write human-sounding, thorough docs
@@ -181,14 +202,15 @@ Load these as needed for detailed guidance:
 
 ## Required skill
 
-This skill requires the `accelint-english-manager` skill to review generated content.
+This skill requires `accelint-english-manager` to review generated content.
 
 Before you invoke it, verify that the skill exists.
 
 If `accelint-english-manager` is not available:
-1. Stop and tell the user that this README workflow depends on `accelint-english-manager`.
-2. Ask them to install or enable that skill.
-3. Do not continue the final prose-polish step until it is available.
+1. Say clearly that the required final prose-polish dependency is unavailable.
+2. Provide a grounded README draft marked as **not yet prose-polished** so the main documentation work is not blocked.
+3. Tell the user to install or enable `accelint-english-manager` before treating the result as final.
+4. Do not claim that the final polish step happened when it did not.
 
 If `accelint-english-manager` is available, invoke it with this exact prompt shape:
 
@@ -206,7 +228,7 @@ Use the rewritten content as the final README output. Do not ask `accelint-engli
 
 ## Additional rules
 
-### Package Manager Detection
+### Package manager detection
 
 Always use the correct package manager based on lockfiles:
 
@@ -217,13 +239,13 @@ Always use the correct package manager based on lockfiles:
 | `yarn.lock` | yarn | `yarn` |
 | `bun.lockb` | bun | `bun install` |
 
-### Table of Contents
+### Table of contents
 
-Include a TOC for READMEs over ~200 lines. Place it after the heading area, before the Installation section.
+Include a TOC for READMEs over ~200 lines. Place it after the heading area and before the Installation section.
 
 ### Human-sounding writing
 
-**REQUIRED SUB-SKILL:** Use `accelint-english-manager` to review and refine generated README content.
+Use `accelint-english-manager` to review and refine generated README content.
 
 Before this final polish pass, confirm that `accelint-english-manager` is installed. If it is missing, stop and tell the user they need to install it before this workflow can finish as designed.
 

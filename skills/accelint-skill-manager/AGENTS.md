@@ -7,17 +7,17 @@
 
 ## Abstract
 
-Comprehensive guide for agent skills, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+This is a comprehensive guide for agent skills, designed for AI agents and LLMs. Each rule has a one-line summary here, with links to detailed examples in the `references/` folder. Load a reference file only when you need detailed implementation guidance for that rule.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant optimizations
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+1. **Start here**: Scan the rule summaries to find the relevant guidance.
+2. **Load references as needed**: Open detailed examples only when you are implementing that rule.
+3. **Use progressive loading**: Each reference file is self-contained with ❌/✅ examples.
 
-This structure minimizes context usage while providing complete implementation guidance when needed.
+This structure minimizes context usage while still providing complete implementation guidance when needed.
 
 ---
 
@@ -44,7 +44,7 @@ Write "Use when..." descriptions with triggering conditions only, never workflow
 [View detailed examples](references/skill.md)
 
 ### 1.3 AGENTS.md
-Provide rule summaries with reference links, compress examples, eliminate redundancy.
+Provide rule summaries with reference links. Compress examples and remove redundancy.
 [View detailed examples](references/agents.md)
 
 ### 1.4 Progressive Disclosure
@@ -60,5 +60,5 @@ Bash preferred, use set -e, stderr for messages, stdout for JSON output.
 [View detailed examples](references/scripts.md)
 
 ### 1.7 Assets
-Static resources, templates, data files for complex/repetitive tasks.
+Use static resources, templates, and data files for complex or repetitive tasks.
 [View detailed examples](references/assets.md)

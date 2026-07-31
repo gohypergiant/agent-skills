@@ -1,0 +1,35 @@
+{
+  "skill_name": "accelint-design-foundation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have a React card component and a `Card.module.css` file in a Next.js app that already uses `@accelint/design-foundation`. Please style it with semantic tokens, semantic spacing, and CSS module patterns instead of inline Tailwind classes.",
+      "expected_output": "Applies design foundation styling through CSS modules, semantic tokens, semantic spacing, and layered component styles rather than generic inline Tailwind.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Can you convert this vanilla Tailwind button styling to `@accelint/design-foundation` conventions? It currently uses `bg-gray-100 text-gray-900 border border-gray-300 px-4 py-2 dark:bg-gray-900` and I want the proper semantic token and outline approach.",
+      "expected_output": "Replaces vanilla Tailwind colors, borders, and manual dark mode with semantic tokens, outline usage, and design foundation spacing guidance.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "My `.module.css` file throws `@variant directive not recognized` and `undefined variable --bg-surface-default` after we added `@accelint/design-toolkit`. Diagnose what setup is missing and show the exact fixes.",
+      "expected_output": "Identifies missing design foundation setup such as @reference directives, PostCSS plugin, and import ordering, then provides exact corrective edits.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "I'm building a status badge component with React Aria states and `@accelint/design-foundation`. Show how to style size and color variants using `data-*` attributes and `@variant` blocks, not attribute selectors.",
+      "expected_output": "Uses data attributes and @variant blocks for component variants and references React Aria-friendly state styling patterns.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "We use `@accelint/design-foundation` but the spacing feels off because someone used classes like `p-4 gap-6` expecting normal Tailwind values. Clean this up and explain the right spacing approach for this system.",
+      "expected_output": "Explains the 1:1 numeric fallback behavior, prefers semantic spacing tokens, and proposes corrected spacing classes aligned with the design system.",
+      "files": []
+    }
+  ]
+}

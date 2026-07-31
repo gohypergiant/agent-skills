@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.6.4] - 2026-07-30
+
+### Changed
+- Tightened behavior-defining prose across `SKILL.md` and `README.md` without changing trigger coverage or workflow order
+  - Replaced rhetorical checkpoint emphasis with clearer requirement wording where the text defines required approvals outside quoted prompts
+  - Tightened error-handling and guardrail prose for more consistent sentence structure and stronger local scanability
+  - Aligned `README.md` wording with the root skill's current planning-only boundary, checkpoint language, and manual-fallback limits
+  - Rationale: This audit-plus-rewrite pass focused on local clarity and cross-file consistency while preserving trigger scope, workflow semantics, and exact technical references
+
+### Version
+- Bumped from 1.6.3 → 1.6.4
+
+## [1.6.3] - 2026-07-30
+
+### Changed
+- Refined the frontmatter `description` for better trigger precision, eval coverage, and boundary clarity
+  - Added explicit trigger coverage for planning an OpenSpec change, creating a structured change package or task plan, and formal planning-workflow requests
+  - Clarified exclusion boundaries for resume-implementation work while preserving the planning-only scope
+  - Tightened wording around mandatory review checkpoints and the no-implementation boundary without changing intended behavior
+  - Rationale: The generated eval set emphasizes trigger specificity and clear separation from apply, archive, architecture-doc, and artifact-polish requests
+
+### Version
+- Bumped from 1.6.2 → 1.6.3
+
+## [1.6.2] - 2026-07-30
+
+### Changed
+- **Tightened trigger-only frontmatter description**
+  - Reduced workflow summary language in `description` so activation guidance stays focused on when to use the skill, not how it executes
+  - Rationale: The skill-manager guidance requires trigger conditions in frontmatter and warns that workflow summaries can cause agents to shortcut the body
+- **Clarified body structure and failure boundaries**
+  - Reformatted the "What This Skill Does" summary into a scan-friendly list
+  - Added explicit stop behavior when expected generated artifacts are missing before later checkpoint steps continue
+  - Tightened sub-agent failure guidance so manual fallback applies to Questions/Research only, while artifact generation still must go through `/opsx`
+  - Rationale: These are safe, localized clarity fixes that reduce ambiguity around failure handling without changing the intended workflow
+
+### Version
+- Bumped from 1.6.1 → 1.6.2
+
 ## [1.6.1] - 2026-07-29
 
 ### Changed

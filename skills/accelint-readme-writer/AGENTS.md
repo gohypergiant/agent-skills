@@ -13,22 +13,22 @@ Guide for creating thorough, human-sounding README documentation that stays alig
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to find the relevant sections.
-2. **Load references as needed**: Open detailed examples only when implementing.
-3. **Follow the workflow**: Analyze the codebase → Compare with existing docs → Generate or update.
+1. Start here: scan the rule summaries to find the relevant sections.
+2. Load references as needed: open detailed examples only when you need implementation detail.
+3. Follow the workflow: analyze the codebase, compare it with existing docs, then generate or update the README.
 
 ---
 
 ## 1. Codebase Analysis
 
-### 1.1 Scoping the Analysis
+### 1.1 Scoping the analysis
 [View detailed examples](references/codebase-analysis.md)
 
-- Start from the README's directory, not the repository root
-- In monorepos, only analyze the package/directory containing the README
-- Respect package boundaries defined by `package.json`
+- Start from the README directory, not the repository root.
+- In monorepos, analyze only the package or directory that contains the README.
+- Respect package boundaries defined by `package.json`.
 
-### 1.2 Identifying Public API
+### 1.2 Identifying public API
 [View detailed examples](references/codebase-analysis.md)
 
 - Check the `package.json` `exports` and `main` fields for entry points.
@@ -36,7 +36,7 @@ Guide for creating thorough, human-sounding README documentation that stays alig
 - Trace re-exports to their source definitions.
 - Distinguish between the public API, which is exported from an entry point, and internal utilities.
 
-### 1.3 Extracting Signatures
+### 1.3 Extracting signatures
 [View detailed examples](references/codebase-analysis.md)
 
 - Capture function signatures with parameter types and return types
@@ -44,7 +44,7 @@ Guide for creating thorough, human-sounding README documentation that stays alig
 - Note async functions and Promise return types
 - Include overloaded signatures if present
 
-### 1.4 Finding Existing Documentation
+### 1.4 Finding existing documentation
 [View detailed examples](references/codebase-analysis.md)
 
 - Read JSDoc/TSDoc comments above exports
@@ -56,10 +56,10 @@ Guide for creating thorough, human-sounding README documentation that stays alig
 
 ## 2. README Structure
 
-### 2.1 Required Sections
+### 2.1 Required sections
 [View detailed examples](references/readme-structure.md)
 
-Every README must include these sections in this order:
+Every README MUST include these sections in this order:
 
 1. **Heading Area** - Title, optional banner, optional badges
 2. **Installation** - How to install the package
@@ -70,16 +70,17 @@ Every README must include these sections in this order:
 7. **Examples** - Practical usage examples
 8. **License** - License information
 
-### 2.2 Optional Sections
+### 2.2 Optional sections
 [View detailed examples](references/readme-structure.md)
 
 Include when relevant:
 
 - **Table of Contents** - For READMEs over ~200 lines
 - **Further Reading** - Links to related resources
+- **Architecture & Development Guides** - Only when related docs such as `AGENTS.md`, `CLAUDE.md`, `ARCHITECTURE.md`, or OpenSpec config files actually exist
 - **Contributing** - How to contribute
 
-### 2.3 Section Ordering
+### 2.3 Section order
 [View detailed examples](references/readme-structure.md)
 
 Follow the prescribed order strictly. Users expect Installation near the top, API details in the middle, and License, Architecture & Development Guides, or Contributing near the bottom.
@@ -88,39 +89,39 @@ Follow the prescribed order strictly. Users expect Installation near the top, AP
 
 ## 3. Writing Principles
 
-**REQUIRED SUB-SKILL:** Use `accelint-english-manager` to review all generated README content before you finalize it.
+Use `accelint-english-manager` to review all generated README content before you finalize it.
 
-### 3.1 Be Absurdly Thorough
+### 3.1 Be thorough
 [View detailed examples](references/writing-principles.md)
 
 When in doubt, include it. Assume the reader has never seen this codebase.
 
-### 3.2 Use Code Blocks Liberally
+### 3.2 Use code blocks liberally
 [View detailed examples](references/writing-principles.md)
 
 Every command should be copy-pasteable. Show example output when helpful.
 
-### 3.3 Explain the Why
+### 3.3 Explain the why
 [View detailed examples](references/writing-principles.md)
 
 Don't just say "run this command" — explain what it does and why.
 
-### 3.4 Use Tables for Reference
+### 3.4 Use tables for reference
 [View detailed examples](references/writing-principles.md)
 
 Environment variables, CLI options, configuration options, and script references work great as tables.
 
-### 3.5 Keep Commands Current
+### 3.5 Keep commands current
 [View detailed examples](references/writing-principles.md)
 
 Detect and use the correct package manager. Never assume npm.
 
-### 3.6 Write Like a Human
+### 3.6 Write like a human
 [View detailed examples](references/writing-principles.md)
 
 Sound like someone who genuinely wants to help, not a robot generating docs.
 
-### 3.7 Apply humanizer patterns
+### 3.7 Apply final prose-polish patterns
 
 After drafting README content, apply the `accelint-english-manager` skill to remove AI writing patterns:
 
@@ -131,12 +132,13 @@ After drafting README content, apply the `accelint-english-manager` skill to rem
 - Fix em dash overuse and rule-of-three patterns
 - Remove sycophantic language ("Great question!", "Certainly!")
 - Add personality and voice. Sterile writing is as obvious as AI slop.
+- If `accelint-english-manager` is unavailable, deliver a clearly labeled draft and say the final polish step still needs to run.
 
 ---
 
 ## 4. Change Detection
 
-### 4.1 Comparing Code to Docs
+### 4.1 Comparing code to docs
 
 When updating an existing README:
 
@@ -147,7 +149,7 @@ When updating an existing README:
    - **Stale**: Documentation for removed exports
    - **Changed**: Signature changes not reflected
 
-### 4.2 Suggesting Changes
+### 4.2 Suggesting changes
 
 Present changes clearly:
 
@@ -165,9 +167,9 @@ Present changes clearly:
 - `createClient(url)` → `createClient(url, options?)` - New optional parameter
 ```
 
-### 4.3 Preserving Custom Content
+### 4.3 Preserving custom content
 
-When updating:
+When you update a README:
 
 - Keep the custom sections that the user added.
 - Preserve formatting choices where possible.
@@ -212,9 +214,9 @@ const result = functionName('input', { option: true });
 
 ---
 
-## Quick Reference Checklist
+## Quick reference checklist
 
-Before finalizing a README, verify:
+Before you finalize a README, verify:
 
 - [ ] Package manager matches lockfile
 - [ ] All public exports are documented

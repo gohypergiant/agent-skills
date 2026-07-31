@@ -10,10 +10,10 @@
 
 ## Optimizations
 
-- Sequential memory access patterns
+- Use sequential memory access patterns
 - Group related data together
 - Use flat arrays instead of nested structures
-- Consider columnar layout for analytics workloads
+- Consider a columnar layout for analytics workloads
 - Write code with clear, predictable execution paths
 
 ## Examples

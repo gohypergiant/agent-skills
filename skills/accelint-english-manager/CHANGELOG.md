@@ -4,6 +4,13 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
+## [1.3.3] - 2026-07-30
+
+### Changed
+- Tightened `SKILL.md` mode-selection wording so the skill asks for a mode without overusing RFC 2119 language in its own prose, while preserving the same workflow.
+- Clarified that generic cleanup requests such as "plain English" or "clean this up" should stay on the default plain-language path unless the user explicitly asks for strict mode.
+- Added an explicit limit that the skill must not invent new requirements, commitments, or product behavior while improving prose.
+
 ## [1.3.2] - 2026-07-30
 
 ### Changed

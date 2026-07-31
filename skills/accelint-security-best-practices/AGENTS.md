@@ -2,25 +2,25 @@
 
 ## Abstract
 
-Comprehensive security guide for JavaScript and TypeScript applications following OWASP Top 10, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+Comprehensive security guide for JavaScript and TypeScript applications that follows OWASP Top 10. It is designed for AI agents and LLMs. Each rule has a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
 ---
 
 ## How to Use This Guide
 
 1. **Start here**: Scan the rule summaries to identify relevant security patterns
-2. **Load references as needed**: Click through to detailed examples only when implementing
+2. **Load references as needed**: Open detailed examples only when you are implementing
 3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
 
-This structure minimizes context usage while providing complete security guidance when needed.
+This structure minimizes context usage while preserving complete security guidance when needed.
 
 ---
 
 ## Critical Security Anti-Patterns
 
-**NEVER** do these - they appear in codebases frequently but create severe vulnerabilities:
+**NEVER** do these. They appear in codebases frequently and create severe vulnerabilities:
 
-- **NEVER** hardcode secrets - API keys, passwords, tokens in source code are immediately compromised via version control; use environment variables exclusively
+- **NEVER** hardcode secrets - API keys, passwords, and tokens in source code are immediately compromised via version control; use environment variables or a dedicated secret manager
 - **NEVER** concatenate user input into queries - creates SQL/NoSQL injection; use parameterized queries and ORMs (10-1000x safer)
 - **NEVER** store tokens in localStorage - vulnerable to XSS attacks; use httpOnly cookies for authentication tokens
 - **NEVER** skip authorization checks - authentication verifies identity, authorization verifies permission; check both on every protected operation
@@ -29,15 +29,15 @@ This structure minimizes context usage while providing complete security guidanc
 - **NEVER** skip rate limiting - enables brute force (1000 password attempts/sec), DoS, data scraping; apply to all endpoints
 - **NEVER** log sensitive data - passwords, tokens, PII in logs persist in aggregation systems accessible to many; redact before logging
 - **NEVER** use default configurations in production - default secrets, disabled security headers, permissive CORS create known vulnerabilities
-- **NEVER** use Array.includes() for permission checks - O(n) lookup and type safety issues; use Set.has() (O(1)) or proper RBAC
+- **NEVER** rely on scattered ad-hoc permission checks - inconsistent string comparisons and route-local logic are easy to misuse; prefer explicit ownership checks and proper RBAC or ABAC
 
-See individual reference files for detailed alternatives and ✅ correct patterns.
+See the individual reference files for detailed alternatives and ✅ correct patterns.
 
 ---
 
 ## Security Categories (OWASP Top 10)
 
-**Before implementing security**: Identify attack surface and worst-case scenarios. Layer defenses so single vulnerability doesn't compromise entire system.
+**Before implementing security**: Identify the attack surface and worst-case scenarios. Layer defenses so a single vulnerability does not compromise the entire system.
 
 Defense in depth: `authentication + authorization + input validation + rate limiting + logging`
 
@@ -160,8 +160,8 @@ For systematic vulnerability identification and categorization, load [references
 
 ## Important Notes
 
-- **Audit everything philosophy** - Audit ALL code for security vulnerabilities. Internal utilities and helpers are frequently exposed through APIs or user interactions.
-- **Defense in depth** - Layer security controls so single vulnerability doesn't compromise entire system. Never rely on single protection.
+- **Audit everything philosophy** - Audit all in-scope code for security vulnerabilities. Internal utilities and helpers are often exposed through APIs or user interactions.
+- **Defense in depth** - Layer security controls so a single vulnerability does not compromise the entire system. Never rely on one protection.
 - **Fail securely** - When validation fails, deny access. Default to most secure option when uncertain.
 - **Principle of least privilege** - Grant minimum permissions necessary. Verify every operation.
 - **Security testing** - Test with malicious inputs and edge cases. Add tests for attack scenarios.

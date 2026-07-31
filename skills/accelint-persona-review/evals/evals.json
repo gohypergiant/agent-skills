@@ -1,0 +1,134 @@
+{
+  "skill_name": "accelint-persona-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "figma-url-ast-dashboard-review",
+      "prompt": "Review this Figma dashboard from the perspective of the air-surveillance-tech persona: https://figma.com/design/ops/Air-Picture-Validation?node-id=1-2. I need feedback on whether the screen supports track validation, weather discrimination, and sensor-health coordination during a normal watch. Please prioritize operational risks over generic UX comments.",
+      "expected_output": "Maps the request to air-surveillance-tech, loads only that persona, uses the Figma URL path, scopes the review to the provided dashboard, and produces a persona-grounded critique focused on track validation, weather discrimination, sensor-health coordination, cognitive load, system visibility, and operationally prioritized recommendations rather than generic UX advice.",
+      "files": [],
+      "assertions": [
+        "Identifies or clearly uses the air-surveillance-tech persona rather than a generic operator persona.",
+        "Treats the Figma URL as the primary design input and acknowledges the dashboard/screen review scope.",
+        "Connects findings to documented AST responsibilities, systems, communications, or pain points such as track validation, RS-4, ERSA, BCS-F, sensor health, or juggling multiple systems.",
+        "Prioritizes operational impact and workflow fit instead of generic visual-polish advice.",
+        "Includes actionable recommendations tied to the persona context."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "loose-role-mapping-weapons-director",
+      "prompt": "Can you do a persona review of this fighter-control workflow for the weapons director role? The Figma frame is here: https://figma.com/design/ops/Fighter-Intercept?node-id=22-14. I'm less interested in colors and more interested in whether it supports comms, intercept decision-making, and not overloading the operator when things get busy.",
+      "expected_output": "Maps the loose role phrase 'weapons director' to the correct weapons-director persona, reviews the workflow from that role's communication and tactical-decision perspective, deprioritizes generic styling comments, and highlights high-tempo workflow, communications, and overload risks with actionable recommendations.",
+      "files": [],
+      "assertions": [
+        "Maps the loose role wording to the weapons-director persona without requiring an unnecessary clarification when the match is unambiguous.",
+        "Frames the critique around fighter-control communications, intercept/tactical actions, or high-tempo workload rather than generic UX commentary.",
+        "Avoids focusing on colors or style-guide feedback as the primary output.",
+        "Provides role-specific, actionable recommendations grounded in responsibilities or pain points."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "screenshot-fallback-mcc",
+      "prompt": "I can't use Figma MCP right now, but I need a persona-based review for the mission-crew-commander of a mission summary screen. Assume I can only share screenshots. Please review for decision support, crew coordination, and whether the layout matches the tempo of a busy mission commander. Be explicit about any limits caused by the screenshot-only input.",
+      "expected_output": "Uses the mission-crew-commander persona, proceeds with a screenshot-only fallback path, explicitly states scope limits caused by missing MCP/design-state access, and still delivers an actionable persona-grounded review centered on decision support, crew coordination, and mission tempo.",
+      "files": [],
+      "assertions": [
+        "Uses a screenshot-only fallback approach rather than assuming live Figma access.",
+        "Explicitly states evidence limits or uncertainty caused by screenshot-only review.",
+        "Keeps the review grounded in the mission-crew-commander role instead of generic stakeholder feedback.",
+        "Provides actionable recommendations despite limited design access."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "outline-unavailable-ast",
+      "prompt": "Please review a surveillance screen for air-surveillance-tech. Figma access is available, but Outline docs are not. I want to know whether the design reduces context switching across BCS-F, RS-4, and ERSA and whether it helps with the valid/not-valid decision. Call out what extra documentation would have made the review stronger.",
+      "expected_output": "Performs the AST review without blocking on Outline, clearly notes that supporting-doc evidence is unavailable, evaluates context switching and valid/not-valid decision support using the persona profile, and mentions which missing standards or source materials would strengthen the review.",
+      "files": [],
+      "assertions": [
+        "Does not block the review on Outline access being unavailable.",
+        "Explicitly notes the lack of supporting documentation and names useful missing context such as standards, prior reviews, specs, or training material.",
+        "Connects the critique to AST systems and decision workflow, especially BCS-F, RS-4, ERSA, or valid/not-valid decisions.",
+        "Maintains persona-grounded operational analysis despite missing docs."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "ambiguous-persona-clarification",
+      "prompt": "Can you review this air-defense console from the director perspective? I want persona-based feedback on whether it helps with tactical calls and coordination, but I'm not sure whether I mean the weapons role or the senior one.",
+      "expected_output": "Recognizes that 'director' is ambiguous, lists the closest available persona options, asks the user to choose rather than guessing, and avoids producing a full review until the persona ambiguity is resolved.",
+      "files": [],
+      "assertions": [
+        "Recognizes the persona request is ambiguous rather than assuming a specific director persona.",
+        "Lists or references the closest available persona options, such as weapons-director and senior-director.",
+        "Asks the user to choose the intended persona before continuing with the full review.",
+        "Avoids pretending the ambiguity is resolved when it is not."
+      ]
+    },
+    {
+      "id": 6,
+      "name": "invalid-persona-request",
+      "prompt": "Do a persona review of this radar settings panel for the intel analyst persona. If that persona doesn't exist, tell me what operator personas are available so I can pick the right one.",
+      "expected_output": "Does not invent an intel-analyst persona, states that the requested persona is unavailable, and offers the available personas from the index so the user can choose a supported role.",
+      "files": [],
+      "assertions": [
+        "Does not fabricate a missing persona.",
+        "States that the requested intel-analyst persona is unavailable or unsupported.",
+        "Offers available personas or directs the user to choose from the supported list.",
+        "Defers the actual review until a valid persona is selected."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "comparison-request-should-not-load-multiple-by-default",
+      "prompt": "I want a persona review of this control panel for surveillance-tech. Keep it focused on that role only. Do not compare it against any other personas unless I ask. The main question is whether the panel supports continuity of detection and doesn't bury the first actions the operator needs to take.",
+      "expected_output": "Keeps the review scoped to the surveillance-tech persona only, does not broaden into unnecessary multi-persona comparison, and critiques the panel in terms of detection continuity, first actions, and role-specific workflow support.",
+      "files": [],
+      "assertions": [
+        "Keeps the review scoped to the requested surveillance-tech persona only.",
+        "Does not introduce multi-persona comparison unless explicitly requested.",
+        "Focuses findings on surveillance-tech workflow concerns such as detection continuity or first actions.",
+        "Provides actionable, role-specific recommendations."
+      ]
+    },
+    {
+      "id": 8,
+      "name": "evidence-and-uncertainty-discipline",
+      "prompt": "Review this Figma flow for the senior-director persona and be careful not to overstate anything. We only have a partial workflow and a few annotations. I want the review to distinguish observed evidence from inference, especially around approval authority and mission-planning decisions.",
+      "expected_output": "Uses the senior-director persona, reviews the partial flow with explicit scope limits, separates observed evidence from reasonable inference, and avoids overstating conclusions about approval authority or mission-planning behavior while still providing useful recommendations.",
+      "files": [],
+      "assertions": [
+        "Acknowledges the design evidence is partial.",
+        "Separates observed evidence from inference or uncertainty in the review.",
+        "Keeps the analysis grounded in the senior-director role and approval/mission-planning context.",
+        "Avoids overconfident claims while still offering practical recommendations."
+      ]
+    },
+    {
+      "id": 9,
+      "name": "generic-ux-near-miss-negative",
+      "prompt": "Can you give this Figma file a quick UX pass and tell me if the spacing, button styles, and typography feel polished? No need to tie it to a role or workflow; I just want generic UI feedback.",
+      "expected_output": "Should not force a persona-based review workflow onto a request that explicitly asks for generic UI feedback without a role or workflow. A strong response would either decline to use persona framing, note that persona review is not the right fit as stated, or ask whether the user wants a role-specific review instead.",
+      "files": [],
+      "assertions": [
+        "Recognizes this is a generic UI review request, not a strong fit for persona-based critique as written.",
+        "Does not invent a persona or produce a full persona-grounded review without role context.",
+        "Either redirects toward generic UX feedback or asks whether the user wants a persona-specific review instead."
+      ]
+    },
+    {
+      "id": 10,
+      "name": "non-figma-operator-guidance-near-miss-negative",
+      "prompt": "I need help writing a training SOP for new surveillance operators. This isn't a design review — it's more about documenting the steps they should follow on shift.",
+      "expected_output": "Should not treat the request as a persona-based Figma/UX review. A strong response would recognize the task is SOP writing rather than interface critique and avoid forcing the persona-review workflow.",
+      "files": [],
+      "assertions": [
+        "Recognizes the request is for SOP/process writing rather than design review.",
+        "Does not force a persona-review critique structure onto the task.",
+        "If it responds helpfully, it redirects toward documentation or writing support instead of pretending this skill is the right fit."
+      ]
+    }
+  ]
+}

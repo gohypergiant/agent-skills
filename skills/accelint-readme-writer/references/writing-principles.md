@@ -2,13 +2,13 @@
 
 Guidelines for creating thorough, human-sounding documentation.
 
-**REQUIRED SUB-SKILL:** Use `accelint-english-manager` to review generated content for AI writing patterns.
+Use `accelint-english-manager` to review generated content for AI writing patterns.
 
 This document covers README-specific writing principles. The `accelint-english-manager` skill provides broader patterns for removing AI-generated text artifacts. Use both together.
 
 ---
 
-## 1. Be absurdly thorough
+## 1. Be thorough
 
 When in doubt, include it. For documentation, more detail is usually better.
 
@@ -34,7 +34,7 @@ If you're using TypeScript, you're all set — types are included. For JavaScrip
 
 ---
 
-## 2. Use Code Blocks Liberally
+## 2. Use code blocks liberally
 
 Every command should be copy-pasteable. Do not describe commands in prose when you can show them.
 
@@ -56,7 +56,7 @@ This compiles TypeScript to JavaScript in the `dist/` directory.
 
 ---
 
-## 3. Show Example Output
+## 3. Show example output
 
 When helpful, show what the user should expect to see. This confirms that they are on the right track.
 
@@ -86,7 +86,7 @@ You should see output like:
 
 ---
 
-## 4. Explain the Why
+## 4. Explain the why
 
 Don't just say "run this command" — explain what it does and why someone would need it.
 
@@ -112,7 +112,7 @@ This prints detailed information about each step, which is helpful when tracking
 
 ---
 
-## 5. Assume Fresh Machine
+## 5. Assume a fresh machine
 
 Write as if the reader has never seen this codebase. Do not assume that they know your conventions.
 
@@ -136,7 +136,7 @@ This installs all dependencies. The first install may take a few minutes.
 
 ---
 
-## 6. Use Tables for Reference
+## 6. Use tables for reference
 
 Environment variables, CLI options, configuration options, and script references work well as tables.
 
@@ -156,7 +156,7 @@ The `format` option can be "json" or "yaml". The `output` option specifies where
 
 ---
 
-## 7. Keep Commands Current
+## 7. Keep commands current
 
 Detect the actual package manager and use it consistently. Never assume `npm`.
 
@@ -176,7 +176,7 @@ pnpm install
 pnpm build
 ```
 
-### Package Manager Detection
+### Package manager detection
 
 Check for lockfiles in this order:
 
@@ -201,7 +201,7 @@ The function accepts a configuration object parameter. The configuration object 
 Pass in a config object with your settings. At minimum, you need `apiKey` and `endpoint` — the function will let you know if anything's missing.
 ```
 
-### Avoid These Patterns
+### Avoid these patterns
 
 - **Overly formal**: "It should be noted that..." → "Note that..."
 - **Passive voice**: "The file is read by the parser" → "The parser reads the file"
@@ -219,7 +219,7 @@ Pass in a config object with your settings. At minimum, you need `apiKey` and `e
 
 ---
 
-## 9. Include a Table of Contents
+## 9. Include a table of contents
 
 For READMEs over ~200 lines, add a TOC at the top after the heading area.
 
@@ -242,9 +242,9 @@ Keep TOC entries to 2 levels deep maximum. Deeper nesting makes the TOC harder t
 
 ## 10. Remove AI writing patterns
 
-After drafting content, apply the `accelint-english-manager` skill to catch patterns that this guide does not cover. Watch for these patterns in README content:
+After you draft content, apply `accelint-english-manager` to catch patterns that this guide does not cover. Watch for these patterns in README content:
 
-### Significance Inflation
+### Significance inflation
 
 **❌ AI pattern:**
 ```markdown
@@ -256,7 +256,7 @@ This package serves as a pivotal tool in the JavaScript ecosystem, marking a cru
 This package parses config files. It supports JSON, YAML, and TOML.
 ```
 
-### Promotional Language
+### Promotional language
 
 **❌ AI pattern:**
 ```markdown
@@ -268,7 +268,7 @@ Nestled within the Node.js ecosystem, this groundbreaking library offers seamles
 A config parser for Node.js projects.
 ```
 
-### Superficial -ing Phrases
+### Superficial -ing phrases
 
 **❌ AI pattern:**
 ```markdown
@@ -280,7 +280,7 @@ The validate function checks your config, ensuring compliance with your schema w
 The validate function checks your config against a schema and returns any errors.
 ```
 
-### Vague Attributions
+### Vague attributions
 
 **❌ AI pattern:**
 ```markdown
@@ -294,7 +294,7 @@ In our benchmarks, this reduced config load time by 40%.
 
 (Or just remove the claim entirely if you don't have specific data.)
 
-### Rule of Three
+### Rule of three
 
 **❌ AI pattern:**
 ```markdown
@@ -306,7 +306,7 @@ The package is fast, flexible, and fully featured.
 The package is fast. See benchmarks below.
 ```
 
-### Generic Conclusions
+### Generic conclusions
 
 **❌ AI pattern:**
 ```markdown
@@ -324,13 +324,13 @@ See the roadmap in CONTRIBUTING.md for planned features.
 
 Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as obvious.
 
-### Signs of soulless writing:
+### Signs of soulless writing
 - Every sentence is the same length
 - No opinions, just neutral reporting
 - No first-person perspective when appropriate
 - Reads like a press release
 
-### How to add voice:
+### How to add voice
 
 **Have opinions when relevant:**
 ```markdown

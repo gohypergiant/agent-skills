@@ -1,8 +1,8 @@
 # Security Best Practices
 
-Systematic security auditing and vulnerability detection for JavaScript/TypeScript applications. Combines audit workflow with OWASP Top 10 security patterns for production-ready code.
+Systematic security auditing and vulnerability detection for JavaScript/TypeScript applications. This skill combines an audit workflow with OWASP Top 10 security patterns for production-ready code.
 
-**Framework-Agnostic**: This skill provides security principles applicable across frameworks (Express, Fastify, Nest.js, Next.js, etc.), package managers (npm, yarn, pnpm, bun), and libraries. Code examples illustrate concepts—adapt them to your project's specific stack.
+**Framework-Agnostic**: This skill gives security principles that apply across frameworks (Express, Fastify, Nest.js, Next.js, and others), package managers (npm, yarn, pnpm, bun), and libraries. Code examples illustrate the concepts. Adapt them to your project's stack.
 
 ## Overview
 
@@ -16,12 +16,13 @@ This skill provides:
 ## When to Use
 
 Use this skill when:
-- Auditing code for security vulnerabilities
-- Implementing authentication or authorization
-- Adding API endpoints, file uploads, or user input handling
-- Working with secrets, credentials, or sensitive data
-- Conducting pre-deployment security checks
-- Users say "audit security", "check for vulnerabilities", "security review", "secure this code"
+- Auditing JavaScript or TypeScript code for security vulnerabilities
+- Hardening authentication, authorization, APIs, file uploads, or user-input handling
+- Reviewing secrets handling, dependency risk, outbound URL fetching, or sensitive-data exposure
+- Conducting repo-scoped or feature-scoped pre-deployment security checks
+- Users say "security review", "audit for vulnerabilities", "secure this code", "review auth flow", "check file upload security", or "harden this API"
+
+This skill is for security-focused work. It should not trigger for generic refactors, non-security TypeScript cleanup, or UX-only auth changes.
 
 ## Structure
 
@@ -54,9 +55,9 @@ accelint-security-best-practices/
 
 This skill minimizes context usage through progressive loading:
 
-1. **Start with SKILL.md** - Follow the 4-phase workflow
-2. **Load AGENTS.md** - Scan compressed security rule summaries
-3. **Load specific references** - Detailed ❌/✅ examples when implementing
+1. **Start with `SKILL.md`** - Follow the 4-phase workflow
+2. **Load `AGENTS.md`** - Scan compressed security rule summaries
+3. **Load specific references** - Open detailed ❌/✅ examples when implementing
 
 ## OWASP Top 10 Coverage
 
@@ -75,15 +76,16 @@ This skill minimizes context usage through progressive loading:
 
 ## Quick Start
 
-1. **Discover vulnerabilities** - Systematically analyze code for security anti-patterns across all OWASP categories
-2. **Categorize by severity** - Map vulnerabilities to OWASP categories with Critical/High/Medium/Low severity
-3. **Load relevant pattern** - Open corresponding reference file for ❌/✅ examples and remediation guidance
-4. **Apply and verify** - Implement security fix, validate closure, confirm no new vulnerabilities introduced
+1. **Scope the task first** - Identify the target path or feature area, whether the user wants audit-only findings or fixes applied, and the highest-risk surfaces
+2. **Discover vulnerabilities** - Analyze the in-scope code for security anti-patterns across relevant OWASP categories
+3. **Categorize by severity** - Map verified vulnerabilities to OWASP categories with Critical/High/Medium/Low severity
+4. **Load the relevant pattern** - Open the corresponding reference file for ❌/✅ examples and remediation guidance
+5. **Apply and verify** - Implement the security fix when requested, validate closure, and confirm that no new vulnerabilities were introduced
 
 ## Critical Security Anti-Patterns
 
 **NEVER** do these:
-- ❌ Hardcode secrets (API keys, passwords, tokens) - use environment variables exclusively
+- ❌ Hardcode secrets (API keys, passwords, tokens) - use environment variables or a dedicated secret manager
 - ❌ Concatenate user input into queries - use parameterized queries/ORMs
 - ❌ Store tokens in localStorage - use httpOnly cookies
 - ❌ Skip authorization checks - verify ownership/permissions before resource access
@@ -92,9 +94,9 @@ This skill minimizes context usage through progressive loading:
 - ❌ Skip rate limiting on APIs - apply limits to all endpoints, stricter on auth
 - ❌ Log sensitive data - redact passwords, tokens, PII before logging
 - ❌ Use default configurations in production - harden all settings
-- ❌ Use Array.includes() for permission checks - use Set.has() or RBAC
+- ❌ Rely on scattered ad-hoc permission checks - prefer explicit ownership checks and well-defined RBAC or ABAC rules
 
-See reference files for ✅ correct patterns.
+See the reference files for ✅ correct patterns.
 
 ## Severity Levels
 
@@ -105,7 +107,7 @@ See reference files for ✅ correct patterns.
 
 ## Defense in Depth
 
-Layer security controls so single vulnerability doesn't compromise entire system:
+Layer security controls so a single vulnerability does not compromise the entire system:
 - Authentication (verify identity) + Authorization (verify permission)
 - Input validation (type/format) + Injection prevention (parameterized queries)
 - Rate limiting (prevent brute force) + Logging (detect attacks)

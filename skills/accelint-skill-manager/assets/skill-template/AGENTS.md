@@ -7,19 +7,19 @@
 
 ## Abstract
 
-Brief summary of what this skill provides and how it's organized. Explain that each rule includes one-line summaries with links to detailed examples in the `references/` folder.
+Briefly summarize what this skill provides and how it is organized. Explain that each rule has a one-line summary with links to detailed examples in the `references/` folder.
 
-**Token efficiency principle:** This guide maximizes knowledge delta by providing only expert-level insights Claude doesn't already know. All rules assume Claude understands standard concepts, libraries, and patterns. Focus is on non-obvious decisions, trade-offs, and edge cases.
+**Token efficiency principle:** This guide maximizes knowledge delta by providing only expert-level insights Claude does not already know. All rules assume Claude understands standard concepts, libraries, and patterns. Focus on non-obvious decisions, trade-offs, and edge cases.
 
 ---
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant guidance
-2. **Load references as needed**: Click through to detailed examples only when implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+1. **Start here**: Scan the rule summaries to identify the relevant guidance.
+2. **Load references as needed**: Open detailed examples only when you are implementing that rule.
+3. **Use progressive loading**: Each reference file is self-contained with ❌/✅ examples.
 
-This structure minimizes context usage while providing complete implementation guidance when needed.
+This structure minimizes context usage while still providing complete implementation guidance when needed.
 
 ---
 

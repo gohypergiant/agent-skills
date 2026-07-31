@@ -2,7 +2,7 @@
 
 Use this reference when the request is technical, procedural, instructional, or explicitly asks for STE or ASD-STE100-style writing. It is the main overlay for `mode=strict`.
 
-Load only the section or rule group that the current request needs. You do not need to load this whole file for every strict request.
+Load only the section or rule group that the current request needs. You do not need this whole file for every strict request.
 
 This is a software-oriented, STE-inspired synthesis for technical clarity and LLM-output cleanup. It is not an official copy of the ASD dictionary and does not claim compliance.
 
@@ -32,7 +32,7 @@ Examples:
 - config / settings / options / configuration
 - run / execute / invoke / launch
 
-Repeated clarity is better than elegant variation, especially in technical and procedural text.
+Repeated clarity is better than stylistic variation, especially in technical and procedural text.
 
 ### Prefer common words when accuracy survives
 
@@ -58,8 +58,7 @@ Examples:
 - compile
 - hydrate
 
-If a technical term may confuse the intended reader, define it once or link to its definition.
-Do not replace an official or canonical technical name with a friendlier phrase if that would reduce precision.
+If a technical term may confuse the intended reader, define it once or link to its definition. Do not replace an official or canonical technical name with a friendlier phrase if that would reduce precision.
 
 ### Keep one meaning and one grammatical role when possible
 
@@ -99,7 +98,7 @@ Avoid when plain alternatives exist:
 
 Prefer active voice, but passive can be acceptable in descriptive writing when the actor is unknown or irrelevant and active phrasing would reduce accuracy.
 
-Use a different sentence construction when a direct word swap would distort the meaning.
+Use a different sentence structure when a direct word swap would distort the meaning.
 
 ## 4. Condition before command
 
@@ -125,7 +124,7 @@ Prefer:
 - one topic per paragraph
 - short paragraphs for scanability
 
-Target a maximum of 20 words for procedure steps and 25 words for descriptive sentences. Exceed only when splitting would reduce accuracy or readability.
+Target a maximum of 20 words for procedure steps and 25 words for descriptive sentences. Exceed that only when splitting would reduce accuracy or readability.
 
 Break long noun chains with prepositions.
 Preserve official long names on first mention. Then shorten carefully or use an established abbreviation if that improves clarity.
@@ -162,7 +161,7 @@ Put the command or condition first. Then state the risk.
 
 ## 8. Avoid filler and AI-slop markers
 
-Common patterns to delete or rewrite:
+Delete or rewrite these common patterns:
 
 - it is worth noting that
 - crucially

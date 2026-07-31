@@ -2,7 +2,7 @@
 
 ## Comment Markers
 
-Use "better comment" markers for non-docblock comments to categorize different types of annotations:
+Use marker comments for non-docblock comments to categorize different kinds of annotations:
 
 - `TODO:` - Future changes or unimplemented features
 - `FIXME:` - Known bugs or critical defects
@@ -29,10 +29,10 @@ Use "better comment" markers for non-docblock comments to categorize different t
 
 ## Comments to Remove
 
-Always remove these types of comments during audits:
+Always remove these comment types during audits:
 
 ### Commented-Out Code
-Dead code should be deleted, not commented. Version control preserves history.
+Dead code should be deleted, not commented out. Version control preserves the history.
 
 **❌ Incorrect: Dead code should be removed**
 ```typescript
@@ -51,7 +51,7 @@ function process(data) {
 ```
 
 ### Edit History Comments
-Comments like "added", "removed", "changed" should be removed. Git provides change history.
+Comments such as "added", "removed", or "changed" should be removed. Git already provides the change history.
 
 **❌ Incorrect: Edit history in comments**
 ```typescript
@@ -71,7 +71,7 @@ function fetchData() {
 ```
 
 ### Comments Restating Code
-Comments that merely restate what the code clearly does add no value.
+Comments that restate what the code already says do not add value.
 
 **❌ Incorrect: Obvious comment**
 ```typescript
@@ -169,7 +169,7 @@ function calculateTotal(basePrice: number, taxRate: number): number {
 
 ## Comments Placement
 
-Move end-of-line comments to their own line above the code they describe. This improves readability and prevents comments from being lost at the end of long lines.
+Move end-of-line comments to their own line above the code they describe. This improves readability and keeps comments from getting lost at the end of long lines.
 
 **❌ Incorrect: End-of-line comments**
 ```typescript

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.2] - 2026-07-30
+
+### Changed
+- Tightened the trigger description around periodic, corpus-wide, human-approved archive audits and added stronger boundaries against propose/apply/archive and single-change verification workflows
+  - Rationale: Improves trigger precision for real archive-synthesis requests while reducing overlap with adjacent OpenSpec skills
+- Added an upfront interaction contract, centralized degraded-mode rules, clearer workflow-order guidance, and a compact final summary template
+  - Rationale: Makes the human stop points, fallback behavior, and expected run conclusion easier to follow during long archive-audit executions
+- Tightened skill prose without changing workflow order, approval gates, or write-permission boundaries
+  - Rationale: Reduces instruction sprawl and improves scanability for a long, safety-sensitive skill
+- Added `evals/evals.json` with decision-drift, reconciliation, structural-coupling, degraded-mode, and human-review-gating scenarios
+  - Rationale: Establishes a reusable default eval set for regression coverage and future skill-creator benchmarking
+
+### Version
+- Bumped from 1.1.1 → 1.1.2
+
 ## [1.1.1] - 2026-07-24
 
 ### Fixed
