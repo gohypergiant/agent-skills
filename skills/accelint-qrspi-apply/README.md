@@ -88,8 +88,9 @@ The skill executes these stages automatically:
 
 1. Identifies the change to apply (from arguments or context)
 2. If ambiguous, prompts you to select from available changes
-3. Verifies tasks.md exists and uses markdown checklist format
-4. Exits early with clear errors if prerequisites aren't met
+3. If interaction is unavailable and multiple candidate changes exist, it stops safely and asks for an explicit change name instead of guessing
+4. Verifies tasks.md exists and uses markdown checklist format
+5. Exits early with clear errors if prerequisites aren't met
 
 ### Parse Tasks and Parallelization Strategy
 
@@ -116,7 +117,7 @@ Falls back to sequential execution if no strategy is found.
 
 Reads `openspec/config.yaml` when present and extracts the `context:` block for sub-agent guidance. This compensates for OpenSpec CLI's limitation where the apply command doesn't automatically inject project context.
 
-The context provides Stack Facts, coding patterns, testing conventions, and anti-patterns that guide implementation.
+The context provides Stack Facts, coding patterns, testing conventions, and anti-patterns that guide implementation. If the context block is missing, malformed, or its boundaries cannot be isolated confidently, the skill skips injection and proceeds without corrupted guidance.
 
 ### Execute Tasks
 
@@ -130,6 +131,7 @@ Implements tasks following the dependency graph:
 **Parallel execution** (for independent slices):
 - Performs overlap check before parallelizing
 - Spawns all slice sub-agents simultaneously when boundaries look safe
+- Falls back to serial execution for the affected level when overlap risk or slice ambiguity is detected and interaction is unavailable
 - Tracks completion as each finishes
 - Reviews slice summaries for collisions before starting next level
 - Offers pause/clear/resume options after each level
@@ -146,7 +148,7 @@ Before verification, the skill checks living documents that may need updates:
 
 - `openspec/config.yaml` (via `accelint-onboard-openspec` if available)
 - `ARCHITECTURE.md` (via `accelint-architecture-doc` if available)
-- `AGENTS.md` (via `accelint-onboard-agent` if available)
+- `AGENTS.md` (via `accelint-onboard-agents` if available)
 - `README.md` (via `accelint-readme-writer` if available)
 
 Processes all documents in sequence. Uses specialized skills when available, falls back to manual updates when not. Skips documents that don't exist or don't need updates.
@@ -335,7 +337,7 @@ Ready to archive!
 - **accelint-qrspi-propose** - Create QRSPI-planned changes (prerequisite)
 - **accelint-qrspi-archive** - Archive completed changes (next step)
 - **accelint-onboard-openspec** - Set up OpenSpec config
-- **accelint-onboard-agent** - Create AGENTS.md
+- **accelint-onboard-agents** - Create AGENTS.md
 - **accelint-architecture-doc** - Update ARCHITECTURE.md
 - **accelint-readme-writer** - Update README.md
 
@@ -354,7 +356,7 @@ After this skill completes, you'll manually run:
 
 ## Version
 
-Current version: **1.6.0**
+Current version: **1.6.1**
 
 See CHANGELOG.md for version history and design decisions.
 

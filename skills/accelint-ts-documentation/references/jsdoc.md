@@ -2,21 +2,24 @@
 
 ## Scope
 
-All functions, type aliases, interfaces, constants, and classes, whether exported or internal, must have well-formed JSDoc comments.
+Use the same two-tier policy defined in `SKILL.md`:
+
+- **Exported code** requires comprehensive, well-formed JSDoc.
+- **Internal code** uses judgment-based documentation. Document non-obvious behavior, intent, constraints, and edge cases. Do not add full JSDoc to every internal symbol by default.
 
 ## Directive Comments Are Exempt
 
-**Tool directive comments must be left unchanged.** These include:
+**Tool directive comments MUST be left unchanged.** These include:
 - Linter directives: `// eslint-disable-next-line`, `// biome-ignore lint/suspicious/noExplicitAny: reason`
 - Formatter directives: `// prettier-ignore`
 - Tool-specific comments: `// biome-ignore-all assist/source/organizeImports: reason`
 - Type checker directives: `// @ts-expect-error`, `// @ts-ignore`
 
-These comments have tool-specific syntax and **must not be modified or reformatted** to follow JSDoc conventions. They serve a different purpose than documentation comments.
+These comments have tool-specific syntax and **MUST NOT be modified or reformatted** to follow JSDoc conventions. They serve a different purpose than documentation comments.
 
 **Exported code** requires comprehensive documentation with all applicable tags.
 
-**Internal code** may use reduced documentation: description, `@template`, `@param`, and `@returns` only. It may omit `@example` and `@throws`.
+**Internal code** may use reduced documentation when documentation is warranted: description, `@template`, `@param`, and `@returns` only. It MAY omit `@example` and `@throws`, and it MAY omit JSDoc entirely when the code is already self-evident.
 
 ## @example Code Fence Requirement
 

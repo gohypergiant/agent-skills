@@ -88,7 +88,7 @@ You should see output like:
 
 ## 4. Explain the why
 
-Don't just say "run this command" — explain what it does and why someone would need it.
+Do not just say "run this command." Explain what it does and why someone would need it.
 
 **❌ Incorrect: what without why**
 ```markdown

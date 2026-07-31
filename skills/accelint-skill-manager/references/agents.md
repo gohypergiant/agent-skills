@@ -2,11 +2,11 @@
 
 ## Overview
 
-As a general rule, follow guidance from [Agents.md](https://agents.md/). Provide concise, descriptive incorrect and correct examples. Consolidate examples when reasonable to reduce token usage. The target audience for this document is an AI agent or LLM.
+As a general rule, follow guidance from [Agents.md](https://agents.md/). Provide concise, descriptive incorrect and correct examples. Consolidate examples when that reduces token usage without losing the rule. The target audience for this document is an AI agent or LLM.
 
 ### Token Efficiency (Critical)
 
-#### Use cross-references:
+#### Use cross-references
 
 **❌ Incorrect: repeated workflow details**
 ```
@@ -19,7 +19,7 @@ When searching, dispatch subagent with template...
 Always use subagents. REQUIRED: Use [other-skill-name] for workflow.
 ```
 
-#### Compress examples:
+#### Compress examples
 
 ```markdown
 # ❌ BAD: Verbose example (42 words)
@@ -49,9 +49,9 @@ You: Searching...
 
 #### Eliminate redundancy
 
-- Don't repeat what's in cross-referenced skills
-- Don't explain what's obvious from skill
-- Don't include multiple examples of same pattern
+- Do not repeat what is already in cross-referenced skills.
+- Do not explain what is already obvious from the skill.
+- Do not include multiple examples of the same pattern.
 
 ---
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.5] - 2026-07-31
+
+### Changed
+- Tightened evidence-backed workflow reliability in `SKILL.md`
+  - Resolved conflicting instructions for missing `accelint-english-manager` by standardizing on a grounded **not yet prose-polished** fallback
+  - Reduced drift risk by keeping a single canonical strict-mode invocation block for `accelint-english-manager`
+  - Relaxed the subagent rule so parallel discovery is preferred when it materially helps, while allowing systematic inline discovery for small README-local targets
+  - Clarified when to pause for confirmation versus proceeding directly with a requested rewrite
+- Aligned support guidance with the adaptive README strategy
+  - Updated `AGENTS.md` and `references/readme-structure.md` so package/library section order remains the default, while app/service/CLI/monorepo-root READMEs can adapt their middle sections to the real public surface
+- Performed a strict prose-tightening pass across the skill artifact set without changing frontmatter
+  - Refined `SKILL.md`, `AGENTS.md`, and reference-file wording for scanability while preserving trigger coverage, workflow semantics, guardrails, and exact technical references
+
+### Version
+- Bumped from 1.2.4 → 1.2.5
+
 ## [1.2.4] - 2026-07-30
 
 ### Changed

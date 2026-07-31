@@ -4,7 +4,7 @@ How to parse and understand code for documentation.
 
 ---
 
-## Scoping the Analysis
+## Scoping the analysis
 
 ### Starting point
 
@@ -286,12 +286,12 @@ Extract usage patterns from tests for the Examples section.
 ### Building the comparison
 
 1. **Parse exports from code:**
-   - List all exports from entry points
-   - Include types, functions, classes, constants
+   - List all exports from entry points.
+   - Include types, functions, classes, and constants.
 
 2. **Parse documented API from README:**
-   - Extract all items in API section
-   - Note function signatures, type names
+   - Extract all items in the API section.
+   - Note function signatures and type names.
 
 3. **Generate diff:**
 

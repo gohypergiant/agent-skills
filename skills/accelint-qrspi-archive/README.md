@@ -1,6 +1,6 @@
 # Accelint QRSPI Archive
 
-Archive OpenSpec changes with cross-capability linking and index maintenance. This skill runs the complete workflow: native archive first, then additive related-spec linking, targeted `openspec/specs/INDEX.md` maintenance, and append-only `openspec/changes/archive/INDEX.md` updates.
+Archive OpenSpec changes with cross-capability linking and index maintenance. This README is a concise companion summary; `SKILL.md` is the canonical operational contract. This skill runs the complete workflow: native archive first, then additive related-spec linking, targeted `openspec/specs/INDEX.md` maintenance, and append-only `openspec/changes/archive/INDEX.md` updates.
 
 ## What This Does
 

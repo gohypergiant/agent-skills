@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.3] - 2026-07-31
+
+### Changed
+- Corrected the routed AGENTS.md writer-skill name from `accelint-onboard-agent` to `accelint-onboard-agents` in `SKILL.md` and `README.md`
+  - Rationale: Matches the directly observed available skill name in this repo/session and removes handoff ambiguity during confirmed-finding routing
+- Normalized `findings:` interface wording and repaired malformed step-reference prose in `SKILL.md`
+  - Rationale: Improves execution clarity in a routing-heavy, safety-sensitive skill without changing workflow behavior
+- Tightened selected body prose in `SKILL.md` and `README.md` without changing frontmatter, workflow order, approval gates, or write-permission boundaries
+  - Rationale: Stage 4 prose audit found dense but behaviorally correct passages where clearer sentence structure improved scanability with no behavior drift
+
+### Version
+- Bumped from 1.1.2 → 1.1.3
+
 ## [1.1.2] - 2026-07-30
 
 ### Changed

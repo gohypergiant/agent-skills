@@ -131,7 +131,7 @@ jobs:
 
 ### Pre-commit Hook
 
-Add to `.git/hooks/pre-commit`:
+Add this to `.git/hooks/pre-commit`:
 
 ```bash
 #!/bin/bash
@@ -161,15 +161,15 @@ These scripts use simple pattern matching and can produce:
 - **False negatives** - Missed issues caused by complex code patterns
 - **Context-unaware** - The scripts do not understand code semantics
 
-Always manually review findings before making changes.
+Always review findings manually before you make changes.
 
 ---
 
 ## Adding New Scripts
 
-When adding new automation scripts:
+When you add new automation scripts:
 
-1. **Name clearly** - Use verb-noun format such as `check-auth.sh`.
+1. **Name clearly** - Use a verb-noun format such as `check-auth.sh`.
 2. **Add help text** - Include usage and examples in the script header.
 3. **Use colors** - Make output easy to scan (`red=error`, `yellow=warning`, `green=success`).
 4. **Use exit codes** - Return `0` for success and `1` for failures.

@@ -1,6 +1,6 @@
 # Vitest Best Practices
 
-Expert guidance for writing maintainable, effective Vitest tests. This skill covers test organization, strict assertions, async testing, mocking strategy, and property-based testing opportunities.
+`accelint-ts-testing` is this repository's skill for maintainable, effective Vitest and Vitest-style TypeScript tests. It covers test organization, strict assertions, async testing, mocking strategy, and property-based testing opportunities.
 
 **For complete guidance, see [SKILL.md](SKILL.md).**
 

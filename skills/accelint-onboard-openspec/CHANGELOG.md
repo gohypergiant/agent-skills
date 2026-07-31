@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.1] - 2026-07-31
+
+### Changed
+- **Progressive disclosure refactor for core skill instructions** — moved the YAML safety checklist and the full `openspec/config.yaml` template out of `SKILL.md` into `references/` files and updated the main workflow to load them only when needed
+  - Reduced `SKILL.md` from 688 lines to 415 lines after the audit identified size and maintenance pressure
+  - Preserved the create/import/refresh workflow while lowering default context load for normal invocations
+- **Guardrail wording and prose consistency** — tightened non-frontmatter instructions and supporting docs without changing frontmatter trigger scope
+  - Rephrased the serial-inference warning so it still prefers parallel discovery when subagents are available while matching the documented inline fallback path
+  - Corrected the recognised-shape example to use the actual `spec` rule key
+  - Tightened README and reference prose so published package guidance stays aligned with the root skill contract
+
+### Added
+- `references/config-template.md` as the canonical full-template source for preview and generation steps
+- `references/yaml-safety.md` as the canonical YAML quoting, indentation, and validation checklist
+
+### Version
+- Bumped from 1.6.0 → 1.6.1
+
 ## [1.6.0] - 2026-07-30
 
 ### Changed

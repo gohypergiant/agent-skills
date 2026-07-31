@@ -4,60 +4,55 @@ description: Use when the task involves React code and the right answer depends 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.8.3"
+  version: "1.8.4"
 ---
 
 # React Best Practices
 
-React-specific performance and correctness guidance for agents working with components, hooks, JSX, hydration, and React 19 patterns.
+Use this skill for React-specific performance and correctness guidance when the work involves components, hooks, JSX, hydration, or React 19 patterns.
 
 ## NEVER Do React
 
 These anti-patterns regularly cause production bugs, avoidable re-renders, or broken user interactions.
 
-**NEVER define components inside components** — creates new component type on every render, causing full remount with state loss and DOM recreation. Results in input fields losing focus on keystroke, animations restarting unexpectedly, and useEffect cleanup/setup running on every parent render.
+Read [AGENTS.md](AGENTS.md) first for the one-line rule index. Then load the matching reference file before you apply a fix.
 
-**NEVER subscribe to searchParams/localStorage if you only read them in callbacks** — causes component to re-render on every URL change or storage event even when the component doesn't display those values. Read directly in the callback instead: `new URLSearchParams(window.location.search)`.
-
-**NEVER use object/array dependencies in useEffect** — triggers effect on every render since objects are recreated with new references each time. Extract primitive values (id, name) from objects and use those as dependencies instead.
-
-**NEVER sync derived state with useState + useEffect** — leads to extra re-renders, infinite loops, and stale intermediate states. Calculate derived values during render instead: `const fullName = firstName + ' ' + lastName`.
-
-**NEVER use client-only state (localStorage, cookies, device detection) directly in SSR components** — causes hydration mismatches where server HTML doesn't match client render, resulting in React warnings, visual flickering, and broken interactivity. Use synchronous inline `<script>` before React hydrates.
-
-**NEVER use forwardRef in React 19+** — deprecated API. Use `ref` as a regular prop instead: `function MyInput({ ref }) { return <input ref={ref} /> }`.
-
-**NEVER create callbacks/objects/arrays inline as props to memoized components** — breaks memoization since new reference is created each render. Extract to module scope, useMemo, or useCallback: `const config = useMemo(() => ({ theme }), [theme])`.
-
-**NEVER put user interaction logic in useEffect** — if it's triggered by a button click or form submit, put it directly in the event handler. Effects are for synchronization with external systems, not user-triggered actions.
+- **NEVER define components inside components** — remounts the child on every parent render and causes focus loss, animation restarts, and effect churn. See [no-inline-components.md](references/no-inline-components.md).
+- **NEVER subscribe to searchParams/localStorage if you only read them in callbacks** — creates unnecessary re-renders for values the component does not display. See [defer-state-reads.md](references/defer-state-reads.md).
+- **NEVER use object/array dependencies in useEffect** — recreated references retrigger effects even when the intended primitive trigger did not change. See [narrow-effect-dependencies.md](references/narrow-effect-dependencies.md).
+- **NEVER sync derived state with useState + useEffect** — adds extra renders and stale intermediate states for values that can be computed during render. See [calculate-derived-state.md](references/calculate-derived-state.md).
+- **NEVER use client-only state directly in SSR render paths** — causes hydration mismatch and theme or device flicker. See [prevent-hydration-mismatch.md](references/prevent-hydration-mismatch.md).
+- **NEVER use forwardRef in React 19+** — use `ref` as a prop instead. See [no-forwardref.md](references/no-forwardref.md).
+- **NEVER create inline props that defeat memoization without checking whether the project uses React Compiler first** — if the compiler is disabled, stabilize expensive identities deliberately; if it is enabled, avoid redundant manual memoization. See [react-compiler-guide.md](references/react-compiler-guide.md).
+- **NEVER put user interaction logic in useEffect by default** — click and submit flows belong in handlers unless the effect is truly synchronizing with an external system. See [interaction-logic-in-event-handlers.md](references/interaction-logic-in-event-handlers.md).
 
 ## Before Optimizing Performance, Ask
 
-Before suggesting `memo()`, `useMemo()`, or `useCallback()` optimizations, confirm that they are needed:
+Before suggesting `memo()`, `useMemo()`, or `useCallback()` optimizations, confirm that they are needed.
 
 1. **Does this project use React Compiler?**
-   - Search for `babel-plugin-react-compiler` or `react-compiler-webpack-plugin` in package.json/config files
-   - If **yes** → Skip manual memoization (memo, useMemo, useCallback, hoisting static JSX) — the compiler handles these automatically
-   - If **no** → Apply all relevant optimizations from this skill
-   - See [react-compiler-guide.md](references/react-compiler-guide.md) for what the compiler handles
+   - Search for `babel-plugin-react-compiler` or `react-compiler-webpack-plugin` in package.json or config files.
+   - If **yes**: Skip manual memoization (`memo`, `useMemo`, `useCallback`, hoisting static JSX). The compiler handles these automatically.
+   - If **no**: Apply the relevant optimizations from this skill.
+   - See [react-compiler-guide.md](references/react-compiler-guide.md) for the exact boundary.
 
 2. **Is this actually a performance problem?**
-   - Has the user measured/profiled and identified a bottleneck?
-   - Or are they asking for a general review/optimization?
+   - Has the user measured or profiled and identified a bottleneck?
+   - Or are they asking for a general review or optimization?
 
-3. **What's the scale?**
-   - For lists: How many items? (affects whether to suggest content-visibility vs virtualization)
+3. **What is the scale?**
+   - For lists: How many items? This affects whether to suggest content-visibility or virtualization.
    - For re-renders: How often does this component re-render?
 
 ## How to Use
 
-This skill uses a **progressive disclosure** structure to minimize context usage:
+This skill uses progressive disclosure to minimize context usage.
 
-### 1. Start with the Overview (`AGENTS.md`)
-Read [AGENTS.md](AGENTS.md) for a concise rule index with one-line summaries.
+### 1. Start with the overview (`AGENTS.md`)
+Read [AGENTS.md](AGENTS.md) for the concise rule index and one-line summaries.
 
-### 2. Load Specific Rules as Needed
-When you identify a relevant optimization, load the corresponding reference file for detailed implementation guidance:
+### 2. Load specific rules as needed
+When you identify a relevant optimization, load the corresponding reference file for detailed implementation guidance.
 
 **Re-render Optimizations:**
 - [defer-state-reads.md](references/defer-state-reads.md)
@@ -105,13 +100,13 @@ When you identify a relevant optimization, load the corresponding reference file
 **Automation Scripts:**
 - [scripts/](scripts/) - Helper scripts to detect anti-patterns
 
-### 3. Apply the Pattern
+### 3. Apply the pattern
 Each reference file contains:
-- ❌ Incorrect examples showing the anti-pattern
-- ✅ Correct examples showing the optimal implementation
+- Incorrect examples showing the anti-pattern
+- Correct examples showing the optimal implementation
 - Explanations of why the pattern matters
 
-### 4. Use the Report Template for Audits
+### 4. Use the report template for audits
 Use the standardized report format only for audits or multi-issue reviews.
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
@@ -124,90 +119,55 @@ The report format provides:
 - Summary table for tracking all findings
 
 **Use the audit template when:**
-- Skill invoked directly via `/accelint-react-best-practices <path>` for a review
-- User asks to audit, review, or assess React code across one or more files
+- The skill is invoked directly via `/accelint-react-best-practices <path>` for a review.
+- The user asks to audit, review, or assess React code across one or more files.
 
 **Do not use the audit template when:**
-- User asks to fix a specific bug or type error
-- User asks what is wrong with a single snippet
-- User requests direct implementation changes
+- The user asks to fix a specific bug or type error.
+- The user asks what is wrong with a single snippet.
+- The user requests direct implementation changes.
 
-Answer directly in those cases, and only load the reference files needed for the issue at hand.
-
-## Examples
-
-### Example 1: Optimizing Re-renders
-**Task:** "This component re-renders too frequently when the user scrolls"
-
-**Approach:**
-1. Read AGENTS.md overview
-2. Identify likely cause: subscribing to continuous values (scroll position)
-3. Load [subscribe-derived-state.md](references/subscribe-derived-state.md) or [transitions-non-urgent-updates.md](references/transitions-non-urgent-updates.md)
-4. Apply the pattern from the reference file
-
-### Example 2: Fixing Stale Closures
-**Task:** "This callback always uses the old state value"
-
-**Approach:**
-1. Read AGENTS.md overview
-2. Identify issue: stale closure in useCallback
-3. Load [functional-setstate-updates.md](references/functional-setstate-updates.md)
-4. Replace direct state reference with functional update
-
-### Example 3: SSR Hydration Mismatch
-**Task:** "Getting hydration errors with localStorage theme"
-
-**Approach:**
-1. Read AGENTS.md overview
-2. Identify issue: client-only state causing mismatch
-3. Load [prevent-hydration-mismatch.md](references/prevent-hydration-mismatch.md)
-4. Implement synchronous script pattern
+Answer directly in those cases. Load only the reference files needed for the issue at hand.
 
 ## Using Skill Patterns Appropriately
 
-Each reference file demonstrates ONE proven pattern, but React problems often have multiple valid solutions.
+Each reference file demonstrates one proven pattern, but React problems can still have multiple valid fixes.
 
-**When applying patterns:**
-1. ✅ Present the pattern from the reference file
-2. ✅ Mention alternative approaches when they exist
-3. ✅ Consider user's React version, project complexity, and team preferences
-4. ✅ For simple cases, suggest simpler solutions even if not in references
+When applying a pattern:
+1. Present the matching reference pattern.
+2. Mention credible alternatives when they materially change tradeoffs.
+3. Consider the user's React version, project complexity, and whether React Compiler is enabled.
+4. Prefer the simpler fix when it solves the real problem cleanly.
 
-**Example:** For SSR hydration issues, `prevent-hydration-mismatch.md` shows the synchronous script approach, but a simple "mounted flag" pattern may be more appropriate for basic use cases.
+For example, [prevent-hydration-mismatch.md](references/prevent-hydration-mismatch.md) shows the synchronous script approach because it avoids flicker, but a mounted-flag pattern can still be acceptable when the UX tradeoff is acceptable.
 
 ## Important Notes
 
-### React Compiler Awareness
-Many manual optimization patterns (memo, useMemo, useCallback, hoisting static JSX) are **automatically handled by React Compiler**.
+### React Compiler awareness
+Treat React Compiler as an early decision gate, not an afterthought.
 
-**Before optimizing, check if the project uses React Compiler:**
-- If enabled: Skip manual memoization, but still apply state/effect/CSS optimizations
-- If not enabled: Apply all relevant optimizations from this guide
+- If enabled, skip manual memoization patterns that the compiler already covers.
+- If not enabled, apply manual memoization and identity-stability guidance where the measured problem justifies it.
 
-See [react-compiler-guide.md](references/react-compiler-guide.md) for a complete breakdown of what the compiler handles vs what still needs manual optimization.
+Use [react-compiler-guide.md](references/react-compiler-guide.md) for the exact boundary.
 
-### React 19+ Features
+### React 19+ features
 This skill covers React 19 features including:
 - `useEffectEvent` (19.2+) for stable event handlers
-- `<Activity>` component for preserving hidden component state
+- `<Activity>` for preserving hidden component state
 - `ref` as a prop (replaces deprecated `forwardRef`)
 - Named imports only (no default import of React)
 
-### Performance Philosophy
+### Performance philosophy
 - Start with correct code, then optimize.
-- Check for React Compiler before suggesting manual memoization or hoisting.
 - Measure before optimizing.
 - Optimize the real bottleneck first. Network or data-volume issues often matter more than render micro-optimizations.
 - Avoid premature optimization of trivial operations.
-
-### Code Quality Principles
-- Prefer simple, readable code over clever optimizations
-- Only add complexity when measurements justify it
-- Document non-obvious performance optimizations
+- Prefer simple, readable code unless measured evidence justifies more complexity.
 
 ## Additional Resources
 
-Catch up on React 19 features:
+Use these resources to catch up on React 19 features:
 - [React 19](https://react.dev/blog/2024/12/05/react-19)
 - [React 19.2](https://react.dev/blog/2025/10/01/react-19-2)
 - [React 19 Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)

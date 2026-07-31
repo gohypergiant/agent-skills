@@ -1,6 +1,6 @@
 # 1.4 Progressive Disclosure
 
-Structure skills for efficient context use:
+Structure skills to use context efficiently:
 
 - Metadata (~100 tokens): The name and description fields are loaded at startup for all skills.
 - Instructions (< 5000 tokens recommended): The full `SKILL.md` body is loaded when the skill is activated.

@@ -2,7 +2,7 @@
 
 ## Directory Structure
 
-A skill is a directory that contains at minimum a `SKILL.md` file. You can optionally include additional directories such as `scripts/`, `references/`, and `assets/` to support the skill. Include a `README.md` file with a general overview optimized for human readers, not agent readers. Keep file references one level deep from `SKILL.md`. Avoid deeply nested reference chains.
+A skill is a directory that contains at minimum a `SKILL.md` file. You can optionally include directories such as `scripts/`, `references/`, and `assets/` to support the skill. Include a `README.md` file with a general overview for human readers, not agent readers. Keep file references one level deep from `SKILL.md`. Avoid deeply nested reference chains.
 
 ### Naming Conventions
 
@@ -17,7 +17,7 @@ A skill is a directory that contains at minimum a `SKILL.md` file. You can optio
 
 ### Local File References
 
-When referencing other files in your skill, use relative paths from the skill root:
+When you reference other files in the skill, use relative paths from the skill root:
 
 ```
 See [the reference guide](references/REFERENCE.md) for details.

@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.2] - 2026-07-31
+
+### Changed
+- Calibrated top-level `SKILL.md` guidance to remove an overstated claim about destructured render queries and to soften a few rigid prose patterns without changing the intended React Testing Library defaults
+  - Rationale: Static audit evidence showed the previous wording was stronger than the repository evidence supported, especially around the `screen` vs destructured-query recommendation
+- Added two targeted evals in `evals/evals.json` for calibrated `screen` guidance and proportional audit-vs-fix behavior
+  - Rationale: Direct repository inspection showed these weak spots were not explicitly covered by the existing eval set
+- Tightened behavior-preserving prose in `SKILL.md` and `AGENTS.md` while leaving frontmatter behavior unchanged during the prose-rewrite stage
+  - Rationale: Stage 4 prose audit found scanability and local clarity improvements were available without changing trigger coverage or workflow semantics
+
+### Version
+- Bumped `metadata.version` to 1.2.2 to reflect a patch-level, evidence-backed refinement
+
 ## [1.2.1] - 2026-07-30
 
 ### Changed

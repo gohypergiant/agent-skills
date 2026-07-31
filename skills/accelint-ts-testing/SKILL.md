@@ -5,14 +5,16 @@ compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "3.1.1"
+  version: "3.1.2"
 ---
 
 # Vitest Best Practices
 
 Use this skill for maintainable, effective Vitest tests. It focuses on expert-level guidance for test organization, clarity, and performance.
 
-## NEVER Do When Writing Vitest Tests
+## Hard stops
+
+Never do these things when writing Vitest tests:
 
 - **NEVER write tests for files with no behavior** - Constants files (just `export const X = value`), type definition files, GLSL uniform declarations, and pure data files contain no logic to test. Testing `expect(MY_CONSTANT).toBe(42)` verifies nothing: if the value changes, the test changes with it, providing zero protection. These "tests" waste CI time and create maintenance burden when values change. Test behavior (functions, logic, transformations), not data declarations. If a file exports only types, constants, or data structures with no functions or logic, skip testing it entirely.
 - **NEVER skip global mock cleanup configuration** - Manual cleanup appears safe but creates "action at a distance" failures: a mock in test file A leaks into test file B running 3 files later, causing non-deterministic failures that only appear when tests run in specific orders. These Heisenbugs waste hours in CI debugging. Configure `clearMocks: true`, `mockReset: true`, `restoreMocks: true` in `vitest.config.ts` once to eliminate this entire class of order-dependent failure.
@@ -29,28 +31,28 @@ Use this skill for maintainable, effective Vitest tests. It focuses on expert-le
 - **NEVER assume TypeScript types prevent runtime errors** - TS types are compile-time only and vanish at runtime. Testing only "type-valid" inputs creates a false sense of security. In production, functions receive invalid data from JSON APIs without validation, `JSON.parse()` results, external libraries, user input, and database records. A function typed as `process(data: ValidData)` can still receive `null`, `undefined`, or malformed objects at runtime. Test defensive programming scenarios: pass `null` to non-nullable parameters, `undefined` to required fields, malformed objects to typed parameters. These "type-invalid" tests catch real bugs that TypeScript cannot prevent.
 - **NEVER write weak properties when stronger ones exist** - Property-based tests that only verify "no exception thrown" or "returns a value" provide minimal coverage. When testing encode/decode pairs, verify roundtrip equality (`decode(encode(x)) === x`), not just that decode succeeds. When testing normalization, verify idempotence (`normalize(normalize(x)) === normalize(x)`), not just that it returns a string. Weak properties give false confidence: they pass but don't actually validate correctness.
 
-## Before Writing Tests, Ask
+## Before writing tests
 
-Use these checks before you implement tests:
+Run these checks before you implement tests.
 
-### Should This File Be Tested?
-- **Does this file contain behavior to test?** Files that only declare constants, types, or data structures without logic don't need tests. Constants files (`export const X = 42`), type definition files (`type User = {...}`), GLSL uniform declarations, configuration objects, and pure data files have no behavior to verify. If the file contains no functions, no logic, no transformations - skip testing it. Test behavior, not data.
+### Should this file be tested?
+- **Does this file contain behavior to test?** Files that only declare constants, types, or data structures without logic do not need tests. Constants files (`export const X = 42`), type definition files (`type User = {...}`), GLSL uniform declarations, configuration objects, and pure data files have no behavior to verify. If the file contains no functions, no logic, and no transformations, skip testing it. Test behavior, not data.
 
-### Test Isolation and Setup
-- **Where should cleanup logic live?** Think in layers: configuration eliminates entire error classes (mock cleanup in vitest.config.ts), setup files handle project-wide concerns (custom matchers, global mocks), beforeEach handles test-specific state. Each test doing its own mock cleanup is like each function doing its own null checks - it works but misses the point. Push concerns to the highest appropriate layer.
-- **Does this test depend on previous tests or shared state?** Test suites are parallel universes - each test should work identically whether it runs first, last, or alone. State dependency creates "quantum tests" that pass or fail based on execution order. If a test needs data from another test, they're actually one test split artificially.
+### Test isolation and setup
+- **Where should cleanup logic live?** Think in layers: configuration eliminates entire error classes, setup files handle project-wide concerns, and `beforeEach` handles test-specific state. Put mock cleanup in `vitest.config.ts`. Use setup files for custom matchers and global mocks. Use `beforeEach` for per-test state. Each test doing its own mock cleanup works, but it misses the point. Push concerns to the highest appropriate layer.
+- **Does this test depend on previous tests or shared state?** Each test must work the same way whether it runs first, last, or alone. If a test needs data from another test, they are actually one test split artificially.
 
-### What to Test
-- **Am I testing behavior or implementation?** Test what users experience (inputs → outputs), not how code achieves it (which functions were called). Implementation tests break during safe refactoring.
-- **What's the simplest dependency I can use?** Real implementation > fake > stub > spy > mock. Each step down this hierarchy adds brittleness. Mock only when using real code is impractical (external APIs, slow operations).
+### What to test
+- **Am I testing behavior or implementation?** Test what users experience (inputs → outputs), not how the code achieves it (which functions were called). Implementation tests break during safe refactoring.
+- **What is the simplest dependency I can use?** Real implementation > fake > stub > spy > mock. Each step down this hierarchy adds brittleness. Mock only when using real code is impractical, such as external APIs or slow operations.
 
-### Test Clarity
-- **Can someone understand this test in 5 seconds?** Follow AAA pattern (Arrange, Act, Assert) with clear boundaries. If setup is complex, extract to helper functions with descriptive names.
-- **Are there multiple variations of the same behavior?** Use `it.each()` for parameterized tests instead of copying test structure. One assertion per concept keeps tests focused.
+### Test clarity
+- **Can someone understand this test in 5 seconds?** Follow the AAA pattern (Arrange, Act, Assert) with clear boundaries. If setup is complex, extract helper functions with descriptive names.
+- **Are there multiple variations of the same behavior?** Use `it.each()` for parameterized tests instead of copying test structure. Keep one assertion concept per test.
 
-### Performance and Maintenance
-- **Will this test still be valuable in 6 months?** Avoid testing framework internals or trivial operations. Focus on business logic, edge cases, and error handling that actually prevent bugs.
-- **Is this test fast enough to run on every save?** Avoid expensive operations in tests. Use fakes for databases, mock timers for delays, stub external calls. Tests should complete in milliseconds.
+### Performance and maintenance
+- **Will this test still be valuable in 6 months?** Avoid testing framework internals or trivial operations. Focus on business logic, edge cases, and error handling that prevent real bugs.
+- **Is this test fast enough to run on every save?** Avoid expensive operations in tests. Use fakes for databases, fake timers for delays, and stubs for external calls. Tests should complete in milliseconds.
 
 ## What This Skill Covers
 
@@ -68,18 +70,18 @@ This skill covers these Vitest testing patterns:
 10. **Snapshot Testing** - When snapshots help vs hurt maintainability
 11. **Property-Based Testing** - Using fast-check for stronger coverage with generated inputs
 
-## How to Use
+## How to use
 
-This skill uses **progressive disclosure** to minimize context usage:
+This skill uses progressive disclosure to minimize context usage.
 
-### 1. Start with the Overview (AGENTS.md)
+### 1. Start with the overview (`AGENTS.md`)
 Read [AGENTS.md](AGENTS.md) first for the concise rule index and the required pre-write, pre-complete, and audit workflows.
 
 ### 2. Follow the matching workflow
-Choose the lightest path that fits the task:
-- **Writing or refactoring tests**: verify the target file has behavior worth testing, then inspect `vitest.config.*` and setup files before adding mocks or cleanup.
-- **Auditing existing tests**: load [property-based-testing.md](references/property-based-testing.md) up front, then inspect only the references needed for the problems you find.
-- **Marking test work complete**: run direct TypeScript type checking against the touched test files using the package's actual package manager.
+Choose the lightest path that fits the task.
+- **Writing or refactoring tests**: verify that the target file has behavior worth testing. Then inspect `vitest.config.*` and setup files before you add mocks or cleanup.
+- **Auditing existing tests**: load [property-based-testing.md](references/property-based-testing.md) first. Then inspect only the references needed for the problems you find.
+- **Marking test work complete**: run direct TypeScript type checking against the touched test files with the package's actual package manager.
 
 ### 3. Load specific references only when triggered
 
@@ -89,9 +91,9 @@ Choose the lightest path that fits the task:
 - **Any audit or review of existing test code** → [property-based-testing.md](references/property-based-testing.md)
 
 **Load when these signals appear:**
-- **Nested describe blocks, poor co-location, weak naming** → [organization.md](references/organization.md)
+- **Nested describe blocks, poor co-location, or weak naming** → [organization.md](references/organization.md)
 - **Missing or blurry Arrange / Act / Assert separation** → [aaa-pattern.md](references/aaa-pattern.md)
-- **Repeated cases with small input/output changes** → [parameterized-tests.md](references/parameterized-tests.md)
+- **Repeated cases with small input or output changes** → [parameterized-tests.md](references/parameterized-tests.md)
 - **Missing failure paths, edge cases, or fault injection** → [error-handling.md](references/error-handling.md)
 - **Loose assertions such as `toBeTruthy()` or `toBeDefined()`** → [assertions.md](references/assertions.md)
 - **Slow tests, repeated setup, or manual mock cleanup hooks** → [performance.md](references/performance.md)
@@ -111,7 +113,7 @@ Each reference file should give enough detail to fix the issue directly with con
 For file or package test audits, use [`assets/output-report-template.md`](assets/output-report-template.md).
 Do not force the template for direct implementation or one-off debugging.
 
-**Audit requirement:** always document property-based testing opportunities when reviewing test code, even if you do not add fast-check in that stage.
+**Audit requirement:** Always document property-based testing opportunities when reviewing test code, even if you do not add fast-check in that stage.
 
 ## Quick Example
 

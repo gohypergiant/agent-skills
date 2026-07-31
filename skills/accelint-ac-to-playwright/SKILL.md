@@ -4,24 +4,28 @@ description: Convert acceptance criteria or Gherkin requirements into Playwright
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.11"
+  version: "1.1.13"
 ---
 
 # AC To Playwright
 
-REQUIRED: Before you process any acceptance criteria, read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) completely from start to finish. NEVER set range limits when reading this file. It is the authoritative source for AC writing rules and mappings.
+## Before you start
 
-When to read `references/acceptance-criteria.md`:
-- Assessment mode: read it once before you analyze any files.
-- Conversion mode: read it once before you generate the first plan in the batch. Do not re-read it for each later file unless the task context changes.
+Before you process any acceptance criteria, read [`references/acceptance-criteria.md`](references/acceptance-criteria.md) completely from start to finish. Do not set range limits when reading this file. It is the authoritative source for AC writing rules and mappings.
 
-Load `references/test-hooks.md` in both Assessment mode and Conversion mode. It contains the controlled vocabulary for validating area/component/intent target naming patterns. Do NOT load it when translating plans → tests because the translation script handles vocabulary automatically.
+Read `references/acceptance-criteria.md` at these points:
+- Assessment mode: once before you analyze any files.
+- Conversion mode: once before you generate the first plan in the batch. Do not re-read it for each later file unless the task context changes.
+
+Load `references/test-hooks.md` in Assessment mode and Conversion mode. It contains the controlled vocabulary for validating `area.component.intent` target naming patterns.
+
+Do not load `references/test-hooks.md` when translating plans → tests because the translation script handles vocabulary automatically.
 
 ## Intent Detection
 
 Choose the mode from the user's phrasing.
 
-Assessment mode triggers on review/evaluate/assess/check/validate/ready phrasing, including similar wording:
+Assessment mode triggers on review, evaluate, assess, check, validate, or ready phrasing, including similar wording:
 - "review these AC"
 - "evaluate these AC"
 - "check if these AC are ready"
@@ -31,7 +35,7 @@ Assessment mode triggers on review/evaluate/assess/check/validate/ready phrasing
 - "validate AC quality"
 - "audit these requirements"
 
-Full conversion mode triggers on convert/generate/create/write/build phrasing, including similar wording:
+Full conversion mode triggers on convert, generate, create, write, or build phrasing, including similar wording:
 - "convert these AC"
 - "generate tests from AC"
 - "turn AC into Playwright tests"
@@ -42,9 +46,11 @@ Full conversion mode triggers on convert/generate/create/write/build phrasing, i
 
 When in doubt:
 - If the user gives output file or directory locations for plans, tests, or summaries, choose Full conversion mode.
-- If the user only asks whether the AC are ready, or provides AC without output locations, choose Assessment mode first.
+- If the user only asks whether the AC are ready, or the user provides AC without output locations, choose Assessment mode first.
 
-Assessment mode analyzes AC text only. It does not generate artifacts. Full conversion mode generates plans and tests.
+Mode boundaries:
+- Assessment mode analyzes AC text only. It does not generate artifacts.
+- Full conversion mode generates plans and tests.
 
 ### Assessment Workflow
 0. Detect intent: the user asks to review, evaluate, assess, check, or validate AC readiness.
@@ -140,15 +146,17 @@ Files analyzed:
    - Require the user to explicitly provide output directories for plans, tests, and summaries before you write any files.
    - Read `references/acceptance-criteria.md`.
    - Work one input file at a time in serial order. Do not parallelize file processing.
-   - For each file, finish the full pipeline, plan → validate → translate → summarize, before you move to the next file.
-   - Derive suite name, test names, startUrl, steps, targets, tags, and source metadata from the rules below.
+   - For each file, finish the full pipeline, `plan → validate → translate → summarize`, before you move to the next file.
+   - Derive `suiteName`, test names, `startUrl`, steps, targets, tags, and source metadata from the rules below.
 3. Build the JSON test plan:
    - Build a JSON test plan that conforms to `references/plan-schema.ts`.
    - Validate it with this retry protocol. Maximum 2 attempts total for the current file:
-     - Attempt 1: run validation.
+     - Attempt 1:
+       - Run validation.
        - If it passes, proceed.
        - If it fails, read the error, fix ONE specific issue, and re-validate.
-     - Attempt 2: re-run validation after the single targeted fix.
+     - Attempt 2:
+       - Re-run validation after the single targeted fix.
        - If it passes, proceed.
        - If it fails, stop processing the current file, report the validation error, and move to the next file.
    - Never make multiple speculative fixes at once.
@@ -171,7 +179,7 @@ Before you process AC, identify these quality signals.
 Good AC, which you can process directly:
 | Check | Question | If NO → Action |
 |-------|----------|----------------|
-| **Targets** | Does every action specify area.component.intent? | Ask the user to clarify which specific element |
+| **Targets** | Does every action specify `area.component.intent`? | Ask the user to clarify which specific element |
 | **Values** | Are all fill/select values quoted literals? | Ask the user for the exact values to use |
 | **Outcomes** | Are expectations measurable, with specific text, an element, or a state? | Ask the user what exactly to verify |
 
@@ -184,7 +192,7 @@ Ask for clarification in these cases because guessing creates tests that fail un
 
 ## Naming Transformations
 
-Input to output mapping: one AC file → one suite → one plan file (`<plans-dir>/<suite-slug>.json`) → one test file.
+Input-to-output mapping: one AC file → one suite → one plan file (`<plans-dir>/<suite-slug>.json`) → one test file.
 - `.md` bullet-style: each `- ` bullet is one test.
 - `.feature` Gherkin: each Scenario is one test. Each Examples row in a Scenario Outline is one test.
 
@@ -213,16 +221,16 @@ Examples:
 Appends ` (user1/pass1)` and ` (user2/pass2)` respectively.
 
 ## Tags (Gherkin only)
-- Feature-level tags -> suite tags.
-- Scenario-level tags -> test tags.
-- Do not include suite tags in test tags; drop duplicates at the test level.
-- If no test tags remain, omit tags field for that test.
-- Tag values include the leading '@'.
+- Feature-level tags → suite tags.
+- Scenario-level tags → test tags.
+- Do not include suite tags in test tags. Drop duplicates at the test level.
+- If no test tags remain, omit the `tags` field for that test.
+- Tag values include the leading `@`.
 
 ## Source metadata
-- Always include a source object at suite level.
-- If AC file is inside a git repo: repo = repo name (folder containing `.git`), path = repo-relative path.
-- If AC file is not inside a git repo: repo = `external`, path = file basename only.
+- Always include a `source` object at suite level.
+- If the AC file is inside a git repo: `repo` = repo name (folder containing `.git`), `path` = repo-relative path.
+- If the AC file is not inside a git repo: `repo` = `external`, `path` = file basename only.
 - Do not store absolute paths.
 
 ## Output Rules
@@ -238,19 +246,20 @@ Valid modifiers for `keyDown` and `keyUp`: `Shift`, `Control`, `a`.
 The `press` action accepts only a single unmodified key. Never pass combination syntax such as `Shift+g` to `press`.
 
 ### Suite-level fields
-- Top-level field order: suiteName, tags (if any), source, tests.
+- Top-level field order: `suiteName`, `tags` (if any), `source`, `tests`.
 
 ### Test-level fields
-- Start URL: always default to '/' unless the user provides an explicit starting page in a given AC per `references/acceptance-criteria.md`.
-- Steps: use only schema actions (but do not use `goto`) and preserve the order in the bullet text or in the Gherkin steps.
-- Assertions: 
+- `startUrl`: always default to `'/'` unless the user provides an explicit starting page in a given AC per `references/acceptance-criteria.md`.
+- `steps`: use only schema actions, and do not use `goto`. Preserve the order in the bullet text or in the Gherkin steps.
+- Assertions:
   - If navigation is triggered, add `expectUrl` using the Start URL mapping.
-  - For visibility changes (e.g., visible/appears/shows/hides and similar wording), add `expectNotVisible` immediately before the action and `expectVisible` immediately after (or vice versa as appropriate).
-  - Only add `expectText` / `expectVisible` / `expectNotVisible` when the AC explicitly names text or visibility.
-  - Do not invent assertions. NEVER infer unstated information.  Required fields that MUST be explicit (not inferred):
-    - target: Must include area + component + intent
-    - value: Must be quoted literal for fills 
-    - expected outcomes: Must include verifiable element/text
+  - For visibility changes (for example visible, appears, shows, hides, and similar wording), add `expectNotVisible` immediately before the action and `expectVisible` immediately after, or vice versa as appropriate.
+  - Only add `expectText`, `expectVisible`, or `expectNotVisible` when the AC explicitly names text or visibility.
+  - Do not invent assertions.
+  - Do not infer unstated information. These fields must be explicit:
+    - `target`: must include area + component + intent
+    - `value`: must be a quoted literal for fills
+    - `expected outcomes`: must include verifiable element/text
 
 ## Resources
 - `scripts/plan-schema.ts` — schema and validation logic to consult when generating plans.
@@ -274,7 +283,7 @@ The `press` action accepts only a single unmodified key. Never pass combination 
 - NEVER use bare string values with selectOption — Playwright's `selectOption()` matches HTML `value` attributes by default, not visible text. AC writers specify visible option text, for example "Premium Plan", so always use `{ label: "text" }` syntax: `.selectOption({ label: "Premium Plan" })`. Using bare strings, `.selectOption("Premium Plan")`, causes silent mismatches where tests pass locally but fail in production because the value attribute differs from the display text.
 - NEVER generate artifacts in assessment mode — when the user asks to review, evaluate, or assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
 - NEVER skip controlled vocabulary checks in assessment — verify that area and component keywords in targets match the lists in `test-hooks.md`.
-- NEVER use `goto` action in steps — tests start at `startUrl`, and navigation happens through clicks or fills that trigger page changes. Using `goto` mid-test bypasses Playwright's navigation lifecycle because the framework expects URL changes to come from user actions, not programmatic jumps. This creates race conditions where assertions run before the destination page is ready, the DOM has not finished mounting, or listeners have not attached yet. The result is flaky tests that often pass locally but fail in CI. Adding waits does not fix the root problem because the issue is lifecycle correctness, not load duration.
+- NEVER use `goto` action in `steps` — tests start at `startUrl`, and navigation happens through clicks or fills that trigger page changes. Using `goto` mid-test bypasses Playwright's navigation lifecycle because the framework expects URL changes to come from user actions, not programmatic jumps. This creates race conditions where assertions run before the destination page is ready, the DOM has not finished mounting, or listeners have not attached yet. The result is flaky tests that often pass locally but fail in CI. Adding waits does not fix the root problem because the issue is lifecycle correctness, not load duration.
 - NEVER use `doubleClick` for element interactions — `doubleClick` is only for coordinate-based double-clicks at x,y positions. For double-clicking elements, use the element-based `click` action twice in sequence. Only use `doubleClick` when the AC explicitly specifies coordinates.
 - NEVER use `mouseClick` for element interactions — `mouseClick` is only for coordinate-based clicks at x,y positions. For clicking elements, always use `click` with test IDs. Only use `mouseClick` when the AC explicitly specifies coordinates.
 - NEVER use `mouseMove` without a follow-up action — `mouseMove` positions the cursor but does not interact with anything. Use it only before actions such as `mouseDown`, `mouseUp`, `mouseClick`, or when the AC explicitly requires moving to specific coordinates before other mouse operations.
@@ -282,8 +291,8 @@ The `press` action accepts only a single unmodified key. Never pass combination 
 - NEVER invent assertions — only add `expectText`, `expectVisible`, or `expectNotVisible` when the AC explicitly states expected outcomes, except `expectUrl` for navigation and visibility pairs for show or hide actions.
 - NEVER store absolute file paths in source metadata — use repo-relative paths for git repos and the basename only for external files.
 - NEVER assume targets or values — if the AC says "click the button" without identifying which button, ask for clarification instead of guessing. Generic targets such as `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
-- NEVER skip validation — even if the JSON looks correct, always run `npx validate-plan` before you write files to catch errors and reduce incorrect artifact cleanup.
+- NEVER skip validation — even if the JSON looks correct, always run `npx validate-plan` before you write files. This catches errors and reduces incorrect artifact cleanup.
 - NEVER reuse existing plans or tests — this has caused problems in the past with changes being lost, so always regenerate all steps from the AC source to ensure accuracy.
 - NEVER write a plan file without validating first — validation catches structural errors. Writing invalid plans creates broken artifacts that need manual cleanup.
-- NEVER process multiple steps of one file in parallel — complete the full pipeline, AC → plan → test → summary, for each file before you move to the next file to avoid partial artifacts and state confusion.
+- NEVER process multiple steps of one file in parallel — complete the full pipeline, `AC → plan → test → summary`, for each file before you move to the next file to avoid partial artifacts and state confusion.
 - NEVER take shortcuts — agents have gone off the rails when they tried to define their own shortcuts, so when this skill is triggered you must always run the full workflow.

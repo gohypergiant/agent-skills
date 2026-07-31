@@ -23,6 +23,11 @@ Agents trigger this skill to convert AC files into Playwright tests or assess AC
 1. **Assessment mode**: validates AC structure and automation readiness without generating files
 2. **Conversion mode**: generates JSON plans, validates them, translates to Playwright specs
 
+Operational rules that match the current skill contract:
+- Conversion must start with a full assessment pass across all provided input files.
+- If any file fails assessment, the conversion workflow stops for the whole batch and should not generate partial plans or specs.
+- Before writing any plan, spec, or summary file, the user must explicitly provide output directories for plans, tests, and summaries.
+
 Example prompts:
 - "Review these AC for automation readiness"
 - "Convert the AC files in ./requirements to Playwright tests"
@@ -44,7 +49,6 @@ Generated tests can use these Playwright actions:
 - **doubleClick** — double-click at x,y coordinates
 - **drag** — drag from one coordinate to another
 - **fill** — enter text in an input or textarea
-- **goto** — navigate to a URL (plan-level only, not in test steps)
 - **hover** — hover over an element
 - **keyDown** / **keyUp** — press and release modifier keys (Shift, Control, a)
 - **mouseClick** — click at x,y coordinates
@@ -59,7 +63,7 @@ Generated tests can use these Playwright actions:
 
 - **expectNotVisible** — element should not be visible
 - **expectText** — element should contain specific text
-- **expectUrl** — page should be at specific URL
+- **expectUrl** — page should be at specific URL after user-driven navigation
 - **expectVisible** — element should be visible
 
 ## AC format requirements
@@ -77,6 +81,8 @@ Both formats must follow strict conventions for automation readiness. Key requir
 - **Expected outcomes** must be explicit and measurable
 
 See [acceptance-criteria.md](references/acceptance-criteria.md) for complete guidelines and examples.
+
+For maintainers: the runtime source of truth is `SKILL.md`. Keep README guidance aligned with its assessment-first workflow, no-guessing rules, and output-directory requirement.
 
 ## Development
 
@@ -107,5 +113,7 @@ When copying generated tests to your Playwright project:
 1. Copy all `.spec.ts` files to your test directory
 2. Copy the `fixtures/` directory alongside the spec files
 3. Generated tests import from `./fixtures/*` and will fail without them
+
+Tests begin at each test's `startUrl`. Do not add a `goto` step to a plan; navigation should come from user actions, and URL checks should use `expectUrl`.
 
 The skill provides a Playwright config template at `assets/templates/playwright.config.ts`. Update `testDir` and `baseURL` for your project.

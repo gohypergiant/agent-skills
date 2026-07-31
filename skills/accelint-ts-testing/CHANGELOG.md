@@ -5,6 +5,13 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.2] - 2026-07-31
+
+### Changed
+- Tightened `references/quick-start.md` so the matcher guidance no longer mislabels `toBe` as a loose assertion and the improved example models flatter test organization.
+- Clarified `README.md` intro wording so `accelint-ts-testing` is explicitly framed as the repo's Vitest-focused TypeScript testing skill.
+- Tightened behavior-bearing prose in `SKILL.md` and corrected a duplicated numbered step in `AGENTS.md` during the strict prose pass.
+
 ## [3.1.1] - 2026-07-31
 
 ### Added

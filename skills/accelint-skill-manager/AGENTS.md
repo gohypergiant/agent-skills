@@ -7,15 +7,15 @@
 
 ## Abstract
 
-This is a comprehensive guide for agent skills, designed for AI agents and LLMs. Each rule has a one-line summary here, with links to detailed examples in the `references/` folder. Load a reference file only when you need detailed implementation guidance for that rule.
+This is a comprehensive guide to agent skills for AI agents and LLMs. Each rule has a one-line summary here, with links to detailed examples in the `references/` folder. Load a reference file only when you need detailed implementation guidance for that rule.
 
 ---
 
 ## How to Use This Guide
 
 1. **Start here**: Scan the rule summaries to find the relevant guidance.
-2. **Load references as needed**: Open detailed examples only when you are implementing that rule.
-3. **Use progressive loading**: Each reference file is self-contained with ❌/✅ examples.
+2. **Load references as needed**: Open detailed examples only when you are applying that rule.
+3. **Use progressive loading**: Each reference file is self-contained and includes ❌/✅ examples.
 
 This structure minimizes context usage while still providing complete implementation guidance when needed.
 
@@ -56,7 +56,7 @@ Use ❌/✅ examples, self-contained files, avoid duplication with SKILL.md.
 [View detailed examples](references/references.md)
 
 ### 1.6 Scripts
-Bash preferred, use set -e, stderr for messages, stdout for JSON output.
+Prefer bash. Use `set -e`, write messages to stderr, and write JSON output to stdout.
 [View detailed examples](references/scripts.md)
 
 ### 1.7 Assets

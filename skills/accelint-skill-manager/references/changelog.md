@@ -2,7 +2,7 @@
 
 ## Purpose
 
-CHANGELOG.md tracks version history and the rationale behind skill changes. Unlike git history, which shows individual commits, a CHANGELOG provides a curated, human-readable summary of what changed and **why**. That context is critical for future maintainers who need to understand design decisions.
+CHANGELOG.md tracks version history and the rationale behind skill changes. Unlike git history, which shows individual commits, a CHANGELOG provides a curated, human-readable summary of what changed and **why**. That context is critical for future maintainers who need to understand the design decisions.
 
 ## When to Update
 
@@ -39,7 +39,7 @@ Use "Keep a Changelog" format with semantic versioning:
 
 ## Versioning Guidelines
 
-### Major Version (1.0 → 2.0)
+### Major Version (1.0.0 → 2.0.0)
 **When:** Substantial rewrites, breaking changes, complete restructuring
 
 **Example:**
@@ -53,10 +53,10 @@ Use "Keep a Changelog" format with semantic versioning:
 - Reorganized into progressive disclosure pattern (SKILL.md → references/)
 
 ### Version
-- Bumped from 1.4 → 2.0
+- Bumped from 1.4.0 → 2.0.0
 ```
 
-### Minor Version (1.0 → 1.1)
+### Minor Version (1.0.0 → 1.1.0)
 **When:** New sections, significant additions, refinements
 
 **Example:**
@@ -74,7 +74,7 @@ Use "Keep a Changelog" format with semantic versioning:
   - Added explicit triggers: useEffect, useState, useMemo, useCallback, memo, SSR
 
 ### Version
-- Bumped from 1.2 → 1.3
+- Bumped from 1.2.0 → 1.3.0
 ```
 
 ### Patch Version (1.0.0 → 1.0.1)
@@ -215,7 +215,7 @@ metadata:
 - Made improvements
 
 ### Version
-- Bumped from 1.1 → 1.2
+- Bumped from 1.1.0 → 1.2.0
 ```
 
 **Why weak:** There is no rationale and no specifics, so a future maintainer cannot understand why the changes happened.
@@ -265,7 +265,7 @@ Copy this template when creating a new CHANGELOG entry:
   - **Impact:** [What broke before this fix?]
 
 ### Version
-- Bumped from X.Y → X.Z
+- Bumped from X.Y.Z → A.B.C
 ```
 
 ## Example: Real CHANGELOG Entry
@@ -284,7 +284,7 @@ From `skills/accelint-react-best-practices/CHANGELOG.md`:
   - **Rationale:** Evaluation showed skill could be overly prescriptive by only suggesting one solution from reference files
 
 ### Version
-- Bumped from 1.3 → 1.4
+- Bumped from 1.3.0 → 1.4.0
 ```
 
 **What makes this strong:**

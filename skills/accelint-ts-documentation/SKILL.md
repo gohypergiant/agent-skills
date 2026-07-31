@@ -4,7 +4,7 @@ description: Use when JavaScript or TypeScript documentation quality is the main
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # Code Documentation Skill
@@ -33,60 +33,58 @@ Apply these checks before you change documentation:
 
 ### 1. Load References Based on Task Type
 
-**For JSDoc additions or validation:**
+For JSDoc additions or validation:
 
-Read [`jsdoc.md`](references/jsdoc.md) in full before you implement.
-Critical content: `@example` code fence syntax, object-parameter dot notation, `@template` requirements, and edge cases.
+- Read [`jsdoc.md`](references/jsdoc.md) in full before you implement.
+- Prioritize `@example` code fence syntax, object-parameter dot notation, `@template` requirements, and edge cases.
+- Do NOT load `comments.md` unless the task explicitly mentions comment markers (`TODO`, `FIXME`, and similar) or comment-quality issues.
 
-Do NOT load `comments.md` unless the task explicitly mentions comment markers (`TODO`, `FIXME`, and similar) or comment-quality issues.
+For comment-quality audits:
 
-**For comment-quality audits:**
-
-Read [`comments.md`](references/comments.md) in full before you implement.
-Critical content: comment-marker standards, what to remove versus preserve, and placement rules.
-
-Do NOT load `jsdoc.md` unless the task explicitly mentions JSDoc tags (`@param`, `@returns`, and similar) or function/type documentation.
+- Read [`comments.md`](references/comments.md) in full before you implement.
+- Prioritize comment-marker standards, what to remove versus preserve, and placement rules.
+- Do NOT load `jsdoc.md` unless the task explicitly mentions JSDoc tags (`@param`, `@returns`, and similar) or function/type documentation.
 
 Do NOT load any references when you are only answering questions, not implementing changes, or when the task is general code quality.
 
 ### 2. Expert Judgment Framework
 
-Apply this thinking framework before auditing:
+Apply this framework before you audit:
 
-**Question 1: Who is the reader?**
-- API consumers: Lack implementation context → Document comprehensively
-- Team members: Have codebase context → Document non-self-evident behaviors only
-- Future you (6 months): Will forget subtle decisions → Document rationale
+Question 1: Who is the reader?
+- API consumers: They lack implementation context, so document comprehensively.
+- Team members: They have codebase context, so document non-self-evident behavior only.
+- Future you (6 months): Document subtle rationale you are likely to forget.
 
-**Question 2: Opacity vs Complexity?**
-- Opacity = Intent is hidden → Must document (e.g., cache.invalidate() - why? performance? correctness?)
-- Complexity = Implementation is intricate → Implementation comments, not JSDoc
+Question 2: Is the problem opacity or complexity?
+- Opacity: Intent is hidden, so you MUST document it. Example: `cache.invalidate()` needs rationale such as performance or correctness.
+- Complexity: Implementation is intricate, so use implementation comments instead of JSDoc.
 
-**Question 3: Maintenance cost trade-off?**
-- High churn code: Minimal docs (won't stay accurate)
-- Stable API: Comprehensive docs (will stay accurate)
-- Internal utilities: Brief docs (low reader count × low frequency = minimal ROI)
+Question 3: What is the maintenance cost trade-off?
+- High-churn code: Keep docs minimal because they are less likely to stay accurate.
+- Stable API: Document comprehensively because the docs are more likely to stay accurate.
+- Internal utilities: Keep docs brief because reader count and reuse frequency are both low.
 
 #### Two-Tier Decision Rule
 
-After applying the thinking framework:
+Apply this rule after the framework:
 
-**Is this exported (public API)?**
-→ YES: Comprehensive documentation REQUIRED
-- All @param, @returns, @template, @throws, @example
-- Even if "obvious" - consumers lack your context
+Is this exported (public API)?
+- YES: Comprehensive documentation is REQUIRED.
+- Include `@param`, `@returns`, `@template`, `@throws`, and `@example`.
+- Keep this standard even when the API feels obvious, because consumers lack your context.
 
-**Is this internal code?**
-→ Apply judgment: Document what's NOT self-evident from:
-1. Function name and type signature
-2. Parameter names and types
-3. Standard patterns in the codebase
+Is this internal code?
+- Apply judgment. Document what is NOT self-evident from:
+  1. Function name and type signature
+  2. Parameter names and types
+  3. Standard patterns in the codebase
 
-**Rule of thumb**: If a competent team member would ask "why?" or "what's the edge case?" - document it. If they'd say "obvious" - skip it.
+Rule of thumb: If a competent team member would ask "why?" or "what's the edge case?", document it. If they would say "obvious", skip it.
 
-### 3. Evaluating Documentation Sufficiency
+### 3. Evaluate Documentation Sufficiency
 
-Use this decision tree to determine if documentation is complete:
+Use this decision tree:
 
 **Step 1: Determine visibility tier**
 ```
@@ -97,83 +95,82 @@ Is it exported (public API)?
 
 **Step 2: Apply entity-specific requirements**
 
-**Tier 1 (Exported) - Always Required:**
-- Description (purpose, usage context, "when to use" for appropriate entities)
-- All @param with property documentation for objects
-- @returns (unless void)
-- @template with constraint explanations for generics
-- @throws with triggering conditions
-- At least one realistic @example
+Tier 1 (Exported) - Always required:
+- Description with purpose, usage context, and "when to use" guidance when appropriate
+- All `@param` tags, including property documentation for object parameters
+- `@returns` unless the return type is `void`
+- `@template` with constraint explanations for generics
+- `@throws` with triggering conditions
+- At least one realistic `@example`
 
-**Tier 2 (Internal) - Judgment-Based:**
-- Brief description (one line acceptable)
-- @param for non-obvious parameters only
-- @returns if non-obvious
-- @template for generics
-- @example only if behavior is complex
+Tier 2 (Internal) - Judgment-based:
+- Brief description. One line is acceptable.
+- `@param` for non-obvious parameters only
+- `@returns` if the return value is non-obvious
+- `@template` for generics
+- `@example` only if the behavior is complex
 
-**Entity-Specific Additions:**
-- **Classes (Tier 1)**: Constructor docs, public method docs, instantiation example
-- **Types/Interfaces (Tier 1)**: Property descriptions for all public properties
-- **Constants/Variables**: Units/constraints if applicable (e.g., "milliseconds", "must be positive")
+Entity-specific additions:
+- Classes (Tier 1): Constructor docs, public method docs, and an instantiation example
+- Types/interfaces (Tier 1): Property descriptions for all public properties
+- Constants/variables: Units or constraints when applicable, such as "milliseconds" or "must be positive"
 
-**Sufficiency Checklist:**
+Sufficiency checklist:
 
-Before marking documentation as "sufficient", verify:
+Before you mark documentation as sufficient, verify:
 - [ ] All exported items have comprehensive documentation
-- [ ] All @param tags describe what the parameter does (not just type info)
-- [ ] All @returns tags describe what is returned in different scenarios
-- [ ] All @example tags use proper code fences with language identifier
-- [ ] No @returns on void functions
-- [ ] Generic functions have @template for each type parameter
+- [ ] All `@param` tags describe what the parameter does, not just type information
+- [ ] All `@returns` tags describe what is returned in different scenarios
+- [ ] All `@example` tags use proper code fences with a language identifier
+- [ ] No `@returns` tag appears on `void` functions
+- [ ] Generic functions have `@template` for each type parameter
 - [ ] Object parameters use dot notation for property documentation
-- [ ] Descriptions focus on WHAT/WHY, not HOW
+- [ ] Descriptions focus on WHAT or WHY, not HOW
 
 ### 4. When References Are Insufficient
 
-If you encounter scenarios not covered in the references or standard patterns:
+If you encounter a scenario that the references or standard patterns do not cover:
 
-**Fallback strategy:**
-1. Apply the two-tier rule (export vs internal) as your foundation.
+Fallback strategy:
+1. Apply the two-tier rule (exported versus internal) as the foundation.
 2. Prioritize clarity over completeness. It is better to document what you know than to guess syntax.
 3. Use standard JSDoc conventions from the official TypeScript or JSDoc documentation.
-4. Document your uncertainty with a NOTE marker: `// NOTE: JSDoc syntax may need review for [specific case]`.
+4. Mark uncertainty with `// NOTE: JSDoc syntax may need review for [specific case]`.
 5. If the case is truly ambiguous, ask the user for clarification instead of making assumptions.
 
 This fallback is for rare edge cases only. Do not use it to avoid loading the relevant reference when the task clearly requires one.
 
-**Common uncovered scenarios:**
-- Exotic TypeScript features (mapped types, conditional types, template literal types)
-- Framework-specific patterns (React hooks with generics, Vue composables)
+Common uncovered scenarios:
+- Exotic TypeScript features such as mapped types, conditional types, and template literal types
+- Framework-specific patterns such as React hooks with generics or Vue composables
 - Complex callback signatures with multiple overloads
 
-For these, default to clear descriptions in natural language rather than incomplete JSDoc tags.
+For these cases, prefer clear natural-language descriptions over incomplete JSDoc tags.
 
-### 5. Use the Report Template (For Explicit Audit Requests)
+### 5. Use the Report Template for Explicit Audit Requests
 
-When users explicitly request a documentation audit or invoke the skill directly (`/accelint-ts-documentation <path>`), use the standardized report format:
+Use the standardized report format when users explicitly request a documentation audit or invoke the skill directly with `/accelint-ts-documentation <path>`.
 
-**Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
+Template: [`assets/output-report-template.md`](assets/output-report-template.md)
 
 The audit report format provides:
 - Numbered findings with clear before/after examples
-- Categorization (Missing, Incomplete, Incorrect Syntax, Quality, Internal)
-- References to detailed guidance (jsdoc.md, comments.md)
+- Categorization (`Missing`, `Incomplete`, `Incorrect Syntax`, `Quality`, `Internal`)
+- References to detailed guidance in `jsdoc.md` or `comments.md`
 - Summary table for tracking all issues
 
-**When to use the audit template:**
-- Skill invoked directly via `/accelint-ts-documentation <path>`
-- User explicitly requests "documentation audit" or "audit documentation"
-- User asks to "review all documentation" across file(s)
+Use the audit template when:
+- The skill is invoked directly via `/accelint-ts-documentation <path>`
+- The user explicitly requests a "documentation audit" or "audit documentation"
+- The user asks to "review all documentation" across files
 
-**When NOT to use the audit template:**
-- User asks to "add JSDoc to this function" (direct implementation)
-- User asks "what's wrong with this comment?" (answer the question)
-- User requests specific fixes (apply fixes directly without formal report)
-
+Do NOT use the audit template when:
+- The user asks to "add JSDoc to this function" and wants direct implementation
+- The user asks "what's wrong with this comment?" and wants the question answered
+- The user requests specific fixes and wants them applied directly
 ## Documentation Audit Anti-Patterns
 
-When performing documentation audits, avoid these common mistakes:
+When you perform documentation audits, avoid these common mistakes:
 
 ### ❌ Incorrect: Over-documenting internal code
 

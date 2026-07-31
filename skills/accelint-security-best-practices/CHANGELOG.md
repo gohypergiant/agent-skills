@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.2] - 2026-07-31
+
+### Changed
+- Tightened workflow wording in `SKILL.md` to reduce exhaustive-sounding audit claims
+  - Replaced absolute coverage language with bounded, evidence-accountable instructions
+  - Required agents to state reviewed scope, note unreviewed areas, and avoid implying exhaustive coverage when audits are partial
+- Expanded negative trigger coverage in `evals/evals.json`
+  - Added near-miss should-not-trigger cases for performance tuning, architecture tradeoff analysis, and maintainability refactoring
+- Tightened behavior-preserving prose in supporting artifacts
+  - Clarified wording in `AGENTS.md`, `assets/output-report-template.md`, and `references/quick-reference.md`
+
+### Version
+- Bumped from 1.1.1 → 1.1.2
+
 ## [1.1.1] - 2026-07-30
 
 ### Changed

@@ -8,9 +8,9 @@ Comprehensive security guide for JavaScript and TypeScript applications that fol
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the rule summaries to identify relevant security patterns
-2. **Load references as needed**: Open detailed examples only when you are implementing
-3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples
+1. **Start here**: Scan the rule summaries to identify relevant security patterns.
+2. **Load references as needed**: Open detailed examples only when you are implementing.
+3. **Progressive loading**: Each reference file is self-contained with ❌/✅ examples.
 
 This structure minimizes context usage while preserving complete security guidance when needed.
 
@@ -162,7 +162,7 @@ For systematic vulnerability identification and categorization, load [references
 
 - **Audit everything philosophy** - Audit all in-scope code for security vulnerabilities. Internal utilities and helpers are often exposed through APIs or user interactions.
 - **Defense in depth** - Layer security controls so a single vulnerability does not compromise the entire system. Never rely on one protection.
-- **Fail securely** - When validation fails, deny access. Default to most secure option when uncertain.
-- **Principle of least privilege** - Grant minimum permissions necessary. Verify every operation.
+- **Fail securely** - When validation fails, deny access. Default to the most secure option when uncertain.
+- **Principle of least privilege** - Grant the minimum permissions necessary. Verify every operation.
 - **Security testing** - Test with malicious inputs and edge cases. Add tests for attack scenarios.
-- **Incident response** - Log security events with sufficient detail for investigation and response.
+- **Incident response** - Log security events with enough detail for investigation and response.

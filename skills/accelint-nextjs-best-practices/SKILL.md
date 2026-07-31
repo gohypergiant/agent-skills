@@ -4,12 +4,12 @@ description: Next.js performance, architecture, and security best practices. Use
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # Next.js Best Practices
 
-Comprehensive performance, architecture, and security guidance for Next.js applications. This skill is written for agents and LLMs working with Next.js code.
+Performance, architecture, and security guidance for Next.js applications. This skill is written for agents and LLMs working with Next.js code.
 
 ## When to Activate This Skill
 
@@ -99,6 +99,12 @@ This skill should activate for requests like:
 
 This skill uses a **progressive disclosure** structure to minimize context usage:
 
+### Fast Triage by Task Shape
+- **Targeted fix or design question:** Read [AGENTS.md](AGENTS.md) first. Identify the likely pattern, then load only the matching detailed reference.
+- **Broad audit or multi-file review:** Read [AGENTS.md](AGENTS.md), then use [references/quick-checklist.md](references/quick-checklist.md) to structure the review before loading deeper references.
+- **Route handler or Server Action review:** Start with [AGENTS.md](AGENTS.md), then check the relevant security and performance references before suggesting changes.
+- **Unclear diagnosis:** Use [references/quick-checklist.md](references/quick-checklist.md) to map symptoms to likely causes, then load the narrowest matching reference file.
+
 ### 1. Start with the Overview (AGENTS.md)
 Read [AGENTS.md](AGENTS.md) first for the condensed rule map and quick diagnostic guide.
 
@@ -106,7 +112,7 @@ Read [AGENTS.md](AGENTS.md) first for the condensed rule map and quick diagnosti
 Use [references/quick-checklist.md](references/quick-checklist.md) when you need a fast review checklist, a scenario-specific starter list, or a quick way to map symptoms to likely fixes.
 
 ### 3. Load Specific Rules as Needed
-When you identify the relevant pattern, load only the matching reference file for detailed implementation guidance:
+When you identify the relevant pattern, load only the matching reference file. Use it for detailed implementation guidance:
 
 **General Patterns:**
 - [prevent-waterfall-chains.md](references/prevent-waterfall-chains.md) (1.1)
@@ -132,7 +138,13 @@ When you identify the relevant pattern, load only the matching reference file fo
 **Automation Scripts:**
 - [scripts/](scripts/) - Helper scripts to detect anti-patterns
 
-### 4. Apply the Pattern
+### 4. Adapt to Router Context
+If the user explicitly says **Pages Router**, keep the same performance and security principles but answer using Pages Router primitives such as `getServerSideProps`, Pages API routes, and the older data-loading model. Do not force App Router-only APIs like Server Components, Server Actions, or `app/api` route handlers into a Pages Router answer unless the user is asking about migration tradeoffs.
+
+### 5. Verify Version-Sensitive Claims When Needed
+If the request depends on a specific Next.js version, an unusual API combination, or behavior you are not fully certain about, verify the claim against current official Next.js documentation before you give a high-confidence recommendation.
+
+### 6. Apply the Pattern
 Each reference file contains:
 - ❌ Incorrect examples that show the anti-pattern
 - ✅ Correct examples that show the recommended implementation
@@ -140,7 +152,7 @@ Each reference file contains:
 - Impact notes
 - Related patterns and references
 
-### 5. Use the Report Template
+### 7. Use the Report Template
 When this skill is invoked for a multi-file Next.js review or audit, use the standardized report format:
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
@@ -149,8 +161,8 @@ The report format provides:
 - Executive Summary with impact assessment
 - Severity levels (Critical, High, Medium, Low) for prioritization
 - Impact analysis (performance, security, data transfer, maintainability)
-- Categorization (Server Actions, RSC Serialization, Data Fetching, Component Architecture)
-- Pattern references linking to detailed guidance in references/
+- Categories (Server Actions, RSC Serialization, Data Fetching, Component Architecture)
+- Pattern references linking to detailed guidance in `references/`
 - Summary table for tracking all issues
 
 **When to use the report template:**
@@ -162,8 +174,15 @@ The report format provides:
 - User asks "what's wrong with this code?" (answer directly)
 - User requests a narrow targeted change rather than an audit
 
-### 6. Use Automation Scripts Selectively
-When you need quick detection help during a real codebase audit, consult [scripts/README.md](scripts/README.md) and run only the script that matches the suspected issue. Treat script output as a heuristic signal that still requires manual review.
+### 8. Route Handler Review Focus
+When reviewing Next.js route handlers, explicitly check:
+- authentication and authorization consistency in the handler itself
+- whether sensitive headers, cookies, or authorization values are forwarded upstream more broadly than needed
+- whether caching is safe for authenticated or user-specific responses
+- whether large exports or responses are built fully in memory when streaming, chunking, or pagination would be safer
+
+### 9. Use Automation Scripts Selectively
+When you need quick detection help during a real codebase audit, consult [scripts/README.md](scripts/README.md). Run only the script that matches the suspected issue. Treat script output as a heuristic signal that still requires manual review.
 
 ## Examples
 
@@ -195,10 +214,7 @@ When you need quick detection help during a real codebase audit, consult [script
 4. Pass only necessary fields, transform on client
 
 ## Additional Resources
-
-Official Next.js documentation:
-- [App Router Documentation](https://nextjs.org/docs/app)
-- [Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components)
-- [Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations)
-- [Authentication Guide](https://nextjs.org/docs/app/guides/authentication)
-- [Performance Optimization](https://nextjs.org/docs/app/building-your-application/optimizing)
+ 
+### ALWAYS read docs before coding
+ 
+Before any Next.js work, find and read the relevant doc in `node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.

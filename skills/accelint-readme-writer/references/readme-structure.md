@@ -6,7 +6,7 @@ Detailed guide for README section order, content requirements, and formatting.
 
 ## Section Order
 
-READMEs MUST follow this section order. Users expect to find information in predictable places.
+Package and library READMEs MUST follow this section order. Users expect to find information in predictable places.
 
 ```
 1.  Heading Area
@@ -22,6 +22,8 @@ READMEs MUST follow this section order. Users expect to find information in pred
 11. Architecture & Development Guides (optional)
 12. Contributing (optional)
 ```
+
+For app, service, CLI, or monorepo-root READMEs, keep the same reader-first flow but adapt the middle sections to the actual public surface. Do not force a package-style API section when setup, commands, workflows, or operations are the main value.
 
 ---
 
@@ -59,8 +61,8 @@ Parse configuration files with schema validation.
 ### Badge guidelines
 
 - Keep badges to 3-4 at most.
-- Most useful: npm version, license, build status.
-- Avoid: download counts, star counts, and redundant badges.
+- Most useful: npm version, license, and build status.
+- Avoid download counts, star counts, and redundant badges.
 
 ---
 
@@ -355,7 +357,7 @@ MIT - see [LICENSE](./LICENSE) for details.
 
 <!-- Include this section only if any of these files exist: openspec/config.yml, openspec/config.yaml, ARCHITECTURE.md, AGENTS.md, CLAUDE.md -->
 
-Links to deeper technical and behavioral documentation that complements the README.
+Links to deeper technical and behavioral documentation that complement the README.
 
 **✅ Correct**
 ```markdown

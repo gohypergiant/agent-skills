@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide shows the workflow for applying patterns from this skill: identify the issue, check `AGENTS.md`, load the appropriate reference file, and implement the solution.
+This guide shows the workflow for applying patterns from this skill: identify the issue, check `AGENTS.md`, load the appropriate reference file, and apply the fix.
 
 ## Examples
 
@@ -143,8 +143,8 @@ function getDisplayName(user: User | undefined): string {
 
 ## Workflow Summary
 
-1. **Identify the pattern** - Recognize anti-patterns such as nested conditionals, chained array methods, or repeated computations.
+1. **Identify the pattern** - Recognize anti-patterns such as nested conditionals, unsafe external input handling, or repeated computations.
 2. **Check `AGENTS.md`** - Find the relevant category and reference file link.
 3. **Load the reference file** - Read the detailed examples and explanations.
-4. **Apply the pattern** - Implement the ✅ correct version.
-5. **Verify the improvement** - Benchmark if performance-related and test if safety-related.
+4. **Apply the pattern** - Implement the correct version.
+5. **Verify the improvement** - Test safety-related changes. If the main task is performance work, use `accelint-ts-performance` instead of this skill.

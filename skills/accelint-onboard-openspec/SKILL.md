@@ -4,20 +4,20 @@ description: Create, import, append, dry-run, or refresh openspec/config.yaml th
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.6.0"
+  version: "1.6.1"
 ---
 
 # Onboard OpenSpec
 
-Guide the user through a conversational interview to produce a complete, project-specific `openspec/config.yaml` configured for the QRSPI methodology.
+Guide the user through a conversational interview that produces a complete, project-specific `openspec/config.yaml` for the QRSPI methodology.
 
 ## Never do this when onboarding OpenSpec
 
-- NEVER run codebase inference serially when subagents are available. Phase 3 spawns parallel subagents for different discovery domains. Serial scanning wastes time on codebases with many config files spread across directories. Spawn all 4 discovery agents simultaneously.
+- NEVER default to serial codebase inference when subagents are available. Phase 3 uses four parallel discovery agents, each for a different inference domain. If subagents are genuinely unavailable, say so explicitly and run the same four-domain pass inline instead of implying that the parallel step happened.
 
 ## Companion skill
 
-This skill produces the project DNA layer of the agent instruction stack: structural facts about what the project is. It is the companion to the `accelint-onboard-agents` skill, which produces the behavior layer (`AGENTS.md` / `CLAUDE.md`): how the agent acts, communicates, and makes decisions.
+This skill produces the project DNA layer of the agent instruction stack: structural facts about the project. It is the companion to the `accelint-onboard-agents` skill, which produces the behavior layer (`AGENTS.md` / `CLAUDE.md`): how the agent acts, communicates, and makes decisions.
 
 If the user volunteers behavioral content during this interview (commit conventions, workflow steps, decision heuristics, tool preferences), acknowledge it and redirect: *"That's behavioral — it belongs in AGENTS.md. I'll note it here for reference, but the `accelint-onboard-agents` skill is the right place to capture it."* Do not write behavioral content into `config.yaml`.
 
@@ -31,28 +31,26 @@ openspec/config.yaml   → this skill             → WHAT the project is
 ## Mental model
 
 The config has two jobs:
-1. **`context:`** — Objective facts about the codebase injected into every AI artifact. Think of it as the "DNA" that makes AI suggestions feel native to the project. Facts only, no opinions.
-2. **`rules:`** — Per-artifact checkpoints (proposal / design / tasks / spec) that encode the team's quality bar.
+1. **`context:`** — Objective facts about the codebase. These are injected into every AI artifact. Think of `context:` as the "DNA" that makes AI suggestions feel native to the project. Facts only, no opinions.
+2. **`rules:`** — Per-artifact checkpoints (`proposal` / `design` / `tasks` / `spec`) that encode the team's quality bar.
 
 ## Phases
 
 ### Phase 0 — File state detection
 
-Before you ask any interview question, check whether `openspec/config.yaml` exists and assess its state. Never silently pick a mode. Always announce the detected mode to the user and confirm before proceeding.
+Before you ask any interview question, check whether `openspec/config.yaml` exists and assess its state. Never pick a mode silently. Always announce the detected mode to the user and confirm it before you proceed.
 
 **Step 1 — Check for related documents**
 
 Before you detect `config.yaml` state, check for related onboarding documents:
 
-1. **Check for ARCHITECTURE.md**
-   - If exists: Read it to understand deployment and infrastructure
-   - Use it to pre-fill answers for Turn 2 (infrastructure/deployment questions)
-   - Note its existence for the "Related Documentation" section
-   - Announce: "Found ARCHITECTURE.md — I'll use it to avoid asking questions
-     about deployment that are already documented."
+1. **Check for `ARCHITECTURE.md`**
+   - If it exists, read it to understand deployment and infrastructure.
+   - Use it to pre-fill answers for Turn 2 infrastructure and deployment questions.
+   - Note its existence for the Related Documentation section.
+   - Announce: "Found ARCHITECTURE.md — I'll use it to avoid asking questions about deployment that are already documented."
 
-Note: AGENTS.md and README.md should NOT influence config.yml generation since
-they contain behavioral/usage info, not project DNA.
+Note: `AGENTS.md` and `README.md` should NOT influence `config.yaml` generation because they contain behavioral or usage information, not project DNA.
 
 **Step 2 — Detect config state**
 
@@ -82,9 +80,7 @@ Does openspec/config.yaml exist?
                   Present three options (A / B / C) before proceeding.
 ```
 
-**Recognised shape** = file is valid YAML with at least a `context:` key
-whose value is a non-empty string, or a `rules:` key with at least one
-of the known artifact IDs (`proposal`, `specs`, `design`, `tasks`).
+**Recognised shape** = the file is valid YAML with at least a `context:` key whose value is a non-empty string, or a `rules:` key with at least one of the known artifact IDs (`proposal`, `spec`, `design`, `tasks`).
 
 ---
 
@@ -97,8 +93,7 @@ happy path for a fresh repo.
 
 #### Mode 2: Import
 
-The file has real content that was not generated by this skill. Present the
-user with three options before touching anything:
+The file has real content that was not generated by this skill. Present the user with three options before you touch anything:
 
 > "This `config.yaml` has existing content with a structure I don't
 > recognise. How would you like to proceed?
@@ -128,13 +123,10 @@ user with three options before touching anything:
    there and remove it from config.yaml?"*
 4. Run a targeted interview covering only the gaps (context sub-sections
    with no existing coverage; artifact keys with no rules).
-5. Show a merged preview before writing. Existing content is labelled
-   `# from existing file`; new content is labelled `# new`.
+5. Show a merged preview before writing. Existing content is labeled `# from existing file`. New content is labeled `# new`.
 
 **If option (b) is chosen:**
-Run the full Phase 1 → Phase 4 interview and write the generated `context:`
-and `rules:` blocks alongside existing content. Add a comment at the top:
-`# Sections below added by accelint-onboard-openspec skill`.
+Run the full Phase 1 → Phase 4 interview and write the generated `context:` and `rules:` blocks alongside existing content. Add this comment at the top: `# Sections below added by accelint-onboard-openspec skill`.
 
 **If option (c) is chosen:**
 Run the full Phase 1 → Phase 4 interview and present the output in the
@@ -145,8 +137,7 @@ as (a) or (b) if the user is satisfied.
 
 #### Mode 3: Refresh
 
-The file matches the skill's expected schema — it was likely produced by a
-previous run. Run an abbreviated interview covering only:
+The file matches the skill's expected schema. It was likely produced by a previous run. Run an abbreviated interview that covers only:
 
 1. **Extract external findings** — check if the invoking prompt includes a `findings:` list:
    - Parse the prompt for a `findings:` section (a bulleted list of factual statements)
@@ -154,8 +145,7 @@ previous run. Run an abbreviated interview covering only:
    - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
    - Store these findings for merging in step 4
 
-2. **Drift detection** — scan the codebase for changes since the file was
-   last updated:
+2. **Drift detection** — scan the codebase for changes since the file was last updated:
 
    | Signal | Where to look |
    |--------|---------------|
@@ -171,12 +161,12 @@ previous run. Run an abbreviated interview covering only:
 3. **Unresolved TODOs** — find all `# TODO: fill in` markers left from the
    previous run and surface them as targeted questions.
 
-4. **Merge and announce all findings** before asking anything:
-   - Combine external findings (from step 1) with drift findings (from step 2) and TODOs (from step 3)
+4. **Merge and announce all findings** before you ask anything:
+   - Combine external findings from step 1 with drift findings from step 2 and TODOs from step 3.
    - Present the merged list to the user:
      > "I found [N] external findings, [M] context sections that may have drifted, and [P] unresolved TODOs.
      > I'll only ask about those — the rest looks current."
-   - If external findings exist, note their source (e.g., "from completed OpenSpec change")
+   - If external findings exist, note their source, for example "from completed OpenSpec change".
 
 5. After the targeted interview, show only the changed sections in the
    preview before writing. Do not re-emit unchanged sections.
@@ -295,16 +285,11 @@ After each stack answer, surface relevant conventions to confirm. Use these exam
 
 ### Phase 3 — Parallel codebase inference
 
-After the interview, spawn parallel discovery subagents to fill remaining config gaps. All config sections are load-bearing. A missing field degrades every downstream AI artifact, so inference is always preferable to omission.
+After the interview, spawn parallel discovery subagents to fill the remaining config gaps. All config sections are load-bearing. A missing field degrades every downstream AI artifact, so inference is always better than omission.
 
-Spawn discovery subagents in parallel — don't scan serially. Each agent focuses
-on one inference domain and returns structured findings. Wait for all agents to
-complete, then merge results before Phase 4.
+Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses on one inference domain and returns structured findings. Wait for all agents to complete, then merge the results before Phase 4.
 
-If subagents are genuinely unavailable in the current environment, say so
-explicitly and do the same discovery inline with direct tools instead of
-pretending the parallel step happened. Keep the same four-domain structure in
-your notes so the eventual config still reflects a complete pass.
+If subagents are genuinely unavailable in the current environment, say so explicitly and do the same discovery inline with direct tools instead of implying that the parallel step happened. Keep the same four-domain structure in your notes so the final config still reflects a complete pass.
 
 **Spawn these agents simultaneously:**
 
@@ -319,31 +304,30 @@ your notes so the eventual config still reflects a complete pass.
 **Agent B — Testing & Code Quality**
 - Test framework: `vitest.config.*`, `jest.config.*`, `pytest.ini`, `pyproject.toml#tool.pytest`
 - Linting / formatting: `.eslintrc*`, `biome.json`, `.prettierrc*`, `ruff.toml`
-- Test structure: Sample test files — describe/it nesting depth, file location relative to source
-- Test file type checking: CI scripts, package.json — check if `tsc --noEmit` runs on `*.test.ts` files
-- Property-based testing: Check for `fast-check` in dependencies
+- Test structure: sample test files — `describe`/`it` nesting depth, file location relative to source
+- Test file type checking: CI scripts, `package.json` — check whether `tsc --noEmit` runs on `*.test.ts` files
+- Property-based testing: check for `fast-check` in dependencies
 - Vitest mock cleanup: `vitest.config.ts` — check for `clearMocks`, `mockReset`, `restoreMocks`
 - Return: test framework, code quality tools, test structure patterns, type checking config
 
 **Agent C — Architecture & Code Patterns**
-- Architecture organisation: Directory tree of `src/` or workspace roots — infer feature-based vs layer-based
+- Architecture organisation: directory tree of `src/` or workspace roots — infer feature-based vs layer-based
 - Path aliases: `tsconfig.json#compilerOptions.paths`, `vite.config#resolve.alias`
-- Design patterns: Sample source files — look for factory functions, repository objects, observer hooks
-- Export style: Sample 3–5 source files; tally named vs default exports
-- Naming conventions: Sample file names, exported identifiers; describe what you observe
-- Error handling: Grep for `throw`, `Result`, `Either`, `tryCatch`, error boundary components
-- TypeScript baseline patterns: If `tsconfig.json` exists, flag that TS/JS baseline patterns should be included
+- Design patterns: sample source files — look for factory functions, repository objects, observer hooks
+- Export style: sample 3–5 source files; tally named vs default exports
+- Naming conventions: sample file names and exported identifiers; describe what you observe
+- Error handling: grep for `throw`, `Result`, `Either`, `tryCatch`, error boundary components
+- TypeScript baseline patterns: if `tsconfig.json` exists, flag that TS/JS baseline patterns should be included
 - Return: architecture style, path aliases, design patterns, export conventions, naming patterns, error handling approach
 
 **Agent D — CI/CD & Versioning**
 - CI/CD: `.github/workflows/`, `.circleci/`, `Jenkinsfile`
 - Versioning: `.changeset/`, `CHANGELOG.md`, `commitlint.config.*`, `.releaserc*`
-- Anti-patterns: `eslint` rule overrides marked `off` or `warn`, comments like `// TODO: replace`, `@deprecated`
+- Anti-patterns: `eslint` rule overrides marked `off` or `warn`, comments such as `// TODO: replace`, `@deprecated`
 - Return: CI/CD platform, versioning approach, documented anti-patterns
 
 **After all agents complete:** merge their findings into a unified inference map.
-Tag each field as `INFERRED [source]` or `UNKNOWN`. Fields tagged `UNKNOWN`
-should be marked as `# TODO: fill in` in the config preview.
+Tag each field as `INFERRED [source]` or `UNKNOWN`. Fields tagged `UNKNOWN` should be marked as `# TODO: fill in` in the config preview.
 
 **For each field resolved via inference**, note the source in the preview with a
 trailing comment, e.g.:
@@ -353,25 +337,16 @@ trailing comment, e.g.:
 - Language: TypeScript 5.4, strict, exactOptionalPropertyTypes   # inferred from tsconfig.json
 ```
 
-**If a field genuinely cannot be inferred** (e.g., performance targets, domain
-concepts, team-specific rules), mark it with `# TODO: fill in` rather than
-omitting it. The user can resolve these after reviewing the preview. Do not
-silently drop a section — an explicit TODO is a prompt to act; an absent section
-is an invisible gap.
+**If a field genuinely cannot be inferred** — for example, performance targets, domain concepts, or team-specific rules — mark it with `# TODO: fill in` instead of omitting it. The user can resolve these after reviewing the preview. Do not silently drop a section. An explicit TODO is a prompt to act. An absent section is an invisible gap.
 
 ---
 
 ### Phase 4 — Generation
 
-1. **Show a labeled preview** of the full config before you write anything. Inferred values carry their source comment. Unresolved fields carry `# TODO: fill in`. This gives the user a complete picture of confidence level across every field.
-2. Ask: *"Does this look right? Any sections to correct or expand before I write
-   the file?"*
-3. After confirmation, write to `openspec/config.yaml` (create directory if
-   needed), **stripping the inference source comments** — they are for review
-   only, not the final file. **For the Related Documentation section:** only include
-   links to files that actually exist in the repository. Check for each file
-   (ARCHITECTURE.md, AGENTS.md/CLAUDE.md, README.md) before including its link.
-4. **Validate the generated YAML** — after writing, read the file back and verify:
+1. **Show a labeled preview** of the full config before you write anything. Inferred values carry their source comment. Unresolved fields carry `# TODO: fill in`. This gives the user a complete picture of the confidence level for every field. Use the template in [references/config-template.md](references/config-template.md) when you produce the full preview or final file shape.
+2. Ask: *"Does this look right? Any sections to correct or expand before I write the file?"*
+3. After confirmation, write to `openspec/config.yaml` and create the directory if needed. **Strip the inference source comments** because they are for review only, not the final file. **For the Related Documentation section:** include links only to files that actually exist in the repository. Check each file (`ARCHITECTURE.md`, `AGENTS.md` / `CLAUDE.md`, `README.md`) before you include its link.
+4. **Validate the generated YAML** — use [references/yaml-safety.md](references/yaml-safety.md) as the safety checklist, then read the file back and verify:
    - No tabs (YAML requires spaces for indentation)
    - Values with special characters are properly quoted
    - No syntax errors (unmatched brackets, quotes, etc.)
@@ -386,293 +361,21 @@ is an invisible gap.
 
 ---
 
-## YAML Generation Safety Rules
+## Reference files
 
-**CRITICAL:** YAML syntax is strict about special characters. Follow these rules when generating config.yaml to avoid syntax errors:
-
-### Quoting Requirements
-
-**Rule:** Values that start with special YAML characters need quoting.
-
-Special characters: `|`, `>`, `"`, `'`, `(`, `)`, `[`, `]`, `{`, `}`, `*`, `&`, `!`, `%`, `@`, `` ` ``
-
-**Examples:**
-```yaml
-# Parentheses at start of value
-❌ description: (internal) auth module     # Syntax error
-✅ description: "(internal) auth module"   # Quoted
-
-# Square brackets (looks like YAML list syntax)
-❌ tag: [PKG:auth]                         # YAML thinks it's a list
-✅ tag: "[PKG:auth]"                       # Quoted string
-
-# Pipe character (YAML thinks it's block scalar)
-❌ pattern: some|other                     # Syntax error
-✅ pattern: "some|other"                   # Quoted
-
-# Colon in value (YAML thinks it's a nested key)
-❌ note: Time: 5pm                         # Syntax error
-✅ note: "Time: 5pm"                       # Quoted
-
-# Value containing quotes - escape with opposite quote type
-✅ command: 'npm run "test:unit"'          # Single quotes protect doubles
-✅ command: "npm run 'test:unit'"          # Double quotes protect singles
-```
-
-### Multi-line String Handling
-
-Use block scalar indicators for multi-line content:
-
-```yaml
-# Literal block (preserves newlines) - preferred for context field
-context: |
-  Line 1
-  Line 2
-  Line 3
-
-# Folded block (folds newlines into spaces) - rarely needed
-description: >
-  This is a long
-  description that
-  flows together.
-```
-
-### Indentation Rules
-
-- **Use spaces only** — never tabs
-- **Consistent indent** — typically 2 spaces per level
-- **Block scalars** — content inside `|` or `>` must be indented relative to the key
-
-### Rules for List Values
-
-```yaml
-# Simple list items - no quotes needed for plain text
-rules:
-  proposal:
-    - Keep proposals under 100 lines
-    - Include scope boundaries
-
-# List items with special chars - quote them
-rules:
-  tasks:
-    - "Tag with [PKG:name] format"        # Quotes protect [ and ]
-    - 'Use "Test:" prefix for validation' # Single quotes protect inner "
-```
-
-### Validation Checklist
-
-After generating the config, mentally verify:
-1. No bare `(`, `)`, `|`, `"`, `'` immediately after colons (unless using `|` or `>` for multiline)
-2. No tab characters anywhere in the file
-3. Consistent 2-space indentation throughout
-4. All list items (`-`) aligned at the same indent level within their parent
-5. Quoted strings use matching quote types
-
-If any of these rules are violated, the YAML will fail to parse.
-
----
+Load these only when needed:
+- [references/config-template.md](references/config-template.md) — full `openspec/config.yaml` template for previews and generation
+- [references/yaml-safety.md](references/yaml-safety.md) — quoting, indentation, and validation checklist for YAML-safe output
 
 ## Config Template
 
-Use this exact structure. Fill every `[placeholder]` with content from the
+Use the exact structure from [references/config-template.md](references/config-template.md). Fill every `[placeholder]` with content from the
 interview or codebase inference. If a field cannot be resolved by either means,
 replace its placeholder with `# TODO: fill in` — never omit the field. Every
 section is load-bearing for downstream AI artifact quality.
 
-```yaml
-schema: spec-driven
+See [references/config-template.md](references/config-template.md) for the full template.
 
-# Project Context
-# Injected into every AI-generated artifact (proposal, design, spec, tasks).
-# QRSPI principle: objective research layer — facts only, no opinions.
-
-context: |
-  # ═══════════════════════════════════════════════════════════════════════════
-  # STACK FACTS
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  ## Project Identity
-  [project name and one-sentence purpose]
-  [repo structure: monorepo / single-package / workspaces list]
-  [build system and task orchestration]
-  [package manager + registries]
-
-  ## Tech Stack
-  - Runtime:            [e.g., Node.js 20 LTS]
-  - Language:           [e.g., TypeScript 5.4, strict mode, exactOptionalPropertyTypes]
-  - Framework:          [e.g., Next.js 14 App Router]
-  - Key Libraries:      [domain-specific dependencies with versions]
-  - Data Layer:         [databases, ORMs, data formats, query builders]
-  - Testing:            [framework, utilities, coverage tooling]
-  - Linting/Formatting: [tools and config files in use]
-  - Build Tools:        [bundlers, compilers, transpilers]
-  - CI/CD:              [platform and key workflow names]
-  - Versioning:         [release strategy and changelog tooling]
-
-  ## Architecture Patterns
-  - Organisation: [feature-based / layer-based / domain-driven / other]
-  - Shared code:  [path to shared utilities / packages]
-  - Path aliases: [list of aliases and their resolved paths]
-  - Key patterns: [design patterns in common use]
-
-  ## Domain Concepts
-  - [Entity or concept]: [one-line definition]
-  - [Entity or concept]: [one-line definition]
-  - [Entity or concept]: [one-line definition]
-
-  ## Performance Targets
-  - [metric]: [target value and context]
-
-  ### TypeScript/JavaScript Performance (if applicable)
-  - Hot paths:    [functions executed >1000 times per interaction or >100 times/sec]
-  - Frame budget: [for real-time systems: 60fps = 16.67ms, 120fps = 8.33ms]
-  - Constraints:  Bounded iteration (explicit limits on loops/queues), O(n) or better algorithmic complexity
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # PATTERNS TO FOLLOW
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  ## Code Patterns
-  - Exports:         [named / default / mixed — and when each applies]
-  - Naming:          [files, variables, functions, constants, types]
-  - Error handling:  [throw / Result<T,E> / boundaries / other]
-  - Validation:      [approach and library]
-  - Constants:       Use `as const` objects, never `enum`
-  - Classes:         Prefer functions over classes unless state management required or extending existing class
-  - Return values:   Return zero values (empty array, empty string, 0, false) instead of null/undefined
-  - Leaf functions:  Leaf functions (bottom of call stack) should be pure — same inputs produce same outputs, no side effects. Centralize state manipulation in parent/orchestrator functions.
-  - Type safety:     Avoid `any` (use `unknown` or generics); avoid `enum` (use `as const` objects); use `type` over `interface`
-  - Immutability:    Prefer `const`, immutable data structures, pure functions
-  - Documentation:   Comprehensive JSDoc for all exported code (@param, @returns, @template, @example)
-  - Order:           Internal functions, variables and types should be defined before they are used (internal/export types -> internal/export constants -> internal/export functions)
-  - Parameter order: Data-last ordering — place the data being operated on as the final parameter. Enables partial application and composition.
-  - Composition:     Use curried functions when the same first parameter(s) recur across call sites.
-
-  ## Architecture Patterns
-  - [pattern name]: [brief description of how it's used here]
-
-  ## Testing Patterns
-  - Pattern:        AAA (Arrange, Act, Assert) with clear boundaries
-  - Property-based: (If available) Use `fast-check` for encode/decode pairs, validators, normalizers, pure functions
-  - Test scope:     Never test library internals; never export internals to test them; never mock own pure functions
-  - Structure:      [describe/it nesting convention]
-  - File location:  [co-located / __tests__ / other]
-  - Test doubles:   Hierarchy: real implementation > fakes > stubs > spies > mocks
-  - Fixtures:       [factory functions / fixture files / inline data]
-  - Assertions:     [preferred assertion style]
-  - Nesting:        Max 2 levels of describe blocks — use descriptive test names instead
-  - Verification:   MUST run `tsc --noEmit` on test files before marking complete
-  - Benchmarks:     [approach if any]
-
-  # NOTE: Commit message convention, PR workflow, and tool preferences
-  # are behavioral — they belong in AGENTS.md, not here.
-
-  # ═══════════════════════════════════════════════════════════════════════════
-  # PATTERNS TO AVOID
-  # ═══════════════════════════════════════════════════════════════════════════
-
-  ## Code Anti-Patterns
-  - Using `any` instead of `unknown` or generics
-  - Using `enum` instead of `as const` objects
-  - Using `interface` when `type` works (prefer type)
-  - Returning `null`/`undefined` instead of zero values (empty arrays, empty strings, 0, false)
-  - Not validating external data with schemas
-  - Deep nesting instead of early returns
-
-  - [anti-pattern]: [why it's banned or deprecated]
-
-  ## Performance Anti-Patterns
-  - Chaining array methods (`.filter().map().reduce()`) — use single reduce pass
-  - Using `Array.includes()` for repeated lookups (use `Set.has()` for O(1) lookups)
-  - Recomputing constants inside loops (hoist invariants outside)
-  - Unbounded loops or queues (set explicit limits to prevent runaway resource consumption)
-  - Placing `try/catch` in hot paths (V8 cannot inline, 3-5x slowdown)
-
-  - [anti-pattern]: [why it's banned or deprecated]
-
-  ## Testing Anti-Patterns
-  - Testing library internals (e.g., verifying Array.prototype.map works)
-  - Exporting internal functions just to test them
-  - Loose assertions in tests (toBeTruthy, toBeDefined)
-  - Nested describe blocks >2 levels deep
-  - Testing implementation details instead of behavior
-
-  - [anti-pattern]: [why it's banned or deprecated]
-
-  ## Documentation Anti-Patterns
-  - Missing JSDoc on exported functions/types
-  - Documenting HOW instead of WHAT/WHY in JSDoc
-  - Vague comment markers (`// TODO: fix this` instead of `// TODO: Replace with binary search for O(log n)`)
-
-# ═══════════════════════════════════════════════════════════════════════════
-# PER-ARTIFACT RULES
-# ═══════════════════════════════════════════════════════════════════════════
-
-rules:
-  proposal:
-    # QRSPI: Scope definition, not a plan.
-    - State the requirement or ticket driving this change
-    - Define scope boundaries — explicitly list what is OUT of scope
-    - Keep under 100 lines (tight and focused)
-    [user-specific proposal rules]
-
-  design:
-    # QRSPI: The "brain surgery" checkpoint — reviewed before any code is written.
-    # Target ~200 lines capturing current state, desired state, open questions.
-
-    # Required sections (in this order):
-    - Start with "Current State": what the code does today, key files, entry
-      points, relevant data flows
-    - "Desired End State": what changes after this work, what stays the same
-    - "Patterns to Follow": ONLY if specific files/functions to reference exist
-      for this change's domain
-    - "Patterns to Avoid": ONLY if specific anti-patterns apply to this change
-    - "Open Questions": genuine uncertainties requiring human input. If none,
-      state explicitly "No unresolved questions."
-    - "Resolved Decisions": numbered (Decision 1, Decision 2…) with Choice,
-      Rationale, Alternatives Considered
-
-    # Technical depth:
-    - Use ASCII diagrams for data flows, state machines, architecture
-    - Call out performance implications where relevant
-    [user-specific design rules]
-
-    # Constraints:
-    - Keep under 250 lines total
-
-  tasks:
-    # QRSPI: Vertical slicing for early failure detection.
-
-    # Vertical slicing (strong preference):
-    - Order as vertical slices — each task delivers a testable end-to-end path
-    - Do NOT group by architectural layer unless explicitly justified
-    - Horizontal (layer-by-layer) only for pure infrastructure; include
-      justification in the task description when used
-    - Each task MUST include an explicit "Test:" line describing what to verify
-      before proceeding to the next task
-    - Prefer 3–5 major slices; more than 5 suggests scope is too large
-
-    # Granularity:
-    - Max 2 hours per task; break larger work into subtasks
-    [user-specific task tagging, e.g., [PKG:name] or [MODULE:name]]
-    - Call out inter-task dependencies explicitly
-    [user-specific rollback requirements]
-    [user-specific deployment test gates]
-
-  spec:
-    - Use Given/When/Then for behaviour specifications
-    - Include concrete example data relevant to the domain
-    - Document edge cases explicitly
-    [user-specific spec rules]
-
-# ═══════════════════════════════════════════════════════════════════════════
-# RELATED DOCUMENTATION
-# ═══════════════════════════════════════════════════════════════════════════
-# Include only files that actually exist in the repository:
-# - ARCHITECTURE.md: System overview, deployment, component interactions, data flows
-# - AGENTS.md: Agent behavior rules, workflow procedures, communication style
-# - README.md: Installation, quick start, usage guide
-```
 
 ---
 
@@ -682,6 +385,6 @@ rules:
 - **Infer and confirm.** "You mentioned Vitest — I'll assume you're using `@testing-library/react` for component tests; correct?" is better than asking from scratch.
 - **Examples reduce ambiguity.** When you ask about naming conventions, give an example first so the user can pattern-match.
 - **Iterative.** Let the user amend answers. Do not lock them into the first response.
-- **Preview before writing.** Always show the generated config preview and get explicit confirmation before you touch the filesystem. In Refresh mode, the preview can be diff-style and limited to changed sections. In Create and Import modes, show the full generated output.
-- **Infer before asking, ask before omitting.** Always attempt codebase inference for any unanswered field. If inference fails, surface a `# TODO: fill in` marker rather than dropping the section. A config with explicit TODOs is actionable. A config with missing sections silently degrades every artifact it drives.
-- **Separate fact from behavior.** When a user answer mixes project DNA with workflow preferences, keep the factual portion for `config.yaml` and call out the behavioral remainder for `AGENTS.md` / `CLAUDE.md` rather than silently blending them together.
+- **Preview before writing.** Always show the generated config preview and get explicit confirmation before you touch the filesystem. In Refresh mode, the preview may be diff-style and limited to changed sections. In Create and Import modes, show the full generated output.
+- **Infer before asking, ask before omitting.** Always attempt codebase inference for any unanswered field. If inference fails, surface a `# TODO: fill in` marker instead of dropping the section. A config with explicit TODOs is actionable. A config with missing sections silently degrades every artifact it drives.
+- **Separate fact from behavior.** When a user answer mixes project DNA with workflow preferences, keep the factual portion for `config.yaml` and call out the behavioral remainder for `AGENTS.md` / `CLAUDE.md` instead of silently blending them together.

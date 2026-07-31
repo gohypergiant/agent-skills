@@ -1,8 +1,10 @@
 # Examples by writing type
 
-Use this reference when a concrete pattern will help before you draft, rewrite, or audit text.
+Use this reference when a concrete before/after pattern will help before you draft, rewrite, or audit text.
 
-These examples are intentionally short. Use them to anchor judgment. Do not force a template onto unrelated prose. Favor the core default method first: state the point early, use direct wording, keep terms stable, and apply stronger structure only when it helps the reader.
+This file is an example bank. Use `references/use-cases.md` for context-specific adaptation guidance.
+
+These examples are intentionally short. Use them to anchor judgment. Do not force a template onto unrelated prose.
 
 ## Procedural rewrite
 
@@ -102,9 +104,9 @@ Why this helps:
 
 **Audit finding:**
 - **Category:** filler and weak modality
-- **Offending text:** "In order to ensure," "should provide guidance," "intuitive and user-friendly"
-- **Better rewrite:** "To help users finish onboarding, the system must give clear guidance."
-- **Note:** If this is product copy instead of a requirement, replace `must` with a factual statement about current behavior.
+- **Source text:** "In order to ensure," "should provide guidance," "intuitive and user-friendly"
+- **Risk:** The sentence hides whether this is a requirement or a descriptive claim. It also uses filler and vague quality terms.
+- **Brief note:** If this is a requirement, the final rewrite should state the obligation directly. If it is product copy, the final rewrite should state the current behavior.
 
 ## Audit example with severity ordering
 
@@ -114,9 +116,9 @@ Why this helps:
 
 **Finding:**
 - **Category:** procedural structure
-- **Offending text:** "You may want to rotate the key after the deploy if the old secret is still active in production."
-- **Better rewrite:** "If the old secret is still active in production, rotate the key after the deploy."
-- **Note:** This keeps the condition, removes weak modality, and makes the action explicit.
+- **Source text:** "You may want to rotate the key after the deploy if the old secret is still active in production."
+- **Risk:** The required action is easy to miss because the condition and command are buried in weak modality.
+- **Brief note:** A rewrite should put the condition first and make the action explicit.
 
 ## Hybrid technical rewrite
 
@@ -162,4 +164,3 @@ Use this file when:
 - the text mixes clarity goals with voice-sensitive constraints
 - a procedural or support rewrite needs a quick anchor before drafting
 - the model is over-correcting toward rigidity and needs examples of when to stay light
-- you want examples of the difference between the core default method and stronger structure

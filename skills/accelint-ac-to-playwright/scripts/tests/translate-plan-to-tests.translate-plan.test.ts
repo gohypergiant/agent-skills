@@ -50,7 +50,7 @@ describe("translatePlan - suiteName validation", () => {
         {
           name: "Test name",
           startUrl: "https://example.com",
-          steps: [{ type: "action", action: "goto", value: "https://example.com" }],
+          steps: [{ type: "action", action: "click", target: "page.button.continue" }],
         },
       ],
     };
@@ -73,7 +73,7 @@ describe("translatePlan - source annotation", () => {
         {
           name: "Test name",
           startUrl: "https://example.com",
-          steps: [{ type: "action", action: "goto", value: "https://example.com" }],
+          steps: [{ type: "action", action: "click", target: "page.button.continue" }],
         },
       ],
     };

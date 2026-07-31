@@ -5,6 +5,12 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-07-31
+
+### Changed
+- Aligned `references/jsdoc.md` with the skill's existing two-tier policy so internal code uses judgment-based JSDoc rather than blanket documentation requirements.
+- Tightened behavior-defining prose across `SKILL.md`, `AGENTS.md`, `references/comments.md`, and `references/jsdoc.md` without changing frontmatter.
+
 ## [1.1.1] - 2026-07-31
 
 ### Added

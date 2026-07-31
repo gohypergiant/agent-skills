@@ -1,10 +1,10 @@
 ---
 name: accelint-skill-prose
-description: Use when creating, auditing, tightening, simplifying, polishing, or reviewing SKILL.md files, agent-skill instructions, CLAUDE.md or AGENTS.md style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Also use when the user wants clearer skill prose without changing behavior, wants a safe description rewrite, audits prompt instructions for ambiguity, or must preserve exact paths, commands, fields, identifiers, or approval semantics while editing. Do not use when the main task is broader content strategy, policy design, or domain review rather than safe prose refinement.
+description: Use when creating, auditing, tightening, simplifying, polishing, or reviewing SKILL.md files, agent-skill instructions, CLAUDE.md or AGENTS.md style guidance, or other behavior-defining prompt artifacts where wording controls trigger coverage, workflow order, guardrails, approval semantics, or exact technical meaning. Prefer this skill over general prose editing when the job is to make wording clearer without changing behavior, including safe description rewrites, ambiguity audits, and edits that must preserve exact paths, commands, fields, or identifiers. Do not use when the main task is broader content strategy, policy design, domain review, or ordinary prose cleanup with no behavior risk.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.9"
+  version: "0.7.10"
 ---
 
 # Skill Prose
@@ -13,11 +13,11 @@ Use this skill to edit behavior-defining prose without changing behavior.
 
 ## Core contract
 
-This skill applies to text that does more than sound good. The wording controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
+Use this skill for text whose wording controls behavior, not just tone. In these artifacts, wording controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
 
 Write in plain, direct English. Do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
 
-Your job is to make the prose easier to follow, easier to audit, and harder to misread while preserving:
+Make the prose easier to follow, easier to audit, and harder to misread while preserving:
 
 - trigger coverage
 - workflow semantics
@@ -66,7 +66,7 @@ These are behavior anchors, not decorative prose.
 
 ## What makes this different from general prose editing
 
-In skill prose, these often carry behavior rather than decoration:
+Use this skill when wording itself controls behavior. In these artifacts, these elements often carry behavior rather than decoration:
 
 - trigger phrases
 - examples that define scope
@@ -140,7 +140,7 @@ Use this mode when the user wants both findings and a safer revision.
 
 For rewrite tasks, ask the user which rewrite mode they want unless the user already made the scope clear.
 
-Offer these choices:
+Offer these modes:
 
 - **`mode=default`** — local rewrite by default.
 - **`mode=strict`** — structural rewrite is allowed when needed.
@@ -203,7 +203,7 @@ If the request says to preserve trigger coverage, exact meaning, or specific tok
 
 Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Add other linked instruction files only when they complete the contract.
 
-Read the root `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before you broaden to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
+Read the root `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files. After that, broaden to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
 
 Do not assume the visible excerpt is the full contract.
 
@@ -244,7 +244,7 @@ Choose the clearest accurate sentence shape for the artifact.
 
 Procedural text tells the agent what to do. Descriptive text explains what something means, why a rule exists, or when a rule applies.
 
-Separate them when that makes the behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
+Separate them when that makes behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
 
 ### 5. Put conditions before commands when that clarifies the logic
 
@@ -270,7 +270,7 @@ Do not over-edit. Improve the prose enough to make the intended behavior easier 
 
 ### 1. Treat descriptions as trigger logic
 
-Frontmatter descriptions are not just summaries. They help decide when the skill is used.
+Frontmatter descriptions help decide when the skill is used.
 
 When tightening a description:
 
@@ -298,6 +298,7 @@ Check for:
 - verbs that carry behavior, such as `stop`, `pause`, `wait`, `proceed`, `skip`, `require`, or `allow`
 
 Do not merge steps or compress qualifiers if doing so hides decision points.
+
 Do not swap a behavior-bearing verb for a near-synonym unless the new wording preserves the same permission, timing, and obligation level.
 
 ### 3. Preserve exact references exactly
@@ -411,13 +412,13 @@ Do not prepend audit notes or explanation unless the user asked.
 
 Always include the consistent report from `assets/output-template.md`.
 
-Give the risk summary first, then the rewrite, then the completed report.
+Give the risk summary first. Then give the rewrite. Then give the completed report.
 
 ## Progressive disclosure
 
 Load references only when needed.
 
-When the user asks you to work on a skill, crawl the skill folder first. This tells you what behavior-defining prose exists beyond the current excerpt. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
+When the user asks you to work on a skill, crawl the skill folder first. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
 
 For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md` first. Then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 

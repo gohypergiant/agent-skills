@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.4] - 2026-07-31
+
+### Changed
+- Tightened `SKILL.md` body routing and rule summaries while preserving behavior and frontmatter
+  - Rationale: Static audit evidence showed the root skill file was carrying more explanatory material than needed even though the package already has `AGENTS.md` and focused `references/` files for progressive disclosure.
+- Tightened `AGENTS.md` prose around the React Compiler decision gate and guide usage without changing rule coverage
+  - Rationale: The Stage 4 prose audit found compressed wording that made the compiler gate slightly harder to scan than necessary.
+- Updated `evals/assertions.md` to match the current 16-case eval set
+  - Rationale: Direct repository inspection showed documentation drift between `evals/evals.json` and `evals/assertions.md`, which reduced maintainability and made the active test surface less clear.
+
+### Version
+- Bumped from 1.8.3 → 1.8.4
+
 ## [1.8.3] - 2026-07-30
 
 ### Changed

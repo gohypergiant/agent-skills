@@ -4,6 +4,32 @@ All notable changes to the accelint-ac-to-playwright skill are documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.13] - 2026-07-31
+
+### Changed
+- Refreshed the package lockfile to remove a high-severity transitive `postcss` vulnerability
+  - Rationale: Stage 1 executed `npm audit --json` and found advisory `GHSA-r28c-9q8g-f849` with a fix available; after `npm audit fix`, Stage 3 verification reported `0` vulnerabilities
+- Updated `README.md` to mirror the runtime skill contract for assessment-first execution, whole-batch stop behavior, and explicit output-directory requirements
+  - Rationale: Stage 1 static audit found maintainership-facing documentation drift relative to `SKILL.md`
+- Tightened non-frontmatter `SKILL.md` prose for scanability, retry-step readability, and clearer mode boundaries without changing behavior
+  - Rationale: Stage 1 and Stage 4 static audits found the skill body accurate but dense; the rewrite improves retrieval and auditability while preserving the contract
+- Kept the skill metadata version aligned with the changelog entry
+  - Rationale: Repository policy requires file-driven version alignment for skill changes
+
+### Version
+- Bumped from 1.1.12 → 1.1.13
+
+## [1.1.12] - 2026-07-31
+
+### Changed
+- Removed `goto` from the plan schema, translator path, fixtures, and related tests so the package now matches the skill rule that forbids `goto` steps
+  - Rationale: Eval-stage audit found a direct contradiction between `SKILL.md` and the implemented validator/translator behavior; aligning them removes contract drift and reduces invalid plan generation risk
+- Tightened non-frontmatter `SKILL.md` prose for obligation wording, field notation, and workflow scanability without changing behavior
+  - Rationale: Stage 4 prose audit found inconsistent severity/style markers and a few hard-to-scan behavior-bearing sections; tightening improves reliability of skill execution under review-driven workflows
+
+### Version
+- Bumped from 1.1.11 → 1.1.12
+
 ## [1.1.11] - 2026-07-30
 
 ### Changed

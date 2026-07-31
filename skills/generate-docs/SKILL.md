@@ -5,7 +5,7 @@ license: Apache-2.0
 metadata:
   internal: true
   author: "accelint"
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Generate Docs
@@ -61,7 +61,7 @@ Keep the prose direct. Help the reader understand what the skill is for, when to
 9. **Avoid duplication across sections** — Each section should add new information instead of restating the same point.
 10. **Default to a short page** — Most pages should feel skimmable in one pass, not like internal design docs.
 
-Remove AI-sounding phrasing such as `leverages`, `streamlines`, `comprehensive`, and `robust`. Keep it direct and human.
+Remove AI-sounding phrasing such as `leverages`, `streamlines`, `comprehensive`, and `robust`. Keep the prose direct and human.
 
 ## Compression Heuristics
 
@@ -77,7 +77,7 @@ Use a longer page only when the skill has multiple genuinely distinct user-facin
 
 ## Audience Filter
 
-Before including any detail, classify it:
+Before you include any detail, use this filter.
 
 ### Include
 - What the skill helps the human accomplish
@@ -96,18 +96,18 @@ Before including any detail, classify it:
 - Internal architecture or implementation mechanics such as progressive disclosure, reference-loading strategy, file traversal order, hidden orchestration, subagent coordination, or context-management tactics unless they materially affect the user's interaction, deliverable, or expectations
 - Low-value operational notes that do not help a human decide whether to use the skill
 
-### Consumer Relevance Test
+### Quick relevance test
 
-Before you include any detail, ask:
-1. Does this help a user decide whether to use the skill?
-2. Does this help them understand what behavior or output to expect?
-3. Would this still make sense if the reader never saw the underlying `SKILL.md`?
+Include a detail only if it helps the reader:
+1. decide whether to use the skill
+2. understand what behavior or output to expect
+3. make sense of the page without seeing the underlying `SKILL.md`
 
-If the answer is no, omit it.
+If not, omit it.
 
 ### Translate Instead of Copying
 
-If the source contains agent-operational guidance with user-facing significance, convert it into human language. Do not describe how the skill is implemented when you can describe what the user experiences or receives instead.
+If the source contains agent-operational guidance with user-facing significance, translate it into human language. Do not describe how the skill is implemented when you can describe what the user experiences or receives instead.
 
 Examples:
 - Internal: "Load references only when needed"
@@ -149,7 +149,7 @@ updated: YYYY-MM-DD
 - `## Degrees of Freedom` - How prescriptive vs flexible the skill is, when relevant
 - `## Related` - Links to related skills
 
-Do not add sections just because the source contains them. Start with the three core sections. Keep the page tight unless extra structure clearly improves consumer understanding.
+Do not add sections just because the source contains them. Start with the three core sections. Keep the page tight unless extra structure clearly improves reader understanding.
 
 Prefer **4–6 total sections** on most pages. If `## Good to Know` exists, do not also create extra boundary or gotcha sections such as `## Common Issues`, `## Critical Setup Rules`, `## Review Format`, or `## Key Behaviors` unless they are truly distinct and essential.
 
@@ -252,7 +252,7 @@ Aim for compression:
 - Each section must add new information; do not restate the same point across multiple sections
 - If a point already appears in `## What It Helps You Do`, do not repeat it in `## Good to Know` unless you are reframing it as a boundary, limit, or gotcha
 
-**When to Use section**: Extract from description field
+**When to Use section**: Extract from the description field.
 ```markdown
 ## When to Use
 
@@ -275,7 +275,7 @@ Use this skill when:
 - [Only include when the staged discovery process is concrete, visible to the user, and important to expectations or output]
 ```
 
-Use labels such as `## How It Works` or `## What It Checks` based on the skill type, but default to `## How It Works`.
+Use labels such as `## How It Works` or `## What It Checks` based on the skill type. Default to `## How It Works`.
 
 This section should answer questions like:
 - Does the skill audit, recommend, transform, or scaffold?
@@ -305,7 +305,7 @@ This section should NOT list internal file reads, traversal order, hidden resour
 [One short sentence about what the user gets back]
 ```
 
-Examples should demonstrate use cases, not simulate the entire internal workflow. Prefer one command plus one outcome summary over transcript-style step-by-step narration. If two examples teach the same thing, keep the clearer one.
+Examples should demonstrate use cases, not simulate the full internal workflow. Prefer one command plus one outcome summary over transcript-style step-by-step narration. If two examples teach the same thing, keep the clearer one.
 
 **Good to Know** (optional): User-facing scope boundaries, prerequisites, limitations, expected outputs, or sibling-skill distinctions. This section is not for maintainer notes or internal implementation details.
 ```markdown
@@ -378,7 +378,7 @@ For example:
 - Bad: `Loads project context into subagent prompts`
   - Good: `Uses project conventions so implementation stays aligned with the repo.`
 
-Keep the prose concise. Prefer user outcomes and behavior first. Show commands or internal steps only when they help the human apply the skill.
+Keep the prose concise. Lead with user outcomes and behavior. Show commands or internal steps only when they help the human apply the skill.
 
 ## Final Style Check
 
@@ -387,8 +387,8 @@ Before you write or save, verify:
 - Are any sections duplicating points already made elsewhere?
 - Does `## How It Works` read like a workflow summary rather than an implementation manual?
 - Are examples concise and non-redundant?
-- Could a specialized heading be folded into `## Good to Know`?
-- Is any phrase only useful to a skill maintainer rather than a user?
+- Could a specialized heading fold into `## Good to Know`?
+- Is any phrase useful only to a skill maintainer rather than a user?
 - Would a normal user care about this detail if they never read the underlying `SKILL.md`?
 
 ### 4. Add Frontmatter
@@ -493,12 +493,20 @@ fi
 - Read both the old source and the new source to identify changes.
 - Preserve the user's prose structure.
 - Update only the code examples or references that changed.
-- Ask the user to review before overwriting.
+- In non-interactive or automation-heavy runs, preserve prose conservatively instead of assuming broad regeneration is safe.
+- Ask the user to review before overwriting when the environment allows it.
 - Update `source_sha`, recompute `doc_sha`, and update the `updated` date.
 
 ## Validation
 
-Run these checks on command or when the user asks to `validate docs`:
+Run these checks on command or when the user asks to `validate docs`.
+
+For validation-only requests, return a concise findings report that calls out:
+- stale docs based on `source_sha`
+- broken cross-references
+- missing frontmatter fields
+- structural markdown issues
+- orphaned docs or docs pointing at missing source files
 
 ### 1. SHA Staleness
 
@@ -543,7 +551,7 @@ List docs that reference non-existent source files.
 
 - Extract from the source. Do not infer behavior.
 - Match the direct, concise voice of the reference examples.
-- Preserve manual edits when updating through the three-way merge flow.
+- Preserve manual edits when you update through the three-way merge flow.
 - Be specific in examples. Show realistic use cases.
 - Ask when you are uncertain what to include.
 - Default to human-facing relevance over internal execution details.

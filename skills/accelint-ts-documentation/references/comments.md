@@ -2,7 +2,7 @@
 
 ## Comment Markers
 
-Use marker comments for non-docblock comments to categorize different kinds of annotations:
+Use marker comments in non-docblock comments to categorize different kinds of annotations:
 
 - `TODO:` - Future changes or unimplemented features
 - `FIXME:` - Known bugs or critical defects
@@ -32,7 +32,7 @@ Use marker comments for non-docblock comments to categorize different kinds of a
 Always remove these comment types during audits:
 
 ### Commented-Out Code
-Dead code should be deleted, not commented out. Version control preserves the history.
+Delete dead code instead of commenting it out. Version control preserves the history.
 
 **❌ Incorrect: Dead code should be removed**
 ```typescript
@@ -51,7 +51,7 @@ function process(data) {
 ```
 
 ### Edit History Comments
-Comments such as "added", "removed", or "changed" should be removed. Git already provides the change history.
+Remove comments such as "added", "removed", or "changed". Git already provides the change history.
 
 **❌ Incorrect: Edit history in comments**
 ```typescript
@@ -71,7 +71,7 @@ function fetchData() {
 ```
 
 ### Comments Restating Code
-Comments that restate what the code already says do not add value.
+Remove comments that restate what the code already says. They do not add value.
 
 **❌ Incorrect: Obvious comment**
 ```typescript

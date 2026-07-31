@@ -64,7 +64,7 @@ Check that these stayed exact unless the user asked otherwise:
 ## 8. Cross-file consistency
 
 - If the task covered a skill folder, did you define the default artifact set clearly: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract?
-- Did you follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
+- Did you read the root `SKILL.md` first, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
 - Did you audit the full behavior-bearing artifact set rather than only the quoted excerpt, and were those files eligible for edit when consistency required it?
 - Did you rewrite any artifact-set files that needed updates so terminology, severity language, workflow wording, examples, and progressive-disclosure handoffs stayed aligned?
 - Did you also check local sentence-structure quality in each behavior-bearing file, rather than treating cross-file alignment as the only rewrite criterion?

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.2] - 2026-07-31
+
+### Fixed
+- Normalized the workflow language across `SKILL.md`, `README.md`, and `assets/audit-process-template.md` to consistently describe **8 execution steps plus archive/completion bookkeeping**.
+- Hardened the merge-back example in `SKILL.md` by replacing a brittle markdown-parsing `grep` snippet with a safer `awk` example for extracting the original branch name.
+- Clarified in `assets/audit-process-template.md` that benchmark verification is optional and only applies when the target package already has a documented bench command.
+- Added eval coverage in `evals/evals.json` for ambiguous numbered approvals and for resuming while an approval decision is still pending.
+- Applied a strict, behavior-preserving prose pass to non-frontmatter workflow text in `SKILL.md` and `assets/audit-process-template.md` to improve scanability and cross-file consistency.
+
+### Version
+- Patch release at `1.1.2`.
+
 ## [1.1.1] - 2026-07-30
 
 ### Fixed

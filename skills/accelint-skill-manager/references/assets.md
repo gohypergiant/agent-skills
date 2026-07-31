@@ -1,9 +1,9 @@
 # 1.7 Assets
 
-Contains static resources that are not intended to be loaded into context. Instead, they are used in the output an agent produces.
-- Templates (document templates, configuration templates)
-- Images (diagrams, examples)
-- Data files (lookup tables, schemas)
+Contains static resources that are not meant to be loaded into context. Instead, they are used in the output an agent produces.
+- Templates such as document templates and configuration templates
+- Images such as diagrams and examples
+- Data files such as lookup tables and schemas
 
 **When to include**: Use this folder when the skill needs files that appear in the final output.
 

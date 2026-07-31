@@ -1,12 +1,12 @@
 # Quick Reference Checklists
 
-Quick checklists for common Next.js scenarios. Use them for systematic reviews and new code creation.
+Quick checklists for common Next.js scenarios. Use them for systematic reviews and for creating new code.
 
 ---
 
 ## New Server Action Checklist
 
-When creating a new Server Action:
+When you create a new Server Action:
 
 - [ ] Add `'use server'` directive at top of file or function
 - [ ] Validate all inputs with Zod schema
@@ -51,7 +51,7 @@ export async function updatePost(data: unknown) {
 
 ## New API Route Checklist
 
-When creating a new API route:
+When you create a new API route:
 
 - [ ] Validate all inputs
 - [ ] Add authentication check
@@ -93,7 +93,7 @@ export async function GET(request: Request) {
 
 ## New Server Component Checklist
 
-When creating a new Server Component:
+When you create a new Server Component:
 
 - [ ] NO `'use client'` directive (Server Components are default)
 - [ ] Use `async` function if fetching data
@@ -131,7 +131,7 @@ async function Content({ dataPromise }: { dataPromise: Promise<Data> }) {
 
 ## New Client Component Checklist
 
-When creating a new Client Component:
+When you create a new Client Component:
 
 - [ ] Add `'use client'` directive at top of file
 - [ ] Only add when you need: hooks, events, or browser APIs
@@ -172,7 +172,7 @@ export function SearchForm({ children }: { children: React.ReactNode }) {
 
 ## Performance Review Checklist
 
-When reviewing existing Next.js code:
+When you review existing Next.js code:
 
 **Security:**
 - [ ] All Server Actions authenticate the caller
@@ -212,7 +212,7 @@ When reviewing existing Next.js code:
 
 ## Migration from Pages Router Checklist
 
-When migrating from Pages Router to App Router:
+When you migrate from Pages Router to App Router:
 
 - [ ] Convert `getServerSideProps` to async Server Components
 - [ ] Convert `getStaticProps` to async Server Components with caching
@@ -228,7 +228,7 @@ When migrating from Pages Router to App Router:
 
 ## Common Anti-Patterns to Avoid
 
-**❌ Don't:**
+**Do not:**
 - Create Server Actions without authentication
 - Await sequentially when operations are independent
 - Pass entire objects when only 1-2 fields are used
@@ -239,7 +239,7 @@ When migrating from Pages Router to App Router:
 - Add `'use client'` to static components
 - Import Server Components into Client Components
 
-**✅ Do:**
+**Do:**
 - Authenticate inside every Server Action
 - Start all independent operations immediately
 - Pass only necessary fields as individual props

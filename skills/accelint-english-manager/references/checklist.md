@@ -1,6 +1,6 @@
 # English discipline checklist
 
-Run this checklist before you deliver a rewrite, draft, or style audit.
+Run this checklist when you need a deeper verification pass before you deliver a rewrite, draft, or style audit.
 
 ## 1. Preserve the user's job to be done
 
@@ -82,7 +82,7 @@ Ask:
 - Is it easier to act on?
 - Is it still the same message?
 
-If all three are true, deliver it.
+If all three are true, deliver it. Use this file as the deeper mechanical pass after the shorter required self-check in `SKILL.md`.
 
 
 ## STE-specific audit note

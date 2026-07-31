@@ -69,7 +69,7 @@ describe("Plan schema", () => {
         {
           name: "A",
           startUrl: "https://x.com",
-          steps: [{ action: "goto", value: "https://x.com", extra: true }],
+          steps: [{ action: "hover", target: "page.button.trigger", extra: true }],
         },
       ],
     };
@@ -1323,7 +1323,7 @@ describe("Test fixture validations", () => {
         "expectUrl",
         "expectVisible",
         "fill",
-        "goto",
+        "hover",
         "keyDown",
         "keyUp",
         "mouseClick",
@@ -1331,6 +1331,7 @@ describe("Test fixture validations", () => {
         "mouseMove",
         "mouseUp",
         "press",
+        "reload",
         "scroll",
         "select",
       ])

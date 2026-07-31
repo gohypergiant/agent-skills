@@ -43,7 +43,7 @@ Use this matrix to determine vulnerability severity:
 **Indicators:**
 - Allows arbitrary code execution (SQL injection, command injection)
 - Production secrets hardcoded in source code
-- No authentication on admin/sensitive endpoints
+- No authentication on admin or sensitive endpoints
 - Allows reading arbitrary files or database records
 
 **Examples:**
@@ -62,7 +62,7 @@ app.delete('/api/users/:id', deleteUser); // Anyone can delete users
 **Likely to enable unauthorized access, data theft, or service disruption**
 
 **Indicators:**
-- Missing authorization (can access others' resources)
+- Missing authorization (can access other users' resources)
 - XSS vulnerabilities (can steal session tokens)
 - Insecure authentication (tokens in localStorage)
 - IDOR without permission checks
@@ -89,7 +89,7 @@ localStorage.setItem('authToken', token);
 **Indicators:**
 - Missing rate limiting (enables brute force)
 - Weak CORS configuration
-- Insufficient logging (can't detect attacks)
+- Insufficient logging (cannot detect attacks)
 - Sensitive data in error messages
 - No security headers
 

@@ -4,60 +4,60 @@ description: Use for JavaScript or TypeScript performance work when the main pro
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # TypeScript Performance Optimization
 
-Systematic performance optimization for JavaScript/TypeScript codebases. Combines audit workflow with expert-level optimization patterns for runtime performance.
+Systematic performance optimization for JavaScript/TypeScript codebases. This skill combines an audit workflow with expert optimization patterns for runtime performance.
 
-## NEVER Do When Optimizing Performance
+## Never Do When Optimizing Performance
 
 Use `accelint-ts-best-practices` for general best practices such as type safety with `any`/`enum`, avoiding `null`, and not mutating parameters. This section covers only performance-specific anti-patterns.
 
-- **NEVER assume code is cold path** - Utility functions, formatters, parsers, and validators appear simple but are frequently called in loops, rendering pipelines, or real-time systems. Always audit ALL code for performance anti-patterns. Do not make assumptions about usage frequency or skip auditing based on perceived simplicity.
+- **Never assume code is a cold path** - Utility functions, formatters, parsers, and validators can still run inside loops, rendering pipelines, or real-time systems. Audit all code for performance anti-patterns. Do not skip an audit because the code looks simple.
 
-- **NEVER apply all optimizations blindly** - Performance patterns have trade-offs. Balance optimization gains against code complexity. When conducting audits, identify ALL anti-patterns through systematic analysis and report them with expected gains. Let users decide which optimizations to apply based on their specific context.
+- **Never apply all optimizations blindly** - Performance patterns have trade-offs. Balance the expected gain against added complexity. During audits, identify all anti-patterns through systematic analysis and report the expected gain for each one. Let users decide which optimizations to apply in their context.
 
-- **NEVER ignore algorithmic complexity** - Optimizing O(n²) code with micro-optimizations is futile. For n=1000, algorithmic fix (O(n² → O(n)) yields 1000x speedup; micro-optimizations yield 1.1-2x at best. Fix algorithm first: use Maps/Sets for O(1) lookups, eliminate nested iterations, choose appropriate data structures.
+- **Never ignore algorithmic complexity** - Micro-optimizations do not fix O(n²) code. For n=1000, an algorithmic fix from O(n²) to O(n) can yield a 1000x speedup, while micro-optimizations usually yield 1.1-2x at best. Fix the algorithm first. Use Maps and Sets for O(1) lookups, eliminate nested iteration, and choose the right data structures.
 
-- **NEVER sacrifice correctness for speed** - Performance bugs are still bugs. Optimizations frequently break edge cases: off-by-one errors in manual loops, wrong behavior for empty arrays, null handling issues. Verify behavior matches before and after. Add comprehensive tests covering edge cases before optimizing—catching bugs in production costs far more than any performance gain.
+- **Never sacrifice correctness for speed** - Performance bugs are still bugs. Optimizations often introduce edge-case failures such as off-by-one errors in manual loops, wrong behavior for empty arrays, or null-handling mistakes. Verify that behavior matches before and after the change. Add tests for the affected edge cases before you optimize.
 
-- **NEVER optimize code you don't own** - Shared utilities, library internals, or code actively developed by others creates merge conflicts, duplicates effort, and confuses ownership. Performance changes affect all callers; coordinate with owners or defer optimization until code stabilizes.
+- **Never optimize code you do not own** - Changes to shared utilities, library internals, or code that other people are actively changing can create merge conflicts, duplicate effort, and confuse ownership. Performance changes affect all callers. Coordinate with the owners or defer the optimization until the code is stable.
 
-- **NEVER ignore memory vs CPU trade-offs** - Caching trades memory for speed. Unbounded memoization causes memory leaks in long-running applications. A 2x CPU speedup that increases memory 10x can trigger OOM crashes or frequent GC pauses (worse than original slowness). Profile memory usage alongside CPU; set cache size limits; use WeakMap for lifecycle-bound caches.
+- **Never ignore memory versus CPU trade-offs** - Caching trades memory for speed. Unbounded memoization can cause memory leaks in long-running applications. A 2x CPU speedup that increases memory usage 10x can trigger OOM crashes or frequent GC pauses. Profile memory usage alongside CPU usage, set cache size limits, and use `WeakMap` for lifecycle-bound caches.
 
-- **NEVER assume performance across environments** - V8 optimizations differ between Node.js versions (v18 vs v20), browsers (Chrome vs Safari), and architectures (x64 vs ARM). An optimization yielding 3x speedup in Chrome may regress 1.5x in Safari. Profile in ALL target environments before shipping; maintain fallback implementations for environment-specific optimizations.
+- **Never assume performance carries across environments** - V8 optimizations vary across Node.js versions (v18 vs v20), browsers (Chrome vs Safari), and architectures (x64 vs ARM). An optimization that yields a 3x speedup in Chrome can regress by 1.5x in Safari. Profile in all target environments before shipping. Keep fallback implementations for environment-specific optimizations when needed.
 
-- **NEVER chain array methods** (.filter().map().reduce()) - Each method creates intermediate arrays and iterates separately. For arrays with 10k items, `.filter().map()` allocates 10k + 5k items (if 50% pass filter) and iterates twice. Use single `reduce` pass to iterate once with zero intermediate allocations, yielding 2-5x speedup in hot paths.
+- **Never chain array methods** (`.filter().map().reduce()`) - Each method creates intermediate arrays and adds another pass. For arrays with 10k items, `.filter().map()` can allocate 10k + 5k items when 50% pass the filter, and it iterates twice. Use a single pass to avoid intermediate allocations and reduce loop overhead.
 
-- **NEVER use `Array.includes()` for repeated lookups** - Array.includes() is O(n) linear search. Checking 1000 items against array of 100 is O(n×m) = 100k operations. Use `Set.has()` instead: O(1) lookup via hash table, reducing 100k operations to 1000 for ~100x speedup. Build Set once upfront; amortized cost is negligible.
+- **Never use `Array.includes()` for repeated lookups** - `Array.includes()` does an O(n) linear search. Checking 1000 items against an array of 100 requires O(n×m) = 100k operations. Use `Set.has()` instead. It does O(1) hash lookup and reduces the same case to about 1000 lookups after you build the `Set` once.
 
-- **NEVER await before checking if you need the result** - `await` suspends execution immediately, even if the value isn't needed. Move `await` into conditional branches that actually use the result. Example: `const data = await fetch(url); if (condition) { use(data); }` wastes I/O time when condition is false. Better: `if (condition) { const data = await fetch(url); use(data); }` skips fetch entirely when unneeded.
+- **Never `await` before you know you need the result** - `await` suspends execution immediately, even when the value is unused. Move `await` into the branches that actually need the result. This avoids unnecessary I/O when the branch is skipped.
 
-- **NEVER recompute constants inside loops** - Recomputing invariants wastes CPU in every iteration. For 10k iterations, `array.length` lookup (even if cached by engine) or `Math.max(a, b)` runs 10k times unnecessarily. Hoist invariants outside loops: `const len = array.length; for (let i = 0; i < len; i++)` or curry functions to precompute constant parameters once.
+- **Never recompute constants inside loops** - Recomputing invariants wastes CPU on every iteration. Hoist loop-invariant values outside the loop, such as `const len = array.length; for (let i = 0; i < len; i++)`, or curry functions to precompute constant parameters once.
 
-- **NEVER create unbounded loops or queues** - Prevents runaway resource consumption from bugs or malicious input. Set explicit limits (`for (let i = 0; i < Math.min(items.length, 10000); i++)`) or timeouts. Unbounded loops can freeze UI threads; unbounded queues cause OOM crashes. Fail fast with clear limits rather than degrading gracefully into unusability.
+- **Never create unbounded loops or queues** - Unbounded execution can consume CPU or memory indefinitely because of bugs or malicious input. Set explicit limits or timeouts. Fail fast with clear limits instead of degrading into hangs or OOM crashes.
 
-- **NEVER place `try/catch` in hot paths** - V8 cannot inline functions containing try-catch blocks and marks entire function as non-optimizable. Single try-catch in hot loop causes 3-5x slowdown by preventing inlining, escape analysis, and other optimizations. Validate inputs before hot paths using type guards; move try-catch outside loops to wrap entire operation; use Result types for expected errors.
+- **Never place `try/catch` in hot paths** - V8 cannot inline functions that contain `try/catch` blocks and may mark the function as non-optimizable. Move `try/catch` outside hot loops, validate inputs before the hot path, and use explicit result handling for expected errors.
 
-## Before Optimizing Performance, Ask
+## Before You Optimize Performance
 
 Use these checks to focus optimization work:
 
 ### Impact Assessment
-- **Is this code actually slow?** Use profiling data to set priorities when it is available. When it is unavailable, audit all code for anti-patterns.
-- **What percentage of runtime does this represent?** Use flame graphs to find the highest-impact issues when profiling data is available. When it is unavailable, report all anti-patterns found.
-- **Raw performance matters** - Audit ALL code for performance anti-patterns regardless of current usage context. Utility functions, formatters, parsers, and data transformations are often called in loops, rendering pipelines, or real-time systems even when they appear simple.
+- **Is this code actually slow?** Use profiling data to set priorities when it is available. When it is unavailable, audit the code for anti-patterns without claiming you found a measured bottleneck.
+- **What percentage of runtime does this represent?** Use flame graphs to find the highest-impact issues when profiling data is available. When it is unavailable, report all anti-patterns you found and label them as static opportunities.
+- **Raw performance still matters** - Audit all code for performance anti-patterns regardless of current usage context. Utility functions, formatters, parsers, and data transformations can still run inside loops, rendering pipelines, or real-time systems.
 
 ### Correctness Verification
 - **Do I have tests covering this code?** Performance bugs are subtle. Add tests before optimizing so regressions are easier to catch.
 - **What are the edge cases?** Manual loop optimizations increase the risk of off-by-one errors, empty-array bugs, and null/undefined handling mistakes. Test thoroughly.
 
-### Complexity vs Benefit
+### Complexity versus Benefit
 - **Is the algorithmic complexity optimal?** O(n) → O(1) can yield a 1000x speedup. Micro-optimizations usually yield 1.1-2x at best. Fix the algorithm first.
 - **Will this optimization persist?** If the code changes frequently, the optimization may be discarded soon. Optimize stable code first.
-- **What is the readability cost?** Manual loops are faster but harder to maintain than `.map()`. Balance performance with team velocity.
+- **What is the readability cost?** Manual loops are often faster than `.map()`, but they can be harder to maintain. Balance performance with team velocity.
 
 ## How to Use
 
@@ -67,14 +67,14 @@ This skill uses **progressive disclosure** to minimize context usage:
 Follow the 4-phase workflow below. Choose Audit Mode or Implementation Mode before you load references.
 
 ### 2. Review the Performance Rules Overview (`AGENTS.md`)
-Load [AGENTS.md](AGENTS.md) to scan compressed rule summaries organized by category.
+Load [AGENTS.md](AGENTS.md) to scan compressed rule summaries by category.
 
 ### 3. Load Specific Performance Patterns as Needed
-Load only the category references that match the issues you found. Do not pre-load unrelated categories.
+Load only the category references that match the issues you found. Do not preload unrelated categories.
 
 ### 4. Use the Report Template for Explicit Audit Requests
 When users explicitly request a performance audit, or invoke the skill directly, load the template for consistent reporting:
-- [assets/output-report-template.md](assets/output-report-template.md) - structured template with guidance
+- [assets/output-report-template.md](assets/output-report-template.md) - Structured template with guidance
 
 ## Performance Optimization Workflow
 
@@ -150,7 +150,7 @@ Load [references/quick-reference.md](references/quick-reference.md) for detailed
 
 **Step 2:** Load the required references for the relevant category. Read each selected file completely with no range limits.
 
-| Category | MANDATORY Files | Optional | Do NOT Load |
+| Category | Required files | Optional | Do not load |
 |----------|----------------|----------|-------------|
 | **Algorithmic** (O(n²), nested loops, repeated lookups) | reduce-looping.md<br>reduce-branching.md | — | memoization, caching, I/O, allocation |
 | **Caching** (property access in loops, repeated calculations) | memoization.md<br>cache-property-access.md | cache-storage-api.md (for Storage APIs) | I/O, allocation |
@@ -161,21 +161,21 @@ Load [references/quick-reference.md](references/quick-reference.md) for detailed
 | **Micro-opt** (hot path fine-tuning, 1.1-2x improvements) | currying.md<br>performance-misc.md | — | all others (apply only after algorithmic fixes) |
 
 **Notes:**
-- If the bottleneck spans multiple categories, load references for all relevant categories.
+- If the bottleneck spans multiple categories, load the references for all relevant categories.
 - Apply micro-optimizations only if the bottleneck is in a hot path, algorithmic optimization is already applied, and you still need an additional 1.1-2x improvement.
 
 ---
 
-**Step 3:** Scan for quick reference during optimization.
+**Step 3:** Use the quick reference during optimization.
 
-Load [AGENTS.md](AGENTS.md) to see compressed rule summaries organized by category. Use as a quick lookup while implementing patterns from the detailed reference files above.
+Load [AGENTS.md](AGENTS.md) to see compressed rule summaries by category. Use it as a quick lookup while you implement patterns from the detailed reference files above.
 
 **Apply patterns systematically:**
 
 1. **Load the reference file** for the identified issue category.
 2. **Scan the ❌/✅ examples** to find matching patterns.
 3. **Apply the optimization** with minimal changes to preserve correctness.
-4. **Add comments** explaining the optimization and referencing the pattern.
+4. **Document the optimization** and reference the pattern.
 
 **Example optimization:**
 ```typescript
@@ -253,11 +253,11 @@ Use guidance that matches the optimization impact:
 
 ## Important Notes
 
-- **Start with evidence when possible** - Prefer profiler-backed hotspots to intuition. If you only have static review, label findings accordingly.
-- **Static review still has value** - Utility functions, formatters, parsers, and validators can end up on hot paths. Audit broadly, but do not overstate certainty without measurements.
+- **Start with evidence when possible** - Prefer profiler-backed hotspots to intuition. If you only have static review, label the findings accordingly.
+- **Static review still has value** - Utility functions, formatters, parsers, and validators can still end up on hot paths. Audit broadly, but do not overstate certainty without measurements.
 - **Reference files are authoritative defaults** - Follow the patterns in `references/` unless measurements or surrounding code constraints justify a different choice.
 - **Hot path definition** - Code executed >1000 times per user interaction or >100 times per second in server contexts. For real-time systems (60fps rendering, live visualization), hot paths are functions in the critical rendering loop that consume >1ms per frame.
-- **Real-time systems have stricter requirements** - 60fps = 16.67ms frame budget. 120fps = 8.33ms. Even 1.05x improvements in hot paths are valuable. Profile with frame timing, not only total execution time.
+- **Real-time systems have stricter requirements** - 60fps = 16.67ms frame budget. 120fps = 8.33ms. Even 1.05x improvements in hot paths can matter. Profile with frame timing, not only total execution time.
 - **Regression testing** - Performance optimizations often introduce subtle edge-case bugs. Add or run tests before and after optimizing.
 - **Memory profiling matters** - Some optimizations, such as memoization and caching, trade memory for speed. Monitor memory usage in production, especially for long-running real-time applications.
 

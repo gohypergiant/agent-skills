@@ -2,7 +2,7 @@
 
 ## Abstract
 
-Comprehensive performance optimization guidance for JavaScript and TypeScript applications, designed for AI agents and LLMs. Each rule includes a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+Comprehensive performance optimization guidance for JavaScript and TypeScript applications, designed for AI agents and LLMs. Each rule has a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
 ---
 
@@ -19,14 +19,14 @@ This structure minimizes context usage while providing complete implementation g
 
 ## Critical Performance Anti-Patterns
 
-**NEVER** do these. They appear frequently in codebases and significantly degrade performance:
+Never do these. They appear frequently in codebases and can significantly degrade performance:
 
-- **NEVER** chain array methods (.filter().map().reduce()) - creates intermediate arrays and multiple iterations; use single `reduce` pass (2-5x faster)
-- **NEVER** use `Array.includes()` for repeated lookups - O(n) linear search; use `Set.has()` instead for O(1) hash lookup (10-100x faster)
-- **NEVER** await before checking if you need the result - this suspends execution unnecessarily; defer `await` into branches that actually use the value
-- **NEVER** recompute constants inside loops - wastes CPU in every iteration; hoist invariants outside loops or curry functions to precompute
-- **NEVER** create unbounded loops or queues - prevents runaway resource consumption; set explicit limits to prevent DoS and crashes
-- **NEVER** place `try/catch` in hot paths - V8 cannot inline functions with try-catch (3-5x slowdown); validate inputs before loops
+- **Never** chain array methods (`.filter().map().reduce()`) - They create intermediate arrays and add extra passes. Use a single pass instead.
+- **Never** use `Array.includes()` for repeated lookups - It does O(n) linear search. Use `Set.has()` for O(1) hash lookup.
+- **Never** `await` before you know you need the result - This suspends execution unnecessarily. Defer `await` into the branches that actually use the value.
+- **Never** recompute constants inside loops - This wastes CPU on every iteration. Hoist invariants outside loops or curry functions to precompute them.
+- **Never** create unbounded loops or queues - Set explicit limits to prevent runaway resource consumption, DoS, and crashes.
+- **Never** place `try/catch` in hot paths - V8 cannot inline functions that contain `try/catch`, which can cause a 3-5x slowdown.
 
 **Note:** For general best practices (type safety with `any`/`enum`, avoiding `null`, not mutating parameters), use the `accelint-ts-best-practices` skill instead.
 
@@ -158,7 +158,7 @@ For systematic bottleneck identification and categorization, load [references/qu
 | Bounded Execution | Prevents DoS | All user-controlled iterations |
 | Micro-optimizations | 1.05-2x | Hot paths only, after profiling |
 
-**Priority order:** Fix the algorithm first, then cache, then I/O, then allocations, then micro-optimize hot paths.
+**Priority order:** Fix the algorithm first. Then address caching, I/O, allocations, and finally micro-optimizations in hot paths.
 
 ---
 
@@ -166,6 +166,6 @@ For systematic bottleneck identification and categorization, load [references/qu
 
 - **Profile before optimizing** - Use Chrome DevTools (browser) or `node --prof` (Node.js). Target functions that consume >5% of runtime when measurements are available.
 - **Hot path definition** - Code executed >1000 times per user interaction or >100 times per second in server contexts.
-- **Real-time systems** - For 60fps rendering (16.67ms frame budget), even 1.05x improvements in critical paths matter. Profile with frame timing.
+- **Real-time systems** - For 60fps rendering (16.67ms frame budget), even 1.05x improvements in critical paths can matter. Profile with frame timing.
 - **Correctness is mandatory** - Run tests before and after optimizing. Performance bugs are still bugs.
-- **Memory vs CPU trade-offs** - Caching trades memory for speed. Monitor memory usage in production.
+- **Memory versus CPU trade-offs** - Caching trades memory for speed. Monitor memory usage in production.

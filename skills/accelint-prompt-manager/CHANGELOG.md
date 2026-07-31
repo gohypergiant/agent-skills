@@ -5,6 +5,21 @@ All notable changes to the accelint-prompt-manager skill will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2026-07-31
+
+### Changed
+- **Clipboard fallback hardening** — tightened post-delivery clipboard guidance in `SKILL.md`
+  - Added explicit command-availability checking before attempting `pbcopy`, `xclip`, `xsel`, or `clip`
+  - Added a manual-copy fallback that tells the agent to rely on the already-delivered markdown code block when clipboard support is unavailable
+  - Kept the change narrowly scoped to a directly observed runtime-fragility issue
+
+### Notes
+- This iteration intentionally stayed conservative because the visible run artifacts did not include executed eval outputs, benchmark files, or grading files.
+- No frontmatter rewrite was performed during the Stage 4 prose pass beyond the required version alignment in this finalization stage.
+
+### Version
+- Bumped from 2.4.0 → 2.4.1 (patch version: small behavior-safe hardening)
+
 ## [2.4.0] - 2026-07-30
 
 ### Changed

@@ -12,9 +12,9 @@ Do not link to other skills' files directly. Use skill name references instead.
 
 **Format:** Start with "Use when..." to focus on triggering conditions
 
-**REQUIRED: Description = When to Use, NOT What the Skill Does**
+**REQUIRED: Description = Triggering Conditions First, Never Workflow Summary**
 
-The description should ONLY describe triggering conditions. Do NOT summarize the skill's process or workflow in the description.
+The description should focus on triggering conditions and searchable keywords. It may briefly identify the skill's function at a high level, but do NOT summarize the skill's process or workflow in the description.
 
 **Why this matters:** Testing showed that when a description summarizes the skill's workflow, an agent may follow the description instead of reading the full skill content. A description saying "code review between tasks" caused an agent to do ONE review, even though the skill's flowchart clearly showed TWO reviews: spec compliance, then code quality.
 
@@ -32,18 +32,19 @@ description: Use when executing plans - dispatches subagent per task with code r
 description: Use for TDD - write test first, watch it fail, write minimal code, refactor
 ```
 
-**✅ Correct: just triggering conditions, no workflow summary**
+**✅ Correct: triggering conditions first, no workflow summary**
 ```
 description: Use when executing implementation plans with independent tasks in the current session
 ```
 
-**✅ Correct: triggering conditions only**
+**✅ Correct: triggering conditions plus high-level function, still no workflow summary**
 ```
-description: Use when implementing any feature or bugfix, before writing implementation code
+description: Use when implementing any feature or bugfix that needs structured pre-code review before writing implementation code
 ```
 
 **Content:**
 - Use concrete triggers, symptoms, and situations that signal this skill applies
+- Briefly identify the skill's function when it improves trigger accuracy, but keep the focus on when to invoke it
 - Describe the *problem* (race conditions, inconsistent behavior) not *language-specific symptoms* (setTimeout, sleep)
 - Keep triggers technology-agnostic unless the skill itself is technology-specific
 - If skill is technology-specific, make that explicit in the trigger
@@ -108,7 +109,7 @@ description: "..."        # Triggering conditions (1-1024 chars)
 license: Apache-2.0       # License identifier
 metadata:
   author: "accelint"      # Author/organization
-  version: "1.0"          # Semantic version
+  version: "1.0.0"        # Semantic version
 ---
 ```
 
@@ -129,13 +130,12 @@ See "Rich Description Field" section above for comprehensive guidance.
 
 **Purpose:** Track skill evolution and ensure CHANGELOG consistency
 
-**Format:** Semantic versioning `"X.Y"` or `"X.Y.Z"`
-- Major.Minor format: `"1.0"`, `"2.3"`
-- Major.Minor.Patch format: `"1.0.1"`, `"2.3.4"`
+**Format:** Semantic versioning `"X.Y.Z"`
+- Major.Minor.Patch format: `"1.0.0"`, `"2.3.4"`
 
 **Versioning Guidelines:**
-- **Major (1.0 → 2.0):** Substantial rewrites, breaking changes, complete restructuring
-- **Minor (1.0 → 1.1):** New sections, significant additions, refinements
+- **Major (1.0.0 → 2.0.0):** Substantial rewrites, breaking changes, complete restructuring
+- **Minor (1.0.0 → 1.1.0):** New sections, significant additions, refinements
 - **Patch (1.0.0 → 1.0.1):** Bug fixes, typo corrections, minor clarifications
 
 **Version Consistency:** Must match the latest version in CHANGELOG.md
@@ -144,13 +144,13 @@ See "Rich Description Field" section above for comprehensive guidance.
 ```yaml
 # After major restructure
 metadata:
-  version: "2.0"  # was 1.4, now complete rewrite
+  version: "2.0.0"  # was 1.4.0, now complete rewrite
 ```
 
 ```yaml
 # After adding new section
 metadata:
-  version: "1.3"  # was 1.2, added new anti-patterns section
+  version: "1.3.0"  # was 1.2.0, added new anti-patterns section
 ```
 
 ```yaml

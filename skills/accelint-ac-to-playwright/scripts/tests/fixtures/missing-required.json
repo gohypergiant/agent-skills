@@ -43,11 +43,6 @@
       "steps": [{ "action": "fill", "target": "#username" }]
     },
     {
-      "name": "Missing goto.value",
-      "startUrl": "https://example.com",
-      "steps": [{ "action": "goto" }]
-    },
-    {
       "name": "Missing select.target",
       "startUrl": "https://example.com",
       "steps": [{ "action": "select", "value": "admin" }]

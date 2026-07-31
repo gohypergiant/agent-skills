@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.4] - 2026-07-31
+
+### Changed
+- Tightened repeated rationale in `SKILL.md` while preserving the workflow contract
+  - Rationale: Stage 2 static audit evidence showed the skill body remained over the skill-creator guidance target and repeated some behavioral rationale, increasing scan cost and maintenance risk
+- Clarified that `README.md` is a concise companion summary and that `SKILL.md` is the canonical operational contract
+  - Rationale: Repository evidence from the prior iteration showed README/SKILL drift had already occurred once, so making artifact ownership explicit reduces future divergence risk
+- Ran a strict skill-prose pass on `SKILL.md` without touching frontmatter, improving local obligation clarity and sentence structure in workflow-heavy sections
+  - Rationale: Stage 4 rewrite output identified behavior-bearing prose that could be tightened safely without changing trigger scope, workflow order, or guardrail strength
+
+### Version
+- Bumped from 1.3.3 → 1.3.4
+
 ## [1.3.3] - 2026-07-30
 
 ### Changed

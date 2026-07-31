@@ -265,6 +265,28 @@
         "The response still uses semantic queries such as role-based access within the scoped container.",
         "The response does not fall back immediately to container.querySelector-based scoping."
       ]
+    },
+    {
+      "id": 25,
+      "prompt": "My team keeps writing `const { getByText } = render(<Banner />)` because it's shorter than `screen`. Is that actually a problem, or just style preference? I want guidance that is practical, not dogmatic.",
+      "expected_output": "Discourages destructured render queries as the default style, but frames the recommendation in terms of consistency, maintainability, and debugging clarity rather than overstated DOM-staleness claims.",
+      "files": [],
+      "expectations": [
+        "The response recommends `screen` as the default style over destructured render queries.",
+        "The response explains maintainability, consistency, or debugging benefits rather than claiming a stronger failure mode than needed.",
+        "The response stays calibrated instead of treating the pattern as an automatic correctness bug in every case."
+      ]
+    },
+    {
+      "id": 26,
+      "prompt": "Please review this RTL test file and give me prioritized findings if anything looks risky, but if the issues are tiny just tell me the direct fix instead of a huge formal report.\n\nrender(<Toast />)\nexpect(screen.getByText('Saved')).toBeInTheDocument()",
+      "expected_output": "Handles the borderline audit-vs-fix scenario with proportional output, keeping the response structured enough to identify the issue while avoiding an oversized formal audit when the example is trivial.",
+      "files": [],
+      "expectations": [
+        "The response notices the request mixes review language with a trivial example and responds proportionally.",
+        "The response identifies that a role-based query may be more appropriate if the element is interactive, or explains why the current query may already be reasonable for plain text content.",
+        "The response does not force the full audit template for a tiny one-line case."
+      ]
     }
   ]
 }

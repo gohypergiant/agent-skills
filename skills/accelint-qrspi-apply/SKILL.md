@@ -5,12 +5,12 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.6.0"
+  version: "1.6.1"
 ---
 
 # Accelint QRSPI Apply
 
-Implement QRSPI-planned OpenSpec changes by orchestrating `/opsx:apply`, dependency-aware slice execution, living-document updates, and mandatory verification.
+Implement QRSPI-planned OpenSpec changes by orchestrating `/opsx:apply`, dependency-aware slice execution, living-document updates, and verification.
 
 ## What This Skill Does
 
@@ -26,7 +26,7 @@ Implement QRSPI-planned OpenSpec changes by orchestrating `/opsx:apply`, depende
 - Sub-agent support (for parallel execution)
 - The expanded OpenSpec workflows (`explore`, `new`, `continue`) enabled
 
-Important: This skill is specifically for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use `/opsx:apply` directly.
+This skill is specifically for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use `/opsx:apply` directly.
 
 ## Workflow Overview
 
@@ -55,6 +55,7 @@ Important: This skill is specifically for QRSPI-planned changes. Standard OpenSp
    openspec list --json
    ```
    Parse the JSON and use **AskUserQuestion** to let the user select the change
+   - If interaction is unavailable, do not guess. Exit with a concise message listing the candidate changes and ask the user to re-invoke this skill with an explicit change name.
 4. Announce: "Applying change: `<name>`" and how to override (e.g., re-invoke with different name)
 5. Check that tasks.md exists:
    ```bash
@@ -64,11 +65,11 @@ Important: This skill is specifically for QRSPI-planned changes. Standard OpenSp
 
 ### Parse Tasks and Parallelization Strategy
 
-Goal: Extract task structure, identify parallel versus sequential execution opportunities, and detect whether work already started so the skill can resume from the correct level.
+Extract the task structure, identify parallel versus sequential execution opportunities, and detect whether work already started so the skill can resume from the correct level.
 
 6. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
 
-7. **Validate checklist format** (REQUIRED for progress tracking):
+7. **Validate checklist format** (required for progress tracking):
    - Check that tasks use markdown checklist format: `- [ ] task` or `- [x] task`
    - If tasks use numbered lists (1. 2. 3.) or plain bullets (- without [ ]):
      ```
@@ -131,9 +132,9 @@ Goal: Extract task structure, identify parallel versus sequential execution oppo
 
 ### Load Project Context
 
-**Goal**: Load project context from `openspec/config.yaml` to inject into sub-agent prompts. This compensates for OpenSpec CLI's limitation where the `apply` command doesn't automatically load project context (unlike artifact creation commands).
+Load project context from `openspec/config.yaml` and inject it into sub-agent prompts. This compensates for an OpenSpec CLI limitation: the `apply` command does not automatically load project context, unlike artifact creation commands.
 
-**Background**: OpenSpec's `openspec instructions apply` command does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). This means sub-agents implementing tasks don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. We work around this limitation by manually loading and injecting the context.
+OpenSpec's `openspec instructions apply` command does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). As a result, sub-agents implementing tasks do not receive the Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. This skill works around that limitation by loading and injecting the context manually.
 
 13. Check if `openspec/config.yaml` exists:
    ```bash
@@ -145,10 +146,10 @@ Goal: Extract task structure, identify parallel versus sequential execution oppo
    cat openspec/config.yaml
    ```
 
-15. Parse and extract the `context` section (the YAML block under `context: |`):
+15. Parse and extract the `context` section, which is the YAML block under `context: |`:
    - The context starts after the line `context: |`
-   - The context continues until the next top-level YAML key (e.g., `rules:`, `schema:`)
-   - Lines in the context block are indented (usually 2 spaces)
+   - The context continues until the next top-level YAML key, such as `rules:` or `schema:`
+   - Lines in the context block are indented, usually by 2 spaces
    - Preserve all whitespace and newlines in the context block
    - You MUST inform the user that you found and loaded the config.
 
@@ -158,7 +159,8 @@ Goal: Extract task structure, identify parallel versus sequential execution oppo
    - Treat it as background implementation guidance only
    - Do not paraphrase it into new project rules unless the file already says so
    - Do not copy it into code, docs, commit messages, or verification output
-   - If it appears malformed or you cannot confidently isolate the `context: |` block, warn the user and proceed without injection rather than passing a corrupted block to sub-agents
+   - If it appears malformed, or if you cannot confidently isolate the `context: |` block, warn the user and proceed without injection rather than passing a corrupted block to sub-agents
+   - If the block boundaries are uncertain, skip injection entirely and report that choice. Do not attempt partial extraction or recovery.
 
 17. If no `context` field exists or the file is missing:
    - Set context to an empty string
@@ -197,7 +199,7 @@ rules:
 
 ### Execute Tasks (Sequential + Parallel)
 
-**Goal**: Implement tasks following the dependency graph, spawning parallel sub-agents where possible.
+Implement tasks by following the dependency graph and spawning parallel sub-agents where possible.
 
 **Sequential execution** (when tasks have dependencies):
 
@@ -208,6 +210,7 @@ For each level in the dependency graph (starting from level 0):
      - Confirm the slice boundaries in tasks.md are explicit enough to identify the assigned work
      - Check whether the slice appears likely to overlap heavily with other slices in the same files or same narrow subsystem
      - If boundaries are unclear or overlap risk is high, stop and ask the user whether to continue serially instead of parallelizing ambiguous slices
+     - If interaction is unavailable, default to serial execution for the affected level. Only stop if even serial execution would risk incorrect implementation
    - Spawn a single sub-agent with this prompt (inject project context loaded in step 16):
      ```
      <project_context>
@@ -244,7 +247,7 @@ For each level in the dependency graph (starting from level 0):
 
      Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-19. Wait for completion before proceeding to the next level
+19. Wait for completion before proceeding to the next level.
 
 **Parallel execution** (when multiple slices are independent):
 
@@ -255,6 +258,7 @@ For each level with multiple independent slices:
      - Compare the slice descriptions and task wording for likely shared files, shared exports, or same-surface edits
      - If two slices appear likely to edit the same file or tightly coupled code path, do not parallelize them blindly
      - In that case, either regroup them into serial execution for this level or ask the user how aggressive they want the parallelization to be
+     - If interaction is unavailable, choose the safer serial regrouping rather than parallelizing an ambiguous level
    ```
    <project_context>
    <!-- Background constraints for your implementation. Do NOT copy into code. -->
@@ -291,11 +295,11 @@ For each level with multiple independent slices:
 
    Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-21. Track completion as each sub-agent finishes
+21. Track completion as each sub-agent finishes:
    - As each slice completes, record the reported summary and note any files or areas it touched
    - Before starting the next dependency level, review the completed slice summaries for collisions or integration risks that need manual cleanup
 
-22. **Context management decision point** - When all slices in the level are done, pause and offer context management:
+22. **Context management decision point** — When all slices in the level are done, pause and offer context management:
    ```
    ✅ Level N complete
 
@@ -347,17 +351,17 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
 ### Update Living Documents
 
-**Goal**: Update project documentation to reflect the implemented changes before running verification.
+Update project documentation to reflect the implemented changes before running verification.
 
-**Why this matters**: OpenSpec changes represent significant architectural decisions and feature additions. Living documents (ARCHITECTURE.md, AGENTS.md, openspec/config.yaml) provide context for agents working in the codebase, while README.md serves human users. Keeping them synchronized prevents documentation drift and ensures future agents and developers have accurate, up-to-date context about the system's current state.
+OpenSpec changes represent significant architectural decisions and feature additions. Living documents (`ARCHITECTURE.md`, `AGENTS.md`, `openspec/config.yaml`) provide context for agents working in the codebase, and `README.md` serves human users. Keeping them synchronized prevents documentation drift and ensures future agents and developers have accurate, up-to-date system context.
 
-**IMPORTANT**: Run this step BEFORE verification so the verification step can check documentation completeness.
+Run this step before verification so the verification step can check documentation completeness.
 
 25. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
 
 26. Determine the repo/package root (may be current directory or a parent)
 
-27. **Process ALL living documents** in this order (do not stop after the first one):
+27. Process all living documents in this order. Do not stop after the first one:
    - OpenSpec config (`openspec/config.yaml`)
    - ARCHITECTURE.md (if exists)
    - AGENTS.md (if exists)
@@ -436,13 +440,13 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - **DO NOT** add coding patterns, testing conventions, or agent behavior (those belong in config.yaml or AGENTS.md)
 
    **For AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
-   - Check if `accelint-onboard-agent` skill is installed
+   - Check if `accelint-onboard-agents` skill is installed
    - If skill is available:
      1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
-     /accelint-onboard-agent
+     /accelint-onboard-agents
      We have just completed the change spec openspec/changes/<change-name>.
 
      findings:
@@ -505,7 +509,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 - Document doesn't exist
 - Change content doesn't introduce anything requiring updates to that document
 
-**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to the next step (Verify Implementation).
+Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there is an error. After finishing all 4 documents, immediately proceed to the next step, Verify Implementation.
 
 28. After checking all 4 documents, run `git status --short` to show which docs were modified
 
@@ -531,7 +535,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      Updated documents:
      - openspec/config.yaml [via accelint-onboard-openspec / manually / skipped]
      - ARCHITECTURE.md [via accelint-architecture-doc / manually / skipped]
-     - AGENTS.md [via accelint-onboard-agent / manually / skipped]
+     - AGENTS.md [via accelint-onboard-agents / manually / skipped]
      - README.md [via accelint-readme-writer / manually / skipped]
 
      These changes ensure documentation stays synchronized with implementation.
@@ -539,13 +543,13 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      Proceeding to verification...
      ```
 
-**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, then **MANDATORY automatic transition to verification without waiting for user input**
+**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, followed by an automatic transition to verification without waiting for user input.
 
 ### Verify Implementation
 
-**Goal**: Verify that the implementation matches the change artifacts (specs, tasks, design).
+Verify that the implementation matches the change artifacts: specs, tasks, and design.
 
-CRITICAL: This is the final step. Verification is MANDATORY and produces the comprehensive final report. Do NOT add additional reporting after this step.
+This is the final step. Verification is mandatory and produces the comprehensive final report. Do NOT add additional reporting after this step.
 
 30. Call the verify command:
    ```
@@ -577,14 +581,14 @@ CRITICAL: This is the final step. Verification is MANDATORY and produces the com
 
 ### Context Management and Resumption
 
-The skill supports pause/clear/resume workflow at dependency level boundaries:
+The skill supports a pause/clear/resume workflow at dependency-level boundaries:
 
 - **Pause points**: After each dependency level completes, the skill offers to continue or let the user clear context (Step 22)
 - **Resumption detection**: When re-invoked, the skill reads tasks.md checkboxes to detect completed slices and resumes from the next incomplete level (Step 8)
 - **Progress tracking**: Task completion is tracked in tasks.md via checkboxes, making progress durable across context clears
 - **Rationale**: Sub-agents can accumulate significant context. Between dependency levels, the orchestrating agent can clear context while preserving work progress via task checkboxes.
 
-**Why this matters**: Long implementations with many slices can bloat context. By offering pause points between levels, users maintain the flexibility to clear context (like in serial `opsx:apply`) while still benefiting from parallelization within each level.
+**Why this matters**: Long implementations with many slices can bloat context. By offering pause points between levels, users maintain the flexibility to clear context, as they can in serial `opsx:apply`, while still benefiting from parallelization within each level.
 
 ### Intelligent Parallelization
 
@@ -596,16 +600,18 @@ If no parallelization strategy is found, the skill runs tasks sequentially. This
 
 ### Verification Before Archive
 
-The skill always runs `/opsx:verify` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
+The skill always runs `/opsx:verify` as the final step. This catches incomplete tasks, broken references, and schema violations before the user archives. The verification report serves as the completion summary.
 
 ### Human-in-the-Loop
 
-The skill reports results and asks the user for guidance when:
+The skill reports results and asks the user for guidance in these cases:
 - Validation fails
 - Tasks are unclear or blocked
 - Slice boundaries are ambiguous
 - Parallel slices appear likely to collide in the same files or same narrow subsystem
 - Any error occurs during implementation
+
+If interaction is unavailable during ambiguity or overlap-risk handling, prefer the safest non-destructive path: default to serial execution for the affected level, and only stop when continuing would risk incorrect implementation.
 
 ### Context Management
 
@@ -625,7 +631,7 @@ If the parallelization strategy contains circular dependencies (Slice A blocks B
 If a slice is referenced in the parallelization strategy but doesn't exist in the task list, report an error and ask the user to fix tasks.md.
 
 **Partial completion**:
-If some tasks were already marked complete (from a previous session), resume from where it left off. Announce: "N/M tasks already complete. Resuming from Slice X."
+If some tasks were already marked complete from a previous session, resume from the correct point. Announce: "N/M tasks already complete. Resuming from Slice X."
 
 **Sub-agent failure**:
 If a sub-agent fails or times out:
@@ -634,7 +640,7 @@ If a sub-agent fails or times out:
 - Do not proceed to dependent slices until the blocking slice succeeds
 
 **Parallel merge risk**:
-If multiple successful slices appear to touch the same file set or incompatible assumptions:
+If multiple successful slices appear to touch the same file set or rely on incompatible assumptions:
 - Pause before the next level
 - Summarize the likely collision clearly
 - Ask whether to resolve integration now or continue with a more serial approach
@@ -644,13 +650,13 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 - Fall back to sequential execution (implement all tasks yourself)
 - Inform user: "Sub-agents not available. Running tasks sequentially."
 
-## NEVER Do This
+## Never Do This
 
-**NEVER stop between living document updates and verification to wait for user confirmation** — Once living document updates (Steps 25-29) complete successfully, immediately proceed to verification (Step 30). These steps are one continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 22). Do not treat completion of living document updates as a signal to stop and wait. It is a signal to continue to verification.
+**NEVER stop between living document updates and verification to wait for user confirmation** — Once living document updates (Steps 25-29) complete successfully, immediately proceed to verification (Step 30). These steps are one continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 22). Do not treat completion of living document updates as a signal to stop and wait. Treat it as a signal to continue to verification.
 
-**NEVER implement tasks directly** — Always delegate to `/opsx:apply` command via sub-agents. The /opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
+**NEVER implement tasks directly** — Always delegate to the `/opsx:apply` command via sub-agents. The `/opsx:apply` workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
 
-**NEVER skip verification** — Verification using `/opsx:verify` (Step 30) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
+**NEVER skip verification** — Verification using `/opsx:verify` (Step 30) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving an incomplete or incorrect implementation.
 
 **NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
 
@@ -658,17 +664,17 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 **NEVER assume a parallel slice split is safe just because tasks.md says so** — Do a quick overlap check before parallel execution. If slices look likely to edit the same files or tightly coupled code path, slow down and regroup or ask the user rather than creating avoidable merge conflicts.
 
-**NEVER pass malformed config context into sub-agents** — If you cannot confidently isolate the `context: |` block from `openspec/config.yaml`, warn the user and proceed without injected context. A missing context block is safer than corrupted guidance.
+**NEVER pass malformed config context into sub-agents** — If you cannot confidently isolate the `context: |` block from `openspec/config.yaml`, warn the user and proceed without injected context. A missing context block is safer than corrupted guidance. When the block boundaries are uncertain, skip injection entirely rather than attempting partial recovery.
 
-**NEVER skip living document updates** — Living document updates (Steps 25-29) keep ARCHITECTURE.md, AGENTS.md, README.md, and config.yaml synchronized with implementation. These steps run BEFORE verification so the verification step can check documentation completeness. Do not skip to verification without updating living documents first.
+**NEVER skip living document updates** — Living document updates (Steps 25-29) keep `ARCHITECTURE.md`, `AGENTS.md`, `README.md`, and `openspec/config.yaml` synchronized with implementation. These steps run before verification so the verification step can check documentation completeness. Do not skip to verification without updating living documents first.
 
 ## Configuration Requirements
 
 This skill assumes:
 1. OpenSpec is installed and initialized
-2. The change exists and has a tasks.md file
-3. Sub-agent support is available (for parallel execution)
-4. Git is initialized (for checking file changes)
+2. The change exists and has a `tasks.md` file
+3. Sub-agent support is available for parallel execution
+4. Git is initialized for checking file changes
 
 If any are missing, report the issue and guide the user to set them up.
 

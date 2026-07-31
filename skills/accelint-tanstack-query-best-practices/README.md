@@ -60,8 +60,7 @@ skills/accelint-tanstack-query-best-practices/
 │   ├── server-integration.md   # Next.js App Router hydration and server cache
 │   └── caching-strategy.md     # Multi-layer cache coordination
 ├── assets/
-│   ├── query-client.ts         # Production-ready QueryClient factory
-│   └── output-report-template.md # Structured output format for reviews
+│   └── query-client.ts         # Production-ready QueryClient factory
 └── evals/
     └── evals.json              # Test cases for QueryClient setup, keys, mutations, performance
 ```
@@ -102,15 +101,15 @@ The skill loads reference files based on your scenario to minimize context usage
 | Life-critical ops | Pessimistic | Medical, financial, safety-critical systems |
 | Audit trail required | Pessimistic | Compliance systems where operator actions must match logged events |
 
-### Observer count thresholds
+### Observer count heuristics
 
 | Observer Count | Performance Impact | Action Required |
 |----------------|-------------------|------------------|
-| 1-5 | Negligible | None |
-| 6-20 | Minimal | Monitor, no immediate action |
-| 21-50 | Noticeable on updates | Consider hoisting queries to parent |
-| 51-100 | Significant overhead | Refactor: hoist queries or use select |
-| 100+ | Critical impact | Immediate refactor: single query with props distribution |
+| 1-5 | Usually negligible | None |
+| 6-20 | Often minimal | Monitor, no immediate action |
+| 21-50 | Can become noticeable on updates | Consider hoisting queries to parent |
+| 51-100 | Often significant overhead | Refactor: hoist queries or use select |
+| 100+ | Usually a strong sign of architectural pressure | Prioritize refactor: single query with props distribution or narrower subscriptions |
 
 ## Hard stops
 
@@ -118,7 +117,7 @@ The skill includes explicit rules for critical mistakes:
 
 - **NEVER use a singleton QueryClient on the server** - Creates data leakage between users
 - **NEVER synchronize query data to useState** - Background refetches make state stale immediately
-- **NEVER put queries inside list item components** - Creates N observers and N network requests
+- **NEVER put queries inside list item components by default** - Often creates per-row observers and can multiply requests when keys differ or rows mount independently
 - **NEVER use unstable query keys** - Arrays with non-guaranteed order, Date.now(), or temporal values
 - **NEVER skip enabled guards for dependent queries** - Creates garbage cache entries with undefined params
 - **NEVER ignore AbortController signals** - Leaves in-flight requests running after unmount

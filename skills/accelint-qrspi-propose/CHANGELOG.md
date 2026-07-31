@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.6.5] - 2026-07-31
+
+### Changed
+- Corrected package guidance to reference `accelint-onboard-agents` consistently instead of the non-existent singular name
+  - Updated `SKILL.md` configuration guidance and `README.md` related/configuration references
+  - Rationale: Static audit plus repository inspection showed a concrete naming mismatch that could misdirect users
+- Tightened supporting prose in `README.md` and `SKILL.md` where drift or scanability issues were directly observed
+  - `README.md` now reflects that the Design stage produces both `proposal.md` and `design.md`
+  - `README.md` now notes the post-approval `specs_touched` / `decisions` frontmatter capture behavior
+  - `README.md` error handling now matches the skill's manual-fallback boundary: only Questions/Research may fall back manually; artifact generation still must go through `/opsx`
+  - `SKILL.md` received a strict, body-only prose pass that improved checkpoint timing wording and local scanability without changing frontmatter, workflow order, commands, or guardrail strength
+  - Rationale: Changes were limited to directly observed drift and wording clarity in behavior-bearing prose
+
+### Version
+- Bumped from 1.6.4 → 1.6.5
+
 ## [1.6.4] - 2026-07-30
 
 ### Changed

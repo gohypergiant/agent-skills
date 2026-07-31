@@ -4,6 +4,8 @@ Complete setup requirements for `@accelint/design-foundation` to work correctly.
 
 ## Required Configuration
 
+Verify these requirements before you debug token, variant, or CSS-module behavior.
+
 ### 1. PostCSS Configuration (Required)
 
 **Create `postcss.config.mjs` in project root:**
@@ -17,9 +19,9 @@ export default {
 };
 ```
 
-**What it does:** The `@accelint/postcss-tailwind-css-modules` plugin fixes named group selectors (like `group-hover/button:`) and @variant selectors in CSS module files.
+**What it does:** The `@accelint/postcss-tailwind-css-modules` plugin fixes named group selectors (like `group-hover/button:`) and `@variant` selectors in CSS module files.
 
-**Without it:** Named groups and @variant selectors fail to resolve, causing build errors or non-functional styles.
+**Without it:** Named groups and `@variant` selectors fail to resolve, which causes build errors or non-functional styles.
 
 **Example of what breaks without the plugin:**
 
@@ -65,9 +67,9 @@ export default {
 }
 ```
 
-**What it does:** Imports design system tokens, utilities, and variant definitions into the CSS module scope.
+**What it does:** This directive imports design system tokens, utilities, and variant definitions into the CSS module scope.
 
-**Without it:** Semantic tokens (`bg-surface-default`), @variant blocks, and @layer directives are undefined, causing "unknown variable" errors.
+**Without it:** Semantic tokens (`bg-surface-default`), `@variant` blocks, and `@layer` directives are undefined, which causes "unknown variable" errors.
 
 ### 3. Package.json Imports (Optional - If Custom Entrypoint)
 
@@ -124,9 +126,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 }
 ```
 
-**Why first:** Design system styles must load before component styles for correct cascade.
+**Why first:** Design system styles MUST load before component styles so the cascade works correctly.
 
 ## Setup Verification Checklist
+
+Use this checklist before you move on to token-level or variant-level debugging.
 
 ```
 [ ] PostCSS config exists with @accelint/postcss-tailwind-css-modules plugin
@@ -222,6 +226,8 @@ import './styles/globals.css'; // Too late
 ```
 
 ## Architecture Decision: Custom Entrypoint vs Direct Import
+
+Use this section only after the required configuration is in place.
 
 ### Use Custom Entrypoint When:
 - Adding project-specific token overrides

@@ -4,24 +4,25 @@ Custom variant system using data attributes for component state and styling in `
 
 ## How Variants Work
 
-Variants use `@custom-variant` CSS directive to create selectors from data attributes:
+Variants are driven by data attributes in markup and authored with `@variant` blocks in CSS modules. Under the hood, the system uses variant definitions that resolve those data attributes for you.
 
 ```css
-/* Definition */
-@custom-variant color-info (&:where([data-color="info"]));
-
-/* Compiled to */
-.color-info\:bg-surface-default:where([data-color="info"]) {
-  background: var(--bg-surface-default);
+@layer components.l2 {
+  .badge {
+    @variant color-info {
+      @apply bg-info-muted outline-1 outline-info-bold;
+    }
+  }
 }
+```
 
-/* Applied in HTML */
-<div data-color="info" class="color-info:bg-surface-default">
+```tsx
+<div className={styles.badge} data-color="info">
   Info content
 </div>
 ```
 
-**Benefit:** Type-safe, reusable states without arbitrary Tailwind variants.
+**Benefit:** Reusable, consistent states without arbitrary Tailwind variants or raw attribute-selector styling as your default pattern.
 
 ## Available Variants
 
@@ -136,29 +137,40 @@ data-position="center"   Center position
 
 ## Styling with Variants
 
-### Basic Pattern
+### Preferred Authoring Pattern
+
+Use `data-*` attributes in markup and `@variant` blocks in CSS modules. This is the package's default recommendation because it keeps variant styling aligned with design foundation conventions.
 
 ```tsx
 // Component HTML
-<button data-color="primary" data-size="large">
+<button className={styles.button} data-color="primary" data-size="large">
   Action
 </button>
+```
 
-// CSS with variants
+```css
 @layer components.l1 {
-  .custom-button {
+  .button {
     @apply px-m py-s;
   }
+}
 
-  .custom-button[data-size="large"] {
-    @apply px-l py-m;
-  }
+@layer components.l2 {
+  .button {
+    @variant size-large {
+      @apply px-l py-m;
+    }
 
-  .custom-button[data-color="primary"] {
-    @apply bg-interactive-bold fg-inverse-bold;
+    @variant color-primary {
+      @apply bg-interactive-bold fg-inverse-bold;
+    }
   }
 }
 ```
+
+### Avoid as the default pattern
+
+Attribute selectors can explain how the underlying data attributes work, but they should not be your default authoring pattern for component variants in this stack.
 
 ### Combining Variants
 
@@ -174,11 +186,15 @@ Multiple variants compose naturally:
 </Card>
 ```
 
-CSS matches all applicable variants:
+Use separate `@variant` blocks for each concern so the styles compose predictably:
 ```css
-[data-color="info"] { /* info styles */ }
-[data-size="large"] { /* large styles */ }
-[data-state="active"] { /* active styles */ }
+@layer components.l2 {
+  .card {
+    @variant color-info { /* info styles */ }
+    @variant size-large { /* large styles */ }
+    @variant state-active { /* active styles */ }
+  }
+}
 ```
 
 ### Variant with Utility Classes
@@ -209,15 +225,19 @@ Design Toolkit components use React Aria, which provides built-in data attribute
   {/* Results in data-hovered, data-pressed, data-focused when interactive */}
   Click me
 </Button>
+```
 
-// Style these states
-@layer components.l1 {
-  .custom-button[data-hovered] {
-    @apply bg-surface-hover;
-  }
+```css
+/* Style these states with layered variant rules */
+@layer components.l3 {
+  .custom-button {
+    @variant hovered {
+      @apply bg-surface-hover;
+    }
 
-  .custom-button[data-pressed] {
-    @apply bg-surface-raised;
+    @variant pressed {
+      @apply bg-surface-raised;
+    }
   }
 }
 ```
@@ -231,6 +251,8 @@ Design Toolkit components use React Aria, which provides built-in data attribute
 - `data-selected` - Selected state (checkboxes, tabs)
 - `data-open` - Open state (modals, dropdowns)
 
+Use these attributes as the runtime signal, then author the styling through the design foundation variant pattern in CSS modules.
+
 ## Creating Custom Variants
 
 When built-in variants don't cover your needs:
@@ -240,9 +262,11 @@ When built-in variants don't cover your needs:
 @custom-variant severity-critical (&:where([data-severity="critical"]));
 
 /* Use in components */
-@layer components.l1 {
-  .alert[data-severity="critical"] {
-    @apply bg-critical-muted fg-inverse-bold outline-critical-bold;
+@layer components.l2 {
+  .alert {
+    @variant severity-critical {
+      @apply bg-critical-muted fg-inverse-bold outline-critical-bold;
+    }
   }
 }
 ```
@@ -299,7 +323,7 @@ When built-in variants don't cover your needs:
 Use `clsx` for dynamic variants:
 
 ```tsx
-import { clsx } from 'clsx';
+import { clsx } from '@accelint/design-foundation/lib/utils';
 
 <Button
   data-color={isDestructive ? 'danger' : 'primary'}

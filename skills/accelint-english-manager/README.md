@@ -22,7 +22,7 @@ Select `accelint-english-manager` when prompted. This skill is not published as 
 
 ## Quick Start
 
-Specify both the job and the mode for best results:
+Specify the job and the mode up front when you can. If the mode is missing, the skill should ask before rewriting:
 
 ```text
 /accelint-english-manager audit+rewrite in strict mode the following:
@@ -56,17 +56,17 @@ Use it when you want cleaner writing that still does the same job. If you need s
 
 ## When to use this skill
 
-The skill triggers on requests that ask for prose improvement without changing the underlying meaning or intent:
+Use this skill for prose-improvement requests where the main job is to make writing clearer without changing its intended meaning.
 
+Common triggers include:
 - "plain English", "simple English", "make this clearer", "make this more direct"
 - "clean this up", "edit this", "review this writing", "grammar check"
 - "too wordy", "too formal", "less fluffy", "friendlier", "shorter"
-- "audit then rewrite", "keep the tone", "mode=strict"
-- "STE", "ASD-STE100", "ADHD-friendly"
+- "audit then rewrite", "keep the tone", `mode=strict`, `STE`, `ASD-STE100`, `ADHD-friendly`
 
-Also use it for docs, prompts, emails, UI copy, support replies, release notes, status updates, incident notes, procedural text, and other LLM-written prose.
+Common artifacts include docs, prompts, emails, UI copy, support replies, release notes, status updates, incident notes, procedural text, and other LLM-written prose.
 
-Do not use it for fact-checking, policy setting, or substantive content design.
+Do not use it for fact-checking, policy setting, or substantive content design. For the canonical trigger and boundary language, see [`SKILL.md`](./SKILL.md).
 
 ## API
 
@@ -124,7 +124,7 @@ Evaluation prompts for the skill. These are most useful to maintainers, but they
 
 ## Examples
 
-These examples come from real files in this repo. They are better than made-up prompts because they reflect how this skill is actually exercised.
+These examples come from real files in this repo.
 
 ### Audit plus rewrite
 
@@ -134,8 +134,6 @@ Source: `skills/accelint-english-manager/evals/evals.json`
 Audit this paragraph and list the highest-risk issues first, then give a rewrite: 'We have identified an issue that may have impacted some users during the deployment window, and engineering is currently working to remediate the situation as quickly as possible.'
 ```
 
-Use this when you want both findings and a revised version.
-
 ### Rewrite-only release note cleanup
 
 Source: `skills/accelint-english-manager/evals/evals.json`
@@ -144,33 +142,7 @@ Source: `skills/accelint-english-manager/evals/evals.json`
 Tighten this release note entry without changing scope or adding hype: 'This update includes improvements to export reliability and reduces the number of cases where scheduled reports fail when a data source responds slowly.' Return only the revised release note in final output.
 ```
 
-Use this when you want a cleaner final version with no audit commentary.
-
-### Error-help rewrite with exact technical text preserved
-
-Source: `skills/accelint-english-manager/evals/evals.json`
-
-```text
-Rewrite this error help text so it is clearer and easier to act on, but keep the command and filename exact: 'The config loader was unable to parse settings.json. Please check the file for trailing commas and then rerun sync --apply.' Return only the revised text in final output.
-```
-
-Use this when commands, filenames, or other technical text must stay exact.
-
-### Strict prose-polish pass
-
-Source: `skills/accelint-readme-writer/SKILL.md`
-
-```text
-/accelint-english-manager audit+rewrite in strict mode the following:
-
-"
-[PASTE CONTENT HERE]
-"
-
-I do not want a report, just apply the new content to the output directly.
-```
-
-Use this when another workflow needs a final cleanup pass with tighter control.
+See [`references/examples.md`](./references/examples.md) for more worked before/after patterns and audit shapes.
 
 ## Architecture & Development Guides
 

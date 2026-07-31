@@ -157,6 +157,7 @@ function validate(data) {
 function isComplete(user, alreadyValid = false) {
   return (alreadyValid || isValid(user)) && user.profile && user.settings;
 }
+```
 
 ## Fallback Patterns
 

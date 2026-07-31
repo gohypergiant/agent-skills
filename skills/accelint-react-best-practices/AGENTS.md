@@ -7,39 +7,39 @@
 
 ## Abstract
 
-This is a React performance and correctness guide for AI agents and LLMs. Each rule includes a one-line summary and a link to detailed examples in `references/`. Load reference files only when you need to apply a specific pattern.
+This guide provides React performance and correctness rules for AI agents and LLMs. Each rule includes a one-line summary and a link to detailed examples in `references/`. Load reference files only when you need to apply a specific pattern.
 
 ---
 
-## ⚡ FIRST: Check React Compiler
+## FIRST: Check React Compiler
 
-**Before suggesting memo/useMemo/useCallback optimizations:**
+Before suggesting `memo`, `useMemo`, or `useCallback` optimizations:
 
-1. **Check if project uses React Compiler** (search for `babel-plugin-react-compiler` or `react-compiler-webpack-plugin` in package.json/config files)
-2. **If React Compiler enabled:** Skip manual memoization patterns — the compiler handles them automatically. Focus on:
-   - State management patterns (functional setState, lazy initialization)
+1. Check whether the project uses React Compiler. Search for `babel-plugin-react-compiler` or `react-compiler-webpack-plugin` in `package.json` or config files.
+2. If React Compiler is enabled, skip manual memoization patterns. The compiler handles them automatically. Focus on:
+   - State management patterns (`functional setState`, lazy initialization)
    - Effect patterns (narrow dependencies, stable callbacks)
-   - CSS optimizations (content-visibility)
-   - SSR/hydration patterns
-3. **If React Compiler NOT enabled:** Apply all optimizations from this skill
+   - CSS optimizations (`content-visibility`)
+   - SSR and hydration patterns
+3. If React Compiler is not enabled, apply the relevant optimizations from this skill.
 
-See [react-compiler-guide.md](references/react-compiler-guide.md) for details on what the compiler handles vs what still needs manual optimization.
+See [react-compiler-guide.md](references/react-compiler-guide.md) for the exact boundary.
 
 ---
 
 ## How to Use This Guide
 
-**For agents and LLMs:**
+For agents and LLMs:
 1. Scan the rule summaries below to identify the relevant pattern.
 2. Load reference files only when you need to apply that pattern.
-3. Treat each reference as self-contained guidance with `❌` and `✅` examples.
+3. Treat each reference as self-contained guidance with incorrect and correct examples.
 
-**Quick shortcuts:**
+Quick shortcuts:
 - Re-render issues? → Section 1 (Re-render Optimizations)
 - Slow rendering? → Section 2 (Rendering Performance)
 - Advanced patterns? → Section 3 (Advanced Patterns)
 - React 19 migration? → Section 4 (Misc)
-- Not sure what's wrong? → Use Quick Diagnostic Guide below
+- Not sure what is wrong? → Use the Quick Diagnostic Guide below
 
 **React 19+ Resources:**
 - [React 19](https://react.dev/blog/2024/12/05/react-19) | [React 19.2](https://react.dev/blog/2025/10/01/react-19-2) | [Upgrade Guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide)
@@ -48,9 +48,9 @@ See [react-compiler-guide.md](references/react-compiler-guide.md) for details on
 
 ## Quick Diagnostic Guide
 
-Use this guide to identify which pattern applies based on the symptom:
+Use this guide to identify which pattern applies based on the symptom.
 
-**Symptom → Solution:**
+Symptom → Solution:
 - Component re-renders on every parent render → 1.2 Extract to Memoized Components
 - Component re-renders when URL/localStorage changes but doesn't display them → 1.1 Defer State Reads
 - Effect runs too frequently → 1.3 Narrow Effect Dependencies, 3.1 Store Event Handlers in Refs

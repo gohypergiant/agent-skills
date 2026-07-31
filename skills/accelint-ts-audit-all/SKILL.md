@@ -4,30 +4,30 @@ description: Command-only TypeScript audit orchestrator for explicit `/skill acc
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # Audit All
 
-Comprehensive TypeScript file audit system that systematically applies multiple audit skills with progress tracking and interactive approval.
+Comprehensive TypeScript file audit system. It applies multiple audit skills in a fixed sequence with progress tracking and interactive approval.
 
-## NEVER Do When Running Audits
+## Never Do When Running Audits
 
-- **NEVER skip the initial test coverage step** - Refactoring without test coverage first can hide breakage. Always run `accelint-ts-testing` before any code changes.
-- **NEVER run best-practices and performance sequentially** - Running them separately can create contradictory recommendations for the same code. Always run them in parallel so you can review merged suggestions.
-- **NEVER present issues one-by-one for approval** - Always show ALL issues in a numbered table first, then show each issue's detailed before/after code, then ask for numbered-list acceptance. This keeps the presentation consistent and lets users spot conflicts across parallel processes.
-- **NEVER skip displaying the overview table** - BLOCKING: You MUST display the emoji severity table with ALL issues before you show any detailed changes. No exceptions.
-- **NEVER ask for approval before showing all detailed changes** - BLOCKING: You MUST show the complete before/after code for EVERY issue before you ask "Apply which issues?"
-- **NEVER auto-apply all recommendations** - Each change needs user approval (accept/deny/other) to preserve code ownership and prevent unwanted modifications.
-- **NEVER run one-off commands instead of documented verification commands** - The audit-process file documents EXACT verification commands. Use those commands verbatim. Never improvise with `npm test`, `bun test`, or similar unless they match the documented commands exactly.
-- **NEVER skip saving progress after completing a step** - After EVERY step completes, immediately save detailed progress to the audit-process file BEFORE you move to the next step. Context limits will break otherwise.
-- **NEVER skip the 100-pass PBT verification** - When property-based tests are added, you MUST run the test suite 100 times to verify stability. Random failures are common with PBT. This is a blocking requirement. Do not proceed until 100 consecutive passes succeed. Run the tests with coverage reporting disabled to improve speed and stability.
-- **NEVER lose progress when context runs out** - Save detailed progress to the audit-process file after each step. Context limits are guaranteed in large audits.
-- **NEVER assume property-based tests are stable** - Random test failures are common with PBT. Run new property tests 100 times to verify stability before you accept them. Run the tests with coverage reporting disabled to improve speed and stability.
-- **NEVER add PERF comments everywhere** - Only add `// PERF:` comments when they provide meaningful insight that future developers would not discover on their own.
-- **NEVER mark a file complete without all 9 steps** - Partial audits leave files in inconsistent states. Complete all steps or mark the file as in progress.
-- **NEVER move on from a broken build** - Fix compilation errors, test failures, and lint issues immediately before you proceed to the next step.
-- **NEVER run audit in main branch** - Always create an isolated worktree to prevent conflicts with parallel audits and allow safe experimentation.
+- **Never skip the initial test coverage step** - Refactoring without test coverage first can hide breakage. Always run `accelint-ts-testing` before any code changes.
+- **Never run best-practices and performance sequentially** - Running them separately can create contradictory recommendations for the same code. Always run them in parallel so you can review merged suggestions.
+- **Never present issues one by one for approval** - Always show ALL issues in a numbered table first, then show detailed before/after code for each issue, then ask for numbered-list acceptance. This keeps the presentation consistent and lets users spot conflicts across parallel processes.
+- **Never skip the overview table** - BLOCKING: You MUST display the emoji severity table with ALL issues before you show any detailed changes. No exceptions.
+- **Never ask for approval before you show all detailed changes** - BLOCKING: You MUST show the complete before/after code for EVERY issue before you ask "Apply which issues?"
+- **Never auto-apply all recommendations** - Each change needs user approval (accept/deny/other) to preserve code ownership and prevent unwanted modifications.
+- **Never run one-off commands instead of documented verification commands** - The audit-process file documents EXACT verification commands. Use those commands verbatim. Never improvise with `npm test`, `bun test`, or similar unless they match the documented commands exactly.
+- **Never skip saving progress after a step completes** - After EVERY step completes, immediately save detailed progress to the audit-process file BEFORE you move to the next step. Context limits will break otherwise.
+- **Never skip the 100-pass PBT verification** - When property-based tests are added, you MUST run the test suite 100 times to verify stability. Random failures are common with PBT. This is a blocking requirement. Do not proceed until 100 consecutive passes succeed. Run the tests with coverage reporting disabled to improve speed and stability.
+- **Never lose progress when context runs out** - Save detailed progress to the audit-process file after each step. Context limits are guaranteed in large audits.
+- **Never assume property-based tests are stable** - Random test failures are common with PBT. Run new property tests 100 times to verify stability before you accept them. Run the tests with coverage reporting disabled to improve speed and stability.
+- **Never add PERF comments everywhere** - Add `// PERF:` comments only when they provide meaningful insight that future developers would not discover on their own.
+- **Never mark a file complete without all 8 execution steps plus archive** - Partial audits leave files in inconsistent states. Complete the full sequence or mark the file as in progress.
+- **Never move on from a broken build** - Fix compilation errors, test failures, and lint issues immediately before you proceed to the next step.
+- **Never run the audit in the main branch** - Always create an isolated worktree to prevent conflicts with parallel audits and allow safe experimentation.
 
 ## Before Starting an Audit, Ask
 
@@ -49,14 +49,18 @@ Apply these tests before launching a comprehensive audit:
 
 ## How to Use
 
-This skill creates and maintains an audit-process file that tracks progress across sessions. It systematically runs four audit skills on each file with interactive approval.
+This skill creates and maintains an audit-process file to track progress across sessions. It runs four audit skills on each file with interactive approval.
+
+Use one canonical model everywhere in this skill package:
+- **8 execution steps per file** across testing, code quality, verification, and documentation
+- **1 archive/completion step** after those 8 execution steps finish for that file
 
 ### Workflow Overview
 
 1. **Initialize** - Create the TODO list and the audit tracking files.
-2. **For each file** - Run the 9-step audit process with user approval.
-3. **Track progress** - Save progress after each step to survive context limits.
-4. **Archive completed work** - Move finished-file details to the history file.
+2. **For each file** - Run the 8 execution steps with user approval.
+3. **Archive completed work** - Move finished-file details to the history file after the 8 execution steps complete.
+4. **Track progress** - Save progress after each step to survive context limits.
 
 ## Main Audit Workflow
 
@@ -65,7 +69,7 @@ Do not trigger it from natural-language requests unless the user explicitly asks
 
 ### Step 1: Initialize the Audit
 
-**Check for existing audit:** Look in `.agents/audit/` directory (in the original repository root) for existing audit-process files.
+**Check for existing audit:** Look in the `.agents/audit/` directory in the original repository root for existing audit-process files.
 
 If multiple audit-process files exist, compare their recorded target path, timestamp, and completion status. Resume only the file that matches the user-requested path and is still in progress; do not guess or merge multiple audits together.
 
@@ -112,7 +116,7 @@ BLOCKING: All audit work MUST happen in an isolated worktree to prevent conflict
 
 **MANDATORY - READ ENTIRE FILE**: Before you create any tracking files, you MUST read [`assets/audit-process-template.md`](assets/audit-process-template.md) completely from start to finish to understand the exact format and required structure. **NEVER set any range limits when reading this file.**
 
-Similarly, you MUST read [`assets/audit-history-template.md`](assets/audit-history-template.md) to understand the archival format.
+You MUST also read [`assets/audit-history-template.md`](assets/audit-history-template.md) to understand the archival format.
 
 **Do NOT load** these templates again after the initial setup. They are needed only once at the start of a new audit.
 
@@ -126,7 +130,7 @@ Create timestamped tracking files in the ORIGINAL repository (not in the worktre
 
 **Build the TODO list:**
 
-Find all TypeScript files in the target directory. Exclude declaration files, generated outputs, and `.test.ts`, `.spec.ts`, and `.bench.ts` files. If the user gives you a single file, verify that it is not a declaration, generated, test, or benchmark file.
+Find all TypeScript files in the target directory. Exclude declaration files, generated outputs, and `.test.ts`, `.spec.ts`, and `.bench.ts` files. If the user gives you a single file, verify that it is not a declaration file, generated file, test file, or benchmark file.
 
 Exclude at minimum:
 - `*.d.ts`
@@ -144,9 +148,9 @@ If the target path resolves to zero auditable files after those exclusions, stop
 - Set "Current File" to first pending file
 - Save the file
 
-### Step 2: Audit Each File (8-Step Process plus archive)
+### Step 2: Audit Each File (8 execution steps, then archive)
 
-For each file in the pending list, follow this exact sequence. The per-file execution work happens inside the audit worktree, while tracking files remain in the original repository.
+For each file in the pending list, follow this exact sequence. Per-file execution happens inside the audit worktree, while tracking files remain in the original repository.
 
 #### Phase 1: Initial Test Coverage
 
@@ -183,7 +187,7 @@ For each file in the pending list, follow this exact sequence. The per-file exec
 
 **Step 3: Run BOTH skills in parallel**
 
-CRITICAL: Run these together to avoid contradictory suggestions:
+CRITICAL: Run these together to avoid contradictory recommendations:
 ```bash
 /skill accelint-ts-best-practices <file-path>
 /skill accelint-ts-performance <file-path>
@@ -262,7 +266,7 @@ If verification passes, skip to documenting results. Otherwise:
 
 ### Step 3: Archive Completed File
 
-When all 9 steps complete for a file:
+When all 8 execution steps complete for a file:
 
 1. **Move detailed progress to history file**
    - Copy entire "Current File - Detailed Progress" section
@@ -299,7 +303,7 @@ When all 9 steps complete for a file:
    # Get the original branch from this audit's process file (in original repo)
    repo_root=$(git rev-parse --show-toplevel)
    audit_process_file="${repo_root}/.agents/audit/audit-process-${timestamp}.md"
-   original_branch=$(grep "^**Original Branch:**" ${audit_process_file} | cut -d'`' -f2)
+   original_branch=$(awk -F'`' '/^\*\*Original Branch:\*\*/ {print $2; exit}' "${audit_process_file}")
 
    # Commit all changes in worktree
    git add -A
@@ -342,7 +346,7 @@ When all 9 steps complete for a file:
 ## Completion Criteria
 
 A file is only complete when:
-- all analysis and interactive approval steps have finished
+- all 8 execution steps and the archive/completion step have finished
 - required verification commands pass for the accepted changes
 - progress has been saved to the audit-process file
 - detailed per-file notes have been moved into the audit-history file
@@ -353,7 +357,7 @@ If any of those conditions are not met, leave the file in progress and update th
 
 **File Status Markers:**
 - `[ ]` - Pending (not started)
-- `[x]` - Completed (all 9 steps done, moved to history)
+- `[x]` - Completed (all 8 execution steps plus archive done, moved to history)
 
 **Step Status Markers:**
 - ✅ - Complete
@@ -364,7 +368,7 @@ If any of those conditions are not met, leave the file in progress and update th
 ```markdown
 ### filename.ts - Audit Status 🔄 IN PROGRESS
 
-**Overall Progress:** X% complete (Step Y of 8)
+**Overall Progress:** X% complete (Execution Step Y of 8)
 
 #### ✅ Step 1: Test Coverage - COMPLETE
 [Findings, changes applied, test results]
@@ -378,7 +382,7 @@ If any of those conditions are not met, leave the file in progress and update th
 
 ## Interactive Change Approval Pattern
 
-**CRITICAL:** Always use the two-phase presentation pattern. NEVER present issues one-by-one or ask for approval before showing all changes.
+**CRITICAL:** Always use the two-phase presentation pattern. NEVER present issues one by one or ask for approval before you show all changes.
 
 ### Phase 1: Overview Table (Quick Scan)
 
@@ -457,7 +461,7 @@ function getUsername(user: User | null) {
 - Emoji severity indicators enable instant visual prioritization
 - Consistent format prevents wildly varying presentations
 
-Wait for user response with numbered list before applying any changes.
+Wait for the user's numbered response before you apply any changes.
 
 ## Verification Commands
 
@@ -487,7 +491,7 @@ Always use the EXACT commands from the audit-process file. Never guess.
 
 ## Important Notes
 
-- **Do NOT load README.md** - It contains user-facing documentation that duplicates this file. All Agent instructions are contained in SKILL.md.
+- **Do NOT load README.md** - It contains user-facing documentation that duplicates this file. All agent instructions are in `SKILL.md`.
 - **Worktree location:** All audit work happens in `.agents/worktrees/audit-${timestamp}` to avoid conflicts with the gitignored `.agents/audit/` directory.
 - **Tracking files location:** Audit process and history files are stored in the original repository's `.agents/audit/` directory (gitignored) and are NOT committed with audit changes.
 - **Property-based test stability:** If property tests fail randomly, check the exact seed that failed and verify the fix against that seed. Add constraints to arbitraries (date ranges, filtered NaNs, safe strings) to prevent false positives.

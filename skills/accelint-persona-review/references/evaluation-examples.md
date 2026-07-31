@@ -9,7 +9,7 @@ Examples of effective and ineffective persona-based design reviews.
 **Good:**
 > The manual track validation workflow creates friction for ASTs who are already juggling 7+ systems (documented pain point). The current design requires them to context-switch between BCS-F, RS-4, and ERSA before making a valid/not-valid determination. Consider consolidating validation inputs into a single view, prioritized by the AST's decision criteria: radar signature clarity, weather pattern correlation, and ERSA visual confirmation.
 
-**Why:** This directly references the persona's documented pain points and systems (`Sees`) and proposes a solution aligned with their workflow.
+**Why:** This directly references the persona's documented pain points and monitored systems (`Sees`) and proposes a solution aligned with their workflow.
 
 **Bad:**
 > This interface could be more intuitive. Users need easier access to validation tools.
@@ -90,13 +90,13 @@ Different personas have different experience levels, responsibilities, and pain 
 
 ## Output Format Flexibility
 
-The skill provides an example output structure, but you can adapt it based on:
+The skill provides an example output structure, but you may adapt it based on:
 
 - **Depth of findings**: If cognitive load is the primary concern, expand that section and condense the others.
 - **Persona profile completeness**: If supporting docs provide rich context, reference them heavily.
 - **Design scope**: A single component needs a different structure than a full dashboard review.
 
-The critical elements are:
+The review MUST include:
 1. A clear connection to the persona's documented profile
 2. Specific, actionable recommendations
 3. Prioritization based on operational impact

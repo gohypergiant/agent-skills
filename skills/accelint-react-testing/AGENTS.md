@@ -7,9 +7,9 @@
 
 ## Abstract
 
-Comprehensive guide for React Testing Library best practices, designed for AI agents and LLMs. Each rule includes one-line summaries here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
+Comprehensive guide for React Testing Library best practices, designed for AI agents and LLMs. Each rule includes a one-line summary here, with links to detailed examples in the `references/` folder. Load reference files only when you need detailed implementation guidance for a specific rule.
 
-**Token efficiency principle:** This guide maximizes knowledge delta by providing only expert-level insights and non-obvious patterns. All rules assume understanding React Testing Library basics, React fundamentals, and standard testing patterns. Focus is on non-obvious decisions, accessibility-first testing, and avoiding common pitfalls.
+**Token efficiency principle:** This guide maximizes knowledge delta by providing only expert-level insights and non-obvious patterns. All rules assume understanding of React Testing Library basics, React fundamentals, and standard testing patterns. The focus is on non-obvious decisions, accessibility-first testing, and avoiding common pitfalls.
 
 ---
 
@@ -46,11 +46,11 @@ getBy* for immediate presence, findBy* for async appearance, queryBy* to assert 
 [View detailed examples](references/query-variants.md)
 
 ### 1.3 User Events
-Use @testing-library/user-event for realistic interaction sequences, not fireEvent.
+Use `@testing-library/user-event` for realistic interaction sequences, not `fireEvent`.
 [View detailed examples](references/user-events.md)
 
 ### 1.4 Async Testing
-Handle async with findBy queries and waitFor; avoid act warnings with proper awaiting.
+Handle async with `findBy` queries and `waitFor`. Avoid `act` warnings with proper awaiting.
 [View detailed examples](references/async-testing.md)
 
 ### 1.5 Custom Render
@@ -58,7 +58,7 @@ Create test utils that wrap components with Context, Redux, Router providers.
 [View detailed examples](references/custom-render.md)
 
 ### 1.6 Accessibility Queries
-Query by semantic roles and labels; test ensures accessibility by design.
+Query by semantic roles and labels. This helps the test verify accessibility by design.
 [View detailed examples](references/accessibility-queries.md)
 
 ### 1.7 Anti-patterns

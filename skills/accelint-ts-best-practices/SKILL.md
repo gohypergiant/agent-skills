@@ -4,7 +4,7 @@ description: Use for JavaScript or TypeScript code-health work where the goal is
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.2"
+  version: "1.2.3"
 ---
 
 # JavaScript and TypeScript Best Practices
@@ -23,6 +23,12 @@ This skill uses a progressive disclosure structure to minimize context usage.
 
 ### 1. Start with the overview (`AGENTS.md`)
 Read [AGENTS.md](AGENTS.md) for a concise overview of all rules, organized by category with one-line summaries.
+
+**Minimum workflow after reading `AGENTS.md`:**
+- If you are writing or refactoring code, read [references/quick-start.md](references/quick-start.md) before you apply fixes. This keeps the identify → load reference → apply pattern workflow explicit.
+- If the code handles external input, network payloads, files, request bodies, environment variables, or other boundary data, read [references/input-validation.md](references/input-validation.md).
+- If the code uses loops, queues, recursion, or long-running async operations, read [references/bounded-iteration.md](references/bounded-iteration.md).
+- If the user asked for an audit, use [`assets/output-report-template.md`](assets/output-report-template.md). If the user asked for a focused fix or quick review, keep the response lightweight: identify the issue, explain why it matters, cite the relevant reference, then apply or recommend the fix directly.
 
 ### 2. Load specific rules as needed
 When you identify a relevant pattern or issue, load the corresponding reference file for detailed implementation guidance:
@@ -59,8 +65,8 @@ When you identify a relevant pattern or issue, load the corresponding reference 
 
 ### 3. Apply the Pattern
 Each reference file contains:
-- ❌ Incorrect examples showing the anti-pattern
-- ✅ Correct examples showing the optimal implementation
+- Incorrect examples showing the anti-pattern
+- Correct examples showing the preferred implementation
 - Explanations of why the pattern matters
 
 ### 4. Use the report template when auditing

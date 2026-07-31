@@ -89,6 +89,8 @@ Version history for the skill. This repo uses file-driven versioning for skills,
 
 Evaluation prompts that exercise the skill's behavior. This file is more useful to maintainers than end users, but it is also the best source of real request examples in this package.
 
+The current eval set covers multiple risk classes, including audit-only compliance, frontmatter boundary preservation, workflow verb sensitivity, folder-level artifact discovery, unchanged-file classification, and exact-reference preservation.
+
 ## Examples
 
 These examples come from real eval prompts in `evals/evals.json`. They are the closest thing this package has to usage examples, and they are better than invented samples.
@@ -160,6 +162,9 @@ Apache 2.0 - see [../../LICENSE](../../LICENSE) for details.
 
 ## Contributing
 
-If you update this skill, keep `SKILL.md` and `CHANGELOG.md` aligned.
+If you update this skill:
+- keep `SKILL.md` `metadata.version` and `CHANGELOG.md` aligned
+- update `evals/evals.json` when you change trigger boundaries, output-mode rules, rewrite-mode behavior, or folder-level artifact-set expectations
+- prefer minimal, evidence-backed edits over broad rewrites unless benchmark, transcript, or review evidence justifies larger changes
 
 For the broader contributor workflow, see [../../CONTRIBUTING.md](../../CONTRIBUTING.md).

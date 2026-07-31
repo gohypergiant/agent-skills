@@ -1,12 +1,12 @@
 # Common Issues and Solutions
 
-This reference provides solutions to frequently encountered issues when working with @accelint/design-foundation.
+This reference provides solutions to common issues when you work with `@accelint/design-foundation`.
 
 ## Issue: "undefined variable --bg-surface-default"
 
-**Cause:** Missing @reference directive in CSS module.
+**Cause:** Missing `@reference` directive in the CSS module.
 
-**Symptom:** Build error when using semantic tokens like `bg-surface-default`, `fg-primary-bold`, etc.
+**Symptom:** Build error when you use semantic tokens like `bg-surface-default`, `fg-primary-bold`, and related utilities.
 
 **Fix:** Add `@reference '#globals';` or `@reference '@accelint/design-foundation/styles';` at the top of the CSS module file.
 
@@ -25,13 +25,13 @@ This reference provides solutions to frequently encountered issues when working 
 
 ## Issue: "@variant directive not recognized"
 
-**Cause:** Missing @reference directive or PostCSS plugin not configured.
+**Cause:** Missing `@reference` directive or PostCSS plugin not configured.
 
-**Symptom:** Build error when using `@variant` blocks like `@variant color-info { ... }`
+**Symptom:** Build error when you use `@variant` blocks like `@variant color-info { ... }`.
 
-**Fix 1:** Verify @reference directive exists at top of CSS module.
+**Fix 1:** Verify that the `@reference` directive exists at the top of the CSS module.
 
-**Fix 2:** Check `postcss.config.mjs` includes `@accelint/postcss-tailwind-css-modules` plugin:
+**Fix 2:** Check that `postcss.config.mjs` includes the `@accelint/postcss-tailwind-css-modules` plugin:
 
 ```javascript
 export default {
@@ -48,7 +48,7 @@ export default {
 
 **Cause:** Missing `@accelint/postcss-tailwind-css-modules` plugin.
 
-**Symptom:** Named group selectors like `group-hover/button:` don't apply styles in CSS modules.
+**Symptom:** Named group selectors like `group-hover/button:` do not apply styles in CSS modules.
 
 **Fix:** Add plugin to `postcss.config.mjs`:
 
@@ -65,11 +65,11 @@ export default {
 
 ## Issue: Styles not applying / tokens showing as raw values
 
-**Cause:** CSS entrypoint not imported or imported too late in component tree.
+**Cause:** CSS entrypoint not imported, or imported too late in the component tree.
 
-**Symptom:** Semantic tokens render as literal `var(--bg-surface-default)` instead of colors, or styles don't apply at all.
+**Symptom:** Semantic tokens render as literal `var(--bg-surface-default)` instead of colors, or styles do not apply at all.
 
-**Fix:** Ensure globals.css (or `@accelint/design-foundation/styles`) is the FIRST import in root layout:
+**Fix:** Ensure `globals.css` (or `@accelint/design-foundation/styles`) is the FIRST import in the root layout:
 
 ```tsx
 // ✅ Correct order
@@ -228,7 +228,7 @@ import './styles/globals.css'; // Too late
 
 ## Diagnostic Checklist
 
-When encountering issues, verify this setup checklist:
+When you encounter issues, verify this setup checklist first:
 
 - [ ] `postcss.config.mjs` includes `@accelint/postcss-tailwind-css-modules` plugin
 - [ ] Every CSS module has `@reference` directive at top

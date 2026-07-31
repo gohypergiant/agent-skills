@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.1] - 2026-07-31
+
+### Changed
+- Clarified `SKILL.md` fallback handling for common Figma and Outline failure modes
+  - Added explicit guidance for unfetchable Figma nodes, partial desktop-selection context, and screenshot fallback as a valid continuation path
+  - Clarified that missing or non-useful Outline results must not block the review and named the missing evidence sources to call out
+- Tightened skill prose for clarity and consistency without changing frontmatter behavior
+  - Refined workflow wording in `SKILL.md`
+  - Refined `references/evaluation-examples.md` for easier scanning and clearer good-versus-bad contrasts
+- Updated `README.md` to clarify that the skill is auto-triggered and that command-style examples are illustrative prompt patterns
+
+### Version
+- Bumped from 1.3.0 → 1.3.1
+
 ## [1.3.0] - 2026-07-30
 
 ### Changed

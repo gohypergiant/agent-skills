@@ -110,14 +110,6 @@ describe("renderStep", () => {
       ],
     ],
     [
-      { type: "action", action: "goto", value: "https://example.com" },
-      1,
-      [
-        'await page.goto("https://example.com");',
-        'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "goto" })'
-      ],
-    ],
-    [
       { type: "action", action: "hover", target: "#tooltip-trigger" },
       3,
       [

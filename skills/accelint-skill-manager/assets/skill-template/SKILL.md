@@ -1,15 +1,15 @@
 ---
 name: skill-name
-description: Use when users say "[trigger phrase 1]", "[trigger phrase 2]", or when [specific scenario]. [WHAT this skill does]. [Additional trigger keywords for searchability].
+description: Use when users say "[trigger phrase 1]", "[trigger phrase 2]", or when [specific scenario]. Include searchable domain keywords, but do not summarize the workflow.
 #
 # REQUIRED: The description field determines whether this skill gets activated.
-# It MUST answer THREE questions:
-#   1. WHAT: What does this skill do? (functionality)
-#   2. WHEN: In what situations should it be used? (trigger scenarios with "Use when...")
-#   3. KEYWORDS: What terms should trigger this skill? (action verbs, file types, domain terms)
+# It should lead with WHEN this skill should trigger, include searchable KEYWORDS, and may briefly identify the skill's function when that helps trigger accuracy.
+# Do NOT summarize the skill's workflow or step sequence here.
 #
 # ✅ GOOD: "Use when users say 'create X', 'build Y', or when working with .ext files for purpose A, purpose B, or purpose C"
+# ✅ GOOD: "Use when reviewing agent skills, improving trigger descriptions, or checking SKILL.md and CHANGELOG alignment for a skill package"
 # ❌ BAD:  "Helps with various tasks" (vague, no triggers, no keywords)
+# ❌ BAD:  "Use when doing X - first inspect files, then run tests, then patch docs" (workflow summary in description)
 #
 license: Apache-2.0
 metadata:

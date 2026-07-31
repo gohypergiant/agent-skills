@@ -16,10 +16,10 @@
 
 ## Audit Process Overview
 
-For each code file, you MUST follow this sequence:
+For each code file, you MUST follow this exact sequence:
 
 1. **Initial Test Coverage** - Run `accelint-ts-testing` to ensure good test coverage exists before refactoring.
-2. **Interactive Changes** - Use the two-phase pattern: show ALL issues in a numbered table with emoji severity (🛑⚠️⚡🔵✅), show detailed before/after code for each issue, and accept changes through a numbered list. If PBTs are added, you MUST run the test suite 100 times and achieve 100 consecutive passes before you proceed. Run the tests with coverage disabled. **SAVE PROGRESS after this step.**
+2. **Interactive Changes** - Use the two-phase pattern: show ALL issues in a numbered table with emoji severity (🛑⚠️⚡🔵✅), show detailed before/after code for EVERY issue, and accept changes through a numbered list. If PBTs are added, you MUST run the test suite 100 times and achieve 100 consecutive passes before you proceed. Run the tests with coverage disabled. **SAVE PROGRESS after this step.**
 3. **Code Quality Analysis** - Run `accelint-ts-best-practices` AND `accelint-ts-performance` in parallel to avoid contradictory suggestions.
 4. **Interactive Changes** - Use the two-phase pattern with a numbered table. If quality and performance recommendations overlap, merge them if possible. Otherwise, present both and let the user choose. Include `// PERF:` comments only where they add genuine insight. **SAVE PROGRESS after this step.**
 5. **Verify Changes** - Run the EXACT verification commands from the "Verification Commands" section below. NEVER improvise.
@@ -27,9 +27,11 @@ For each code file, you MUST follow this sequence:
 7. **Documentation Pass** - Run `accelint-ts-documentation` to complete the audit.
 8. **Interactive Changes** - Use the two-phase pattern with a numbered table. **SAVE PROGRESS after this step before archiving.**
 
+Do not skip any step. If a step is blocked, record the blocking state in this file before you stop.
+
 **Progress Tracking:**
 - After each step, save detailed progress to the "Current File - Detailed Progress" section in this file.
-- When a file is complete (all 9 steps are done), move its detailed progress to `audit-history-{same date as audit-process file}-{same time as audit-process file}.md`.
+- When a file is complete (all 8 execution steps plus archive are done), move its detailed progress to `audit-history-{same date as audit-process file}-{same time as audit-process file}.md`.
 - Update the file status in the "Files to Audit" section (Pending → In Progress → Completed).
 
 ---
@@ -77,7 +79,7 @@ For each code file, you MUST follow this sequence:
 
 # Step 8: Apply changes interactively with user approval
 
-# Step 9: Final verification
+# Final verification after Step 8
 {exact lint command}
 ```
 
@@ -87,17 +89,17 @@ For each code file, you MUST follow this sequence:
 
 ### File Organization
 - **In-progress work** → Document in "Current File - Detailed Progress" section of this file
-- **Completed work** → Move to `audit-history.md` when all 9 steps are done
+- **Completed work** → Move to `audit-history.md` when all 8 execution steps plus archive are done
 - **Historical reference** → Only read `audit-history.md` if you need to revert or understand past decisions
 
 ### Audit Guidelines
-- Test files (*.test.ts) and benchmark files (*.bench.ts) are excluded from this audit
-- **ALWAYS use the two-phase interactive pattern:** Show ALL issues in the emoji severity table first, then show detailed before/after code for each issue, then accept changes through a numbered list. NEVER present issues one-by-one.
+- Test files (`*.test.ts`), spec files (`*.spec.ts`), and benchmark files (`*.bench.ts`) are excluded from this audit
+- **ALWAYS use the two-phase interactive pattern:** Show ALL issues in the emoji severity table first, then show detailed before/after code for EVERY issue, then accept changes through a numbered list. NEVER present issues one by one.
 - Performance comments (`// PERF:`) should be added only when they provide meaningful insight.
 - The user must approve each change before you apply it (numbered-list acceptance workflow).
 - **BLOCKING:** Save progress to this file after you complete EACH step and before you continue.
 - This audit will require multiple sessions because of context window constraints.
-- **BLOCKING:** If property-based tests are added, run the test suite 100 times and achieve 100 consecutive passes before you proceed. Random failures are common with PBT.
+- **BLOCKING:** If property-based tests are added, run the test suite 100 times without coverage and achieve 100 consecutive passes before you proceed. Random failures are common with PBT.
   - If ANY run fails, examine the seed that failed.
   - Fix test properties (add constraints to arbitraries: date ranges, filtered NaNs, safe strings).
   - Re-run 100 times until 100 consecutive passes are achieved.
@@ -109,9 +111,9 @@ For each code file, you MUST follow this sequence:
 
 You MUST run the provided commands exactly when they are needed:
 - Test changes: `{exact test command}`
-- Verify build/check tsc types: `{exact build command}`
-- Test benches (±0.05x is acceptable variance): `{exact bench command}` (if applicable)
-- Verify correct formatting: `{exact lint command}`
+- Verify build or TypeScript checks: `{exact build command}`
+- Verify lint or formatting: `{exact lint command}`
+- Optional benchmark verification when the target package already has a documented bench command: `{exact bench command}` (if applicable)
 
 ---
 
@@ -134,7 +136,7 @@ You MUST run the provided commands exactly when they are needed:
 
 ### filename.ts - Audit Status 🔄 IN PROGRESS
 
-**Overall Progress:** X% complete (Step Y of 8)
+**Overall Progress:** X% complete (Execution Step Y of 8)
 
 #### ✅ Step 1: Test Coverage - COMPLETE
 [Details of findings and changes]

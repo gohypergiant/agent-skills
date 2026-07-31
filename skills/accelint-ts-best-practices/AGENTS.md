@@ -22,6 +22,7 @@ This structure minimizes context usage while providing complete implementation g
 
 **When writing new code:**
 - REQUIRED: Read [quick-start.md](references/quick-start.md) for complete workflow examples.
+- REQUIRED: Read [bounded-iteration.md](references/bounded-iteration.md) before you write loops, queues, recursion, or long-running async operations.
 - Load specific pattern files only when you encounter relevant scenarios.
 - Start with the pattern, then check related safety rules.
 
@@ -46,16 +47,16 @@ This structure minimizes context usage while providing complete implementation g
 
 ## Critical Anti-Patterns
 
-NEVER do these. They appear in codebases frequently and significantly degrade code quality, safety, or maintainability:
+Treat these as strong defaults. These patterns appear in codebases frequently and usually degrade code quality, safety, or maintainability unless the surrounding framework or codebase constraints clearly justify an exception:
 
-- **NEVER** use `any` type - use `unknown` for truly unknown types or generics for flexible types
-- **NEVER** use `enum` keyword - use `as const` objects to avoid extra JavaScript output and runtime overhead
-- **NEVER** use `interface` for simple type aliases - use `type` instead; reserve `interface` only for declaration merging or legacy API compatibility
-- **NEVER** mutate function parameters - creates hidden side effects and breaks pure function principles
-- **NEVER** return `null` or `undefined` - return zero values instead ([], {}, 0, "") to eliminate downstream null checks
-- **NEVER** create unbounded loops or queues - set explicit limits to prevent runaway resource consumption and crashes
+- Avoid `any` type. Use `unknown` for truly unknown types or generics for flexible types.
+- Avoid the `enum` keyword in application code. Prefer `as const` objects to avoid extra JavaScript output and runtime overhead.
+- Prefer `type` over `interface` for simple aliases. Reserve `interface` for declaration merging, class contracts, or legacy API compatibility.
+- Do not mutate function parameters. It creates hidden side effects and breaks pure function principles.
+- Prefer zero values over `null` or `undefined` return values when a natural identity value exists ([], {}, 0, "") so callers avoid defensive null checks.
+- Never create unbounded loops or queues. Set explicit limits to prevent runaway resource consumption and crashes.
 
-See individual reference files for detailed alternatives and ✅ correct patterns.
+See individual reference files for detailed alternatives, exception context, and ✅ correct patterns.
 
 ---
 

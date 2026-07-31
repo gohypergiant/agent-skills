@@ -1,6 +1,6 @@
 # OpenSpec Onboarding Skill
 
-Generate `openspec/config.yaml` through a conversational interview. The skill asks about your tech stack and architecture, runs parallel codebase inference to fill gaps, and outputs a complete configuration file for the QRSPI (Question, Research, Spec, Plan, Implement) methodology.
+Generate `openspec/config.yaml` through a conversational interview. The skill asks about your tech stack and architecture, runs parallel codebase inference to fill gaps, and produces a complete configuration file for the QRSPI (Question, Research, Spec, Plan, Implement) methodology.
 
 ## What it does
 
@@ -15,10 +15,10 @@ The configuration is injected into every AI-generated proposal, design document,
 
 ## When to use this skill
 
-Use it when you:
+Use it when you need to:
 
 - Start a new project with OpenSpec
-- Migrate an existing project to the OpenSpec workflow  
+- Migrate an existing project to the OpenSpec workflow
 - Update configuration after tech stack changes
 - Onboard team members
 - Refresh stale configuration
@@ -35,14 +35,14 @@ Invoke the skill:
 
 The skill will:
 
-1. Check for existing documentation (ARCHITECTURE.md, AGENTS.md)
-2. Detect config file state and announce the mode (create/import/refresh)
+1. Check for existing documentation, especially `ARCHITECTURE.md`
+2. Detect config file state and announce the mode (`create`, `import`, or `refresh`)
 3. Run an interview with questions grouped by topic
-4. Spawn parallel discovery agents to infer what you didn't answer
+4. Spawn parallel discovery agents to infer what you did not answer
 5. Show a labeled preview with inference sources
 6. Write `openspec/config.yaml` after confirmation
 
-The process takes 5-10 minutes depending on project complexity.
+The process takes 5–10 minutes, depending on project complexity.
 
 ## Configuration modes
 
@@ -50,26 +50,26 @@ The process takes 5-10 minutes depending on project complexity.
 
 Runs when `openspec/config.yaml` doesn't exist or is empty.
 
-Runs a complete interview covering all configuration sections and outputs a fresh file with all context sections populated.
+Runs a complete interview that covers all configuration sections and produces a fresh file with all context sections populated.
 
 ### Import mode
 
-Runs when `openspec/config.yaml` exists with unrecognized structure.
+Runs when `openspec/config.yaml` exists with an unrecognized structure.
 
 Presents three options:
 
-- **(a) Restructure** - Map existing content onto QRSPI schema, flag behavioral content for `AGENTS.md`, fill gaps with targeted questions
-- **(b) Append** - Run full interview and add new sections alongside existing content
-- **(c) Dry run** - Generate output without writing to filesystem
+- **(a) Restructure** — map existing content onto the QRSPI schema, flag behavioral content for `AGENTS.md`, and fill gaps with targeted questions
+- **(b) Append** — run the full interview and add new sections alongside existing content
+- **(c) Dry run** — generate output without writing to the filesystem
 
 ### Refresh mode
 
 Runs when `openspec/config.yaml` exists with recognized QRSPI schema.
 
-Runs an abbreviated interview covering only:
+Runs an abbreviated interview that covers only:
 
 - External findings passed from upstream workflows
-- Drift detection (tech stack changes, new dependencies, updated configs)
+- Drift detection, such as tech stack changes, new dependencies, or updated configs
 - Unresolved `# TODO: fill in` markers from previous runs
 
 Only asks about changed areas. Unchanged sections stay untouched.
@@ -100,7 +100,7 @@ After the interview, four discovery agents run simultaneously:
 - **Agent C: Architecture & Code Patterns** - Directory structure, path aliases, design patterns, export style, naming, error handling
 - **Agent D: CI/CD & Versioning** - CI platform, versioning strategy, documented anti-patterns
 
-All agents run concurrently and merge findings before showing the preview.
+All agents run concurrently and merge their findings before the preview is shown.
 
 ## Configuration output
 
@@ -127,7 +127,7 @@ Every section matters. Missing fields degrade the AI artifacts that use this con
 
 ### Answer honestly about unknowns
 
-If you don't know an answer, say so. The skill attempts codebase inference. Fields that can't be resolved are marked `# TODO: fill in`.
+If you do not know an answer, say so. The skill attempts codebase inference. Fields that cannot be resolved are marked `# TODO: fill in`.
 
 ### Review inferred values
 
@@ -137,11 +137,11 @@ The preview labels all inferred values with their source:
 - Runtime: Node.js 20 LTS   # inferred from .nvmrc
 ```
 
-Check these before confirming. Inference may misread unconventional project structures.
+Check these before you confirm. Inference may misread unconventional project structures.
 
 ### Complete TODOs after generation
 
-If the final config has `# TODO: fill in` markers, edit the file directly. These usually represent performance targets, team-specific rules, or domain concepts that can't be inferred from code.
+If the final config has `# TODO: fill in` markers, edit the file directly. These usually represent performance targets, team-specific rules, or domain concepts that cannot be inferred from code.
 
 ### Use refresh mode for updates
 
@@ -149,40 +149,40 @@ When the tech stack changes, re-run the skill. It detects drift automatically an
 
 ## Companion skill
 
-This skill produces the project DNA layer (structural facts about what the project is). Its companion `accelint-onboard-agents` produces the behavior layer (`AGENTS.md` / `CLAUDE.md`) covering how the agent acts and makes decisions.
+This skill produces the project DNA layer: structural facts about the project. Its companion `accelint-onboard-agents` produces the behavior layer (`AGENTS.md` / `CLAUDE.md`), which covers how the agent acts and makes decisions.
 
 ```
 openspec/config.yaml   → this skill                 → WHAT the project is
 AGENTS.md / CLAUDE.md  → accelint-onboard-agents   → HOW the agent behaves
 ```
 
-If you mention behavioral content during the OpenSpec interview (commit conventions, workflow steps, tool preferences), the skill will redirect you to `accelint-onboard-agents`.
+If you mention behavioral content during the OpenSpec interview, such as commit conventions, workflow steps, or tool preferences, the skill redirects you to `accelint-onboard-agents`.
 
 ## Troubleshooting
 
 ### "Config file has unrecognized structure"
 
-Choose restructure to migrate to QRSPI format, append to keep existing structure and add new sections, or dry run to preview without modifying.
+Choose restructure to migrate to QRSPI format, append to keep the existing structure and add new sections, or dry run to preview without modifying anything.
 
 ### "YAML syntax error after generation"
 
-Validation caught a parse error and fixed it before writing. The safety checks worked.
+Validation catches the parse error and fixes it before writing. The safety checks worked.
 
 ### "Subagents aren't available"
 
-If subagents are unavailable, the skill will say so and perform the same four-domain scan inline with direct tools.
+If subagents are unavailable, the skill says so explicitly and performs the same four-domain scan inline with direct tools.
 
 ### "Refresh mode found drift I don't want to encode yet"
 
-The skill shows changed sections first, marks unresolved items as `# TODO: fill in`, and calls out findings that may belong in specs or docs instead.
+The skill shows the changed sections first, marks unresolved items as `# TODO: fill in`, and calls out findings that may belong in specs or docs instead.
 
 ### "Inference marked too many fields as TODO"
 
-Edit the file directly to fill TODOs, or re-run with more detailed interview answers.
+Edit the file directly to fill the TODOs, or re-run the skill with more detailed interview answers.
 
 ## Version
 
-Current version: 1.6.0
+Current version: 1.6.1
 
 See [CHANGELOG.md](CHANGELOG.md) for version history and changes.
 

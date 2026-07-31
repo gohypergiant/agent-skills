@@ -4,6 +4,13 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on Keep a Changelog, and this project uses Semantic Versioning.
 
+## [1.1.1] - 2026-07-31
+
+### Changed
+- Tightened `SKILL.md` to reduce duplicated reference material, clarify package source hierarchy, and route setup, token, spacing, and troubleshooting detail to the existing reference files.
+- Aligned variant guidance so the package consistently prefers `data-*` attributes in markup with `@variant` blocks in CSS modules.
+- Corrected documentation drift in `README.md` and `AGENTS.md` so the semantic spacing model is consistently described as an eight-step scale including `oversized`.
+
 ## [1.1.0] - 2026-07-30
 
 ### Changed

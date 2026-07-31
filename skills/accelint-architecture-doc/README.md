@@ -147,7 +147,7 @@ The skill includes 11 eval scenarios in `evals/evals.json` covering create, refr
 
 ## Version
 
-Current version: 1.1.1
+Current version: 1.1.2
 
 See `CHANGELOG.md` for release history.
 

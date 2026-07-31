@@ -15,18 +15,18 @@ Quick-reference guide for styling with Accelint's opinionated Tailwind implement
 
 ## How to Use This Guide
 
-1. **Start here**: Scan the quick reference to identify relevant tokens and patterns
-2. **Load references as needed**: Click through to detailed catalogs only when implementing
-3. **Progressive loading**: Each reference file is self-contained with complete examples
+1. **Start here**: Scan the quick reference to identify the relevant tokens and patterns.
+2. **Load references as needed**: Open detailed catalogs only when you are implementing.
+3. **Use progressive loading**: Each reference file is self-contained and includes complete examples.
 
-This structure minimizes context usage while providing complete implementation guidance when needed.
+This structure minimizes context usage while still providing complete implementation guidance when needed.
 
 ---
 
 ## Quick Reference
 
 - [1.1 Color Tokens](#11-color-tokens) - Semantic tokens for backgrounds, text, icons, outlines
-- [1.2 Spacing Scale](#12-spacing-scale) - Seven-step semantic scale (xxs through xxl)
+- [1.2 Spacing Scale](#12-spacing-scale) - Eight-step semantic scale (xxs through oversized)
 - [1.3 Variant System](#13-variant-system) - Data attribute variants for component states
 - [1.4 CSS Layer Structure](#14-css-layer-structure) - Layer hierarchy for custom component styles
 - [1.5 Typography & Shadows](#15-typography--shadows) - Text sizing and elevation scales
@@ -122,7 +122,7 @@ data-position="top|right|bottom|left|center"
 
 ### 1.4 CSS Layer Structure
 
-Custom CSS must use layer hierarchy for predictable specificity.
+Custom CSS should use the layer hierarchy for predictable specificity.
 
 **Layers:**
 ```css
@@ -172,7 +172,7 @@ shadow-elevation-overlay-bold     Prominent overlay elevation (modals)
 
 ### Pattern: Outline vs Border
 
-**Use outlines, not borders.** Outlines don't affect element dimensions, preventing layout shifts.
+**Use outlines, not borders.** Outlines do not affect element dimensions, which prevents layout shifts.
 
 ```tsx
 // ✅ Correct - outline doesn't add to size
@@ -206,7 +206,7 @@ shadow-elevation-overlay-bold     Prominent overlay elevation (modals)
 
 ### Pattern: Semantic vs Primitive
 
-**Use semantic tokens in components, never primitives.**
+**Use semantic tokens in components. Never use primitives as the first choice.**
 
 Primitives (`--primitive-neutral-50`) are for theme definitions only. Components use semantic tokens (`bg-surface-default`) that map to primitives.
 
@@ -228,7 +228,7 @@ Primitives (`--primitive-neutral-50`) are for theme definitions only. Components
 
 ## 3. Migration from Vanilla Tailwind
 
-**Quick conversion:**
+Use this quick conversion when you need a first-pass mapping:
 
 | Vanilla Tailwind | Design Foundation |
 |------------------|-------------------|

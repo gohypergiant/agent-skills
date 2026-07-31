@@ -18,24 +18,21 @@ test('product test', () => {
 - Vague test name doesn't describe behavior
 - No AAA structure separation
 - Unclear what's being tested
-- Uses loose assertion (`toBe` instead of `toEqual`)
-- No describe blocks for organization
+- Uses a less intent-revealing matcher choice for this value comparison
 - Abbreviated variable names
 
 **✅ Correct: improved with Vitest best practices**
 ```ts
 describe('ProductService', () => {
-  describe('Add new product', () => {
-    it('should have status "pending approval" when no price is specified', () => {
-      // Arrange
-      const productService = new ProductService();
+  it('should have status "pending approval" when no price is specified', () => {
+    // Arrange
+    const productService = new ProductService();
 
-      // Act
-      const newProduct = productService.add({name: 'Widget'});
+    // Act
+    const newProduct = productService.add({name: 'Widget'});
 
-      // Assert
-      expect(newProduct.status).toEqual('pendingApproval');
-    });
+    // Assert
+    expect(newProduct.status).toEqual('pendingApproval');
   });
 });
 ```
@@ -44,17 +41,17 @@ describe('ProductService', () => {
 - Clear, descriptive test name that explains the behavior
 - Test description in lowercase, reads as sentence: "it should have status..."
 - AAA pattern with comment markers for clarity
-- Organized with describe blocks (module > behavior)
+- Simple organization with one module-level `describe()` and one focused `it()`
 - Descriptive variable names (not abbreviated)
-- Strict assertion (`toEqual` instead of `toBe`)
+- Matcher choice makes the expected value comparison explicit
 
 ## Key Transformations
 
 1. **Test name**: `'product test'` → `'should have status "pending approval" when no price is specified'`
-2. **Organization**: Flat `test()` → Nested `describe()` blocks with `it()`
+2. **Organization**: Flat `test()` → One module-level `describe()` with a focused `it()`
 3. **Structure**: Mixed code → Clear AAA sections
 4. **Variables**: `p` → `newProduct`
-5. **Assertions**: `toBe()` → `toEqual()`
+5. **Assertions**: Less explicit value comparison → `toEqual()` for a clearer expected value check
 
 This example applies these principles:
 - [organization.md](organization.md) - Describe block structure

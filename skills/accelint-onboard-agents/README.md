@@ -56,7 +56,7 @@ The skill shows the complete file with source comments on inferred values:
 - Use Conventional Commits (`feat:`, `fix:`)  # inferred from commitlint.config.ts
 ```
 
-After you confirm, it writes the file without the source comments. The generated file includes a Related Documentation section that cross-references onboarding files found in Phase 0 (`openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, `README.md`). It includes only links to files that actually exist.
+After you confirm, it writes the file without the source comments. In non-interactive or headless workflows, it should still produce the preview and record that in-session human confirmation could not be collected rather than claiming the preview was confirmed. The generated file includes a Related Documentation section that cross-references onboarding files found in Phase 0 (`openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, `README.md`). It includes only links to files that actually exist.
 
 ## AGENTS.md structure
 
@@ -65,6 +65,8 @@ The generated file has these sections:
 ```markdown
 # Agent Behavior
 
+> NOTE: This file governs HOW the agent behaves.
+
 ## Role & Identity
 [one-sentence role definition and scope]
 
@@ -72,7 +74,7 @@ The generated file has these sections:
 [response style, code change format, uncertainty handling]
 
 ## Workflow Procedures
-[feature development, bug fixes, pre-commit checklist, commit conventions, PR rules, versioning]
+[feature development, bug fixes, pre-commit checklist, commit conventions, PR rules, versioning, completion summary]
 
 ## Decision Heuristics
 [table of situations and default actions]
@@ -82,6 +84,9 @@ The generated file has these sections:
 
 ## Guardrails
 [never rules, always-ask-first rules, security-sensitive areas]
+
+## Related Documentation
+[only existing onboarding or reference files]
 ```
 
 Each section is filled from interview answers or codebase inference. If neither source can resolve a field, the skill marks it with `<!-- TODO: fill in -->`.
@@ -190,12 +195,12 @@ Example: `feat(layer): add WebGPU fallback for Safari`
 
 See [CHANGELOG.md](CHANGELOG.md) for details.
 
-Current version: 1.4.1
+Current version: 1.4.2
 
-Changes in 1.4.1:
-- Clarified related-document detection for both `openspec/config.yml` and `openspec/config.yaml`
-- Added a quality checklist for reviewing generated onboarding files before writing
-- Corrected README version history to match the published skill metadata
+Changes in 1.4.2:
+- Clarified headless/non-interactive preview handling so agents still show the labeled preview without falsely claiming a human confirmed it
+- Corrected package-level write guidance so the target directory, not always the repo root, is the destination
+- Expanded the README structure summary to match the generated file contract more closely
 
 ## Related skills
 

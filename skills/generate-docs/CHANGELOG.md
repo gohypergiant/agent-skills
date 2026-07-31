@@ -5,6 +5,14 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-07-31
+
+### Changed
+- Compressed overlapping audience-filtering guidance in `SKILL.md` while preserving the same user-facing decision criteria.
+- Clarified validation-only output expectations so the skill returns a concise findings report for stale docs, broken links, missing frontmatter, structural issues, and orphaned docs.
+- Tightened body prose for scanability without changing frontmatter, commands, paths, SHA logic, or workflow semantics.
+- Clarified that non-interactive runs should preserve prose conservatively when manual edits may exist.
+
 ## [1.0.1] - 2026-07-31
 
 ### Added

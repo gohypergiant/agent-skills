@@ -17,7 +17,7 @@ Select `accelint-design-foundation` from the interactive picker, choose Project 
 This skill helps you write component styles that fit the design foundation conventions:
 
 - Use semantic color tokens (`bg-surface-default`, `fg-primary-bold`) instead of raw Tailwind colors
-- Apply the semantic spacing scale (`xxs` through `xxl`) instead of numeric classes
+- Apply the semantic spacing scale (`xxs` through `oversized`) instead of numeric classes
 - Put component styles in CSS modules with `@layer` directives instead of inline className strings
 - Use `outline` classes instead of `border` classes to avoid layout shifts
 - Style component variants with `@variant` blocks and data attributes instead of attribute selectors
@@ -82,7 +82,7 @@ Use semantic tokens that adapt to light and dark themes automatically:
 
 ### Semantic Spacing
 
-Use the seven-step scale (`xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`) instead of numeric classes:
+Use the eight-step scale (`xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`, `oversized`) instead of numeric classes:
 
 ```css
 /* ✅ Correct */

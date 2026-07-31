@@ -7,10 +7,6 @@
       "startUrl": "https://example.com",
       "steps": [
         {
-          "action": "goto",
-          "value": "https://example.com/login"
-        },
-        {
           "action": "fill",
           "target": "form.input.username",
           "value": "someone"
@@ -105,6 +101,13 @@
           "action": "expectText",
           "target": "page.div.welcome",
           "value": "Welcome!"
+        },
+        {
+          "action": "hover",
+          "target": "page.button.help"
+        },
+        {
+          "action": "reload"
         }
       ]
     }

@@ -5,6 +5,38 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.4] - 2026-07-31
+
+### Changed
+- Aligned description-writing guidance across `SKILL.md`, `references/skill.md`, and `assets/skill-template/SKILL.md`
+  - Clarified that descriptions should lead with triggering conditions, include searchable keywords, and avoid workflow summaries
+  - Added a matching frontmatter-audit check so the package now audits the same rule it teaches
+- Updated the skill-audit rubric to validate required concepts instead of one literal heading layout
+  - Explicitly accepts modern workflow variants such as separate creation/audit workflows and routing sections
+- Standardized versioning guidance on full semver across the package references
+  - Replaced mixed `X.Y` examples with `X.Y.Z` examples in `references/skill.md` and `references/changelog.md`
+- Tightened package prose in `SKILL.md`, `AGENTS.md`, and selected `references/*` files without changing behavior
+  - Compressed wording around workflow routing, progressive disclosure, and support-file guidance for easier scanning
+- Focused `README.md` more tightly on this package by trimming generic background sections
+- Rationale: Iteration-2 static audit evidence showed intra-package policy drift around description rules, audit-structure expectations, version formatting, and some lower-density README content
+
+### Version
+- Bumped from 2.1.3 → 2.1.4
+
+## [2.1.3] - 2026-07-31
+
+### Changed
+- Tightened scope control and evidence-calibration guidance in `SKILL.md`
+  - Clarified that narrow field-level refinements should not automatically expand into version/changelog work unless the user asks or repo policy requires it
+  - Added explicit redirect guidance to lead with the better-matched skill and avoid long self-centered explanations on out-of-scope requests
+  - Made question-first behavior more operational by defining when it is acceptable to skip or compress scoping questions for clearly complete briefs
+  - Instructed narrow verification tasks such as version/changelog alignment checks to stop after the requested answer unless a directly related blocking issue changes it
+  - Added explicit reminders to verify counts, path claims, and "all clear" conclusions before asserting them
+- Rationale: Iteration-1 eval results showed recurring drift in boundary redirects, narrow-task scope expansion, skipped scoping questions, and overconfident audit claims despite otherwise strong package-review behavior
+
+### Version
+- Bumped from 2.1.2 → 2.1.3
+
 ## [2.1.2] - 2026-07-30
 
 ### Changed

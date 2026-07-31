@@ -4,12 +4,12 @@ Comprehensive JavaScript and TypeScript file audit system that applies multiple 
 
 ## Overview
 
-`accelint-ts-audit-all` orchestrates four specialized audit skills through a 9-step process per file. It tracks detailed progress across sessions and requires interactive approval for all changes.
+`accelint-ts-audit-all` orchestrates four specialized audit skills through 8 execution steps per file, followed by archive/completion bookkeeping. It tracks detailed progress across sessions and requires interactive approval for all changes.
 
 This is a command-only skill. It runs only when explicitly invoked with `/skill accelint-ts-audit-all <path>`. It does not trigger from natural-language requests.
 
 **Key Features:**
-- 9-step audit process per file with progress tracking
+- 8 execution steps per file plus archive/completion bookkeeping
 - Interactive change approval using emoji severity tables (🛑⚠️⚡🔵✅)
 - Parallel execution of quality and performance skills to avoid contradictory recommendations
 - Session persistence with audit-process and audit-history tracking files

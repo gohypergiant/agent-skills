@@ -324,9 +324,35 @@
       "files": [],
       "expectations": [
         "The response recognizes that this skill is command-only and should not naturally trigger on a generic request.",
-        "The response does not launch the full 9-step audit workflow unprompted.",
+        "The response does not launch the full 8-step audit workflow plus archive/completion bookkeeping unprompted.",
         "The response avoids creating worktrees or audit tracking files for a casual cleanup request.",
         "The response keeps the distinction between explicit skill invocation and generic TypeScript advice clear."
+      ]
+    },
+    {
+      "id": 26,
+      "name": "ambiguous_numbered_approval_requires_clarification_before_apply",
+      "prompt": "Use /skill accelint-ts-audit-all on src/cache.ts. After you show the full issues table and detailed before/after changes, I reply: `1, maybe 3, skip the risky one, and definitely do the docs fix`. Handle that approval response the way the skill should.",
+      "expected_output": "Does not auto-apply an ambiguous mixed approval response. It preserves the numbered approval workflow, maps only unambiguous selections if possible, and asks a concise clarification question before applying anything uncertain.",
+      "files": [],
+      "expectations": [
+        "The response keeps the numbered approval workflow rather than guessing the user's intent.",
+        "The response does not silently apply a risky or unclear subset of changes.",
+        "The response asks for clarification on the ambiguous portions of the approval response before applying them.",
+        "The response keeps accepted versus unresolved issue numbers explicit."
+      ]
+    },
+    {
+      "id": 27,
+      "name": "resume_while_waiting_for_approval_restores_pending_decision_state",
+      "prompt": "Resume /skill accelint-ts-audit-all on packages/core/src. The previous session already finished Step 3 and displayed the combined Step 4 overview table and detailed before/after code for `serializer.ts`, but the session ended before the user answered `Apply which issues?`. Continue correctly.",
+      "expected_output": "Restores the in-progress approval state from the audit-process file, summarizes the pending issue set for the current file, and asks for the numbered acceptance decision instead of rerunning unrelated steps or pretending the changes were already approved.",
+      "files": [],
+      "expectations": [
+        "The response resumes from the saved in-progress approval checkpoint rather than restarting the file audit.",
+        "The response does not treat Step 4 as completed without the user's acceptance input.",
+        "The response preserves the current file and pending approval context explicitly.",
+        "The response asks for the numbered approval decision needed to continue."
       ]
     }
   ]

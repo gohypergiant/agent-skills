@@ -3,84 +3,132 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Review this login acceptance-criteria markdown file and tell me if it is ready for Playwright conversion. Each bullet uses explicit area.component.intent targets, quoted fill values, and measurable outcomes.",
-      "expected_output": "Assessment mode only. Returns a conversion-ready verdict with the validated checklist and does not generate plans or test files.",
+      "prompt": "Please review `login-ready.md` and tell me whether these markdown acceptance criteria are automation-ready for Playwright conversion. I only want the readiness assessment, not generated files.",
+      "expected_output": "Assessment-mode pass result with a clear conversion-ready verdict, the validated checklist, and no generated plan/spec artifacts.",
       "files": [
-        "login-ac.md"
+        "login-ready.md"
       ]
     },
     {
       "id": 2,
-      "prompt": "Can these acceptance criteria be converted as-is? The file includes steps like 'interact with the email field' and 'enter a valid email' without quoted literals.",
-      "expected_output": "Assessment mode failure report that flags vague verbs and missing exact literal values, with concrete fixes.",
+      "prompt": "Assess `signup-ambiguous.md` for Playwright readiness. It has phrases like 'interact with the email field' and uses placeholders like 'a valid email' instead of exact quoted values.",
+      "expected_output": "Assessment-mode failure that flags vague verbs and missing quoted literal values, with concrete fixes instead of conversion output.",
       "files": [
-        "ambiguous-login-ac.md"
+        "signup-ambiguous.md"
       ]
     },
     {
       "id": 3,
-      "prompt": "Validate this feature file for automation readiness. One scenario mixes Then before When and another uses incomplete selector targets.",
-      "expected_output": "Assessment mode failure report that identifies Gherkin step-order violations and missing area.component.intent specificity.",
+      "prompt": "Can `profile-bad-order.feature` be converted as-is? One scenario mixes Then before When, and another step uses an incomplete target instead of a full area.component.intent target.",
+      "expected_output": "Assessment-mode failure that identifies Gherkin step-order problems and missing selector specificity, without generating artifacts.",
       "files": [
-        "broken-order.feature"
+        "profile-bad-order.feature"
       ]
     },
     {
       "id": 4,
-      "prompt": "Convert these acceptance criteria into Playwright tests. Save plans to ./plans, tests to ./tests, and summaries to ./summaries. The batch includes two valid files and one invalid file.",
-      "expected_output": "Runs assessment across all files first and stops the entire conversion workflow when one file fails, without generating partial artifacts.",
+      "prompt": "Review `settings-vocabulary.feature` for automation readiness. The scenarios look structurally correct, but some targets use area or component words outside the controlled vocabulary from test-hooks.md.",
+      "expected_output": "Assessment-mode failure that explicitly calls out controlled-vocabulary mismatches for area/component naming.",
       "files": [
-        "valid-checkout.md",
-        "valid-profile.feature",
-        "invalid-settings.md"
+        "settings-vocabulary.feature"
       ]
     },
     {
       "id": 5,
-      "prompt": "Generate Playwright tests from this checkout markdown AC file.",
-      "expected_output": "Chooses full conversion intent but requests explicit output directories for plans, tests, and summaries before writing files.",
+      "prompt": "Convert `checkout-happy-path.md` into Playwright tests.",
+      "expected_output": "Conversion-mode intent detection followed by a request for explicit output directories for plans, tests, and summaries before writing files.",
       "files": [
-        "checkout.md"
+        "checkout-happy-path.md"
       ]
     },
     {
       "id": 6,
-      "prompt": "Convert checkout.md to Playwright tests. Plans: ./plans Tests: ./tests Summaries: ./summaries. Each bullet is already automation-ready.",
-      "expected_output": "Successful markdown conversion: one suite for the file, one test per bullet, validated JSON plan, translated spec, and summary output.",
+      "prompt": "Convert `checkout-happy-path.md` to Playwright tests. Save plans to ./plans, tests to ./tests, and summaries to ./summaries. The markdown bullets are already automation-ready.",
+      "expected_output": "Successful markdown conversion with one suite per file, one test per bullet, a validated JSON plan, translated spec output, and summary output.",
       "files": [
-        "checkout.md"
+        "checkout-happy-path.md"
       ]
     },
     {
       "id": 7,
-      "prompt": "Turn this Gherkin .feature file with Feature tags, Scenario tags, and a Scenario Outline into Playwright specs. Use ./plans, ./tests, and ./summaries.",
-      "expected_output": "Successful Gherkin conversion with correct suite/test tag handling, one test per scenario/example row, and stable parameter suffix naming.",
+      "prompt": "Turn `subscription-outline.feature` into Playwright specs using ./plans, ./tests, and ./summaries. It has Feature tags, Scenario tags, and a Scenario Outline with multiple example rows.",
+      "expected_output": "Successful Gherkin conversion that preserves suite-vs-test tags, creates one test per scenario/example row, and uses stable outline parameter suffixes.",
       "files": [
-        "subscription.feature"
+        "subscription-outline.feature"
       ]
     },
     {
       "id": 8,
-      "prompt": "Convert these requirements to Playwright tests. The AC includes selecting 'Premium Plan' from a dropdown, a navigation change after clicking Continue, and a modal that appears after submit. Output directories are provided.",
-      "expected_output": "Generated plan/spec uses label-based dropdown selection, adds URL assertions for navigation, and adds explicit visibility assertions only where stated.",
+      "prompt": "Convert `modal-navigation.md` into Playwright tests using ./plans, ./tests, and ./summaries. The AC includes selecting 'Premium Plan' from a dropdown, clicking Continue to navigate, and a confirmation modal that appears after submit.",
+      "expected_output": "Generated plan/spec uses label-based dropdown selection, adds URL assertions for the explicit navigation, and adds visibility assertions only where the AC explicitly describe appearance.",
       "files": [
-        "plan-selection.md"
+        "modal-navigation.md"
       ]
     },
     {
       "id": 9,
-      "prompt": "Create Playwright automation from this AC where the user presses Shift+g to open the global command palette. Use ./plans, ./tests, and ./summaries.",
-      "expected_output": "Generated plan translates the key combination into keyDown -> press -> keyUp rather than a single combined press action.",
+      "prompt": "Create Playwright automation from `keyboard-shortcuts.md` using ./plans, ./tests, and ./summaries. One AC says the user presses Shift+g to open the command palette.",
+      "expected_output": "Generated plan translates the keyboard combination into keyDown -> press -> keyUp rather than a single combined key press action.",
       "files": [
         "keyboard-shortcuts.md"
       ]
     },
     {
       "id": 10,
-      "prompt": "Make tests from these acceptance criteria. One step says 'select the first option' and another says 'click the button' without identifying which button. Use ./plans, ./tests, and ./summaries.",
-      "expected_output": "The skill refuses to guess, surfaces the ambiguities through assessment failure or clarification guidance, and does not emit unsafe generic selectors.",
+      "prompt": "Make Playwright tests from `ambiguous-targets.md` using ./plans, ./tests, and ./summaries. One step says 'select the first option' and another says 'click the button' without identifying which button.",
+      "expected_output": "The skill refuses to guess, reports the ambiguities through assessment failure or clarification guidance, and avoids unsafe generic selectors.",
       "files": [
-        "ambiguous-actions.md"
+        "ambiguous-targets.md"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Convert `batch-mixed/` into Playwright outputs using ./plans, ./tests, and ./summaries. The batch contains two valid AC files and one invalid AC file.",
+      "expected_output": "Runs assessment across the full batch first and stops the entire conversion workflow when any file fails, without generating partial plans or specs for the valid files.",
+      "files": [
+        "batch-mixed/account-success.md",
+        "batch-mixed/subscription-success.feature",
+        "batch-mixed/preferences-invalid.md"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Convert `background-tags.feature` to Playwright tests using ./plans, ./tests, and ./summaries. It includes a Background section plus file-level and scenario-level tags.",
+      "expected_output": "Successful conversion that preserves Background context, keeps Feature tags at suite level only, and keeps scenario-specific tags on the relevant tests.",
+      "files": [
+        "background-tags.feature"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "Convert `canvas-operations.md` into Playwright tests using ./plans, ./tests, and ./summaries. The AC explicitly describes coordinate-based dragging and a right-click at a specific position.",
+      "expected_output": "Generated plan/spec preserves the coordinate-based mouse actions and does not replace them with element-target click steps.",
+      "files": [
+        "canvas-operations.md"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "Convert `settings-start-page.md` into Playwright tests using ./plans, ./tests, and ./summaries. One criterion explicitly starts on the settings page instead of the default root route.",
+      "expected_output": "Generated output honors the explicit non-root startUrl for that test while leaving unspecified cases at the default '/'.",
+      "files": [
+        "settings-start-page.md"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "Convert `external-profile.md` into Playwright tests using ./plans, ./tests, and ./summaries. Assume this AC file is outside any git repository.",
+      "expected_output": "Generated source metadata uses repo: 'external' and stores only the file basename in path, never an absolute filesystem path.",
+      "files": [
+        "external-profile.md"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "Convert `visibility-pairs.md` to Playwright tests using ./plans, ./tests, and ./summaries. The AC explicitly says a loading toast is visible before submit and hides after the save completes.",
+      "expected_output": "Generated assertions respect the documented visibility-pair behavior, placing expectVisible/expectNotVisible around the triggering action only because the AC explicitly describe the visibility change.",
+      "files": [
+        "visibility-pairs.md"
       ]
     }
   ]

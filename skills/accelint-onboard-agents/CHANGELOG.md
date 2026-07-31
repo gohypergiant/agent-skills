@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.4.2] - 2026-07-31
+
+### Changed
+- Clarified Phase 4 behavior in `SKILL.md` for headless or non-interactive runs so agents still produce the labeled preview, record that confirmation could not be collected in-session, and avoid falsely claiming human approval
+- Corrected the final write-target wording in `SKILL.md` so package-level onboarding writes to the target directory being onboarded rather than implying the repository root is always correct
+- Updated `README.md` so its generated-file structure summary now includes the note header, completion-summary expectation, and related-documentation section required by the skill contract
+- Tightened `SKILL.md` prose in behavior-bearing sections and corrected the adjacent-skill reference to `accelint-onboard-openspec` without changing frontmatter or workflow semantics
+
+### Version
+- Bumped from 1.4.1 → 1.4.2
+
 ## [1.4.1] - 2026-07-30
 
 ### Changed

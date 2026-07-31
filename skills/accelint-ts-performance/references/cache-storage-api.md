@@ -12,7 +12,7 @@ function getTheme() {
 
 **✅ Correct: `Map` cache**
 ```ts
-const storageCache = new Map<string, string | null>()
+const storageCache = new Map<string, string | null>();
 
 function getLocalStorage(key: string) {
   if (!storageCache.has(key)) {
@@ -24,20 +24,20 @@ function getLocalStorage(key: string) {
 
 function setLocalStorage(key: string, value: string) {
   localStorage.setItem(key, value);
-  storageCache.set(key, value);  // keep cache in sync
+  storageCache.set(key, value); // Keep the cache in sync.
 }
 ```
 
 Cookie caching:
 
 ```ts
-let cookieCache: Record<string, string> | null = null
+let cookieCache: Record<string, string> | null = null;
 
 function getCookie(name: string) {
   if (!cookieCache) {
     cookieCache = Object.fromEntries(
-      document.cookie.split('; ').map(c => c.split('='));
-    )
+      document.cookie.split('; ').map((c) => c.split('=')),
+    );
   }
 
   return cookieCache[name];
@@ -55,9 +55,9 @@ window.addEventListener('storage', (e) => {
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    storageCache.clear()
+    storageCache.clear();
   }
 });
 ```
 
-If storage can change externally (another tab, server-set cookies), invalidate the cache:
+If storage can change externally, such as from another tab or server-set cookies, invalidate the cache.

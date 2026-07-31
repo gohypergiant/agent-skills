@@ -13,7 +13,7 @@ This guide gives expert-level Vitest testing guidance for AI agents and LLMs. Ea
 
 ---
 
-## How to Use This Guide
+## How to use this guide
 
 1. **Start here**: Scan the rule summaries to identify the relevant patterns.
 2. **Check for existing setup files**: Before you write tests, look for setup files that configure global mocks and utilities.
@@ -65,7 +65,7 @@ Mock cleanup is a safety concern. Configure it once globally to make forgetting 
 
 See [vitest-features.md](references/vitest-features.md#discovering-existing-setup-files) and [performance.md](references/performance.md#cleanup-between-tests) for detailed examples.
 
-## Workflow: Before Marking Test Files Complete
+## Workflow: Before marking test files complete
 
 **REQUIRED: This workflow is MANDATORY. Never skip type checking test files.**
 
@@ -103,14 +103,14 @@ To detect the package manager, check for:
 - `yarn.lock` → use `yarn exec`
 - `package-lock.json` → use `npm exec`
 
-2. **Look for common type issues:**
+3. **Look for common type issues:**
 - Mock types not matching actual implementation types
 - Test data with missing or incorrect properties
 - Assertion types that don't match expected values
 - Missing type parameters on generic functions
 - Incorrect use of type guards or type assertions
 
-3. **Fix all type errors before marking complete (NON-NEGOTIABLE)**
+4. **Fix all type errors before marking complete (NON-NEGOTIABLE)**
 This step is MANDATORY, not optional. Type errors in tests are as critical as type errors in production code.
 - Do NOT use `as any` or `@ts-ignore` to bypass type checking
 - Update test data to match actual types

@@ -100,7 +100,7 @@ Develop skill content with agent-focused information:
 
 ### Progressive Disclosure
 - Metadata (~100 tokens) loaded at startup
-- Main SKILL.md (<5000 tokens) loaded when activated
+- Main `SKILL.md` should stay concise; prefer keeping it under ~500 lines and move detailed examples into `references/`
 - References loaded only when needed
 - Minimizes context usage for LLMs
 
@@ -129,27 +129,9 @@ Package three types of resources:
 
 ---
 
-## What Skills Provide
+## Package Focus
 
-Skills are modular packages that extend Claude's capabilities by providing:
-
-1. **Specialized workflows** - Multi-step procedures for specific domains
-2. **Tool integrations** - Instructions for working with specific file formats or APIs
-3. **Domain expertise** - Company-specific knowledge, schemas, business logic
-4. **Bundled resources** - Scripts, references, and assets for complex tasks
-5. **Best practices** - Documentation and examples for particular subjects
-
-Skills act as "onboarding guides" that transform agents into specialized problem solvers equipped with procedural knowledge.
-
----
-
-## Example Skills
-
-- **pdf-editor**: Scripts for rotating, merging, and manipulating PDFs
-- **frontend-app-builder**: Boilerplate templates for React/Next.js apps
-- **big-query**: Table schemas and relationships for database queries
-- **vitest**: Best practices and patterns for testing with Vitest
-- **react-best-practices**: Performance optimization patterns for React
+This package is for maintainers creating or improving skill packages. For general background on what skills are, see the external references linked in [Learn More](#learn-more). This README stays focused on the package workflow, artifact set, and maintenance conventions used here.
 
 ---
 

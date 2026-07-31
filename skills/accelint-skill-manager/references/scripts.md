@@ -13,11 +13,11 @@ Contains executable code that agents can run. Scripts should:
 
 ### Recommendations
 
-Bash scripts are preferred. When using bash scripts:
-- Use `#!/bin/bash` shebang
+Bash scripts are preferred. When you use bash scripts:
+- Use the `#!/bin/bash` shebang
 - Use `set -e` for fail-fast behavior
 - Write status messages to stderr: `echo "Message" >&2`
-- Write machine-readable output (JSON) to stdout
+- Write machine-readable output such as JSON to stdout
 - Include a cleanup trap for temp files
 - Reference the script path as `skills/{skill-name}/scripts/{script}.sh`
 

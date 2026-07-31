@@ -5,6 +5,18 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-07-31
+
+### Fixed
+- Surfaced a clearer minimum workflow in `SKILL.md`, including explicit guidance to load `references/quick-start.md`, `references/input-validation.md`, and `references/bounded-iteration.md` for the relevant task shapes.
+- Added a lightweight non-audit response pattern in `SKILL.md` so focused fixes and quick reviews stay consistent without forcing the formal audit template.
+- Removed a stale reference from `assets/output-report-template.md` that pointed to a non-existent example file.
+- Tightened package-body prose in `AGENTS.md` and `references/quick-start.md` to improve scanability while preserving behavior.
+- Softened over-absolute wording in `AGENTS.md` so opinionated defaults remain strong without implying that every rule is context-free.
+
+### Version
+- Bumped from 1.2.2 → 1.2.3
+
 ## [1.2.2] - 2026-07-30
 
 ### Fixed

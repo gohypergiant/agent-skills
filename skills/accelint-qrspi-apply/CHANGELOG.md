@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.6.1] - 2026-07-31
+
+### Changed
+- **Headless-safe apply orchestration wording** — tightened fallback behavior where the workflow previously depended on interactive clarification
+  - Added an explicit non-interactive fallback for ambiguous change selection: list candidate changes and stop rather than guessing
+  - Added explicit non-interactive fallback for overlap-risk or unclear slice boundaries: regroup to serial execution for the affected level unless even serial execution would be unsafe
+  - Tightened config-context loading instructions so uncertain `context: |` boundaries cause a clean skip of context injection rather than partial recovery attempts
+- **Helper-skill naming alignment**
+  - Renamed AGENTS.md helper references from `accelint-onboard-agent` to `accelint-onboard-agents` in skill instructions and README guidance to match the repository skill inventory
+- **Behavior-preserving prose tightening**
+  - Rewrote SKILL.md body prose for scanability and clearer rule surfacing without changing frontmatter, step numbering, commands, paths, or workflow order
+
+### Version
+- Bumped from 1.6.0 → 1.6.1
+
 ## [1.6.0] - 2026-07-30
 
 ### Changed

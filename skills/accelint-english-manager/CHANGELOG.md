@@ -4,6 +4,13 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
+## [1.3.4] - 2026-07-31
+
+### Changed
+- Tightened `README.md` so the quick-start guidance matches the skill's actual mode-selection workflow and points readers to `SKILL.md` for canonical trigger boundaries.
+- Reduced duplication between `README.md`, `references/examples.md`, and `references/checklist.md` by clarifying each file's role and trimming repeated instructional framing.
+- Updated audit-only guidance in `SKILL.md` and `references/examples.md` to use finding language that stays audit-first instead of implying an automatic rewrite.
+
 ## [1.3.3] - 2026-07-30
 
 ### Changed

@@ -1,13 +1,13 @@
 # Next.js Best Practices
 
 > **Note:**
-> This document is mainly for agents and LLMs to follow when maintaining, generating, or refactoring Next.js code. Humans may also find it useful, but guidance here is optimized for automation and consistency by AI-assisted workflows.
+> This document is mainly for agents and LLMs that maintain, generate, or refactor Next.js code. Humans may also find it useful, but the guidance is optimized for automation and consistency in AI-assisted workflows.
 
 ---
 
 ## Abstract
 
-Comprehensive performance optimization guidance for Next.js applications, written for agents and LLMs. Each rule includes a short summary with links to detailed examples in `references/`. Load reference files only when you need a specific pattern.
+Performance optimization guidance for Next.js applications, written for agents and LLMs. Each rule includes a short summary with links to detailed examples in `references/`. Load reference files only when you need a specific pattern.
 
 **Focus:** Next.js App Router patterns including Server Components, Server Actions, RSC serialization, and server-side optimization.
 
@@ -30,7 +30,7 @@ Comprehensive performance optimization guidance for Next.js applications, writte
 - Large HTML payload? → 2.2-2.3 (Serialization optimization)
 - Slow page loads? → 1.3 (Suspense), 2.4 (Parallel data fetching)
 - Real-world examples? → [Compound Patterns](references/compound-patterns.md)
-- Not sure what's wrong? → Use Quick Diagnostic Guide below
+- Not sure what is wrong? → Use the Quick Diagnostic Guide below
 
 **Next.js Resources:**
 - [App Router](https://nextjs.org/docs/app) | [Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations) | [Authentication](https://nextjs.org/docs/app/guides/authentication) | [Performance](https://nextjs.org/docs/app/building-your-application/optimizing)
@@ -41,7 +41,7 @@ Comprehensive performance optimization guidance for Next.js applications, writte
 
 Use this guide to quickly identify which optimization applies based on symptoms:
 
-**Symptom -> Solution:**
+**Symptom -> solution:**
 - API route or Server Action is slow → 1.1 Prevent Waterfall Chains, 1.2 Parallelize Operations
 - Entire page waits for data → 1.3 Strategic Suspense Boundaries
 - Server Action can be called without login → 2.1 Authenticate Server Actions
@@ -63,7 +63,7 @@ Use this guide to quickly identify which optimization applies based on symptoms:
 
 ## 1. General
 
-Core patterns for optimal server-side execution in Next.js App Router.
+Core patterns for optimal server-side execution in the Next.js App Router.
 
 ### 1.1 Prevent Waterfall Chains
 Start independent operations immediately in API routes/Server Actions, even if you don't await them yet.
@@ -81,7 +81,7 @@ Use Suspense to show wrapper UI immediately while data loads, instead of blockin
 
 ## 2. Server-Side Performance
 
-Optimizing server-side rendering and data fetching eliminates server-side waterfalls and reduces response times. These patterns are specific to Next.js App Router and RSC (React Server Components).
+Optimizing server-side rendering and data fetching eliminates server-side waterfalls and reduces response times. These patterns are specific to the Next.js App Router and RSC (React Server Components).
 
 ### 2.1 Authenticate Server Actions Like API Routes
 Always verify authentication and authorization inside each Server Action—treat them as public endpoints.

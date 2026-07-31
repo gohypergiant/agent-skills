@@ -1,10 +1,10 @@
 # Archive Synthesis
 
-Periodic consistency checker for OpenSpec archives. Reads backward across archived changes to detect decision drift, structural over-coupling, and index staleness — the one gap nothing else in the QRSPI/OpenSpec stack covers.
+Periodic consistency checker for OpenSpec archives. It reads backward across archived changes to detect decision drift, structural over-coupling, and index staleness — the one gap nothing else in the QRSPI/OpenSpec stack covers.
 
 ## What It Does
 
-Scans the complete archive history to verify internal consistency:
+This skill scans the complete archive history to verify internal consistency:
 
 - **Decision drift** — finds past decisions that contradict later changes
 - **Index reconciliation** — checks whether `specs/INDEX.md` still matches actual `spec.md` files
@@ -30,7 +30,7 @@ Invoke this skill when:
 - "audit the spec archive for contradictions"
 - "check capability coupling"
 
-Never runs automatically — always a direct human request or accepted suggestion.
+This skill never runs automatically — always a direct human request or accepted suggestion.
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ This skill requires:
 2. **accelint-qrspi-archive** in regular use (produces the indexes this skill reads)
 3. **Archive indexes** — both `openspec/changes/archive/INDEX.md` and `openspec/specs/INDEX.md` exist with at least one row
 4. **Sub-agent support** — for reading `design.md` files without polluting parent context
-5. **Writer skills with findings interface** — accelint-architecture-doc, accelint-onboard-openspec, accelint-onboard-agent, accelint-readme-writer supporting Mode 3 Refresh with `findings:` input
+5. **Writer skills with findings interface** — accelint-architecture-doc, accelint-onboard-openspec, accelint-onboard-agents, accelint-readme-writer supporting Mode 3 Refresh with `findings:` input
 
 ### Check archive state
 
@@ -52,7 +52,7 @@ Both files should exist. If missing, run accelint-qrspi-archive on at least one 
 
 ### Minimum corpus size
 
-Works with any corpus size but warns if fewer than ~10 archived changes exist (low signal-to-noise ratio).
+This skill works with any corpus size but warns if fewer than ~10 archived changes exist (low signal-to-noise ratio).
 
 ## How It Works
 
@@ -78,20 +78,20 @@ This skill has narrow, confirmation-gated write permissions:
 
 **On `archive/INDEX.md`:**
 - Only the `Status` column
-- Only for decision-drift findings after human confirms which change stands
+- Only for decision-drift findings after the human confirms which change stands
 - Format: `superseded by <slug> (<date>)`
 
 **On `specs/INDEX.md`:**
-- Single-row patch (Purpose + related:) or removal
+- Single-row patch (`Purpose` + `related:`) or removal
 - Only for reconciliation findings after human confirmation
 - Never touches `last_touched_by`
 
 **On `SYNTHESIS-LOG.md`:**
 - Appends one checkpoint line per run
-- Records dismissed decision-drift pairs (structural coupling dismissals don't persist)
+- Records dismissed decision-drift pairs (structural coupling dismissals do not persist)
 
 **To writer skills:**
-- Routes confirmed findings via `findings:` interface
+- Routes confirmed findings via the `findings:` interface
 - Never rewrites hub docs directly
 
 ### Cost Control
@@ -105,7 +105,7 @@ This skill has narrow, confirmation-gated write permissions:
 
 ### Decision Drift Detection
 
-Groups changes by shared/related capabilities, pattern-matches Decision summaries for opposing choices (polling vs. push, eager vs. lazy, etc.), then verifies candidates by opening full `design.md` files.
+This check groups changes by shared or related capabilities, pattern-matches `Decision` summaries for opposing choices (polling vs. push, eager vs. lazy, etc.), then verifies candidates by opening full `design.md` files.
 
 **Classification:**
 - **CRITICAL** — contradiction affects a capability touched after the earlier decision
@@ -114,7 +114,7 @@ Groups changes by shared/related capabilities, pattern-matches Decision summarie
 
 ### Index Reconciliation
 
-Confirms every `spec.md` still exists and matches its `specs/INDEX.md` row's Purpose and related: values.
+This check confirms every `spec.md` still exists and matches its `specs/INDEX.md` row's `Purpose` and `related:` values.
 
 **Classification:**
 - **CRITICAL** — capability directory or spec.md missing entirely
@@ -122,7 +122,7 @@ Confirms every `spec.md` still exists and matches its `specs/INDEX.md` row's Pur
 
 ### Structural Coupling
 
-Computes median related-count across specs/INDEX.md, flags outliers ≥5 and ≥2× median.
+This check computes the median related-count across `specs/INDEX.md` and flags outliers ≥5 and ≥2× median.
 
 **Classification:**
 - **SUGGESTION** — "sync/protocol relates to 14 capabilities, more than double the index median of 6"
@@ -161,14 +161,14 @@ median of 6.
 
 ## Human Review Rules
 
-- **Confirm** — proceeds to routing/writing (for decision drift, asks which side stands first)
-- **Dismiss** — persists only for decision-drift pairs; coupling/reconciliation findings resurface next run
-- **Defer** — nothing written, resurfaces next run unchanged
-- Unaddressed findings default to deferred (never confirmed automatically)
+- **Confirm** — proceeds to routing or writing. For decision drift, ask which side stands first.
+- **Dismiss** — persists only for decision-drift pairs; coupling and reconciliation findings resurface next run.
+- **Defer** — nothing is written, and the finding resurfaces next run unchanged.
+- Unaddressed findings default to deferred. Never confirm them automatically.
 
 ## Degraded Mode
 
-If dependencies unavailable:
+If dependencies are unavailable:
 
 - **No subagent support** — falls back to parent-context reads, warns about degraded behavior
 - **Writer skill missing** — still produces report, provides manual paste-ready findings text
@@ -184,7 +184,7 @@ This skill is deliberately last in a four-piece stack:
 3. **Shared findings: interface** — Mode 3 extension across writer skills (routing destination)
 4. **This skill** — consumes indexes, routes findings (builds on 1-3)
 
-Without 1, there's no corpus to lint. Without 2-3, skill can scan/report but degrades to manual guidance for routing.
+Without 1, there is no corpus to lint. Without 2-3, this skill can still scan and report, but it degrades to manual guidance for routing.
 
 ## Configuration Defaults
 
@@ -194,7 +194,7 @@ Without 1, there's no corpus to lint. Without 2-3, skill can scan/report but deg
 | Structural coupling floor | ≥5 relationships | Prevents flagging minimally-connected specs |
 | Structural coupling multiplier | ≥2× median | Adapts to project's natural density |
 
-Preflight reports mismatches but never adjusts automatically.
+Preflight reports mismatches but never adjusts them automatically.
 
 ## Related Skills
 
@@ -202,7 +202,7 @@ Preflight reports mismatches but never adjusts automatically.
 - **accelint-qrspi-apply** — implements changes, uses same findings: interface
 - **accelint-onboard-openspec** — updates config.yaml (routing target)
 - **accelint-architecture-doc** — updates ARCHITECTURE.md (routing target)
-- **accelint-onboard-agent** — updates AGENTS.md (routing target)
+- **accelint-onboard-agents** — updates AGENTS.md (routing target)
 - **accelint-readme-writer** — updates README.md (routing target)
 
 ## Evaluation Coverage
@@ -251,4 +251,4 @@ Apache-2.0
 
 ## Version
 
-1.1.2 (2026-07-30)
+1.1.3 (2026-07-31)

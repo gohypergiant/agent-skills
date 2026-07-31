@@ -252,16 +252,6 @@ function renderStep(step: Step, stepIndex: number): string {
       ].join("\n");
     }
 
-    case "goto":
-      return [
-        `    try {`,
-        `      await page.goto(${JSON.stringify(step.value)});`,
-        `    } catch (error) {`,
-        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
-        `      throw error;`,
-        `    }`
-      ].join("\n");
-
     case "hover": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [

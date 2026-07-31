@@ -1,15 +1,15 @@
 # TypeScript Performance Optimization
 
-Performance audit and optimization for JavaScript/TypeScript codebases. Combines a 4-phase audit workflow with expert optimization patterns.
+Performance audit and optimization for JavaScript/TypeScript codebases. This skill combines a 4-phase audit workflow with expert optimization patterns.
 
 ## Overview
 
 This skill provides:
 
-- **4-phase workflow** (Profile → Analyze → Optimize → Verify) for systematic audits
-- **Expert optimization patterns** with ❌/✅ examples for each category
+- **4-phase workflow** (`Profile → Analyze → Optimize → Verify`) for systematic audits
+- **Expert optimization patterns** with `❌` and `✅` examples for each category
 - **Bottleneck categorization** and decision frameworks
-- **Profiling tool guidance** (Chrome DevTools, `node --prof`)
+- **Profiling tool guidance** (`Chrome DevTools`, `node --prof`)
 
 ## When to Use
 
@@ -52,9 +52,9 @@ accelint-ts-performance/
 
 This skill minimizes context usage:
 
-1. **Start with `SKILL.md`** - follow the 4-phase workflow
-2. **Load `AGENTS.md`** - scan compressed rule summaries
-3. **Load specific references** - use detailed ❌/✅ examples when implementing
+1. **Start with `SKILL.md`** - Follow the 4-phase workflow.
+2. **Load `AGENTS.md`** - Scan compressed rule summaries.
+3. **Load specific references** - Use detailed `❌` and `✅` examples when implementing.
 
 ## Performance Categories
 
@@ -70,20 +70,20 @@ This skill minimizes context usage:
 
 ## Quick Start
 
-1. **Profile first** - use Chrome DevTools or `node --prof` to find bottlenecks consuming >5% of runtime
-2. **Categorize issues** - map bottlenecks to optimization categories (see `quick-reference.md`)
-3. **Load the relevant pattern** - open the reference file for ❌/✅ examples
-4. **Apply and verify** - implement, measure speedup, validate correctness with tests
+1. **Profile first** - Use Chrome DevTools or `node --prof` to find bottlenecks that consume >5% of runtime.
+2. **Categorize issues** - Map bottlenecks to optimization categories. See `quick-reference.md`.
+3. **Load the relevant pattern** - Open the reference file for `❌` and `✅` examples.
+4. **Apply and verify** - Implement the change, measure the speedup, and validate correctness with tests.
 
 ## Critical Anti-Patterns
 
-**NEVER** do these:
-- ❌ Chain array methods (`.filter().map()`) - use single `reduce` pass
-- ❌ Use `Array.includes()` for repeated lookups - use `Set.has()` (O(n) → O(1))
-- ❌ Await before checking if needed - defer `await` into branches
-- ❌ Recompute constants in loops - hoist invariants outside
-- ❌ Create unbounded loops - set explicit limits
-- ❌ Place `try/catch` in hot paths - degrades V8 optimization
+Never do these:
+- `❌` Chain array methods (`.filter().map()`) - Use a single pass.
+- `❌` Use `Array.includes()` for repeated lookups - Use `Set.has()` (O(n) → O(1)).
+- `❌` `await` before checking whether it is needed - Defer `await` into the branch that uses the result.
+- `❌` Recompute constants in loops - Hoist invariants outside the loop.
+- `❌` Create unbounded loops - Set explicit limits.
+- `❌` Place `try/catch` in hot paths - It degrades V8 optimization.
 
 See reference files for ✅ correct patterns.
 

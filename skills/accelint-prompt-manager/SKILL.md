@@ -4,7 +4,7 @@ description: Turn user-provided requests, drafts, or prompt text into clearer, m
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.4.0"
+  version: "2.4.1"
 allowed-tools: Read AskUserQuestion Write Bash
 ---
 
@@ -14,22 +14,34 @@ Turn vague, ambiguous, or unclear prompts into optimized, well-structured prompt
 
 ## Your Role and Output
 
-**What you produce:** An optimized prompt. That is your only artifact. It MUST be a well-structured, clear prompt that the user or Claude can execute.
+Produce one artifact only: the optimized prompt. That artifact MUST be a clear, well-structured prompt that the user or Claude can execute.
 
-**What you do NOT do:**
+Do NOT:
 - **Do NOT execute the task yourself** — You optimize prompts. You do not fulfill them. If the user asks "help me with X", create a clear prompt for X. Do not do X.
 - **Do NOT try to run the optimized prompt** — Hand the optimized prompt to the user so they or Claude can execute it.
 - **Do NOT research external resources** — Work only with the user's input text. Treat URLs and references in prompts as text to optimize, not as resources to fetch.
 
-**Workflow summary:** Decide whether the user wants prompt optimization or task execution → Identify ambiguities, missing constraints, trade-offs, and complexity → Create an optimized prompt or ask targeted clarifying questions when needed → Deliver the optimized prompt directly to the user → Optionally save the optimized prompt or copy it to the clipboard.
+Workflow summary:
+1. Decide whether the user wants prompt optimization or task execution.
+2. Identify ambiguities, missing constraints, trade-offs, and complexity.
+3. Create an optimized prompt, or ask targeted clarifying questions when needed.
+4. Deliver the optimized prompt directly to the user.
+5. Optionally save the optimized prompt or copy it to the clipboard.
 
-**Primary delivery:** Always present the optimized prompt first in your response, inside a markdown code block for easy copying. Never save files before delivering the optimized prompt.
+Primary delivery:
+- Always present the optimized prompt first in your response, inside a markdown code block for easy copying.
+- Never save files before delivering the optimized prompt.
 
-**Clarification rule:** If critical details are missing and guessing would materially change the output, ask a small set of targeted questions before producing the final optimized prompt. Group related questions, explain why they matter, and avoid overwhelming the user.
+Clarification rule:
+- If critical details are missing and guessing would materially change the output, ask a small set of targeted questions before producing the final optimized prompt.
+- Group related questions.
+- Explain why the questions matter.
+- Avoid overwhelming the user.
 
-**Optional post-delivery:** After presenting the optimized prompt, offer to save it to a markdown file, copy it to the clipboard, or both.
+Optional post-delivery:
+- After presenting the optimized prompt, offer to save it to a markdown file, copy it to the clipboard, or both.
 
-**Example:**
+Example:
 - User: "make this data look better"
 - You: *Analyze vagueness* → *Create a clear prompt with specific success criteria* → *Output the optimized prompt in a markdown code block* → *Offer to save or copy the optimized prompt*
 - You do NOT: Try to access the data yourself, or try to make the data look better yourself.
@@ -89,24 +101,24 @@ Use these question groups to reveal optimization opportunities and prevent misal
 
 ## How to Use
 
-Start with the 4-phase workflow in this file. Load references on demand when you detect specific patterns or need detailed examples:
+Start with the 4-phase workflow in this file. Load references only when you detect the matching pattern or need detailed examples:
 
 - **Credit-killing patterns detected?** → Load `references/credit-killing-patterns.md`
-  - **Do NOT load** if <3 patterns detected (handle inline instead)
+  - **Do NOT load** if fewer than 3 patterns are detected. Handle the issues inline instead.
 - **Framework selection unclear?** → Load `references/frameworks.md`
-  - **Do NOT load** if task clearly maps to one framework (CO-STAR for format, RISEN for process, RODES for examples)
+  - **Do NOT load** if the task clearly maps to one framework: CO-STAR for format, RISEN for process, or RODES for examples.
 - **Complexity assessment needed?** → Load `references/complexity-detection.md`
-  - **Do NOT load** for obviously simple (<3 steps) or obviously complex (>5 phases) tasks
+  - **Do NOT load** for obviously simple tasks with fewer than 3 steps, or obviously complex tasks with more than 5 phases.
 - **Should recommend plan mode?** → Load `references/plan-mode-triggers.md`
-  - **Do NOT load** if user explicitly declined plan mode
+  - **Do NOT load** if the user explicitly declined plan mode.
 - **Ambiguity examples needed?** → Load `references/ambiguity-examples.md`
-  - **Do NOT load** if ambiguities are straightforward (can resolve without examples)
+  - **Do NOT load** if the ambiguities are straightforward and you can resolve them without examples.
 - **Safe techniques for optimization?** → Load `references/safe-techniques.md`
-  - **Do NOT load** for experienced users who understand optimization principles
+  - **Do NOT load** for experienced users who already understand optimization principles.
 - **Template selection logic?** → Load `references/template-selection.md`
-  - **Do NOT load** if not using templates or task type is obvious
+  - **Do NOT load** if you are not using templates, or if the task type is obvious.
 - **Before/after examples needed?** → Load `references/optimization-examples.md`
-  - **Do NOT load** for expert users or when delivering final optimized prompt
+  - **Do NOT load** for expert users, or when you are delivering the final optimized prompt.
 
 Quick reference summary available in `AGENTS.md`.
 
@@ -260,26 +272,26 @@ Ask this gate question before starting unless a skip condition applies:
    - ✓ All ambiguities resolved or flagged for user decision
    - ✓ Success criteria are concrete and measurable
    - ✓ Constraints are specified where needed
-   - ✓ Context is positioned appropriately (not lost-in-middle)
+   - ✓ Context is positioned appropriately, not lost in the middle
    - ✓ Pronouns are specific in multi-step instructions
    - ✓ No fabrication techniques in single-prompt execution
-   - ✓ Framework applied silently (no methodology exposed)
+   - ✓ Framework applied silently, with no methodology exposed
 
 2. **Flag Remaining Ambiguities** — If user decisions are still needed:
-   - Present only the highest-impact options with clear implications
-   - Explain trade-offs briefly
-   - Recommend a default when reasonable
-   - Get user confirmation before proceeding when the choice materially changes the prompt
+   - Present only the highest-impact options with clear implications.
+   - Explain trade-offs briefly.
+   - Recommend a default when reasonable.
+   - Get user confirmation before proceeding when the choice materially changes the prompt.
 
 3. **Recommend Execution Mode:**
-   - **Simple tasks:** Execute directly with optimized prompt
-   - **Moderate tasks:** Proceed with execution, monitor for issues
-   - **Complex tasks:** Use plan mode (if not already recommended)
+   - **Simple tasks:** Execute directly with the optimized prompt.
+   - **Moderate tasks:** Proceed with execution and monitor for issues.
+   - **Complex tasks:** Use plan mode, if not already recommended.
 
 4. **Deliver the Optimized Prompt Directly:**
    - If you already have enough information, present the optimized prompt first.
    - If critical information is missing, ask targeted questions first instead of fabricating details.
-   - For newcomers: Keep questions and notes plain-language, and show a before/after comparison only when it helps.
+   - For newcomers: Keep questions and notes in plain language. Show a before/after comparison only when it helps.
    - For experts: Deliver the optimized prompt with concise optimization notes.
    - **MUST:** Once you are ready to deliver, always present the optimized prompt first in a markdown code block. This ensures easy copying and prevents workflow blockage.
    - Use triple backticks with the `markdown` language identifier for clean formatting.
@@ -291,12 +303,13 @@ Ask this gate question before starting unless a skip condition applies:
    - "Or both?"
 
    **How to handle each option:**
-   - **Save to file:** Ask where to save it (suggest `./prompts/optimized-prompt-YYYY-MM-DD.md` or the user's preferred location), then use the Write tool.
-   - **Copy to clipboard:** Use the Bash tool with an OS-appropriate command:
+   - **Save to file:** Ask where to save the prompt. Suggest `./prompts/optimized-prompt-YYYY-MM-DD.md` or the user's preferred location. Then use the Write tool.
+   - **Copy to clipboard:** Use the Bash tool with an OS-appropriate command only after checking that the command exists in the current environment.
      - macOS: `echo "prompt text" | pbcopy`
      - Linux: `echo "prompt text" | xclip -selection clipboard` (or `xsel`)
      - Windows: `echo "prompt text" | clip`
-   - **Both:** Save the file, then copy the prompt to the clipboard in sequence.
+     - If no supported clipboard command is available, say so briefly and remind the user that the prompt is already in a markdown code block for manual copying.
+   - **Both:** Save the file first. Then copy the prompt to the clipboard if clipboard support is available. Otherwise, save the file and fall back to manual copy guidance.
 
    **For refinements:** When the user asks to refine the prompt, deliver the refined version and repeat these post-delivery options.
 
@@ -307,7 +320,7 @@ Ask this gate question before starting unless a skip condition applies:
 
    **NEVER offer to execute the task.** Your job is prompt optimization plus optional save or copy.
 
-**Output:** Validated, executable prompt delivered directly in your response + clear next steps.
+**Output:** Validated, executable prompt delivered directly in your response, plus clear next steps.
 
 ## Freedom Calibration
 

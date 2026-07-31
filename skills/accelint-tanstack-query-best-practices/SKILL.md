@@ -4,29 +4,27 @@ description: Use when the user needs the right TanStack Query or React Query sha
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4.1"
+  version: "1.4.2"
 ---
 
 # TanStack Query Best Practices
 
-Expert patterns for TanStack Query in modern React applications with Next.js App Router and Server Components.
+Use this skill for TanStack Query patterns in React applications, with extra emphasis on Next.js App Router and server/client integration when that stack is present.
 
 ## Scope
 
-Use this skill for TanStack Query guidance in React applications generally, with extra emphasis on Next.js App Router and server/client integration when that stack is present.
-
-Before applying Next.js-specific advice, confirm whether the codebase actually uses App Router, Server Components, Server Actions, `HydrationBoundary`, or `dehydrate`. If the project is a client-only React app, skip the Next.js server-cache guidance and focus on query keys, hook structure, invalidation, observer economics, and mutation correctness.
+Before applying Next.js-specific advice, confirm whether the codebase actually uses App Router, Server Components, Server Actions, `HydrationBoundary`, or `dehydrate`. If the project is a client-only React app, skip the Next.js server-cache guidance. Focus on query keys, hook structure, invalidation, observer economics, and mutation correctness instead.
 
 ## NEVER Do With TanStack Query
 
 - **NEVER use a singleton QueryClient on the server** - Creates data leakage between users and race conditions. Each request must get its own isolated QueryClient instance to prevent cached data from one user appearing for another.
 - **NEVER synchronize query data to useState** - Background refetches, invalidations, and optimistic updates all modify the cache. Local state copies become stale immediately, causing "my save didn't work" bugs. Use query data directly or derive with useMemo.
-- **NEVER put queries inside list item components** - Creates N observers for N items, causing O(n) iteration on every cache update. 200 list items calling useQuery creates 200 network requests and 200 observers. Hoist queries to parent components.
+- **NEVER put queries inside list item components by default** - This often creates an observer per row and can also multiply requests when keys differ or mounting is staggered. Treat repeated per-item queries as a performance smell; check whether a parent query plus prop distribution would reduce observer and network overhead.
 - **NEVER use unstable query keys** - Arrays with non-guaranteed order, temporal queries with Date.now(), or object keys without deterministic serialization create infinite cache entries. Keys must be stable and deterministic.
 - **NEVER skip enabled guards for dependent queries** - Firing queries with undefined parameters creates garbage cache entries like ['tracks', undefined] and wastes network requests before real data arrives.
 - **NEVER ignore AbortController signals** - Without query cancellation support, unmounted components leave in-flight requests running, wasting bandwidth and potentially updating stale cache entries.
 - **NEVER use optimistic updates for high-stakes or external mutations** - Life-critical operations, audit trail systems, and mutations triggered by external events need pessimistic updates to ensure UI matches server state.
-- **NEVER assume structural sharing is free** - For datasets >1000 items updating frequently, structural sharing's O(n) deep equality checks become CPU overhead. Disable with structuralSharing: false for large, frequently-changing data.
+- **NEVER assume structural sharing is free** - On large, frequently updated datasets, structural sharing's deep equality work can become noticeable CPU overhead. Treat `structuralSharing: false` as a targeted performance lever after confirming payload size and update frequency justify it.
 - **NEVER skip onSettled in optimistic updates** - onSettled is your cleanup guarantee even if onError throws. Without it, UI can be left in corrupted state when error handler fails. Always pair onMutate with onSettled for resource cleanup and cache consistency.
 - **NEVER assume cache invalidation is synchronous** - invalidateQueries triggers background refetches which can race with optimistic updates. Use cancelQueries in onMutate to prevent background refetches from overwriting your optimistic changes before the mutation completes.
 - **NEVER use setQueryData without structural comparison** - Directly setting cache data bypasses structural sharing and breaks referential equality optimizations. Wrap in updater function to preserve references for unchanged portions: `setQueryData(key, (old) => ({ ...old, changed: value }))` instead of `setQueryData(key, newValue)`.
@@ -35,20 +33,20 @@ Before applying Next.js-specific advice, confirm whether the codebase actually u
 ## Before Using TanStack Query, Ask
 
 ### State Classification
-- **Is this server state or client state?** TanStack Query manages server state (API data, database records, external system state). UI state (modals, themes, form drafts) belongs in Zustand or useState.
-- **Does this data change after initial render?** Static reference data might not need TanStack Query's refetching machinery. Consider if simpler alternatives suffice.
+- **Is this server state or client state?** TanStack Query manages server state such as API data, database records, and external system state. UI state such as modals, themes, and form drafts belongs in Zustand or `useState`.
+- **Does this data change after initial render?** Static reference data might not need TanStack Query's refetching machinery. Consider whether a simpler alternative is enough.
 
 ### Cache Strategy
-- **How fresh does this data need to be?** Lookup tables can have 1-hour staleTime. Real-time tracking needs 5-second staleTime with refetchInterval. Match configuration to business requirements.
-- **What's the query lifecycle?** Frequently-accessed data needs higher gcTime. One-time detail views can have aggressive garbage collection.
+- **How fresh does this data need to be?** Lookup tables can have 1-hour `staleTime`. Real-time tracking needs 5-second `staleTime` with `refetchInterval`. Match configuration to business requirements.
+- **What is the query lifecycle?** Frequently accessed data needs higher `gcTime`. One-time detail views can use more aggressive garbage collection.
 
 ### Observer Economics
-- **How many components will subscribe to this query?** >10 observers on a single cache entry suggests hoisting queries to parent. >100 observers indicates architectural issues.
-- **Am I creating N queries or 1 query with N observers?** List items should receive props from parent query, not call individual useQuery hooks.
+- **How many components will subscribe to this query?** More than 10 observers on a single cache entry suggests hoisting queries to a parent. More than 100 observers indicates architectural issues.
+- **Am I creating N queries or 1 query with N observers?** List items should receive props from a parent query, not call individual `useQuery` hooks.
 
 ## How to Use
 
-This skill uses **progressive disclosure** to minimize context usage. Load references based on your scenario:
+This skill uses progressive disclosure to minimize context usage. Load references that match the scenario.
 
 ### Scenario 1: Setting Up Query Client
 1. REQUIRED: Read [`query-client-setup.md`](references/query-client-setup.md) completely.
@@ -56,7 +54,7 @@ This skill uses **progressive disclosure** to minimize context usage. Load refer
 3. If the codebase is client-only React, skip `server-integration.md` and stay focused on client QueryClient setup.
 4. MUST NOT load other references for initial setup unless the task also involves mutations, key design, or caching strategy.
 
-Copy [assets/query-client.ts](assets/query-client.ts) for a production-ready baseline, then adapt defaults to the app's freshness and retry needs.
+Copy [assets/query-client.ts](assets/query-client.ts) for a production-ready baseline. Then adapt the defaults to the app's freshness and retry needs.
 
 ### Scenario 2: Building Query Hooks
 1. REQUIRED: Read [`query-keys.md`](references/query-keys.md) for key factory setup.
@@ -64,11 +62,12 @@ Copy [assets/query-client.ts](assets/query-client.ts) for a production-ready bas
 3. If the problem involves dependent queries, query cancellation, `select`, or hook anti-patterns, also read [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md).
 4. MUST NOT load `mutations-and-updates.md` unless implementing or reviewing mutations.
 
-Use the decision tables below for configuration defaults, but adapt them to actual data freshness and payload size.
+Use the decision tables below for configuration defaults. Adapt them to the actual data freshness and payload size.
 
 ### Scenario 3: Implementing Mutations
-REQUIRED: Read [`mutations-and-updates.md`](references/mutations-and-updates.md) completely. Reference [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md) for rollback patterns.
-MUST NOT load `caching-strategy.md` for basic CRUD mutations.
+1. REQUIRED: Read [`mutations-and-updates.md`](references/mutations-and-updates.md) completely.
+2. Reference [`patterns-and-pitfalls.md`](references/patterns-and-pitfalls.md) for rollback patterns.
+3. MUST NOT load `caching-strategy.md` for basic CRUD mutations.
 
 ### Scenario 4: Debugging Performance Issues
 1. First, check the Observer Count Thresholds table below.
@@ -78,9 +77,9 @@ MUST NOT load `caching-strategy.md` for basic CRUD mutations.
 5. MUST NOT load all references up front. Diagnose first, then load targeted content.
 
 ### Scenario 5: Multi-Layer Caching Strategy
-REQUIRED: Read [`caching-strategy.md`](references/caching-strategy.md) for unified Next.js `use cache` + TanStack Query + HTTP cache patterns.
-Use this scenario only when the codebase actually has a server cache layer to coordinate with TanStack Query.
-MUST NOT load it if the app only uses client-side TanStack Query.
+1. REQUIRED: Read [`caching-strategy.md`](references/caching-strategy.md) for unified Next.js `use cache` + TanStack Query + HTTP cache patterns.
+2. Use this scenario only when the codebase actually has a server cache layer to coordinate with TanStack Query.
+3. MUST NOT load it if the app only uses client-side TanStack Query.
 
 ## Query Configuration Decision Matrix
 
@@ -106,7 +105,7 @@ MUST NOT load it if the app only uses client-side TanStack Query.
 
 ## Query Key Architecture
 
-Use hierarchical factories for consistent invalidation:
+Use hierarchical factories for consistent invalidation.
 
 ```typescript
 // Recommended structure
@@ -125,10 +124,10 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 ```
 
 **Key stability rules:**
-- Deterministic serialization (sort arrays before joining)
-- No temporal values (Date.now(), random IDs)
-- Type consistency (don't mix '1' and 1)
-- Stable object shapes (use sorted keys or serialize)
+- Deterministic serialization. Sort arrays before joining.
+- No temporal values such as `Date.now()` or random IDs.
+- Type consistency. Do not mix `'1'` and `1`.
+- Stable object shapes. Use sorted keys or serialize.
 
 ## Server-Client Integration Pattern
 
@@ -139,20 +138,20 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 | **Browser HTTP cache** | Eliminate network requests | Cache-Control headers | Per-browser |
 
 **Unified invalidation strategy:**
-1. Use same key factories for both server and client caches
-2. Server mutations call updateTag(keys.detail(id).tag)
-3. Client mutations call queryClient.invalidateQueries({ queryKey: keys.detail(id) })
-4. Both caches stay synchronized with same hierarchy
+1. Use the same key factories for both server and client caches.
+2. Server mutations call `updateTag(keys.detail(id).tag)`.
+3. Client mutations call `queryClient.invalidateQueries({ queryKey: keys.detail(id) })`.
+4. Both caches stay synchronized with the same hierarchy.
 
 ## Observer Count Thresholds
 
 | Observer Count | Performance Impact | Action Required |
 |----------------|-------------------|------------------|
-| 1-5 | Negligible | None |
-| 6-20 | Minimal | Monitor, no immediate action |
-| 21-50 | Noticeable on updates | Consider hoisting queries to parent |
-| 51-100 | Significant overhead | Refactor: hoist queries or use select |
-| 100+ | Critical impact | Immediate refactor: single query with props distribution |
+| 1-5 | Usually negligible | None |
+| 6-20 | Often minimal | Monitor, no immediate action |
+| 21-50 | Can become noticeable on updates | Consider hoisting queries to parent |
+| 51-100 | Often significant overhead | Refactor: hoist queries or use select |
+| 100+ | Usually a strong sign of architectural pressure | Prioritize refactor: single query with props distribution or narrower subscriptions |
 
 **Diagnosis:**
 1. Open TanStack Query DevTools in development.
@@ -197,7 +196,7 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 - **<50 observers** → Issue is elsewhere, continue to Step 2
 
 **Step 2: Check data size and update frequency**
-- **>1000 items + frequent updates** → Disable structural sharing: `structuralSharing: false` (see fundamentals.md for details)
+- **Large collections + frequent updates** → Evaluate whether structural sharing is now part of the cost. If profiling shows meaningful overhead, try `structuralSharing: false` and compare behavior (see fundamentals.md for details).
 - **Large payloads (>500KB)** → Check network tab, consider pagination or infinite queries
 - **Fast updates (<1s interval)** → Lower staleTime or use refetchInterval, verify cache strategy
 
@@ -242,7 +241,7 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 
 ## Freedom Calibration
 
-**Calibrate guidance specificity to mutation risk:**
+Calibrate guidance specificity to mutation risk.
 
 | Task Type | Freedom Level | Guidance Format | Example |
 |-----------|---------------|-----------------|---------|
@@ -250,20 +249,20 @@ queryClient.invalidateQueries({ queryKey: keys.detail(id) }); // Invalidate one 
 | **Optimistic updates** | Medium freedom | Complete pattern with rollback handling | "Use onMutate/onError/onSettled callbacks" |
 | **QueryClient setup** | Low freedom | Exact code with critical security warning | "NEVER use singleton on server - use factory" |
 
-**The test:** "If the agent makes a mistake, what's the consequence?"
+**The test:** "If the agent makes a mistake, what is the consequence?"
 - Server singleton mistake → Data leakage between users (critical security issue)
 - Observer count mistake → Performance degradation (medium impact)
-- staleTime tuning → Suboptimal freshness (low impact)
+- `staleTime` tuning → Suboptimal freshness (low impact)
 
 ## Important Notes
 
-- Query keys are hashed deterministically - ['tracks', '1'] and ['tracks', 1] create different cache entries
-- Query keys must be JSON-serializable for cache persistence across page reloads and hydration
-- shouldDehydrateQuery with pending status enables streaming without await in server components
-- HydrationBoundary must wrap client components only - server components bypass the boundary
-- revalidateTag vs updateTag matters: revalidateTag uses stale-while-revalidate, updateTag invalidates immediately
-- Background refetches run even when no components are mounted if gcTime hasn't expired
-- Structural sharing runs twice when using select: once on raw data, once on transformed data
-- `select` only runs on successfully cached data — it is never called in error states; put validation and error throwing in `queryFn`
-- cancelQueries in onMutate is critical - background refetches can overwrite optimistic updates
-- Context returned from onMutate is passed to onError and onSettled for rollback state
+- Query keys are hashed deterministically. `['tracks', '1']` and `['tracks', 1]` create different cache entries.
+- Query keys must be JSON-serializable for cache persistence across page reloads and hydration.
+- `shouldDehydrateQuery` with pending status enables streaming without `await` in server components.
+- `HydrationBoundary` must wrap client components only. Server components bypass the boundary.
+- `revalidateTag` vs `updateTag` matters. `revalidateTag` uses stale-while-revalidate. `updateTag` invalidates immediately.
+- Background refetches run even when no components are mounted if `gcTime` has not expired.
+- Structural sharing runs twice when using `select`: once on raw data, once on transformed data.
+- `select` only runs on successfully cached data. It is never called in error states. Put validation and error throwing in `queryFn`.
+- `cancelQueries` in `onMutate` is critical. Background refetches can overwrite optimistic updates.
+- Context returned from `onMutate` is passed to `onError` and `onSettled` for rollback state.

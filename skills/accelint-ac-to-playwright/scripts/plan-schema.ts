@@ -63,12 +63,6 @@ const fillStep = z.object({
   value: z.string(),
 }).strict();
 
-const gotoStep = z.object({
-  type: z.literal("action").default("action"),
-  action: z.literal("goto"),
-  value: z.string(),
-}).strict();
-
 const hoverStep = z.object({
   type: z.literal("action").default("action"),
   action: z.literal("hover"),
@@ -148,7 +142,6 @@ export const stepSchema = z.discriminatedUnion("action", [
   expectUrlStep,
   expectVisibleStep,
   fillStep,
-  gotoStep,
   hoverStep,
   keyDownStep,
   keyUpStep,

@@ -5,25 +5,25 @@ compatibility: Requires @testing-library/react, works with Vitest or Jest
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.1"
+  version: "1.2.2"
 ---
 
 # React Testing Best Practices
 
-Expert guidance for writing maintainable, user-centric React component tests with Testing Library. Focused on query selection, accessibility-first testing, and avoiding implementation details.
+Expert guidance for writing maintainable, user-centric React component tests with Testing Library. Focus on query selection, accessibility-first testing, and avoiding implementation details.
 
-## NEVER Do When Writing React Tests
+## Never Do When Writing React Tests
 
-- **NEVER query by test IDs before trying accessible queries** - Test IDs bypass accessibility verification: a button with `data-testid="submit"` but no accessible name works in tests but fails for screen reader users. When tests pass with test IDs, you ship inaccessible UIs. Query hierarchy: `getByRole` > `getByLabelText` > `getByText` > `getByTestId`. Each step down this list means less confidence your UI is usable.
-- **NEVER use `fireEvent` for user interactions when `userEvent` is available** - `fireEvent` dispatches single DOM events, missing the event sequence real users trigger: `fireEvent.click()` fires one click event, but real users trigger focus → mousedown → mouseup → click. Components that work with fireEvent break in production when users interact normally. `userEvent.click()` simulates the full interaction sequence, catching bugs fireEvent misses.
-- **NEVER test implementation details instead of user behavior** - Tests that verify "state variable X equals Y" or "function Z was called" create false failures: you refactor from useState to useReducer, all tests fail, yet the UI works identically. Testing implementation details punishes refactoring and provides zero confidence the user experience works. Test what users see and do (rendered output, interaction results), not how your component achieves it internally.
-- **NEVER query from `container` or use destructured queries after initial render** - `const { getByText } = render(<Component />)` creates stale queries that miss updates: after state changes, destructured queries search the initial DOM snapshot, missing newly rendered elements. This causes "element not found" errors for elements that are actually present. Always use `screen.getByText()` which automatically queries the current DOM state. Using screen consistently also makes tests more maintainable - adding a new query doesn't require updating the destructuring.
-- **NEVER add aria-label or role attributes solely for tests** - If you're adding `aria-label="submit-button"` or `role="button"` just so tests can find elements, you're working backwards. Tests should verify the component is already accessible, not make it accessible for tests. Adding test-only ARIA pollutes production code and masks real accessibility problems. Fix the component's semantic HTML and existing ARIA first.
-- **NEVER snapshot entire component trees without specific assertions** - Massive snapshots with 500+ lines break on any change (updated classname, new prop, reordered elements), forcing reviewers to approve diffs they can't meaningfully evaluate. When test failures require "just update the snapshot" without understanding why, the test has zero value. Snapshot specific critical structures (error messages, data tables) with targeted assertions for everything else.
-- **NEVER use `waitFor` for actions that return promises** - `waitFor(() => expect(element).toBeInTheDocument())` polls repeatedly until timeout when a promise-based `findBy` query solves it in one shot: `await screen.findByText('loaded')` waits for the element to appear without polling. Reserve waitFor for assertions that can't use findBy (checking element disappears, waiting for attribute changes).
-- **NEVER perform side effects inside waitFor callback** - `waitFor(() => { fireEvent.click(button); expect(text).toBeInTheDocument(); })` runs the click multiple times as waitFor retries, causing unpredictable behavior. waitFor is for waiting on assertions, not triggering actions. Perform all actions outside waitFor, then use waitFor only for the assertion: `fireEvent.click(button); await waitFor(() => expect(text).toBeInTheDocument());` or better yet, `await userEvent.click(button); expect(await screen.findByText(text)).toBeInTheDocument();`.
-- **NEVER create custom renders without documenting provider requirements** - A custom `renderWithRedux` function with undocumented required store shape breaks for every developer: they call `render(<Component />)` instead of `renderWithRedux()`, tests fail with cryptic "Cannot read property of undefined", wasting 15 minutes debugging. Centralize provider setup in test utils with TypeScript types that enforce correct usage, or document required wrappers prominently.
-- **NEVER mix queries from different Testing Library imports** - Importing both `@testing-library/react` render and `@testing-library/dom` queries creates confusion: `screen` from react package doesn't work with `getByRole` from dom package, causing "screen.getByRole is not a function" errors. Import all queries from `@testing-library/react` for React components - it re-exports everything from dom with React-specific enhancements.
+- **Never query by test IDs before trying accessible queries** - Test IDs bypass accessibility verification: a button with `data-testid="submit"` but no accessible name works in tests but fails for screen reader users. When tests pass with test IDs, you ship inaccessible UIs. Query hierarchy: `getByRole` > `getByLabelText` > `getByText` > `getByTestId`. Each step down this list means less confidence that your UI is usable.
+- **Never use `fireEvent` for user interactions when `userEvent` is available** - `fireEvent` dispatches single DOM events. It misses the event sequence that real users trigger: `fireEvent.click()` fires one click event, but real users trigger focus → mousedown → mouseup → click. Components that work with `fireEvent` can break in production when users interact normally. `userEvent.click()` simulates the full interaction sequence and catches bugs that `fireEvent` misses.
+- **Never test implementation details instead of user behavior** - Tests that verify "state variable X equals Y" or "function Z was called" create false failures: you refactor from `useState` to `useReducer`, all tests fail, yet the UI works the same way. Testing implementation details punishes refactoring and provides no confidence that the user experience works. Test what users see and do (rendered output, interaction results), not how your component achieves it internally.
+- **Prefer `screen` over `container` queries or destructured render queries for day-to-day RTL work** - `const { getByText } = render(<Component />)` is not the clearest default style once tests grow. It scatters query access across local variables, makes shared test conventions less consistent, and nudges people toward container-first patterns when debugging gets harder. `screen.getByText()` keeps queries centralized around the rendered document and makes it easier to add, compare, and debug queries consistently. Reach for destructured queries only when there is a specific reason.
+- **Do not add aria-label or role attributes solely to satisfy a test** - If you're adding `aria-label="submit-button"` or `role="button"` only so tests can find elements, you're working backwards. Tests should verify that the component is already accessible, not manufacture accessibility for testability. Fix the component's semantic HTML and existing ARIA first.
+- **Avoid snapshotting entire component trees without specific assertions** - Massive snapshots with 500+ lines break on any change (updated class name, new prop, reordered elements), forcing reviewers to approve diffs they cannot evaluate meaningfully. When failures turn into "just update the snapshot," the test has little review value. Snapshot specific critical structures (error messages, data tables) and use targeted assertions for the rest.
+- **Never use `waitFor` for actions that return promises** - `waitFor(() => expect(element).toBeInTheDocument())` polls repeatedly until timeout when a promise-based `findBy` query solves it in one shot: `await screen.findByText('loaded')` waits for the element to appear without polling. Reserve `waitFor` for assertions that cannot use `findBy` (checking that an element disappears, waiting for attribute changes).
+- **Never perform side effects inside waitFor callback** - `waitFor(() => { fireEvent.click(button); expect(text).toBeInTheDocument(); })` runs the click multiple times as `waitFor` retries, causing unpredictable behavior. `waitFor` is for waiting on assertions, not triggering actions. Perform all actions outside `waitFor`, then use `waitFor` only for the assertion: `fireEvent.click(button); await waitFor(() => expect(text).toBeInTheDocument());` or better yet, `await userEvent.click(button); expect(await screen.findByText(text)).toBeInTheDocument();`.
+- **Do not create custom renders without documenting provider requirements** - A custom `renderWithRedux` function with an undocumented required store shape breaks for every developer: they call `render(<Component />)` instead of `renderWithRedux()`, tests fail with cryptic "Cannot read property of undefined" errors, and debugging time is wasted. Centralize provider setup in test utils with TypeScript types that enforce correct usage, or document required wrappers prominently.
+- **Never mix queries from different Testing Library imports** - Importing both `@testing-library/react` render and `@testing-library/dom` queries creates confusion: `screen` from the React package does not work with `getByRole` from the DOM package, causing "screen.getByRole is not a function" errors. Import all queries from `@testing-library/react` for React components. It re-exports everything from DOM Testing Library with React-specific enhancements.
 
 ## Before Writing Tests, Ask
 
@@ -54,7 +54,7 @@ This skill uses progressive disclosure to minimize context usage.
 Read [AGENTS.md](AGENTS.md) first. It provides a concise overview of the rules with one-line summaries.
 
 ### 2. Load specific references only when needed
-Use these triggers to decide which reference file to load:
+Use these triggers to decide which reference file to load.
 
 **Always load the full file for these cases:**
 - **Writing any query (`getBy*`, `findBy*`, `queryBy*`)** → [query-priority.md](references/query-priority.md)
@@ -66,18 +66,18 @@ Use these triggers to decide which reference file to load:
 - **Components using Context, Redux, Router, or other providers** → [custom-render.md](references/custom-render.md)
 - **Testing accessibility or ARIA attributes** → [accessibility-queries.md](references/accessibility-queries.md)
 - **Using `container`, wrapper queries, or `rerender` heavily** → [anti-patterns.md](references/anti-patterns.md)
-- **Queries failing or no clear selector** → [query-variants.md](references/query-variants.md) for `screen.debug()` and `screen.logTestingPlaygroundURL()` usage
+- **Queries failing or there is no clear selector** → [query-variants.md](references/query-variants.md) for `screen.debug()` and `screen.logTestingPlaygroundURL()` usage
 
 **Do not load unless the case needs it:**
-- Do not load [custom-render.md](references/custom-render.md) for simple components without providers
-- Do not load [async-testing.md](references/async-testing.md) for synchronous tests
-- Do not load [accessibility-queries.md](references/accessibility-queries.md) unless the task involves ARIA or accessibility concerns
+- Do not load [custom-render.md](references/custom-render.md) for simple components without providers.
+- Do not load [async-testing.md](references/async-testing.md) for synchronous tests.
+- Do not load [accessibility-queries.md](references/accessibility-queries.md) unless the task involves ARIA or accessibility concerns.
 
 ### 3. Apply the pattern
 Each reference file contains:
-- Incorrect examples that show the anti-pattern
-- Correct examples that show the preferred pattern
-- Brief explanations of why the pattern matters
+- incorrect examples that show the anti-pattern
+- correct examples that show the preferred pattern
+- brief explanations of why the pattern matters
 
 ### 4. Audit existing tests when needed
 Use the provided scripts to audit existing test suites:
@@ -93,17 +93,17 @@ Use the provided scripts to audit existing test suites:
 ```
 
 ### 5. Use the report template for audits
-When this skill is invoked for test code review, use the standardized report format:
+When this skill is invoked for test code review, use the standardized report format.
 
 **Template:** [`assets/output-report-template.md`](assets/output-report-template.md)
 
 The report format provides:
 - Executive Summary with accessibility confidence and user-centric coverage assessment
-- Severity levels (Critical, High, Medium, Low) for prioritization
-- Impact analysis (accessibility confidence, user-centric confidence, test reliability, refactor safety)
-- Categorization (Query Priority, Query Variants, User Events, Async Testing, Custom Render, Accessibility, Anti-patterns)
-- Pattern references linking to detailed guidance in references/
-- Summary table for tracking all issues
+- severity levels (`Critical`, `High`, `Medium`, `Low`) for prioritization
+- impact analysis (accessibility confidence, user-centric confidence, test reliability, refactor safety)
+- categorization (`Query Priority`, `Query Variants`, `User Events`, `Async Testing`, `Custom Render`, `Accessibility`, `Anti-patterns`)
+- pattern references that link to detailed guidance in `references/`
+- a summary table for tracking all issues
 
 **When to use the report template:**
 - Skill invoked directly via `/accelint-react-testing <path>`

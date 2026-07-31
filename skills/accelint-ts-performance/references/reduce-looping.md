@@ -29,10 +29,13 @@ const result = arr.filter(predicate).map(mapper);
 
 **✅ Correct: single pass**
 ```ts
-const result = arr.reduce((acc, curr) =>
-  predicate(curr) ? [...acc, mapper(curr)] : acc,
-  []
-);
+const result = [];
+
+for (const item of arr) {
+  if (predicate(item)) {
+    result.push(mapper(item));
+  }
+}
 // Single pass: test and transform in one iteration
 ```
 
@@ -41,7 +44,7 @@ const result = arr.reduce((acc, curr) =>
 - Cache misses from jumping between arrays
 - Double the loop overhead (iterator setup, bounds checks)
 
-For 10,000 items, chaining `.filter().map()` means 20,000+ iterations plus temporary array allocation. Single `reduce` = 10,000 iterations, zero intermediate arrays.
+For 10,000 items, chaining `.filter().map()` means 20,000+ iterations plus temporary array allocation. A single-pass loop keeps the work to 10,000 iterations and avoids the extra filtered array.
 
 ### Linear Search to O(1) Lookup
 

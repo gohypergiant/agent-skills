@@ -4,14 +4,12 @@ description: Onboard a repository to agent-driven development by creating or ref
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4.1"
+  version: "1.4.2"
 ---
 
 # Onboard Agents
 
-Guide the user through a conversational interview that produces a complete,
-project-specific `AGENTS.md` (or `CLAUDE.md`) governing how an AI coding
-agent behaves across project interactions.
+Guide the user through a conversational interview that produces a complete, project-specific `AGENTS.md` (or `CLAUDE.md`) governing how an AI coding agent behaves across project interactions.
 
 ## Separation of Concerns
 
@@ -51,8 +49,7 @@ duplicate each other.
 
 ### Hard Rule: What Does NOT Belong Here
 
-If information answers "what is the project?" rather than "how should the
-agent behave?", it belongs in `config.yaml`, not here.
+If information answers "what is the project?" rather than "how should the agent behave?", it belongs in `config.yaml`, not here.
 
 | Belongs in AGENTS.md              | Belongs in config.yaml            |
 |-----------------------------------|-----------------------------------|
@@ -68,7 +65,7 @@ agent behave?", it belongs in `config.yaml`, not here.
 ## NEVER Do When Onboarding Agents
 
 - **NEVER run codebase discovery serially** — Phase 3 spawns parallel subagents for different behavioral domains. Serial scanning wastes time on codebases with many config files spread across directories.
-- **NEVER skip discovery before asking questions** — attempt to infer behavioral conventions from the codebase before adding questions to the interview. A question about commit format when `commitlint.config.ts` exists wastes the user's time.
+- **NEVER skip discovery before asking questions** — infer behavioral conventions from the codebase before adding questions to the interview. A question about commit format when `commitlint.config.ts` exists wastes the user's time.
 - **NEVER omit sections from the generated AGENTS.md** — if a section cannot be inferred or answered, mark it with `<!-- TODO: fill in -->` rather than leaving it out. Missing sections silently shape agent behavior in unpredictable ways.
 - **NEVER duplicate root-level instructions in package-level files** — if a monorepo root AGENTS.md exists, package files should reference it and add only what is package-specific. Repeated instructions inflate context on every agent invocation.
 - **NEVER write the final file without showing a preview** — the user must see inferred values with source annotations and confirm before any filesystem write.
@@ -79,35 +76,25 @@ agent behave?", it belongs in `config.yaml`, not here.
 
 ### Phase 0 — File State Detection
 
-Before you ask any interview question, check whether the target file exists
-and assess its state. Never silently pick a mode. Always announce the
-detected mode to the user and confirm before proceeding.
+Before you ask any interview question, check whether the target file exists and assess its state. Never silently pick a mode. Always announce the detected mode to the user and confirm before proceeding.
 
 **Step 1 — Monorepo root check**
 
-Before assessing the local file, determine whether the current working
-directory is a package inside a monorepo. If a root-level `AGENTS.md` or
-`CLAUDE.md` exists above the current directory:
+Before assessing the local file, determine whether the current working directory is a package inside a monorepo. If a root-level `AGENTS.md` or `CLAUDE.md` exists above the current directory:
 
 1. Read the root file in full.
-2. Announce: *"I found a root-level AGENTS.md at [path]. I'll use it as
-   context to avoid duplicating instructions that apply to all packages.
-   The file I generate here will reference the root where appropriate
-   rather than repeating it."*
+2. Announce: *"I found a root-level AGENTS.md at [path]. I'll use it as context to avoid duplicating instructions that apply to all packages. The file I generate here will reference the root where appropriate rather than repeating it."*
 3. In the generated file, add a header reference:
    ```markdown
    <!-- Inherits from: [relative path to root AGENTS.md] -->
    <!-- Only package-specific overrides and additions are defined here. -->
    ```
-4. During the interview, at the start of each turn, surface what the root
-   file already covers for that section before asking any questions:
+4. During the interview, at the start of each turn, surface what the root file already covers for that section before asking any questions:
 
    > "The root AGENTS.md defines [summary of this section's content].
    > Does this package need to add to or override any of that?"
 
-   If the user says no: emit a reference in the generated file rather than
-   repeating the content. If the user flags additions or overrides: ask the
-   normal turn questions scoped to what's actually missing or different.
+   If the user says no: emit a reference in the generated file rather than repeating the content. If the user flags additions or overrides: ask the normal turn questions scoped to what is actually missing or different.
 
 **Step 1.5 — Check for Related Documents**
 
@@ -219,8 +206,7 @@ as (a) or (b) if the user is satisfied.
 
 #### Mode 3: Refresh (build on what's there)
 
-The file matches the skill's expected shape — it was likely produced by a
-previous run. Run an abbreviated interview covering only:
+The file matches the skill's expected shape — it was likely produced by a previous run. Run an abbreviated interview covering only:
 
 1. **Extract external findings** — check if the invoking prompt includes a `findings:` list:
    - Parse the prompt for a `findings:` section (a bulleted list of factual statements)
@@ -228,8 +214,7 @@ previous run. Run an abbreviated interview covering only:
    - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
    - Store these findings for merging in step 4
 
-2. **Drift detection** — scan the codebase for changes since the file was
-   last updated:
+2. **Drift detection** — scan the codebase for changes since the file was last updated:
 
    | Signal | Where to look |
    |--------|---------------|
@@ -241,26 +226,22 @@ previous run. Run an abbreviated interview covering only:
    | OpenSpec added/removed | `openspec/` directory presence |
    | New protected branches | `.github/branch-protection*`, README |
 
-3. **Unresolved TODOs** — find all `<!-- TODO: fill in -->` markers left
-   from the previous run and surface them as targeted questions.
+3. **Unresolved TODOs** — find all `<!-- TODO: fill in -->` markers left from the previous run and surface them as targeted questions.
 
 4. **Merge and announce all findings** before asking anything:
-   - Combine external findings (from step 1) with drift findings (from step 2) and TODOs (from step 3)
+   - Combine external findings (from step 1), drift findings (from step 2), and TODOs (from step 3)
    - Present the merged list to the user:
      > "I found [N] external findings, [M] sections that may have drifted, and [P] unresolved TODOs.
      > I'll only ask about those — the rest looks current."
    - If external findings exist, note their source (e.g., "from completed OpenSpec change")
 
-5. After the targeted interview, show a diff-style preview (changed sections
-   only) before writing. Do not re-emit sections that have not changed.
+5. After the targeted interview, show a diff-style preview that includes only changed sections before writing. Do not re-emit sections that have not changed.
 
 ---
 
 ### Phase 1 — Discovery Interview
 
-Run the interview conversationally. Do not dump all questions at once. Group
-them into natural topic turns. If the user describes a workflow, infer related
-behavioral constraints and confirm them instead of asking again.
+Run the interview conversationally. Do not dump all questions at once. Group them into natural topic turns. If the user describes a workflow, infer related behavioral constraints and confirm them instead of asking again.
 
 **Turn 1 — Role & Identity**
 - What role should the agent play? ("senior TypeScript engineer", "full-stack
@@ -325,9 +306,7 @@ behavioral constraints and confirm them instead of asking again.
 
 ### Phase 2 — Smart Defaults
 
-After each workflow answer, surface relevant behavioral conventions to
-confirm. Use these examples as a pattern and extend them to other stacks when
-appropriate.
+After each workflow answer, surface relevant behavioral conventions to confirm. Use these examples as a pattern and extend them to other stacks when appropriate.
 
 **Turborepo + PNPM monorepo → suggest confirming:**
 - "I'll assume you want `pnpm -w` (workspace root) for adding shared deps
@@ -356,15 +335,9 @@ appropriate.
 
 ### Phase 3 — Parallel Codebase Discovery (fill gaps before generating)
 
-After the interview, audit every `AGENTS.md` section that still has no answer.
-For each gap, try to derive the behavioral intent directly from the codebase
-using parallel subagents before asking again or leaving a `# TODO`. A
-behavioral file with explicit TODOs is actionable. A file with missing sections
-silently shapes agent behavior in unpredictable ways.
+After the interview, audit every `AGENTS.md` section that still has no answer. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before asking again or leaving a `# TODO`. A behavioral file with explicit TODOs is actionable. A file with missing sections silently shapes agent behavior in unpredictable ways.
 
-Spawn discovery subagents in parallel — don't scan serially. Each agent focuses
-on one behavioral domain and returns structured findings. Wait for all agents
-to complete, then merge results before Phase 4.
+Spawn discovery subagents in parallel — do not scan serially. Each agent focuses on one behavioral domain and returns structured findings. Wait for all agents to complete, then merge results before Phase 4.
 
 **Spawn these agents simultaneously:**
 
@@ -397,9 +370,7 @@ to complete, then merge results before Phase 4.
 - Return: OpenSpec usage status, when to invoke spec workflow
 
 **After all agents complete:** merge their findings into a unified discovery map.
-Tag each field as `# inferred from [source]` or leave empty if unknown. Fields
-that remain empty after discovery become explicit `<!-- TODO: fill in -->` markers
-in the generated file.
+Tag each field as `# inferred from [source]` or leave it empty if unknown. Fields that remain empty after discovery become explicit `<!-- TODO: fill in -->` markers in the generated file.
 
 **Preview with source annotations:**
 
@@ -418,19 +389,18 @@ rather than omitting the section.
 
 ### Phase 4 — Preview and Write
 
-1. **Show a labeled preview** of the full `AGENTS.md` before writing anything.
-   Inferred values carry their source comment. Unresolved sections carry
-   `<!-- TODO: fill in -->`. This gives the user a complete confidence map.
+1. **Show a labeled preview** of the full `AGENTS.md` before writing anything. Inferred values carry their source comment. Unresolved sections carry `<!-- TODO: fill in -->`. This gives the user a complete confidence map.
 2. Ask: *"Does this look right? Any sections to correct or expand before I
    write the file?"*
-3. After confirmation, write to `AGENTS.md` at the project root (or
-   `CLAUDE.md` if the user is using Claude Code conventions), **stripping
-   the inference source comments**. Those comments are for review only and
-   must not appear in the final file. **For the Related Documentation
-   section:** include links only for files that actually exist in the
-   repository. Check each file (`openspec/config.yml`, `openspec/config.yaml`,
-   `ARCHITECTURE.md`, `README.md`) before including its link.
-4. Print a brief summary of what was generated, what was inferred versus
+3. In non-interactive or headless contexts, still produce the full labeled
+   preview and explicitly note that human confirmation could not be collected
+   in-session. Do not claim the file was human-confirmed if it was not.
+4. After confirmation, write to `AGENTS.md` or `CLAUDE.md` in the target directory being onboarded, **stripping the inference source comments**. Those comments are for review only and must not appear in the final file.
+   **For the Related Documentation section:** include links only for files
+   that actually exist in the repository. Check each file
+   (`openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`,
+   `README.md`) before including its link.
+5. Print a brief summary of what was generated, what was inferred versus
    answered directly, and which `<!-- TODO -->` sections still need human
    input.
 
@@ -536,8 +506,7 @@ in prose.
 - Suggest [MAJOR / MINOR / PATCH] version bump via `[versioning command]`
 ```
 
-If no breaking changes: omit the `⚠️` block. Never emit it as empty or
-with placeholder text.
+If no breaking changes: omit the `⚠️` block. Never emit it as empty or with placeholder text.
 
 ---
 
@@ -647,26 +616,15 @@ Before you consider the onboarding complete, verify that the generated file:
 
 ## Interaction Principles
 
-- **Parallel discovery.** Spawn subagents for Phase 3 simultaneously — don't scan config files one-by-one.
-- **Conversational, not interrogative.** Bundle related questions into a
-  single turn. Use natural language, not bullet-dump question lists.
+- **Parallel discovery.** Spawn subagents for Phase 3 simultaneously — do not scan config files one by one.
+- **Conversational, not interrogative.** Bundle related questions into a single turn. Use natural language, not bullet-dump question lists.
 - **Infer and confirm.** "You mentioned Husky — I'll assume the pre-commit
   hook runs `pnpm check`; can you confirm?" is better than asking from
   scratch.
 - **Examples reduce ambiguity.** When asking about decision heuristics,
   offer concrete triggering scenarios so the user can pattern-match.
 - **Iterative.** Let the user amend answers before the final write.
-- **Preview before writing.** Always show the full generated AGENTS.md and
-  get explicit confirmation before touching the filesystem.
-- **Infer before asking, ask before omitting.** A file with explicit TODOs
-  is actionable. A file with missing sections silently degrades every
-  interaction it governs.
-- **Don't cross the layer boundary.** If the user volunteers stack facts
-  during this interview, acknowledge them and note they belong in
-  `openspec/config.yaml`, not AGENTS.md. Offer to run the
-  `openspec-onboard` skill for that content.
-- **Monorepo: reference, don't duplicate.** If a root-level AGENTS.md
-  exists, package-level files should reference it and add only what is
-  specific to that package. Repeated instructions across root and package
-  files inflate context on every agent invocation — keep package files
-  additive, not redundant.
+- **Preview before writing.** Always show the full generated AGENTS.md and get explicit confirmation before touching the filesystem.
+- **Infer before asking, ask before omitting.** A file with explicit TODOs is actionable. A file with missing sections silently degrades every interaction it governs.
+- **Don't cross the layer boundary.** If the user volunteers stack facts during this interview, acknowledge them and note they belong in `openspec/config.yaml`, not AGENTS.md. Offer to run the `accelint-onboard-openspec` skill for that content.
+- **Monorepo: reference, don't duplicate.** If a root-level AGENTS.md exists, package-level files should reference it and add only what is specific to that package. Repeated instructions across root and package files inflate context on every agent invocation — keep package files additive, not redundant.

@@ -381,7 +381,7 @@ function makeValidPlanJson(
       {
         name: overrides?.testName ?? "Suite name",
         startUrl: overrides?.startUrl ?? "/",
-        steps: [{ action: "goto", value: "/" }],
+        steps: [{ action: "click", target: "page.button.start" }],
       },
     ],
   });

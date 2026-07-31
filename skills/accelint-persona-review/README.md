@@ -2,6 +2,8 @@
 
 Evaluate Figma designs from specific operator personas and surface role-specific UX insights that generic reviews miss.
 
+This skill is intended to auto-trigger for persona-based operator UX reviews. The examples below are shorthand prompt patterns, not required slash-command syntax.
+
 ## Usage
 
 ```bash
@@ -100,6 +102,6 @@ For broader repository context:
 
 ## Version
 
-Current version: **1.3.0**
+Current version: **1.3.1**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.

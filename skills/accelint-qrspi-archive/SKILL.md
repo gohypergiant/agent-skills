@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the OpenSpec CLI. Per-capability spec writes normally require sub-agent support — see Error Handling for the degraded inline fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
 metadata:
   author: accelint
-  version: "1.3.3"
+  version: "1.3.4"
 ---
 
 # Accelint QRSPI Archive
@@ -16,10 +16,10 @@ Cross-linking has to happen after the merge resolves, not before it, which is ex
 
 ## What This Skill Does
 
-**Automates**: the full archive operation for one or more OpenSpec changes in a single invocation — invoking `/opsx:archive` or `/opsx:bulk-archive` itself, then immediately following up with cross-capability linking and index maintenance.
-**Scope**: everything from "archive this change" through updated indices. This skill calls the native command itself during archive and extraction; it does not wait for the merge to have happened some other way first.
-**Output**: the change(s) archived via OpenSpec's own merge, plus updated `related:` frontmatter and a regenerated `## Related Specs` section on every touched spec, an updated `openspec/specs/INDEX.md` (patched for the capabilities this batch touched, or built fresh project-wide the first time the file doesn't exist yet), and one appended row per archived change in `openspec/changes/archive/INDEX.md`.
-**Does NOT**: implement the merge or conflict-resolution logic itself (that's OpenSpec's own, which this skill invokes via the native command rather than reimplementing), prune any `related:` entry, change a change's `Status` column after its initial write, reorder existing changelog rows, or shell out to the OpenSpec CLI to read local spec files (plain file reads are sufficient — see Explicitly Out of Scope).
+- **Automates**: the full archive operation for one or more OpenSpec changes in a single invocation — invoking `/opsx:archive` or `/opsx:bulk-archive` itself, then immediately following up with cross-capability linking and index maintenance.
+- **Scope**: everything from "archive this change" through updated indices. This skill calls the native command itself during archive and extraction. It does not wait for the merge to happen some other way first.
+- **Output**: the change(s) archived via OpenSpec's own merge, plus updated `related:` frontmatter and a regenerated `## Related Specs` section on every touched spec, an updated `openspec/specs/INDEX.md` (patched for the capabilities this batch touched, or built fresh project-wide the first time the file does not exist yet), and one appended row per archived change in `openspec/changes/archive/INDEX.md`.
+- **Does NOT**: implement the merge or conflict-resolution logic itself (that is OpenSpec's own, which this skill invokes via the native command rather than reimplementing), prune any `related:` entry, change a change's `Status` column after its initial write, reorder existing changelog rows, or shell out to the OpenSpec CLI to read local spec files (plain file reads are sufficient — see Explicitly Out of Scope).
 
 ## Prerequisites
 
@@ -68,27 +68,11 @@ If any of these are missing, report the gap and guide the user to resolve it bef
 │  7 Report           Summarize what changed                 Summary     │
 └────────────────────────────────────────────────────────────────────────┘
 
-Critical: for /opsx:bulk-archive, validation through reporting run exactly ONCE, after every
-merge in the batch has resolved — never once per intermediate merge. Running
-early would compute pairs against a specs_touched set that hasn't finished
-accumulating cross-change conflicts, and would patch INDEX.md against a
-half-finished batch.
+REQUIRED: for /opsx:bulk-archive, validation through reporting run exactly ONCE, after every merge in the batch resolves — never once per intermediate merge. Running early would compute pairs against a `specs_touched` set that has not finished accumulating cross-change conflicts, and would patch `INDEX.md` against a half-finished batch.
 
-Spec writing always delegates to subagents, regardless of batch size — one
-capability or forty. This isn't a parallelization optimization that only
-kicks in for large batches; it's how this skill keeps raw spec.md contents
-out of the parent's context on every run, the same pattern
-accelint-qrspi-propose and accelint-qrspi-apply use.
+Spec writing always delegates to subagents, regardless of batch size — one capability or forty. This is not a parallelization optimization that only kicks in for large batches. It is how this skill keeps raw `spec.md` contents out of the parent's context on every run, the same pattern `accelint-qrspi-propose` and `accelint-qrspi-apply` use.
 
-Archive and extraction is the mirror image: it never delegates to a subagent, regardless of
-batch size or whether sub-agent support is even available. /opsx:archive and
-/opsx:bulk-archive are themselves agent-driven, multi-step skills — not a
-single deterministic CLI call — and a subagent handed "run /opsx:archive"
-has no reliable way to resume that skill's own remaining steps once it
-branches internally into something like a separate sync skill, and no way
-to surface an interactive prompt back to the user if one comes up. Both of
-those are failure modes this skill hit in practice, not hypothetical ones —
-see the Archive and Extract section for the full account.
+Archive and extraction is the mirror image: it never delegates to a subagent, regardless of batch size or whether sub-agent support is available. `/opsx:archive` and `/opsx:bulk-archive` are themselves agent-driven, multi-step skills — not a single deterministic CLI call. A subagent handed "run `/opsx:archive`" has no reliable way to resume that skill's own remaining steps once it branches internally into something like a separate sync skill, and no way to surface an interactive prompt back to the user if one comes up. Both are failure modes this skill hit in practice, not hypothetical ones.
 ```
 
 ## Implementation Steps
@@ -133,9 +117,9 @@ Goal: confirm the archive operation's inputs are shaped correctly before touchin
 
 **Archive and Extract** (runs inline — never a subagent)
 
-6. Let OpenSpec do the actual merge, then read back the data steps 17 and 23 need — done directly in this context, not handed to a subagent.
+6. Let OpenSpec do the actual merge, then read back the data steps 17 and 23 need. Do this directly in this context, not in a subagent.
 
-This step never runs as a subagent, regardless of batch size and regardless of whether sub-agent support is available at all. That's a reversal of this skill's `1.0.0` behavior, made after running into two concrete failure modes in practice:
+This step never runs as a subagent, regardless of batch size and regardless of whether sub-agent support is available. That is a reversal of this skill's `1.0.0` behavior, made after running into two concrete failure modes in practice:
 
 - **`/opsx:archive` and `/opsx:bulk-archive` are agent-driven skills, not a single deterministic CLI call.** They read project state, decide what needs syncing, and — when a sync is needed — hand off internally to a separate sync skill before returning to finish the rest of the archive workflow (merging delta specs, moving the change into `openspec/changes/archive/`). A subagent hand-fed the instruction "run `/opsx:archive`" has no reliable way to tell "I finished the sync skill this archive step referred me to" apart from "I finished the thing I was actually asked to do" — there's no caller to check back with mid-task. In practice this showed up exactly that way: the subagent ran the sync step, considered its job done, and returned control without ever reaching the merge. Running archive directly in this context means the same agent that issued "run `/opsx:archive`" is the one watching it branch into sync, so it can recognize the branch for what it is and carry on to archive's remaining steps once sync finishes — the same continuity a person would have running the command themselves.
 - **A subagent can't surface an interactive prompt to the user.** `/opsx:archive` and `/opsx:bulk-archive` may raise more than the routine sync y/n — `/opsx:bulk-archive` in particular can prompt for confirmation before merging changes that touch overlapping specs (see step 2 below). A subagent that hits a prompt like that is stuck: it can't hand the question to the user and get a real answer, and guessing on the user's behalf is worse than not proceeding. Running archive inline means any such prompt lands in the same conversation the user is already in.
@@ -237,7 +221,7 @@ This does give something up: `/opsx:archive`'s own internal work — comparing d
 
 Always spawn one subagent per touched capability to do this — every time, not conditionally on how many capabilities are involved. Each capability's edit is fully independent once the new-partner map is fixed (the same independence `accelint-qrspi-apply` relies on to parallelize slices), and doing the read/merge/write inside a subagent keeps that spec's full contents out of the parent's context whether this is a one-capability archive or a forty-capability bulk-archive. Making this a threshold-based judgment call ("parallelize if there are many capabilities, otherwise just edit inline") means the parent's context cost varies run to run for no good reason; delegating unconditionally makes it flat. It also means this subagent, not the parent, is the one place that ever reads a spec's current `related:` value — which is exactly why the merge-with-existing-entries logic belongs here rather than in cross-link computation.
 
-22. For each touched capability, spawn a subagent with this prompt (the parent supplies only the *newly contributed* partner names from cross-link computation — not a final list; the subagent is the one that merges those against whatever the file already has):
+22. For each touched capability, spawn a subagent with this prompt. The parent supplies only the *newly contributed* partner names from cross-link computation — not a final list. The subagent is the one that merges those names against whatever the file already has:
 
    ```
    Update openspec/specs/<capability>/spec.md only. Do not touch any other file.
@@ -305,7 +289,7 @@ Always spawn one subagent per touched capability to do this — every time, not 
    - **Brand-new capability** (per preflight step 4): grep for capability-name cells to find the first existing row that sorts after the new one alphabetically, and insert the new row immediately before it (or append at the end if it sorts last). This still only touches one new line — locating the insertion point doesn't require loading row content, just the capability-name column.
    - Every row for every untouched capability is never opened, matched, or rewritten — not just "left identical" as an outcome of a full rebuild, but literally never touched by this operation.
 
-26. Build each row without cross-row padding — single-space cell separation (`| sync/protocol | Defines the live-sync wire proto | ui/status-indicator | add-live-sync |`), not aligned to the widest value in each column:
+26. Build each row without cross-row padding — single-space cell separation (`| sync/protocol | Defines the live-sync wire proto | ui/status-indicator | add-live-sync |`), not alignment to the widest value in each column:
 
    ```markdown
    | Capability | Purpose | Related | Last touched by |
@@ -322,7 +306,7 @@ Always spawn one subagent per touched capability to do this — every time, not 
 
 **Output**: `openspec/specs/INDEX.md`, with one line changed or inserted per capability this batch touched and every other line untouched, or built once from every capability project-wide if the file didn't exist yet.
 
-A patched `specs/INDEX.md` can still drift from reality for reasons outside this skill's control — a `spec.md` hand-edited outside the archive workflow, a capability directory renamed or deleted directly. This skill doesn't re-derive the whole index every run to catch that. Nothing else currently does either: `accelint-archive-synthesis`'s two checks (decision-drift, structural-coupling) both read `specs/INDEX.md` as ground truth rather than auditing it against the `spec.md` files it summarizes. Catching this kind of drift would mean adding an index-reconciliation check to `accelint-archive-synthesis` — a natural fit for a skill that already exists to do periodic, corpus-wide checks — but that check doesn't exist yet. Until it does, this is an accepted, narrow gap rather than a covered one.
+A patched `specs/INDEX.md` can still drift from reality for reasons outside this skill's control — a `spec.md` hand-edited outside the archive workflow, a capability directory renamed or deleted directly. This skill doesn't re-derive the whole index every run to catch that. Nothing else currently does either: `accelint-archive-synthesis`'s two checks (decision-drift, structural-coupling) both read `specs/INDEX.md` as ground truth rather than auditing it against the `spec.md` files it summarizes. That is an accepted, narrow gap rather than a covered one.
 
 **Append to openspec/changes/archive/INDEX.md**
 
@@ -382,7 +366,7 @@ A quick-reference summary — each of these is explained in full where it's actu
 - **`specs_touched`/`decisions` frontmatter belongs to propose time, not archive time.** `accelint-qrspi-propose` is where this is supposed to get written, as part of the change's own design work. Task A's derive-and-confirm path exists for changes that didn't go through that flow — a fallback with the author's confirmation still required, not this skill's primary way of getting that data.
 - **This skill only adds.** Pruning a `related:` entry or changing an existing `Status` value is `accelint-archive-synthesis`'s job — both need cross-change judgment and human confirmation this skill doesn't have.
 - **Every write is idempotent.** Flow-style sorted `related:` and row-level patching of `specs/INDEX.md` mean a re-run against unchanged inputs is byte-identical, so retrying after a partial failure never duplicates entries or rows.
-- **`specs/INDEX.md` is patched row-by-row for the capabilities touched this run (built wholesale only on first bootstrap); `changes/archive/INDEX.md` is append-only.** One describes current state, the other describes history — treating either the other way corrupts history or lets the index drift. Verifying `specs/INDEX.md` against every `spec.md` on disk, corpus-wide, isn't something this skill does, and isn't currently something `accelint-archive-synthesis` does either — its existing checks read the index as ground truth rather than auditing it. That's a gap worth closing there someday, not a job for this skill's per-archive hot path.
+- **`specs/INDEX.md` is patched row-by-row for the capabilities touched this run (built wholesale only on first bootstrap); `changes/archive/INDEX.md` is append-only.** One describes current state, the other describes history — treating either the other way corrupts history or lets the index drift. Verifying `specs/INDEX.md` against every `spec.md` on disk, corpus-wide, is outside this skill's per-archive hot path.
 - **Spec writing always delegates to subagents, never conditionally; archive and extraction never does, unconditionally.** Unconditional delegation for spec writing keeps the parent's context cost flat regardless of batch size, the same discipline `accelint-qrspi-propose` and `accelint-qrspi-apply` use for every file-touching operation. Archive runs inline for the opposite reason: `/opsx:archive`/`/opsx:bulk-archive` are agent-driven and can branch or prompt mid-run, and only the context the user is actually in can follow that branch through or answer that prompt.
 
 ## Explicitly Out of Scope
@@ -392,12 +376,12 @@ A quick-reference summary — each of these is explained in full where it's actu
 - **No per-edge relationship metadata.** A `related:` entry doesn't carry a reason or a timestamp of its own — that context already lives in the originating change's `design.md` and its row in `changes/archive/INDEX.md`, reachable by grepping if ever needed.
 - **No automatic pruning of `related:`.** Only additive. Removal is `accelint-archive-synthesis`'s job, and only with human confirmation.
 - **No directionality in the relation.** Co-touch is inherently symmetric, so it's always computed as all-pairs, never as a dependency direction — "A depends on B" is a different kind of edge this skill doesn't model at all.
-- **No corpus-wide drift detection in `specs/INDEX.md`.** Index updates only ever patch the rows for capabilities this batch's changes declared in `specs_touched`. If some capability's `spec.md` was edited outside this skill and its `INDEX.md` row has gone stale as a result, this skill's hot path doesn't catch that — and neither, currently, does `accelint-archive-synthesis`: its decision-drift and structural-coupling checks both read `specs/INDEX.md` as ground truth rather than verifying it against `spec.md`. This is a real, accepted gap, not a job this skill should absorb into its own per-archive cost.
-- **No reconciling summary stats trailing `changes/archive/INDEX.md`.** If that file carries a total row count or similar after the table, the changelog append step preserves it untouched (see step 30) rather than incrementing it — updating summary stats is corpus-wide bookkeeping in the same family as `specs/INDEX.md` drift above, not a per-archive job.
+- **No corpus-wide drift detection in `specs/INDEX.md`.** Index updates only ever patch the rows for capabilities this batch's changes declared in `specs_touched`. If some capability's `spec.md` was edited outside this skill and its `INDEX.md` row has gone stale as a result, this skill's hot path doesn't catch that. This is a real, accepted gap, not a job this skill should absorb into its own per-archive cost.
+- **No reconciling summary stats trailing `changes/archive/INDEX.md`.** If that file carries a total row count or similar after the table, the changelog append step preserves it untouched (see step 30) rather than incrementing it — that's corpus-wide bookkeeping, not a per-archive job.
 
 ## Error Handling
 
-**Missing or malformed design.md frontmatter (Task A)**: derive a candidate `specs_touched`/`decisions` from the change's own `proposal.md` and delta spec directories, present it to the user for explicit confirmation, and write the confirmed value back into `design.md` before archive runs for that change. Stop before archive for that change, with the field named, only if the user chooses to pause and fix it themselves, or if nothing in the change's own files supports a candidate at all.
+**Missing or malformed design.md frontmatter (Task A)**: derive a candidate `specs_touched`/`decisions` from the change's own `proposal.md` and delta spec directories, present it to the user for explicit confirmation, and write the confirmed value back into `design.md` before archive runs for that change. Stop before archive for that change, and name the missing field, only if the user chooses to pause and fix it themselves, or if nothing in the change's own files supports a candidate at all.
 
 **Missing `## Purpose` or `### Purpose` heading (Task B)**: don't block archive, validation, or cross-link computation (they don't touch spec bodies), but stop before spec writing reaches that capability and ask the user to either add a placeholder or fix the spec first.
 
@@ -409,7 +393,7 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **`/opsx:archive` or `/opsx:bulk-archive` branches internally mid-run** (most commonly into a separate sync skill): this is normal, expected shape for the command, not a failure — see archive section steps 4-5. Stay with it and resume archive's own remaining steps once the branch completes; if the branch (or anything else during the run) raises a prompt beyond the routine sync y/n, surface it to the user and wait for their answer rather than guessing.
 
-**No subagent support available for spec writing** (e.g. an environment without sub-agent support): fall back to performing spec-writing steps directly in this context instead of one subagent per capability. Warn the user explicitly that this run will hold full `spec.md` contents in context as a result — this is a degraded fallback for spec writing only, not the intended default there, and normal operation should always prefer subagents for spec writing. This has no bearing on the archive step, which already runs in this context unconditionally by design regardless of sub-agent availability — see the Archive and Extract section.
+**No subagent support available for spec writing** (e.g. an environment without sub-agent support): fall back to performing spec-writing steps directly in this context instead of one subagent per capability. Warn the user explicitly that this run will hold full `spec.md` contents in context as a result. This is a degraded fallback for spec writing only, not the intended default there, and normal operation should always prefer subagents for spec writing. This has no bearing on the archive step, which already runs in this context unconditionally by design regardless of sub-agent availability — see the Archive and Extract section.
 
 **`specs/INDEX.md` or `changes/archive/INDEX.md` doesn't exist yet**: expected on a project's first-ever archive. Create `changes/archive/INDEX.md` fresh with a header row (step 31); `specs/INDEX.md` is built fresh from every capability in the index update bootstrap case (step 27), and patched row-by-row on every archive after that.
 
@@ -558,4 +542,4 @@ Skill: ✓ Archived add-dark-mode, then update-footer, specs/ui/ merged in that 
 ...
 ```
 
-This is the scenario archive running inline actually unlocks: a subagent handed `/opsx:bulk-archive` has no way to relay that ordering question to the user and get a real answer back, so it either stalls or has to guess. Running archive in this context means the question reaches the person who can actually answer it.
+This scenario is what archive running inline actually unlocks: a subagent handed `/opsx:bulk-archive` has no way to relay that ordering question to the user and get a real answer back, so it either stalls or has to guess. Running archive in this context means the question reaches the person who can actually answer it.

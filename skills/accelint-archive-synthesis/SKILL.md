@@ -2,18 +2,17 @@
 name: accelint-archive-synthesis
 description: Audit the full OpenSpec archive for cross-change decision drift, contradictory or stale archived decisions, openspec/specs/INDEX.md drift, and capability over-coupling that only appears across many archived changes. Use when the user asks to run archive synthesis, review whether older decisions still hold, look for contradictions across archived changes, reconcile openspec/specs/INDEX.md against live spec.md files, find stale capability summaries, or check whether a capability has become too interconnected. Also use it when accelint-qrspi-archive suggests a synthesis run and the human explicitly agrees. Do not use it for proposing a change, implementing a change, archiving a change, or verifying a single change. This skill is for periodic, corpus-wide, human-approved archive audits that stop at findings until the human confirms any action.
 license: Apache-2.0
-compatibility: Requires the OpenSpec CLI, sub-agent support, and a project already onboarded with accelint-qrspi-archive so that openspec/changes/archive/INDEX.md and openspec/specs/INDEX.md exist and are populated. Routing confirmed findings requires the shared findings - interface (Mode 3 Refresh support) in whichever writer skill(s) a given finding targets; without it, this skill still produces its report but degrades to manual guidance for that step.
+compatibility: Requires the OpenSpec CLI, sub-agent support, and a project already onboarded with accelint-qrspi-archive so that openspec/changes/archive/INDEX.md and openspec/specs/INDEX.md exist and are populated. Routing confirmed findings requires the shared `findings:` interface (Mode 3 Refresh support) in whichever writer skill(s) a given finding targets; without it, this skill still produces its report but degrades to manual guidance for that step.
 metadata:
   author: accelint
-  version: "1.1.2"
+  version: "1.1.3"
 ---
 
 # Accelint Archive Synthesis
 
-Use this skill to read backward across the archived-change history, check whether the archive still agrees with itself, reconcile the running indexes against the live files they summarize, and surface capabilities whose accumulated relationships suggest they have outgrown their boundaries. In Karpathy's LLM Wiki pattern, this is the `lint` operation: `ingest` already exists as `accelint-qrspi-archive`, and `query` already exists as artifact loading at propose/apply time, but nothing else periodically re-reads the whole corpus to check internal consistency. Every other drift check in this stack, including `accelint-qrspi-apply` Step 5's hub-doc refresh, is forward-looking and scoped to one change's own proposal and design. This skill is the only one that looks the other direction and, since `accelint-qrspi-archive` moved to row-level index patching for efficiency, the only one that re-checks `specs/INDEX.md` against the `spec.md` files it summarizes.
+Use this skill to read backward across archived changes, check whether the archive still agrees with itself, reconcile the running indexes against the live files they summarize, and surface capabilities whose accumulated relationships suggest they have outgrown their boundaries. In Karpathy's LLM Wiki pattern, this is the `lint` operation. `ingest` already exists as `accelint-qrspi-archive`, and `query` already exists as artifact loading at propose/apply time. Nothing else periodically re-reads the whole corpus to check internal consistency. Every other drift check in this stack, including `accelint-qrspi-apply` Step 5's hub-doc refresh, is forward-looking and scoped to one change's own proposal and design. This skill is the only one that looks the other direction. Since `accelint-qrspi-archive` moved to row-level index patching for efficiency, this skill is also the only one that re-checks `specs/INDEX.md` against the `spec.md` files it summarizes.
 
-That backward-looking scope also keeps this skill's footprint small and deliberate. It reads two indexes and, only for genuine candidates, a handful of `design.md` files. For the reconciliation check, it reads only the top of each `spec.md`. It never rewrites a hub doc directly, and every write it does make on either index is a single targeted line, gated behind explicit human confirmation of that specific finding. It never runs on its own initiative. A human always decides which findings get acted on.
-
+That backward-looking scope keeps this skill's footprint small and deliberate. It reads two indexes and, only for genuine candidates, a handful of `design.md` files. For the reconciliation check, it reads only the top of each `spec.md`. It never rewrites a hub doc directly. Every write it makes on either index is a single targeted line, gated behind explicit human confirmation of that specific finding. It never runs on its own initiative. A human always decides which findings get acted on.
 
 ## Interaction Contract
 
@@ -24,7 +23,7 @@ That backward-looking scope also keeps this skill's footprint small and delibera
 
 ## Degraded-Mode Rules
 
-Use these fallback rules consistently instead of improvising:
+Use these fallback rules consistently. Do not improvise:
 
 - **No subagent support**: fall back to parent-context reads for the targeted files only, and warn that raw file content will remain in context.
 - **Writer skill missing or lacking `findings:` support**: keep the finding in the report and hand the user a paste-ready manual `findings:` block.
@@ -112,7 +111,7 @@ This skill borrows `/opsx:verify`'s CRITICAL/WARNING/SUGGESTION register deliber
 
 ## Workflow Overview
 
-Use the workflow table as the canonical execution order. If a background explanation elsewhere is longer or richer than the table, follow the table plus the numbered implementation steps, not the narrative wording.
+Use the workflow table as the canonical execution order. If a background explanation elsewhere is longer or richer than the table, follow the table and the numbered implementation steps, not the narrative wording.
 
 ```
 ┌───────────────────────────────────────────────────────────────────────────────┐
@@ -147,7 +146,7 @@ When subagent support is available, prefer one subagent per candidate for Step 3
 
 ## Implementation Steps
 
-Execute these steps in order without stopping between them unless an error occurs or a human decision is required. The first mandatory stop is Step 7.
+Execute these steps in order. Do not stop between them unless an error occurs or a human decision is required. The first mandatory stop is Step 7.
 
 1. **Preflight — confirm this run has something to check and that its two reasoned-default thresholds still look reasonable, before reading anything else.**
 
@@ -229,7 +228,7 @@ Compute the median `related:` list length across every row loaded in Step 2. Fla
 
    Worked example: across 22 capability rows, related-counts of `[1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 10, 11, 14, 14]` sort to a median of 6 (the 11th and 12th of 22 values, both 6). The floor is `max(5, 2 × 6) = 12`, so only the two rows at 14 clear it — everything from 11 down, including the two rows already at 6, stays unflagged. This is exactly the kind of distribution Verification Task C checks against: if every project's median clustered near 1 or 2 instead, the fixed floor of 5 alone would already flag most of the corpus regardless of the 2× multiplier, which is precisely the mismatch Task C exists to surface.
 
-6. **Compile Report — assemble everything Steps 3, 4, and 5 found into one report, in the same CRITICAL / WARNING / SUGGESTION register `/opsx:verify` already uses, so it reads as a familiar artifact rather than a new report format to learn.**
+6. **Compile Report — assemble everything Steps 3, 4, and 5 found into one report, using the same CRITICAL / WARNING / SUGGESTION register `/opsx:verify` already uses, so it reads as a familiar artifact rather than a new report format.**
 
 ```
 ## Archive Synthesis Report — <date>
@@ -257,7 +256,7 @@ checkpoint or "project start">.
 
    Never present a finding here as already-resolved — every CRITICAL/WARNING item is a candidate for Step 7, not a conclusion.
 
-7. **Human Review — let a human decide what actually happens with each finding — this skill never resolves a contradiction on its own authority.**
+7. **Human Review — let a human decide what happens with each finding. This skill never resolves a contradiction on its own authority.**
 
 Present each finding individually, in severity order. The three options are always Confirm / Dismiss / Defer, but "Confirm" and "Dismiss" don't do the same thing for a decision-drift finding as they do for a structural coupling or index reconciliation finding, and the label has to say so — a person choosing between them shouldn't have to already know this skill's internals to know what they're picking:
 
@@ -299,7 +298,7 @@ openspec/specs/cache/layer/spec.md, which no longer exists.
 
 - A contradiction over **tech stack, dependencies, or coding/architecture patterns** → `accelint-onboard-openspec` (`openspec/config.yaml`).
 - A contradiction over **system structure, components, or data flow** → `accelint-architecture-doc` (`ARCHITECTURE.md`). This is also always the target for structural coupling findings, landing in that skill's existing Known Technical Debt interview slot.
-- A contradiction over **agent workflow or behavior** → `accelint-onboard-agent` (`AGENTS.md`).
+- A contradiction over **agent workflow or behavior** → `accelint-onboard-agents` (`AGENTS.md`).
 - A contradiction over **user-facing setup or usage** → `accelint-readme-writer` (`README.md`).
 
 A single finding can legitimately target more than one — invoke each relevant writer skill separately, with the same finding rephrased once per invocation to fit that doc's own focus, exactly as `accelint-qrspi-apply` Step 5 already treats each hub doc as an independent target rather than a single combined update. Each invocation succeeds or fails on its own — one writer skill being unavailable or erroring never blocks or rolls back a separate, successful invocation of another (see Error Handling for the specific case of a routing failure after `Status` has already been written).
@@ -362,7 +361,7 @@ End every completed run with a short summary that covers:
 
 **A flagged writer skill isn't installed, or doesn't yet support `findings:` in its Mode 3 path**: don't fail the whole run. Still produce and present the finding in the report; for Step 8 routing, tell the user this specific handoff needs to happen manually and summarize what the finding was so they can paste it in themselves.
 
-**No subagent support available**: fall back to opening flagged `design.md` candidates directly in the parent context for Step 3 Step 3. Warn the user explicitly that this run's raw design.md contents will sit in context as a result — a degraded fallback, not the default.
+**No subagent support available**: fall back to opening flagged `design.md` candidates directly in the parent context for Step 3's targeted verification. Warn the user explicitly that this run's raw `design.md` contents will sit in context as a result — a degraded fallback, not the default.
 
 **A `design.md` referenced by an index row no longer exists** (moved, renamed, or the archive folder was otherwise disturbed outside this skill's own writes): skip that row for Step 3's targeted verification, note it in the report as unverifiable, and do not treat its absence as itself a finding.
 
@@ -390,46 +389,46 @@ End every completed run with a short summary that covers:
 
 ## NEVER Do This
 
-**NEVER run without an explicit human invocation or accepted suggestion** — this skill has no automatic trigger of its own; `accelint-qrspi-archive` only ever suggests, it never forces a run.
+**NEVER run without an explicit human invocation or accepted suggestion** — this skill has no automatic trigger of its own. `accelint-qrspi-archive` only ever suggests. It never forces a run.
 
-**NEVER write any `archive/INDEX.md` column other than `Status`** — every other field is `accelint-qrspi-archive`'s, permanently, on every row this skill ever touches.
+**NEVER write any `archive/INDEX.md` column other than `Status`** — every other field belongs to `accelint-qrspi-archive`, permanently, on every row this skill touches.
 
 **NEVER introduce a third state to `Status`** — it is always `current` or `superseded by <slug> (<date>)`, never anything else.
 
-**NEVER update `Status` without an explicit human confirmation of that specific contradiction** — a candidate surfacing in Step 3 is not the same thing as a human agreeing it's real.
+**NEVER update `Status` without an explicit human confirmation of that specific contradiction** — a candidate surfacing in Step 3 is not the same as a human agreeing it is real.
 
 **NEVER rewrite a hub doc directly** — always route a confirmed finding through the relevant writer skill's own Mode 3 Refresh path via the `findings:` interface, exactly like `accelint-qrspi-apply` Step 5 already does.
 
-**NEVER open every `design.md` in the corpus wholesale** — Step 3 only opens the specific candidates the cheap index-only scan in Step 2 flagged, one subagent per candidate.
+**NEVER open every `design.md` in the corpus wholesale** — Step 3 opens only the specific candidates the cheap index-only scan in Step 2 flagged, one subagent per candidate.
 
-**NEVER silently adjust the 15-change trigger or the 5-and-2×-median coupling floor** — Tasks A and C only report a mismatch; changing either number is a human's call.
+**NEVER silently adjust the 15-change trigger or the 5-and-2×-median coupling floor** — Tasks A and C only report a mismatch. Changing either number is a human decision.
 
-**NEVER treat a missing or moved `design.md` as itself a finding** — it just means that row can't be verified this run; note it and move on.
+**NEVER treat a missing or moved `design.md` as a finding** — it only means that row cannot be verified this run. Note it and move on.
 
-**NEVER tell a human a dismissed structural coupling finding is permanently suppressed** — only decision-drift dismissals persist to `SYNTHESIS-LOG.md`; a dismissed coupling finding resurfaces next run exactly like a deferred one, since its underlying count is a moving snapshot. Say this plainly rather than implying a guarantee this skill doesn't keep.
+**NEVER tell a human a dismissed structural coupling finding is permanently suppressed** — only decision-drift dismissals persist to `SYNTHESIS-LOG.md`. A dismissed coupling finding resurfaces next run exactly like a deferred one, because its underlying count is a moving snapshot. Say this plainly rather than implying a guarantee this skill does not keep.
 
-**NEVER let this skill itself edit or remove an existing `dismissed:` entry** — Step 9 only ever appends. Reconsidering a previously dismissed pair is a manual edit to `SYNTHESIS-LOG.md`, deliberately outside this skill's own write path.
+**NEVER let this skill edit or remove an existing `dismissed:` entry** — Step 9 only ever appends. Reconsidering a previously dismissed pair is a manual edit to `SYNTHESIS-LOG.md`, deliberately outside this skill's own write path.
 
-**NEVER roll back a `Status` update because a routing invocation afterward failed** — the two writes are independent. A confirmed finding's `Status` change reflects the human's confirmation, not whether the writer-skill handoff succeeded; a failed handoff gets reported and handed to the human manually, it never reverses a write that already landed.
+**NEVER roll back a `Status` update because a routing invocation afterward failed** — the two writes are independent. A confirmed finding's `Status` change reflects the human's confirmation, not whether the writer-skill handoff succeeded. A failed handoff gets reported and handed to the human manually. It never reverses a write that already landed.
 
 **NEVER write to `specs/INDEX.md` except a single confirmed row's patch or removal** — same discipline as the `Status` exception on `archive/INDEX.md`: one narrow, confirmation-gated write, never a bulk edit or full-file rewrite.
 
-**NEVER touch `last_touched_by` when patching a reconciliation finding** — that field records which archived change last touched the capability; a reconciliation patch isn't an archived change, and overwriting it would misattribute a hand-edit fix to a change that never happened.
+**NEVER touch `last_touched_by` when patching a reconciliation finding** — that field records which archived change last touched the capability. A reconciliation patch is not an archived change, and overwriting it would misattribute a hand-edit fix to a change that never happened.
 
 **NEVER guess a renamed capability's new name or insert a speculative row for it** — a missing-file CRITICAL finding only ever removes the stale row. Step 4 never verified the new capability's content, so writing a row for it would be a guess dressed up as a finding.
 
-**NEVER re-pad or realign existing rows in `specs/INDEX.md` when patching or removing one row** — same rule `accelint-qrspi-archive` follows for its own row-level writes. Cell padding is per-row, not aligned to the table's widest value; touching every row's whitespace to keep columns visually lined up turns a one-line diff back into a full-file rewrite.
+**NEVER re-pad or realign existing rows in `specs/INDEX.md` when patching or removing one row** — same rule `accelint-qrspi-archive` follows for its own row-level writes. Cell padding is per-row, not aligned to the table's widest value. Touching every row's whitespace to keep columns visually lined up turns a one-line diff back into a full-file rewrite.
 
-**NEVER tell a human a dismissed index reconciliation finding is permanently suppressed** — same rule as structural coupling, and for the same reason: the comparison is against live file state, not a fixed historical fact, so it's re-checked every run regardless of a prior dismissal.
+**NEVER tell a human a dismissed index reconciliation finding is permanently suppressed** — same rule as structural coupling, and for the same reason: the comparison is against live file state, not a fixed historical fact, so it is re-checked every run regardless of a prior dismissal.
 
-**NEVER treat a missing `## Purpose` heading in an otherwise-existing `spec.md` as a directory-level CRITICAL** — the file and directory both resolve to something real; that's a content-level WARNING, same bucket as a `Purpose`/`related:` mismatch.
+**NEVER treat a missing `## Purpose` heading in an otherwise-existing `spec.md` as a directory-level CRITICAL** — the file and directory both resolve to something real. That is a content-level WARNING, in the same bucket as a `Purpose`/`related:` mismatch.
 
 ## Terminology
 
 This skill uses several terms precisely and doesn't mix them — worth pinning down once rather than re-explaining in every phase:
 
-- **Candidate**: a possible contradiction, drift, or coupling signal the coarse scan (Step 3 Step 2), the existence/content check (Step 4), or the median check (Step 5) has flagged, before any verification has happened. Not yet a finding.
-- **Confirmed**: a candidate that Step 3 Step 3's targeted subagent verified against full `design.md` content, a Step 4 discrepancy that simply is what the direct comparison against `spec.md` shows (no separate verification step needed, since it's already a direct read), or a Step 5 structural signal that simply is what the index says it is (same reasoning).
+- **Candidate**: a possible contradiction, drift, or coupling signal the Step 3 coarse scan, the Step 4 existence/content check, or the Step 5 median check has flagged, before any verification has happened. Not yet a finding.
+- **Confirmed**: a candidate that Step 3's targeted subagent verification confirmed against full `design.md` content, a Step 4 discrepancy that simply is what the direct comparison against `spec.md` shows (no separate verification step needed, since it's already a direct read), or a Step 5 structural signal that simply is what the index says it is (same reasoning).
 - **Finding**: a confirmed candidate, phrased as a plain fact, ready for Step 5's report and Step 6's human review. Only findings appear in the report — raw candidates that Step 3 dismissed never do.
 - **Confirmed (human)**: distinct from the verification-step "confirmed" above — this is the human's Step 6 decision that a given finding warrants action. Context disambiguates which sense is meant; where it doesn't, this document says "human-confirmed" explicitly.
 - **Dismissed**: a Step 6 human decision that a finding isn't real or doesn't need action. Persists for decision-drift findings (the pair is logged and never re-flagged); does not persist for structural coupling or index reconciliation findings (both are re-checked every run regardless, since both read a live, moving snapshot of current state rather than a fixed historical fact). See Step 6 and "The Log This Skill Owns" for why they differ.

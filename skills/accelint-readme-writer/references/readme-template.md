@@ -204,17 +204,17 @@ pnpm lint
 
 Utility packages have many small, independent functions. Customize the template by:
 
-- Keeping the API section comprehensive, with all exports.
-- Including examples inline with each API entry.
-- Removing the standalone Examples section if the API examples are sufficient.
+- Keep the API section comprehensive, with all exports.
+- Include examples inline with each API entry.
+- Remove the standalone Examples section if the API examples are sufficient.
 
 ### For Pipeline Packages
 
 Pipeline packages have one main workflow. Customize the template by:
 
-- Keeping the API section focused on the main entry points.
-- Expanding the Examples section with complete workflows.
-- Adding step-by-step guides for common tasks.
+- Keep the API section focused on the main entry points.
+- Expand the Examples section with complete workflows.
+- Add step-by-step guides for common tasks.
 
 ### For CLI Tools
 

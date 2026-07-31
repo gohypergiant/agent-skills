@@ -23,13 +23,13 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
 2. EXECUTIVE SUMMARY: Provide a high-level overview
    - Summarize what was audited and the workflow used
    - Count vulnerabilities by severity (e.g., "2 Critical, 5 High, 3 Medium")
-   - Include Risk Assessment explaining WHY security matters for this specific code
+   - Include Risk Assessment that explains why security matters for this specific code
 
 3. PHASE 1 - ISSUE GROUPING RULES:
-   - Group vulnerabilities when they share the SAME root cause AND same fix pattern
+   - Group vulnerabilities when they share the same root cause and the same fix pattern
    - Example: Multiple endpoints missing authentication → group together
    - Example: Different types of injection vulnerabilities → separate issues
-   - Use subsections (4-8) for grouped issues, individual numbers (1, 2, 3) for unique issues
+   - Use subsections (4-8) for grouped issues, and individual numbers (1, 2, 3) for unique issues
 
 4. PHASE 1 - EACH VULNERABILITY OR GROUP MUST INCLUDE:
    - Location (file:line or file:line-range)
@@ -211,7 +211,7 @@ Completed a systematic security audit of [file/module path] using the accelint-s
 [List High severity vulnerabilities - deploy within days]
 
 ### Medium Priority (Scheduled Release)
-[List Medium severity vulnerabilities - deploy in next scheduled release]
+[List Medium severity vulnerabilities - deploy in the next scheduled release]
 
 ### Low Priority (Defense in Depth)
 [List Low severity vulnerabilities - deploy when convenient or batch together]

@@ -67,7 +67,7 @@ INSTRUCTIONS FOR COMPLETING THIS TEMPLATE:
    - Include all issues with their numbers
    - Keep it concise - one row per issue/group
 
-See assets/audit-report-example.md for a real-world example.
+Use this template directly even if no package-specific example file is present.
 -->
 
 ## Executive Summary

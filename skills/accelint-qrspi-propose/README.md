@@ -63,7 +63,8 @@ The skill checks this before running and guides you if configuration is needed.
 ├─────────────────────────────────────────────────────────────────┤
 │  Questions      Ticket only          Questions       —          │
 │  Research       Questions only       Research doc    —          │
-│  Design         Q+R (NO ticket)      design.md       ✓ REVIEW   │
+│  Design         Q+R (NO ticket)      proposal.md,    ✓ REVIEW   │
+│                                      design.md                   │
 │  Specs/Tasks    Q+R+design           specs/*, tasks  ✓ REVIEW   │
 │  Done           —                    Exit            —          │
 └─────────────────────────────────────────────────────────────────┘
@@ -81,7 +82,7 @@ A fresh sub-agent (new context) sees only the questions and answers them with fa
 
 Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts under your project's `config.yaml` rules.
 
-Required checkpoint: Review the design before continuing. Corrections here are cheap; corrections after code is written are expensive.
+Required checkpoint: Review the design before continuing. After approval or confirmed manual edits, the skill captures `specs_touched` and `decisions` metadata in `design.md` frontmatter before moving on. Corrections here are cheap; corrections after code is written are expensive.
 
 #### Stage 4: Specs & Tasks
 
@@ -214,7 +215,7 @@ The skill assumes your project has:
 1. OpenSpec installed (`openspec/` directory exists)
 2. config.yaml configured with rules for design, specs, tasks (ideally via `accelint-onboard-openspec`)
 3. Expanded profile enabled (workflows include `explore`, `new`, `continue`)
-4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agent`)
+4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agents`)
 
 If anything is missing, the skill will guide you through setup.
 
@@ -222,7 +223,7 @@ If anything is missing, the skill will guide you through setup.
 
 If OpenSpec commands fail, the skill surfaces the error and lets you retry or abort. It does not continue automatically.
 
-If a sub-agent fails, you will see the error and can retry that stage or provide manual input for the Questions or Research stages.
+If a sub-agent fails, you will see the error and can retry that stage. Manual fallback is limited to the Questions or Research stages; proposal, design, specs, and tasks still must be generated through `/opsx` commands.
 
 If artifacts are missing after generation, the skill checks file paths and provides the expected locations for manual inspection.
 
@@ -239,6 +240,6 @@ Do not rush to implementation. Create multiple specs before coding. Planning art
 ## Related Skills
 
 - `accelint-onboard-openspec` - Set up OpenSpec configuration for your project
-- `accelint-onboard-agent` - Create AGENTS.md with behavior rules
+- `accelint-onboard-agents` - Create AGENTS.md with behavior rules
 - `accelint-qrspi-apply` - Implement tasks from the generated change
 - `accelint-qrspi-archive` - Archive completed changes with cross-capability linking

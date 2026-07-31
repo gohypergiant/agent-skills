@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.2] - 2026-07-31
+
+### Fixed
+- Reframed several `SKILL.md` and `README.md` performance thresholds and per-item query warnings as heuristics instead of hard rules, based on direct audit evidence that some guidance was more rigid than the repository evidence justified.
+- Tightened root skill prose for scanability and workflow clarity while preserving frontmatter, trigger coverage, progressive-disclosure routing, and technical references.
+- Removed the unreferenced `assets/output-report-template.md` asset and aligned the README package structure to the files actually used by the skill.
+
+### Version
+- Patch release at `1.4.2`.
+
 ## [1.4.1] - 2026-07-30
 
 ### Fixed

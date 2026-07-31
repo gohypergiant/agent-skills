@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.10] - 2026-07-31
+
+### Fixed
+- Tightened the `SKILL.md` frontmatter description so trigger routing more clearly prefers `accelint-skill-prose` when wording controls behavior, while preserving the existing boundary against broader content strategy, policy work, and ordinary prose cleanup.
+- Reduced a few repeated explanatory lines in `SKILL.md` so the root contract is easier to scan without changing workflow semantics, guardrail strength, or progressive-disclosure handoffs.
+- Added concise maintainer guidance to `README.md` about eval coverage, version alignment, and when to keep changes minimal because no benchmark or transcript evidence justifies broader rewrites.
+- Applied a strict-mode local prose pass to `SKILL.md` and `references/checklist.md`, excluding frontmatter as required, to clarify root-first artifact discovery and improve local sentence flow without changing the behavior contract.
+
+### Version
+- Patch release at `0.7.10`.
+
 ## [0.7.9] - 2026-07-30
 
 ### Fixed

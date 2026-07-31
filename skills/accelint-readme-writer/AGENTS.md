@@ -7,7 +7,7 @@
 
 ## Abstract
 
-Guide for creating thorough, human-sounding README documentation that stays aligned with the actual codebase. Designed for AI agents working with JavaScript and TypeScript projects, including monorepos.
+Guide for creating README documentation that stays aligned with the actual codebase. It is designed for AI agents working with JavaScript and TypeScript projects, including monorepos.
 
 ---
 
@@ -15,7 +15,7 @@ Guide for creating thorough, human-sounding README documentation that stays alig
 
 1. Start here: scan the rule summaries to find the relevant sections.
 2. Load references as needed: open detailed examples only when you need implementation detail.
-3. Follow the workflow: analyze the codebase, compare it with existing docs, then generate or update the README.
+3. Follow the workflow: analyze the codebase, compare it with the existing docs, then generate or update the README.
 
 ---
 
@@ -39,10 +39,10 @@ Guide for creating thorough, human-sounding README documentation that stays alig
 ### 1.3 Extracting signatures
 [View detailed examples](references/codebase-analysis.md)
 
-- Capture function signatures with parameter types and return types
-- Document generic type parameters
-- Note async functions and Promise return types
-- Include overloaded signatures if present
+- Capture function signatures with parameter types and return types.
+- Document generic type parameters.
+- Note async functions and Promise return types.
+- Include overloaded signatures if present.
 
 ### 1.4 Finding existing documentation
 [View detailed examples](references/codebase-analysis.md)
@@ -59,7 +59,9 @@ Guide for creating thorough, human-sounding README documentation that stays alig
 ### 2.1 Required sections
 [View detailed examples](references/readme-structure.md)
 
-Every README MUST include these sections in this order:
+The required sections depend on what the README is documenting.
+
+For package or library READMEs, use this default order:
 
 1. **Heading Area** - Title, optional banner, optional badges
 2. **Installation** - How to install the package
@@ -69,6 +71,8 @@ Every README MUST include these sections in this order:
 6. **API** - Public API signatures and descriptions
 7. **Examples** - Practical usage examples
 8. **License** - License information
+
+For app, service, CLI, or monorepo-root READMEs, keep the same reader-first ordering principles but adapt the middle sections to the real public surface. Do not force an API section when the main user-facing surface is setup, commands, workflows, or operations.
 
 ### 2.2 Optional sections
 [View detailed examples](references/readme-structure.md)
@@ -83,7 +87,7 @@ Include when relevant:
 ### 2.3 Section order
 [View detailed examples](references/readme-structure.md)
 
-Follow the prescribed order strictly. Users expect Installation near the top, API details in the middle, and License, Architecture & Development Guides, or Contributing near the bottom.
+Follow the prescribed order strictly for package and library READMEs. For app, service, CLI, or monorepo-root READMEs, preserve the same high-level reading flow: setup near the top, usage and workflow details in the middle, and License, Architecture & Development Guides, or Contributing near the bottom.
 
 ---
 
@@ -104,7 +108,7 @@ Every command should be copy-pasteable. Show example output when helpful.
 ### 3.3 Explain the why
 [View detailed examples](references/writing-principles.md)
 
-Don't just say "run this command" — explain what it does and why.
+Do not just say "run this command." Explain what it does and why.
 
 ### 3.4 Use tables for reference
 [View detailed examples](references/writing-principles.md)
@@ -130,7 +134,7 @@ After drafting README content, apply the `accelint-english-manager` skill to rem
 - Eliminate superficial -ing analyses ("highlighting", "showcasing", "fostering")
 - Replace vague attributions with specific sources or remove entirely
 - Fix em dash overuse and rule-of-three patterns
-- Remove sycophantic language ("Great question!", "Certainly!")
+- Remove sycophantic language ("Great question!", "Certainly!").
 - Add personality and voice. Sterile writing is as obvious as AI slop.
 - If `accelint-english-manager` is unavailable, deliver a clearly labeled draft and say the final polish step still needs to run.
 
@@ -151,7 +155,7 @@ When updating an existing README:
 
 ### 4.2 Suggesting changes
 
-Present changes clearly:
+Present the changes clearly:
 
 ```markdown
 ## Suggested README Updates

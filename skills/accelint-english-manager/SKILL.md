@@ -4,7 +4,7 @@ description: Use when the user wants prose rewritten, tightened, audited, simpli
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.3"
+  version: "1.3.4"
 ---
 
 # English Manager
@@ -163,7 +163,7 @@ Default to a compact review unless the user asks for something more formal.
 Use this shape:
 1. **Summary** — 1 to 3 sentences on the main clarity, tone, or actionability issues
 2. **Highest-risk issues first** — especially meaning drift, ambiguity, hidden actions, obligation drift, or broken structure
-3. **Targeted findings** — offending text, better rewrite, and a brief note only when it helps
+3. **Targeted findings** — source text, risk, and a brief note only when it helps
 4. **Optional full rewrite** — include it only if the user asked for one or the passage has repeated issues
 
 ### Rewrite only
