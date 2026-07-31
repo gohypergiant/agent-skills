@@ -1,223 +1,364 @@
-# Documentation Skill
+# TypeScript Documentation Skill
 
-This skill audits JavaScript/TypeScript documentation and provides guidance on JSDoc, comments, anti-patterns, and documentation judgment.
+Audit and improve JavaScript/TypeScript documentation quality: JSDoc completeness, comment markers, dead-comment cleanup, and documentation judgment for exported APIs versus internal code.
 
-## Design Philosophy
+## What This Skill Does
 
-This skill combines focused activation with expert judgment frameworks:
+This skill audits and improves TypeScript and JavaScript documentation. It enforces comprehensive docs for exported APIs, uses judgment for internal code, validates JSDoc syntax, audits comment quality, and produces either formal reports or direct fixes.
 
-1. **Enhanced activation** - Triggers on specific keywords (@param, @returns, @template, @example, JSDoc, TODO, FIXME)
-2. **Expert anti-patterns** - 6 critical "NEVER do this" patterns with examples
-3. **Thinking frameworks** - Public/internal distinction with judgment criteria
-4. **Decision trees** - Clear sufficiency evaluation for all code element types
-5. **Edge case coverage** - Handles deprecated APIs, overloads, generics, callbacks, builders, events
-6. **Conflict resolution** - Principles for resolving documentation dilemmas
+### Core capabilities
 
-## What This Skill Covers
+- **JSDoc validation** — Check exported functions, types, interfaces, classes, and constants for missing or incomplete documentation
+- **Comment-quality audits** — Review TODO/FIXME/HACK markers, remove dead code comments, improve comment placement
+- **Two-tier documentation** — Exported APIs get comprehensive docs; internal code uses judgment
+- **Syntax enforcement** — Validate `@param`, `@returns`, `@template`, `@throws`, `@example` tags and code-fence requirements
+- **Formal audit reports** — Structured findings with before/after examples, categorization, and references
 
-### Core Capabilities
+### When to use this skill
 
-**JSDoc Auditing**
-- Comprehensive standards for exported vs internal code
-- Function, type, interface, class, and constant documentation
-- Generic type parameter documentation (@template)
-- Object parameter documentation with dot notation
-- Example code fences with language identifiers
-- Error documentation (@throws)
+Use this skill when:
 
-**Comment Quality**
-- Comment markers (TODO, FIXME, HACK, NOTE, PERF, REVIEW, DEBUG, REMARK)
-- Identifying comments to remove (dead code, edit history, obvious statements)
-- Identifying comments to preserve (linter directives, business logic, markers)
-- Comment placement best practices
+- Adding or reviewing JSDoc on exported functions, types, or classes
+- Auditing documentation drift after refactors
+- Cleaning up vague TODO/FIXME markers or dead comments
+- Validating that `@example` tags use fenced code blocks with language identifiers
+- Determining whether internal code needs documentation
+- Producing formal documentation audit reports for review
 
-**Expert Guidance**
-- Anti-patterns with visual ❌/✅ examples
-- Audit mindset and thinking frameworks
-- Decision trees for documentation sufficiency
-- Conflict resolution principles
-- Edge case handling (deprecated APIs, overloads, callbacks, etc.)
+Do not use this skill for:
 
-## Usage
-
-### Trigger Phrases
-
-This skill activates when you use documentation-specific keywords:
-
-```
-Audit the documentation in src/utils/math.ts
-```
-
-```
-Add JSDoc to all exported functions in src/api/client.ts
-```
-
-```
-Add @param and @returns tags to this function
-```
-
-```
-Review comments and add TODO/FIXME markers where appropriate
-```
-
-```
-Document this function with @example
-```
-
-```
-Fix comments in src/core/ - remove dead code and improve placement
-```
-
-### Example Audit Output
-
-The skill provides structured audit reports:
-
-**Missing Documentation:**
-- `fetchUserProfile()` (line 45) - missing @throws for AuthenticationError
-- `processData()` (line 89) - missing @param for options.timeout
-- `UserConfig` interface (line 12) - missing property descriptions
-
-**Syntax Issues:**
-- `calculateTotal()` (line 34) - @example without code fence
-- `authenticate()` (line 67) - void function has @returns tag
-
-**Comment Quality:**
-- Line 23: Remove commented-out code
-- Line 45: Move end-of-line comment above code
-- Line 78: Add FIXME marker for known bug
+- General TypeScript code-quality reviews focused on type safety, correctness, or performance
+- Test-writing or test-quality audits
+- Security reviews or vulnerability assessments
 
 ## How It Works
 
-### Activation and Loading
+### The two-tier rule
 
-1. **Verify current structure** - Read the parent `SKILL.md` to confirm the current file organization.
-2. **Load documentation references** - Load the expected reference files, with fallback discovery if the structure changes:
-   - `jsdoc.md` - JSDoc syntax and tag requirements
-   - `comments.md` - Comment markers, removal rules, preservation rules, and placement rules
-3. **Apply the audit workflow** - Use the thinking frameworks and decision trees.
+This skill applies different standards based on code visibility:
 
-This approach keeps the expected file list clear while still verifying the current structure before loading references.
+**Exported (public API)** → Comprehensive documentation required:
+- Description with purpose and usage context
+- All `@param`, `@returns`, `@template`, `@throws` tags
+- At least one realistic `@example` with fenced code blocks
+- Property descriptions for interfaces and types
 
-### Audit Process
+**Internal code** → Judgment-based minimal documentation:
+- Brief description (one line acceptable)
+- `@param` only for non-obvious parameters
+- `@returns` if non-obvious
+- `@template` for generics
+- Skip `@example` and `@throws` unless behavior is complex
 
-**Step 1: Determine Scope**
-- Is code exported (public API)? → Comprehensive docs required
-- Is code internal? → Apply judgment frameworks
+### Workflow modes
 
-**Step 2: Check Completeness**
-- Use decision trees for Functions, Types, Classes, Constants
-- Verify all required tags present (@param, @returns, @template, @throws, @example)
+**Direct implementation** — When you ask to "add JSDoc to this function" or "clean up comments in this file", the skill loads the relevant reference, applies fixes, and returns the updated code.
 
-**Step 3: Validate Syntax**
-- @example tags must use code fences with language identifier
-- Object parameters must use dot notation
-- void functions should not have @returns
-- Generic functions must include @template
+**Formal audit** — When you invoke `/accelint-ts-documentation <path>` or explicitly request a documentation audit, the skill produces a structured report using the standardized template with categorized findings, before/after examples, and actionable recommendations.
 
-**Step 4: Review Comments**
-- Apply markers (TODO, FIXME, HACK, NOTE, etc.)
-- Remove dead code and edit history
-- Preserve linter directives and business logic
-- Improve placement (move end-of-line comments above code)
+**Answer-only guidance** — When you ask "should internal helpers get @example tags?", the skill answers the policy question directly without loading references or implementing changes.
 
-**Step 5: Report Findings**
-- Structured output with file:line references
-- Categorized by issue type
-- Specific, actionable recommendations
+### Reference loading strategy
 
-## Key Features
+The skill loads references only when needed:
 
-### Anti-Patterns
+- **JSDoc work** → Load `references/jsdoc.md` for syntax rules, tag requirements, and edge cases
+- **Comment-quality work** → Load `references/comments.md` for marker standards, removal rules, and placement
+- **Mixed tasks** → Load both when the request covers JSDoc and comment cleanup
+- **Answer-only questions** → Skip reference loading and answer directly
 
-Visual ❌/✅ examples show common documentation mistakes:
-- Approving @example without code fences
-- Over-documenting internal code vs under-documenting public APIs
-- Leaving commented-out code
-- Documenting HOW instead of WHAT/WHY
-- Using @returns for void functions
-- Adding TODO without context
+## Usage Examples
 
-### Thinking Frameworks
+### Example 1: Audit exported function JSDoc
 
-**Two-Tier Approach:**
-- Public API → Always comprehensive (no exceptions)
-- Internal code → Three judgment dimensions:
-  - Complexity vs Clarity
-  - Maintenance Burden
-  - Value vs Noise
+```typescript
+// You provide:
+export function clamp(min: number, max: number, value: number): number {
+  if (min > max) throw new RangeError('bad range');
+  return Math.max(min, Math.min(max, value));
+}
 
-### Decision Trees
+// Skill identifies:
+// - Missing description
+// - Missing @param tags for all three parameters
+// - Missing @returns
+// - Missing @throws for RangeError
+// - Missing @example with fenced code block
+```
 
-Clear sufficiency evaluation for:
-- Functions/Methods (exported vs internal requirements)
-- Types/Interfaces (with/without @example)
-- Classes (constructor, methods, examples)
-- Constants/Variables (when documentation is needed)
+### Example 2: Internal helper judgment
 
-### Conflict Resolution
+```typescript
+// You provide:
+/** Checks if a value is not null or undefined. */
+function isDefined<T>(value: T | null | undefined): value is T {
+  return value != null;
+}
 
-Principles for resolving common dilemmas:
-- Comprehensive vs Concise (favor comprehensive for public APIs)
-- Document Complexity vs Avoid Noise (well-named internals need minimal docs)
-- Stable API vs Changing Requirements (document current, note future with @remarks)
-- Multiple Valid Approaches (consistency > perfection)
+// Skill evaluates:
+// Brief internal documentation is sufficient here.
+// Could add @template for the generic, but not required.
+// No need for @example or @throws on simple internal helpers.
+```
 
-### Edge Cases
+### Example 3: Fix @example syntax
 
-Handling for special scenarios:
-- Deprecated APIs (@deprecated, @see, migration paths)
-- Overloaded functions (single doc block, multiple examples)
-- Generic utility types (@template explanations, type transformations)
-- Callback parameters (dot notation for parameters)
-- Builder patterns (chain examples)
-- Event emitters (event-specific payloads)
+```typescript
+// Before:
+/**
+ * Formats a username for display.
+ * @param value - Raw username.
+ * @returns Formatted username.
+ * @example
+ * formatUser('sam');
+ */
+export function formatUser(value: string): string {
+  return value.trim();
+}
 
-### Quality Examples
+// After:
+/**
+ * Formats a username for display.
+ * @param value - Raw username.
+ * @returns Formatted username.
+ * @example
+ * ```typescript
+ * const formatted = formatUser('sam');
+ * console.log(formatted); // 'sam'
+ * ```
+ */
+export function formatUser(value: string): string {
+  return value.trim();
+}
+```
 
-Side-by-side comparison of excellent vs poor documentation with annotated explanations showing why each approach succeeds or fails.
+### Example 4: Clean up vague markers
 
-## Benefits of Hybrid Design
+```typescript
+// Before:
+// TODO: fix this
+// TODO: improve performance
 
-**Expert knowledge layer**:
-- Anti-patterns, thinking frameworks, and decision trees are unique to this skill.
-- The skill adds audit-specific expertise beyond general documentation rules.
-- It provides about 640 lines of focused documentation guidance.
+// After:
+// TODO(alice): Replace with binary search for O(log n) lookup
+// PERF(alice): Current linear scan is O(n), bottleneck for >1000 items
+```
 
-**Smart delegation**:
-- Implementation details such as JSDoc syntax and comment rules come from the parent skill.
-- This avoids duplicating content that changes frequently.
-- The verification step handles parent-skill reorganization.
+## Key Documentation Standards
 
-**Activation specificity**:
-- The description includes specific JSDoc tags such as `@param`, `@returns`, `@template`, and `@example`.
-- It triggers on documentation-specific phrases users actually say.
-- This improves activation accuracy over a general-purpose parent skill.
+### JSDoc requirements
 
-**Comprehensive coverage**:
-- Standard cases: decision trees for all code-element types.
-- Edge cases: deprecated APIs, overloads, generics, callbacks, builders, and events.
-- Conflicts: resolution principles for common dilemmas.
-- Quality benchmarks: excellent and poor examples.
+**All exported code must have:**
+- Description explaining purpose and behavior
+- `@param` for every parameter (use dot notation for object properties)
+- `@returns` unless the function returns `void`
+- `@template` for each generic type parameter with constraint explanation
+- `@throws` for all possible errors with triggering conditions
+- At least one `@example` with fenced code blocks and language identifier
 
-**Drift-resilient integration**:
-- The skill verifies the parent structure before loading.
-- It can fall back to discovery if files are reorganized.
-- It keeps the expected file list clear.
+**@example code fence syntax:**
+```typescript
+/**
+ * @example
+ * ```typescript
+ * const result = add(1, 2);
+ * console.log(result); // 3
+ * ```
+ */
+```
 
-## Integration
+### Comment markers
 
-**Use this skill when**:
-- Documentation auditing is the primary focus
-- You need expert judgment on what/how to document
-- You're adding JSDoc to exported functions/types/classes
-- You're reviewing comment quality and markers
-- You need guidance on edge cases (deprecated, overloads, generics, etc.)
+Use specific markers with context and ownership:
 
-## Skill Metrics
+- `TODO(username):` — Future changes or unimplemented features
+- `FIXME(username):` — Known bugs or critical defects
+- `HACK(username):` — Workarounds or sub-optimal solutions
+- `NOTE:` — Important informational points
+- `PERF(username):` — Performance bottlenecks or optimizations
 
-- **Size**: ~640 lines (SKILL.md)
-- **Knowledge ratio**: 70% expert / 20% activation / 10% redundant
-- **Pattern**: Navigation wrapper with substantial original content
+### Comments to remove
+
+Always remove during audits:
+- Commented-out code (version control preserves history)
+- Edit history ("Added 2024-01-15", "Changed by John")
+- Obvious restatements (`// increment counter` above `counter++`)
+
+### Comments to preserve unchanged
+
+Never modify tool directives:
+- Linter: `// eslint-disable-next-line`, `// biome-ignore`
+- Type checker: `// @ts-expect-error`, `// @ts-ignore`
+- Formatter: `// prettier-ignore`
+
+## Anti-Patterns
+
+### ❌ Over-documenting internal code
+
+```typescript
+/**
+ * Internal helper function that validates input
+ * @internal
+ * @param x - The input value
+ * @returns True if valid, false otherwise
+ * @example
+ * ```typescript
+ * if (isValid(data)) { ... }
+ * ```
+ */
+function isValid(x: unknown): boolean {
+  return x != null;
+}
+```
+
+Internal docs rot faster than public API docs. Team members read implementation faster than outdated documentation. Reserve comprehensive docs for stable exported APIs.
+
+### ✅ Minimal internal, comprehensive public
+
+```typescript
+// Internal - minimal
+/** Checks if value is not null/undefined */
+function isValid(x: unknown): boolean {
+  return x != null;
+}
+
+// Public - comprehensive
+/**
+ * Validates user input data
+ * @param data - User input to validate
+ * @returns True if data is defined and not null
+ * @example
+ * ```typescript
+ * if (validateInput(userData)) {
+ *   processData(userData);
+ * }
+ * ```
+ */
+export function validateInput(data: unknown): boolean {
+  return data != null;
+}
+```
+
+### ❌ Documenting HOW instead of WHAT/WHY
+
+```typescript
+/**
+ * Loops through array using reduce to accumulate values into a sum
+ */
+function sum(numbers: number[]): number {
+  return numbers.reduce((a, b) => a + b, 0);
+}
+```
+
+JSDoc appears in IDE autocomplete. Consumers don't have access to implementation. Explaining HOW increases refactoring burden.
+
+### ✅ Describe behavior, not implementation
+
+```typescript
+/**
+ * Calculates the sum of all numbers in the array
+ * @param numbers - Array of numbers to sum
+ * @returns The total sum, or 0 for empty array
+ */
+function sum(numbers: number[]): number {
+  return numbers.reduce((a, b) => a + b, 0);
+}
+```
+
+## Formal Audit Reports
+
+When you invoke the skill with `/accelint-ts-documentation <path>` or explicitly request a documentation audit, the skill produces a structured report:
+
+**Report structure:**
+- Numbered findings with clear titles
+- File and line location for each issue
+- Before (❌) and after (✅) code examples
+- Issue explanation in bullet points
+- Category (Missing, Incomplete, Incorrect Syntax, Quality, Internal)
+- Reference to detailed guidance (`jsdoc.md` or `comments.md`)
+- Summary table with all findings
+
+Example finding:
+
+```markdown
+### 1. fetchUserProfile - Missing @throws documentation
+
+**Location:** `src/api/client.ts:45`
+
+❌ Current: Function throws errors but does not document them
+```typescript
+export async function fetchUserProfile(userId: string): Promise<Profile> {
+  // implementation
+}
+```
+
+**Issue:**
+- Missing @throws for AuthenticationError
+- Missing @throws for NotFoundError
+- Missing @throws for NetworkError
+
+**Category:** Incomplete Documentation
+**Reference:** jsdoc.md
+
+✅ Recommended:
+```typescript
+/**
+ * Fetches user profile data from the authentication service
+ * @param userId - Unique identifier for the user
+ * @returns User profile with email and name
+ * @throws {AuthenticationError} When session is expired
+ * @throws {NotFoundError} When profile doesn't exist
+ * @throws {NetworkError} When all retries are exhausted
+ */
+export async function fetchUserProfile(userId: string): Promise<Profile> {
+  // implementation
+}
+```
+```
+
+## Edge Cases
+
+The skill handles complex scenarios documented in `references/jsdoc.md`:
+
+- **Deprecated APIs** — Use `@deprecated`, `@see`, and migration path guidance
+- **Overloaded functions** — Single doc block with multiple examples
+- **Generic utility types** — `@template` explanations for type transformations
+- **Destructured parameters** — Document object parameter with dot notation for properties
+- **Builder patterns** — Show method chaining in examples
+- **Event emitters** — Document event-specific payloads
+
+## References
+
+Detailed guidance lives in the skill's reference files:
+
+- **[references/jsdoc.md](references/jsdoc.md)** — JSDoc syntax, tag requirements, exported vs internal standards, edge cases
+- **[references/comments.md](references/comments.md)** — Comment markers, removal rules, preservation rules, placement standards
+- **[assets/output-report-template.md](assets/output-report-template.md)** — Formal audit report structure
+
+## Evaluation Coverage
+
+The skill includes 20 evaluation cases in `evals/evals.json` covering:
+
+- JSDoc completeness for exported functions, types, interfaces, classes, and constants
+- Internal code judgment calls
+- Generic type parameter documentation (`@template`)
+- `@example` code fence validation
+- Void function `@returns` removal
+- Object parameter dot notation
+- Comment marker quality (TODO/FIXME/HACK)
+- Dead code and edit-history comment removal
+- Tool directive preservation (eslint, @ts-expect-error)
+- Business-logic comment preservation
+- Reference loading strategy (JSDoc vs comments vs both)
+- Formal audit vs direct implementation workflows
+- Skill boundary cases (not triggering on generic TS reviews)
+
+## Repository Context
+
+This skill is part of the agent-skills repository. Related documentation:
+
+- **[ARCHITECTURE.md](/Users/brandon.pierce/Projects/agent-skills/ARCHITECTURE.md)** — Repository structure and component architecture
+- **[AGENTS.md](/Users/brandon.pierce/Projects/agent-skills/AGENTS.md)** — Agent behavior and workflow conventions
 
 ## License
 

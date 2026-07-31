@@ -2,11 +2,11 @@
 
 Rewrite English so it is clearer, plainer, easier to scan, and easier to act on without changing the user's meaning.
 
-This skill is part of the `gohypergiant/agent-skills` repository. Install it through the repo-wide skills flow, not as a standalone npm package.
+This skill is part of the `gohypergiant/agent-skills` repository. Install it through the repo-wide skills workflow.
 
 ## Installation
 
-Install the skill collection, then select `accelint-english-manager` when the CLI prompts you.
+Use the [Agent Skills](https://agentskills.io/) CLI to install from the repository:
 
 **npm:**
 ```bash
@@ -18,11 +18,11 @@ npx skills add gohypergiant/agent-skills
 pnpm dlx skills add gohypergiant/agent-skills
 ```
 
-This skill does not ship as a separate package with its own `package.json`.
+Select `accelint-english-manager` when prompted. This skill is not published as a standalone npm package.
 
 ## Quick Start
 
-This skill works best when you specify both the job and the mode.
+Specify both the job and the mode for best results:
 
 ```text
 /accelint-english-manager audit+rewrite in strict mode the following:
@@ -36,23 +36,37 @@ This prompt shape is already used elsewhere in this repo when another skill need
 
 ## What is accelint-english-manager?
 
-`accelint-english-manager` is an editorial skill for rewriting English without drifting meaning, tone, audience, or required constraints. It is built for docs, prompts, support replies, release notes, UI copy, policy text, and other writing where clarity matters more than flourish.
+`accelint-english-manager` rewrites English to make it clearer without drifting meaning, tone, audience, or required constraints. Use it for docs, prompts, support replies, release notes, UI copy, policy text, and other writing where clarity matters more than flourish.
 
 The skill combines plain-language discipline, STE-leaning structure, and ADHD-friendly shaping. It uses them together rather than treating them as separate modes.
 
 ## Why use it?
 
-A lot of editing tools make text shorter but less accurate. Others flatten the voice so much that the result sounds robotic.
+Many editing tools make text shorter but less accurate. Others flatten the voice so much that the result sounds robotic.
 
-This skill is meant to avoid both problems.
+This skill avoids both problems:
 
-- It preserves meaning before it optimizes wording.
-- It keeps exact technical text, commands, identifiers, and file paths intact unless the user asks to rewrite them.
-- It separates rewrite scope with `mode=default` and `mode=strict`.
-- It supports audit-only, rewrite-only, and audit-plus-rewrite work.
-- It explicitly avoids claiming official ASD-STE100 compliance.
+- Preserves meaning before optimizing wording
+- Keeps exact technical text, commands, identifiers, and file paths intact unless asked to rewrite them
+- Separates rewrite scope with `mode=default` and `mode=strict`
+- Supports audit-only, rewrite-only, and audit-plus-rewrite work
+- Does not claim official ASD-STE100 compliance
 
-Use it when you want cleaner writing that still does the same job. If you need subject-matter review, legal review, or formal standards certification, this skill is not a substitute for those.
+Use it when you want cleaner writing that still does the same job. If you need subject-matter review, legal review, or formal standards certification, this skill is not a substitute.
+
+## When to use this skill
+
+The skill triggers on requests that ask for prose improvement without changing the underlying meaning or intent:
+
+- "plain English", "simple English", "make this clearer", "make this more direct"
+- "clean this up", "edit this", "review this writing", "grammar check"
+- "too wordy", "too formal", "less fluffy", "friendlier", "shorter"
+- "audit then rewrite", "keep the tone", "mode=strict"
+- "STE", "ASD-STE100", "ADHD-friendly"
+
+Also use it for docs, prompts, emails, UI copy, support replies, release notes, status updates, incident notes, procedural text, and other LLM-written prose.
+
+Do not use it for fact-checking, policy setting, or substantive content design.
 
 ## API
 
@@ -157,6 +171,13 @@ I do not want a report, just apply the new content to the output directly.
 ```
 
 Use this when another workflow needs a final cleanup pass with tighter control.
+
+## Architecture & Development Guides
+
+For project structure and maintenance guidance, see:
+
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) — system architecture and tech stack
+- [AGENTS.md](../../AGENTS.md) — agent behavior and workflow conventions
 
 ## Further Reading
 

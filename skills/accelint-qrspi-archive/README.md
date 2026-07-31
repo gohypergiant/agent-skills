@@ -1,38 +1,37 @@
 # Accelint QRSPI Archive
 
-Archive OpenSpec changes with cross-capability linking and index maintenance. This skill runs the complete archive workflow itself: native archive first, then additive related-spec linking, targeted `openspec/specs/INDEX.md` maintenance, and append-only `openspec/changes/archive/INDEX.md` updates.
+Archive OpenSpec changes with cross-capability linking and index maintenance. This skill runs the complete workflow: native archive first, then additive related-spec linking, targeted `openspec/specs/INDEX.md` maintenance, and append-only `openspec/changes/archive/INDEX.md` updates.
 
 ## What This Does
 
 This skill handles the full archive-plus-bookkeeping workflow:
 
 - Runs `/opsx:archive` or `/opsx:bulk-archive`
-- Cross-links every capability pair each archived change touched
+- Cross-links every capability pair the archived change touched
 - Updates `related:` frontmatter and regenerates `## Related Specs`
-- Patches `openspec/specs/INDEX.md` for the capabilities this archive batch touched, or builds it once if the file does not exist yet
+- Patches `openspec/specs/INDEX.md` for touched capabilities, or builds it once if missing
 - Appends one row per archived change to `openspec/changes/archive/INDEX.md`
 
-The skill runs the native archive command itself as the first operational step. It is not a post-merge hook. That ordering matters because cross-linking and index updates must happen after archive conflict resolution finishes and the merged specs reach their final archived state.
+The skill runs the native archive command as its first step. It is not a post-merge hook. Cross-linking and index updates must happen after archive conflict resolution finishes and merged specs reach their final archived state.
 
 ## When to Use This
 
-Use this skill when:
+Use this skill when you want to archive OpenSpec changes and complete the post-archive bookkeeping in a single operation.
 
-- You want to archive one or more OpenSpec changes end to end
-- You want archive-time cross-linking maintained automatically
-- You want `openspec/specs/INDEX.md` kept in sync after archive
-- You want `openspec/changes/archive/INDEX.md` updated as part of the same workflow
-
-Common trigger phrases:
-- "archive this change"
+Trigger phrases:
+- "archive this change" or "archive the add-live-sync change"
+- "run /opsx:archive" or "run /opsx:bulk-archive"
 - "bulk archive the pending changes"
-- "run /opsx:archive"
-- "run /opsx:bulk-archive"
-- "cross-link the touched specs"
-- "update the specs index after archive"
-- "keep the archive index current"
+- "cross-link touched specs" (after archive)
+- "update openspec/specs/INDEX.md" or "patch the specs index"
+- "append to openspec/changes/archive/INDEX.md"
 
-Do not run `/opsx:archive` or `/opsx:bulk-archive` manually first. Let this skill orchestrate the whole workflow.
+Do not use this skill for:
+- Proposing or planning a change (use `accelint-qrspi-propose`)
+- Implementing a change (use `accelint-qrspi-apply`)
+- Pruning stale `related:` entries or changing existing `Status` values (use `accelint-archive-synthesis`)
+
+**Important:** Do not run `/opsx:archive` or `/opsx:bulk-archive` manually first. This skill invokes those commands itself as the first operational step.
 
 ## Prerequisites
 
@@ -335,15 +334,21 @@ For bulk archives, validation through reporting runs once after the whole batch 
 
 ## Related Skills
 
-- `accelint-qrspi-propose` — creates the change package and normally writes the `design.md` frontmatter this skill later reads
-- `accelint-qrspi-apply` — implements a planned change before it reaches archive time
-- `accelint-archive-synthesis` — handles pruning stale `related:` entries and changing archive `Status` values with human confirmation
+- **accelint-qrspi-propose** — creates the change package and writes the `design.md` frontmatter (`specs_touched`, `decisions`) this skill reads during preflight
+- **accelint-qrspi-apply** — implements a planned change before it reaches archive time
+- **accelint-archive-synthesis** — handles corpus-wide archive audits, pruning stale `related:` entries, and changing archive `Status` values with human confirmation
+
+## Architecture & Development Guides
+
+For broader repository context:
+- [ARCHITECTURE.md](../../../ARCHITECTURE.md) — repository structure, components, and tech stack
+- [AGENTS.md](../../../AGENTS.md) — agent behavior and workflow rules for this repository
 
 ## OpenSpec Commands
 
-This skill uses these OpenSpec commands:
+This skill invokes these OpenSpec commands as part of its workflow:
 
-- `/opsx:archive <change-name>` — archive a single change
-- `/opsx:bulk-archive` — archive all pending changes
+- `/opsx:archive <change-name>` — archives a single change
+- `/opsx:bulk-archive` — archives all pending changes
 
-The skill invokes these commands itself during archive and extraction. Do not run them manually first.
+This skill runs these commands directly in your current context (never as a subagent) to handle prompts and internal workflow branches. Do not run them manually before invoking this skill.

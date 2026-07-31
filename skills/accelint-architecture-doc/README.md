@@ -1,428 +1,156 @@
 # accelint-architecture-doc
 
-Generate or update a living ARCHITECTURE.md document that gives agents and engineers a clear picture of the system structure, tech stack, and deployment model.
+Create or update ARCHITECTURE.md by scanning the codebase, asking targeted questions only about gaps, and writing structured documentation after preview and confirmation.
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [What is this?](#what-is-accelint-architecture-doc)
-- [How it works](#how-it-works)
-- [Usage modes](#usage-modes)
-- [Output format](#output-format)
-- [Advanced features](#advanced-features)
-- [Examples](#examples)
-- [License](#license)
+Three modes:
+- **Create** — new ARCHITECTURE.md from scratch
+- **Refresh** — update existing file based on drift
+- **Restructure** — import unstructured content into standard template
 
 ## Installation
 
 Install this skill using the skills CLI:
 
 ```bash
-npx skills add https://github.com/accelint/agent-skills --skill accelint-architecture-doc
+npx skills add gohypergiant/agent-skills
 ```
-
-Once installed, invoke it in Claude Code with `/accelint-architecture-doc`.
-
-## Quick Start
-
-The simplest use case is creating a new ARCHITECTURE.md:
 
 ```bash
-/accelint-architecture-doc
+pnpm dlx skills add gohypergiant/agent-skills
 ```
 
-The skill detects whether you need to create a new file, refresh an existing one, or restructure non-standard documentation. It scans the codebase, asks targeted questions about what it could not infer, shows you a preview, and writes the file only after confirmation.
+Select `accelint-architecture-doc` when prompted.
 
-## What is accelint-architecture-doc?
+## Usage
 
-This skill generates ARCHITECTURE.md files. They are living documents that capture:
+Usage examples:
 
-- Project structure and directory layout
-- Tech stack (frameworks, languages, key libraries)
-- System components (frontend, backend services, workers)
-- Data stores (databases, caches, queues)
-- External integrations and APIs
-- Infrastructure, deployment, and monitoring setup
-- Security model (auth, authorization, encryption)
-- Testing and development environment
-- Future roadmap and known technical debt
-
-Two groups benefit from this:
-
-**AI agents** get codebase context without scanning hundreds of files. **Engineers** get onboarding material and a single source of truth for architectural decisions.
-
-## How It Works
-
-The skill operates in three phases:
-
-### Phase 0: Scope and File State Detection
-
-Before scanning anything, the skill checks:
-
-1. **Monorepo detection** — determines whether you are at the repo root or inside a package, then adjusts scope.
-2. **File state** — checks whether ARCHITECTURE.md exists and whether it follows the standard template.
-
-Based on what it finds, it picks one of three modes:
-
-| Mode | When | What It Does |
-|------|------|-------------|
-| **Create** | No ARCHITECTURE.md exists | Full scan → interview → preview → write |
-| **Refresh** | File exists and follows template | Drift detection → targeted updates → preview → write |
-| **Restructure** | File exists but doesn't match template | Offers to import existing content into standard structure |
-
-### Phase 1: Parallel Discovery
-
-If the file needs creation or a full refresh, the skill spawns five parallel subagents to scan different discovery domains:
-
-- **Agent A** - Project identity and structure
-- **Agent B** - Tech stack and components
-- **Agent C** - Infrastructure, CI/CD, and deployment
-- **Agent D** - Data stores, security, and external APIs
-- **Agent E** - Testing and code quality
-
-Each agent scans specific files (package.json, docker-compose.yml, IaC configs, etc.) and returns structured findings. The skill merges these into a unified discovery map and tags each field as either `INFERRED [source]` or `UNKNOWN`.
-
-### Phase 2: Targeted Interview
-
-The skill asks only about `UNKNOWN` fields. Questions come in groups:
-
-1. Gaps in components (if the service list looks incomplete)
-2. Infrastructure and deployment (if cloud provider or deployment model isn't clear)
-3. Security (if auth mechanism is unknown)
-4. Roadmap and future plans (always asked, since code can't tell us this)
-5. Identity and glossary (if not found in README or package.json)
-
-Well-documented codebases usually need 2 to 3 questions. Fresh projects with minimal config may need 6 to 8 questions.
-
-### Phase 3: Preview and Write
-
-You see the complete ARCHITECTURE.md before anything is written. Inference sources are marked inline:
-
-```markdown
-**Cloud Provider:** AWS # inferred from Dockerfile base image and .aws/ directory
-**CI/CD Pipeline:** GitHub Actions # inferred from .github/workflows/deploy.yml
-**Monitoring & Logging:** <!-- TODO: fill in -->
+```
+Create an ARCHITECTURE.md for this repo
 ```
 
-After you confirm, the skill writes the final file without the source annotations.
-
-## Usage Modes
-
-### Mode 1: Create (New File)
-
-**When:** No ARCHITECTURE.md exists
-
-**What happens:**
-1. Full codebase scan via parallel subagents
-2. Targeted interview for gaps
-3. Preview with inference annotations
-4. Write after confirmation
-
-**Typical time:** 2-3 minutes with parallel discovery
-
-**Example:**
-```bash
-/accelint-architecture-doc
+```
+Update ARCHITECTURE.md to reflect the new Redis caching layer
 ```
 
-Output:
 ```
-No ARCHITECTURE.md found. Creating from scratch.
-Spawning 5 discovery agents...
-[Agents return findings]
-I inferred most sections. I need to ask about:
-1. Cloud provider (couldn't determine from codebase)
-2. Monitoring stack (no observability config found)
-3. Roadmap items
-[Shows preview]
-Does this look right?
+Restructure our architecture doc into the standard template
 ```
 
-### Mode 2: Refresh (Update Existing)
+The skill detects file state, chooses the mode, scans for evidence, asks necessary questions, shows a preview, and writes after confirmation.
 
-**When:** ARCHITECTURE.md exists and follows the standard template
+## How it works
 
-**What happens:**
-1. Reads the existing file to understand current state
-2. Runs drift detection (scans for new frameworks, added services, updated deployment configs)
-3. Asks only about what changed
-4. Shows preview with changes highlighted
-5. Writes after you confirm
+**Phase 0: Scope and File Detection**
+- Detect monorepo scope (root or package-level)
+- Check whether ARCHITECTURE.md exists and follows template
+- Choose mode: create, refresh, or restructure
 
-**Typical time:** 1 to 2 minutes
+**Phase 1: Discovery**
+- Scan five domains in parallel when possible: project identity, tech stack, infrastructure, data stores, testing
+- Infer from package.json, docker-compose.yml, IaC configs, CI workflows, ORM schemas
+- Tag findings as `INFERRED [source]` or `UNKNOWN`
 
-**Example:**
-```bash
-/accelint-architecture-doc
-```
+**Phase 2: Targeted Interview**
+- Ask only about `UNKNOWN` fields (deployment, security, roadmap)
+- Group related questions into conversational turns
 
-Output:
-```
-Found ARCHITECTURE.md. Running drift detection...
-Detected changes:
-- New service: worker/ directory with Dockerfile
-- Added dependency: @prisma/client (database change?)
-- New CI workflow: .github/workflows/test.yml
+**Phase 3: Preview and Write**
+- Show complete ARCHITECTURE.md with inference source annotations
+- Confirm before writing
+- Strip annotations from final file
+- Update agent behavior docs (AGENTS.md or CLAUDE.md) to reference the new file
 
-I'll update sections 3, 4, and 8. Sections 1, 2, 5, 6, 7, 9, 10, 11 appear accurate.
-[Asks targeted questions]
-[Shows preview]
-```
+## Output structure
 
-### Mode 3: Restructure (Import Existing Content)
+Output is an 11-section document:
 
-**When:** ARCHITECTURE.md exists but doesn't follow the standard template
+1. Project Structure
+2. High-Level System Diagram
+3. Core Components
+4. Data Stores
+5. External Integrations / APIs
+6. Deployment & Infrastructure
+7. Security Considerations
+8. Development & Testing Environment
+9. Future Considerations / Roadmap
+10. Project Identification
+11. Glossary / Acronyms
 
-**What happens:**
-1. Reads the existing file and notices it doesn't match the template
-2. Offers three options:
-   - **(a) Restructure** - import existing content into the template and fill gaps
-   - **(b) Append** - add missing template sections below what's already there
-   - **(c) Dry run** - preview what the restructured doc would look like
-3. If you choose restructure, it maps existing content to the correct template sections.
-4. It flags any content that does not fit cleanly and asks where it should go.
-5. Fills gaps through scanning and interview
-6. Shows preview before writing
+See `references/template.md` for the full skeleton.
 
-**Takes about:** 3-4 minutes (includes mapping and gap-filling)
+## Features
 
-**Example:**
-```bash
-/accelint-architecture-doc
-```
+**Monorepo support**
+- Root-level docs cover the full system
+- Package-level docs reference the root and focus on package scope
 
-Output:
-```
-ARCHITECTURE.md exists but doesn't follow the standard template structure.
-I recommend restructuring it — this makes it consistent for agents and engineers.
+**Drift detection**
+- Scan for new dependencies, services, IaC changes, CI/CD updates, data stores, security changes, testing updates, monitoring additions
+- Present detected changes before asking questions
 
-(a) Restructure (recommended) — import your existing content into the template
-(b) Append — add missing sections below what's already there
-(c) Dry run — show what restructured doc would look like
+**External findings support**
+- Accept `findings:` list from invoking prompt
+- Merge external findings with drift detection
+- Used for doc updates after completed OpenSpec changes
 
-Which would you prefer?
-```
+**Agent behavior integration**
+- Check for AGENTS.md or CLAUDE.md
+- Add reference to ARCHITECTURE.md if missing
 
-## Output Format
-
-The skill generates an 11-section ARCHITECTURE.md following this structure:
-
-1. **Project Structure** — annotated directory tree showing architectural layers
-2. **High-Level System Diagram** — ASCII art block diagram of components and data flow
-3. **Core Components** — detailed breakdown of frontend, backend services, and workers
-4. **Data Stores** — databases, caches, queues, with purpose and key schemas
-5. **External Integrations / APIs** — third-party services and integration methods
-6. **Deployment & Infrastructure** — cloud provider, IaC, CI/CD, monitoring
-7. **Security Considerations** — auth, authorization, encryption, security tools
-8. **Development & Testing Environment** — local setup, test frameworks, code quality tools
-9. **Future Considerations / Roadmap** — planned changes and known technical debt
-10. **Project Identification** — name, repo URL, primary contact, last update date
-11. **Glossary / Acronyms** — project-specific terms
-
-Each section includes guidance comments in the template, loaded via `references/template.md`. The skill fills these sections through automated inference and targeted questions.
-
-## Advanced Features
-
-### Monorepo Support
-
-The skill detects monorepo structure and adjusts scope:
-
-**At monorepo root:**
-- Generates a root-level ARCHITECTURE.md covering the full system
-- Section 3 (Core Components) creates subsections per package
-- Section 1 (Project Structure) shows workspace layout
-
-**Inside a monorepo package:**
-- Checks for root-level ARCHITECTURE.md and reads it for context
-- Generates a package-specific doc that references the root doc
-- Focuses on: package purpose, internal structure, dependencies on other packages
-
-### Drift Detection (Refresh Mode)
-
-When refreshing an existing document, the skill scans for:
-
-| Signal Category | Example Detections |
-|-----------------|-------------------|
-| **New dependencies** | Added framework or major library |
-| **Service changes** | New Dockerfile, new service in docker-compose.yml |
-| **Infrastructure updates** | New IaC files, changed cloud provider signals |
-| **CI/CD changes** | Added or modified workflows |
-| **Data store additions** | New migration directories, new schema files |
-| **Security changes** | New auth middleware, added secrets manager |
-| **Testing updates** | New test configs, added E2E framework |
-| **Monitoring additions** | New observability deps or configs |
-
-For each detected change, the skill asks questions to understand the context instead of updating blindly.
-
-### Agent Behavior Doc Integration
-
-If the skill finds `AGENTS.md` or `CLAUDE.md` during discovery, it checks whether the agent behavior file already references ARCHITECTURE.md. If not, it adds this block near the top of that agent behavior file:
-
-```markdown
-## System Architecture
-
-For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
-```
-
-This connects architectural context with behavioral instructions without adding agent-behavior guidance to ARCHITECTURE.md itself.
-
-### Inference Source Annotations
-
-During preview, the skill marks how each field was determined:
-
-```markdown
-**Technologies:** React 18, Next.js 14 # inferred from package.json and next.config.js
-**Deployment:** <!-- TODO: fill in -->
-**Monitoring:** Datadog # from user interview
-```
-
-These annotations help you verify accuracy before the skill writes anything. The final file does not include them.
-
-### Preservation of Human-Authored Content
-
-In refresh mode, the skill does not silently remove content. If it finds sections that look human-written and cannot verify their accuracy, it asks before changing them.
+**OpenSpec awareness**
+- Read openspec/config.yml or openspec/config.yaml when present
+- Use as source of truth for stack facts and coding patterns
+- Reduce redundant scanning
 
 ## Examples
 
-### Example 1: New Next.js App
-
-**Input:**
-```bash
-/accelint-architecture-doc
+**Create mode:**
 ```
-
-**Context:** Fresh Next.js 14 app with Prisma, deployed to Vercel, uses GitHub Actions for CI
-
-**Output (abbreviated):**
-```markdown
-# Architecture Overview
-
-## 1. Project Structure
-
-my-app/
-├── app/              # Next.js 14 App Router pages and layouts
-├── components/       # Reusable React components
-├── lib/             # Utility functions and shared logic
-├── prisma/          # Database schema and migrations
-├── public/          # Static assets
-└── .github/         # CI/CD workflows
-
-## 2. High-Level System Diagram
-
-[User] <--> [Next.js Frontend/Backend] <--> [PostgreSQL Database]
-
-## 3. Core Components
-
-### 3.1. Frontend
-
-**Name:** Web Application
-
-**Description:** Server-rendered React application with App Router for routing and layouts
-
-**Technologies:** React 18, Next.js 14 App Router, TypeScript, Tailwind CSS
-
-**Deployment:** Vercel
-
-### 3.2. Backend Services
-
-#### 3.2.1. Next.js API Routes
-
-**Name:** API Service
-
-**Description:** REST API via Next.js route handlers in app/api/
-
-**Technologies:** Next.js 14, TypeScript, Prisma ORM
-
-**Deployment:** Vercel (serverless functions)
-
-## 4. Data Stores
-
-### 4.1. Primary Database
-
-**Name:** Application Database
-
-**Type:** PostgreSQL 15 (via Supabase)
-
-**Purpose:** Stores user data, content, and application state
-
-**Key Schemas:** users, posts, sessions
-
-...
+Create an ARCHITECTURE.md for this Next.js app
 ```
+→ Scans the codebase, asks about deployment and roadmap, shows preview, writes file
 
-### Example 2: Refresh After Adding Service
-
-**Input:**
-```bash
-/accelint-architecture-doc
+**Refresh mode:**
 ```
-
-**Context:** Existing ARCHITECTURE.md, added a background worker service
-
-**Output:**
+Update ARCHITECTURE.md — we added a worker service and Redis
 ```
-Found ARCHITECTURE.md. Running drift detection...
+→ Detects changes, asks targeted questions, shows diff-style preview, updates file
 
-Detected changes:
-- New directory: worker/ with Dockerfile and package.json
-- Added dependency: bull (job queue library)
-- New service in docker-compose.yml: redis
-
-I'll update Section 3 (Core Components) to add the worker service
-and Section 4 (Data Stores) to document Redis.
-
-What does the worker service do?
-> Processes video transcoding jobs asynchronously
-
-[Shows preview with additions highlighted]
-[User confirms]
-
-Updated ARCHITECTURE.md:
-- Added Section 3.2.2: Background Worker
-- Added Section 4.2: Redis Job Queue
+**Restructure mode:**
 ```
-
-### Example 3: Restructure Unstructured Doc
-
-**Input:**
-```bash
-/accelint-architecture-doc
+Our ARCHITECTURE.md is messy. Can you clean it up?
 ```
+→ Offers restructure/append/dry-run options, maps existing content to template sections, fills gaps, shows preview
 
-**Context:** ARCHITECTURE.md exists but is formatted as free-form prose, not the template structure
-
-**Output:**
+**Monorepo root:**
 ```
-ARCHITECTURE.md exists but doesn't follow the standard template structure.
-I recommend restructuring it — this makes it consistent for agents and engineers.
-
-(a) Restructure (recommended)
-(b) Append
-(c) Dry run
-
-> a
-
-Reading existing content...
-
-Found content that maps to:
-- Section 1: directory structure notes
-- Section 3: component descriptions
-- Section 6: deployment details
-- Unmapped: "Performance Considerations" section
-
-Where should "Performance Considerations" go?
-(a) Section 9 (Future Considerations / Roadmap)
-(b) Section 8 (Development & Testing)
-(c) New custom section
-
-> a
-
-[Continues with gap-filling interview]
-[Shows preview]
-[Writes restructured file]
+Generate root ARCHITECTURE.md for this monorepo
 ```
+→ Produces a repo-wide doc with package-aware component coverage
+
+**Monorepo package:**
+```
+Create ARCHITECTURE.md for packages/web
+```
+→ Generates package-level doc that references root ARCHITECTURE.md
+
+**With external findings:**
+```
+Refresh ARCHITECTURE.md. Findings: - Auth migrated from sessions to JWT. - Worker switched from BullMQ to Redis streams.
+```
+→ Merges findings with drift detection, scopes questions accordingly
+
+## Testing
+
+The skill includes 11 eval scenarios in `evals/evals.json` covering create, refresh, restructure, monorepo, OpenSpec-aware, and agent-doc integration workflows.
+
+## Version
+
+Current version: 1.1.1
+
+See `CHANGELOG.md` for release history.
 
 ## License
 
-Apache-2.0 - see [LICENSE](./LICENSE) for details.
+Apache-2.0

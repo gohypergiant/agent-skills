@@ -1,6 +1,6 @@
 # Persona-Based Design Review
 
-Evaluate Figma designs from the perspective of specific operator personas and surface role-specific UX insights that generic reviews miss.
+Evaluate Figma designs from specific operator personas and surface role-specific UX insights that generic reviews miss.
 
 ## Usage
 
@@ -16,7 +16,7 @@ Evaluate Figma designs from the perspective of specific operator personas and su
 
 1. Loads the operator persona profile (responsibilities, pain points, systems, workflows)
 2. Fetches the Figma design from a URL or desktop selection, or falls back to screenshots when MCP access is unavailable
-3. Searches Outline docs for the most relevant guidelines, requirements, and prior review context
+3. Searches Outline docs for relevant guidelines, requirements, and prior review context
 4. Produces a persona-grounded critique that prioritizes operational impact across:
    - cognitive load
    - workflow and communication fit
@@ -24,7 +24,7 @@ Evaluate Figma designs from the perspective of specific operator personas and su
    - context awareness (rank, experience, schedule)
    - system visibility
    - communication support
-5. Calls out evidence gaps when the review is limited by missing design context or supporting documentation
+5. Calls out evidence gaps when review is limited by missing design context or supporting documentation
 
 ## Available Personas
 
@@ -39,6 +39,8 @@ Evaluate Figma designs from the perspective of specific operator personas and su
 
 **Command Roles:**
 - `mission-crew-commander` - Mission Crew Commander (O4-O5)
+
+See `references/personas/_index.md` for full persona summaries.
 
 ## Adding New Personas
 
@@ -79,16 +81,25 @@ Then update `references/personas/_index.md` to include the new persona ID and su
 - **Figma MCP**: Preferred for accessing designs from desktop or URL
 - **Outline MCP**: Preferred for searching supporting documentation
 
-## Version history
-
-See [CHANGELOG.md](CHANGELOG.md) for details.
-
-Current version: 1.3.0
-- Audit-driven trigger and workflow clarity improvements
-- Default eval coverage for persona selection, fallbacks, and boundary validation
-- Stronger evidence-versus-inference guidance in reviews
-
 ## Fallbacks
 
-- If Figma MCP is unavailable, review screenshots and state the resulting scope limits clearly.
-- If Outline MCP is unavailable, proceed with the persona profile plus design context and note that supporting-document evidence was unavailable.
+- If Figma MCP is unavailable, review screenshots and state the resulting scope limits clearly
+- If Outline MCP is unavailable, proceed with persona profile plus design context and note that supporting-document evidence was unavailable
+
+## References
+
+- `references/personas/` - Individual persona profiles
+- `references/personas/_index.md` - Persona catalog
+- `references/evaluation-examples.md` - Examples of effective persona reviews
+
+## Architecture & Development Guides
+
+For broader repository context:
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - System architecture and technical organization
+- [AGENTS.md](../../AGENTS.md) - Agent behavior and workflow conventions
+
+## Version
+
+Current version: **1.3.0**
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and release notes.

@@ -1,24 +1,24 @@
 # TypeScript Performance Optimization
 
-Systematic performance optimization guidance for JavaScript/TypeScript codebases. Combines an audit workflow with expert-level optimization patterns for runtime performance.
+Performance audit and optimization for JavaScript/TypeScript codebases. Combines a 4-phase audit workflow with expert optimization patterns.
 
 ## Overview
 
 This skill provides:
 
-- **4-phase workflow** (Profile → Analyze → Optimize → Verify) for systematic performance audits
-- **Expert optimization patterns** with ❌/✅ examples for all performance categories
-- **Bottleneck categorization** and decision frameworks for when to optimize
-- **Profiling tool guidance** (`Chrome DevTools`, `node --prof`)
+- **4-phase workflow** (Profile → Analyze → Optimize → Verify) for systematic audits
+- **Expert optimization patterns** with ❌/✅ examples for each category
+- **Bottleneck categorization** and decision frameworks
+- **Profiling tool guidance** (Chrome DevTools, `node --prof`)
 
 ## When to Use
 
 Use this skill when:
-- auditing code for performance bottlenecks
-- optimizing loops, caching, or allocation patterns
-- profiling slow code paths
-- fixing algorithmic complexity issues (O(n²) → O(n))
-- users say `optimize performance`, `this is slow`, `why is this slow`, or `reduce allocations`
+- Auditing code for performance bottlenecks
+- Optimizing loops, caching, or allocation patterns
+- Profiling slow code paths
+- Fixing algorithmic complexity (O(n²) → O(n))
+- Users say `optimize performance`, `this is slow`, `why is this slow`, or `reduce allocations`
 
 ## Structure
 
@@ -27,6 +27,10 @@ accelint-ts-performance/
 ├── SKILL.md                    # 4-phase workflow + guidance
 ├── AGENTS.md                   # Compressed rule overview
 ├── README.md                   # This file
+├── evals/
+│   └── evals.json             # 24 test cases
+├── assets/
+│   └── output-report-template.md # Structured audit report template
 └── references/
     ├── quick-reference.md      # Bottleneck → category mapping
     ├── reduce-branching.md     # Convert conditionals to lookups
@@ -46,7 +50,7 @@ accelint-ts-performance/
 
 ## Progressive Disclosure
 
-This skill minimizes context usage through progressive loading:
+This skill minimizes context usage:
 
 1. **Start with `SKILL.md`** - follow the 4-phase workflow
 2. **Load `AGENTS.md`** - scan compressed rule summaries
@@ -66,10 +70,10 @@ This skill minimizes context usage through progressive loading:
 
 ## Quick Start
 
-1. **Profile first** - use Chrome DevTools or `node --prof` to identify bottlenecks that consume >5% of runtime
+1. **Profile first** - use Chrome DevTools or `node --prof` to find bottlenecks consuming >5% of runtime
 2. **Categorize issues** - map bottlenecks to optimization categories (see `quick-reference.md`)
-3. **Load the relevant pattern** - open the corresponding reference file for ❌/✅ examples
-4. **Apply and verify** - implement the optimization, measure the speedup, and validate correctness with tests
+3. **Load the relevant pattern** - open the reference file for ❌/✅ examples
+4. **Apply and verify** - implement, measure speedup, validate correctness with tests
 
 ## Critical Anti-Patterns
 
@@ -81,7 +85,12 @@ This skill minimizes context usage through progressive loading:
 - ❌ Create unbounded loops - set explicit limits
 - ❌ Place `try/catch` in hot paths - degrades V8 optimization
 
-See the reference files for ✅ correct patterns.
+See reference files for ✅ correct patterns.
+
+## Architecture & Development Guides
+
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - repository architecture and system design
+- [AGENTS.md](../../AGENTS.md) - agent behavior rules and workflow conventions
 
 ## License
 

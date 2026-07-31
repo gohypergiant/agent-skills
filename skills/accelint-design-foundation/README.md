@@ -1,66 +1,166 @@
-# Accelint Design Foundation
+# accelint-design-foundation
 
-Agent skill for styling with `@accelint/design-foundation` and `@accelint/design-toolkit` packages. Provides expert knowledge of opinionated Tailwind conventions including semantic tokens, custom spacing scale, outline-based borders, @variant system, and CSS module patterns.
+Agent skill for styling React components with `@accelint/design-foundation` and `@accelint/design-toolkit`. Guides you through semantic tokens, spacing conventions, CSS module patterns, and the `@variant` system that replaces standard Tailwind patterns.
 
 ## Installation
 
-**npm**
+Install this skill using the skills CLI:
+
 ```bash
-npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-design-foundation
+npx skills add gohypergiant/agent-skills
 ```
 
-**pnpm**
-```bash
-pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-design-foundation
+Select `accelint-design-foundation` from the interactive picker, choose Project scope, and use Symlink method.
+
+## What It Does
+
+This skill helps you write component styles that fit the design foundation conventions:
+
+- Use semantic color tokens (`bg-surface-default`, `fg-primary-bold`) instead of raw Tailwind colors
+- Apply the semantic spacing scale (`xxs` through `xxl`) instead of numeric classes
+- Put component styles in CSS modules with `@layer` directives instead of inline className strings
+- Use `outline` classes instead of `border` classes to avoid layout shifts
+- Style component variants with `@variant` blocks and data attributes instead of attribute selectors
+
+It also catches setup issues like missing `@reference` directives, incorrect PostCSS config, or wrong import order.
+
+## Quick Start
+
+Once installed, the skill activates automatically when you work with design foundation components. Use natural language prompts:
+
 ```
-
-## Usage
-
-This skill automatically activates when working with components that use `@accelint/design-foundation` or `@accelint/design-toolkit`.
-
-**Example prompts that trigger the skill:**
-
-```
-Style this Button component using Design Foundation tokens
-Add styling to this card with the design system
-Theme this component for light and dark mode
-Update the spacing in this component to use the semantic scale
+Style this Button using design foundation tokens
+Convert this vanilla Tailwind card to design foundation
+Fix the @variant not found build error
+Add hover and active states to this component
 ```
 
 ## What's Included
 
-- **SKILL.md** - Core patterns, anti-patterns, and styling workflows
-- **AGENTS.md** - Quick reference for tokens, spacing, and variants
-- **references/** - Detailed catalogs and migration guide:
-  - `token-reference.md` - Complete token catalog with examples
-  - `variant-system.md` - @variant system usage patterns
-  - `spacing-scale.md` - Semantic spacing scale guide
-  - `migration-guide.md` - Converting from vanilla Tailwind
-- **assets/** - Example component showing correct patterns
+- **SKILL.md** — Core styling patterns, anti-patterns, setup requirements, and response guidelines
+- **AGENTS.md** — Quick reference for tokens, spacing, and variant patterns
+- **references/** — Detailed guides for specific topics:
+  - `setup.md` — PostCSS config, @reference directives, and CSS entrypoint setup
+  - `token-reference.md` — Complete catalog of semantic, domain, and primitive tokens
+  - `variant-system.md` — Data attribute variants and @variant block syntax
+  - `spacing-scale.md` — Semantic scale usage and numeric fallback behavior
+  - `migration-guide.md` — Converting vanilla Tailwind to design foundation
+  - `troubleshooting.md` — Common build errors and fixes
+- **assets/** — Example React component with correct CSS module setup
+- **evals/** — Test cases for styling, migration, setup, and troubleshooting scenarios
 
 ## Key Concepts
 
 ### CSS Modules First
-Component styles belong in CSS modules (`.module.css`), not inline className props. Inline Tailwind classes should only be used for minor one-off overrides.
+
+Component styles belong in CSS modules (`.module.css`), not inline `className` props. Inline Tailwind classes are only for minor one-off overrides.
+
+```tsx
+// ✅ Correct
+import styles from './Card.module.css';
+<div className={styles.card}>{content}</div>
+
+// ❌ Wrong
+<div className="bg-surface-default outline-1 outline-interactive p-m">{content}</div>
+```
 
 ### Semantic Tokens
-Use semantic tokens like `bg-surface-default` and `fg-primary-bold` instead of raw Tailwind colors. Semantic tokens automatically adapt to light/dark themes.
+
+Use semantic tokens that adapt to light and dark themes automatically:
+
+```css
+/* ✅ Correct */
+.card {
+  @apply bg-surface-default fg-primary-bold outline-1 outline-interactive;
+}
+
+/* ❌ Wrong */
+.card {
+  @apply bg-gray-100 text-gray-900 border border-gray-300 dark:bg-gray-800;
+}
+```
 
 ### Semantic Spacing
-Use the seven-step semantic scale (`xxs` → `xs` → `s` → `m` → `l` → `xl` → `xxl`) instead of numeric Tailwind spacing (`p-4`, `gap-2`).
+
+Use the seven-step scale (`xxs`, `xs`, `s`, `m`, `l`, `xl`, `xxl`) instead of numeric classes:
+
+```css
+/* ✅ Correct */
+.button {
+  @apply px-m py-xs gap-s;
+}
+
+/* ❌ Wrong */
+.button {
+  @apply px-4 py-2 gap-2;
+}
+```
+
+Note: Numeric classes work differently in design foundation. `p-1` means 1px exactly, not 4px like vanilla Tailwind. Use them only for non-conforming designs.
 
 ### Outlines Over Borders
-Prefer `outline` classes over `border` classes. Outlines don't affect element dimensions, preventing layout shifts.
+
+Outlines don't affect element dimensions, so they prevent layout shifts:
+
+```css
+/* ✅ Correct */
+.card {
+  @apply outline-1 outline-interactive;
+}
+
+/* ❌ Wrong */
+.card {
+  @apply border-2 border-gray-300;
+}
+```
 
 ### @variant System
-Use `@variant` directive blocks in CSS modules for conditional styling based on data attributes.
 
-## Examples
+Use data attributes and `@variant` blocks for component variants instead of attribute selectors:
 
-### Basic Card Component
+```tsx
+// Component
+<button className={styles.button} data-color="info" data-size="large">
+  Click
+</button>
+```
+
+```css
+/* ✅ Correct */
+@layer components.l2 {
+  .button {
+    @variant color-info {
+      @apply bg-interactive-bold fg-inverse-bold;
+    }
+    
+    @variant size-large {
+      @apply px-l py-s;
+    }
+  }
+}
+
+/* ❌ Wrong */
+.button[data-color="info"] {
+  @apply bg-interactive-bold;
+}
+```
+
+## Setup Requirements
+
+Design foundation needs specific configuration to work. The skill checks for these automatically:
+
+1. **PostCSS plugin** — Add `@accelint/postcss-tailwind-css-modules` to `postcss.config.mjs`
+2. **@reference directive** — Every CSS module must reference the design system at the top
+3. **CSS entrypoint import** — Import globals or design-foundation styles first in your root layout
+
+See `references/setup.md` for complete setup instructions.
+
+## Example Component
+
+Here's a properly styled card with variants:
 
 **Card.tsx**
-```typescript
+```tsx
 import styles from './Card.module.css';
 
 export function Card({ children, size = 'medium' }) {
@@ -74,6 +174,8 @@ export function Card({ children, size = 'medium' }) {
 
 **Card.module.css**
 ```css
+@reference '@accelint/design-foundation/styles';
+
 @layer components.l1 {
   .card {
     @apply bg-surface-default outline-1 outline-interactive shadow-elevation-raised-muted p-m;
@@ -93,17 +195,31 @@ export function Card({ children, size = 'medium' }) {
 }
 ```
 
-## Requirements
+The `@reference` directive at the top is required. Without it, semantic tokens and `@variant` blocks are undefined and cause build errors.
 
-- `@accelint/design-foundation` package installed
-- Tailwind CSS configured to use design foundation
-- CSS modules support in build system
+## Common Issues
 
-## Learn More
+**"undefined variable --bg-surface-default"**
 
-- [AGENTS.md](AGENTS.md) - Quick reference guide
-- [SKILL.md](SKILL.md) - Complete styling patterns
-- [references/](references/) - Detailed catalogs and guides
+Missing `@reference` directive. Add this to the top of your CSS module:
+
+```css
+@reference '@accelint/design-foundation/styles';
+```
+
+**"@variant directive not recognized"**
+
+Missing PostCSS plugin or `@reference` directive. Check that `@accelint/postcss-tailwind-css-modules` is in your `postcss.config.mjs`.
+
+**"group-hover/button: selector not working"**
+
+Missing PostCSS plugin. Named group selectors need `@accelint/postcss-tailwind-css-modules` to resolve correctly in CSS modules.
+
+See `references/troubleshooting.md` for more common issues and fixes.
+
+## Architecture & Development Guides
+
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) — Repository structure and system architecture
 
 ## License
 

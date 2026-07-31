@@ -1,8 +1,8 @@
 # Security Best Practices
 
-Systematic security auditing and vulnerability detection for JavaScript/TypeScript applications. This skill combines an audit workflow with OWASP Top 10 security patterns for production-ready code.
+Systematic security auditing and vulnerability detection for JavaScript and TypeScript applications. This skill combines a 4-phase audit workflow with OWASP Top 10 security patterns for production-ready code.
 
-**Framework-Agnostic**: This skill gives security principles that apply across frameworks (Express, Fastify, Nest.js, Next.js, and others), package managers (npm, yarn, pnpm, bun), and libraries. Code examples illustrate the concepts. Adapt them to your project's stack.
+**Framework-Agnostic**: Security principles apply across frameworks (Express, Fastify, Nest.js, Next.js), package managers (npm, yarn, pnpm, bun), and libraries. Code examples illustrate concepts. Adapt them to your project's stack.
 
 ## Overview
 
@@ -33,7 +33,7 @@ accelint-security-best-practices/
 ├── README.md                   # This file
 ├── references/
 │   ├── quick-reference.md      # Vulnerability → category mapping
-│   ├── secrets-management.md   # Environment variables, no hardcoding
+│   ├── secrets-management.md   # Environment variables, secret managers
 │   ├── input-validation.md     # Zod schemas, type checking
 │   ├── file-uploads.md         # Size, type, extension validation
 │   ├── injection-prevention.md # SQL, NoSQL, Command, XSS
@@ -76,11 +76,11 @@ This skill minimizes context usage through progressive loading:
 
 ## Quick Start
 
-1. **Scope the task first** - Identify the target path or feature area, whether the user wants audit-only findings or fixes applied, and the highest-risk surfaces
-2. **Discover vulnerabilities** - Analyze the in-scope code for security anti-patterns across relevant OWASP categories
+1. **Scope the task** - Identify target path or feature area, whether the user wants audit-only findings or fixes applied, repo size, and highest-risk surfaces (auth, secrets, APIs, file uploads, outbound fetches)
+2. **Discover vulnerabilities** - Analyze in-scope code for security anti-patterns across relevant OWASP categories
 3. **Categorize by severity** - Map verified vulnerabilities to OWASP categories with Critical/High/Medium/Low severity
 4. **Load the relevant pattern** - Open the corresponding reference file for ❌/✅ examples and remediation guidance
-5. **Apply and verify** - Implement the security fix when requested, validate closure, and confirm that no new vulnerabilities were introduced
+5. **Apply and verify** - Implement the security fix when requested, validate closure, and confirm no new vulnerabilities were introduced
 
 ## Critical Security Anti-Patterns
 
@@ -112,6 +112,13 @@ Layer security controls so a single vulnerability does not compromise the entire
 - Input validation (type/format) + Injection prevention (parameterized queries)
 - Rate limiting (prevent brute force) + Logging (detect attacks)
 - Security headers (browser protection) + CSRF tokens (request validation)
+
+## Architecture & Development Guides
+
+Related documentation for this repository:
+
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - System architecture and technical overview
+- [AGENTS.md](../../AGENTS.md) - Agent behavior and workflow guidance
 
 ---
 

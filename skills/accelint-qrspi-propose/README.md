@@ -1,21 +1,21 @@
 # Accelint QRSPI Propose
 
-Automate the planning phase of spec-driven development. This skill walks through Questions → Research → Design → Structure (QRSPI) and requires review checkpoints before any code is written.
+Plan tickets, bugs, and feature requests through the QRSPI methodology before writing code. This skill walks through Questions → Research → Design → Structure, requires review checkpoints, and stops before implementation.
 
 ## What This Does
 
-This skill takes a ticket or feature request and produces a complete OpenSpec change:
+Takes a ticket or feature request and produces a complete OpenSpec change:
 
 - Research questions and answers (what we need to know before building)
 - Design document (decisions, trade-offs, architectural choices)
 - Delta specs (what changes in the system)
 - Task breakdown (vertical slices for implementation)
 
-The skill stops after planning. Run `/accelint-qrspi-apply <change-name>` when you are ready to implement.
+The skill stops after planning. Run `/accelint-qrspi-apply <change-name>` when ready to implement.
 
 ## When to Use This
 
-Invoke this skill when:
+Use when:
 
 - Planning a new feature or change before writing code
 - You have a ticket/issue that needs design work
@@ -32,7 +32,7 @@ Trigger phrases:
 
 This skill requires OpenSpec's expanded workflows: `explore`, `new`, and `continue`.
 
-### Check if you have them:
+### Check if you have them
 
 ```bash
 openspec config list
@@ -43,7 +43,7 @@ Look for these in the `workflows:` section:
 - `new`
 - `continue`
 
-### Enable if missing:
+### Enable if missing
 
 ```bash
 openspec config profile
@@ -51,7 +51,7 @@ openspec config profile
 openspec update
 ```
 
-The skill will check this before running and guide you if configuration is needed.
+The skill checks this before running and guides you if configuration is needed.
 
 ## How It Works
 
@@ -59,7 +59,7 @@ The skill will check this before running and guide you if configuration is neede
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Phase          Context              Output          Checkpoint │
+│  Stage          Context              Output          Checkpoint │
 ├─────────────────────────────────────────────────────────────────┤
 │  Questions      Ticket only          Questions       —          │
 │  Research       Questions only       Research doc    —          │
@@ -69,35 +69,35 @@ The skill will check this before running and guide you if configuration is neede
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Phase 1: Questions
+#### Stage 1: Questions
 
 Spawn a sub-agent that sees only the ticket and generates research questions. No solutions, just questions about what we need to know.
 
-#### Phase 2: Research
+#### Stage 2: Research
 
 A fresh sub-agent (new context) sees only the questions and answers them with facts from the codebase. The ticket is kept out of context to prevent "solution-first thinking".
 
-#### Phase 3: Design Scaffolding
+#### Stage 3: Design Scaffolding
 
 Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts under your project's `config.yaml` rules.
 
-REQUIRED checkpoint: Review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
+Required checkpoint: Review the design before continuing. Corrections here are cheap; corrections after code is written are expensive.
 
-#### Phase 4: Specs & Tasks
+#### Stage 4: Specs & Tasks
 
 Generate delta specs and task breakdown. A sub-agent receives questions + research + approved design (NO ticket) and creates the remaining artifacts with emphasis on vertical slicing.
 
-REQUIRED checkpoint: Review the task breakdown to ensure vertical slicing, not layer-by-layer slicing.
+Required checkpoint: Review the task breakdown to verify vertical slicing, not layer-by-layer slicing.
 
-#### Phase 5: Completion
+#### Stage 5: Completion
 
-The skill reports completion and exits. You decide when to run `/accelint-qrspi-apply <change-name>` to start implementation.
+The skill reports completion and exits. You decide when to run `/clear` then `/accelint-qrspi-apply <change-name>` to start implementation.
 
 ## Key Concepts
 
 ### Context Isolation
 
-The ticket text is deliberately kept out of context after Phase 1. This is the core QRSPI insight:
+The ticket text is deliberately kept out of context after Stage 1. This is the core QRSPI insight:
 
 - Questions (ticket IN): "What do we need to know?"
 - Research (ticket OUT): Objective facts only, no solution bias
@@ -139,7 +139,7 @@ Phase 3: All API changes
 Phase 4: All frontend changes
 ```
 
-The skill checks for horizontal slicing and corrects it before review if it detects it.
+The skill detects horizontal slicing and corrects it before review.
 
 ### No Automatic Implementation
 
@@ -149,7 +149,7 @@ The skill stops after planning. This allows:
 - Clearing context between planning and coding
 - User control over when implementation begins
 
-When you are ready to start building, run `/clear`, then run `/accelint-qrspi-apply <change-name>`.
+When ready to start building, run `/clear`, then run `/accelint-qrspi-apply <change-name>`.
 
 ## Example Usage
 
@@ -168,10 +168,10 @@ Agent: Checking OpenSpec configuration...
 ✓ Expanded workflows enabled
 
 Generating research questions...
-[Questions phase completes]
+[Questions stage completes]
 
 Answering research questions from codebase...
-[Research phase completes]
+[Research stage completes]
 
 Creating OpenSpec change and design artifact...
 [Design generated]
@@ -222,7 +222,7 @@ If anything is missing, the skill will guide you through setup.
 
 If OpenSpec commands fail, the skill surfaces the error and lets you retry or abort. It does not continue automatically.
 
-If a sub-agent fails, you will see the error and can retry that phase or provide manual input for the Questions or Research stages.
+If a sub-agent fails, you will see the error and can retry that stage or provide manual input for the Questions or Research stages.
 
 If artifacts are missing after generation, the skill checks file paths and provides the expected locations for manual inspection.
 
@@ -234,11 +234,11 @@ The design checkpoint is your leverage point. A five-minute review here prevents
 
 If the skill warns about horizontal slicing, listen. Layer-by-layer development hides integration issues until the end.
 
-Do not rush to implementation. It is fine to create multiple specs before coding. Planning artifacts are cheap; code is expensive.
+Do not rush to implementation. Create multiple specs before coding. Planning artifacts are cheap; code is expensive.
 
 ## Related Skills
 
 - `accelint-onboard-openspec` - Set up OpenSpec configuration for your project
 - `accelint-onboard-agent` - Create AGENTS.md with behavior rules
 - `accelint-qrspi-apply` - Implement tasks from the generated change
-- `opsx:verify` - Verify implementation matches artifacts before archiving
+- `accelint-qrspi-archive` - Archive completed changes with cross-capability linking

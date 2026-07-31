@@ -1,47 +1,49 @@
 # React Best Practices
 
-React-specific performance and correctness guidance for agents and LLMs working with React code.
+React performance and correctness guidance for agents working with components, hooks, JSX, hydration, and React 19 patterns.
 
-## Overview
+## What This Is
 
-This skill provides structured React guidance for:
-- Re-render optimizations
-- Rendering performance improvements
-- Advanced patterns for state and effects
-- React 19+ migration guidance
+This skill provides React performance and correctness patterns for agents:
+- Re-render optimization
+- Rendering performance
+- State and effect patterns
+- React 19+ migration
 - React Compiler awareness
 
-Many of these patterns originated in [Vercel's Skill](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices). This version extends them with additional patterns, React Compiler guidance, and broader examples.
+Many patterns come from [Vercel's React Best Practices skill](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices). This version adds React Compiler guidance, React 19 features, and broader examples.
 
-**Note:** This skill focuses on React-specific optimizations. Framework-specific guidance for Next.js, Remix, and similar tools is out of scope unless the issue depends on React behavior.
+**Scope:** React-specific optimizations only. Framework-specific guidance for Next.js, Remix, and similar tools is out of scope unless the issue depends on React behavior.
 
 ---
 
 ## Quick Start
 
-### For Agents and LLMs
+This is a skill package: structured guidance files that agents load on demand. No dependencies to install.
 
-1. **Read [SKILL.md](SKILL.md)** - Understand when to trigger this skill and how to use it.
-2. **Reference [AGENTS.md](AGENTS.md)** - Browse the rule summaries and quick diagnostic guide.
-3. **Load specific patterns** - Open detailed examples in `references/` only as needed.
-4. **Use checklists** - Apply [quick-checklists.md](references/quick-checklists.md) for systematic reviews.
+### For Agents
+
+1. **Read [SKILL.md](SKILL.md)** - Understand when to trigger this skill and how to use it
+2. **Check [AGENTS.md](AGENTS.md)** - Browse rule summaries and the quick diagnostic guide
+3. **Load specific patterns** - Open detailed examples in `references/` only when needed
+4. **Use checklists** - Apply [quick-checklists.md](references/quick-checklists.md) for systematic reviews
 
 ### For Humans
 
-This skill is optimized for AI agents but humans may find it useful for:
-- Learning React performance optimization patterns
-- Reviewing code for common anti-patterns
-- Understanding React 19+ features and migrations
-- Systematic performance auditing with checklists
+Humans can use this skill to:
+- Learn React performance patterns
+- Review code for anti-patterns
+- Understand React 19+ features
+- Run systematic performance audits
 
 ---
 
 ## Pattern Categories
 
 ### 1. Re-render Optimizations
-Patterns to reduce unnecessary component re-renders and state updates:
+Reduce unnecessary component re-renders and state updates:
 - Defer state reads
-- Extract to memoized components
+- Extract memoized components
 - Narrow effect dependencies
 - Subscribe to derived state
 - Functional setState updates
@@ -49,7 +51,7 @@ Patterns to reduce unnecessary component re-renders and state updates:
 - Transitions for non-urgent updates
 
 ### 2. Rendering Performance
-Patterns to optimize actual rendering and painting:
+Optimize actual rendering and painting:
 - Animate SVG wrapper (GPU acceleration)
 - CSS content-visibility (long lists)
 - Hoist static JSX
@@ -86,7 +88,7 @@ Patterns for React 19 and modern React:
 - Dedicated [React Compiler Guide](references/react-compiler-guide.md)
 
 ### Quick Diagnostic Guide
-Navigate directly to relevant patterns based on symptoms:
+Find patterns by symptom:
 - "Component re-renders too often" → Section 1
 - "Scrolling is janky" → Section 2.2, 2.1
 - "Hydration mismatch errors" → Section 2.5
@@ -102,7 +104,7 @@ Ready-to-use checklists for:
 - Code reviews
 
 ### Real-World Examples
-[Compound Patterns](references/compound-patterns.md) shows complete examples:
+[Compound Patterns](references/compound-patterns.md) includes complete examples:
 - Optimized search component
 - Infinite scroll list
 - Dashboard with widgets
@@ -126,17 +128,45 @@ This skill covers React 19+ features including:
 
 ---
 
-## Usage in Claude Code
+## Usage
 
-This skill is designed to be used with environments such as Claude Code (claude.ai/claude-code) and automatically activates when:
-- Writing React components, hooks, or JSX
-- Refactoring React code
-- Optimizing re-renders or performance
-- Reviewing React code
-- Fixing hydration mismatches
-- Implementing React 19 features
+Agents trigger this skill when working with:
+- React components, hooks, or JSX
+- Re-render or performance optimization
+- Hydration mismatches
+- React 19 features
+- React code reviews
 
-See [SKILL.md](SKILL.md) for complete activation criteria and trigger phrases.
+See [SKILL.md](SKILL.md) for complete trigger criteria.
+
+---
+
+## Skill Package Structure
+
+```
+accelint-react-best-practices/
+├── SKILL.md                 # Skill definition and workflow
+├── AGENTS.md                # Rule summaries for quick reference
+├── README.md                # This file
+├── CHANGELOG.md             # Version history
+├── references/              # 33 detailed pattern files
+│   ├── defer-state-reads.md
+│   ├── extract-memoized-components.md
+│   ├── prevent-hydration-mismatch.md
+│   ├── react-compiler-guide.md
+│   ├── quick-checklists.md
+│   ├── compound-patterns.md
+│   └── ...
+├── scripts/                 # Automation scripts
+│   ├── check-imports.sh
+│   ├── find-forwardref.sh
+│   ├── detect-static-jsx.sh
+│   └── README.md
+├── assets/
+│   └── output-report-template.md
+└── evals/
+    └── evals.json           # 16 test cases
+```
 
 ---
 
@@ -161,18 +191,19 @@ When adding new patterns:
 
 This skill follows these principles:
 
-1. **Correctness first** - Avoid bugs before optimizing performance.
-2. **Check React Compiler first** - Do not suggest manual memoization or hoisting until you know whether the compiler is enabled.
-3. **Measure before optimizing** - Profile to identify real bottlenecks.
-4. **Optimize the slowest operations first** - Network and data-volume issues often matter more than render micro-optimizations.
-5. **Avoid premature optimization** - Do not optimize trivial operations.
-6. **Prefer simplicity** - Choose simple, readable code over clever optimizations.
-7. **Document non-obvious patterns** - Explain why an optimization exists.
+1. **Correctness first** - Avoid bugs before optimizing performance
+2. **Check React Compiler first** - Do not suggest manual memoization or hoisting until you know whether the compiler is enabled
+3. **Measure before optimizing** - Profile to identify real bottlenecks
+4. **Optimize the slowest operations first** - Network and data-volume issues often matter more than render micro-optimizations
+5. **Avoid premature optimization** - Do not optimize trivial operations
+6. **Prefer simplicity** - Choose simple, readable code over clever optimizations
+7. **Document non-obvious patterns** - Explain why an optimization exists
 
 ---
 
 ## References
 
+This skill draws patterns and inspiration from:
 - https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
 - https://github.com/buildworksai/AgentHub/blob/main/.agent/skills/react-best-practices/skill.md
 - https://github.com/programming-in-th/programming.in.th/blob/main/.claude/docs/react-patterns.md
@@ -180,3 +211,11 @@ This skill follows these principles:
 - https://github.com/softaworks/agent-toolkit/blob/main/skills/react-useeffect/README.md
 - https://github.com/Jeffallan/claude-skills/blob/main/skills/react-expert/SKILL.md
 - https://github.com/prowler-cloud/prowler/blob/master/skills/react-19/SKILL.md
+
+---
+
+## Version
+
+Current version: **1.8.3**
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and recent changes.

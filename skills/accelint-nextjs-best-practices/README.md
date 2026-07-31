@@ -1,6 +1,6 @@
 # Next.js Best Practices
 
-Comprehensive performance, architecture, and security guidance for Next.js applications, written for agents and LLMs working with Next.js code.
+Performance, architecture, and security guidance for Next.js applications, written for agents and LLMs working with Next.js code.
 
 ## Overview
 
@@ -24,7 +24,7 @@ This skill provides structured Next.js performance and security guidance coverin
 2. **Start with [AGENTS.md](AGENTS.md)** for the condensed rule map and diagnostic guide.
 3. **Use [references/quick-checklist.md](references/quick-checklist.md)** to triage common scenarios quickly.
 4. **Load only the needed reference file(s)** because each detailed reference covers one pattern.
-5. **Use [scripts/README.md](scripts/README.md)** when a quick heuristic scan would help confirm likely issues.
+5. **Consult [scripts/README.md](scripts/README.md)** when a quick heuristic scan would help confirm likely issues.
 
 ### For Humans
 
@@ -92,6 +92,51 @@ Optimize server-side request caching:
 
 ---
 
+## Skill Structure
+
+This skill uses **progressive disclosure** to minimize context usage:
+
+### Primary Files
+- **[SKILL.md](SKILL.md)** - Canonical activation criteria, workflow, and trigger phrases
+- **[AGENTS.md](AGENTS.md)** - Condensed rule map and quick diagnostic guide (read this first after activation)
+- **[references/quick-checklist.md](references/quick-checklist.md)** - Fast triage for common scenarios
+
+### Detailed References
+Load only when you need implementation details:
+
+**General Patterns (1.x):**
+- [prevent-waterfall-chains.md](references/prevent-waterfall-chains.md)
+- [parallelize-independent-operations.md](references/parallelize-independent-operations.md)
+- [strategic-suspense-boundaries.md](references/strategic-suspense-boundaries.md)
+
+**Server-Side Performance (2.x):**
+- [server-actions-security.md](references/server-actions-security.md)
+- [avoid-duplicate-serialization.md](references/avoid-duplicate-serialization.md)
+- [minimize-serialization.md](references/minimize-serialization.md)
+- [parallel-data-fetching.md](references/parallel-data-fetching.md)
+- [react-cache-deduplication.md](references/react-cache-deduplication.md)
+- [use-after-non-blocking.md](references/use-after-non-blocking.md)
+
+**Miscellaneous (3.x):**
+- [avoid-barrel-imports.md](references/avoid-barrel-imports.md)
+- [server-vs-client-component.md](references/server-vs-client-component.md)
+
+**Additional Resources:**
+- [compound-patterns.md](references/compound-patterns.md) - Real-world combined patterns
+
+### Automation Scripts
+Helper scripts for detecting anti-patterns during audits:
+- [scripts/check-server-actions-auth.sh](scripts/check-server-actions-auth.sh)
+- [scripts/detect-barrel-imports.sh](scripts/detect-barrel-imports.sh)
+- [scripts/find-waterfall-chains.sh](scripts/find-waterfall-chains.sh)
+
+See [scripts/README.md](scripts/README.md) for usage and limitations.
+
+### Assets
+- [assets/output-report-template.md](assets/output-report-template.md) - Standardized audit report format
+
+---
+
 ## App Router Focus
 
 This skill primarily covers the **Next.js App Router** (Next.js 13+):
@@ -118,13 +163,6 @@ See [SKILL.md](SKILL.md) for complete activation criteria and trigger phrases.
 
 ---
 
-## Maintenance Notes
-
-- `SKILL.md` is the canonical activation and workflow file.
-- `AGENTS.md` is the fast-reference overview agents should read first after activation.
-- `references/` contains the detailed pattern guidance that should be loaded on demand.
-- `scripts/` contains optional heuristic checks; they support audits but do not replace judgment.
-
 ## Performance Philosophy
 
 This skill follows these principles:
@@ -143,6 +181,14 @@ This skill follows these principles:
 - **accelint-react-best-practices** - For React-specific optimizations such as hooks, memoization, and re-renders.
 - **accelint-ts-best-practices** - For TypeScript type-safety and correctness patterns.
 - **accelint-security-best-practices** - For security guidance beyond Server Actions.
+
+---
+
+## Architecture & Development Guides
+
+For deeper context on this repository:
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - Repository architecture and system design
+- [AGENTS.md](../../AGENTS.md) - Agent behavior and workflow conventions
 
 ---
 

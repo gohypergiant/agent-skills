@@ -1,6 +1,6 @@
 # accelint-skill-prose
 
-Safely tighten behavior-defining prompt artifacts without changing what they mean or how they behave.
+Safely edit behavior-defining prompt artifacts without changing what they mean or how they behave.
 
 This skill is part of the `gohypergiant/agent-skills` repository. Install it through the repo-wide skills flow, not as a standalone npm package.
 
@@ -20,21 +20,11 @@ pnpm dlx skills add gohypergiant/agent-skills
 
 This skill does not ship as a separate package with its own `package.json`.
 
-## Quick Start
-
-The clearest real invocation pattern in this repo is a folder-level request:
-
-```text
-/accelint-skill-prose <path-to-skill-folder>, audit+rewrite, mode=strict
-```
-
-Use that when you want to audit or tighten a whole skill folder instead of a single pasted paragraph.
-
 ## What is accelint-skill-prose?
 
 `accelint-skill-prose` edits prompt artifacts where wording controls behavior, not just style. That includes `SKILL.md` files, `AGENTS.md` or `CLAUDE.md` guidance, prompt templates, guardrails, workflow notes, and behavior-bearing Markdown in `references/` folders.
 
-Its job is to make those files easier to follow and audit without changing trigger coverage, workflow order, guardrail strength, or exact technical meaning.
+It makes those files easier to follow and audit without changing trigger coverage, workflow order, guardrail strength, or exact technical meaning.
 
 ## Why use it?
 
@@ -83,13 +73,13 @@ Progressive-disclosure reference files that the root skill loads when needed.
 
 | File | Purpose |
 |------|---------|
-| `references/checklist.md` | Final pass checks for output-mode compliance, no-rewrite decisions, and cross-file consistency |
-| `references/frontmatter-descriptions.md` | Safe tightening rules for frontmatter descriptions and trigger language |
-| `references/workflow-guardrails.md` | Guidance for workflow order, approval gates, rationale, and behavior-bearing verbs |
-| `references/ste-compatible-rules.md` | Selective Simplified Technical English patterns adapted for behavior-preserving edits |
-| `references/rfc-2119.md` | Guidance for obligation-strength normalization without changing behavior |
-| `references/examples.md` | Worked examples of safe audits, rewrites, and no-rewrite decisions |
 | `references/artifact-patterns.md` | Positive rewrite patterns for descriptions, workflows, guardrails, rationale, and examples |
+| `references/checklist.md` | Final pass checks for output-mode compliance, no-rewrite decisions, and cross-file consistency |
+| `references/examples.md` | Worked examples of safe audits, rewrites, and no-rewrite decisions |
+| `references/frontmatter-descriptions.md` | Safe tightening rules for frontmatter descriptions and trigger language |
+| `references/rfc-2119.md` | Guidance for obligation-strength normalization without changing behavior |
+| `references/ste-compatible-rules.md` | Selective Simplified Technical English patterns adapted for behavior-preserving edits |
+| `references/workflow-guardrails.md` | Guidance for workflow order, approval gates, rationale, and behavior-bearing verbs |
 
 ### `CHANGELOG.md`
 
@@ -101,11 +91,9 @@ Evaluation prompts that exercise the skill's behavior. This file is more useful 
 
 ## Examples
 
-These examples come from real files in this skill folder. They are the closest thing this package has to usage examples, and they are better than invented samples.
+These examples come from real eval prompts in `evals/evals.json`. They are the closest thing this package has to usage examples, and they are better than invented samples.
 
 ### Audit-only request
-
-Source: `skills/accelint-skill-prose/evals/evals.json`
 
 ```text
 Audit this workflow prose for behavior risk. Do NOT provide a rewrite, only findings.
@@ -113,19 +101,15 @@ Audit this workflow prose for behavior risk. Do NOT provide a rewrite, only find
 
 Use this when you want risk analysis without replacement text.
 
-### Rewrite-only request
-
-Source: `skills/accelint-skill-prose/evals/evals.json`
+### Rewrite-only request with exact preservation
 
 ```text
 Tighten this instruction without changing step number, approval dependency, timing rule, exact tokens, or rationale. Return only the revised instruction in final output.
 ```
 
-Use this when you already know you want a revision and want tight control over what must stay exact.
+Use this when you want tight control over what must stay exact.
 
 ### Frontmatter-description tightening
-
-Source: `skills/accelint-skill-prose/evals/evals.json`
 
 ```text
 Tighten this skill description without losing trigger phrases or task coverage. Keep it suitable for frontmatter. Return only the revised description in final output.
@@ -135,13 +119,13 @@ Use this when the wording in `description:` helps decide when a skill should tri
 
 ### Folder-level skill audit
 
-Source: `skills/accelint-skill-prose/references/examples.md`
-
 ```text
 Request: Tighten this skill's prose safely. The user pasted only one section, but the skill also has `AGENTS.md` and `references/` files.
 ```
 
 Use this when a local rewrite could create drift across a whole skill folder.
+
+Source: `references/examples.md`
 
 ## File Layout
 

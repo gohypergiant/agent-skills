@@ -1,15 +1,15 @@
-# accelint-onboard-agent
+# accelint-onboard-agents
 
-Generates `AGENTS.md` or `CLAUDE.md` through a structured interview. These files define how AI coding agents should behave in your project: workflow conventions, communication style, and decision rules.
+Generate `AGENTS.md` or `CLAUDE.md` for your repository through a structured interview. These files tell AI coding agents how to behave: workflow steps, communication style, decision rules, and guardrails.
 
 ## What it does
 
-The skill runs a conversational interview that covers agent role, communication preferences, workflow procedures, and guardrails. Before it asks questions, it tries to infer behavior from the codebase, such as commit conventions from `commitlint.config.ts` or pre-commit checks from Husky hooks.
+This skill runs a conversational interview covering agent role, communication preferences, workflow procedures, and guardrails. Before asking questions, it tries to infer behavior from your codebase—commit conventions from `commitlint.config.ts`, pre-commit checks from Husky hooks, and so on.
 
 It supports three modes:
-- Create — generate a new file from scratch
-- Import — restructure existing content that does not match the template
-- Refresh — update a file that already matches the expected structure
+- **Create** — generate a new file from scratch
+- **Import** — restructure existing content that doesn't match the template
+- **Refresh** — update a file that already matches the expected structure
 
 The output is behavior only. Stack details, architecture patterns, and coding standards belong in `openspec/config.yaml`, not here.
 
@@ -25,7 +25,7 @@ Use this skill when the goal is to define agent behavior. If the real need is to
 
 **Phase 0: File state detection**
 
-The skill first checks whether the current directory is a monorepo package. If a root-level `AGENTS.md` exists above the current directory, it reads that file to avoid duplicating global instructions. It then checks for related onboarding documents such as `openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, and existing `AGENTS.md` or `CLAUDE.md` files. Last, it assesses the local file state and chooses the correct mode: Create, Import, or Refresh.
+The skill checks whether the current directory is a monorepo package. If a root-level `AGENTS.md` exists above the current directory, it reads that file to avoid duplicating global instructions. It then checks for related onboarding documents like `openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, and existing `AGENTS.md` or `CLAUDE.md` files. Finally, it picks the correct mode: Create, Import, or Refresh.
 
 **Phase 1: Discovery interview**
 
@@ -33,11 +33,11 @@ The skill asks about agent role, communication style, workflow procedures, decis
 
 **Phase 2: Smart defaults**
 
-After each answer, the skill suggests related conventions based on what it found. For example, if you mention Turborepo + PNPM, it confirms whether to use `pnpm -w` for root dependencies and `pnpm --filter` for package-scoped dependencies. If it finds `commitlint.config.ts`, it asks which commit types you use beyond the standard set.
+After each answer, the skill suggests related conventions based on what it found. For example, if you mention Turborepo + pnpm, it confirms whether to use `pnpm -w` for root dependencies and `pnpm --filter` for package-scoped dependencies. If it finds `commitlint.config.ts`, it asks which commit types you use beyond the standard set.
 
 **Phase 3: Parallel codebase discovery**
 
-For gaps the interview does not fill, the skill spawns five agents in parallel to inspect config files:
+For gaps the interview doesn't fill, the skill spawns five agents in parallel to inspect config files:
 
 - Version control and commit conventions (`commitlint`, `git log`, branch protection)
 - CI/CD and pre-commit workflows (GitHub Actions, Husky, lefthook)
@@ -45,7 +45,7 @@ For gaps the interview does not fill, the skill spawns five agents in parallel t
 - Security and migrations (migration directories, `.env.example`, `.gitignore` patterns)
 - OpenSpec integration (`openspec/` directory, config files)
 
-Parallel discovery is intentional. It reduces turnaround time on repositories where relevant config files are spread across many directories.
+Parallel discovery is intentional. It cuts turnaround time on repositories where relevant config files are spread across many directories.
 
 **Phase 4: Preview and write**
 
@@ -94,7 +94,7 @@ Behavior goes in AGENTS.md. Project facts go in openspec/config.yaml:
 |----------------------|-----------------------------------|
 | "Always run `pnpm check` before committing" | "Package manager: pnpm" |
 | "Use Conventional Commits" | "TypeScript 5.x, strict mode" |
-| "Ask before deleting files" | "Monorepo: Turborepo + PNPM" |
+| "Ask before deleting files" | "Monorepo: Turborepo + pnpm" |
 | "You are a senior TS engineer" | "`type` over `interface`" |
 
 If you mix agent behavior with project facts in the same file, every agent invocation spends context on information that belongs elsewhere.
@@ -122,21 +122,27 @@ This skill avoids these common mistakes:
 
 ## Installation
 
+**npm:**
 ```bash
-npx skills add https://github.com/accelint/agent-skills --skill accelint-onboard-agent
+npx skills add gohypergiant/agent-skills --skill accelint-onboard-agents
+```
+
+**pnpm:**
+```bash
+pnpm dlx skills add gohypergiant/agent-skills --skill accelint-onboard-agents
 ```
 
 ## Usage
 
 ```
-/accelint-onboard-agent
+/accelint-onboard-agents
 ```
 
 Or just say "Help me set up AGENTS.md for this project".
 
-## Example Output
+## Example output
 
-For a TypeScript monorepo with Turborepo, PNPM, Conventional Commits, and Husky pre-commit hooks, the skill generates:
+For a TypeScript monorepo with Turborepo, pnpm, Conventional Commits, and Husky pre-commit hooks, the skill generates:
 
 ```markdown
 # Agent Behavior
@@ -195,6 +201,5 @@ Changes in 1.4.1:
 
 - `accelint-onboard-openspec` — generates `openspec/config.yaml` for architecture and coding standards
 - `accelint-architecture-doc` — creates architecture documentation
-- `init` — provides a quick `CLAUDE.md` setup without the interview
 
-Use this skill when you want the full structured interview. Use `/init` when you need a basic starting point.
+Use this skill when you want the full structured interview for agent behavior guidance.

@@ -1,27 +1,29 @@
 # Skill Manager
 
-Comprehensive guide for creating effective agent skills that extend Claude's capabilities with specialized knowledge, workflows, and tool integrations.
+Create, audit, refactor, and maintain agent skills using structured workflows, progressive disclosure, and evidence-based patterns.
 
 ## Installation
 
-**npm**
+**npm:**
 ```bash
 npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-manager
 ```
 
-**pnpm**
+**pnpm:**
 ```bash
 pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-manager
 ```
 
+---
+
 ## Overview
 
-This skill provides structured guidance for skill creation and management, including:
+This skill provides guidance for skill creation and management, including:
 - 4-step skill creation workflow
 - Skill architecture and file structure
 - Progressive disclosure patterns
-- Best practices for reusable resources
-- Examples and templates
+- Version and changelog conventions
+- Audit procedures for skill quality
 
 Think of this as a "meta-skill": a skill for building skills. It provides the methodology, conventions, and structure guidelines needed to develop high-quality agent skills.
 
@@ -82,6 +84,7 @@ Create the skill structure following established conventions:
 - Check for existing relevant skills
 - Follow naming conventions (kebab-case directories, uppercase SKILL.md)
 - Set up proper directory structure
+- Use the template in `assets/skill-template/` as a starting point
 
 ### Step 4: Editing and Refining
 
@@ -89,6 +92,7 @@ Develop skill content with agent-focused information:
 - Include procedural knowledge that isn't obvious
 - Focus on non-obvious implementation details
 - Structure content for progressive disclosure
+- Update version and changelog using semantic versioning
 
 ---
 
@@ -109,8 +113,13 @@ Every skill should be built around real usage patterns:
 ### Structured Guidelines
 All guidelines follow a consistent format:
 - One-line summaries with links
-- ❌/✅ examples in reference files
+- Anti-pattern/correct-pattern examples in reference files
 - Self-contained documentation
+
+### Version Control
+- Semantic versioning (major.minor.patch)
+- CHANGELOG.md with rationale for each change
+- Version alignment between SKILL.md frontmatter and CHANGELOG
 
 ### Reusable Resources
 Package three types of resources:
@@ -150,8 +159,8 @@ This skill is designed for environments such as Claude Code. It automatically ac
 
 ### Auditing an Existing Skill
 
-**prompt**
-```bash
+**prompt:**
+```
 Persona:
 You are an expert skill architect.
 
@@ -167,8 +176,8 @@ A complete, production-ready skill following all best practices.
 
 ### Creating a New Skill
 
-**prompt**
-```bash
+**prompt:**
+```
 Persona:
 You are an expert skill architect.
 
@@ -184,12 +193,43 @@ A complete, production-ready skill following all best practices.
 
 ### Manual Invocation
 
-**command**
+**command:**
 ```bash
 /accelint-skill-manager
 ```
 
 See [SKILL.md](SKILL.md) for complete activation criteria and detailed workflow.
+
+---
+
+## File Structure
+
+```
+accelint-skill-manager/
+├── SKILL.md                     # Main skill workflow and instructions
+├── AGENTS.md                    # Implementation rules for maintainers
+├── README.md                    # This file
+├── CHANGELOG.md                 # Version history with rationale
+├── references/                  # Detailed implementation guides
+│   ├── agents.md                # AGENTS.md formatting conventions
+│   ├── assets.md                # Asset file guidelines
+│   ├── changelog.md             # CHANGELOG best practices
+│   ├── file-system.md           # Directory structure conventions
+│   ├── progressive-disclosure.md # Context optimization patterns
+│   ├── references.md            # Reference file format
+│   ├── scripts.md               # Script conventions
+│   └── skill.md                 # SKILL.md frontmatter and structure
+├── assets/                      # Templates and boilerplate
+│   └── skill-template/          # Starting template for new skills
+│       ├── SKILL.md
+│       ├── AGENTS.md
+│       ├── README.md
+│       ├── CHANGELOG.md
+│       └── references/
+│           └── example.md
+└── evals/                       # Test cases for skill behavior
+    └── evals.json               # Structured evaluation suite
+```
 
 ---
 
@@ -201,8 +241,9 @@ When creating or updating skills:
 2. **Start with concrete examples** - Use real usage patterns, not hypothetical scenarios.
 3. **Structure for progressive disclosure** - Keep `SKILL.md` under 500 lines and move details to `references/`.
 4. **Use consistent formatting** - Follow naming conventions and directory structure.
-5. **Include both ❌ and ✅ examples** - Show anti-patterns and correct implementations.
+5. **Include both anti-pattern and correct-pattern examples** - Show what not to do and what to do instead.
 6. **Document for agents** - Focus on non-obvious procedural knowledge.
+7. **Maintain version control** - Update both version and CHANGELOG with rationale for changes.
 
 See [AGENTS.md](AGENTS.md) for detailed implementation guidelines.
 
@@ -222,6 +263,14 @@ This skill follows these principles:
 4. **Reusable resources** - Package scripts, schemas, and templates to eliminate repetitive work
 5. **Consistent structure** - Follow conventions for predictable, maintainable skills
 6. **Minimal nesting** - Keep file references one level deep from SKILL.md
+
+---
+
+## Architecture & Development Guides
+
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - Repository architecture and technical overview
+- [AGENTS.md](../../AGENTS.md) - Agent behavior rules for this repository
+- [CLAUDE.md](../../CLAUDE.md) - Claude-specific agent conventions
 
 ---
 

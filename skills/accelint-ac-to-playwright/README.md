@@ -1,67 +1,111 @@
 # accelint-ac-to-playwright
 
-This skill converts acceptance criteria into JSON test plans and then Playwright spec files.
+Convert acceptance criteria into Playwright test automation. This skill reads AC in bullet or Gherkin format, validates them for automation readiness, generates JSON test plans, and translates those plans into Playwright spec files.
 
 ## Contents
 
-- `SKILL.md` — skill instructions.
-- `references/`:
-  - [acceptance-criteria.md](references/acceptance-criteria.md) contains guidance for writing and reading AC
-  - [test-hooks.md](references/test-hooks.md) contains rules for structuring test hooks
-  - This [schema](scripts/plan-schema.ts) is used to validate JSON test plans
-- `scripts/` — translators, validators, and CLI entry points.
-- `assets/templates/` — template files users can copy as starting points:
-  - [playwright.config.ts](assets/templates/playwright.config.ts) — portable Playwright config for running generated specs.
+- **SKILL.md** — skill instructions for agents
+- **references/** — AC writing rules and vocabulary
+  - [acceptance-criteria.md](references/acceptance-criteria.md) — guidelines for writing automation-ready AC
+  - [test-hooks.md](references/test-hooks.md) — controlled vocabulary for test hook naming
+  - [plan-schema.ts](scripts/plan-schema.ts) — Zod schema for JSON test plans
+- **scripts/** — conversion pipeline: validation, plan generation, test translation
+- **assets/** — templates and fixtures
+  - [playwright.config.ts](assets/templates/playwright.config.ts) — portable Playwright config template
+  - **fixtures/** — shared test utilities that generated tests import from:
+    - `error-handling.ts` — failure artifact attachment helper
+    - `console-tracking.ts` — console message tracking helper
 
-## Quick usage
+## Usage
 
-To generate Playwright tests from plan files, using your agent of choice, trigger this skill's usage with a prompt like:
+Agents trigger this skill to convert AC files into Playwright tests or assess AC quality before conversion. The skill provides two modes:
 
-- `Create Playwright tests from the AC files located at <insert path here>`
-- `Change the AC file at <insert path here> into a Playwright test file`
+1. **Assessment mode**: validates AC structure and automation readiness without generating files
+2. **Conversion mode**: generates JSON plans, validates them, translates to Playwright specs
 
-When running the CLI, you must provide the tests and summary directories explicitly:
+Example prompts:
+- "Review these AC for automation readiness"
+- "Convert the AC files in ./requirements to Playwright tests"
+- "Generate tests from login-flow.feature"
 
-```
+When using the CLI directly:
+
+```bash
+npm ci
+npm run build
 npx generate-tests path/to/plan.json --tests-dir path/to/tests --summary-dir path/to/summaries
 ```
 
-## Current functionality
+## Supported actions
 
-AC files are first converted to JSON plan files, which are validated against a schema. Validated JSON plan files are then converted to Playwright tests.
+Generated tests can use these Playwright actions:
 
-Tests can currently use the following actions:
-- click - clicks an element.
-- doubleClick - double-clicks at x,y coordinates (not element-based).
-- fill - adds text to an element (generally `<input>` or `<textarea>` elements only). Use this for entering data into form fields.
-- goto - generally only used at the start of a test to get to the starting URL.
-- hover - hovers over an element.
-- keyDown - presses and holds a modifier key (accepts `Shift`, `Control`, or app-specific modifier `a`). Must be paired with `keyUp` to release the key.
-- keyUp - releases a held modifier key (accepts `Shift`, `Control`, or app-specific modifier `a`). Must be paired with a preceding `keyDown`.
-- mouseClick - clicks at x,y coordinates (not element-based).
-- mouseDown - presses a mouse button at the current cursor position.
-- mouseMove - moves the mouse cursor to x,y coordinates.
-- mouseUp - releases a mouse button at the current cursor position.
-- press - presses and immediately releases a single keyboard key (accepts unmodified characters like `a`, `1`, `,` or named keys like `Enter`, `Tab`, `F7`, `Space`, `ArrowLeft`). For simple keyboard actions or for pressing keys while a modifier is held (between `keyDown` and `keyUp`). Intended for page-wide keyboard shortcuts, not for entering text into input fields (use `fill` instead).
-- reload - refreshes the page.
-- scroll - scrolls the page in a direction by a specified pixel amount.
-- select - picks an item from a select dropdown.
+- **click** — click an element
+- **doubleClick** — double-click at x,y coordinates
+- **drag** — drag from one coordinate to another
+- **fill** — enter text in an input or textarea
+- **goto** — navigate to a URL (plan-level only, not in test steps)
+- **hover** — hover over an element
+- **keyDown** / **keyUp** — press and release modifier keys (Shift, Control, a)
+- **mouseClick** — click at x,y coordinates
+- **mouseDown** / **mouseUp** — press and release mouse button at current position
+- **mouseMove** — move cursor to x,y coordinates
+- **press** — press and release a keyboard key
+- **reload** — refresh the page
+- **scroll** — scroll in a direction by pixel amount
+- **select** — choose an option from a dropdown
 
-And the following assertions:
-- expectNotVisible - the element should not be visible on the page (can be present in the DOM or not).
-- expectText - the element should contain some specific text.
-- expectUrl - the current page should be some specific URL.
-- expectVisible - the element should be visible on the page.
+## Supported assertions
 
-## Acceptance criteria notes
+- **expectNotVisible** — element should not be visible
+- **expectText** — element should contain specific text
+- **expectUrl** — page should be at specific URL
+- **expectVisible** — element should be visible
 
-Acceptance criteria can be provided either in Gherkin (`.feature` files) or bullets (`.md` files). Gherkin provides more functionality as well as better clarity to the agent and is the recommended option.
+## AC format requirements
 
-In order to produce test plan files deterministically and without excessive questions, some care when drafting AC is essential. Please see the full guidelines (and examples) for both bullet-format and Gherkin-format AC at [acceptance-criteria.md](references/acceptance-criteria.md).
+Acceptance criteria can be written in two formats:
 
-## Playwright config notes
+- **Bullet format** (`.md` files): each `- ` bullet is one test
+- **Gherkin format** (`.feature` files): each Scenario is one test
 
-The skill provides a template at `assets/templates/playwright.config.ts` that can be copied to your project.
-- `testDir` defaults to `./tests`. Please update this based on where the tests and config land in your repo.
-- `baseURL` defaults to `http://localhost:3000` as a placeholder. Please update if necessary.
-- The rest of the config can be reviewed and changed as necessary based on your target repo and environment.
+Both formats must follow strict conventions for automation readiness. Key requirements:
+
+- **Targets** must use the `area.component.intent` pattern with controlled vocabulary
+- **Action verbs** must be clear and mappable to Playwright actions
+- **Input values** must be quoted literals, not placeholders like "a valid email"
+- **Expected outcomes** must be explicit and measurable
+
+See [acceptance-criteria.md](references/acceptance-criteria.md) for complete guidelines and examples.
+
+## Development
+
+**Build:**
+
+```bash
+npm ci
+npm run build
+```
+
+**Test:**
+
+```bash
+npm test
+```
+
+**Available CLI commands** (after build):
+
+- `npx validate-plan <path>` — validate a JSON test plan against the schema
+- `npx generate-tests <path>` — generate Playwright tests from a plan
+- `npx append-json-summary-entry` — add an entry to the batch summary JSON
+- `npx create-markdown-summary` — create a markdown summary from batch JSON
+
+## Integration notes
+
+When copying generated tests to your Playwright project:
+
+1. Copy all `.spec.ts` files to your test directory
+2. Copy the `fixtures/` directory alongside the spec files
+3. Generated tests import from `./fixtures/*` and will fail without them
+
+The skill provides a Playwright config template at `assets/templates/playwright.config.ts`. Update `testDir` and `baseURL` for your project.

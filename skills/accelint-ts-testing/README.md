@@ -1,8 +1,10 @@
 # Vitest Best Practices
 
-Expert patterns for writing maintainable, effective Vitest tests. This skill gives practical guidance on test organization, assertions, mocking, async testing, and performance optimization.
+Expert guidance for writing maintainable, effective Vitest tests. This skill covers test organization, strict assertions, async testing, mocking strategy, and property-based testing opportunities.
 
-**For complete guidance, see [SKILL.md](SKILL.md)**
+**For complete guidance, see [SKILL.md](SKILL.md).**
+
+---
 
 ## Quick Start
 
@@ -50,6 +52,8 @@ describe('add', () => {
 });
 ```
 
+---
+
 ## Common Commands
 
 ```bash
@@ -73,27 +77,59 @@ vitest --ui         # Visual UI
 }
 ```
 
+---
+
 ## What You'll Learn
 
-This skill covers expert guidance on:
-- Test organization and AAA pattern
-- Strict assertions to catch bugs
-- Test doubles hierarchy (real code > fakes > stubs > spies > mocks)
-- Async testing and timer mocking
-- Performance optimization and global configuration
-- Vitest-specific features and setup file discovery
-- Property-based testing opportunities with fast-check
+This skill provides expert guidance on:
 
-**See [SKILL.md](SKILL.md) for the full patterns and examples.**
+- **Test organization** — File placement, describe blocks, and AAA pattern
+- **Strict assertions** — Catch bugs with intent-revealing matchers
+- **Test doubles** — Fakes > stubs > spies > mocks hierarchy
+- **Async testing** — Promises, timers, and fake-timer mocking
+- **Performance** — Global config and fast test design
+- **Vitest features** — Coverage, setup files, and config discovery
+- **Property-based testing** — fast-check opportunities for encode/decode pairs, normalizers, validators, and invariants
+
+**See [SKILL.md](SKILL.md) for full patterns and examples.**
+
+---
+
+## References
+
+- **[SKILL.md](SKILL.md)** — Complete skill guidance with progressive loading
+- **[AGENTS.md](AGENTS.md)** — Quick rule index and required workflows
+- **[references/](references/)** — Detailed topic-specific guidance
+- **[assets/output-report-template.md](assets/output-report-template.md)** — Audit report template
+
+---
+
+## Evaluation Suite
+
+This skill includes a 32-case eval suite covering:
+
+- Vitest authoring, async testing, strict assertions
+- Mocking boundaries and test-doubles hierarchy
+- Property-based testing recommendations
+- Reference-loading behavior and near-miss triggers
+
+See [evals/evals.json](evals/evals.json) for the full suite.
+
+---
+
+## Version Compatibility
+
+This skill is designed for modern Vitest workflows. Compatibility targets (not verified in this package):
+
+- **Vitest**: Recent stable versions (1.x+)
+- **Node.js**: v18+
+- **TypeScript**: v5+
+
+---
 
 ## Learn More
 
 - [Vitest Documentation](https://vitest.dev/)
 - [Testing Library](https://testing-library.com/)
-- [AGENTS.md](AGENTS.md) - Quick reference for all rules
-
-## Version Compatibility
-
-- **Vitest**: v1.0.0+
-- **Node.js**: v18.0.0+
-- **TypeScript**: v5.0.0+
+- [Repository ARCHITECTURE.md](../../ARCHITECTURE.md) — System overview
+- [Repository AGENTS.md](../../AGENTS.md) — Repo-wide agent behavior rules

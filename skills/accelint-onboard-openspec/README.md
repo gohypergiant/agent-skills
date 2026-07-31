@@ -1,89 +1,76 @@
 # OpenSpec Onboarding Skill
 
-This skill generates `openspec/config.yaml` through a conversational interview. It asks about the tech stack, architecture, and domain concepts, then runs parallel codebase inference to fill gaps. The output is a complete configuration file for the QRSPI (Question, Research, Spec, Plan, Implement) methodology.
+Generate `openspec/config.yaml` through a conversational interview. The skill asks about your tech stack and architecture, runs parallel codebase inference to fill gaps, and outputs a complete configuration file for the QRSPI (Question, Research, Spec, Plan, Implement) methodology.
 
-## Overview
+## What it does
 
-OpenSpec needs an `openspec/config.yaml` file that defines project context and per-artifact rules. This skill creates it by:
+OpenSpec requires an `openspec/config.yaml` file that defines project context and per-artifact rules. This skill creates it by:
 
-- Asking targeted questions about tech stack, architecture, domain concepts, and team conventions
-- Spawning four discovery agents simultaneously to infer missing details from your codebase
+- Running a structured interview about your tech stack, architecture, and domain concepts
+- Spawning four discovery agents in parallel to infer missing details from your codebase
 - Detecting whether to create, import, or refresh based on existing file state
-- Enforcing YAML quoting rules and validating syntax
+- Validating YAML syntax before writing
 
-The configuration gets injected into every AI-generated proposal, design document, task list, and specification.
+The configuration is injected into every AI-generated proposal, design document, task list, and specification.
 
-## When to use
+## When to use this skill
 
-Use this skill when you start a new project with OpenSpec, migrate an existing project to the OpenSpec workflow, update configuration after tech stack changes, onboard team members, or refresh stale configuration.
+Use it when you:
 
-The skill detects the current state and adapts.
+- Start a new project with OpenSpec
+- Migrate an existing project to the OpenSpec workflow  
+- Update configuration after tech stack changes
+- Onboard team members
+- Refresh stale configuration
+
+The skill detects file state and adapts automatically.
 
 ## Quick start
 
-### Prerequisites
+Invoke the skill:
 
-You need an environment that can spawn agents for parallel inference. A git repository is recommended but not required.
+```bash
+/accelint-onboard-openspec
+```
 
-### Basic usage
+The skill will:
 
-1. Invoke the skill:
-   ```
-   /accelint-onboard-openspec
-   ```
+1. Check for existing documentation (ARCHITECTURE.md, AGENTS.md)
+2. Detect config file state and announce the mode (create/import/refresh)
+3. Run an interview with questions grouped by topic
+4. Spawn parallel discovery agents to infer what you didn't answer
+5. Show a labeled preview with inference sources
+6. Write `openspec/config.yaml` after confirmation
 
-2. Answer interview questions grouped by topic (project identity, tech stack, architecture, domain concepts, code patterns)
-
-3. Review the generated preview with inferred values and TODO markers
-
-4. Confirm to write `openspec/config.yaml` to disk
-
-The entire process takes 5-10 minutes depending on project complexity and interview depth.
-
-## Related documentation checks
-
-Before running the interview, the skill checks for existing onboarding documents:
-
-- **ARCHITECTURE.md** - Used to pre-fill infrastructure/deployment questions, avoiding redundant questions
-- **AGENTS.md / CLAUDE.md** - Noted for cross-reference in "Related Documentation" section
-- **README.md** - Noted for cross-reference in "Related Documentation" section
-
-When ARCHITECTURE.md exists, the skill announces: "Found ARCHITECTURE.md — I'll use it to avoid asking questions about deployment that are already documented."
-
-This ensures consistency across documentation and reduces interview time.
+The process takes 5-10 minutes depending on project complexity.
 
 ## Configuration modes
 
-The skill has three modes based on file state:
+### Create mode
 
-### Mode 1: Create
+Runs when `openspec/config.yaml` doesn't exist or is empty.
 
-**Triggers when:** `openspec/config.yaml` doesn't exist or is empty
+Runs a complete interview covering all configuration sections and outputs a fresh file with all context sections populated.
 
-Runs a complete interview covering all configuration sections. Questions are grouped into natural conversation turns rather than dumped as a questionnaire.
+### Import mode
 
-Outputs a fresh configuration file with all context sections populated.
-
-### Mode 2: Import
-
-**Triggers when:** `openspec/config.yaml` exists with unrecognized structure
+Runs when `openspec/config.yaml` exists with unrecognized structure.
 
 Presents three options:
 
-- **(a) Restructure** - Map existing content onto QRSPI schema, flag behavioral content for `AGENTS.md`, run targeted interview to fill gaps
+- **(a) Restructure** - Map existing content onto QRSPI schema, flag behavioral content for `AGENTS.md`, fill gaps with targeted questions
 - **(b) Append** - Run full interview and add new sections alongside existing content
 - **(c) Dry run** - Generate output without writing to filesystem
 
-This protects existing custom configuration while letting you adopt the QRSPI structure.
+### Refresh mode
 
-### Mode 3: Refresh
+Runs when `openspec/config.yaml` exists with recognized QRSPI schema.
 
-**Triggers when:** `openspec/config.yaml` exists with recognized QRSPI schema
+Runs an abbreviated interview covering only:
 
-Runs an abbreviated interview:
-
-- Drift detection: scans for tech stack changes (new dependencies, updated TypeScript config, new CI workflows)
-- Unresolved TODOs: finds `# TODO: fill in` markers left from previous runs
+- External findings passed from upstream workflows
+- Drift detection (tech stack changes, new dependencies, updated configs)
+- Unresolved `# TODO: fill in` markers from previous runs
 
 Only asks about changed areas. Unchanged sections stay untouched.
 
@@ -91,225 +78,56 @@ Only asks about changed areas. Unchanged sections stay untouched.
 
 The interview covers 10 topics:
 
-| Turn | Focus Area | Example Questions |
-|------|------------|------------------|
-| 1 | Project Identity | Name, purpose, monorepo structure, package manager |
-| 2 | Tech Stack | Runtime, language, framework, data layer, testing, build tools |
-| 3 | Architecture | Organization style, path aliases, design patterns |
-| 4 | Domain Concepts | Key entities, terminology, specialized concepts |
-| 5 | Performance | Concrete targets (p95 latency, fps, memory), hot paths |
-| 6 | Code Patterns | Export style, naming conventions, error handling, testing structure |
-| 7 | Anti-Patterns | Banned patterns, deprecated approaches, performance traps |
-| 8 | Proposal Rules | Database impact, breaking changes, security checklists |
-| 9 | Design Rules | Docker/K8s changes, performance implications, diagram styles |
-| 10 | Task Rules | Tagging conventions, rollback requirements, test gates |
+1. **Project Identity** - Name, purpose, monorepo structure, package manager
+2. **Tech Stack** - Runtime, language, framework, data layer, testing, build tools
+3. **Architecture** - Organization style, path aliases, design patterns
+4. **Domain Concepts** - Key entities, terminology, specialized concepts
+5. **Performance** - Concrete targets (p95 latency, fps, memory), hot paths
+6. **Code Patterns** - Export style, naming conventions, error handling, testing structure
+7. **Anti-Patterns** - Banned patterns, deprecated approaches, performance traps
+8. **Proposal Rules** - Database impact, breaking changes, security checklists
+9. **Design Rules** - Docker/K8s changes, performance implications, diagram styles
+10. **Task Rules** - Tagging conventions, rollback requirements, test gates
 
-Questions within each topic are bundled. The skill infers related tooling from stack answers. For example, if you mention Vitest, it assumes testing-library for React components.
+Questions within each topic are bundled into natural conversation turns.
 
 ## Parallel codebase inference
 
 After the interview, four discovery agents run simultaneously:
 
-### Agent A: Stack & Build Tooling
+- **Agent A: Stack & Build Tooling** - Runtime, TypeScript config, package manager, monorepo workspaces, build tools
+- **Agent B: Testing & Code Quality** - Test framework, linting, formatting, test structure, type checking
+- **Agent C: Architecture & Code Patterns** - Directory structure, path aliases, design patterns, export style, naming, error handling
+- **Agent D: CI/CD & Versioning** - CI platform, versioning strategy, documented anti-patterns
 
-Analyzes:
-- Runtime version (`.nvmrc`, `.node-version`, `package.json#engines`)
-- TypeScript configuration (`tsconfig.json` — compiler options, path aliases)
-- Package manager (lockfile detection)
-- Monorepo workspaces (`pnpm-workspace.yaml`, `turbo.json`)
-- Build tools (`vite.config.*`, `webpack.config.*`)
+All agents run concurrently and merge findings before showing the preview.
 
-### Agent B: Testing & Code Quality
+## Configuration output
 
-Analyzes:
-- Test framework (`vitest.config.*`, `jest.config.*`, `pytest.ini`)
-- Linting and formatting (`.eslintrc*`, `biome.json`, `.prettierrc*`)
-- Test structure patterns (describe/it nesting, file location)
-- Type checking configuration for test files
-- Mock cleanup settings (Vitest)
-
-### Agent C: Architecture & Code Patterns
-
-Analyzes:
-- Architecture organization (directory tree structure)
-- Path aliases (`tsconfig.json#paths`, `vite.config#resolve.alias`)
-- Design patterns (factory, repository, observer — inferred from source)
-- Export style (named vs default — tallied from samples)
-- Naming conventions (file names, identifiers)
-- Error handling approach (throw, Result, Either, boundaries)
-
-### Agent D: CI/CD & Versioning
-
-Analyzes:
-- CI/CD platform (`.github/workflows/`, `.circleci/`)
-- Versioning strategy (`.changeset/`, `commitlint.config.*`)
-- Anti-patterns (ESLint rule overrides, `@deprecated` annotations)
-
-All agents run concurrently. The skill merges their findings before it shows you the preview.
-
-## Configuration schema
-
-The generated `openspec/config.yaml` has this structure:
+The generated `openspec/config.yaml` follows this structure:
 
 ```yaml
 schema: spec-driven
 
 context: |
-  # Project DNA — injected into every AI artifact
-  
-  ## Stack Facts
-  - Project identity, tech stack, architecture patterns
-  - Domain concepts with one-line definitions
-  - Performance targets and constraints
-  
-  ## Patterns to Follow
-  - Code patterns (exports, naming, error handling)
-  - Architecture patterns
-  - Testing patterns with AAA structure
-  
-  ## Patterns to Avoid
-  - Code anti-patterns with rationale
-  - Performance anti-patterns
-  - Testing anti-patterns
+  # Stack Facts - Project identity, tech stack, architecture, domain concepts, performance targets
+  # Patterns to Follow - Code patterns, architecture patterns, testing patterns
+  # Patterns to Avoid - Anti-patterns with rationale
 
 rules:
-  proposal:
-    - Scope definition checkpoints
-    - Out-of-scope boundaries
-  
-  design:
-    - Required sections (Current State, Desired End State, etc.)
-    - Technical depth requirements
-    - Line limits
-  
-  tasks:
-    - Vertical slicing preference
-    - Granularity limits (max 2 hours per task)
-    - Test verification requirements
-  
-  spec:
-    - Given/When/Then format
-    - Concrete example data
-    - Edge case documentation
+  proposal:    # Scope definition checkpoints
+  design:      # Required sections, technical depth, line limits
+  tasks:       # Vertical slicing, granularity, test verification
+  spec:        # Given/When/Then format, example data, edge cases
 ```
 
-Every section matters. Missing fields degrade the AI artifacts that use this config. Unresolved fields get marked `# TODO: fill in` instead of being omitted.
-
-The complete template structure is defined in the skill and includes:
-
-- **Stack Facts** - Project identity, tech stack, architecture patterns, domain concepts, performance targets
-- **Patterns to Follow** - Code patterns, architecture patterns, testing patterns with AAA structure
-- **Patterns to Avoid** - Code anti-patterns, performance anti-patterns, testing anti-patterns, documentation anti-patterns
-- **Per-Artifact Rules** - Checkpoints for proposals, designs, tasks, and specifications
-- **Related Documentation** - Links to ARCHITECTURE.md, AGENTS.md/CLAUDE.md, README.md (only if files exist)
-
-### Interaction principles
-
-The interview follows conversational design:
-
-- **Bundle questions** - Group related questions into natural turns, not bullet-dump forms
-- **Infer and confirm** - "You mentioned Vitest — I'll assume testing-library for React; correct?" beats asking from scratch
-- **Examples reduce ambiguity** - When asking about conventions, provide examples for pattern-matching
-- **Preview before writing** - Show a full preview in Create/Import modes and a changed-sections preview in Refresh mode before touching filesystem
-- **Infer before asking, ask before omitting** - Attempt codebase inference for all fields; mark unresolved as `# TODO:` rather than dropping sections
-- **Keep fact and behavior separate** - Put project DNA in `config.yaml`, and redirect workflow preferences or agent-behavior guidance to `AGENTS.md` / `CLAUDE.md`
-
-## YAML safety features
-
-The skill enforces YAML generation rules:
-
-### Automatic quoting
-
-Values starting with special characters get quoted:
-
-```yaml
-tag: "[PKG:auth]"           # Square brackets protected
-description: "(internal)"    # Parentheses protected
-pattern: "some|other"        # Pipe character protected
-note: "Time: 5pm"            # Colon in value protected
-```
-
-### Block scalar indicators
-
-Multi-line content uses literal block scalars:
-
-```yaml
-context: |
-  Line 1
-  Line 2
-  Line 3
-```
-
-### Validation checklist
-
-Before writing, the skill checks:
-- No tab characters (YAML needs spaces)
-- Quote matching
-- Consistent 2-space indentation
-- List items aligned at same level
-- Special characters quoted where needed
-
-After writing, it reads the file back to verify it's valid YAML.
-
-## YAML generation safety
-
-The skill enforces strict YAML syntax rules to prevent parse errors.
-
-### Quoting requirements
-
-Values starting with special characters need quotes:
-
-| Special Character | Example | Solution |
-|------------------|---------|----------|
-| `(`, `)` | `(internal) auth` | `"(internal) auth"` |
-| `[`, `]` | `[PKG:auth]` | `"[PKG:auth]"` |
-| `|` | `some|other` | `"some|other"` |
-| `:` in value | `Time: 5pm` | `"Time: 5pm"` |
-| `"`, `'` | `npm run "test"` | `'npm run "test"'` |
-
-### Block scalars
-
-Multi-line content uses literal block indicators:
-
-```yaml
-context: |
-  Line 1
-  Line 2
-  Line 3
-```
-
-### Validation checklist
-
-After generating config, the skill verifies:
-- No tab characters (YAML requires spaces)
-- Matching quote pairs
-- Consistent 2-space indentation
-- Aligned list items
-- Quoted special characters
-
-It reads the file back after writing to catch any parse errors.
-
-## Smart defaults
-
-The skill suggests stack-specific conventions. Next.js + TypeScript + Tailwind gets questions about App Router vs Pages Router, Server Component boundaries, and `"use client"` directive placement. React + Vitest assumes `userEvent` over `fireEvent` and role-based queries. Python + FastAPI asks about Pydantic v1 vs v2 and dependency injection. Node.js + Prisma asks about transaction patterns and soft-delete conventions.
-
-This reduces open-ended questions without changing the interview scope.
-
-## Companion skill: `accelint-onboard-agents`
-
-This skill produces the project DNA layer (structural facts). Its companion `accelint-onboard-agents` produces the behavior layer (`AGENTS.md` / `CLAUDE.md`) covering how the agent acts, communicates, and makes decisions.
-
-If you volunteer behavioral content during the OpenSpec interview (commit conventions, workflow steps, tool preferences), the skill will redirect you:
-
-> "That's behavioral - it belongs in AGENTS.md. I'll note it here for reference, but the `accelint-onboard-agents` skill is where to capture it."
-
-The two skills do not overlap.
+Every section matters. Missing fields degrade the AI artifacts that use this config.
 
 ## Best practices
 
 ### Answer honestly about unknowns
 
-If you don't know an answer, say so. The skill will try codebase inference. Fields that can't be resolved get marked `# TODO: fill in` for later.
+If you don't know an answer, say so. The skill attempts codebase inference. Fields that can't be resolved are marked `# TODO: fill in`.
 
 ### Review inferred values
 
@@ -319,62 +137,54 @@ The preview labels all inferred values with their source:
 - Runtime: Node.js 20 LTS   # inferred from .nvmrc
 ```
 
-Check these before confirming. Inference can misread unconventional project structures.
+Check these before confirming. Inference may misread unconventional project structures.
 
 ### Complete TODOs after generation
 
-If the final config has `# TODO: fill in` markers, edit the file directly. These usually represent performance targets, team-specific rules, or domain concept definitions that can't be inferred from code.
+If the final config has `# TODO: fill in` markers, edit the file directly. These usually represent performance targets, team-specific rules, or domain concepts that can't be inferred from code.
 
 ### Use refresh mode for updates
 
 When the tech stack changes, re-run the skill. It detects drift automatically and only asks about changed sections.
 
-### Keep context factual
+## Companion skill
 
-The `context:` block gets injected into every AI artifact. Put objective facts there, not opinions or procedures. Guidelines like "use semantic tokens" belong in the patterns section, not as prose.
+This skill produces the project DNA layer (structural facts about what the project is). Its companion `accelint-onboard-agents` produces the behavior layer (`AGENTS.md` / `CLAUDE.md`) covering how the agent acts and makes decisions.
 
-## Validation and quality
+```
+openspec/config.yaml   → this skill                 → WHAT the project is
+AGENTS.md / CLAUDE.md  → accelint-onboard-agents   → HOW the agent behaves
+```
 
-After generation, the skill:
-
-1. Shows a labeled preview with inference sources and TODO markers
-2. Asks for confirmation before writing to disk
-3. Writes the file without inference comment clutter
-4. Validates the YAML by reading it back
-5. Reports what was configured, what was inferred versus answered directly, and which TODOs remain
-
-This catches syntax errors before they hit disk.
+If you mention behavioral content during the OpenSpec interview (commit conventions, workflow steps, tool preferences), the skill will redirect you to `accelint-onboard-agents`.
 
 ## Troubleshooting
 
 ### "Config file has unrecognized structure"
 
-The skill found content that doesn't match the expected schema. Choose (a) Restructure to migrate to QRSPI format, (b) Append to keep existing structure and add new sections, or (c) Dry run to preview without modifying the file.
+Choose restructure to migrate to QRSPI format, append to keep existing structure and add new sections, or dry run to preview without modifying.
 
 ### "YAML syntax error after generation"
 
-The validation caught a parse error. It's automatically fixed before the final write. If you see this, the safety checks worked.
+Validation caught a parse error and fixed it before writing. The safety checks worked.
 
-### "Subagents aren't available in this environment"
+### "Subagents aren't available"
 
-Parallel inference is the preferred path. If subagents are genuinely unavailable, the skill should say so explicitly, keep the same four discovery domains, and perform the scan inline with direct tools instead of implying that parallel agents ran.
+If subagents are unavailable, the skill will say so and perform the same four-domain scan inline with direct tools.
 
 ### "Refresh mode found drift I don't want to encode yet"
 
-That's acceptable. The skill should show the changed sections first, leave unresolved items as `# TODO: fill in` when needed, and call out findings that may belong in specs, docs, or `AGENTS.md` instead of forcing them into `config.yaml`.
+The skill shows changed sections first, marks unresolved items as `# TODO: fill in`, and calls out findings that may belong in specs or docs instead.
 
 ### "Inference marked too many fields as TODO"
 
-This happens when the project has unconventional structure or the skill can't find expected config files. Edit the file directly to fill TODOs, or re-run with more detailed interview answers.
+Edit the file directly to fill TODOs, or re-run with more detailed interview answers.
 
-## Version history
-
-See [CHANGELOG.md](CHANGELOG.md) for details.
+## Version
 
 Current version: 1.6.0
-- Audit-driven trigger, prose, and workflow-clarity improvements
-- Default eval coverage for create/import/refresh and boundary validation
-- Explicit inline-discovery fallback when subagents are unavailable
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and changes.
 
 ## License
 
@@ -384,4 +194,4 @@ Apache-2.0
 
 - `accelint-onboard-agents` - Generate behavioral configuration (`AGENTS.md` / `CLAUDE.md`)
 - `accelint-readme-writer` - Generate README documentation
-- `accelint-architecture-doc` - Create ARCHITECTURE.md with parallel discovery (pattern reference for this skill)
+- `accelint-architecture-doc` - Create ARCHITECTURE.md with parallel discovery
