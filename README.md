@@ -1,271 +1,287 @@
-# Agent Skills
+# Skill Manager
 
-A repository of reusable agent skills and the docs site that publishes them.
+Create, audit, refactor, and maintain agent skills using structured workflows, progressive disclosure, and evidence-based patterns.
 
-The source of truth lives in `skills/`. The published documentation lives in `docs/content/docs/`. Local harness integrations read the same skills through symlinks in `.agents/skills/`.
-
-## Quick Start
-
-### For your project
-
-Skills follow the [Agent Skills](https://agentskills.io/) format and can be installed using the skills CLI.
+## Installation
 
 **npm:**
 ```bash
-npx skills add gohypergiant/agent-skills
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-manager
 ```
 
 **pnpm:**
 ```bash
-pnpm dlx skills add gohypergiant/agent-skills
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-manager
 ```
 
-- Only select skills that are relevant for your project
-- We recommend "Project" for the installation scope
-- We recommend "Symlink" for the installation method
+---
 
-### Browse the published docs locally
+## Overview
 
-The documentation app lives in `docs/` and uses pnpm.
+This skill provides guidance for skill creation and management, including:
+- 4-step skill creation workflow
+- Skill architecture and file structure
+- Progressive disclosure patterns
+- Version and changelog conventions
+- Audit procedures for skill quality
 
+Think of this as a "meta-skill": a skill for building skills. It provides the methodology, conventions, and structure guidelines needed to develop high-quality agent skills.
+
+**Note:** This skill is optimized for AI agents creating other skills, but humans may find it useful for understanding skill architecture and contributing to skill development.
+
+---
+
+## Requirements
+
+- Claude Code CLI or compatible agent environment
+- File system write permissions for skill creation
+- Git repository (recommended for version tracking)
+- Understanding of agent skill architecture
+
+---
+
+## Quick Start
+
+### For Agents/LLMs
+
+1. **Read [SKILL.md](SKILL.md)** - Understand the 4-step workflow for creating skills.
+2. **Reference [AGENTS.md](AGENTS.md)** - Browse detailed implementation rules and conventions.
+3. **Load specific guidelines** - Access detailed examples in `references/` only as needed.
+4. **Follow the workflow** - Apply the structured approach to skill creation.
+
+### For Humans
+
+This skill is optimized for AI agents, but humans may also find it useful for:
+- Understanding how agent skills are structured
+- Learning best practices for skill architecture
+- Contributing to existing skills
+- Creating new skills for specialized domains
+- Packaging domain expertise for AI agents
+
+---
+
+## Skill Creation Workflow
+
+### Step 1: Understanding with Concrete Examples
+
+Gather real examples of how the skill will be used. Ask questions to understand:
+- What functionality should the skill support?
+- Can you give examples of how this skill would be used?
+- What would a user say that should trigger this skill?
+
+This keeps the skill grounded in actual problems instead of hypothetical ones.
+
+### Step 2: Planning Reusable Contents
+
+Analyze each example to identify reusable resources:
+- **Scripts**: Executable helpers that eliminate repetitive coding
+- **References**: Documentation of schemas, patterns, or domain knowledge
+- **Assets**: Templates, boilerplate, or example files
+
+### Step 3: Initializing the Skill
+
+Create the skill structure following established conventions:
+- Check for existing relevant skills
+- Follow naming conventions (kebab-case directories, uppercase SKILL.md)
+- Set up proper directory structure
+- Use the template in `assets/skill-template/` as a starting point
+
+### Step 4: Editing and Refining
+
+Develop skill content with agent-focused information:
+- Include procedural knowledge that isn't obvious
+- Focus on non-obvious implementation details
+- Structure content for progressive disclosure
+- Update version and changelog using semantic versioning
+
+---
+
+## Key Features
+
+### Progressive Disclosure
+- Metadata (~100 tokens) loaded at startup
+- Main SKILL.md (<5000 tokens) loaded when activated
+- References loaded only when needed
+- Minimizes context usage for LLMs
+
+### Concrete Examples
+Every skill should be built around real usage patterns:
+- Start with actual user requests
+- Identify repetitive workflows
+- Package reusable solutions
+
+### Structured Guidelines
+All guidelines follow a consistent format:
+- One-line summaries with links
+- Anti-pattern/correct-pattern examples in reference files
+- Self-contained documentation
+
+### Version Control
+- Semantic versioning (major.minor.patch)
+- CHANGELOG.md with rationale for each change
+- Version alignment between SKILL.md frontmatter and CHANGELOG
+
+### Reusable Resources
+Package three types of resources:
+- **Scripts**: Automate repetitive tasks
+- **References**: Document schemas, patterns, APIs
+- **Assets**: Provide templates and boilerplate
+
+---
+
+## What Skills Provide
+
+Skills are modular packages that extend Claude's capabilities by providing:
+
+1. **Specialized workflows** - Multi-step procedures for specific domains
+2. **Tool integrations** - Instructions for working with specific file formats or APIs
+3. **Domain expertise** - Company-specific knowledge, schemas, business logic
+4. **Bundled resources** - Scripts, references, and assets for complex tasks
+5. **Best practices** - Documentation and examples for particular subjects
+
+Skills act as "onboarding guides" that transform agents into specialized problem solvers equipped with procedural knowledge.
+
+---
+
+## Example Skills
+
+- **pdf-editor**: Scripts for rotating, merging, and manipulating PDFs
+- **frontend-app-builder**: Boilerplate templates for React/Next.js apps
+- **big-query**: Table schemas and relationships for database queries
+- **vitest**: Best practices and patterns for testing with Vitest
+- **react-best-practices**: Performance optimization patterns for React
+
+---
+
+## Usage
+
+This skill is designed for environments such as Claude Code. It automatically activates when creating, refactoring, or auditing agent skills.
+
+### Auditing an Existing Skill
+
+**prompt:**
+```
+Persona:
+You are an expert skill architect.
+
+Objective:
+1. Use the accelint-skill-manager skill to audit ./skills/example-skill
+2. Identify any best practice optimizations that can be made
+3. Optimize towards deterministic output and correctness when auditing
+4. Explain your reasoning clearly with specific examples
+
+Output:
+A complete, production-ready skill following all best practices.
+```
+
+### Creating a New Skill
+
+**prompt:**
+```
+Persona:
+You are an expert skill architect.
+
+Objective:
+1. Use the accelint-skill-manager skill
+2. Create a new skill for [domain/tool/workflow]
+3. Follow the 4-step workflow
+4. Ensure adherence to all conventions
+
+Output:
+A complete, production-ready skill following all best practices.
+```
+
+### Manual Invocation
+
+**command:**
 ```bash
-cd docs
-pnpm install
-pnpm dev
+/accelint-skill-manager
 ```
 
-Then open http://localhost:3000.
+See [SKILL.md](SKILL.md) for complete activation criteria and detailed workflow.
 
-### Rebuild local skill symlinks
+---
 
-```bash
-bash scripts/symlink-agent-skills.sh
-```
-
-Run this after adding a new directory under `skills/`, or any time `.agents/skills/` has gone stale.
-
-## What is this repository?
-
-This repo is for creating, maintaining, and publishing agent skills.
-
-Each skill is a directory under `skills/` with its own `SKILL.md` and, in most cases, companion files such as `CHANGELOG.md`, `AGENTS.md`, `README.md`, references, scripts, or assets. The `docs/` app turns that material into a browsable Fumadocs site.
-
-If you want the user-facing introduction to skills, start with the docs site content instead of this root README:
-
-- `docs/content/docs/index.mdx`
-- `docs/content/docs/getting-started.mdx`
-
-## Why this repo exists
-
-Skills are easier to maintain when the source files, local harness wiring, and published docs stay close together.
-
-This layout gives you a few practical benefits:
-
-- edit canonical skill content in `skills/`
-- expose those same directories to local agent harnesses through `.agents/skills/`
-- publish matching documentation from `docs/content/docs/`
-- keep repo-specific authoring rules in one place with `AGENTS.md`
-
-If you're here to add or revise a skill, this repo is the working area. If you're here to learn how to use a skill, the docs app is the better entry point.
-
-## Repository Layout
-
-```text
-agent-skills/
-├── skills/                      # Source of truth for maintained skills
-├── .agents/skills/              # Symlinks pointing back to skills/
-├── docs/                        # Next.js + Fumadocs documentation app
-│   ├── content/docs/            # Published docs content
-│   └── package.json             # Docs scripts and dependencies
-├── scripts/
-│   └── symlink-agent-skills.sh  # Rebuild .agents/skills symlinks
-├── AGENTS.md                    # Repo rules for skill authors and agents
-├── CLAUDE.md                    # Additional agent-facing context
-├── CONTRIBUTING.md
-└── README.md
-```
-
-## Internal Skills
-
-This repository leverages the following third party agent skills internally:
-
-- [humanizer](https://skills.sh/softaworks/agent-toolkit/humanizer)
-- [ask-questions-if-underspecified](https://skills.sh/trailofbits/skills/ask-questions-if-underspecified)
-- [skill-judge](https://skills.sh/softaworks/agent-toolkit/skill-judge)
-- [bash-defensive-patterns](https://skills.sh/wshobson/agents/bash-defensive-patterns)
-
-We recommend installing these globally using skills.sh since they are applicable to multiple projects.
-
-## Skill Development Workflow
-
-To scaffold and establish a new skill you can invoke the `accelint-skill-manager` skill like so:
+## File Structure
 
 ```
-/accelint-skill-manager <description of skill>. Can you help me refine and complete it?
+accelint-skill-manager/
+├── SKILL.md                     # Main skill workflow and instructions
+├── AGENTS.md                    # Implementation rules for maintainers
+├── README.md                    # This file
+├── CHANGELOG.md                 # Version history with rationale
+├── references/                  # Detailed implementation guides
+│   ├── agents.md                # AGENTS.md formatting conventions
+│   ├── assets.md                # Asset file guidelines
+│   ├── changelog.md             # CHANGELOG best practices
+│   ├── file-system.md           # Directory structure conventions
+│   ├── progressive-disclosure.md # Context optimization patterns
+│   ├── references.md            # Reference file format
+│   ├── scripts.md               # Script conventions
+│   └── skill.md                 # SKILL.md frontmatter and structure
+├── assets/                      # Templates and boilerplate
+│   └── skill-template/          # Starting template for new skills
+│       ├── SKILL.md
+│       ├── AGENTS.md
+│       ├── README.md
+│       ├── CHANGELOG.md
+│       └── references/
+│           └── example.md
+└── evals/                       # Test cases for skill behavior
+    └── evals.json               # Structured evaluation suite
 ```
 
-After creating or significantly modifying a skill, run this 4-step audit loop before considering the work done.
-
-### Step 1 — Initial skill-judge audit
-
-Run the `skill-judge` skill against the completed skill. Apply all suggested improvements before proceeding.
-
-### Step 2 — accelint-skill-manager audit
-
-Run `/clear` to reset context, then run the `accelint-skill-manager` skill against the skill. Apply all structural and content suggestions before proceeding.
-
-### Step 3 — Final skill-judge audit
-
-Run `/clear`, then run `skill-judge` again. Apply remaining suggestions. Target **grade A or higher (>=108/120)**.
-
-### Step 4 — Frontmatter verification checklist
-
-- [ ] `name` is lowercase, no uppercase letters, no consecutive hyphens, ≤64 chars, matches directory name
-- [ ] `description` answers WHAT + WHEN + KEYWORDS, is non-empty, ≤1024 chars
-- [ ] `metadata.version` is bumped (major for substantial changes, minor for small fixes)
-
-### Optional: Step 5 — Exhaustive skill-creator optimization
-
-**⚠️ High-cost, high-rigor step. Use for production-critical skills only.**
-
-
-Run `/clear`, then run `/skill-creator "Optimize [skill-name]. Run full test suite with benchmarks and iterate until grade A."`. Follow the skill-creator workflow to review outputs, provide feedback, and approve iterations.
-
-## API
-
-This repository is content-first rather than library-first, so the public surface is the directory structure and the scripts you work with.
-
-### Skill directories in `skills/`
-
-These are the maintained skills currently in the repo:
-
-- `accelint-ac-to-playwright`
-- `accelint-architecture-doc`
-- `accelint-archive-synthesis`
-- `accelint-design-foundation`
-- `accelint-nextjs-best-practices`
-- `accelint-onboard-agent`
-- `accelint-onboard-openspec`
-- `accelint-persona-review`
-- `accelint-prompt-manager`
-- `accelint-qrspi-apply`
-- `accelint-qrspi-archive`
-- `accelint-qrspi-propose`
-- `accelint-react-best-practices`
-- `accelint-react-testing`
-- `accelint-readme-writer`
-- `accelint-security-best-practices`
-- `accelint-skill-manager`
-- `accelint-tanstack-query-best-practices`
-- `accelint-ts-audit-all`
-- `accelint-ts-best-practices`
-- `accelint-ts-documentation`
-- `accelint-ts-performance`
-- `accelint-ts-testing`
-
-**Current count:** 23 skill directories under `skills/`.
-
-### `scripts/symlink-agent-skills.sh`
-
-Rebuilds `.agents/skills/` so local harness discovery points at the current skill sources.
-
-What the script does:
-
-| Step | Behavior |
-|------|----------|
-| Resolve repo root | Finds the repository root from the script location |
-| Ensure target dir exists | Creates `.agents/skills/` if needed |
-| Iterate skills | Walks each directory under `skills/` |
-| Refresh links | Creates or updates `../../skills/<skill-name>` symlinks |
-| Protect conflicts | Skips existing non-symlink paths with a warning |
-
-Expected link shape:
-
-```text
-.agents/skills/<skill-name> -> ../../skills/<skill-name>
-```
-
-### Docs app scripts in `docs/package.json`
-
-The docs app exposes these main scripts:
-
-| Script | Command | What it does |
-|--------|---------|--------------|
-| `dev` | `pnpm dev` | Starts the Next.js docs app locally |
-| `build` | `pnpm build` | Builds the production docs bundle |
-| `start` | `pnpm start` | Serves the production build |
-| `types:check` | `pnpm run types:check` | Regenerates MDX types, runs Next typegen, and checks TypeScript |
-
-## Examples
-
-### Start the docs site
-
-```bash
-cd docs
-pnpm install
-pnpm dev
-```
-
-Use this when you want to preview changes under `docs/content/docs/` or verify that new documentation renders correctly.
-
-### Type-check the docs app
-
-```bash
-cd docs
-pnpm run types:check
-```
-
-This is the most complete verification command exposed by the docs app. It runs `fumadocs-mdx`, `next typegen`, and `tsc --noEmit`.
-
-### Rebuild local harness symlinks
-
-```bash
-bash scripts/symlink-agent-skills.sh
-```
-
-If you added a new skill under `skills/`, this makes it visible through `.agents/skills/` without copying files around.
-
-### Inspect a skill directory
-
-A typical skill directory includes files like these:
-
-```text
-skills/<skill-name>/
-├── SKILL.md
-├── CHANGELOG.md
-├── AGENTS.md
-├── README.md
-├── references/
-├── scripts/
-└── assets/
-```
-
-Not every skill uses every optional file, but `SKILL.md` is the anchor.
-
-## Further Reading
-
-- `docs/content/docs/index.mdx` — main docs landing page
-- `docs/content/docs/getting-started.mdx` — installation and usage guidance
-- `docs/content/docs/*/index.mdx` — per-skill published docs
-- `skills/accelint-skill-manager/assets/skill-template/` — starting point for new skills
-
-## License
-
-Apache 2.0. See [LICENSE](./LICENSE).
-
-## Architecture & Development Guides
-
-For deeper technical and contributor context:
-
-- [AGENTS.md](./AGENTS.md) — repo rules for creating and maintaining skills
-- [CLAUDE.md](./CLAUDE.md) — additional agent-facing instructions
+---
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for contributor setup.
+When creating or updating skills:
 
-Most changes here fall into one of these buckets:
+1. **Follow the 4-step workflow** - Do not skip steps without a clear reason.
+2. **Start with concrete examples** - Use real usage patterns, not hypothetical scenarios.
+3. **Structure for progressive disclosure** - Keep `SKILL.md` under 500 lines and move details to `references/`.
+4. **Use consistent formatting** - Follow naming conventions and directory structure.
+5. **Include both anti-pattern and correct-pattern examples** - Show what not to do and what to do instead.
+6. **Document for agents** - Focus on non-obvious procedural knowledge.
+7. **Maintain version control** - Update both version and CHANGELOG with rationale for changes.
 
-1. update or add a skill under `skills/`
-2. update the published docs under `docs/content/docs/`
-3. maintain local development tooling such as `scripts/symlink-agent-skills.sh`
+See [AGENTS.md](AGENTS.md) for detailed implementation guidelines.
+
+**Learn More:**
+- [Agent Skills Specification](https://agentskills.io/specification)
+- [references/](references/) - Detailed examples and best practices
+
+---
+
+## Skill Architecture Philosophy
+
+This skill follows these principles:
+
+1. **Progressive disclosure** - Load information only when needed
+2. **Concrete over abstract** - Build from real examples, not hypothetical use cases
+3. **Agent-focused content** - Include procedural knowledge that helps agents execute effectively
+4. **Reusable resources** - Package scripts, schemas, and templates to eliminate repetitive work
+5. **Consistent structure** - Follow conventions for predictable, maintainable skills
+6. **Minimal nesting** - Keep file references one level deep from SKILL.md
+
+---
+
+## Architecture & Development Guides
+
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - Repository architecture and technical overview
+- [AGENTS.md](../../AGENTS.md) - Agent behavior rules for this repository
+- [CLAUDE.md](../../CLAUDE.md) - Claude-specific agent conventions
+
+---
+
+## Learn More
+
+- [Agent Skill Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices.md)
+- [What Are Agent Skills?](https://agentskills.io/what-are-skills.md)
+- [Agent Skill Spec](https://agentskills.io/specification.md)
+
+---
+
+## License
+
+Apache 2.0
