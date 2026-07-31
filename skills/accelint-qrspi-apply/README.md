@@ -2,6 +2,15 @@
 
 Orchestrate parallel implementation of QRSPI-planned OpenSpec changes through dependency-aware slice execution, living-document updates, and mandatory verification.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-qrspi-apply
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-qrspi-apply
+```
+
 ## What This Does
 
 This skill implements QRSPI-planned OpenSpec changes by:

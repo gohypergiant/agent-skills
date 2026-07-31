@@ -12,11 +12,11 @@ Three modes:
 Install this skill using the skills CLI:
 
 ```bash
-npx skills add gohypergiant/agent-skills
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-architecture-doc
 ```
 
 ```bash
-pnpm dlx skills add gohypergiant/agent-skills
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-architecture-doc
 ```
 
 Select `accelint-architecture-doc` when prompted.

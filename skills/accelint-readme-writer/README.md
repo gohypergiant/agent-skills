@@ -2,6 +2,15 @@
 
 A skill for creating and maintaining README documentation that stays in sync with your actual codebase.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-readme-writer
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-readme-writer
+```
+
 ## Table of Contents
 
 - [Overview](#overview)

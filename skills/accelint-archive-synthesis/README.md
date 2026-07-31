@@ -2,6 +2,15 @@
 
 Periodic consistency checker for OpenSpec archives. It reads backward across archived changes to detect decision drift, structural over-coupling, and index staleness — the one gap nothing else in the QRSPI/OpenSpec stack covers.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-archive-synthesis
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-archive-synthesis
+```
+
 ## What It Does
 
 This skill scans the complete archive history to verify internal consistency:

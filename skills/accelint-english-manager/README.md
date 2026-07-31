@@ -10,12 +10,12 @@ Use the [Agent Skills](https://agentskills.io/) CLI to install from the reposito
 
 **npm:**
 ```bash
-npx skills add gohypergiant/agent-skills
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-english-manager
 ```
 
 **pnpm:**
 ```bash
-pnpm dlx skills add gohypergiant/agent-skills
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-english-manager
 ```
 
 Select `accelint-english-manager` when prompted. This skill is not published as a standalone npm package.

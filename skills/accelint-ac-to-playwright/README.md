@@ -2,6 +2,15 @@
 
 Convert acceptance criteria into Playwright test automation. This skill reads AC in bullet or Gherkin format, validates them for automation readiness, generates JSON test plans, and translates those plans into Playwright spec files.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ac-to-playwright
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ac-to-playwright
+```
+
 ## Contents
 
 - **SKILL.md** — skill instructions for agents

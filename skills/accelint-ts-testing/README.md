@@ -54,6 +54,11 @@ describe('add', () => {
 
 ---
 
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-testing
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-testing
+```
+
 ## Common Commands
 
 ```bash

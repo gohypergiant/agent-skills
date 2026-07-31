@@ -4,6 +4,15 @@ Evaluate Figma designs from specific operator personas and surface role-specific
 
 This skill is intended to auto-trigger for persona-based operator UX reviews. The examples below are shorthand prompt patterns, not required slash-command syntax.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-persona-review
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-persona-review
+```
+
 ## Usage
 
 ```bash

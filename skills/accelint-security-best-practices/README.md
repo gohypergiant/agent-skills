@@ -4,6 +4,15 @@ Systematic security auditing and vulnerability detection for JavaScript and Type
 
 **Framework-Agnostic**: Security principles apply across frameworks (Express, Fastify, Nest.js, Next.js), package managers (npm, yarn, pnpm, bun), and libraries. Code examples illustrate concepts. Adapt them to your project's stack.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-security-best-practices
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-security-best-practices
+```
+
 ## Overview
 
 This skill provides:

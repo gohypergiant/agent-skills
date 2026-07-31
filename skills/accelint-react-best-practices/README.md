@@ -2,6 +2,15 @@
 
 React performance and correctness guidance for agents working with components, hooks, JSX, hydration, and React 19 patterns.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-react-best-practices
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-react-best-practices
+```
+
 ## What This Is
 
 This skill provides React performance and correctness patterns for agents:

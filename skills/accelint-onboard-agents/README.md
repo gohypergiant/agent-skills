@@ -129,12 +129,12 @@ This skill avoids these common mistakes:
 
 **npm:**
 ```bash
-npx skills add gohypergiant/agent-skills --skill accelint-onboard-agents
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-onboard-agents
 ```
 
 **pnpm:**
 ```bash
-pnpm dlx skills add gohypergiant/agent-skills --skill accelint-onboard-agents
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-onboard-agents
 ```
 
 ## Usage

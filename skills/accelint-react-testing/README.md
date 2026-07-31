@@ -12,6 +12,11 @@ This skill provides best practices for testing React components with [@testing-l
 npm install -D @testing-library/react @testing-library/user-event @testing-library/jest-dom
 ```
 
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-react-testing
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-react-testing
+```
+
 ## What's Included
 
 ### Core Guidance (SKILL.md)

@@ -2,6 +2,15 @@
 
 Performance, architecture, and security guidance for Next.js applications, written for agents and LLMs working with Next.js code.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-nextjs-best-practices
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-nextjs-best-practices
+```
+
 ## Overview
 
 This skill provides structured Next.js performance and security guidance covering:

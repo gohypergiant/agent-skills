@@ -7,10 +7,14 @@ Agent skill for styling React components with `@accelint/design-foundation` and 
 Install this skill using the skills CLI:
 
 ```bash
-npx skills add gohypergiant/agent-skills
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-design-foundation
 ```
 
 Select `accelint-design-foundation` from the interactive picker, choose Project scope, and use Symlink method.
+
+```bash
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-design-foundation
+```
 
 ## What It Does
 

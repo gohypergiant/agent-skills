@@ -2,6 +2,15 @@
 
 Generate `openspec/config.yaml` through a conversational interview. The skill asks about your tech stack and architecture, runs parallel codebase inference to fill gaps, and produces a complete configuration file for the QRSPI (Question, Research, Spec, Plan, Implement) methodology.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-onboard-openspec
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-onboard-openspec
+```
+
 ## What it does
 
 OpenSpec requires an `openspec/config.yaml` file that defines project context and per-artifact rules. This skill creates it by:

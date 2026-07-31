@@ -10,12 +10,12 @@ Install the skill collection, then select `accelint-skill-prose` when the CLI pr
 
 **npm:**
 ```bash
-npx skills add gohypergiant/agent-skills
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-prose
 ```
 
 **pnpm:**
 ```bash
-pnpm dlx skills add gohypergiant/agent-skills
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-prose
 ```
 
 This skill does not ship as a separate package with its own `package.json`.

@@ -133,10 +133,10 @@ Install with the skills CLI:
 
 ```bash
 # npm
-npx skills add gohypergiant/agent-skills
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-tanstack-query-best-practices
 
 # pnpm
-pnpm dlx skills add gohypergiant/agent-skills
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-tanstack-query-best-practices
 ```
 
 Select `accelint-tanstack-query-best-practices` when prompted. We recommend "Project" for installation scope and "Symlink" for installation method.

@@ -2,6 +2,15 @@
 
 Plan tickets, bugs, and feature requests through the QRSPI methodology before writing code. This skill walks through Questions → Research → Design → Structure, requires review checkpoints, and stops before implementation.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-qrspi-propose
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-qrspi-propose
+```
+
 ## What This Does
 
 Takes a ticket or feature request and produces a complete OpenSpec change:

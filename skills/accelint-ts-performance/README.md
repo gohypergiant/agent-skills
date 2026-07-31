@@ -2,6 +2,15 @@
 
 Performance audit and optimization for JavaScript/TypeScript codebases. This skill combines a 4-phase audit workflow with expert optimization patterns.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-performance
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-performance
+```
+
 ## Overview
 
 This skill provides:

@@ -28,8 +28,8 @@
         "Uses trigger-oriented language in the proposed description"
       ],
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/CHANGELOG.md"
+        "skills/accelint-skill-manager/SKILL.md",
+        "skills/accelint-skill-manager/CHANGELOG.md"
       ]
     },
     {
@@ -45,9 +45,9 @@
         "Returns prioritized, actionable findings rather than silently editing files"
       ],
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/CHANGELOG.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/AGENTS.md"
+        "skills/accelint-skill-manager/SKILL.md",
+        "skills/accelint-skill-manager/CHANGELOG.md",
+        "skills/accelint-skill-manager/AGENTS.md"
       ]
     },
     {
@@ -76,8 +76,8 @@
         "Keeps focus on the description field as the primary activation surface"
       ],
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/evals/evals.json"
+        "skills/accelint-skill-manager/SKILL.md",
+        "skills/accelint-skill-manager/evals/evals.json"
       ]
     },
     {
@@ -92,8 +92,8 @@
         "Explains corrective action if a mismatch is found, or explicit confirmation if aligned"
       ],
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/CHANGELOG.md"
+        "skills/accelint-skill-manager/SKILL.md",
+        "skills/accelint-skill-manager/CHANGELOG.md"
       ]
     },
     {
@@ -109,15 +109,15 @@
         "Returns coherence findings across the package"
       ],
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/AGENTS.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/CHANGELOG.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/evals/evals.json",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/references/file-system.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/references/skill.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/references/changelog.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/assets/skill-template/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/assets/skill-template/CHANGELOG.md"
+        "skills/accelint-skill-manager/SKILL.md",
+        "skills/accelint-skill-manager/AGENTS.md",
+        "skills/accelint-skill-manager/CHANGELOG.md",
+        "skills/accelint-skill-manager/evals/evals.json",
+        "skills/accelint-skill-manager/references/file-system.md",
+        "skills/accelint-skill-manager/references/skill.md",
+        "skills/accelint-skill-manager/references/changelog.md",
+        "skills/accelint-skill-manager/assets/skill-template/SKILL.md",
+        "skills/accelint-skill-manager/assets/skill-template/CHANGELOG.md"
       ]
     },
     {
@@ -145,10 +145,10 @@
         "Frames the outcome as restoring package coherence and usability"
       ],
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/AGENTS.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/references/file-system.md",
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-skill-manager/references/skill.md"
+        "skills/accelint-skill-manager/SKILL.md",
+        "skills/accelint-skill-manager/AGENTS.md",
+        "skills/accelint-skill-manager/references/file-system.md",
+        "skills/accelint-skill-manager/references/skill.md"
       ]
     },
     {

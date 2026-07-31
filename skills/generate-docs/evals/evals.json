@@ -7,8 +7,8 @@
       "prompt": "Generate docs for /Users/brandon.pierce/Projects/agent-skills/skills/generate-docs. There is no published page for it yet. Create the Fumadocs MDX page from the skill source, keep it human-facing, and write it to the correct docs path.",
       "expected_output": "Chooses generate mode, reads the skill source from skills/generate-docs/SKILL.md, derives the docs path docs/content/docs/generate-docs/index.mdx, adds the required frontmatter including source, source_sha, doc_sha, deprecated, and updated, and produces a concise human-facing page that starts the body with H2 sections rather than duplicating the frontmatter description.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/generate-docs/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/generate-docs/index.mdx"
+        "skills/generate-docs/SKILL.md",
+        "docs/content/docs/generate-docs/index.mdx"
       ]
     },
     {
@@ -17,8 +17,8 @@
       "prompt": "Create or refresh the published docs for /Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer. Make sure the output path follows this repo's docs convention rather than mirroring the full skill folder name.",
       "expected_output": "Uses the skill source under skills/accelint-readme-writer/SKILL.md but writes to docs/content/docs/readme-writer/index.mdx by stripping the accelint- prefix. It should not write to docs/content/docs/accelint-readme-writer/.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/accelint-readme-writer/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -27,8 +27,8 @@
       "prompt": "Refresh the docs page for /Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer because the skill changed since the page was last generated. The existing page's source_sha is stale, but its current body still matches the recorded doc_sha, so there are no manual edits to preserve.",
       "expected_output": "Chooses update mode, detects source staleness by comparing current SKILL.md hash to source_sha, detects no manual edits because current doc content still matches recorded doc_sha, regenerates the affected content safely, and updates source_sha, doc_sha, and updated date.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/accelint-readme-writer/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -37,8 +37,8 @@
       "prompt": "Update the published docs for /Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer. The source skill changed, and the existing docs page also has human-written custom prose that no longer matches the recorded doc_sha. Preserve those manual edits instead of wiping them out.",
       "expected_output": "Uses the three-way merge path: compares source_sha for staleness, compares current doc body to doc_sha to detect manual edits, preserves the human-written prose structure, updates only the parts needed to reflect the current skill, asks the user to review before overwriting, and then updates source_sha, recomputes doc_sha, and updates the date.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/accelint-readme-writer/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -47,8 +47,8 @@
       "prompt": "Refresh the stale docs for /Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer. Scope is one skill only, I want an update rather than validation, and my priority is preserving custom prose wherever it is still accurate.",
       "expected_output": "Does not ask redundant startup questions because the prompt already specifies skill scope, operation mode, and user priority. It proceeds directly into the refresh workflow and centers the update strategy on preserving accurate custom prose.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/accelint-readme-writer/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -64,8 +64,8 @@
       "prompt": "Validate the published docs for /Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer. Check whether the page is stale, whether its frontmatter is complete, whether the structure follows the MDX rules, and whether its markdown links still resolve.",
       "expected_output": "Chooses validation mode and runs the documented checks: source_sha staleness detection, required frontmatter field validation, structure checks such as H2 body start and code-fence language tags, and broken markdown link verification. It reports findings rather than defaulting to a full rewrite.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/accelint-readme-writer/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -74,8 +74,8 @@
       "prompt": "Run a docs validation sweep for the skill docs in this repository and tell me which skills under skills/ are missing a corresponding docs/content/docs page and which published skill docs point at source files that no longer exist.",
       "expected_output": "Uses the validation workflow to identify orphaned docs in both directions: skills without matching docs pages and docs whose source frontmatter points at missing skill files. It treats pair-discovery as part of validation rather than inventing unrelated checks.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/generate-docs/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/generate-docs/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -84,8 +84,8 @@
       "prompt": "Create docs for /Users/brandon.pierce/Projects/agent-skills/skills/generate-docs, but keep the page useful for a human deciding whether to use the skill. Do not dump the skill's internal execution plan into the published docs.",
       "expected_output": "Produces a compressed, human-facing page focused on what the skill helps a person do, when to use it, and what behavior to expect. It translates relevant internals into user-visible benefits and excludes internal file-loading order, scaffolding mechanics, or hidden orchestration details unless they materially affect the user's experience.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/generate-docs/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/generate-docs/index.mdx"
+        "skills/generate-docs/SKILL.md",
+        "docs/content/docs/generate-docs/index.mdx"
       ]
     },
     {
@@ -94,8 +94,8 @@
       "prompt": "Generate a new docs page for /Users/brandon.pierce/Projects/agent-skills/skills/generate-docs using the repository's standard skill-doc structure. Keep it skimmable and avoid repeating the header description again in the body.",
       "expected_output": "Creates frontmatter plus a body that starts with H2 sections such as What It Helps You Do, When to Use, and How It Works. It does not start the body with H1, and it does not repeat the frontmatter description paragraph immediately after the frontmatter.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/generate-docs/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/generate-docs/index.mdx"
+        "skills/generate-docs/SKILL.md",
+        "docs/content/docs/generate-docs/index.mdx"
       ]
     },
     {
@@ -104,8 +104,8 @@
       "prompt": "Document /Users/brandon.pierce/Projects/agent-skills/skills/generate-docs and include examples, but keep them short and named by use case instead of writing a long step-by-step transcript.",
       "expected_output": "If it includes examples, they are concise, use-case-named examples that show an explicit slash command or direct invocation cue plus a one-sentence outcome summary. It avoids transcript-style walkthroughs or long internal procedure dumps.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/generate-docs/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/generate-docs/index.mdx"
+        "skills/generate-docs/SKILL.md",
+        "docs/content/docs/generate-docs/index.mdx"
       ]
     },
     {
@@ -114,8 +114,8 @@
       "prompt": "The docs page for /Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer has custom human-written prose, but the skill source changed in a few places. Update only the code-related or behavior-related facts that drifted and leave the human wording alone where it is still accurate.",
       "expected_output": "Uses the manual-edit-preservation branch of the update workflow, keeping the existing prose structure and only patching the content that truly changed relative to the source skill. It does not regenerate the entire page as if it were generated-only content.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/accelint-readme-writer/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -124,7 +124,7 @@
       "prompt": "Refresh the docs page for /Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer and make sure the new doc_sha reflects only the markdown body content, not the frontmatter block.",
       "expected_output": "Recomputes doc_sha from the content after the frontmatter delimiter rather than hashing the whole file. The update flow treats frontmatter metadata and body hashing separately, consistent with the documented merge logic.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     },
     {
@@ -140,7 +140,7 @@
       "prompt": "Update the skill docs in this repository by discovering the matching skill-source and published-doc pairs automatically. Use the repo's conventions for skills/ and docs/content/docs/, including the accelint- prefix rule.",
       "expected_output": "Uses repo-aware discovery to map skills/<name>/SKILL.md files to docs/content/docs/<name-without-accelint-prefix>/index.mdx pages. It does not require the user to hand-specify every pair when the repo layout provides enough information.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/generate-docs/SKILL.md"
+        "skills/generate-docs/SKILL.md"
       ]
     },
     {
@@ -191,8 +191,8 @@
       "prompt": "Refresh /Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx from the current skill source, but preserve the page's established section shape if manual edits are detected and the structure is still valid.",
       "expected_output": "When manual edits are present, it reads the existing docs page as part of the update workflow, treats the current valid structure as user-owned context, and preserves that structure while merging source-driven updates. It does not force the latest template shape over a good manual structure.",
       "files": [
-        "/Users/brandon.pierce/Projects/agent-skills/skills/accelint-readme-writer/SKILL.md",
-        "/Users/brandon.pierce/Projects/agent-skills/docs/content/docs/readme-writer/index.mdx"
+        "skills/accelint-readme-writer/SKILL.md",
+        "docs/content/docs/readme-writer/index.mdx"
       ]
     }
   ]

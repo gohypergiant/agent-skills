@@ -2,6 +2,15 @@
 
 Archive OpenSpec changes with cross-capability linking and index maintenance. This README is a concise companion summary; `SKILL.md` is the canonical operational contract. This skill runs the complete workflow: native archive first, then additive related-spec linking, targeted `openspec/specs/INDEX.md` maintenance, and append-only `openspec/changes/archive/INDEX.md` updates.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-qrspi-archive
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-qrspi-archive
+```
+
 ## What This Does
 
 This skill handles the full archive-plus-bookkeeping workflow:

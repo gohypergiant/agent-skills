@@ -2,6 +2,15 @@
 
 Audit and improve JavaScript/TypeScript documentation quality: JSDoc completeness, comment markers, dead-comment cleanup, and documentation judgment for exported APIs versus internal code.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-documentation
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-documentation
+```
+
 ## What This Skill Does
 
 This skill audits and improves TypeScript and JavaScript documentation. It enforces comprehensive docs for exported APIs, uses judgment for internal code, validates JSDoc syntax, audits comment quality, and produces either formal reports or direct fixes.

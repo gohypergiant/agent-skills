@@ -2,6 +2,15 @@
 
 Comprehensive coding standards for JavaScript and TypeScript applications, designed for AI agents and LLMs working with modern codebases.
 
+## Installation
+
+Install this skill using the skills CLI:
+
+```bash
+npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-best-practices
+pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ts-best-practices
+```
+
 ## Overview
 
 This skill provides structured guidance for JavaScript and TypeScript development across four areas:
