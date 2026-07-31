@@ -1,6 +1,6 @@
 ---
 name: accelint-ts-documentation
-description: Audit and improve JavaScript/TypeScript documentation quality when the main task is JSDoc, comment markers, or non-obvious code comments. Use for requests to add or review JSDoc, document exported functions/types/classes, check @param/@returns/@template/@throws/@example usage, clean up TODO/FIXME/HACK/NOTE comments, remove dead or edit-history comments, improve comment placement, or evaluate whether internal docs are sufficient. Do not use for general TypeScript code-quality reviews unless documentation is the primary focus.
+description: Use when JavaScript or TypeScript documentation quality is the main task, especially JSDoc, comment markers, or non-obvious code comments. Covers adding or reviewing JSDoc for exported APIs, validating tags such as `@param`, `@returns`, `@template`, `@throws`, and `@example`, cleaning up TODO or FIXME style markers, removing dead comments, improving comment placement, and judging whether internal documentation is sufficient. Do not use it for general TypeScript code-quality reviews unless documentation is the primary focus.
 license: Apache-2.0
 metadata:
   author: accelint

@@ -1,6 +1,6 @@
 ---
 name: accelint-readme-writer
-description: Use when creating, auditing, refreshing, or rewriting a README.md for a package, app, service, CLI, monorepo root, or subpackage. Trigger on requests like "write a README," "document this package/library/tool," "README audit," "fix stale docs," "refresh the README after a refactor," or "update docs for packages/x." Best for README-scoped work that compares the target folder’s real code, nearby docs, and existing README, then produces grounded audits, targeted updates, or full drafts with verified commands, preserved custom content, and repo-aware examples.
+description: Use when creating, auditing, refreshing, or rewriting a README.md for a package, app, service, CLI, monorepo root, or subpackage. Trigger on requests to write a README, document a package or tool, audit README drift, refresh docs after a refactor, or update docs for a specific folder. Best for README-scoped work that compares the target folder's real code, nearby docs, and existing README, then produces grounded audits, targeted updates, or full drafts with verified commands, preserved custom sections, and repo-aware examples. Do not use for changelogs, architecture docs, ADRs, or non-README documentation.
 license: Apache-2.0
 metadata:
   author: accelint

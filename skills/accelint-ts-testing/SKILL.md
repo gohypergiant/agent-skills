@@ -1,6 +1,6 @@
 ---
 name: accelint-ts-testing
-description: Use when writing, reviewing, refactoring, or auditing TypeScript tests that use Vitest or Vitest-style patterns, especially when the request mentions `describe`, `it`/`test`, `expect`, `vi.fn`, `vi.mock`, `*.test.ts`, `*.spec.ts`, `fast-check`, flaky async tests, loose assertions, over-mocking, parameterized cases, or property-based testing opportunities. Prefer this skill for Vitest unit and integration testing guidance, test-quality audits, and fast-check opportunities. Do not use it for Jest-only requests, Playwright end-to-end coverage, or TypeScript documentation work unless the main problem is still Vitest test quality.
+description: Use when writing, reviewing, refactoring, or auditing TypeScript tests that use Vitest or Vitest-style patterns. Best for requests involving `describe`, `it` or `test`, `expect`, `vi.fn`, `vi.mock`, `*.test.ts`, `*.spec.ts`, async test flakiness, loose assertions, over-mocking, parameterized cases, and property-based testing opportunities with fast-check. Prefer it for Vitest unit or integration test guidance and test-quality audits. Do not use it for Jest-only requests, Playwright end-to-end coverage, or TypeScript documentation work unless the real problem is still Vitest test quality.
 compatibility: Requires vitest testing framework
 license: Apache-2.0
 metadata:

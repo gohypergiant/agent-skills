@@ -1,6 +1,6 @@
 ---
 name: accelint-skill-prose
-description: Use when creating, auditing, tightening, simplifying, de-slopping, polishing, or reviewing `SKILL.md` files, agent-skill instructions, `CLAUDE.md`/`AGENTS.md`-style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Also use when the user wants clearer skill prose without changing behavior, wants a safe skill-description rewrite, audits prompt instructions for ambiguity, or must preserve exact paths, commands, fields, identifiers, or approval semantics while editing.
+description: Use when creating, auditing, tightening, simplifying, polishing, or reviewing SKILL.md files, agent-skill instructions, CLAUDE.md or AGENTS.md style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Also use when the user wants clearer skill prose without changing behavior, wants a safe description rewrite, audits prompt instructions for ambiguity, or must preserve exact paths, commands, fields, identifiers, or approval semantics while editing. Do not use when the main task is broader content strategy, policy design, or domain review rather than safe prose refinement.
 license: Apache-2.0
 metadata:
   author: accelint

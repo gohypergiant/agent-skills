@@ -1,6 +1,6 @@
 ---
 name: accelint-react-best-practices
-description: Use when the task involves React code and the right answer depends on React rendering, state, effects, hydration, or React 19 behavior. Trigger on writing, reviewing, refactoring, debugging, optimizing, or auditing React components, hooks, or JSX; fixing re-renders, stale closures, remounting, hydration mismatches, or effect dependency issues; or advising on transitions, lazy initialization, useDeferredValue, useTransition, useEffectEvent, Activity, ref-as-prop, React Compiler, or combined-hook patterns. Also use for React-focused performance reviews in any React app, including Vite or Next.js. Do not use for backend, database, auth, or generic API work unless the problem is specifically about React behavior.
+description: Use when the task involves React code and the right answer depends on rendering, state, effects, hydration, or React 19 behavior. Trigger on writing, reviewing, refactoring, debugging, optimizing, or auditing React components, hooks, or JSX; fixing re-renders, stale closures, remounting, hydration mismatches, or effect dependency issues; or advising on transitions, lazy initialization, useDeferredValue, useTransition, useEffectEvent, Activity, ref as prop, React Compiler, or combined-hook patterns. Also use for React-focused performance reviews in Vite, Next.js, or other React apps. Do not use for backend, database, auth, or generic API work unless the problem is specifically about React behavior.
 license: Apache-2.0
 metadata:
   author: accelint

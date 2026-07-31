@@ -1,6 +1,6 @@
 ---
 name: accelint-qrspi-propose
-description: Use when the user wants to plan a ticket, bug, feature request, or proposed product, CLI, or app change with the formal QRSPI/OpenSpec workflow before implementation. Trigger on requests to use QRSPI, create or plan an OpenSpec change, run a formal planning workflow, create a structured change package or task plan, scope or break down a change, or stop before writing code. Prefer this skill when the user wants spec-driven planning artifacts with required review checkpoints and a no-implementation boundary, not implementation or resume-implementation work, archiving, generic architecture docs, artifact-polish-only edits, or loose brainstorming without a request for OpenSpec planning outputs.
+description: Plan a ticket, bug, feature request, or proposed product, CLI, or app change with the QRSPI and OpenSpec workflow before implementation. Use when the user wants to create or plan an OpenSpec change, run a formal planning workflow, generate structured proposal, design, specs, or tasks artifacts, scope or break down a change, or stop before writing code. Prefer this skill for spec-driven planning with required review checkpoints and an explicit no-implementation boundary. Do not use for implementation or resume-implementation work, archiving, generic architecture documentation, artifact-polish-only edits, or loose brainstorming that does not request OpenSpec planning outputs.
 license: Apache-2.0
 metadata:
   author: accelint

@@ -1,6 +1,6 @@
 ---
 name: accelint-ts-performance
-description: "Performance audit and optimization guidance for JavaScript/TypeScript code when the main problem is runtime speed, hot-path inefficiency, or throughput. Use for explicit performance reviews, slow code, profiling follow-up, repeated linear lookups, nested loops, avoidable allocations, sequential awaits, cache/memoization opportunities, memory-locality issues, or V8 hot-path concerns such as try/catch in loops. Also use to classify findings by optimization category and expected gain, or to produce a formal audit without patching yet. Do not use for general TypeScript maintainability, type-safety, JSDoc/comment cleanup, or non-performance code review work."
+description: Use for JavaScript or TypeScript performance work when the main problem is runtime speed, hot-path inefficiency, or throughput. Best for performance audits, profiling follow-up, slow code, repeated linear lookups, nested loops, avoidable allocations, sequential awaits, caching or memoization opportunities, memory-locality issues, and V8 hot-path concerns such as `try/catch` in loops. It also fits requests to classify findings by optimization category and expected gain or to report performance issues before patching. Do not use it for general maintainability, type safety, JSDoc or comment cleanup, or non-performance reviews.
 license: Apache-2.0
 metadata:
   author: accelint

@@ -1,6 +1,6 @@
 ---
 name: accelint-ts-audit-all
-description: Comprehensive TypeScript file audit system. Command-only skill (no natural triggers). Accepts file or directory path to systematically audit through accelint-ts-testing, accelint-ts-best-practices, accelint-ts-performance, and accelint-ts-documentation skills. Maintains progress tracking across sessions with interactive change approval. Uses isolated git worktrees to enable parallel audits without conflicts.
+description: Command-only TypeScript audit orchestrator for explicit `/skill accelint-ts-audit-all <path>` runs. Use it to audit a file or directory through ts-testing first, ts-best-practices and ts-performance in parallel, then ts-documentation, with required interactive approval, exact verification commands, resumable progress tracking, and isolated git worktrees for safe parallel audits. Do not use it for natural-language triggering, one-off reviews, or partial ad hoc audit flows.
 license: Apache-2.0
 metadata:
   author: accelint

@@ -1,6 +1,6 @@
 ---
 name: accelint-skill-manager
-description: Use when creating, auditing, refactoring, evaluating, or improving an agent skill package itself, including `SKILL.md`, `AGENTS.md`, `references/`, `scripts/`, `assets/`, `evals/`, and `CHANGELOG.md`. Trigger on requests like "create a skill," "make a new skill," "build a skill package," "audit this skill package," "review skill quality," "fix this SKILL.md," "refactor this skill," "optimize skill triggering," "improve eval coverage," "check version/changelog alignment," or "review consistency across skill files." Do not use for generic prompt polishing, prose-only cleanup, or README/docs work when the real task is not skill-package architecture, quality, or governance.
+description: Use when creating, auditing, refactoring, evaluating, or improving an agent skill package itself, including SKILL.md, AGENTS.md, references, scripts, assets, evals, and CHANGELOG.md. Trigger on requests to create a skill, build a skill package, audit skill quality, fix or refactor a SKILL.md, optimize triggering, improve eval coverage, check version and changelog alignment, or review consistency across skill files. Best for skill-package architecture, quality, structure, and governance. Do not use for generic prompt polishing, prose-only cleanup, or README and docs work when the real task is not the skill package itself.
 license: Apache-2.0
 metadata:
   author: accelint

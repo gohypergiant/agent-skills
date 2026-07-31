@@ -1,6 +1,6 @@
 ---
 name: generate-docs
-description: Use when creating, refreshing, or validating published Fumadocs MDX pages for skill packages in this repository, especially for requests about skill docs under `docs/content/docs/`, generating a page from `skills/<name>/SKILL.md`, checking whether a published skill page is stale, or updating a published page while preserving manual edits with source/doc SHA tracking. Do not use for editing `SKILL.md` prose itself, generic README or architecture docs, or broad markdown housekeeping outside the skill-doc workflow.
+description: Use when creating, refreshing, or validating published Fumadocs MDX pages for skill packages in this repository. Best for work under `docs/content/docs/`, generating docs from `skills/<name>/SKILL.md`, checking whether a published skill page is stale, or updating docs while preserving manual edits through source and doc SHA tracking. Do not use it for editing `SKILL.md` prose, generic README or architecture documentation, or broad markdown housekeeping outside the skill-doc workflow.
 license: Apache-2.0
 metadata:
   internal: true

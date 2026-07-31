@@ -1,6 +1,6 @@
 ---
 name: accelint-ac-to-playwright
-description: Convert acceptance criteria or Gherkin requirements into Playwright-ready test plans and specs, or assess whether those requirements are automation-ready first. Use when the user wants to review AC for Playwright readiness, check whether requirements can be automated as-is, convert markdown bullets or .feature files into Playwright tests, generate test automation from acceptance criteria, or validate that scenarios are specific enough to map to selectors, actions, and assertions. Prefer this skill for requirement-to-Playwright workflows, not for generic Playwright coding, debugging, or test framework setup.
+description: Convert acceptance criteria or Gherkin requirements into Playwright-ready plans and specs, or assess whether they are automation-ready first. Use when the user wants to review AC readiness, validate whether requirements can be automated as written, convert markdown bullets or .feature files into Playwright tests, generate automation from acceptance criteria, or check whether scenarios map cleanly to selectors, actions, and assertions. Prefer this skill for requirement-to-Playwright workflows, not for generic Playwright coding, debugging, or framework setup.
 license: Apache-2.0
 metadata:
   author: accelint
