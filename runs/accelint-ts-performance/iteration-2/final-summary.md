@@ -1,0 +1,5 @@
+- Changed `references/reduce-looping.md` because direct file inspection showed the prior “correct” example still allocated with `[...acc, ...]` on each kept item.
+- Changed `references/memoization.md` because direct file inspection found a broken Markdown code fence before `## Fallback Patterns`.
+- Changed `assets/output-report-template.md` because static audit evidence showed its “assume hot path” warning conflicted with the skill’s measured-vs-static guidance and cold-path eval intent.
+- Tightened prose in `SKILL.md`, `AGENTS.md`, `README.md`, `references/batching.md`, and `references/cache-storage-api.md` based on direct repository inspection.
+- Blocker: no evals or benchmark runs were executed in this workflow, so confidence is limited to static repository evidence and observed file defects; the Stage 4 subagent also hit its turn limit, so the prose report was completed manually from direct inspection.

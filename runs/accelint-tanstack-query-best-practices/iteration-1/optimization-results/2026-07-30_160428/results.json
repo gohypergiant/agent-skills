@@ -1,0 +1,1150 @@
+{
+  "exit_reason": "max_iterations (5)",
+  "original_description": "Use whenever a task involves TanStack Query or @tanstack/react-query in a React or Next.js codebase, especially QueryClient setup, query hook design, query key factories, dependent queries, mutations, optimistic updates, invalidation, hydration, dehydrate/HydrationBoundary, observer-count performance, staleTime/gcTime tuning, or multi-layer caching with Next.js App Router. Also use for reviews, audits, refactors, and debugging when the user mentions useQuery, useSuspenseQuery, useMutation, invalidateQueries, refetch, stale data, duplicate requests, cache thrash, hydration mismatches, or React Query migration.",
+  "best_description": "Use this skill when the user is trying to decide the right TanStack Query / React Query shape for an app: how server data should be fetched, keyed, cached, hydrated, invalidated, or updated in React or Next.js. Reach for it for setup, reviews, audits, migrations, and debugging when TanStack Query is the main server-state layer: QueryClient defaults, query-key structure, staleTime/gcTime policy, dependent queries, mutations, optimistic updates, stale data, duplicate requests, or refetch churn. It is especially relevant in Next.js App Router when the question is about server/client cache boundaries: prefetching, dehydrate/HydrationBoundary, per-request QueryClient setup, useSuspenseQuery, or keeping server actions and cache tags aligned with client invalidation. Skip it for SWR, plain fetch, Zustand, local UI state, or backend-only caching unless TanStack Query is central.",
+  "best_score": "4/6",
+  "best_train_score": "5/10",
+  "best_test_score": "4/6",
+  "final_description": "Use this skill when the user is trying to decide the right TanStack Query / React Query shape for an app: how server data should be fetched, keyed, cached, hydrated, invalidated, or updated in React or Next.js. Reach for it for setup, reviews, audits, migrations, and debugging when TanStack Query is the main server-state layer: QueryClient defaults, query-key structure, staleTime/gcTime policy, dependent queries, mutations, optimistic updates, stale data, duplicate requests, or refetch churn. It is especially relevant in Next.js App Router when the question is about server/client cache boundaries: prefetching, dehydrate/HydrationBoundary, per-request QueryClient setup, useSuspenseQuery, or keeping server actions and cache tags aligned with client invalidation. Skip it for SWR, plain fetch, Zustand, local UI state, or backend-only caching unless TanStack Query is central.",
+  "iterations_run": 5,
+  "holdout": 0.4,
+  "train_size": 10,
+  "test_size": 6,
+  "history": [
+    {
+      "iteration": 1,
+      "description": "Use whenever a task involves TanStack Query or @tanstack/react-query in a React or Next.js codebase, especially QueryClient setup, query hook design, query key factories, dependent queries, mutations, optimistic updates, invalidation, hydration, dehydrate/HydrationBoundary, observer-count performance, staleTime/gcTime tuning, or multi-layer caching with Next.js App Router. Also use for reviews, audits, refactors, and debugging when the user mentions useQuery, useSuspenseQuery, useMutation, invalidateQueries, refetch, stale data, duplicate requests, cache thrash, hydration mismatches, or React Query migration.",
+      "train_passed": 5,
+      "train_failed": 5,
+      "train_total": 10,
+      "train_results": [
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "test_passed": 3,
+      "test_failed": 3,
+      "test_total": 6,
+      "test_results": [
+        {
+          "query": "My dashboard uses useQuery in every row and now scrolling is janky. I need help figuring out whether observer count is the issue and how to restructure it without losing caching.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I need an optimistic update for a toggle mutation with rollback, cancelQueries, and invalidation afterward. We're using React Query in a React 19 app. What's the safe pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "This Next.js page has hydration mismatches after server-prefetched query data reaches the client. Could the issue be in our HydrationBoundary or cache invalidation setup? Help me debug it.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I have a GraphQL Apollo Client app with normalized cache issues after mutations. Looking for mutation update and cache invalidation advice, but please keep it Apollo-specific.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Can you help fix flaky RTL tests around loading spinners, waitFor, and mocked network calls in a React component that internally uses useQuery? I need testing advice, not query architecture.",
+          "should_trigger": false,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Can you optimize a Next.js App Router page that's slow because of barrel imports, giant client bundles, and bad server/client boundaries? We don't use React Query at all.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "passed": 5,
+      "failed": 5,
+      "total": 10,
+      "results": [
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "iteration": 2,
+      "description": "Use this skill for any request to design, review, debug, refactor, or migrate TanStack Query / React Query usage in a React or Next.js app. Reach for it when the user is trying to structure server-state fetching and caching: QueryClient setup and defaults, query key architecture, invalidation strategy, mutations and optimistic updates, dependent queries, staleTime/gcTime choices, or performance problems from duplicate requests, stale data, refetch churn, or too many observers. Also use it for Next.js App Router and server/client cache coordination, including prefetching, dehydrate/HydrationBoundary, per-request QueryClient setup, and aligning server actions or cache tags with client invalidation. Do not use it for SWR, plain fetch, local UI state, Zustand, or generic backend issues unless TanStack Query is part of the problem.",
+      "train_passed": 5,
+      "train_failed": 5,
+      "train_total": 10,
+      "train_results": [
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "test_passed": 3,
+      "test_failed": 3,
+      "test_total": 6,
+      "test_results": [
+        {
+          "query": "My dashboard uses useQuery in every row and now scrolling is janky. I need help figuring out whether observer count is the issue and how to restructure it without losing caching.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I need an optimistic update for a toggle mutation with rollback, cancelQueries, and invalidation afterward. We're using React Query in a React 19 app. What's the safe pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "This Next.js page has hydration mismatches after server-prefetched query data reaches the client. Could the issue be in our HydrationBoundary or cache invalidation setup? Help me debug it.",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help fix flaky RTL tests around loading spinners, waitFor, and mocked network calls in a React component that internally uses useQuery? I need testing advice, not query architecture.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I have a GraphQL Apollo Client app with normalized cache issues after mutations. Looking for mutation update and cache invalidation advice, but please keep it Apollo-specific.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Can you optimize a Next.js App Router page that's slow because of barrel imports, giant client bundles, and bad server/client boundaries? We don't use React Query at all.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "passed": 5,
+      "failed": 5,
+      "total": 10,
+      "results": [
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "description": "Use this skill whenever the user is shaping or troubleshooting TanStack Query / React Query as the server-state layer in a React or Next.js app. Reach for it for setup and architecture questions, not just code fixes: QueryClient defaults, query-key design, invalidation and mutation strategy, optimistic updates, dependent queries, staleTime/gcTime choices, and debugging stale data, duplicate requests, over-refetching, or cache inconsistency. Also use it for audits and migrations, especially older React Query codebases moving to TanStack Query v5. In Next.js App Router projects, use it when the user needs server/client cache coordination: prefetching, dehydrate/HydrationBoundary, per-request QueryClient setup, useSuspenseQuery, and aligning server actions or cache tags with client invalidation. Do not use it for SWR, plain fetch, local UI state, Zustand, or generic backend-only caching unless TanStack Query is central to the problem.",
+      "train_passed": 5,
+      "train_failed": 5,
+      "train_total": 10,
+      "train_results": [
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "test_passed": 3,
+      "test_failed": 3,
+      "test_total": 6,
+      "test_results": [
+        {
+          "query": "My dashboard uses useQuery in every row and now scrolling is janky. I need help figuring out whether observer count is the issue and how to restructure it without losing caching.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I need an optimistic update for a toggle mutation with rollback, cancelQueries, and invalidation afterward. We're using React Query in a React 19 app. What's the safe pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "This Next.js page has hydration mismatches after server-prefetched query data reaches the client. Could the issue be in our HydrationBoundary or cache invalidation setup? Help me debug it.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help fix flaky RTL tests around loading spinners, waitFor, and mocked network calls in a React component that internally uses useQuery? I need testing advice, not query architecture.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I have a GraphQL Apollo Client app with normalized cache issues after mutations. Looking for mutation update and cache invalidation advice, but please keep it Apollo-specific.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Can you optimize a Next.js App Router page that's slow because of barrel imports, giant client bundles, and bad server/client boundaries? We don't use React Query at all.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "passed": 5,
+      "failed": 5,
+      "total": 10,
+      "results": [
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "iteration": 4,
+      "description": "Use this skill when the user is deciding how TanStack Query / React Query should own server state in a React SPA or Next.js app, not only when a specific hook is broken. Reach for it for architecture, audits, migrations, and debugging: QueryClient setup and defaults, query-key factories, staleTime/gcTime policy, dependent queries, mutations, invalidation, optimistic updates, and problems like stale data, duplicate requests, refetch churn, or cache drift. It is especially relevant in Next.js App Router when the user is coordinating server and client caches: prefetching, dehydrate/HydrationBoundary, per-request QueryClient creation, useSuspenseQuery, and aligning server actions or cache tags with client invalidation. Also use it for older React Query codebases moving to TanStack Query v5. Skip it for SWR, plain fetch, Zustand, local UI state, or backend-only caching unless TanStack Query is central.",
+      "train_passed": 5,
+      "train_failed": 5,
+      "train_total": 10,
+      "train_results": [
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "test_passed": 3,
+      "test_failed": 3,
+      "test_total": 6,
+      "test_results": [
+        {
+          "query": "My dashboard uses useQuery in every row and now scrolling is janky. I need help figuring out whether observer count is the issue and how to restructure it without losing caching.",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I need an optimistic update for a toggle mutation with rollback, cancelQueries, and invalidation afterward. We're using React Query in a React 19 app. What's the safe pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "This Next.js page has hydration mismatches after server-prefetched query data reaches the client. Could the issue be in our HydrationBoundary or cache invalidation setup? Help me debug it.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help fix flaky RTL tests around loading spinners, waitFor, and mocked network calls in a React component that internally uses useQuery? I need testing advice, not query architecture.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I have a GraphQL Apollo Client app with normalized cache issues after mutations. Looking for mutation update and cache invalidation advice, but please keep it Apollo-specific.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Can you optimize a Next.js App Router page that's slow because of barrel imports, giant client bundles, and bad server/client boundaries? We don't use React Query at all.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "passed": 5,
+      "failed": 5,
+      "total": 10,
+      "results": [
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "iteration": 5,
+      "description": "Use this skill when the user is trying to decide the right TanStack Query / React Query shape for an app: how server data should be fetched, keyed, cached, hydrated, invalidated, or updated in React or Next.js. Reach for it for setup, reviews, audits, migrations, and debugging when TanStack Query is the main server-state layer: QueryClient defaults, query-key structure, staleTime/gcTime policy, dependent queries, mutations, optimistic updates, stale data, duplicate requests, or refetch churn. It is especially relevant in Next.js App Router when the question is about server/client cache boundaries: prefetching, dehydrate/HydrationBoundary, per-request QueryClient setup, useSuspenseQuery, or keeping server actions and cache tags aligned with client invalidation. Skip it for SWR, plain fetch, Zustand, local UI state, or backend-only caching unless TanStack Query is central.",
+      "train_passed": 5,
+      "train_failed": 5,
+      "train_total": 10,
+      "train_results": [
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "test_passed": 4,
+      "test_failed": 2,
+      "test_total": 6,
+      "test_results": [
+        {
+          "query": "My dashboard uses useQuery in every row and now scrolling is janky. I need help figuring out whether observer count is the issue and how to restructure it without losing caching.",
+          "should_trigger": true,
+          "trigger_rate": 0.6666666666666666,
+          "triggers": 2,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I need an optimistic update for a toggle mutation with rollback, cancelQueries, and invalidation afterward. We're using React Query in a React 19 app. What's the safe pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "This Next.js page has hydration mismatches after server-prefetched query data reaches the client. Could the issue be in our HydrationBoundary or cache invalidation setup? Help me debug it.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I have a GraphQL Apollo Client app with normalized cache issues after mutations. Looking for mutation update and cache invalidation advice, but please keep it Apollo-specific.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Can you optimize a Next.js App Router page that's slow because of barrel imports, giant client bundles, and bad server/client boundaries? We don't use React Query at all.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Can you help fix flaky RTL tests around loading spinners, waitFor, and mocked network calls in a React component that internally uses useQuery? I need testing advice, not query architecture.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ],
+      "passed": 5,
+      "failed": 5,
+      "total": 10,
+      "results": [
+        {
+          "query": "Need advice on coordinating Next.js server cache tags with TanStack Query invalidation so server actions and client mutations don't drift apart. How would you structure the cache layers?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Can you help me design query key factories for @tanstack/react-query so list/detail invalidation stays predictable across filters, pagination, and mutations?",
+          "should_trigger": true,
+          "trigger_rate": 0.3333333333333333,
+          "triggers": 1,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "I'm wiring TanStack Query into a React SPA and want a clean QueryClient setup with sensible staleTime/gcTime defaults for product catalog data vs live cart counts. Can you suggest the client setup and how to think about those defaults?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "We're migrating an older React Query codebase to TanStack Query v5 and keep tripping over stale data, duplicate requests, and useSuspenseQuery choices in App Router. Audit the approach and point out the biggest mistakes.",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "Next.js App Router app here. We prefetch data on the server and hydrate into client components, but I'm fuzzy on dehydrate, HydrationBoundary, and where the QueryClient should live per request. Can you review the pattern?",
+          "should_trigger": true,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": false
+        },
+        {
+          "query": "My React app fetches data with SWR, not TanStack Query, but I want general guidance on stale-while-revalidate tradeoffs and cache freshness. No migration right now.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Write Playwright tests that verify a table refetches after a save and shows optimistic UI state while a request is pending.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "We use plain fetch in React Server Components plus a tiny useEffect on the client. Should I add TanStack Query, or is that overkill for mostly static CMS content?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "I'm debugging a Zustand store that keeps getting out of sync with local component state after form edits. There are no server queries involved. What pattern should I use instead?",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        },
+        {
+          "query": "Please review this backend route handler for auth, input validation, and SSRF risk. It happens to be called by a useQuery hook on the frontend, but the problem is the API security.",
+          "should_trigger": false,
+          "trigger_rate": 0.0,
+          "triggers": 0,
+          "runs": 3,
+          "pass": true
+        }
+      ]
+    }
+  ]
+}

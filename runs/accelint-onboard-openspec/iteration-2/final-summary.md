@@ -1,0 +1,3 @@
+- Changed: extracted YAML safety and full config template from `skills/accelint-onboard-openspec/SKILL.md` into `references/`, tightened non-frontmatter prose, corrected the recognised-shape example from `specs` to `spec`, and bumped version to `1.6.1` with changelog updates.
+- Evidence: Stage 1 measured `SKILL.md` at 688 lines; after changes it measured 415 lines. Static audit evidence showed repeated boundary prose, internal wording tension around serial-vs-fallback inference, and the incorrect `specs` example. Version/changelog alignment was directly verified in repo files.
+- Blockers: no tooling blockers; docs-page drift was observed but not updated in this run, so confidence is highest for core skill-package improvements rather than published-doc sync.

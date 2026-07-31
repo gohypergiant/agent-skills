@@ -1,0 +1,94 @@
+## Summary
+- Task: Audit and tighten behavior-defining prose for `skills/accelint-security-best-practices`
+- Output mode: audit plus rewrite
+- Rewrite mode: mode=strict
+- Artifact set reviewed: `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/SKILL.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/AGENTS.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/README.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/assets/output-report-template.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/authentication.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/authorization.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/csrf-protection.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/dependency-security.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/file-uploads.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/injection-prevention.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/input-validation.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/mfa.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/quick-reference.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/rate-limiting.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/secrets-management.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/security-headers.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/sensitive-data.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/ssrf-prevention.md`, `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/xss-prevention.md`
+
+## What changed
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/SKILL.md`
+  - Changed: yes
+  - Why: Tightened workflow prose, clarified mode descriptions, and improved scanability while preserving trigger coverage, phase order, approval logic, and exact file references.
+  - Notes: Reworded progressive-disclosure guidance, strengthened a few ambiguous phrases, and kept all behavior-bearing tokens and workflow structure intact.
+
+## Other artifact-set files
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/AGENTS.md`
+  - Changed: yes
+  - Why: Local-tightening sweep found several compressed summaries that were clear but could be made easier to scan without changing security rules.
+  - Notes: Tightened framing language and preserved all category mappings and anti-pattern coverage.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/README.md`
+  - Changed: yes
+  - Why: The README is part of the artifact set and needed wording alignment with the root workflow and progressive-disclosure model.
+  - Notes: Normalized phrasing around workflow steps, scope, and reference loading.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/assets/output-report-template.md`
+  - Changed: yes
+  - Why: Template instructions are behavior-bearing support text and benefited from clearer operator guidance without changing required sections.
+  - Notes: Tightened instructional lines and preserved exact section structure and placeholders.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/authentication.md`
+  - Changed: yes
+  - Why: Local-tightening sweep found low-risk sentence improvements that preserved security requirements and example semantics.
+  - Notes: Clarified opening guidance and rationale wording only.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/authorization.md`
+  - Changed: yes
+  - Why: Local-tightening sweep found minor wording fixes that improved readability without changing guardrail force.
+  - Notes: Tightened framework guidance and explanatory rationale.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/csrf-protection.md`
+  - Changed: yes
+  - Why: Local-tightening sweep found small prose changes that improved clarity while preserving exact CSRF requirements.
+  - Notes: Adjusted explanatory sentences only.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/dependency-security.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved readability in introduction and rationale without affecting commands or requirement strength.
+  - Notes: Preserved all package-manager references and audit commands.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/file-uploads.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved directness in top-level behavior-bearing prose.
+  - Notes: Preserved all validation rules, examples, and checklists.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/injection-prevention.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved readability in the framing text without changing injection guidance.
+  - Notes: Preserved exact code examples and tool references.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/input-validation.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved introductory clarity while preserving schema-validation requirements.
+  - Notes: No trigger or checklist drift introduced.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/mfa.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved explanatory precision without changing MFA workflow or requirements.
+  - Notes: Preserved all setup, verification, and recovery behavior.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/quick-reference.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved compressed audit guidance and one risk description.
+  - Notes: Preserved all mappings, severity ranges, and detection patterns.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/rate-limiting.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved sentence structure while preserving severity and timing guidance.
+  - Notes: Preserved exact examples, limits, and implementation patterns.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/secrets-management.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved directness in the opening guidance and rationale.
+  - Notes: Preserved exact secret-handling requirements and environment-variable references.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/security-headers.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved readability in top-level rationale while preserving header requirements.
+  - Notes: All exact header names, directives, and code examples stayed intact.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/sensitive-data.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved one rationale sentence while preserving logging and exposure guardrails.
+  - Notes: Exact sensitive-field examples and logging guidance remained intact.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/ssrf-prevention.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved directness in the opening guidance and rationale.
+  - Notes: Preserved all blocked endpoints, redirect rules, and validation requirements.
+- `/Users/brandon.pierce/Projects/agent-skills/skills/accelint-security-best-practices/references/xss-prevention.md`
+  - Changed: yes
+  - Why: Local-tightening sweep improved clarity in the framing text without changing XSS prevention guidance.
+  - Notes: Preserved all exact API names, CSP guidance, and sanitization patterns.
+
+## Behavior check
+- Trigger coverage: preserved
+- Workflow semantics: preserved
+- Guardrail strength: preserved
+- Exact technical references: preserved
+
+## Risks or limits
+- None noted

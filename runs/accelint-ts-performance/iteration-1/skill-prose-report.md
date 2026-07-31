@@ -1,0 +1,92 @@
+## Summary
+- Task: Audit and tighten prose for `skills/accelint-ts-performance` in audit plus rewrite output mode and `mode=strict`
+- Output mode: audit plus rewrite
+- Rewrite mode: mode=strict
+- Artifact set reviewed: `skills/accelint-ts-performance/SKILL.md`, `skills/accelint-ts-performance/AGENTS.md`, `skills/accelint-ts-performance/assets/output-report-template.md`, `skills/accelint-ts-performance/references/avoid-allocations.md`, `skills/accelint-ts-performance/references/batching.md`, `skills/accelint-ts-performance/references/bounded-iteration.md`, `skills/accelint-ts-performance/references/cache-property-access.md`, `skills/accelint-ts-performance/references/cache-storage-api.md`, `skills/accelint-ts-performance/references/currying.md`, `skills/accelint-ts-performance/references/defer-await.md`, `skills/accelint-ts-performance/references/memoization.md`, `skills/accelint-ts-performance/references/object-operations.md`, `skills/accelint-ts-performance/references/performance-misc.md`, `skills/accelint-ts-performance/references/predictable-execution.md`, `skills/accelint-ts-performance/references/quick-reference.md`, `skills/accelint-ts-performance/references/reduce-branching.md`, `skills/accelint-ts-performance/references/reduce-looping.md`, `skills/accelint-ts-performance/README.md`
+
+## What changed
+- `skills/accelint-ts-performance/SKILL.md`
+  - Changed: yes
+  - Why: Tightened workflow prose, reporting instructions, and explanatory guidance to reduce ambiguity while preserving trigger coverage, workflow semantics, guardrail strength, and exact references.
+  - Notes: Clarified mode descriptions, phase outputs, decision guidance, and progressive-disclosure handoffs with more direct sentence structure.
+
+## Other artifact-set files
+- `skills/accelint-ts-performance/AGENTS.md`
+  - Changed: yes
+  - Why: Tightened summary prose and quick-start guidance so the compressed overview stays aligned with the root workflow and uses more direct instructions.
+  - Notes: Improved scanning language, note framing, and priority wording without changing category coverage.
+- `skills/accelint-ts-performance/README.md`
+  - Changed: yes
+  - Why: Tightened supporting package prose so public-facing guidance matches the root skill contract and stays easy to scan.
+  - Notes: Clarified overview bullets, usage triggers, progressive disclosure steps, and quick-start instructions.
+- `skills/accelint-ts-performance/assets/output-report-template.md`
+  - Changed: yes
+  - Why: Tightened template instructions and warning prose so audit outputs remain consistent and harder to misread.
+  - Notes: Clarified instruction bullets, preserved report structure, and kept the warning block behavior intact.
+- `skills/accelint-ts-performance/references/avoid-allocations.md`
+  - Changed: yes
+  - Why: Tightened local explanatory prose and decision lists so the guidance is easier to follow without changing optimization boundaries.
+  - Notes: Clarified when to use variables and when allocation optimization is warranted.
+- `skills/accelint-ts-performance/references/batching.md`
+  - Changed: yes
+  - Why: Tightened the local summary sentence for clarity.
+  - Notes: Preserved the file's narrow quick-reference role.
+- `skills/accelint-ts-performance/references/bounded-iteration.md`
+  - Changed: yes
+  - Why: Tightened guardrail wording and local list structure so the fail-fast rationale is clearer.
+  - Notes: Preserved hard-stop strength and explicit-limit semantics.
+- `skills/accelint-ts-performance/references/cache-property-access.md`
+  - Changed: yes
+  - Why: Tightened optimization bullets for clearer local guidance.
+  - Notes: Preserved the same caching and direct-access rules.
+- `skills/accelint-ts-performance/references/cache-storage-api.md`
+  - Changed: yes
+  - Why: Clarified when in-memory caching applies and tightened invalidation wording.
+  - Notes: Preserved the external-change invalidation requirement.
+- `skills/accelint-ts-performance/references/currying.md`
+  - Changed: yes
+  - Why: Tightened overview and decision criteria so use and non-use conditions are easier to scan.
+  - Notes: Preserved the currying boundary and hot-path emphasis.
+- `skills/accelint-ts-performance/references/defer-await.md`
+  - Changed: yes
+  - Why: Tightened the core rule and payoff statement for local clarity.
+  - Notes: Preserved the same defer-`await` behavior.
+- `skills/accelint-ts-performance/references/memoization.md`
+  - Changed: yes
+  - Why: Tightened optimization and fallback criteria so memoization boundaries are easier to scan.
+  - Notes: Preserved cache-safety guidance and fallback logic.
+- `skills/accelint-ts-performance/references/object-operations.md`
+  - Changed: yes
+  - Why: Tightened optimization bullets so ownership and immutability conditions are more explicit.
+  - Notes: Preserved mutation-safety boundaries.
+- `skills/accelint-ts-performance/references/performance-misc.md`
+  - Changed: yes
+  - Why: Tightened local explanatory prose for string-building guidance.
+  - Notes: Preserved the same examples and performance rule.
+- `skills/accelint-ts-performance/references/predictable-execution.md`
+  - Changed: yes
+  - Why: Tightened optimization bullets for directness.
+  - Notes: Preserved the same locality and execution-path guidance.
+- `skills/accelint-ts-performance/references/quick-reference.md`
+  - Changed: yes
+  - Why: Tightened the action checklist at the end so next steps are clearer.
+  - Notes: Preserved symptom-to-category mapping and example coverage.
+- `skills/accelint-ts-performance/references/reduce-branching.md`
+  - Changed: yes
+  - Why: Tightened optimization bullets so the allowed transformation shapes are clearer.
+  - Notes: Preserved optimization categories and examples.
+- `skills/accelint-ts-performance/references/reduce-looping.md`
+  - Changed: yes
+  - Why: Tightened explanation blocks and fallback criteria for local scanability.
+  - Notes: Preserved all examples, expected-gain rationale, and fallback boundaries.
+
+## Behavior check
+- Trigger coverage: preserved
+- Workflow semantics: preserved
+- Guardrail strength: preserved
+- Exact technical references: preserved
+
+## Risks or limits
+- `skills/accelint-ts-performance/references/cache-storage-api.md` remains slightly style-inconsistent in code-comment punctuation, but further tightening would affect code examples rather than prose.
+- `skills/accelint-ts-performance/references/reduce-looping.md` and `skills/accelint-ts-performance/references/memoization.md` retain some original emphasis phrasing inside explanatory paragraphs because more aggressive edits risk behavior drift without meaningful clarity gain.
+- Files inspected but left outside the rewritten artifact set: `skills/accelint-ts-performance/evals/evals.json` because it is data, not behavior-defining prose.

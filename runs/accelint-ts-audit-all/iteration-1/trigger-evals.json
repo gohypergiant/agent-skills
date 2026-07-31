@@ -1,0 +1,66 @@
+[
+  {
+    "query": "Use /skill accelint-ts-audit-all on packages/data/src/normalizeUser.ts and walk me through the full audit workflow with progress tracking.",
+    "should_trigger": true
+  },
+  {
+    "query": "Please run the accelint-ts-audit-all skill against ./src/utils/date/ and resume any in-progress audit if one already exists.",
+    "should_trigger": true
+  },
+  {
+    "query": "I want the command-only ts audit skill to audit services/api/src/auth/token.ts, create the audit-process file, and use the testing/best-practices/performance/documentation sequence.",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you use /skill accelint-ts-audit-all for libs/common/src and keep approvals interactive instead of auto-applying fixes?",
+    "should_trigger": true
+  },
+  {
+    "query": "Resume my TypeScript audit in .agents/audit for apps/web/src/hooks/useFeatureFlag.ts and continue from the next pending step.",
+    "should_trigger": true
+  },
+  {
+    "query": "Run the audit-all TypeScript skill on packages/ui/src/Button.tsx. I specifically want the worktree-based 9-step audit process, not a quick review.",
+    "should_trigger": true
+  },
+  {
+    "query": "Use the comprehensive TS audit-all command on src/lib/parsers so we can batch through each auditable file with saved progress across sessions.",
+    "should_trigger": true
+  },
+  {
+    "query": "I need the command-only audit orchestrator for TypeScript to process one file at a time in an isolated worktree and ask me which fixes to apply.",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit src/server/cache.ts for TypeScript best practices and performance issues. Just give me the recommendations here; do not start the big multi-skill tracked workflow.",
+    "should_trigger": false
+  },
+  {
+    "query": "Use accelint-ts-best-practices on packages/core/src/math.ts and skip any testing or documentation passes.",
+    "should_trigger": false
+  },
+  {
+    "query": "Can you review this Vitest suite in tests/parser.test.ts and suggest stronger assertions?",
+    "should_trigger": false
+  },
+  {
+    "query": "I want a repo-wide TypeScript architecture audit and a summary doc, not code changes or interactive approvals.",
+    "should_trigger": false
+  },
+  {
+    "query": "Please optimize the frontmatter description for skills/accelint-ts-audit-all/SKILL.md so it triggers more accurately.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run /skill accelint-ts-testing on src/currency.ts and add property-based tests if they make sense.",
+    "should_trigger": false
+  },
+  {
+    "query": "Could you do a quick TypeScript cleanup pass on src/index.ts? No worktrees, no audit files, and no step-by-step approval ceremony.",
+    "should_trigger": false
+  },
+  {
+    "query": "I need a README for our internal TypeScript auditing workflow so the team knows when to use ts-testing vs ts-performance.",
+    "should_trigger": false
+  }
+]

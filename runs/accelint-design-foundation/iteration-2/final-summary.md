@@ -1,0 +1,3 @@
+- Changed: tightened `SKILL.md`, aligned variant guidance in `references/variant-system.md`, and fixed spacing-scale drift in `README.md` and `AGENTS.md`.
+- Evidence: Stage 1 `/skill:skill-creator` audit found density, duplication, and variant-guidance tension; direct file inspection confirmed spacing-scale drift and overlapping reference material.
+- Blockers: Stage 4 prose subagent stopped before writing its report, so the final prose summary was completed from direct repository inspection. No full benchmark/human-review loop ran, which limited confidence for broader behavioral changes.

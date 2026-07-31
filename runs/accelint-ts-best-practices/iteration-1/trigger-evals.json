@@ -1,0 +1,66 @@
+[
+  {
+    "query": "I'm reviewing a TS utility package and want a code-quality audit focused on type safety, unsafe null handling, any usage, enum usage, and whether our helper functions return predictable zero values. Please scan src/utils and summarize the anti-patterns you find.",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you refactor this TypeScript module to avoid any, replace an enum with an as const object, and clean up some control-flow / return-value issues? I care more about correctness and maintainability than speed.",
+    "should_trigger": true
+  },
+  {
+    "query": "Need help fixing a bunch of TypeScript type errors after a refactor. There are union narrowing issues, an any leaking through a parser, and some functions returning null where callers expect arrays.",
+    "should_trigger": true
+  },
+  {
+    "query": "please review this js file like a strict senior engineer. i'm worried about hidden mutation, weak error handling, and sloppy state updates more than style formatting.",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to write new TS code for a service layer and keep it defensive: explicit return types, bounded iteration, validated inputs, and safer error handling. Can you guide the implementation?",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit these TypeScript helpers for code duplication, bad naming, and interface-vs-type choices. If there are anti-patterns, explain the safer pattern and fix them.",
+    "should_trigger": true
+  },
+  {
+    "query": "We're cleaning up a Node + TypeScript codebase before handing it to another team. Please review for correctness issues like null returns, unsafe external-data handling, mutable params, and brittle assertions.",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you look over this TS queue processor? Not for perf tuning yet — I want to know whether the loop bounds, state handling, and error paths follow solid TypeScript/JS best practices.",
+    "should_trigger": true
+  },
+  {
+    "query": "My Vitest suite is flaky and slow. Can you review the tests and suggest better mocking patterns, stricter assertions, and maybe property-based tests where it makes sense?",
+    "should_trigger": false
+  },
+  {
+    "query": "Please optimize this TypeScript formatter for speed. It's on a hot path and I care about allocations, deopts, and algorithmic complexity much more than style or type cleanliness.",
+    "should_trigger": false
+  },
+  {
+    "query": "Could you add JSDoc to our exported utilities and clean up TODO/FIXME comments? The code itself mostly works; this is really a documentation pass.",
+    "should_trigger": false
+  },
+  {
+    "query": "I need a React review for a component with stale closures, too many renders, and effect dependency issues. It's TypeScript, but the real problem is React behavior.",
+    "should_trigger": false
+  },
+  {
+    "query": "Can you generate Playwright tests from these acceptance criteria? They're written in markdown bullets and I need automation-ready scenarios.",
+    "should_trigger": false
+  },
+  {
+    "query": "Need a security audit of this Express upload endpoint: auth, authorization, SSRF risk, file validation, secrets, and abuse cases.",
+    "should_trigger": false
+  },
+  {
+    "query": "We have a Next.js App Router page with Server Actions and cache weirdness. Please tell me where the logic should live and why the page is slow.",
+    "should_trigger": false
+  },
+  {
+    "query": "Can you rewrite this README for our TypeScript package? It needs clearer setup instructions and examples after a refactor.",
+    "should_trigger": false
+  }
+]
