@@ -34,7 +34,7 @@ Check these points before you start.
 - **Does it follow the template?** If not, proactively offer to restructure it before you do anything else.
 
 ### What can I infer vs. what must I ask?
-- **Use parallel subagents for discovery** when they are available and the repo is large or multi-domain enough to benefit. Spawn them simultaneously across discovery domains instead of scanning serially.
+- **Use parallel subagents for discovery** when subagents are available. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
 - **Reserve questions for genuine gaps** such as deployment specifics, roadmap items, and security decisions that are not in the code.
 
 ---
