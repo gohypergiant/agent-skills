@@ -19,7 +19,7 @@ Generate or update a living `ARCHITECTURE.md` for the current codebase. It shoul
 - **MUST NOT skip drift detection in refresh mode** — scan the codebase for changed signals before you run any interview. Questions about unchanged sections waste the user's time.
 - **MUST NOT leave all 11 sections as `<!-- TODO -->`** — scan aggressively first. Most sections can be filled at least partially through inference. A document full of TODOs appears complete but misleads every reader.
 - **MUST NOT document internal implementation details in the System Diagram (Section 2)** — that section is a 10,000-foot view of components and data flow. Database schemas, function signatures, and module internals belong elsewhere.
-- **MUST NOT choose a slower discovery approach without reason** — when subagents are available and the repo is large or multi-domain enough to benefit, Phase 1 should use parallel discovery by domain. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
+- **MUST NOT choose a slower discovery approach without reason** — when subagents are available, Phase 1 should use parallel subagents for discovery. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
 
 ## Before Writing, Ask
 
