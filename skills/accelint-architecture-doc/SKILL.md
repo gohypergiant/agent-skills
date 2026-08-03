@@ -161,7 +161,7 @@ Until the user explicitly chooses **(a)**, **(b)**, or **(c)**, do not restructu
 
 ### Phase 1 — Discovery
 
-Use parallel discovery subagents when they are available and the repo is large or multi-domain enough to benefit. If subagents are unavailable, the environment is constrained, or the repo is small, do focused inline discovery across the same domains. In either case, collect structured findings across the discovery domains below, then merge the results before Phase 2.
+When subagents are available, use parallel subagents for discovery. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow. In either case, collect structured findings across the discovery domains below, then merge the results before Phase 2.
 
 **Discovery domains to cover, preferably simultaneously when parallel execution is available:**
 
