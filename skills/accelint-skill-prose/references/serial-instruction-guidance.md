@@ -15,7 +15,7 @@ Run this pass before you edit workflow-bearing prose.
 ### 1. Detect explicit serial instructions
 Look for:
 - numbered lists
-- `Step 1`, `Phase 2`, `First`, `Next`, `Then`, `After`, `Finally`
+- `Step 1`, `Stage 2`, `First`, `Next`, `Then`, `After`, `Finally`
 - `before`, `after`, `until`, `once`, `when`, `only then`
 - `requires`, `depends on`, `done when`
 - `if this fails, return to`
@@ -66,8 +66,8 @@ Then use:
 - `Done when:` for gates that later steps rely on
 - an explicit failure route such as `If this check fails, return to Step 3.`
 
-### Multi-phase workflows
-Use `## Phase N` headings only as containers. Ordered steps still need their own numbered step headings inside each phase.
+### Multi-stage workflows
+If you need a higher-level container above ordered steps, prefer `## Stage N` or a descriptive section heading. Ordered steps still need their own numbered step headings inside that container.
 
 ### Branching workflows
 Name each branch and the join point.
@@ -80,6 +80,8 @@ Good pattern:
 ## Rewrite rules
 
 - Treat one step as one action. Split any step that says `and then`.
+- Do not use empty step headings. Every `### Step N: Name` block must contain at least one operational sentence, gate, or completion condition.
+- If a step heading only labels a principle, convert that principle into an action the agent or reader can execute.
 - Never leave ordered work in plain bullets. Replace plain bullets with ordered steps when the work is not actually optional or unordered.
 - Move conditions before actions when that makes timing clearer without changing behavior.
 - Replace emphasis-only warnings with enforceable gates when the workflow depends on order.
@@ -92,10 +94,11 @@ Good pattern:
 Ask these before you finalize the edit:
 1. Could an agent now do these steps out of order and still claim compliance?
 2. Did any `ask first`, `wait`, `pause`, `stop`, `return`, or `do not proceed until` rule become softer?
-3. Did a paragraph still hide multiple actions that should be separate steps?
-4. Did any branch lose its named destination or rejoin point?
-5. Did any validation or approval rule stay as emphasis instead of becoming a gate?
-6. Would an agent reading only the rewritten text still follow the same order under load?
+3. Did any step heading stay empty or act only as decoration instead of instruction?
+4. Did a paragraph still hide multiple actions that should be separate steps?
+5. Did any branch lose its named destination or rejoin point?
+6. Did any validation or approval rule stay as emphasis instead of becoming a gate?
+7. Would an agent reading only the rewritten text still follow the same order under load?
 
 ## Notes for this skill
 

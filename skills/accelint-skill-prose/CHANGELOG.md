@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.13] - 2026-08-03
+
+### Changed
+- Updated `references/serial-instruction-guidance.md` to prefer neutral stage-container wording (`Stage` or a descriptive section heading) instead of `Phase` when discussing higher-level workflow containers. This is a low-risk precaution based on repo evidence that some agents treat phase-style headings as checkpoint boundaries.
+
+### Version
+- Patch release at `0.7.13`.
+
 ## [0.7.12] - 2026-08-03
 
 ### Changed

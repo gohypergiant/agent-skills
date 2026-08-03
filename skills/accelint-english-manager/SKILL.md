@@ -4,7 +4,7 @@ description: Use when the user wants prose rewritten, tightened, audited, simpli
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.6"
+  version: "1.3.7"
 ---
 
 # English Manager
@@ -223,26 +223,38 @@ Load references only when they materially help.
 
 ### Step 1: Ask for the mode
 Do this first unless the user already specified the mode.
+Done when: the rewrite mode is explicit, or the request is truly audit-only.
 
 ### Step 2: Choose the output mode
-Do this after Step 1.
+Requires: Step 1 is complete when the request needs a rewrite mode.
+Choose `Audit only`, `Rewrite only`, or `Audit plus rewrite` before you draft.
 
 ### Step 3: Extract the constraints
-Do this before you draft.
+Requires: Steps 1 and 2 are complete.
+Identify the meaning, audience, tone, format, and exact wording that must stay fixed before you draft.
 
 ### Step 4: Apply the mode
+Requires: Step 3 is complete.
 Let `mode=default` or `mode=strict` set the default scope.
+Done when: the allowed rewrite scope is clear.
 
 ### Step 5: Draft in direct English
+Requires: Steps 1 to 4 are complete.
+Write in plain, direct English that preserves the user's intended meaning, audience, tone, and explicit constraints.
 
 ### Step 6: Keep repeated terms stable
+Requires: Step 5 is complete.
+Use one term for one concept. Do not rotate synonyms for style.
 
 ### Step 7: Make the action path easy to scan
+Requires: Steps 5 and 6 are complete.
 Do this when the reader must act.
 If the text contains ordered actions, load `references/serial-instruction-guidance.md` and make the order explicit.
 
 ### Step 8: Run the self-check before delivery
+Requires: Steps 1 to 7 are complete.
 Do not deliver before Step 8 is complete.
+If the self-check fails, return to the earliest affected step.
 
 ### For revising existing text
 

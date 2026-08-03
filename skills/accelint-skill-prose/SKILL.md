@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, polishing, or
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.12"
+  version: "0.7.13"
 ---
 
 # Skill Prose
@@ -230,6 +230,7 @@ When order matters:
 - make the order explicit
 - use a numbered list for 2 to 3 short ordered steps
 - use `### Step 0` plus a checklist, then `### Step N: Name`, for 4 or more ordered steps
+- give every `### Step N: Name` block an operational body, gate, or completion condition
 - add `Requires:` when a step depends on an earlier step
 - add `Done when:` when later work depends on a successful check
 - add a named failure route when a later step must wait for a passing check

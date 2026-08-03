@@ -8,7 +8,7 @@ Check for explicit serial instructions first.
 
 Common signals:
 - numbered steps
-- `Step 1`, `Phase 2`, `First`, `Next`, `Then`, `After that`, `Finally`
+- `Step 1`, `Stage 2`, `First`, `Next`, `Then`, `After that`, `Finally`
 - `before`, `after`, `until`, `once`, `when`, `only then`, `do not ... until`
 - `requires`, `depends on`, `done when`, `if this passes, continue`
 - branch markers such as `if`, `otherwise`, `else`, `skip`, `return to`
@@ -55,8 +55,8 @@ Use this pattern by default:
 5. Add `Done when:` when later work depends on a successful check.
 6. Add an explicit failure route such as `If this fails, return to Step 3.`
 
-### For phases
-Use `## Phase N` only as a container. Put ordered steps inside the phase. Give the phase an exit condition when the outcome matters.
+### For stage containers
+If you need a higher-level container above ordered steps, prefer a neutral section label such as `## Stage N` or a descriptive heading. Put ordered steps inside the container. Give the container an exit condition when the outcome matters.
 
 ### For branches
 Name the branch destination. Do not leave a branch implied.
@@ -69,6 +69,8 @@ Good pattern:
 ## Rewrite rules
 
 - One step is one action. Split any step that says `and then`.
+- Do not use empty step headings. Every `### Step N: Name` block must contain at least one operational sentence, gate, or completion condition.
+- If a step heading only labels a principle, convert that principle into an action the reader or agent can execute.
 - Put the condition before the action when that makes timing easier to follow.
 - Replace emphasis-only warnings with enforceable gates when the text really depends on order.
 - Never leave ordered work in plain bullets.
@@ -79,11 +81,12 @@ Good pattern:
 
 Before you deliver, confirm:
 1. Every ordered action is visible as an ordered action.
-2. Every dependent step names what must be true first.
-3. Every validation or approval gate blocks the later step clearly.
-4. Every branch names its next step.
-5. The final text cannot be read as `do these in any order` when order matters.
-6. Any checklist or progress-tracking instruction appears before the workflow it tracks.
+2. No step heading is empty or purely decorative.
+3. Every dependent step names what must be true first.
+4. Every validation or approval gate blocks the later step clearly.
+5. Every branch names its next step.
+6. The final text cannot be read as `do these in any order` when order matters.
+7. Any checklist or progress-tracking instruction appears before the workflow it tracks.
 
 ## Notes for this skill
 
