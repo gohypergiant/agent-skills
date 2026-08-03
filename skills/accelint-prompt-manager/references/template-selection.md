@@ -631,7 +631,10 @@ Templates help optimize unclear prompts. Do not force structure onto a prompt th
 
 ## Loading Templates
 
-Templates live in `assets/prompt-templates/`. Load on explicit request or when optimization benefits from detailed structure:
+Follow this sequence when templates are relevant:
+1. Start with the template structure outline in this file.
+2. Decide whether the task maps clearly to one template.
+3. Load the full template only if the user explicitly requests it or the optimization needs detailed structure.
 
 **Explicit loading:**
 User: "Use the debugging template"
@@ -639,11 +642,7 @@ Action: Load `assets/prompt-templates/debugging.md`
 
 **Implicit loading:**
 User: "Help me debug this error"
-Action: Apply debugging template structure silently (don't load full file unless complex case needs detailed reference)
-
-**Progressive disclosure:**
-Start with template structure outline (in this file).
-Load full template only if detailed guidance needed.
+Action: Apply debugging template structure silently. Do not load the full template unless the complex case needs that detailed reference.
 
 ---
 

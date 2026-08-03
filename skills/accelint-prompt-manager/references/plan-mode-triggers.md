@@ -34,20 +34,20 @@ Five minutes of planning can prevent hours of rework.
 
 ---
 
-### 2. Many Sequential Phases
+### 2. Many Sequential Steps
 
-**Trigger:** >5 phases where each produces artifacts needed by next phase.
+**Trigger:** >5 steps where each produces artifacts needed by the next step.
 
 **Example:** "Migrate database from MySQL to PostgreSQL"
-- Phase 1: Audit schema differences
-- Phase 2: Write migration scripts
-- Phase 3: Set up dual-write system
-- Phase 4: Backfill data
-- Phase 5: Validate data integrity
-- Phase 6: Switch read traffic
-- Phase 7: Decommission MySQL
+- Step 1: Audit schema differences
+- Step 2: Write migration scripts
+- Step 3: Set up dual-write system
+- Step 4: Backfill data
+- Step 5: Validate data integrity
+- Step 6: Switch read traffic
+- Step 7: Decommission MySQL
 
-**Why plan mode:** Each phase depends on the previous phase. A wrong early approach cascades.
+**Why plan mode:** Each step depends on the previous step. A wrong early approach cascades.
 
 ---
 
@@ -211,13 +211,13 @@ If you recommend plan mode but user says "just proceed":
 
 **Template:**
 ```
-This task involves [X interdependent decisions and Y sequential phases].
+This task involves [X interdependent decisions and Y sequential steps].
 Plan mode will help design the approach before execution, preventing costly
 rework.
 
 Key complexity factors:
 - [Factor 1: e.g., "Choosing auth method affects scalability"]
-- [Factor 2: e.g., "7 sequential phases each depending on previous"]
+- [Factor 2: e.g., "7 sequential steps each depending on the previous step"]
 - [Factor 3: e.g., "High failure consequence—security implications"]
 
 Shall I enter plan mode to design the approach first?

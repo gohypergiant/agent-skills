@@ -4,7 +4,8 @@ Use this guide to turn vague prompts into optimized, actionable prompts. It high
 
 ## How to Use This Guide
 
-1. **Start with `SKILL.md`** — Run the 4-phase workflow for any prompt optimization.
+Follow this sequence:
+1. **Start with `SKILL.md`** — Run the 4-step workflow for any prompt optimization.
 2. **Use this guide for quick lookup** — Check patterns, frameworks, and techniques here first.
 3. **Load details on demand** — Read specific `references/` files only when needed.
 
@@ -54,7 +55,7 @@ Use this guide to turn vague prompts into optimized, actionable prompts. It high
 
 **Simple:** Single objective, <3 steps, no ambiguity → Execute directly
 **Moderate:** Some ambiguity, 3-5 steps, few dependencies → Proceed with monitoring
-**Complex:** >3 interdependent decisions OR >5 sequential phases → Recommend plan mode
+**Complex:** >3 interdependent decisions OR >5 sequential steps → Recommend plan mode
 
 → Full criteria: `references/complexity-detection.md`
 
@@ -62,7 +63,7 @@ Use this guide to turn vague prompts into optimized, actionable prompts. It high
 
 **Always recommend plan mode when:**
 - >3 interdependent decisions that affect each other
-- >5 sequential phases requiring coordination
+- >5 sequential steps requiring coordination
 - Significant ambiguity with cascading implications
 - User asks "how should I approach this?"
 
@@ -112,13 +113,13 @@ Use this guide to turn vague prompts into optimized, actionable prompts. It high
 ## Workflow Summary
 
 ```
-Phase 1: Intake & Assessment
+Step 1: Intake & Assessment
   ↓ Extract intent, calibrate skill level, detect complexity
-Phase 2: Pattern Detection
+Step 2: Pattern Detection
   ↓ Identify credit-killing patterns, ambiguities, trade-offs
-Phase 3: Framework Selection & Optimization
+Step 3: Framework Selection & Optimization
   ↓ Apply CO-STAR/RISEN/RODES silently, use safe techniques
-Phase 4: Validation & Handoff
+Step 4: Validation & Handoff
   ↓ Quality checks, flag remaining ambiguities, recommend execution mode
 ```
 

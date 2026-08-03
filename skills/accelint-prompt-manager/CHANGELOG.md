@@ -5,6 +5,17 @@ All notable changes to the accelint-prompt-manager skill will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.2] - 2026-08-03
+
+### Changed
+- **Serial-instruction terminology tightening** — replaced workflow uses of `Phase` with `Step` in serial guidance paths so ordered behavior is more explicit and consistent with the repo's serial-instruction rules
+  - Updated `SKILL.md`, `AGENTS.md`, `references/complexity-detection.md`, and `references/plan-mode-triggers.md`
+  - Kept the workflow order, gating behavior, and plan-mode thresholds unchanged
+  - Reworded `sequential phases` to `sequential steps` where the text described ordered execution rather than high-level staging
+
+### Version
+- Bumped from 2.4.1 → 2.4.2 (patch version: behavior-preserving prose tightening)
+
 ## [2.4.1] - 2026-07-31
 
 ### Changed
