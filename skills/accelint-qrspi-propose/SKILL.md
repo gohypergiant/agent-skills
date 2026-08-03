@@ -70,51 +70,87 @@ REQUIRED: The agent MUST pause and wait for explicit user approval at both check
 
 ## Implementation Steps
 
-Execute these steps in order without stopping between them:
+Execute this workflow in order. Do not stop between steps unless a step tells you to stop, wait, or return.
 
-1. **Validate user input**: Check if the user provided a ticket, feature request, or idea in their prompt (either as skill arguments or in their message). If the prompt is empty or contains only the skill invocation with no actual content:
-   ```
-   I need a ticket or feature description to plan. Please provide:
+### Step 0: Track progress
+Do this before any other work.
 
-   - A ticket ID and description (e.g., "ATI-123: Add user authentication...")
-   - A feature request ("I want to add dark mode support...")
-   - An idea or problem statement ("Users complain about slow search...")
+Create a progress checklist in your reply and update it after each completed step group.
+If a task-tracking tool is available, you MAY use it instead.
 
-   Then I'll use QRSPI to break it down into a structured plan.
-   ```
-   Exit the skill and wait for the user to provide input. Do NOT proceed with internal examples or placeholder content.
+- [ ] Steps 1-7: Validate input and OpenSpec configuration
+- [ ] Steps 8-16: Generate and answer research questions
+- [ ] Steps 17-31: Generate and review `design.md`, then capture frontmatter
+- [ ] Steps 32-45: Generate and review `tasks.md`
+- [ ] Steps 46-47: Announce completion and exit
 
-2. Tell the user: "Checking OpenSpec configuration..."
+### Step 1: Validate user input
+Check if the user provided a ticket, feature request, or idea in their prompt (either as skill arguments or in their message).
 
-3. Run `openspec config list` and parse the output
+If the prompt is empty or contains only the skill invocation with no actual content, tell the user:
+```
+I need a ticket or feature description to plan. Please provide:
 
-4. Check if the `workflows:` section contains all three required workflows: `explore`, `new`, and `continue`
+- A ticket ID and description (e.g., "ATI-123: Add user authentication...")
+- A feature request ("I want to add dark mode support...")
+- An idea or problem statement ("Users complain about slow search...")
 
-5. If any are missing:
-   ```
-   This skill requires the expanded OpenSpec workflows (explore, new, continue).
+Then I'll use QRSPI to break it down into a structured plan.
+```
 
-   Your current workflows: [list what's enabled]
-   Missing: [list what's missing]
+Done when:
+- You confirmed that the user supplied real planning input, or
+- You exited the skill and are waiting for the user to provide input.
 
-   To enable the expanded workflows, run:
+Do NOT proceed with internal examples or placeholder content.
 
-   openspec config profile
-   # Select "expanded" from the list
-   openspec update
+### Step 2: Announce the configuration check
+Tell the user: "Checking OpenSpec configuration..."
 
-   Then re-run this skill.
-   ```
+### Step 3: Read the current OpenSpec configuration
+Run `openspec config list` and parse the output.
 
-6. Exit the skill if required workflows are not enabled
+### Step 4: Check for the required workflows
+Check whether the `workflows:` section contains all three required workflows: `explore`, `new`, and `continue`.
 
-7. If validation passes and all workflows are present, continue to step 8
+### Step 5: Show the missing-workflows instructions when needed
+Requires: Step 4 is complete.
 
-8. **Generate research questions** (Context isolation: the agent sees ONLY the ticket, not prior codebase knowledge or research. This prevents solution-first thinking)
+If any required workflow is missing, show this exact guidance:
+```
+This skill requires the expanded OpenSpec workflows (explore, new, continue).
 
-9. Accept the ticket description from the user (passed as the skill argument or prompted if missing)
+Your current workflows: [list what's enabled]
+Missing: [list what's missing]
 
-10. Spawn a sub-agent with this exact prompt:
+To enable the expanded workflows, run:
+
+openspec config profile
+# Select "expanded" from the list
+openspec update
+
+Then re-run this skill.
+```
+
+### Step 6: Stop if the required workflows are not enabled
+Requires: Step 5 is complete when any required workflow is missing.
+
+If the required workflows are not enabled, exit the skill.
+
+### Step 7: Continue only after validation passes
+Requires: Steps 1-6 are complete.
+Done when: the user provided real planning input and all required workflows are present.
+
+Go to Step 8 only after validation passes.
+
+### Step 8: Start question generation
+Context isolation rule: the agent sees ONLY the ticket, not prior codebase knowledge or research. This prevents solution-first thinking.
+
+### Step 9: Accept the ticket description
+Accept the ticket description from the user (passed as the skill argument or prompted if missing).
+
+### Step 10: Spawn the Questions sub-agent
+Spawn a sub-agent with this exact prompt:
 
    ```
    /opsx:explore
@@ -127,13 +163,21 @@ Execute these steps in order without stopping between them:
    to know before building this. Do not propose any solutions. Questions only.
    ```
 
-11. Wait for the sub-agent to complete and return the questions
+### Step 11: Wait for the Questions sub-agent
+Wait for the sub-agent to complete and return the questions.
 
-12. Extract and store the questions — they will be passed to the next step
+Done when: you have the generated questions.
 
-13. **Answer research questions** (Context isolation: the agent answering questions should see ONLY the questions, not the original ticket. This is the core QRSPI insight — research is objective and ticket-agnostic)
+### Step 12: Store the generated questions
+Requires: Step 11 is complete.
 
-14. Spawn a NEW sub-agent (fresh context) with this exact prompt:
+Extract and store the questions. Later steps pass them forward.
+
+### Step 13: Start research answering
+Context isolation rule: the agent answering questions should see ONLY the questions, not the original ticket. This is the core QRSPI insight — research is objective and ticket-agnostic.
+
+### Step 14: Spawn the Research sub-agent
+Spawn a NEW sub-agent (fresh context) with this exact prompt:
 
    ```
    /opsx:explore
@@ -143,17 +187,27 @@ Execute these steps in order without stopping between them:
    Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
    ```
 
-15. Wait for the sub-agent to complete and return the research document
+### Step 15: Wait for the Research sub-agent
+Wait for the sub-agent to complete and return the research document.
 
-16. Store the research answers — they will inform the design step
+Done when: you have the research document.
 
-17. **Generate design scaffolding** (Context isolation: the ticket MUST NOT be in context during artifact generation. Spawn a sub-agent with only questions + research to prevent "completion bleed".)
+### Step 16: Store the research answers
+Requires: Step 15 is complete.
 
-18. Read `openspec/config.yaml` to extract the `rules.design` section
+Store the research answers. They inform the design step.
 
-19. Read `CLAUDE.md` or `AGENTS.md` to extract agent behavior context
+### Step 17: Start design scaffolding
+Context isolation rule: the ticket MUST NOT be in context during artifact generation. Spawn a sub-agent with only questions + research to prevent "completion bleed".
 
-20. Spawn a sub-agent with this exact prompt:
+### Step 18: Read the design rules
+Read `openspec/config.yaml` to extract the `rules.design` section.
+
+### Step 19: Read agent behavior context for design generation
+Read `CLAUDE.md` or `AGENTS.md` to extract agent behavior context.
+
+### Step 20: Spawn the Design sub-agent
+Spawn a sub-agent with this exact prompt:
 
    ```
    You are generating OpenSpec artifacts based on QRSPI research. You have access
@@ -199,24 +253,53 @@ Execute these steps in order without stopping between them:
    If you generate specs/* or tasks.md, you will bypass the mandatory design review.
    ```
 
-21. Wait for the sub-agent to complete
+### Step 21: Wait for the Design sub-agent
+Wait for the sub-agent to complete.
 
-22. Extract the change name/slug from the sub-agent output (look for "Change name:" or parse from the file path)
+Done when: the sub-agent reports completion.
 
-23. Store the change name — later steps use it
+### Step 22: Extract the change name
+Requires: Step 21 is complete.
 
-24. Verify the reported `design.md` path
+Extract the change name or slug from the sub-agent output. Look for "Change name:" or parse it from the file path.
 
-   - If the file is missing, stop and follow the missing-artifact handling in Error Handling.
-   - Do NOT proceed to the checkpoint with an assumed path.
+### Step 23: Store the change name
+Requires: Step 22 is complete.
 
-25. Go to the design review checkpoint next. Do NOT continue to later generation steps first.
+Store the change name. Later steps use it.
 
-26. **REQUIRED CHECKPOINT: Design Review** (This is the "brain surgery" moment from the QRSPI talk. A correction here costs minutes; the same correction after implementation costs a code review cycle. You MUST pause here and wait for user input. DO NOT proceed without explicit user approval.)
+### Step 24: Verify the reported `design.md` path
+Requires: Step 21 is complete.
 
-27. Read the generated `design.md` file
+Check whether the reported `design.md` path exists.
 
-28. Present it to the user with this framing:
+If the file is missing:
+- Stop.
+- Follow the missing-artifact handling in Error Handling.
+- Do NOT proceed to the checkpoint with an assumed path.
+
+Done when: `design.md` exists at the reported path.
+
+### Step 25: Route to the design review checkpoint
+Requires: Step 24 is complete.
+
+Go to the design review checkpoint next. Do NOT continue to later generation steps first.
+
+### Step 26: Pause for the design review checkpoint
+This is the "brain surgery" moment from the QRSPI talk. A correction here costs minutes; the same correction after implementation costs a code review cycle.
+
+You MUST pause here and wait for user input.
+Do NOT proceed without explicit user approval.
+
+### Step 27: Read the generated `design.md`
+Requires: Step 24 is complete.
+
+Read the generated `design.md` file.
+
+### Step 28: Present `design.md` for review
+Requires: Step 27 is complete.
+
+Present it to the user with this framing:
 
    ```
    Design artifact generated. Please review for:
@@ -232,19 +315,27 @@ Execute these steps in order without stopping between them:
    (c) Manual edit — edit the file yourself, then tell me when ready
    ```
 
-29. Wait for user input:
-   - **(a) Approve**: Go to step 30.
-   - **(b) Request edits**:
-     1. User describes changes.
-     2. Make edits to `design.md` in place.
-     3. Show the diff.
-     4. Return to step 28 for review.
-   - **(c) Manual edit**:
-     1. Wait for user confirmation that edits are complete.
-     2. Re-read `design.md`.
-     3. Go to step 30.
+### Step 29: Handle the design review response
+Requires: Step 28 is complete.
 
-30. **Capture specs_touched/decisions frontmatter.** Run this step only after step 29a or step 29c. Once the user has approved or confirmed manual edits are complete, `design.md` is in its final form for this planning pass. Capture its `specs_touched` and `decisions` as structured YAML frontmatter now, not any earlier, so an edit made during this same checkpoint cannot leave the frontmatter stale against content that changed after it was written.
+Wait for user input.
+
+- **Branch 29a — Approve**: Go to Step 30.
+- **Branch 29b — Request edits**:
+  1. User describes changes.
+  2. Make edits to `design.md` in place.
+  3. Show the diff.
+  4. Return to Step 28 for review.
+- **Branch 29c — Manual edit**:
+  1. Wait for user confirmation that edits are complete.
+  2. Re-read `design.md`.
+  3. Go to Step 30.
+
+### Step 30: Capture `specs_touched` and `decisions` frontmatter
+Requires: Branch 29a or Branch 29c is complete.
+Done when: the frontmatter is captured, or the user has been told what is missing and the workflow follows the Error Handling rule for this case.
+
+Run this step only after Step 29a or Step 29c. Once the user has approved or confirmed manual edits are complete, `design.md` is in its final form for this planning pass. Capture its `specs_touched` and `decisions` as structured YAML frontmatter now, not any earlier, so an edit made during this same checkpoint cannot leave the frontmatter stale against content that changed after it was written.
 
    - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (specs/tasks generation happens in steps 32-42), so there's nothing else to derive it from.
    - **`decisions`**: design.md's own decision content — the choices, rationale, and alternatives the design phase already worked through — restructured into a list of `{id, choice, rationale, alternatives}` entries. This is structuring content that's already there, not writing new design content.
@@ -268,20 +359,30 @@ Execute these steps in order without stopping between them:
    - If `specs_touched` or a clear decisions list can't be confidently read out of the approved design.md/proposal.md, don't guess at either — tell the user what's missing and ask them to add it to design.md directly. A design doc without a clear decisions trail is worth flagging on its own terms, and `accelint-qrspi-archive` needs this frontmatter later to do its cross-capability linking.
    - This frontmatter is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, not part of the design content `/opsx:continue` generates — writing it here doesn't fall under the "never generate artifacts yourself" rule (see NEVER Do This). Nothing in proposal.md's or design.md's actual content gets created or altered by this step; only the frontmatter block does.
 
-31. If the user does not explicitly approve, do NOT move forward.
+### Step 31: Enforce explicit design approval
+Requires: Step 29 is complete.
 
-   - Accepted approval examples include: "looks good", "approve", and "continue".
-   - This checkpoint is required. Skipping it bypasses the core value of QRSPI methodology.
+If the user does not explicitly approve, do NOT move forward.
 
-32. **Generate specs and tasks** (Context isolation: continue to keep the ticket out of context. Spawn a sub-agent with questions + research + approved `design.md`.)
+Accepted approval examples include: "looks good", "approve", and "continue".
+This checkpoint is required. Skipping it bypasses the core value of QRSPI methodology.
 
-33. Read the (possibly user-edited) design.md file from step 30
+### Step 32: Start specs and tasks generation
+Requires: Steps 30 and 31 are complete.
 
-34. Read `openspec/config.yaml` to extract the `rules.spec` and `rules.tasks` sections
+Context isolation rule: continue to keep the ticket out of context. Spawn a sub-agent with questions + research + approved `design.md`.
 
-35. Read `CLAUDE.md` or `AGENTS.md` for agent behavior context
+### Step 33: Read the approved `design.md`
+Read the possibly user-edited `design.md` file from Step 30.
 
-36. Spawn a sub-agent with this exact prompt:
+### Step 34: Read the spec and task rules
+Read `openspec/config.yaml` to extract the `rules.spec` and `rules.tasks` sections.
+
+### Step 35: Read agent behavior context for specs/tasks generation
+Read `CLAUDE.md` or `AGENTS.md` for agent behavior context.
+
+### Step 36: Spawn the Specs/Tasks sub-agent
+Spawn a sub-agent with this exact prompt:
 
    ```
    You are generating OpenSpec specs and tasks based on QRSPI research and an
@@ -326,16 +427,26 @@ Execute these steps in order without stopping between them:
    After tasks.md is generated, report completion and the path to the tasks file.
    ```
 
-37. Wait for the sub-agent to complete
+### Step 37: Wait for the Specs/Tasks sub-agent
+Wait for the sub-agent to complete.
 
-38. Verify the reported artifact paths
+Done when: the sub-agent reports completion.
 
-   - Confirm that `specs/*` and `tasks.md` exist at the reported paths.
-   - If any expected file is missing, stop and follow the missing-artifact handling in Error Handling before reading or editing anything.
+### Step 38: Verify the reported artifact paths
+Requires: Step 37 is complete.
 
-39. Read the generated `tasks.md` file
+Confirm that `specs/*` and `tasks.md` exist at the reported paths.
+If any expected file is missing, stop and follow the missing-artifact handling in Error Handling before reading or editing anything.
 
-40. Validate the vertical slicing structure:
+Done when: all expected generated artifacts exist.
+
+### Step 39: Read the generated `tasks.md`
+Requires: Step 38 is complete.
+
+Read the generated `tasks.md` file.
+
+### Step 40: Validate the vertical slicing structure
+Requires: Step 39 is complete.
 
    **VERTICAL SLICING (required for qrspi-apply)**:
 
@@ -378,41 +489,48 @@ Execute these steps in order without stopping between them:
    - Size: Prefer 3-5 major slices; more than 5 suggests scope is too large
    - Duration: Max 2 hours per subtask; break larger work into smaller subtasks
 
-41. If horizontal or mixed slicing is detected, **automatically convert it to vertical slices**.
+### Step 41: Convert horizontal or mixed slicing when needed
+Requires: Step 40 is complete.
 
-   REQUIRED: The `qrspi-apply` skill requires vertical slicing. If `/opsx:continue` generated horizontal slices, you MUST restructure them before presenting them to the user.
+If horizontal or mixed slicing is detected, automatically convert it to vertical slices.
 
-   Do this in order:
+The `qrspi-apply` skill requires vertical slicing. If `/opsx:continue` generated horizontal slices, you MUST restructure them before presenting them to the user.
 
-   1. **Identify end-to-end feature paths**: Look for the smallest complete user-facing feature that touches all relevant architectural layers. For example:
-      - Instead of: "Slice 1: All API changes" + "Slice 2: All CLI changes"
-      - Convert to: "Slice 1: CLI help command (CLI + API)" + "Slice 2: CLI list command (CLI + API)"
+Do this in order:
 
-   2. **Restructure each slice** with these required elements:
-      - **Deliverable:** - A working, demonstrable feature (not just "API endpoint exists")
-      - **Test:** - Explicit verification showing the end-to-end path works
-      - **Subtasks in markdown checklist format**: Each subtask MUST use `- [ ] instruction` format
-      - Subtasks that cross layers (e.g., "- [ ] Update API handler" + "- [ ] Wire CLI command" + "- [ ] Add help text")
+1. **Identify end-to-end feature paths**: Look for the smallest complete user-facing feature that touches all relevant architectural layers. For example:
+   - Instead of: "Slice 1: All API changes" + "Slice 2: All CLI changes"
+   - Convert to: "Slice 1: CLI help command (CLI + API)" + "Slice 2: CLI list command (CLI + API)"
 
-      CRITICAL: Preserve the markdown checklist format (`- [ ] ...`) for all subtasks.
-      Do NOT use numbered lists (1. 2. 3.) or plain bullets (- without [ ]).
-      The qrspi-apply skill depends on this format to track task completion.
+2. **Restructure each slice** with these required elements:
+   - **Deliverable:** - A working, demonstrable feature (not just "API endpoint exists")
+   - **Test:** - Explicit verification showing the end-to-end path works
+   - **Subtasks in markdown checklist format**: Each subtask MUST use `- [ ] instruction` format
+   - Subtasks that cross layers (e.g., "- [ ] Update API handler" + "- [ ] Wire CLI command" + "- [ ] Add help text")
 
-   3. **Preserve parallelization opportunities**: Structure slices to be independent.
-      - Good: "Slice 1: auth flow" and "Slice 2: data export flow" are independent
-      - Bad: "Slice 1: database schema" must complete before "Slice 2: service layer"
+   CRITICAL: Preserve the markdown checklist format (`- [ ] ...`) for all subtasks.
+   Do NOT use numbered lists (1. 2. 3.) or plain bullets (- without [ ]).
+   The qrspi-apply skill depends on this format to track task completion.
 
-   4. **Update Parallelization Strategy (if it exists)**: If `tasks.md` already has a `## Parallelization Strategy` section, revise it to reflect the new slice structure.
+3. **Preserve parallelization opportunities**: Structure slices to be independent.
+   - Good: "Slice 1: auth flow" and "Slice 2: data export flow" are independent
+   - Bad: "Slice 1: database schema" must complete before "Slice 2: service layer"
 
-      - Update which slices can run in parallel.
-      - Update which slices have dependencies.
-      - If the section does not exist, add it in step 42.
+4. **Update Parallelization Strategy (if it exists)**: If `tasks.md` already has a `## Parallelization Strategy` section, revise it to reflect the new slice structure.
+   - Update which slices can run in parallel.
+   - Update which slices have dependencies.
+   - If the section does not exist, add it in Step 42.
 
-   5. **Write changes to `tasks.md`**: Edit the file in place using the Edit tool.
+5. **Write changes to `tasks.md`**: Edit the file in place using the Edit tool.
 
-   6. **Show diff to user**: Display what changed and explain why (for example, "Converted from layer-based to feature-based slices for better parallelization").
+6. **Show diff to user**: Display what changed and explain why (for example, "Converted from layer-based to feature-based slices for better parallelization").
 
-42. **REQUIRED: Check for and add Parallelization Strategy section**:
+Done when:
+- Vertical slicing already passed validation, or
+- The converted `tasks.md` is saved and ready for review.
+
+### Step 42: Check for and add `## Parallelization Strategy`
+Requires: Step 40 is complete.
 
    After vertical slicing is validated or corrected, check whether tasks.md contains a `## Parallelization Strategy` section.
 
@@ -453,7 +571,10 @@ Execute these steps in order without stopping between them:
    (step 41d), verify it accurately reflects the new vertical slice structure and
    update if needed.
 
-43. **REQUIRED CHECKPOINT: Tasks Review** - Present `tasks.md` to the user for final approval:
+### Step 43: Pause for the tasks review checkpoint
+Requires: Steps 41 and 42 are complete.
+
+Present `tasks.md` to the user for final approval:
 
    ```
    Specs and tasks generated.
@@ -471,22 +592,33 @@ Execute these steps in order without stopping between them:
    (c) Manual edit — edit tasks.md yourself, then confirm
    ```
 
-44. Handle user input with the same branch structure as step 29:
+### Step 44: Handle the tasks review response
+Requires: Step 43 is complete.
 
-   - **(a) Approve**: Go to step 46.
-   - **(b) Request changes**:
-     1. User describes changes.
-     2. Edit `tasks.md` in place.
-     3. Show the diff.
-     4. Return to step 43 for review.
-   - **(c) Manual edit**:
-     1. Wait for user confirmation that edits are complete.
-     2. Re-read `tasks.md`.
-     3. Return to step 43 for review unless the user also explicitly approves.
+Handle user input with the same branch structure as Step 29:
 
-45. REQUIRED: Wait for the user to explicitly approve the `tasks.md` structure. If the user does not respond or the conversation ends, stop here. Do NOT auto-proceed to completion.
+- **Branch 44a — Approve**: Go to Step 46.
+- **Branch 44b — Request changes**:
+  1. User describes changes.
+  2. Edit `tasks.md` in place.
+  3. Show the diff.
+  4. Return to Step 43 for review.
+- **Branch 44c — Manual edit**:
+  1. Wait for user confirmation that edits are complete.
+  2. Re-read `tasks.md`.
+  3. Return to Step 43 for review unless the user also explicitly approves.
 
-46. **Completion** - After tasks.md is approved, announce completion:
+### Step 45: Enforce explicit tasks approval
+Requires: Step 44 is complete.
+
+Wait for the user to explicitly approve the `tasks.md` structure.
+If the user does not respond or the conversation ends, stop here.
+Do NOT auto-proceed to completion.
+
+### Step 46: Announce completion
+Requires: Branch 44a is complete.
+
+After `tasks.md` is approved, announce completion:
 
    ```
    ✅ QRSPI planning phase complete.
@@ -508,7 +640,10 @@ Execute these steps in order without stopping between them:
    maintains proper context management.
    ```
 
-47. Exit the skill — do NOT automatically invoke `/accelint-qrspi-apply`
+### Step 47: Exit the skill
+Requires: Step 46 is complete.
+
+Exit the skill. Do NOT automatically invoke `/accelint-qrspi-apply`.
 
 ## Key Principles
 
