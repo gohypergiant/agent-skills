@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, polishing, or
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.10"
+  version: "0.7.12"
 ---
 
 # Skill Prose
@@ -107,11 +107,16 @@ When goals conflict, use this order:
 
 ## Operating controls
 
-Choose two controls before you edit:
+Choose two controls before you edit.
+Do them in order.
 
-1. **Output mode** — what you will deliver.
-2. **Rewrite mode** — how far you may reshape the prose.
+### Step 1: Choose the output mode
+This controls what you will deliver.
 
+### Step 2: Choose the rewrite mode
+This controls how far you may reshape the prose.
+
+Do not reverse these steps.
 Keep them separate. Output mode controls the deliverable. Rewrite mode controls the rewrite scope.
 
 ### Output mode
@@ -182,7 +187,8 @@ Use these lenses when they match the text:
 
 ## Before you edit
 
-### 1. Extract what must stay fixed
+### Step 1: Extract what must stay fixed
+Do this before you tighten, reorder, or relabel anything.
 
 First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
 
@@ -199,7 +205,8 @@ Look for:
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
 
-### 2. Define the artifact set when the task covers a skill folder
+### Step 2: Define the artifact set when the task covers a skill folder
+Requires: Step 1 is complete.
 
 Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Add other linked instruction files only when they complete the contract.
 
@@ -209,12 +216,35 @@ Do not assume the visible excerpt is the full contract.
 
 If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
 
+## Serial-order detection and handling
+
+Treat sequence as behavior when the text tells the agent or reader to do one thing before another.
+
+Detect and strengthen these cases:
+- **explicit serial instructions** — numbered steps, `Step 1`, `first/next/then/finally`, `before/after/until`, `requires`, `done when`, `return to`, `do not proceed until`
+- **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, or a paragraph mixes discovery, decision, rewrite, and verification
+- **sequencing cues in skill files** — choose output mode before rewrite mode, define the artifact set before cross-file edits, load references before citing them, run self-check before delivery, ask first before edits that need approval
+- **sequencing cues in general prose** — procedural paragraphs, approval notes, policy instructions, workflow warnings, and bullets that are really ordered tasks
+
+When order matters:
+- make the order explicit
+- use a numbered list for 2 to 3 short ordered steps
+- use `### Step 0` plus a checklist, then `### Step N: Name`, for 4 or more ordered steps
+- add `Requires:` when a step depends on an earlier step
+- add `Done when:` when later work depends on a successful check
+- add a named failure route when a later step must wait for a passing check
+- split `do X and then Y` into separate steps when compliance would be safer
+- put conditions before actions when that makes timing clearer
+- replace emphasis-only warnings with enforceable gates when a later action depends on an earlier check
+- never leave ordered work in plain bullets
+
+Load `references/serial-instruction-guidance.md` before you edit workflow-bearing prose whose order, approval timing, validation loop, branch logic, or reference-loading sequence matters. Keep `SKILL.md` operational. Use the reference for the detailed detection pass, structure rules, and edge cases.
+
 ## Rewrite method
 
 Use this method whenever you rewrite behavior-defining prose.
 
-### 1. Lead with the operational point
-
+### Step 1: Lead with the operational point
 Start with the rule, action, boundary, or decision the reader must understand.
 
 - In descriptions, surface the scope logic early.
@@ -224,13 +254,15 @@ Start with the rule, action, boundary, or decision the reader must understand.
 
 Do not add a preamble when the instruction works better without one.
 
-### 2. Keep one term for one concept
+### Step 2: Keep one term for one concept
+Requires: Step 1 is complete.
 
 Pick one term for each repeated behavior-bearing concept and keep it stable.
 
 Do not rotate synonyms for style if those synonyms could suggest different scope, timing, or force.
 
-### 3. Match the sentence shape to the job
+### Step 3: Match the sentence shape to the job
+Requires: Steps 1 and 2 are complete.
 
 Choose the clearest accurate sentence shape for the artifact.
 
@@ -240,29 +272,34 @@ Choose the clearest accurate sentence shape for the artifact.
 - **Rationale** — explain why the rule exists without burying the rule itself.
 - **Examples** — keep only examples that anchor scope, edge cases, or expected behavior.
 
-### 4. Separate instruction from explanation when it helps
+### Step 4: Separate instruction from explanation when it helps
+Requires: Steps 1 to 3 are complete.
 
 Procedural text tells the agent what to do. Descriptive text explains what something means, why a rule exists, or when a rule applies.
 
 Separate them when that makes behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
 
-### 5. Put conditions before commands when that clarifies the logic
+### Step 5: Put conditions before commands when that clarifies the logic
+Requires: Steps 1 to 4 are complete.
 
 If a rule depends on a condition, put the condition first when doing so makes the logic easier to follow and does not change timing or emphasis.
 
-### 6. Preserve exact obligation strength
+### Step 6: Preserve exact obligation strength
+Requires: Steps 1 to 5 are complete.
 
 Keep requirement, recommendation, permission, and prohibition at the same level.
 
 Use RFC 2119 terms when they genuinely clarify normative force. Do not normalize severity labels mechanically or just to sound more formal.
 
-### 7. Keep the action path easy to scan
+### Step 7: Keep the action path easy to scan
+Requires: Steps 1 to 6 are complete.
 
 Use short paragraphs, clean lists, and bounded sentences when they make the behavior easier to audit.
 
 Do not reshape source text just to make it feel lighter. Scanability helps only when it preserves the same behavior.
 
-### 8. Use the smallest structure that makes the rule clear
+### Step 8: Use the smallest structure that makes the rule clear
+Requires: Steps 1 to 7 are complete.
 
 Do not over-edit. Improve the prose enough to make the intended behavior easier to follow and harder to misread.
 
@@ -437,6 +474,7 @@ Treat local sentence-structure quality as part of the decision, not as a cosmeti
 
 Load references only when needed:
 
+- `references/serial-instruction-guidance.md` — explicit and implied step order, approval timing, validation loops, branching, and when workflow prose must become stronger ordered steps
 - `references/checklist.md` — final pass before delivery, output-mode compliance, no-rewrite decisions, and cross-file consistency checks
 - `references/frontmatter-descriptions.md` — description tightening, trigger-family preservation, and trigger-scope safety
 - `references/workflow-guardrails.md` — workflow, approval, rationale, verb-sensitivity, and exact-reference preservation
@@ -464,7 +502,27 @@ If the task is audit-only, also ask: did I accidentally draft replacement wordin
 
 ## Required self-check before delivery
 
+### Step 0: Track progress
+Do this before any other work when the verification workflow has 4 or more real actions.
+Create a short checklist in your working state or reply and update it after each step.
+
+- [ ] Step 1: Re-read the trigger or scope language
+- [ ] Step 2: Check for accidental synonym drift
+- [ ] Step 3: Check obligation and severity terms
+- [ ] Step 4: Check referents
+- [ ] Step 5: Re-check exact tokens and behavior-bearing verbs
+- [ ] Step 6: Confirm artifact-set discovery
+- [ ] Step 7: Confirm folder-level coverage
+- [ ] Step 8: Confirm local-tightening sweep status
+- [ ] Step 9: Confirm unchanged-file classification if needed
+- [ ] Step 10: Confirm incomplete-discovery disclosure if needed
+- [ ] Step 11: Confirm rationale preservation
+- [ ] Step 12: Confirm structural-behavior equivalence
+- [ ] Step 13: Confirm ordered behavior is still visible
+- [ ] Step 14: Confirm audit-only output stayed findings-only
+
 This step is not optional.
+Do not deliver before this check is complete.
 
 1. Re-read the trigger or scope language. Would it still route the same requests?
 2. Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
@@ -478,7 +536,8 @@ This step is not optional.
 10. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
 11. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
 12. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
-13. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
+13. If the text contains explicit or implied ordered instructions, confirm that the order, gates, branch destinations, and return paths are still visible as ordered behavior.
+14. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
 
 ## Limits
 

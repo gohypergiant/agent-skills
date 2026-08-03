@@ -4,7 +4,7 @@ description: Use when the user wants prose rewritten, tightened, audited, simpli
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.4"
+  version: "1.3.6"
 ---
 
 # English Manager
@@ -35,8 +35,7 @@ These outrank style preferences.
 
 Choose the smallest fitting path before you edit.
 
-### 1. Ask for the mode first
-
+### Step 1: Ask for the mode first
 For drafting or rewriting tasks, ask the user which mode they want before you edit, unless the user already specified the mode explicitly.
 
 Offer these choices:
@@ -45,9 +44,12 @@ Offer these choices:
 
 If the user did not choose a mode, ask a short clarifying question instead of assuming.
 
-For audit-only requests, you may proceed without asking for a mode if the user clearly wants review rather than a rewrite. If the audit later expands into a rewrite, ask for the mode before rewriting.
+For audit-only requests, you may proceed without asking for a mode if the user clearly wants review rather than a rewrite.
+Do not rewrite until the mode is known.
+If the audit later expands into a rewrite, ask for the mode before rewriting.
 
-### 2. Choose the output mode
+### Step 2: Choose the output mode
+Do this after Step 1.
 
 - **Audit only** — review the text without rewriting it unless the user asks.
 - **Rewrite only** — return cleaner final text directly.
@@ -55,7 +57,8 @@ For audit-only requests, you may proceed without asking for a mode if the user c
 
 If the user asks for only the rewrite, return only the rewrite. Do not return audit notes unless the user asked for them.
 
-### 3. Preserve the constraints
+### Step 3: Preserve the constraints
+Do this before you rewrite or restructure anything.
 
 Extract and protect these first:
 - meaning
@@ -67,7 +70,8 @@ Extract and protect these first:
 
 If a style rule conflicts with an explicit user constraint, the constraint wins.
 
-### 4. Choose the scope through the mode
+### Step 4: Choose the scope through the mode
+Requires: Steps 1 to 3 are complete.
 
 Let the mode set your default rewrite scope.
 
@@ -154,6 +158,30 @@ If the user asks for strict STE-style review:
 
 If the user asks for "plain English," "simple English," "clean this up," or a similar generic cleanup request without naming a mode, treat that as a plain-language goal, not as implicit `mode=strict`.
 
+## Serial-order detection and handling
+
+Treat sequence as behavior when the text tells the reader or agent to do one thing before another.
+
+Detect and strengthen these cases:
+- **explicit serial instructions** — numbered steps, `first/next/then/finally`, `before/after/until`, `requires`, `depends on`, `done when`, `return to`
+- **implied step ordering** — one sentence hides multiple actions, one action depends on the output of another, or a warning implies a missing gate
+- **sequencing cues in skill files** — ask-for-mode first, choose output mode before delivery, preserve constraints before rewriting, load rule references before citing them, run self-check before delivery
+- **sequencing cues in general prose** — procedures, operational notes, support steps, onboarding text, prompts, and any paragraph where setup, action, validation, and delivery are mixed together
+
+When order matters:
+- make the sequence explicit
+- use a numbered list for 2 to 3 short ordered steps
+- use `### Step 0` plus a checklist, then `### Step N: Name`, for 4 or more ordered steps
+- add `Requires:` when a step depends on an earlier step
+- add `Done when:` when later work depends on a successful check
+- add a named failure route when a later step must wait for a passing check
+- split `do X and then Y` into separate steps when that improves compliance
+- put conditions before actions when that makes timing clearer
+- replace emphasis-only warnings with enforceable gates when a later action depends on an earlier check
+- never leave ordered work in plain bullets
+
+Load `references/serial-instruction-guidance.md` before you rewrite or audit any text with real workflow order, gating, branching, or validation loops. Keep `SKILL.md` operational. Use the reference for deeper detection logic, structure rules, and edge cases.
+
 ## Output rules
 
 ### Audit only
@@ -180,6 +208,7 @@ Give the findings first, then the rewrite.
 
 Load references only when they materially help.
 
+- `references/serial-instruction-guidance.md` — ordered instructions, implied sequencing, gating, branching, validation loops, and when a paragraph should become explicit steps
 - `references/substitutions.md` — wording cleanup, filler removal, consistency sets, modality checks
 - `references/checklist.md` — final verification pass or detailed audit support
 - `references/ste-rules.md` — technical, procedural, instructional, or explicit STE requests; also for `mode=strict`
@@ -192,32 +221,93 @@ Load references only when they materially help.
 
 ### For drafting from scratch
 
-1. Ask the user which mode they want, unless they already specified it.
-2. Choose the output mode.
-3. Extract the constraints.
-4. Apply `mode=default` or `mode=strict`, and let that set the default scope.
-5. Draft in direct English.
-6. Keep repeated terms stable.
-7. If the reader must act, make the action path easy to scan.
-8. Run the self-check before delivery.
+### Step 1: Ask for the mode
+Do this first unless the user already specified the mode.
+
+### Step 2: Choose the output mode
+Do this after Step 1.
+
+### Step 3: Extract the constraints
+Do this before you draft.
+
+### Step 4: Apply the mode
+Let `mode=default` or `mode=strict` set the default scope.
+
+### Step 5: Draft in direct English
+
+### Step 6: Keep repeated terms stable
+
+### Step 7: Make the action path easy to scan
+Do this when the reader must act.
+If the text contains ordered actions, load `references/serial-instruction-guidance.md` and make the order explicit.
+
+### Step 8: Run the self-check before delivery
+Do not deliver before Step 8 is complete.
 
 ### For revising existing text
 
-1. Ask the user which mode they want, unless they already specified it.
-2. Preserve the user's meaning and constraints.
-3. Apply `mode=default` or `mode=strict`, and let that set the default scope.
-4. Tighten the wording with the smallest change that fixes the problem.
-5. Remove filler, stale phrasing, and avoidable abstraction.
-6. Split overloaded sentences or restructure only when substitution alone will not work.
-7. Recheck pronouns, modality, and untouchables.
-8. Run the self-check before delivery.
+### Step 0: Track progress
+Do this before any other work when the rewrite workflow has 4 or more real actions.
+Create a short checklist in your working state or reply and update it after each step.
+
+- [ ] Step 1: Ask for the mode
+- [ ] Step 2: Preserve the user's meaning and constraints
+- [ ] Step 3: Apply the mode
+- [ ] Step 4: Tighten the wording with the smallest safe change
+- [ ] Step 5: Remove filler, stale phrasing, and avoidable abstraction
+- [ ] Step 6: Split overloaded sentences or restructure only when substitution alone will not work
+- [ ] Step 7: Recheck pronouns, modality, and untouchables
+- [ ] Step 8: Run the self-check before delivery
+
+### Step 1: Ask for the mode
+Do this first unless the user already specified the mode.
+Done when: the rewrite mode is explicit, or the request is truly audit-only.
+
+### Step 2: Preserve the user's meaning and constraints
+Requires: Step 1 is complete.
+Do this before any rewrite.
+Done when: meaning, audience, tone, format, and untouchables are identified.
+
+### Step 3: Apply the mode
+Requires: Steps 1 and 2 are complete.
+Let `mode=default` or `mode=strict` set the default scope.
+Done when: the allowed rewrite scope is clear.
+
+### Step 4: Tighten the wording with the smallest safe change
+Requires: Steps 1 to 3 are complete.
+
+### Step 5: Remove filler, stale phrasing, and avoidable abstraction
+Requires: Step 4 is complete.
+
+### Step 6: Split overloaded sentences or restructure only when substitution alone will not work
+Requires: Steps 4 and 5 are complete.
+If the source hides sequence, gates, or branch logic, load `references/serial-instruction-guidance.md` and rewrite the sequence explicitly.
+If sequence checks fail, return to Step 4.
+
+### Step 7: Recheck pronouns, modality, and untouchables
+Requires: Steps 4 to 6 are complete.
+Done when: referents are clear and obligation strength still matches the source.
+
+### Step 8: Run the self-check before delivery
+Requires: Steps 1 to 7 are complete.
+Do not deliver before Step 8 is complete.
+If the self-check fails, return to the earliest affected step.
 
 ### For checking text instead of rewriting it
 
-1. Identify the highest-risk issues first.
-2. Keep the review proportional to the request.
-3. Use a stricter, rule-based audit format only when the user asks for it or the text is high-consequence.
-4. If the user asked for STE checking, load only the relevant part of `references/ste-rules.md` that you need and do not invent rule numbers.
+### Step 1: Identify the highest-risk issues first
+Put meaning drift, ambiguity, hidden actions, obligation drift, and weak sequencing first.
+
+### Step 2: Keep the review proportional to the request
+
+### Step 3: Use a stricter, rule-based audit format only when the user asks for it or the text is high-consequence
+
+### Step 4: Load the right references before citing them
+If the user asked for STE checking, load only the relevant part of `references/ste-rules.md` that you need and do not invent rule numbers.
+If the text contains ordered actions or weak sequencing cues, load `references/serial-instruction-guidance.md` before you judge whether the sequence is clear enough.
+
+### Step 5: Run the self-check before delivery
+Do not deliver before Step 5 is complete.
 
 ## Conflict resolution
 
@@ -242,8 +332,10 @@ Before you deliver, confirm:
 2. Key terms stayed stable.
 3. Obligation, permission, capability, and uncertainty did not drift.
 4. Untouchables stayed exact.
-5. The final answer matches the requested output mode.
-6. The final answer matches the requested rewrite mode.
+5. Any explicit or implied ordered instructions are still visible as ordered instructions.
+6. Any required gate, dependency, or validation step still blocks the later step clearly.
+7. The final answer matches the requested output mode.
+8. The final answer matches the requested rewrite mode.
 
 For a deeper mechanical pass, load `references/checklist.md`.
 

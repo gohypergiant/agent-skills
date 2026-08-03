@@ -4,6 +4,20 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
+## [1.3.6] - 2026-08-03
+
+### Changed
+- Tightened the serial-instruction guidance in `SKILL.md` to align more closely with the house standard: numbered lists for 2 to 3 short steps, `Step 0` plus a checklist for 4 or more steps, explicit `Requires:` and `Done when:` guidance, and a stronger prohibition against plain bullets for ordered work.
+- Upgraded the revision workflow in `SKILL.md` to model `Step 0` progress tracking, clearer dependencies, done conditions, and explicit loop-back behavior when sequencing checks fail.
+- Tightened `references/serial-instruction-guidance.md` so `Step 0` is the default for 4 or more ordered steps and the prohibition on plain bullets is stated more absolutely.
+
+## [1.3.5] - 2026-08-03
+
+### Changed
+- Reworked `SKILL.md` so the main operating flow uses explicit step ordering, stronger sequencing language, and clearer gates around mode selection, rewriting, auditing, and pre-delivery checks.
+- Added a dedicated serial-instruction section to `SKILL.md` so explicit and implied ordered actions are detected and strengthened instead of left in soft paragraph form.
+- Added `references/serial-instruction-guidance.md` for progressive disclosure of sequencing heuristics, structure rules, branching guidance, and delivery checks for ordered prose.
+
 ## [1.3.4] - 2026-07-31
 
 ### Changed

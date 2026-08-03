@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.12] - 2026-08-03
+
+### Changed
+- Tightened the serial-order rules in `SKILL.md` to align more closely with the house standard: numbered lists for 2 to 3 short steps, `Step 0` plus a checklist for 4 or more steps, stronger `Requires:` and `Done when:` expectations, and a harder rule against plain bullets for ordered work.
+- Added explicit `Step 0` progress tracking to the required self-check workflow so long verification sequences have visible state and better skip observability.
+- Tightened `references/serial-instruction-guidance.md` so `Step 0` is the default for 4 or more ordered steps and the plain-bullets rule is stated as a hard prohibition.
+
+### Version
+- Patch release at `0.7.12`.
+
+## [0.7.11] - 2026-08-03
+
+### Changed
+- Reworked `SKILL.md` to express key operating flows as explicit ordered steps with stronger dependency and gating language around output-mode selection, artifact discovery, rewrite sequencing, and pre-delivery checks.
+- Added a dedicated serial-order section to `SKILL.md` so explicit and implied sequencing cues in skills, prompts, and general prose are detected and strengthened instead of left as soft paragraph logic.
+- Added `references/serial-instruction-guidance.md` for progressive disclosure of sequencing detection, preferred structures, branch handling, and audit questions for workflow-bearing prose.
+
+### Version
+- Patch release at `0.7.11`.
+
 ## [0.7.10] - 2026-07-31
 
 ### Fixed
