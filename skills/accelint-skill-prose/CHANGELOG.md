@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0] - 2026-08-04
+
+### Changed
+- Updated `SKILL.md` to classify workflow prose into action, gate, readiness check, stage note, branch handler, and landmark checkpoint before restructuring, reducing the risk of pseudo-step inflation during strict rewrites.
+- Added stage-aware rewrite guidance to `SKILL.md`, including when to prefer `## Stage:` containers, when to preserve landmark checkpoint numbers, and when a workflow rewrite must be surfaced as structural instead of local cleanup.
+- Expanded the decision tests and required self-check in `SKILL.md` to catch filler numbering, buried first actions, duplicated stage rules, and unannounced structural changes.
+- Updated `references/serial-instruction-guidance.md` with stronger rules for multi-stage workflows, transition-step qualification, landmark-preservation tradeoffs, and post-rewrite audit questions for pseudo-step inflation.
+- Updated `references/checklist.md` so workflow-safety and output-mode checks explicitly catch stage-note promotion, numbering placeholders, and structural rewrites presented as local cleanup.
+
+### Version
+- Minor release at `0.8.0`.
+
 ## [0.7.13] - 2026-08-03
 
 ### Changed

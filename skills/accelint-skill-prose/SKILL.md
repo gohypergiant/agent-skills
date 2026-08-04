@@ -1,10 +1,10 @@
 ---
 name: accelint-skill-prose
-description: Use when creating, auditing, tightening, simplifying, polishing, or reviewing SKILL.md files, agent-skill instructions, CLAUDE.md or AGENTS.md style guidance, or other behavior-defining prompt artifacts where wording controls trigger coverage, workflow order, guardrails, approval semantics, or exact technical meaning. Prefer this skill over general prose editing when the job is to make wording clearer without changing behavior, including safe description rewrites, ambiguity audits, and edits that must preserve exact paths, commands, fields, or identifiers. Do not use when the main task is broader content strategy, policy design, domain review, or ordinary prose cleanup with no behavior risk.
+description: Use when creating, auditing, tightening, simplifying, polishing, or reviewing `SKILL.md` files, agent-skill instructions, `CLAUDE.md` or `AGENTS.md` guidance, or other behavior-defining prompt artifacts whose wording controls trigger coverage, workflow order, guardrails, approval semantics, or exact technical meaning. Prefer this skill over general prose editing when the job is to make wording clearer without changing behavior, including safe description rewrites, ambiguity audits, and edits that must preserve exact paths, commands, fields, or identifiers. Do not use it when the main task is broader content strategy, policy design, domain review, or ordinary prose cleanup with no behavior risk.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.13"
+  version: "0.8.0"
 ---
 
 # Skill Prose
@@ -107,14 +107,11 @@ When goals conflict, use this order:
 
 ## Operating controls
 
-Choose two controls before you edit.
+Choose these controls before you edit.
 Do them in order.
 
-### Step 1: Choose the output mode
-This controls what you will deliver.
-
-### Step 2: Choose the rewrite mode
-This controls how far you may reshape the prose.
+1. Choose the output mode. This controls what you will deliver.
+2. Choose the rewrite mode. This controls how far you may reshape the prose.
 
 Do not reverse these steps.
 Keep them separate. Output mode controls the deliverable. Rewrite mode controls the rewrite scope.
@@ -174,7 +171,7 @@ Behavior:
 - preserve behavior, but allow structural rewrite when the structure itself causes ambiguity
 - separate instructions, rationale, warnings, and examples when that improves control
 - normalize terminology and obligation language more deliberately across the edited artifact set
-- reorganize only as far as needed to make trigger scope, workflow order, and guardrail force easier to follow
+- reorganize only as far as needed to make trigger scope, workflow order, and guardrail strength easier to follow
 
 Strict mode is not permission to broaden scope casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asked for a broader rewrite.
 
@@ -190,7 +187,7 @@ Use these lenses when they match the text:
 ### Step 1: Extract what must stay fixed
 Do this before you tighten, reorder, or relabel anything.
 
-First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
+First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, field / key / property, and workflow-role terms such as stage / step / gate / checkpoint / branch / readiness check.
 
 Look for:
 
@@ -216,9 +213,21 @@ Do not assume the visible excerpt is the full contract.
 
 If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
 
+Done when: You can name the files that complete the behavior contract, or you have disclosed that the crawl is incomplete.
+
 ## Serial-order detection and handling
 
 Treat sequence as behavior when the text tells the agent or reader to do one thing before another.
+
+When you tighten workflow-bearing prose, classify each unit before you restructure it:
+- **Action** — do something now
+- **Gate** — stop, wait, require, or branch
+- **Readiness check** — confirm outputs exist or state is complete
+- **Stage note** — purpose, context isolation, rationale, or input scope
+- **Branch handler** — handle approve / request changes / manual edit
+- **Landmark checkpoint** — a named pause or review moment that downstream prose may reference
+
+Do not give all six categories the same structural weight.
 
 Detect and strengthen these cases:
 - **explicit serial instructions** — numbered steps, `Step 1`, `first/next/then/finally`, `before/after/until`, `requires`, `done when`, `return to`, `do not proceed until`
@@ -231,6 +240,7 @@ When order matters:
 - use a numbered list for 2 to 3 short ordered steps
 - use `### Step 0` plus a checklist, then `### Step N: Name`, for 4 or more ordered steps
 - give every `### Step N: Name` block an operational body, gate, or completion condition
+- do not create a numbered step if it only restates stage purpose, repeats a nearby context rule, announces the next phase, or preserves numbering without operational value
 - add `Requires:` when a step depends on an earlier step
 - add `Done when:` when later work depends on a successful check
 - add a named failure route when a later step must wait for a passing check
@@ -238,6 +248,18 @@ When order matters:
 - put conditions before actions when that makes timing clearer
 - replace emphasis-only warnings with enforceable gates when a later action depends on an earlier check
 - never leave ordered work in plain bullets
+
+For stage-based workflows:
+- if the document already names stages or phases in multiple places, treat that as evidence of an existing organizing mechanic
+- prefer a `## Stage:` container or equivalent higher-level heading when several consecutive items share one phase purpose
+- keep phase purpose, context-isolation rules, rationale, and entry conditions at stage level unless they need a standalone numbered checkpoint
+- preserve landmark step numbers when they are reused across the file or tied to checkpoints
+- do not preserve low-value filler steps only to keep numbering contiguous
+- if stage boundaries, numbering architecture, checkpoint placement, or overview/checklist alignment would change, classify the rewrite as structural and surface that explicitly
+
+Transition-step rule:
+- a transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on
+- a transition step is not acceptable if the surrounding stage container already makes the navigation obvious
 
 Load `references/serial-instruction-guidance.md` before you edit workflow-bearing prose whose order, approval timing, validation loop, branch logic, or reference-loading sequence matters. Keep `SKILL.md` operational. Use the reference for the detailed detection pass, structure rules, and edge cases.
 
@@ -304,6 +326,8 @@ Requires: Steps 1 to 7 are complete.
 
 Do not over-edit. Improve the prose enough to make the intended behavior easier to follow and harder to misread.
 
+If the workflow already has an implicit stage model, prefer stage-aware cleanup over flattening adjacent notes into peer numbered steps.
+
 ## Core rules
 
 ### 1. Treat descriptions as trigger logic
@@ -334,8 +358,14 @@ Check for:
 - conditions that gate an action
 - warnings that explain why a step matters
 - verbs that carry behavior, such as `stop`, `pause`, `wait`, `proceed`, `skip`, `require`, or `allow`
+- stage boundaries or phase markers that already organize the workflow
+- landmark checkpoints that other sections may reference
 
 Do not merge steps or compress qualifiers if doing so hides decision points.
+Do not promote stage notes, rationale, or handoff summaries into standalone numbered steps unless they carry real operational weight.
+
+If the document already names phases or stages in multiple places, consider a stage-aware rewrite rather than a flat step rewrite.
+If preserving important checkpoints conflicts with step quality, surface that tradeoff explicitly instead of padding the workflow with filler steps.
 
 Do not swap a behavior-bearing verb for a near-synonym unless the new wording preserves the same permission, timing, and obligation level.
 
@@ -495,6 +525,12 @@ Before you deliver, ask:
 - Did any behavior-bearing verb drift into a softer or different action?
 - Did any rationale sentence get cut even though it explained a guardrail or timing rule?
 - Did any example that defines scope get removed?
+- Did I create any numbered steps that are really stage notes?
+- Did I preserve numbering at the cost of weak filler steps?
+- Is the first real operation easy to find?
+- Did I duplicate a stage-level rule as a numbered step?
+- Would a stage container be safer than more `### Step N` blocks?
+- If the rewrite changed stages, checkpoints, or numbering architecture, did I classify it as structural?
 - Is the rewrite actually clearer, or just shorter?
 
 If any answer is risky, revise less.
@@ -520,7 +556,9 @@ Create a short checklist in your working state or reply and update it after each
 - [ ] Step 11: Confirm rationale preservation
 - [ ] Step 12: Confirm structural-behavior equivalence
 - [ ] Step 13: Confirm ordered behavior is still visible
-- [ ] Step 14: Confirm audit-only output stayed findings-only
+- [ ] Step 14: Confirm no pseudo-step inflation or filler numbering
+- [ ] Step 15: Confirm structural-rewrite disclosure if needed
+- [ ] Step 16: Confirm audit-only output stayed findings-only
 
 This step is not optional.
 Do not deliver before this check is complete.
@@ -533,12 +571,14 @@ Do not deliver before this check is complete.
 6. Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS.md`, and any inspected instruction files before deciding the artifact set was complete.
 7. Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract.
 8. If you changed any file in a folder-level rewrite, confirm that you ran a dedicated local-tightening sweep across the other inspected behavior-bearing files before you left them unchanged.
-9. If any inspected behavior-bearing file stayed unchanged, confirm that you can classify the reason exactly as `Already near minimum safe form`, `Rewrite would add drift risk without meaningful clarity gain`, or `Local-tightening sweep incomplete`. Do not use a generic `No edit needed` classification.
+9. If any inspected behavior-bearing file stayed unchanged, classify the reason exactly as `Already near minimum safe form`, `Rewrite would add drift risk without meaningful clarity gain`, or `Local-tightening sweep incomplete`. Do not use a generic `No edit needed` classification.
 10. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
 11. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
 12. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
 13. If the text contains explicit or implied ordered instructions, confirm that the order, gates, branch destinations, and return paths are still visible as ordered behavior.
-14. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
+14. Confirm that you did not create numbered steps that are really stage notes, preserve numbering by padding filler steps, or bury the first real operation behind transition-only steps.
+15. If the rewrite changed stages, checkpoints, numbering architecture, or overview/checklist alignment, confirm that you classified it as structural rather than presenting it as local cleanup.
+16. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
 
 ## Limits
 
@@ -548,7 +588,7 @@ This skill improves behavior-defining prose safely. It does not replace domain r
 
 When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or sentence structures that make the behavior harder to follow than necessary. If you changed any file in the artifact set, do a dedicated local-tightening sweep of the other inspected behavior-bearing files before you leave them unchanged. Edit those files when needed so the folder remains internally consistent and locally clear before you deliver the work.
 
-Cross-file alignment is REQUIRED, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
+Cross-file alignment is required, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

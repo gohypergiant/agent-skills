@@ -16,6 +16,9 @@ Run this checklist before you deliver an audit or rewrite.
 - Did any approval gate, timing rule, or condition become less clear?
 - Did any warning lose the reason the step matters?
 - Did any behavior-bearing verb change meaning, such as `stop` → `pause`, `wait` → `delay`, or `must` → `should`?
+- Did any numbered step become a stage note, transition-only filler, or numbering placeholder?
+- Is the first real operation still easy to find?
+- If the document already had stages or phases, did the rewrite preserve that organizing mechanic or explicitly justify changing it?
 
 ## 3. Guardrail strength
 
@@ -79,6 +82,7 @@ Check that these stayed exact unless the user asked otherwise:
 - If the request was rewrite-only, did you avoid prepending audit notes?
 - If the rewrite used `mode=default`, did you keep the structure local unless the structure itself hid behavior?
 - If the rewrite used `mode=strict`, did you reorganize only as far as needed to clarify behavior?
+- If the rewrite changed stage boundaries, checkpoint placement, numbering architecture, or overview/checklist alignment, did you classify it as structural instead of presenting it as local cleanup?
 - If the safest result was no rewrite, did you say so explicitly instead of forcing a cosmetic edit?
 
 ## 10. Final question
