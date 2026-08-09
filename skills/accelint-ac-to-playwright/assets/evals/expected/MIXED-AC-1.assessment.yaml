@@ -1,0 +1,28 @@
+# Ground-truth planted issues for MIXED-AC-1.feature.
+# This fixture is a degraded copy of PERFECT-AC.feature: each issue below is a
+# defensible violation of references/acceptance-criteria.md ("Targets") and/or
+# references/test-hooks.md (controlled area/component vocabulary).
+# Only rule-citable violations are enumerated; phrasing variations that still
+# expose all three target parts (e.g. line 26 "card tooltip text") are NOT
+# flagged, to avoid false positives.
+expected_issues:
+  - line: 10
+    scenario: "Keyboard modifier combination"
+    issue: "Target is missing its intent — 'the text on the header' has area+component but no intent noun."
+    rule: "acceptance-criteria.md Targets pattern <intent> <component> on the <area>; all three parts required"
+    must_contain: ["intent", "header", "missing"]
+    fix_suggestion: "Name the intent, e.g. 'the banner text on the header says ...' so the target resolves to header.text.banner."
+  - line: 15
+    scenario: "Mouse drag operation"
+    issue: "Area 'notification' is not in the controlled area vocabulary (nav/header/footer/form/drawer/card/toast/modal/table/page/area)."
+    rule: "test-hooks.md controlled area vocabulary; assessment must verify area keyword"
+    must_contain: ["notification", "area", "vocabulary"]
+    fix_suggestion: "Use a controlled area keyword, e.g. 'the success text on the toast says ...' (toast.text.success)."
+  - line: 19
+    scenario: "Page reload action"
+    issue: "Target is missing its component keyword — 'the refresh in the nav' has no component (button/link/...)."
+    rule: "acceptance-criteria.md Targets pattern requires a component keyword; vague reference without component type"
+    must_contain: ["refresh", "component", "nav"]
+    fix_suggestion: "Specify the component, e.g. 'the user clicks the refresh link in the nav' (nav.link.refresh)."
+expected_issue_count: 3
+fixture_name: "MIXED-AC-1.feature"

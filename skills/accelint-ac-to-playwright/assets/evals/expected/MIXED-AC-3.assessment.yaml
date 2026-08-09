@@ -1,0 +1,35 @@
+# Ground-truth planted issues for MIXED-AC-3.feature.
+# Theme: incorrect usage (vague/unsupported verbs, non-exact input values,
+# non-clue outcome wording, manual modifier decomposition). Each issue is a
+# defensible violation of references/acceptance-criteria.md.
+# borderline (excluded, for human REVIEW):
+#   - line 18 "the user presses the 'p' key" quotes the single key name; the
+#     reference shows "presses the g key" without quotes but never prohibits
+#     quoting a key, so this is left out to avoid a false positive.
+expected_issues:
+  - line: 9
+    scenario: "Keyboard hold and release sequence"
+    issue: "Modifier combos are written as 'presses Shift+<key>' and the agent itself expands them into hold/press/release; manually decomposing into 'holds down the Shift key' (line 9) plus 'releases the Shift key' (line 11) is not a supported keyboard pattern — there is no standalone hold/release-key action."
+    rule: "acceptance-criteria.md Keyboard actions; modifier combinations are written 'Shift+g' and auto-expanded, not hand-decomposed into hold/release steps"
+    must_contain: ["holds down", "Shift", "modifier combination"]
+    fix_suggestion: "Collapse the sequence into 'the user presses Shift+<key>' (e.g. 'Shift+Enter') and let the agent expand it."
+  - line: 10
+    scenario: "Keyboard hold and release sequence"
+    issue: "'uses' is a vague verb that cannot be mapped to a test step (the reference explicitly bans 'use'/'interact'); 'item button' also leans on the vague word 'item'."
+    rule: "acceptance-criteria.md Avoid ambiguity; use clear action verbs (click/fill/etc.), avoid vague verbs like 'use' or 'interact'"
+    must_contain: ["uses", "vague verb", "click"]
+    fix_suggestion: "Use a concrete verb, e.g. 'the user clicks the select button on the page'."
+  - line: 24
+    scenario: "Form date input"
+    issue: "Fill value is not an exact value — 'yesterday's date' is relative/ambiguous; fills must include exact literal values."
+    rule: "acceptance-criteria.md Avoid ambiguity; input values must be exact (e.g. \"with '2026-06-10'\")"
+    must_contain: ["yesterday's date", "exact", "input value"]
+    fix_suggestion: "Provide an exact value, e.g. 'the user fills the date input on the form with '2026-06-10''."
+  - line: 31
+    scenario: "Element becomes visible after action"
+    issue: "'is there' is not a recognized visibility/outcome clue word; the agent looks for words like 'visible', 'appears', 'shows', 'see' to detect a visibility change."
+    rule: "acceptance-criteria.md Avoid ambiguity; visibility changes need clue words (visible/appears/shows/see/changes/hides)"
+    must_contain: ["is there", "visibility", "appears"]
+    fix_suggestion: "Use a clue word, e.g. 'the localization text in the header appears' or '... is visible'."
+expected_issue_count: 4
+fixture_name: "MIXED-AC-3.feature"

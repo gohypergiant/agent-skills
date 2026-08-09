@@ -12,7 +12,8 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"test": "vitest --coverage"
+		"test": "vitest --coverage",
+		"eval": "uv run --directory evals pytest"
 	},
 	"devDependencies": {
 		"@types/node": "^25.0.3",

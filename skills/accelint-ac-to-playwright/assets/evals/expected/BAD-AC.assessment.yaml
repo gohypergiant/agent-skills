@@ -1,0 +1,58 @@
+# Ground-truth violation classes for BAD-AC.feature.
+# NOTE: This manifest validates that the *magnitude* of the breakage is
+# recognized — exact one-to-one issue matching is NOT expected. The fixture is
+# severely broken; repeated instances of the same violation class are grouped
+# into one entry with an `instances:` line list. A correct assessment should
+# report this file as decisively NOT conversion-ready and surface most of these
+# classes; the count below is a lower bound on distinct defensible classes.
+expected_issues:
+  - class: "multiple-features-per-file"
+    instances: [2, 26, 65]
+    issue: "Three Feature: blocks in one file. The skill maps one AC file to exactly one suite/Feature."
+    rule: "acceptance-criteria.md Gherkin: 'Feature:' — one feature per file"
+    must_contain: ["multiple", "feature", "one file"]
+    fix_suggestion: "Split into three separate .feature files, one Feature each."
+  - class: "malformed-scenario-keyword"
+    instances: [10, 15, 20]
+    issue: "'Scenario 1/2/3' lacks the 'Scenario:' keyword (missing colon and a descriptive name)."
+    rule: "acceptance-criteria.md Gherkin: 'Scenario:' keyword structure"
+    must_contain: ["Scenario", "keyword", "colon"]
+    fix_suggestion: "Use 'Scenario: <descriptive name>' for each test."
+  - class: "uppercase-step-keywords"
+    instances: [11, 12, 13, 16, 17, 18, 21, 22, 23]
+    issue: "GIVEN/WHEN/THEN are all-caps; Gherkin step keywords must be Given/When/Then."
+    rule: "acceptance-criteria.md Gherkin: Given/When/Then keywords"
+    must_contain: ["GIVEN", "keyword", "Given"]
+    fix_suggestion: "Use proper-case Given/When/Then keywords."
+  - class: "behavior-driven-no-imperative-action"
+    instances: [12, 13, 17, 18, 22, 23, 39, 40, 41, 44, 45, 46, 49, 50, 51, 54, 55, 56, 57, 60, 61, 62, 71, 72, 73, 74, 75, 76, 77, 78, 82, 83, 84, 85]
+    issue: "Steps describe system behavior, not explicit user procedure. No recognized action verb (click/fill/select/press/hover/...) maps these to Playwright."
+    rule: "acceptance-criteria.md 'procedure-driven vs behavior-driven': AC must give imperative, action-oriented how-to steps"
+    must_contain: ["action verb", "behavior", "procedure"]
+    fix_suggestion: "Rewrite each When/Then as an explicit user action with a verb, e.g. 'the user clicks the ... button on the ...'."
+  - class: "missing-targets-no-vocabulary"
+    instances: [13, 18, 23, 39, 40, 44, 45, 46, 50, 51, 55, 60, 61]
+    issue: "Steps reference no target matching area.component.intent; locations like 'on the map'/'on the COP'/'build environment' are not controlled-vocabulary targets."
+    rule: "acceptance-criteria.md Targets + test-hooks.md controlled area/component vocabulary"
+    must_contain: ["target", "area.component.intent", "vocabulary"]
+    fix_suggestion: "Identify each element with <intent> <component> on the <area> using controlled keywords."
+  - class: "unmeasurable-expected-outcomes"
+    instances: [40, 41, 55, 56, 57, 61, 62, 72, 83, 84, 85]
+    issue: "Outcomes are not measurable (specific text/element/state): 'should represent track history', 'should not fail', 'no error', 'behavior'."
+    rule: "acceptance-criteria.md 'Expected outcomes': must be explicit and measurable"
+    must_contain: ["measurable", "outcome", "explicit"]
+    fix_suggestion: "State exact verifiable text/element/state and visibility wording (appears/shows/says '...')."
+  - class: "vague-verbs-and-missing-values"
+    instances: [12, 22, 39, 60]
+    issue: "Vague/unmappable verbs ('specifies', 'selects the Event' without a component/value) — no quoted literal inputs."
+    rule: "acceptance-criteria.md Action verbs + Input values (exact quoted literals)"
+    must_contain: ["vague", "verb", "value"]
+    fix_suggestion: "Use click/fill/select with a concrete target and quoted literal value."
+  - class: "invalid-background-context"
+    instances: [5, 6, 7, 8, 29, 30, 31, 32, 33, 34, 35, 36, 38]
+    issue: "Background Givens are narrative prose and a data table, not shared-context steps; no startUrl ('the user is on the X page') is derivable."
+    rule: "acceptance-criteria.md Gherkin: Background = Given steps of shared context; Start URL rule"
+    must_contain: ["Background", "context", "startUrl"]
+    fix_suggestion: "Replace prose/tables with 'Given the user is on the <page> page' and concrete context."
+expected_issue_count: 8
+fixture_name: "BAD-AC.feature"

@@ -1,0 +1,58 @@
+# Ground-truth planted issues for MIXED-AC-5.feature.
+# Theme: Gherkin structure (missing Feature, malformed tag, wrong keyword in
+# Background, When-after-Then, compound step, Scenario Outline without
+# Examples, Examples header/parameter mismatch, And as first step). Each issue
+# is a defensible violation of references/acceptance-criteria.md Gherkin rules.
+# borderline (excluded, for human REVIEW):
+#   - none.
+expected_issues:
+  - line: 2
+    scenario: "(file-level)"
+    issue: "No 'Feature:' declaration — the file opens with a tag line (line 1) and goes straight to Background; every Gherkin file needs exactly one Feature."
+    rule: "acceptance-criteria.md Gherkin keywords; 'Feature:' provides the high-level description, one feature per file"
+    must_contain: ["Feature:", "missing", "one feature per file"]
+    fix_suggestion: "Add a 'Feature: <description>' line after the feature-level tags on line 1."
+  - line: 5
+    scenario: "Background"
+    issue: "Background must consist of Given steps only, but line 5 uses 'Then' and describes an action ('clicks the ready button'); Background is shared Given context, not an action/outcome."
+    rule: "acceptance-criteria.md Gherkin keywords; Background is one or more Given steps run before each scenario"
+    must_contain: ["Background", "Then", "Given"]
+    fix_suggestion: "Make the Background a Given context (e.g. 'Given the user is on the test page'); move the ready-button click into each scenario's When steps if needed."
+  - line: 7
+    scenario: "Multiple visibility state changes"
+    issue: "'missing-at-symbol' is a malformed tag — Gherkin tags must start with '@'; without it the token is not a valid tag."
+    rule: "acceptance-criteria.md Gherkin tags; tags begin with '@'"
+    must_contain: ["missing-at-symbol", "tag", "@"]
+    fix_suggestion: "Prefix the tag with '@', e.g. '@missing-at-symbol', or remove it."
+  - line: 19
+    scenario: "Coordinate-based double-click"
+    issue: "A 'When' step (line 19) appears after the 'Then' (line 18), violating Given→When→Then ordering; adding more actions after the first outcome means a second test is needed."
+    rule: "acceptance-criteria.md Gherkin ordering; within a scenario Given then When then Then — no When after Then (write a second test instead)"
+    must_contain: ["When", "after", "Then"]
+    fix_suggestion: "Split into a second scenario, or move the line-19 click up into the When block before the Then assertion."
+  - line: 24
+    scenario: "User submits feedback form successfully"
+    issue: "Compound step — one 'And' crams an action (click submit) and an outcome (confirmation text says 'Feedback received') into a single step, mixing a When action with a Then outcome."
+    rule: "acceptance-criteria.md Phrasing + ordering; one step per action, outcomes belong in separate Then steps"
+    must_contain: ["compound", "Then", "outcome"]
+    fix_suggestion: "Split into 'And the user clicks the submit button on the form' (When) and 'Then the confirmation text on the toast says 'Feedback received''."
+  - line: 27
+    scenario: "User login with different credentials"
+    issue: "Scenario Outline uses parameters (<username>, <password>, <message>) but has no Examples block immediately after it (the next thing is the tc024 scenario on line 34); an outline must be paired with one or more Examples blocks."
+    rule: "acceptance-criteria.md Gherkin keywords; 'Scenario Outline' is always paired with one or more 'Examples:' blocks immediately after"
+    must_contain: ["Scenario Outline", "Examples", "missing"]
+    fix_suggestion: "Add an 'Examples:' table for this outline whose header columns are username, password, message."
+  - line: 41
+    scenario: "User login with admin and guest credentials"
+    issue: "Examples header columns 'user | pass | message' do not correspond to the outline parameters '<username> | <password> | <message>' — 'user'/'pass' will not bind to <username>/<password>."
+    rule: "acceptance-criteria.md Gherkin keywords; Examples header row must correspond to the scenario-outline parameters"
+    must_contain: ["user", "username", "Examples header"]
+    fix_suggestion: "Rename the columns to 'username' and 'password' to match the '<username>'/'<password>' parameters."
+  - line: 47
+    scenario: "User submits feedback form"
+    issue: "Scenario's first step is 'And' (line 47) with no preceding Given/When/Then; 'And' only replaces a successive same-type keyword and cannot open a scenario."
+    rule: "acceptance-criteria.md Gherkin keywords; 'And'/'But' replace successive Given/When/Then and cannot be a scenario's first step"
+    must_contain: ["And", "first step", "When"]
+    fix_suggestion: "Start the scenario with 'When the user fills the comment input ...' instead of 'And'."
+expected_issue_count: 8
+fixture_name: "MIXED-AC-5.feature"

@@ -1,0 +1,49 @@
+# Post-creation summary
+
+- Run date: 2026-06-11T19:25:28.503Z
+
+## Inputs: AC files
+- agent-skills/skills/accelint-ac-to-playwright/assets/evals/PERFECT-AC.feature
+
+## Outputs: Playwright test files
+- /tmp/gen-out/tests/comprehensive-action-and-assertion-coverage.spec.ts
+
+## Next steps
+- Copy the generated Playwright spec files AND the fixtures/ directory into your project repo. The spec files import test utilities from fixtures/ and will fail to compile without it.
+- Ensure the codebase includes the required test hooks (data-testid attributes on the appropriate elements). If there's any ambiguity, review the input AC file alongside the JSON plan to most easily see the intended test flow and targets.
+- If Playwright isn't yet configured for your project and you requested the config template, copy it to your repo root and adjust baseURL, testDir, and reporter/output paths to match your project.
+- Consider reviewing your Vitest (or other) test configs to make sure these new Playwright *.spec.ts files won't get picked up with other testing.
+- Add a CI step to run Playwright and upload traces/screenshots on failure.
+
+## Required test hooks
+- /tmp/gen-out/tests/comprehensive-action-and-assertion-coverage.spec.ts
+  - multiple visibility state changes
+    - drawer.div.settings-panel
+    - modal.text.welcome
+    - card.text.tutorial
+    - page.button.toggle-interface
+  - keyboard modifier combination
+    - header.text.banner
+  - keyboard hold and release sequence
+    - page.button.item
+    - page.text.selection
+  - element-based actions and basic assertions
+    - form.button.login
+    - form.input.email
+    - form.input.password
+    - form.dropdown.plan
+    - page.text.success
+  - mouse drag operation
+    - toast.text.success
+  - mouse position, press, and release sequence
+    - toast.text.success
+  - coordinate-based double-click
+    - modal.text.distance
+  - user scrolls on the page
+    - page.text.position
+  - page reload action
+    - nav.link.refresh
+    - header.text.status
+  - hover interaction
+    - card.button.info
+    - card.text.tooltip

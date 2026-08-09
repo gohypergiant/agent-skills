@@ -1,0 +1,25 @@
+# Distinct target strings appearing in PERFECT-AC.plan.json (19 unique).
+# toast.text.success appears in two scenarios (drag + mouse-sequence) but is
+# counted once here since the consumer checks for distinct target coverage.
+must_have_targets:
+  - drawer.div.settings-panel
+  - modal.text.welcome
+  - card.text.tutorial
+  - page.button.toggle-interface
+  - header.text.banner
+  - page.button.item
+  - page.text.selection
+  - form.button.login
+  - form.input.email
+  - form.input.password
+  - form.dropdown.plan
+  - page.text.success
+  - toast.text.success
+  - modal.text.distance
+  - page.text.position
+  - nav.link.refresh
+  - header.text.status
+  - card.button.info
+  - card.text.tooltip
+expected_test_count: 10
+forbidden_actions: [goto]
