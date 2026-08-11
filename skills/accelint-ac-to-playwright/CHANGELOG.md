@@ -10,15 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Major refactor: Progressive disclosure pattern with subagent-based validation**
   - Rationale: Improved skill performance by reducing context bloat and enabling parallel validation; original SKILL.md was loading all validation rules upfront regardless of need
   - Split SKILL.md into focused mode files:
-    - `references/assessment-mode.md` - AC quality validation workflow
-    - `references/conversion-mode.md` - Test generation workflow
+    - `agents/assessment-mode.md` - AC quality validation workflow
+    - `agents/conversion-mode.md` - Test generation workflow
   - Created 6 specialized subagent validators (all run in parallel):
-    - `references/validate-targets.md` - Format + controlled vocabulary validation using target-validator.ts
-    - `references/validate-gherkin-structure.md` - Comprehensive .feature file structure validation
-    - `references/validate-bullet-format.md` - Markdown bullet-style AC format validation
-    - `references/validate-preconditions.md` - Given step context setup validation
-    - `references/validate-actions.md` - When step action verb and parameter validation
-    - `references/validate-assertions.md` - Then step explicitness and measurability validation
+    - `agents/validate-targets.md` - Format + controlled vocabulary validation using target-validator.ts
+    - `agents/validate-gherkin-structure.md` - Comprehensive .feature file structure validation
+    - `agents/validate-bullet-format.md` - Markdown bullet-style AC format validation
+    - `agents/validate-preconditions.md` - Given step context setup validation
+    - `agents/validate-actions.md` - When step action verb and parameter validation
+    - `agents/validate-assertions.md` - Then step explicitness and measurability validation
   - Standardized input/output formats across all validators with line numbers for precise error reporting
   - SKILL.md now serves as high-level orchestrator with mode detection, loading detailed workflows only when needed
 
