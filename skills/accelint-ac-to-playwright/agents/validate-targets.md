@@ -27,8 +27,8 @@ Note: The orchestrator (assessment mode) is responsible for extracting targets f
 
 To run the validator script, use:
 ```
-cat << 'SCRIPT' | npx tsx
-import { validateTargetArray } from "./skills/accelint-ac-to-playwright/scripts/target-validator";
+cat << 'SCRIPT' | node
+const { validateTargetArray } = require("./dist/scripts/target-validator.js");
 
 const targets = [/* paste targets array here */];
 const result = validateTargetArray(targets);
