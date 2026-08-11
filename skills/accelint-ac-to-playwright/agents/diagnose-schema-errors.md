@@ -68,7 +68,7 @@ Every step must have:
 |--------|----------------|-------|
 | `click` | `target` | Element-based click |
 | `fill` | `target`, `value` | Value must be string |
-| `selectOption` | `target`, `value` | Value must be string |
+| `select` | `target`, `value` | Value must be string |
 | `hover` | `target` | — |
 | `press` | `value` | Single key or Modifier+key |
 | `mouseClick` | `x`, `y` | Coordinates (integers ≥ 0) |
@@ -79,8 +79,8 @@ Every step must have:
 | `mouseUp` | `x`, `y` | Must follow `mouseDown` with matching button |
 | `keyDown` | `value` | Must be paired with `keyUp` |
 | `keyUp` | `value` | Must follow `keyDown` with matching key |
-| `scroll` | `direction`, `amount` | Direction: `"up"` or `"down"`, amount: integer |
-| `wheel` | `x`, `y`, `direction`, `amount` | Coordinates + direction (`"up"`/`"down"`) + amount |
+| `scroll` | `direction`, `amount` | Direction: `"up"`, `"down"`, `"left"`, or `"right"`, amount: integer |
+| `reload` | — | Page reload |
 | `expectText` | `target`, `value` | Both required |
 | `expectVisible` | `target` | — |
 | `expectNotVisible` | `target` | — |
