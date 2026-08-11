@@ -23,7 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - SKILL.md now serves as high-level orchestrator with mode detection, loading detailed workflows only when needed
 
 ### Version
-- Bumped from 1.1.9 → 2.0.0
+- Bumped from 1.1.10 → 2.0.0
 
 ## [1.1.10] - 2026-07-09
 
