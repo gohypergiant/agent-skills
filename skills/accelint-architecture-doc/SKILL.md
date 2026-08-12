@@ -4,7 +4,7 @@ description: Generate or update an ARCHITECTURE.md living document for any codeb
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Architecture Doc
@@ -275,13 +275,19 @@ ARCHITECTURE.md is a pure technical document about system structure and should n
 
 After writing ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md (check in that order):
 
-1. **Read the agent behavior file** to check whether it already mentions ARCHITECTURE.md
-2. **If no reference exists,** add this block near the top of the file (after any existing title/header, before main content):
+1. **Read the agent behavior file** to check whether it already has a "Related Documentation" section
+2. **If no "Related Documentation" section exists,** create one at the bottom of the file with this structure:
 
 ```markdown
-## System Architecture
+## Related Documentation
 
-For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
+- **ARCHITECTURE.md** — System architecture, deployment overview, component interactions
+  *(Reference this when behavioral decisions depend on understanding system structure)*
 ```
 
-3. **If using CLAUDE.md** and it simply points to AGENTS.md (e.g., `@AGENTS.md`), update AGENTS.md instead — don't modify the pointer file.
+3. **If a "Related Documentation" section already exists:**
+   - Check if ARCHITECTURE.md is already listed
+   - If not listed, add it to the section following the pattern above
+   - Preserve existing entries in the section
+
+4. **If using CLAUDE.md** and it simply points to AGENTS.md (e.g., `@AGENTS.md`), update AGENTS.md instead — don't modify the pointer file.
