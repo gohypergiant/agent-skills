@@ -51,7 +51,7 @@ openspec update
 │                                      design.md       —          │
 │                                      [STOP HERE]                │
 │  ⚠️  CHECKPOINT 1: Review design.md - MUST approve to continue  │
-│  (frontmatter capture: specs_touched/decisions -> design.md)    │
+│  (frontmatter: specs_touched/decisions/created_at -> design.md) │
 │                                                                 │
 │  Specs/Tasks    Q+R+design           specs/*         —          │
 │                                      tasks.md        —          │
@@ -64,7 +64,7 @@ Note: Keep the ticket OUT of context after the Questions stage to prevent comple
 
 REQUIRED: The Design stage (steps 17-25) generates ONLY `proposal.md` and `design.md`, then STOPS for review at step 26. The Specs/Tasks stage (steps 32-42) generates `specs/*` and `tasks.md` separately after design approval.
 
-Capture frontmatter at step 30 after Checkpoint 1 approval, not before. `design.md` reaches its final form for this planning pass only after the user approves it or confirms a manual edit. Earlier capture can write `specs_touched/decisions` against content the user is about to change.
+Capture frontmatter at step 30 after Checkpoint 1 approval, not before. `design.md` reaches its final form for this planning pass only after the user approves it or confirms a manual edit. Earlier capture can write `specs_touched/decisions/created_at` against content the user is about to change. The `created_at` timestamp marks when the user approved the design (the moment the change becomes "real").
 
 ⚠️  REQUIRED CHECKPOINTS: The agent MUST pause and wait for explicit user approval at both checkpoints (step 26 and step 43). Proceeding without approval bypasses QRSPI's core value.
 ```
@@ -246,11 +246,13 @@ Execute these steps in order without stopping between them:
 
    - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (specs/tasks generation happens in steps 32-42), so there's nothing else to derive it from.
    - **`decisions`**: design.md's own decision content — the choices, rationale, and alternatives the design phase already worked through — restructured into a list of `{id, choice, rationale, alternatives}` entries. This is structuring content that's already there, not writing new design content.
-   - Write both into design.md's YAML frontmatter:
+   - **`created_at`**: ISO 8601 timestamp marking when this change was created (now, at the moment the user approves the design). Use `new Date().toISOString()` format. This is the first of three timestamps used to measure time spent in the QRSPI flow (created_at → started_at → completed_at).
+   - Write all into design.md's YAML frontmatter:
 
      ```yaml
      ---
      change: <change-name-from-step-23>
+     created_at: "2026-08-17T15:23:45.123Z"
      specs_touched: [capability-a, capability-b]
      decisions:
        - id: D1

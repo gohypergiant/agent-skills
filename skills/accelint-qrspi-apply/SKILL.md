@@ -36,11 +36,13 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 │  Stage          Action                        Output            │
 ├─────────────────────────────────────────────────────────────────┤
 │  Preflight      Select and validate change    Ready to proceed  │
+│  Start Time     Record started_at timestamp   Telemetry marker  │
 │  Parse          Extract parallelization       Dependency graph  │
 │  Dependencies   Identify blocking tasks       Execution plan    │
 │  Load Context   Read config.yaml context      Project context   │
 │  Execute        Run slices (parallel/serial)  Implemented code  │
 │  Update Docs    Sync living documents         Updated docs      │
+│  Complete Time  Record completed_at timestamp Telemetry marker  │
 │  Verify         Run opsx:verify               Verification rpt  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -63,13 +65,47 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
    ```
    If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `/opsx:continue` to generate tasks before applying."
 
+### Record Implementation Start
+
+**Goal**: Mark when implementation begins for telemetry tracking.
+
+6. Read the design.md file from `openspec/changes/<change-name>/design.md` to check if `started_at` timestamp exists in frontmatter
+
+7. If `started_at` is NOT present in the frontmatter (first time applying this change):
+   - Add the `started_at` timestamp to the frontmatter using ISO 8601 format
+   - Use current timestamp: `new Date().toISOString()` (e.g., "2026-08-17T15:23:45.123Z")
+   - CRITICAL: Insert `started_at` immediately after the `created_at` field to keep all timestamps grouped together
+   - Preserve all other frontmatter fields (change, created_at, specs_touched, decisions) in their original order
+   - Inform user: "Recording implementation start time..."
+
+8. If `started_at` IS present (resuming after context clear or pause):
+   - Do not modify the timestamp — preserve the original start time
+   - Inform user: "Resuming implementation (started at [timestamp])..."
+
+**Example frontmatter after adding started_at:**
+```yaml
+---
+change: <change-name>
+created_at: "2026-08-17T15:00:00.000Z"
+started_at: "2026-08-17T16:30:00.000Z"
+specs_touched: [capability-a, capability-b]
+decisions:
+  - id: D1
+    choice: <decision>
+    rationale: <why>
+    alternatives: [<option>]
+---
+```
+
+**Output**: Timestamp written to design.md frontmatter (if this is first application), or confirmation of resumption
+
 ### Parse Tasks and Parallelization Strategy
 
 **Goal**: Extract task structure and identify parallel vs sequential execution opportunities. Detect if work has already started and resume from the correct level.
 
-6. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
+9. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
 
-7. **Validate checklist format** (CRITICAL for progress tracking):
+10. **Validate checklist format** (CRITICAL for progress tracking):
    - Check that tasks use markdown checklist format: `- [ ] task` or `- [x] task`
    - If tasks use numbered lists (1. 2. 3.) or plain bullets (- without [ ]):
      ```
@@ -85,15 +121,15 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
      ```
    - Exit if format is invalid — do not proceed with invalid task format
 
-8. **Check for partial completion** (resumption detection):
+11. **Check for partial completion** (resumption detection):
    - Count completed tasks (marked `- [x]`) vs total tasks
    - Parse which slices have all their tasks marked complete
    - If any slices are complete, announce: "Detected partial completion. Resuming from Slice N."
    - Adjust the execution plan to skip completed slices
 
-9. Look for the "Parallelization Strategy" section (usually at the end of the file)
+12. Look for the "Parallelization Strategy" section (usually at the end of the file)
 
-10. Parse the strategy to build a dependency graph:
+13. Parse the strategy to build a dependency graph:
 
    **Example strategy:**
    ```md
@@ -118,11 +154,11 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
      - Final integration
    ```
 
-11. If no "Parallelization Strategy" section exists:
+14. If no "Parallelization Strategy" section exists:
    - Assume all tasks must run sequentially (safe default)
    - Inform user: "No parallelization strategy found. Running tasks sequentially."
 
-12. Build an execution plan showing:
+15. Build an execution plan showing:
    - Which slices run in which order
    - Which slices can run in parallel (and which are already complete)
    - Total estimated parallelization speedup
@@ -136,26 +172,26 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 
 **Background**: OpenSpec's `openspec instructions apply` command does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). This means sub-agents implementing tasks don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. We work around this limitation by manually loading and injecting the context.
 
-13. Check if `openspec/config.yaml` exists:
+16. Check if `openspec/config.yaml` exists:
    ```bash
    test -f openspec/config.yaml && echo "exists" || echo "missing"
    ```
 
-14. If the file exists, read it:
+17. If the file exists, read it:
    ```bash
    cat openspec/config.yaml
    ```
 
-15. Parse and extract the `context` section (YAML block under `context: |`):
+18. Parse and extract the `context` section (YAML block under `context: |`):
    - The context starts after the line `context: |`
    - The context continues until the next top-level YAML key (e.g., `rules:`, `schema:`)
    - Lines in the context block are indented (usually 2 spaces)
    - Preserve all whitespace and newlines in the context block
    - You MUST inform the user that you found and loaded the config.
 
-16. Store the extracted context for injection into sub-agent prompts in the next steps
+19. Store the extracted context for injection into sub-agent prompts in the next steps
 
-17. If no `context` field exists or the file is missing:
+20. If no `context` field exists or the file is missing:
    - Set context to empty string
    - Proceed without context injection (sub-agents will rely on OpenSpec's default behavior)
    - You MUST inform the user that you could NOT find and load the config.
@@ -198,7 +234,7 @@ rules:
 
 For each level in the dependency graph (starting from level 0):
 
-18. If the level has only one slice:
+21. If the level has only one slice:
    - Spawn a single sub-agent with this prompt (inject project context loaded in step 16):
      ```
      <project_context>
@@ -235,13 +271,13 @@ For each level in the dependency graph (starting from level 0):
 
      Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-19. Wait for completion before proceeding to the next level
+22. Wait for completion before proceeding to the next level
 
 **Parallel execution** (when multiple slices are independent):
 
 For each level with multiple independent slices:
 
-20. Spawn all sub-agents in parallel in a single turn (one per slice, inject project context from earlier steps):
+23. Spawn all sub-agents in parallel in a single turn (one per slice, inject project context from earlier steps):
    ```
    <project_context>
    <!-- Background constraints for your implementation. Do NOT copy into code. -->
@@ -278,9 +314,9 @@ For each level with multiple independent slices:
 
    Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-21. Track completion as each sub-agent finishes
+24. Track completion as each sub-agent finishes
 
-22. **Context management decision point** - When all slices in the level are done, pause and offer context management:
+25. **Context management decision point** - When all slices in the level are done, pause and offer context management:
    ```
    ✅ Level N complete
 
@@ -296,13 +332,13 @@ For each level with multiple independent slices:
    (c) Pause here — you can resume later with this skill
    ```
 
-23. If user chooses (b), instruct them:
+26. If user chooses (b), instruct them:
    ```
    Run `/clear` to reset context, then re-invoke this skill.
    I'll detect that Level N is complete and resume from Level N+1.
    ```
 
-24. If user chooses (c), exit and remind them how to resume:
+27. If user chooses (c), exit and remind them how to resume:
    ```
    Paused at Level N+1. To resume, re-invoke this skill.
    Progress is tracked in tasks.md checkboxes.
@@ -338,11 +374,11 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
 **IMPORTANT**: Run this step BEFORE verification so the verification step can check documentation completeness.
 
-25. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
+28. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
 
-26. Determine the repo/package root (may be current directory or a parent)
+29. Determine the repo/package root (may be current directory or a parent)
 
-27. **Process ALL living documents** in this order (do not stop after the first one):
+30. **Process ALL living documents** in this order (do not stop after the first one):
    - OpenSpec config (`openspec/config.yaml`)
    - ARCHITECTURE.md (if exists)
    - AGENTS.md (if exists)
@@ -490,11 +526,11 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 - Document doesn't exist
 - Change content doesn't introduce anything requiring updates to that document
 
-**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to the next step (Verify Implementation).
+**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to the next step (Record Completion Timestamp).
 
-28. After checking all 4 documents, run `git status` to show which docs were modified
+31. After checking all 4 documents, run `git status` to show which docs were modified
 
-29. Present summary (then immediately continue to verification):
+32. Present summary (then immediately continue to recording completion timestamp):
 
    - If no updates were needed:
      ```
@@ -521,10 +557,46 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
      These changes ensure documentation stays synchronized with implementation.
 
-     Proceeding to verification...
+     Recording completion timestamp...
      ```
 
-**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, then **MANDATORY automatic transition to verification without waiting for user input**
+**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed
+
+### Record Implementation Completion
+
+**Goal**: Mark when implementation completes (before verification) for telemetry tracking.
+
+**IMPORTANT**: This step runs immediately after living document updates and before verification. Do not wait for user input.
+
+33. Read the design.md file from `openspec/changes/<change-name>/design.md`
+
+34. Add the `completed_at` timestamp to the frontmatter using ISO 8601 format:
+   - Use current timestamp: `new Date().toISOString()` (e.g., "2026-08-17T17:45:00.000Z")
+   - CRITICAL: Insert `completed_at` immediately after the `started_at` field to keep all timestamps grouped together
+   - Preserve all other frontmatter fields (change, created_at, started_at, specs_touched, decisions) in their original order
+   - This marks the moment implementation finished, right before verification begins
+
+35. Inform user: "Implementation complete. Running verification..."
+
+**Example frontmatter after adding completed_at:**
+```yaml
+---
+change: <change-name>
+created_at: "2026-08-17T15:00:00.000Z"
+started_at: "2026-08-17T16:30:00.000Z"
+completed_at: "2026-08-17T17:45:00.000Z"
+specs_touched: [capability-a, capability-b]
+decisions:
+  - id: D1
+    choice: <decision>
+    rationale: <why>
+    alternatives: [<option>]
+---
+```
+
+**IMPORTANT**: After recording the completion timestamp, immediately proceed to verification (step 36). Do NOT pause or wait for user input. The completion timestamp marks the end of implementation work, and verification follows automatically.
+
+**Output**: Timestamp written to design.md frontmatter, then **MANDATORY automatic transition to verification without waiting for user input**
 
 ### Verify Implementation
 
@@ -532,12 +604,12 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
 **CRITICAL**: This is the FINAL step. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this step.
 
-30. Call the verify command:
+36. Call the verify command:
    ```
    /opsx:verify <change-name>
    ```
 
-31. The verify command will:
+37. The verify command will:
    - Check task completion (all checkboxes marked)
    - Verify spec coverage (requirements implemented)
    - Validate design adherence (decisions followed)
@@ -545,16 +617,16 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    - Generate a comprehensive verification report with CRITICAL/WARNING/SUGGESTION issues
    - Include next steps (archive if passed, fix issues if failed)
 
-32. Present the verification report to the user
+38. Present the verification report to the user
 
-33. The verification report IS the completion report. It includes:
+39. The verification report IS the completion report. It includes:
    - Overall status (passed/failed)
    - Issue breakdown by severity
    - List of changed files
    - Next steps based on status
    - Archive guidance if ready
 
-34. Exit the skill after presenting the verification report. The report already tells the user what to do next.
+40. Exit the skill after presenting the verification report. The report already tells the user what to do next.
 
 **Output**: Comprehensive verification report with status, issues, changed files, and next steps
 
@@ -623,17 +695,17 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 ## NEVER Do This
 
-**NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 25-29) complete successfully, immediately proceed to verification (Step 30). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 22). Do not treat completion of living document updates as a signal to stop and wait — it's a signal to continue to verification.
+**NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 28-32) complete successfully, immediately proceed to recording the completion timestamp (Steps 33-35), then to verification (Step 36). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 25). Do not treat completion of living document updates or timestamp recording as signals to stop and wait — they are signals to continue to the next step.
 
 **NEVER implement tasks directly** — Always delegate to `/opsx:apply` command via sub-agents. The /opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
 
-**NEVER skip verification** — Verification using `/opsx:verify` (Step 30) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
+**NEVER skip verification** — Verification using `/opsx:verify` (Step 36) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
 
 **NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
 
 **NEVER skip dependency levels** — If Slice A blocks Slice B, Slice B cannot start until Slice A completes successfully. Do not spawn dependent slices before their blockers finish, even if it would speed up implementation. The dependency graph in the Parallelization Strategy must be respected.
 
-**NEVER skip living document updates** — Living document updates (Steps 25-29) keep ARCHITECTURE.md, AGENTS.md, README.md, and config.yaml synchronized with implementation. These steps run BEFORE verification so the verification step can check documentation completeness. Do not skip to verification without updating living documents first.
+**NEVER skip living document updates** — Living document updates (Steps 28-32) keep ARCHITECTURE.md, AGENTS.md, README.md, and config.yaml synchronized with implementation. These steps run BEFORE the completion timestamp and verification so the verification step can check documentation completeness. Do not skip to timestamp recording or verification without updating living documents first.
 
 ## Configuration Requirements
 
