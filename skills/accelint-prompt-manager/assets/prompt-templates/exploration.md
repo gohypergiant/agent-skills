@@ -1,95 +1,102 @@
-# Documentation Template
+# Exploration Template
 
-Use for: READMEs, API docs, guides, tutorials, code comments.
+Use for: Codebase discovery, pattern finding, understanding architecture, learning new systems.
 
 ## Structure
 
 ```
-Write [DOC_TYPE] for [TARGET_AUDIENCE]
+Explore [CODEBASE/AREA] to understand [SPECIFIC_ASPECT]
 
-Purpose: [What reader will learn/accomplish after reading]
+Goals:
+- [What to discover]
+- [Patterns to identify]
+- [Questions to answer]
 
-Audience:
-- Skill level: [Beginner/Intermediate/Expert]
-- Domain knowledge: [What they already know]
-- What they're trying to accomplish: [Their goal]
+Scope:
+- [What to explore]: [Whole codebase / specific directory / specific feature]
+- [What to skip]: [Known areas / out of scope]
 
-Required sections:
-1. [Section name]: [What to cover, level of detail]
-2. [Section name]: [What to cover, level of detail]
-3. [Section name]: [What to cover, level of detail]
+Exploration approach:
+1. Start with [entry points]: [files/functions to begin investigation]
+2. Map [relationships/dependencies]: [How components connect]
+3. Identify [key patterns/conventions]: [Recurring structures]
+4. Document [findings organized by category]
 
-For each section:
-- Include code examples with explanations
-- Highlight common pitfalls and how to avoid them
-- Provide practical use cases
+Questions to answer:
+- [Specific question 1]
+- [Specific question 2]
+- [Specific question 3]
 
-Tone: [Helpful/Professional/Technical/Friendly]
-Depth: [Overview/Intermediate/Comprehensive]
+Output format:
+- Summary of [architecture/patterns discovered]
+- Key files with their purposes
+- Findings organized by [category]
+- Diagrams [if helpful for understanding]
 
-Format:
-- [Markdown/RST/other]
-- Code blocks with syntax highlighting
-- [Tables/diagrams if needed]
-
-Success criteria:
-Reader can [accomplish goal] without additional help or needing to read source code
+Stop condition: [When is exploration complete]
 ```
 
 ## Example Usage
 
 ```
-Write API reference documentation for the User Management API, targeting frontend developers integrating it for the first time.
+Explore the authentication system to understand how user sessions are managed.
 
-Purpose: Enable frontend devs to integrate user auth and management features without backend support
+Goals:
+- Understand session lifecycle (create, validate, refresh, expire)
+- Identify where session data is stored
+- Find all middleware that checks authentication
+- Map the flow from login to protected route access
 
-Audience:
-- Skill level: Intermediate frontend developers
-- Domain knowledge: Familiar with REST APIs, HTTP, JSON, but new to our system
-- Goal: Integrate login, user profile, and account management features
+Scope:
+- Explore: src/auth/, src/middleware/, database schema for sessions
+- Skip: Frontend components (focusing on backend only), OAuth providers (out of scope for now)
 
-Required sections:
-1. Authentication: How to get and use JWT tokens
-   - Login flow with example
-   - Token refresh mechanism
-   - Handling auth errors
-2. User endpoints: CRUD operations for users
-   - GET /users/:id (fetch profile)
-   - PUT /users/:id (update profile)
-   - DELETE /users/:id (delete account)
-3. Error handling: Common errors and how to handle them
-   - 401 Unauthorized → redirect to login
-   - 403 Forbidden → show "permission denied"
-   - 429 Rate Limited → show "too many requests, try again in X seconds"
+Exploration approach:
+1. Start with login endpoint (src/auth/login.ts)
+   - Trace: credentials → validation → session creation → response
+2. Map session storage
+   - Database tables: sessions, users
+   - Cache layer: Redis keys
+3. Identify auth middleware
+   - Find all files importing requireAuth or similar
+   - Document: what each middleware checks, what routes use it
+4. Document flow with sequence diagram
 
-For each endpoint:
-- Purpose and when to use it
-- Request format (headers, body) with curl example
-- Response format (success and error cases) with JSON examples
-- Common pitfalls
-  - "Don't forget to include Authorization header"
-  - "User IDs must be UUIDs, not integers"
+Questions to answer:
+- How long do sessions last? (TTL in database vs cache)
+- What triggers session refresh? (Automatic vs manual)
+- How are expired sessions cleaned up? (Cron job? Lazy deletion?)
+- Can users have multiple sessions? (Different devices)
+- What data is stored in session? (User ID only vs full profile)
 
-Tone: Professional but helpful. Explain non-obvious behavior, skip REST basics they already know.
+Output format:
+- Summary: "Sessions stored in PostgreSQL (persistence) + Redis (fast lookup). 7-day expiry with sliding window. One session per device."
 
-Depth: Intermediate—enough detail to integrate successfully, not exhaustive edge cases
+- Key files:
+  - src/auth/login.ts: Creates sessions on successful login
+  - src/auth/middleware.ts: validateSession() checks Redis then DB
+  - src/jobs/cleanup-sessions.ts: Cron job removes expired sessions (runs daily)
+  - database/migrations/002_sessions.sql: Session table schema
 
-Format:
-- Markdown
-- Syntax-highlighted code blocks (JSON, curl, JavaScript)
-- Table for error codes
-- Callout boxes for important warnings
+- Session lifecycle flow:
+  1. Login → create session in DB + cache in Redis
+  2. Request → middleware checks Redis (fast) → if miss, check DB
+  3. Activity → extends expiry (sliding window, resets on each request)
+  4. Logout → delete from DB + Redis
+  5. Expiry → cron job cleanup (daily at 2am)
 
-Success criteria:
-✓ Frontend dev can implement login, profile view, and account deletion
-✓ Common integration mistakes are prevented by warnings
-✓ Error handling is clear and actionable
-✓ Zero questions asked in Slack after reading
+- Findings:
+  - Redis cache prevents DB hit on every request (perf optimization)
+  - Sliding window: Active users stay logged in indefinitely
+  - Each device gets separate session (tracked by device_fingerprint)
+  - Session stores only user_id and created_at (profile fetched separately)
+
+Stop condition: Can answer all questions about session lifecycle, have mapping of key files
 ```
 
 ## Common Pitfalls
 
-- **Wrong audience level:** Too basic for experts, too advanced for beginners
-- **Missing examples:** Abstract descriptions without concrete code
-- **No common pitfalls:** Users hit same issues repeatedly
-- **Outdated:** Docs don't match current implementation
+- **Unfocused exploration:** "Understand the codebase" too vague → Specify what aspect
+- **No stop condition:** Explore forever without clear completion criteria
+- **Poor organization:** Findings dumped without structure → Hard to reference later
+- **Missing "why":** Document what code does without explaining design decisions
