@@ -4,11 +4,11 @@ Three proven frameworks for structuring prompts based on task type. Each framewo
 
 ## What
 
-These are structured templates that organize prompt elements systematically. Frameworks ensure completeness while maintaining clarity. They are organizational tools, not rigid formulas.
+These are structured templates that organize prompt elements systematically. Frameworks help preserve completeness while keeping prompts clear. They are organizational tools, not rigid formulas.
 
 ## Why It Matters
 
-Ad-hoc prompts miss critical elements. Frameworks provide checklist-like completeness while adapting to context. The key insight is simple: different task types need different structures.
+Ad-hoc prompts often miss critical elements. Frameworks provide checklist-like completeness while still adapting to context. Different task types need different structures.
 
 ---
 
@@ -174,7 +174,7 @@ Sense check:
 "You're a senior engineer refactoring legacy authentication code. Make it secure, maintainable, and test-covered while preserving existing API contracts..."
 ```
 
-**Rationale:** Users care about clarity and results, not prompt-engineering methodology. Framework names add noise without adding value.
+**Rationale:** Users care about clarity and results, not prompt-engineering methodology. Framework names add noise without value.
 
 ---
 
@@ -190,7 +190,7 @@ Some tasks benefit from hybrid approaches:
 **When combining:**
 1. Choose the primary framework based on task type.
 2. Borrow specific components from other frameworks as needed.
-3. Maintain a coherent structure. Do not create Frankenstein prompts.
+3. Maintain a coherent structure. Do not create stitched-together prompts.
 
 ---
 
@@ -261,4 +261,4 @@ Frameworks add structure but aren't always necessary:
 - Complex task requires organization
 - Output quality depends on completeness
 
-Remember: Frameworks are tools for clarity, not goals in themselves.
+Remember: Frameworks are tools for clarity, not goals by themselves.

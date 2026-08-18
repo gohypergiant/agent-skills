@@ -4,11 +4,11 @@ How to assess whether a task is simple (execute directly), moderate (proceed wit
 
 ## What
 
-These are systematic criteria for categorizing task complexity before execution. Complexity determines the optimization strategy and whether plan mode should be recommended.
+These are systematic criteria for categorizing task complexity before execution. The complexity level determines the optimization strategy and whether plan mode should be recommended.
 
 ## Why It Matters
 
-Executing complex tasks without planning causes rework, missed requirements, and suboptimal architectures. Simple tasks do not need elaborate planning. The skill is to distinguish between them.
+Executing complex tasks without planning causes rework, missed requirements, and suboptimal architectures. Simple tasks do not need elaborate planning. The key is to distinguish between them.
 
 ---
 
@@ -69,7 +69,7 @@ Executing complex tasks without planning causes rework, missed requirements, and
 
 **Characteristics:**
 - >3 interdependent decisions that affect each other
-- >5 sequential phases requiring coordination
+- >5 sequential steps requiring coordination
 - Significant ambiguity with cascading implications
 - High consequence of failure
 - Hard to reverse once started
@@ -84,7 +84,7 @@ Executing complex tasks without planning causes rework, missed requirements, and
 **Optimization Strategy:**
 - ALWAYS recommend plan mode
 - Do not proceed with execution until the plan is approved
-- Explain the reasoning: "This task involves [X dependencies and Y phases]. Plan mode will help design the approach before execution, preventing costly rework."
+- Explain why: "This task involves [X dependencies and Y sequential steps]. Plan mode will help design the approach before execution, preventing costly rework."
 
 **Plan Mode:** REQUIRED
 
@@ -111,19 +111,19 @@ Executing complex tasks without planning causes rework, missed requirements, and
 
 ---
 
-### Phase Counting
+### Step Counting
 
-**Count sequential phases** that each produce artifacts needed by next phase:
+**Count sequential steps** that each produce artifacts needed by the next step:
 
 **Example: "Refactor authentication system"**
-- Phase 1: Audit current implementation for issues
-- Phase 2: Design new architecture
-- Phase 3: Write tests for existing behavior
-- Phase 4: Implement new auth logic
-- Phase 5: Migrate existing sessions
-- Phase 6: Deploy with rollback strategy
+- Step 1: Audit current implementation for issues
+- Step 2: Design new architecture
+- Step 3: Write tests for existing behavior
+- Step 4: Implement new auth logic
+- Step 5: Migrate existing sessions
+- Step 6: Deploy with rollback strategy
 
-**Result:** 6 sequential phases → COMPLEX → Recommend plan mode
+**Result:** 6 sequential steps → COMPLEX → Recommend plan mode
 
 ---
 
@@ -218,7 +218,7 @@ When complexity is unclear, ask:
 
 **Analysis:**
 - Ambiguity: "Optimize" for what? (Speed, memory, cost)
-- Phases: Profile → Identify bottlenecks → Apply fixes → Validate
+- Steps: Profile → Identify bottlenecks → Apply fixes → Validate
 - Decisions: Index strategy, caching layer, query rewrite, schema changes
 - Dependencies: Index choice affects caching needs affects schema
 - Failure impact: Could degrade performance if wrong approach
@@ -231,7 +231,7 @@ When complexity is unclear, ask:
 
 **Analysis:**
 - Ambiguity: Minimal (email validation is well-defined)
-- Phases: Write function → Write tests (2 phases)
+- Steps: Write function → Write tests (2 steps)
 - Decisions: Regex vs library (1 decision, not interdependent)
 - Dependencies: None
 - Failure impact: Low (easy to fix if wrong)
@@ -244,7 +244,7 @@ When complexity is unclear, ask:
 
 **Analysis:**
 - Ambiguity: Some (which auth method, what rate limits)
-- Phases: Design routes → Implement auth → Add rate limiting → Write tests (4 phases)
+- Steps: Design routes → Implement auth → Add rate limiting → Write tests (4 steps)
 - Decisions: Auth method, rate limit strategy, storage (3 decisions, some dependency)
 - Dependencies: Auth method affects rate limiting (per-user vs per-IP)
 - Failure impact: Moderate (security implications but standard patterns exist)
@@ -268,7 +268,7 @@ Build pattern recognition for common complex task indicators:
 - "Write function to [single action]"
 - "Extract [data] from [source]"
 
-**Caution:** Keywords are hints, not deterministic. Always count decisions/phases/dependencies.
+**Caution:** Keywords are hints, not rules. Always count decisions, steps, and dependencies.
 
 ---
 
@@ -287,4 +287,4 @@ If you recommend plan mode but user wants to proceed immediately:
 - Making major architectural decisions without user input
 - Assuming answers to ambiguous questions
 
-**Key principle:** User has final say, but you must transparently communicate the risks.
+**Key principle:** The user has final say, but you must communicate the risks transparently.

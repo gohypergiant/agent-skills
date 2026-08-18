@@ -4,11 +4,11 @@ Five proven techniques that reliably improve prompt quality without risk of degr
 
 ## What
 
-These are specific, actionable optimization methods that work across task types and models. These techniques have been validated through extensive production use.
+These are specific, actionable optimization methods that work across task types and models. They have been validated through extensive production use.
 
 ## Why It Matters
 
-Not all optimization attempts improve quality. Some techniques help in specific contexts but harm quality in others. These five are universally safe. They improve clarity without introducing new problems.
+Not all optimization attempts improve quality. Some techniques help in specific contexts but harm quality in others. These five are broadly safe. They improve clarity without introducing new problems.
 
 ---
 
@@ -47,7 +47,7 @@ Not all optimization attempts improve quality. Some techniques help in specific 
 **How to apply:**
 1. Identify creative/subjective elements (tone, style, format, scope)
 2. Specify: what to include, what to avoid, length, audience, examples
-3. Balance: enough constraint for consistency, enough freedom for quality
+3. Balance the prompt: enough constraint for consistency, enough freedom for quality
 
 **Examples:**
 
@@ -200,7 +200,7 @@ If the config object is invalid: log validation errors to stderr and exit with c
 
 ## Combining Techniques
 
-These techniques compound—using multiple together amplifies effectiveness:
+These techniques compound. Using multiple techniques together amplifies their effect:
 
 **Example: Combining all 5 techniques**
 
@@ -280,6 +280,6 @@ If all five checks pass, optimization is complete.
 
 ## Key Principle
 
-Safe techniques share a common property: they add clarity without adding risk. They never degrade quality—worst case, they have no effect. That's why they're safe to apply universally.
+Safe techniques share a common property: they add clarity without adding risk. They should not degrade quality. In the worst case, they have no effect. That is why they are safe to apply broadly.
 
 Unsafe techniques (e.g., adding CoT to reasoning models, using fabrication patterns) can actively harm quality. Know the difference.

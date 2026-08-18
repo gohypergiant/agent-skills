@@ -4,11 +4,11 @@ Guide for choosing the right prompt template based on task type. Each template o
 
 ## What
 
-These are 12 pre-built prompt templates organized by common software-engineering task types. Each template includes structure, tone, and quality criteria tuned for its domain.
+These are 12 pre-built prompt templates organized by common software-engineering task types. Each template includes structure, tone, and quality criteria tuned to its domain.
 
 ## Why It Matters
 
-Different tasks need different prompt structures. Code-review prompts differ from debugging prompts, and debugging prompts differ from creative-writing prompts. Templates accelerate optimization by starting from proven patterns.
+Different tasks need different prompt structures. Code-review prompts differ from debugging prompts, and debugging prompts differ from creative-writing prompts. Templates speed up optimization by starting from proven patterns.
 
 ---
 
@@ -601,7 +601,7 @@ Output:
 
 ## Customization
 
-Templates are starting points, not rigid formulas:
+Templates are starting points, not rigid formulas.
 
 **Customize based on:**
 - User expertise (adjust explanation depth)
@@ -625,13 +625,16 @@ Templates are starting points, not rigid formulas:
 - User explicitly wants informal approach
 - Template would add complexity without benefit
 
-Templates optimize unclear prompts. Do not force structure onto a prompt that is already clear.
+Templates help optimize unclear prompts. Do not force structure onto a prompt that is already clear.
 
 ---
 
 ## Loading Templates
 
-Templates live in `assets/prompt-templates/`. Load on explicit request or when optimization benefits from detailed structure:
+Follow this sequence when templates are relevant:
+1. Start with the template structure outline in this file.
+2. Decide whether the task maps clearly to one template.
+3. Load the full template only if the user explicitly requests it or the optimization needs detailed structure.
 
 **Explicit loading:**
 User: "Use the debugging template"
@@ -639,14 +642,10 @@ Action: Load `assets/prompt-templates/debugging.md`
 
 **Implicit loading:**
 User: "Help me debug this error"
-Action: Apply debugging template structure silently (don't load full file unless complex case needs detailed reference)
-
-**Progressive disclosure:**
-Start with template structure outline (in this file).
-Load full template only if detailed guidance needed.
+Action: Apply debugging template structure silently. Do not load the full template unless the complex case needs that detailed reference.
 
 ---
 
 ## Key Principle
 
-Templates accelerate optimization by providing proven patterns. They are tools for clarity, not bureaucratic requirements. Use them when helpful, and skip them when they are not.
+Templates accelerate optimization by providing proven patterns. They are tools for clarity, not bureaucratic requirements. Use them when they help, and skip them when they do not.

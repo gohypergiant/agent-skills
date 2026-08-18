@@ -8,7 +8,7 @@ These are specific prompt-construction patterns that reduce model effectiveness,
 
 ## Why It Matters
 
-Generic advice like "be clear" does not prevent concrete failures. These patterns represent actual problems encountered in production systems that process millions of prompts. Knowing what NOT to do is half of expert knowledge.
+Generic advice like "be clear" does not prevent concrete failures. These patterns represent actual problems encountered in production systems that process millions of prompts. Knowing what NOT to do is a core part of expert knowledge.
 
 ---
 
@@ -16,7 +16,7 @@ Generic advice like "be clear" does not prevent concrete failures. These pattern
 
 **Pattern:** Asking Claude to "act as 3 experts and debate", "explore multiple reasoning paths in a tree", or "build a graph of connected thoughts".
 
-**Why It Fails:** These techniques (Mixture-of-Experts, Tree-of-Thought, and Graph-of-Thought) make Claude invent conversations between fake personas instead of deepening its own reasoning. The model fabricates the appearance of multi-agent collaboration without actual benefit. You get theatrical output that looks impressive but does not improve reasoning quality.
+**Why It Fails:** These techniques (Mixture-of-Experts, Tree-of-Thought, and Graph-of-Thought) make Claude invent conversations between fake personas instead of deepening its own reasoning. The model fabricates the appearance of multi-agent collaboration without actual benefit. The output can look impressive without improving reasoning quality.
 
 **Example:**
 ❌ "Act as 3 experts (a frontend dev, a backend dev, and a DBA). Debate the best approach to implementing this feature."
@@ -50,7 +50,7 @@ Generic advice like "be clear" does not prevent concrete failures. These pattern
 ❌ "Using the CO-STAR framework: [Context] You're a senior engineer... [Objective] Refactor this..."
 ✅ "You're a senior engineer refactoring legacy authentication code. Make it secure, maintainable, and test-covered..."
 
-**Rule:** Route through frameworks silently. The structure improves quality invisibly.
+**Rule:** Route through frameworks silently. The structure should improve quality without calling attention to itself.
 
 ---
 
@@ -259,4 +259,4 @@ These patterns follow the same structure. Due to space constraints, here are abb
 
 ## How to Apply
 
-When optimizing a prompt, scan for these patterns systematically. Each detected pattern has a concrete fix. This list is not exhaustive. New anti-patterns emerge with new models and use cases. These 35 patterns represent the most common production failures.
+When optimizing a prompt, scan for these patterns systematically. Each detected pattern has a concrete fix. This list is not exhaustive. New anti-patterns will emerge with new models and use cases. These 35 patterns represent the most common production failures.

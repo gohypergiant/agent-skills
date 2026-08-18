@@ -5,6 +5,54 @@ All notable changes to the accelint-prompt-manager skill will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.2] - 2026-08-03
+
+### Changed
+- **Serial-instruction terminology tightening** — replaced workflow uses of `Phase` with `Step` in serial guidance paths so ordered behavior is more explicit and consistent with the repo's serial-instruction rules
+  - Updated `SKILL.md`, `AGENTS.md`, `references/complexity-detection.md`, and `references/plan-mode-triggers.md`
+  - Kept the workflow order, gating behavior, and plan-mode thresholds unchanged
+  - Reworded `sequential phases` to `sequential steps` where the text described ordered execution rather than high-level staging
+
+### Version
+- Bumped from 2.4.1 → 2.4.2 (patch version: behavior-preserving prose tightening)
+
+## [2.4.1] - 2026-07-31
+
+### Changed
+- **Clipboard fallback hardening** — tightened post-delivery clipboard guidance in `SKILL.md`
+  - Added explicit command-availability checking before attempting `pbcopy`, `xclip`, `xsel`, or `clip`
+  - Added a manual-copy fallback that tells the agent to rely on the already-delivered markdown code block when clipboard support is unavailable
+  - Kept the change narrowly scoped to a directly observed runtime-fragility issue
+
+### Notes
+- This iteration intentionally stayed conservative because the visible run artifacts did not include executed eval outputs, benchmark files, or grading files.
+- No frontmatter rewrite was performed during the Stage 4 prose pass beyond the required version alignment in this finalization stage.
+
+### Version
+- Bumped from 2.4.0 → 2.4.1 (patch version: small behavior-safe hardening)
+
+## [2.4.0] - 2026-07-30
+
+### Changed
+- **Audit-driven boundary and workflow improvements** — tightened the skill after a full prompt-manager audit
+  - Re-centered the skill on prompt optimization rather than task execution
+  - Strengthened the request-classification flow so optimization-vs-execution gets resolved earlier and more explicitly
+  - Added safer clarification guidance for high-impact missing details and extremely vague requests
+  - Improved ambiguity handling so the skill asks only when unresolved ambiguity would materially change the optimized prompt
+  - Clarified that plan-mode guidance belongs in the downstream handoff for complex tasks
+  - Added selective template-usage guidance and a concise response-patterns section for common real-world cases
+  - Removed repo-misaligned memory-block guidance from the root skill and aligned quick-reference wording accordingly
+- **Artifact-set prose tightening**
+  - Tightened `AGENTS.md` and reference docs for scanability and consistency without changing framework logic or guardrail intent
+
+### Added
+- **Expanded default eval coverage** — strengthened the generated eval set for non-interactive validation
+  - Expanded coverage from 4 cases to 12 cases
+  - Added Claude Code, system-prompt, batch/API, incident-analysis, anti-fluff, credit-killing-pattern rewrite, and risk-sensitive scenarios
+
+### Version
+- Bumped from 2.3.0 → 2.4.0
+
 ## [2.3.0] - 2026-03-20
 
 ### Changed
