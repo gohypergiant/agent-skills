@@ -1,6 +1,6 @@
 # Use cases and adaptation notes
 
-Use this reference to adapt the core writing method to different contexts. Do not flatten everything into the same style.
+Use this reference to adapt the core writing method to different contexts. Do not flatten every case into the same style.
 
 The core defaults still apply:
 - preserve meaning and constraints
@@ -41,7 +41,7 @@ Use:
 - warning before risk
 - numbered procedures
 
-This context benefits strongly from stronger STE-style structure and stronger ADHD-friendly shaping.
+This context benefits from stronger STE-style structure and stronger ADHD-friendly shaping.
 
 ## Error messages and support answers
 
@@ -81,7 +81,7 @@ Use:
 
 Default mode: `mode=default`
 
-Use this section for writing that must be technically clear but still needs persuasion, trust, or brand fit.
+Use this section for writing that must stay technically clear but still needs persuasion, trust, or brand fit.
 
 Examples:
 - RFC summaries
@@ -131,7 +131,7 @@ Still remove:
 
 ## ADHD-friendly chat or coaching output
 
-Default mode: `mode=default`, plus `references/adhd-patterns.md` when the reader needs stronger execution shaping
+Default mode: `mode=default`, plus `references/adhd-patterns.md` when the reader needs stronger execution shaping.
 
 Use:
 - action first
