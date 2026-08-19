@@ -43,28 +43,33 @@ Common signals:
 
 Use the smallest structure that makes the order hard to miss.
 
-### For 2 to 3 short steps
-Use a numbered list.
+### Step 1: Choose the structure by workflow size
+Use a numbered list for 2 to 3 short steps.
+Use `### Step 0: Track progress`, then `### Step N: Name`, for 4 or more ordered steps.
+Done when: the workflow shape has one explicit ordered structure.
 
-### For 4 or more ordered steps
-Use this pattern by default:
-1. Add `### Step 0: Track progress`.
-2. Put a checklist under Step 0.
-3. Convert each ordered action into `### Step N: Name`.
-4. Add `Requires:` when a step depends on an earlier step.
-5. Add `Done when:` when later work depends on a successful check.
-6. Add an explicit failure route such as `If this fails, return to Step 3.`
+### Step 2: Add dependency and gate markers
+Requires: Step 1 is complete.
+Add `Requires:` when a step depends on an earlier step.
+Add `Done when:` when later work depends on a successful check.
+Add an explicit failure route such as `If this fails, return to Step 3.`
+Done when: later steps cannot start without their named prerequisite or passing check.
 
-### For stage containers
+### Step 3: Add stage containers only when the workflow needs them
+Requires: Steps 1 and 2 are complete.
 If you need a higher-level container above ordered steps, prefer a neutral section label such as `## Stage N` or a descriptive heading. Put ordered steps inside the container. Give the container an exit condition when the outcome matters.
+Done when: the stage container adds grouping without hiding step order.
 
-### For branches
-Name the branch destination. Do not leave a branch implied.
+### Step 4: Name every branch destination
+Requires: Steps 1 to 3 are complete when branching exists.
+Do not leave a branch implied.
 
 Good pattern:
 - `If X, go to Step 4a.`
 - `If not X, go to Step 4b.`
 - `Both branches return to Step 5.`
+
+Done when: every branch names its next step and rejoin point.
 
 ## Rewrite rules
 
@@ -79,7 +84,7 @@ Good pattern:
 
 ## Delivery checks
 
-Before you deliver, confirm:
+Before you deliver, confirm this in order:
 1. Every ordered action is visible as an ordered action.
 2. No step heading is empty or purely decorative.
 3. Every dependent step names what must be true first.
@@ -87,6 +92,8 @@ Before you deliver, confirm:
 5. Every branch names its next step.
 6. The final text cannot be read as `do these in any order` when order matters.
 7. Any checklist or progress-tracking instruction appears before the workflow it tracks.
+
+If any check fails, fix the earliest failed item first, then rerun the later checks.
 
 ## Notes for this skill
 

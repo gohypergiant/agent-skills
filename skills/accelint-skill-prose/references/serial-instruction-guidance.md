@@ -51,12 +51,17 @@ Look for:
 
 Choose the smallest structure that preserves behavior and makes the order hard to miss.
 
+### Step 1: Classify the workflow units
 Before you restructure workflow prose, classify each unit as an action, gate, readiness check, stage note, branch handler, or landmark checkpoint. Do not give all six categories the same structural weight.
+Done when: you know which units need ordered steps, which units stay at stage level, and which units act as gates or checks.
 
-### 2 to 3 short ordered steps
+### Step 2: Choose the base structure by workflow length
+Requires: Step 1 is complete.
+
+#### 2 to 3 short ordered steps
 Use a numbered list.
 
-### 4 or more ordered steps
+#### 4 or more ordered steps
 Use this pattern by default:
 
 ### Step 0: Track progress
@@ -67,36 +72,43 @@ Then use:
 - `Requires:` for dependencies
 - `Done when:` for gates that later steps rely on
 - an explicit failure route such as `If this check fails, return to Step 3.`
+Done when: the reader can see the order, state, dependencies, and retry path without inferring them.
 
-### Multi-stage workflows
+### Step 3: Keep stage structure when the workflow already has it
+Requires: Step 2 is complete.
 If you need a higher-level container above ordered steps, prefer `## Stage:` or a descriptive section heading. Ordered steps still need their own numbered step headings inside that container.
 
 If the document already names stages or phases in more than one place, treat that as evidence of an existing organizing mechanic rather than flattening everything into peer numbered steps.
 Put phase purpose, context isolation, rationale, and entry conditions at stage level unless they need a standalone numbered checkpoint.
+Done when: stage notes stay as stage notes and step headings only carry operational work.
 
-### Branching workflows
+### Step 4: Name every branch and rejoin point
+Requires: Step 3 is complete.
 Name each branch and the join point.
 
 Good pattern:
 - `If X, go to Step 4a.`
 - `If not X, go to Step 4b.`
 - `Both branches return to Step 5.`
+Done when: every branch names its destination and its rejoin point.
 
 ## Rewrite rules
 
-- Treat one step as one action. Split any step that says `and then`.
-- Do not use empty step headings. Every `### Step N: Name` block must contain at least one operational sentence, gate, or completion condition.
-- Do not create a numbered step if it only restates stage purpose, repeats a nearby context rule, announces the next phase, or preserves numbering without operational value.
-- If a step heading only labels a principle, convert that principle into an action the agent or reader can execute, or demote it to a stage note.
-- Never leave ordered work in plain bullets. Replace plain bullets with ordered steps when the work is not actually optional or unordered.
-- Move conditions before actions when that makes timing clearer without changing behavior.
-- Replace emphasis-only warnings with enforceable gates when the workflow depends on order.
-- Keep approval, validation, and retry logic explicit.
-- Keep sequencing cues in the operational file. Move heuristics, examples, and edge cases to references.
-- If the source contract is weakly ordered but clearly intends sequence, strengthen the wording. Do not preserve weak sequencing just because it is already present.
-- Preserve landmark step numbers when they are reused across the file or tied to checkpoints, but do not pad the workflow with weak filler steps only to keep numbering contiguous.
-- Treat a rewrite as structural when it changes stage boundaries, numbering architecture, checkpoint placement, or overview/checklist alignment.
-- A transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on.
+Apply these rules in order when you rewrite serial instructions.
+
+1. Treat one step as one action. Split any step that says `and then`.
+2. Do not use empty step headings. Every `### Step N: Name` block must contain at least one operational sentence, gate, or completion condition.
+3. Do not create a numbered step if it only restates stage purpose, repeats a nearby context rule, announces the next phase, or preserves numbering without operational value.
+4. If a step heading only labels a principle, convert that principle into an action the agent or reader can execute, or demote it to a stage note.
+5. Never leave ordered work in plain bullets. Replace plain bullets with ordered steps when the work is not actually optional or unordered.
+6. Move conditions before actions when that makes timing clearer without changing behavior.
+7. Replace emphasis-only warnings with enforceable gates when the workflow depends on order.
+8. Keep approval, validation, and retry logic explicit.
+9. Keep sequencing cues in the operational file. Move heuristics, examples, and edge cases to references.
+10. If the source contract is weakly ordered but clearly intends sequence, strengthen the wording. Do not preserve weak sequencing just because it is already present.
+11. Preserve landmark step numbers when they are reused across the file or tied to checkpoints, but do not pad the workflow with weak filler steps only to keep numbering contiguous.
+12. Treat a rewrite as structural when it changes stage boundaries, numbering architecture, checkpoint placement, or overview/checklist alignment.
+13. A transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on.
 
 ## Audit questions
 
