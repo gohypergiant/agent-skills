@@ -4,11 +4,11 @@ Before/after transformations showing how to optimize vague prompts into clear, a
 
 ## What
 
-These are real-world examples of prompt optimization across different task types. Each example shows the original vague prompt, the analysis of issues, and the optimized version with rationale.
+These are real-world examples of prompt optimization across different task types. Each example shows the original vague prompt, the issue analysis, and the optimized version with rationale.
 
 ## Why It Matters
 
-Concrete transformations build intuition faster than abstract principles. These examples demonstrate optimization techniques in action.
+Concrete transformations build intuition faster than abstract principles. These examples show optimization techniques in action.
 
 ---
 
@@ -450,16 +450,16 @@ Or specify your constraints (budget, complexity tolerance, performance target) a
 
 Across all examples, successful optimization follows patterns:
 
-1. **Identify vague terms** → Replace with specific criteria
-2. **Add missing context** → Environment, constraints, current state
-3. **Define success explicitly** → Measurable, verifiable outcomes
-4. **Structure complex tasks** → Break into sequential steps
-5. **Eliminate ambiguity** → Use precise language, avoid pronouns
-6. **Position context smartly** → Important info first/last, details referenced
-7. **Expose trade-offs** → Don't hide complexity, help user decide
+1. **Identify vague terms** → Replace them with specific criteria.
+2. **Add missing context** → Include environment, constraints, and current state.
+3. **Define success explicitly** → Use measurable, verifiable outcomes.
+4. **Structure complex tasks** → Break them into sequential steps.
+5. **Eliminate ambiguity** → Use precise language and avoid unclear pronouns.
+6. **Position context deliberately** → Put important information first or last, and reference details.
+7. **Expose trade-offs** → Do not hide complexity. Help the user decide.
 
 ---
 
 ## Key Principle
 
-Optimization transforms guesswork into clarity. Every vague term is an opportunity to align with user intent. Every ambiguity is a chance to prevent misalignment. Good optimization makes implicit assumptions explicit and makes unmeasurable goals measurable.
+Optimization turns guesswork into clarity. Every vague term is an opportunity to align with user intent. Every ambiguity is a chance to prevent misalignment. Good optimization makes implicit assumptions explicit and makes unmeasurable goals measurable.
