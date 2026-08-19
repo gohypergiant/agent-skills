@@ -5,14 +5,44 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.1] - 2026-08-11
+## [1.1.3] - 2026-07-31
 
-### Fixed
-- **Consistent link location in agent behavior files** — changed ARCHITECTURE.md link placement from near-the-top to within a "Related Documentation" section at the bottom
-  - Now adds/updates a "Related Documentation" section with structured list format
-  - Preserves existing entries if section already exists
-  - Matches the established pattern used across other documentation skills
-  - Rationale: Standardizes cross-reference location across all doc-generating skills, making agent behavior files more predictable and easier to maintain
+### Changed
+- Added structured `expectations` to create, refresh, OpenSpec-aware, and external-findings eval scenarios in `evals/evals.json`
+  - Rationale: Stage 1 audit found the highest-value workflow branches were still covered mostly by narrative `expected_output` text, which limited future grading rigor and empirical verification
+- Tightened behavior-defining prose in `SKILL.md` without changing frontmatter, trigger scope, workflow order, or guardrail intent
+  - Rationale: Stage 1 audit and the Stage 4 strict prose pass both identified instruction density and mixed obligation wording as avoidable execution risk in transcript-sensitive flows
+
+### Version
+- Bumped from 1.1.2 → 1.1.3
+
+## [1.1.2] - 2026-07-31
+
+### Changed
+- Made preview-before-write, restructure approval, refresh sequencing, package-scope defaulting, and CLAUDE.md pointer-file handling more operationally explicit in `SKILL.md`
+  - Rationale: Stage 1 eval review found these were the highest-risk transcript-sensitive behaviors; clearer operational wording improves consistency without changing intended behavior
+- Added structured `expectations` to high-risk evals covering restructure gating, package-vs-root scope, anti-fabrication/TODO handling, and agent-doc follow-up
+  - Rationale: Stage 1 eval review found strong scenario breadth but weak quantitative grading readiness; these assertions improve empirical verification in future runs
+- Tightened behavior-defining prose while preserving frontmatter, workflow semantics, and guardrails
+  - Rationale: Stage 4 prose audit identified scan-cost and obligation-language clarity issues in the instruction body
+
+### Version
+- Bumped from 1.1.1 → 1.1.2
+
+## [1.1.1] - 2026-07-30
+
+### Changed
+- Refined trigger boundaries and scope wording so the skill favors ARCHITECTURE.md-producing documentation workflows over generic architecture discussion or brainstorming
+  - Rationale: Improves invocation quality and reduces false positives on architecture-adjacent prompts that do not need file generation
+- Clarified refresh sequencing, restructure approval requirements, monorepo scope defaults, and fallback discovery behavior when subagents are unavailable or unnecessary
+  - Rationale: Makes the workflow more reliable across constrained environments, small repos, and ambiguous existing docs
+- Tightened skill prose and aligned the package README with the actual AGENTS.md / CLAUDE.md integration contract
+  - Rationale: Reduces instruction drift between artifacts and makes the behavior easier to audit
+- Added `evals/evals.json` with representative create, refresh, restructure, monorepo, OpenSpec-aware, and agent-doc follow-up scenarios
+  - Rationale: Establishes a reusable default eval set for regression coverage and future skill-creator benchmarking
+
+### Version
+- Bumped from 1.1.0 → 1.1.1
 
 ## [1.1.0] - 2026-07-08
 
