@@ -1,23 +1,23 @@
 ---
 name: accelint-skill-prose
-description: Use when creating, auditing, tightening, simplifying, de-slopping, polishing, or reviewing `SKILL.md` files, agent-skill instructions, `CLAUDE.md`/`AGENTS.md`-style guidance, or other behavior-defining prompt artifacts where wording changes can alter trigger coverage, workflow order, guardrails, or exact technical meaning. Use this skill whenever the user wants clearer skill prose without changing behavior, asks for a safe skill-description rewrite, reviews prompt instructions for ambiguity, or needs to preserve exact paths, commands, fields, identifiers, or approval semantics while editing.
+description: Use when creating, auditing, tightening, simplifying, polishing, or reviewing `SKILL.md` files, agent-skill instructions, `CLAUDE.md` or `AGENTS.md` guidance, or other behavior-defining prompt artifacts whose wording controls trigger coverage, workflow order, guardrails, approval semantics, or exact technical meaning. Prefer this skill over general prose editing when the job is to make wording clearer without changing behavior, including safe description rewrites, ambiguity audits, and edits that must preserve exact paths, commands, fields, or identifiers. Do not use it when the main task is broader content strategy, policy design, domain review, or ordinary prose cleanup with no behavior risk.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.7.8"
+  version: "0.8.0"
 ---
 
 # Skill Prose
 
-Use this skill to edit behavior-defining prose while preserving behavior.
+Use this skill to edit behavior-defining prose without changing behavior.
 
 ## Core contract
 
-This skill applies to text that does more than sound good. It controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
+Use this skill for text whose wording controls behavior, not just tone. In these artifacts, wording controls when a skill triggers, what it promises, what order work happens in, and what must stay exact.
 
 Write in plain, direct English. Do not treat skill prose like ordinary prose. A cleaner sentence is a bad edit if it changes behavior.
 
-Your job is to make the prose easier to follow, easier to audit, and harder to misread while preserving:
+Make the prose easier to follow, easier to audit, and harder to misread while preserving:
 
 - trigger coverage
 - workflow semantics
@@ -26,7 +26,7 @@ Your job is to make the prose easier to follow, easier to audit, and harder to m
 
 Keep one term for one concept. Do not rotate terms just to avoid repetition. In skill prose, stable terminology is part of the behavior contract.
 
-Use compatible ideas from Simplified Technical English when they help, such as short explicit sentences, consistent terminology, active voice by default, and clear separation between instructions and explanation. Do not apply controlled-language rules mechanically if doing so would erase rationale, flatten scope, or weaken behavioral precision.
+Use compatible ideas from Simplified Technical English when they help, such as short explicit sentences, consistent terminology, active voice by default, and clear separation between instructions and explanation. Do not apply controlled-language rules mechanically if that would erase rationale, flatten scope, or weaken behavioral precision.
 
 This skill extends general English editing with extra safety for:
 
@@ -44,7 +44,7 @@ Use `assets/output-template.md` for all outputs.
 
 ### Behavioral drift
 
-Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it or replace it only with wording that keeps the same behavior.
+Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it, or replace it only with wording that keeps the same behavior.
 
 Rationale is not filler by default. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose.
 
@@ -66,7 +66,7 @@ These are behavior anchors, not decorative prose.
 
 ## What makes this different from general prose editing
 
-In skill prose, these often carry behavior rather than decoration:
+Use this skill when wording itself controls behavior. In these artifacts, these elements often carry behavior rather than decoration:
 
 - trigger phrases
 - examples that define scope
@@ -107,11 +107,13 @@ When goals conflict, use this order:
 
 ## Operating controls
 
-Choose two controls before you edit:
+Choose these controls before you edit.
+Do them in order.
 
-1. **Output mode** — what you will deliver.
-2. **Rewrite mode** — how far you may reshape the prose.
+1. Choose the output mode. This controls what you will deliver.
+2. Choose the rewrite mode. This controls how far you may reshape the prose.
 
+Do not reverse these steps.
 Keep them separate. Output mode controls the deliverable. Rewrite mode controls the rewrite scope.
 
 ### Output mode
@@ -124,9 +126,9 @@ Use this mode when the user wants review, risk analysis, or a check for ambiguit
 
 Do not rewrite the text unless the user explicitly asks for a rewrite.
 
-Do not include replacement wording, “safer” rewrites, or suggested revised sentences in the deliverable. If you need to point to a safer pattern, describe the risk in principle instead of drafting substitute text.
+Do not include replacement wording, "safer" rewrites, or suggested revised sentences in the deliverable. If you need to point to a safer pattern, describe the risk in principle instead of drafting substitute text.
 
-A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary evidence for why the source is risky. In those cases, keep it at fragment level, not sentence level, and do not let it become a stealth rewrite of the passage.
+A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary evidence for why the source is risky. In those cases, keep it at fragment level, not sentence level. Do not let it become a stealth rewrite of the passage.
 
 #### Rewrite only
 
@@ -140,10 +142,10 @@ Use this mode when the user wants both findings and a safer revision.
 
 For rewrite tasks, ask the user which rewrite mode they want unless the user already made the scope clear.
 
-Offer these choices:
+Offer these modes:
 
 - **`mode=default`** — local rewrite by default.
-- **`mode=strict`** — structural rewrite allowed when needed.
+- **`mode=strict`** — structural rewrite is allowed when needed.
 
 For audit-only requests, you may proceed without asking for a rewrite mode. If the task expands into a rewrite, ask for the rewrite mode before you rewrite.
 
@@ -169,7 +171,7 @@ Behavior:
 - preserve behavior, but allow structural rewrite when the structure itself causes ambiguity
 - separate instructions, rationale, warnings, and examples when that improves control
 - normalize terminology and obligation language more deliberately across the edited artifact set
-- reorganize only as far as needed to make trigger scope, workflow order, and guardrail force easier to follow
+- reorganize only as far as needed to make trigger scope, workflow order, and guardrail strength easier to follow
 
 Strict mode is not permission to broaden scope casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asked for a broader rewrite.
 
@@ -182,9 +184,10 @@ Use these lenses when they match the text:
 
 ## Before you edit
 
-### 1. Extract what must stay fixed
+### Step 1: Extract what must stay fixed
+Do this before you tighten, reorder, or relabel anything.
 
-First normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, and field / key / property.
+First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, field / key / property, and workflow-role terms such as stage / step / gate / checkpoint / branch / readiness check.
 
 Look for:
 
@@ -199,22 +202,72 @@ Look for:
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
 
-### 2. Define the artifact set when the task covers a skill folder
+### Step 2: Define the artifact set when the task covers a skill folder
+Requires: Step 1 is complete.
 
 Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Add other linked instruction files only when they complete the contract.
 
-Read the root `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files before you broaden to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
+Read the root `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files. After that, broaden to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
 
 Do not assume the visible excerpt is the full contract.
 
 If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
 
+Done when: You can name the files that complete the behavior contract, or you have disclosed that the crawl is incomplete.
+
+## Serial-order detection and handling
+
+Treat sequence as behavior when the text tells the agent or reader to do one thing before another.
+
+When you tighten workflow-bearing prose, classify each unit before you restructure it:
+- **Action** — do something now
+- **Gate** — stop, wait, require, or branch
+- **Readiness check** — confirm outputs exist or state is complete
+- **Stage note** — purpose, context isolation, rationale, or input scope
+- **Branch handler** — handle approve / request changes / manual edit
+- **Landmark checkpoint** — a named pause or review moment that downstream prose may reference
+
+Do not give all six categories the same structural weight.
+
+Detect and strengthen these cases:
+- **explicit serial instructions** — numbered steps, `Step 1`, `first/next/then/finally`, `before/after/until`, `requires`, `done when`, `return to`, `do not proceed until`
+- **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, or a paragraph mixes discovery, decision, rewrite, and verification
+- **sequencing cues in skill files** — choose output mode before rewrite mode, define the artifact set before cross-file edits, load references before citing them, run self-check before delivery, ask first before edits that need approval
+- **sequencing cues in general prose** — procedural paragraphs, approval notes, policy instructions, workflow warnings, and bullets that are really ordered tasks
+
+When order matters:
+- make the order explicit
+- use a numbered list for 2 to 3 short ordered steps
+- use `### Step 0` plus a checklist, then `### Step N: Name`, for 4 or more ordered steps
+- give every `### Step N: Name` block an operational body, gate, or completion condition
+- do not create a numbered step if it only restates stage purpose, repeats a nearby context rule, announces the next phase, or preserves numbering without operational value
+- add `Requires:` when a step depends on an earlier step
+- add `Done when:` when later work depends on a successful check
+- add a named failure route when a later step must wait for a passing check
+- split `do X and then Y` into separate steps when compliance would be safer
+- put conditions before actions when that makes timing clearer
+- replace emphasis-only warnings with enforceable gates when a later action depends on an earlier check
+- never leave ordered work in plain bullets
+
+For stage-based workflows:
+- if the document already names stages or phases in multiple places, treat that as evidence of an existing organizing mechanic
+- prefer a `## Stage:` container or equivalent higher-level heading when several consecutive items share one phase purpose
+- keep phase purpose, context-isolation rules, rationale, and entry conditions at stage level unless they need a standalone numbered checkpoint
+- preserve landmark step numbers when they are reused across the file or tied to checkpoints
+- do not preserve low-value filler steps only to keep numbering contiguous
+- if stage boundaries, numbering architecture, checkpoint placement, or overview/checklist alignment would change, classify the rewrite as structural and surface that explicitly
+
+Transition-step rule:
+- a transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on
+- a transition step is not acceptable if the surrounding stage container already makes the navigation obvious
+
+Load `references/serial-instruction-guidance.md` before you edit workflow-bearing prose whose order, approval timing, validation loop, branch logic, or reference-loading sequence matters. Keep `SKILL.md` operational. Use the reference for the detailed detection pass, structure rules, and edge cases.
+
 ## Rewrite method
 
 Use this method whenever you rewrite behavior-defining prose.
 
-### 1. Lead with the operational point
-
+### Step 1: Lead with the operational point
 Start with the rule, action, boundary, or decision the reader must understand.
 
 - In descriptions, surface the scope logic early.
@@ -224,13 +277,15 @@ Start with the rule, action, boundary, or decision the reader must understand.
 
 Do not add a preamble when the instruction works better without one.
 
-### 2. Keep one term for one concept
+### Step 2: Keep one term for one concept
+Requires: Step 1 is complete.
 
 Pick one term for each repeated behavior-bearing concept and keep it stable.
 
 Do not rotate synonyms for style if those synonyms could suggest different scope, timing, or force.
 
-### 3. Match the sentence shape to the job
+### Step 3: Match the sentence shape to the job
+Requires: Steps 1 and 2 are complete.
 
 Choose the clearest accurate sentence shape for the artifact.
 
@@ -240,37 +295,44 @@ Choose the clearest accurate sentence shape for the artifact.
 - **Rationale** — explain why the rule exists without burying the rule itself.
 - **Examples** — keep only examples that anchor scope, edge cases, or expected behavior.
 
-### 4. Separate instruction from explanation when it helps
+### Step 4: Separate instruction from explanation when it helps
+Requires: Steps 1 to 3 are complete.
 
 Procedural text tells the agent what to do. Descriptive text explains what something means, why a rule exists, or when a rule applies.
 
-Separate them when that makes the behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
+Separate them when that makes behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
 
-### 5. Put conditions before commands when that clarifies the logic
+### Step 5: Put conditions before commands when that clarifies the logic
+Requires: Steps 1 to 4 are complete.
 
 If a rule depends on a condition, put the condition first when doing so makes the logic easier to follow and does not change timing or emphasis.
 
-### 6. Preserve exact obligation strength
+### Step 6: Preserve exact obligation strength
+Requires: Steps 1 to 5 are complete.
 
 Keep requirement, recommendation, permission, and prohibition at the same level.
 
 Use RFC 2119 terms when they genuinely clarify normative force. Do not normalize severity labels mechanically or just to sound more formal.
 
-### 7. Keep the action path easy to scan
+### Step 7: Keep the action path easy to scan
+Requires: Steps 1 to 6 are complete.
 
 Use short paragraphs, clean lists, and bounded sentences when they make the behavior easier to audit.
 
 Do not reshape source text just to make it feel lighter. Scanability helps only when it preserves the same behavior.
 
-### 8. Use the smallest structure that makes the rule clear
+### Step 8: Use the smallest structure that makes the rule clear
+Requires: Steps 1 to 7 are complete.
 
-Do not over-edit. Improve the prose enough that the intended behavior is easier to follow and harder to misread.
+Do not over-edit. Improve the prose enough to make the intended behavior easier to follow and harder to misread.
+
+If the workflow already has an implicit stage model, prefer stage-aware cleanup over flattening adjacent notes into peer numbered steps.
 
 ## Core rules
 
 ### 1. Treat descriptions as trigger logic
 
-Frontmatter descriptions are not just summaries. They help decide when the skill is used.
+Frontmatter descriptions help decide when the skill is used.
 
 When tightening a description:
 
@@ -280,7 +342,7 @@ When tightening a description:
 - do not add adjacent trigger families unless expansion was explicitly requested
 - do not convert a short description into a broad trigger inventory unless the user asked for that
 
-If a phrase does trigger work, keep it or replace it only with wording that preserves the same scope exactly.
+If a phrase does trigger work, keep it, or replace it only with wording that preserves the same scope exactly.
 
 ### 2. Treat workflow prose as executable guidance
 
@@ -296,8 +358,15 @@ Check for:
 - conditions that gate an action
 - warnings that explain why a step matters
 - verbs that carry behavior, such as `stop`, `pause`, `wait`, `proceed`, `skip`, `require`, or `allow`
+- stage boundaries or phase markers that already organize the workflow
+- landmark checkpoints that other sections may reference
 
 Do not merge steps or compress qualifiers if doing so hides decision points.
+Do not promote stage notes, rationale, or handoff summaries into standalone numbered steps unless they carry real operational weight.
+
+If the document already names phases or stages in multiple places, consider a stage-aware rewrite rather than a flat step rewrite.
+If preserving important checkpoints conflicts with step quality, surface that tradeoff explicitly instead of padding the workflow with filler steps.
+
 Do not swap a behavior-bearing verb for a near-synonym unless the new wording preserves the same permission, timing, and obligation level.
 
 ### 3. Preserve exact references exactly
@@ -411,13 +480,13 @@ Do not prepend audit notes or explanation unless the user asked.
 
 Always include the consistent report from `assets/output-template.md`.
 
-Give the risk summary first, then the rewrite, then the completed report.
+Give the risk summary first. Then give the rewrite. Then give the completed report.
 
 ## Progressive disclosure
 
 Load references only when needed.
 
-When the user asks you to work on a skill, crawl the skill folder first. This tells you what behavior-defining prose exists beyond the current excerpt. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
+When the user asks you to work on a skill, crawl the skill folder first. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
 
 For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md` first. Then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
@@ -436,6 +505,7 @@ Treat local sentence-structure quality as part of the decision, not as a cosmeti
 
 Load references only when needed:
 
+- `references/serial-instruction-guidance.md` — explicit and implied step order, approval timing, validation loops, branching, and when workflow prose must become stronger ordered steps
 - `references/checklist.md` — final pass before delivery, output-mode compliance, no-rewrite decisions, and cross-file consistency checks
 - `references/frontmatter-descriptions.md` — description tightening, trigger-family preservation, and trigger-scope safety
 - `references/workflow-guardrails.md` — workflow, approval, rationale, verb-sensitivity, and exact-reference preservation
@@ -455,6 +525,12 @@ Before you deliver, ask:
 - Did any behavior-bearing verb drift into a softer or different action?
 - Did any rationale sentence get cut even though it explained a guardrail or timing rule?
 - Did any example that defines scope get removed?
+- Did I create any numbered steps that are really stage notes?
+- Did I preserve numbering at the cost of weak filler steps?
+- Is the first real operation easy to find?
+- Did I duplicate a stage-level rule as a numbered step?
+- Would a stage container be safer than more `### Step N` blocks?
+- If the rewrite changed stages, checkpoints, or numbering architecture, did I classify it as structural?
 - Is the rewrite actually clearer, or just shorter?
 
 If any answer is risky, revise less.
@@ -463,7 +539,29 @@ If the task is audit-only, also ask: did I accidentally draft replacement wordin
 
 ## Required self-check before delivery
 
+### Step 0: Track progress
+Do this before any other work when the verification workflow has 4 or more real actions.
+Create a short checklist in your working state or reply and update it after each step.
+
+- [ ] Step 1: Re-read the trigger or scope language
+- [ ] Step 2: Check for accidental synonym drift
+- [ ] Step 3: Check obligation and severity terms
+- [ ] Step 4: Check referents
+- [ ] Step 5: Re-check exact tokens and behavior-bearing verbs
+- [ ] Step 6: Confirm artifact-set discovery
+- [ ] Step 7: Confirm folder-level coverage
+- [ ] Step 8: Confirm local-tightening sweep status
+- [ ] Step 9: Confirm unchanged-file classification if needed
+- [ ] Step 10: Confirm incomplete-discovery disclosure if needed
+- [ ] Step 11: Confirm rationale preservation
+- [ ] Step 12: Confirm structural-behavior equivalence
+- [ ] Step 13: Confirm ordered behavior is still visible
+- [ ] Step 14: Confirm no pseudo-step inflation or filler numbering
+- [ ] Step 15: Confirm structural-rewrite disclosure if needed
+- [ ] Step 16: Confirm audit-only output stayed findings-only
+
 This step is not optional.
+Do not deliver before this check is complete.
 
 1. Re-read the trigger or scope language. Would it still route the same requests?
 2. Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
@@ -473,11 +571,14 @@ This step is not optional.
 6. Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS.md`, and any inspected instruction files before deciding the artifact set was complete.
 7. Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract.
 8. If you changed any file in a folder-level rewrite, confirm that you ran a dedicated local-tightening sweep across the other inspected behavior-bearing files before you left them unchanged.
-9. If any inspected behavior-bearing file stayed unchanged, confirm that you can classify the reason exactly as `Already near minimum safe form`, `Rewrite would add drift risk without meaningful clarity gain`, or `Local-tightening sweep incomplete`. Do not use a generic `No edit needed` classification.
+9. If any inspected behavior-bearing file stayed unchanged, classify the reason exactly as `Already near minimum safe form`, `Rewrite would add drift risk without meaningful clarity gain`, or `Local-tightening sweep incomplete`. Do not use a generic `No edit needed` classification.
 10. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
 11. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
 12. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
-13. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
+13. If the text contains explicit or implied ordered instructions, confirm that the order, gates, branch destinations, and return paths are still visible as ordered behavior.
+14. Confirm that you did not create numbered steps that are really stage notes, preserve numbering by padding filler steps, or bury the first real operation behind transition-only steps.
+15. If the rewrite changed stages, checkpoints, numbering architecture, or overview/checklist alignment, confirm that you classified it as structural rather than presenting it as local cleanup.
+16. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
 
 ## Limits
 
@@ -487,7 +588,7 @@ This skill improves behavior-defining prose safely. It does not replace domain r
 
 When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or sentence structures that make the behavior harder to follow than necessary. If you changed any file in the artifact set, do a dedicated local-tightening sweep of the other inspected behavior-bearing files before you leave them unchanged. Edit those files when needed so the folder remains internally consistent and locally clear before you deliver the work.
 
-Cross-file alignment is REQUIRED, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
+Cross-file alignment is required, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

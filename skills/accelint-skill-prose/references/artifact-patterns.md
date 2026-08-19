@@ -13,12 +13,14 @@ Goal: keep trigger logic compact, explicit, and stable.
 Use this pattern when you are deciding how to shape the description, not when you are checking trigger-family safety in detail. For trigger-preservation rules, load `frontmatter-descriptions.md`.
 
 Shape descriptions so they:
+
 - name the task clearly
 - keep scope-defining nouns and verbs explicit
 - keep boundary language visible
 - avoid marketing filler
 
 Useful order:
+
 1. what the skill does
 2. when to use it
 3. boundary or non-goal when needed
@@ -30,6 +32,7 @@ Goal: make the action path easy to follow without changing order.
 Use this pattern when you are deciding how to present the workflow, not when you are checking exactness, gates, or timing drift in detail. For those safety checks, load `workflow-guardrails.md`.
 
 Shape workflow prose so it:
+
 - leads with the action or timing boundary
 - keeps one step or decision per line when possible
 - keeps approval gates and stop points explicit
@@ -42,6 +45,7 @@ Goal: make the limit direct, exact, and hard to weaken by paraphrase.
 Use this pattern when you are shaping the prose. For obligation-level normalization, load `rfc-2119.md`.
 
 Shape guardrails so they:
+
 - state the prohibition or requirement directly
 - preserve the original obligation level
 - name the protected behavior or risk when that helps compliance
@@ -52,6 +56,7 @@ Shape guardrails so they:
 Goal: explain why a rule exists without burying the rule itself.
 
 Shape rationale so it:
+
 - follows or sits next to the rule it supports
 - names the failure mode the rule prevents
 - stays descriptive rather than turning into a second procedure
@@ -62,6 +67,7 @@ Shape rationale so it:
 Goal: keep examples only when they do real behavior work.
 
 Keep examples when they:
+
 - define scope
 - mark a boundary case
 - show exact output shape
@@ -74,6 +80,7 @@ Remove or tighten examples only when they are redundant and not doing scope or b
 Goal: help the user act without smuggling in a rewrite.
 
 Shape findings so they:
+
 - lead with the highest-risk issue
 - identify the source text or section clearly
 - explain the behavior risk

@@ -6,7 +6,7 @@ Use this reference when tightening a skill description or other short trigger-de
 
 A frontmatter description is compact trigger logic. Treat it like behavior-defining scope, not like marketing copy.
 
-If the description belongs to a skill folder, check the root `SKILL.md` and the relevant behavior-bearing support files before tightening it. Description wording must still match the actual body guidance and boundaries the skill enforces elsewhere across the folder.
+If the description belongs to a skill folder, check the root `SKILL.md` and the relevant behavior-bearing support files before tightening it. The description must still match the body guidance and boundaries the skill enforces across the folder.
 
 ## Preserve exactly when important
 
@@ -16,7 +16,7 @@ Default to preserving these unless the user asked to change them:
 - quoted trigger phrases
 - trigger families whose coverage depends on grouped examples
 - boundary language such as planning-only or audit-only limits
-- named artifact types like `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, prompts, checklists, templates
+- named artifact types like `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, prompts, checklists, and templates
 - exact tool or command references when they define scope
 
 ## Common failure modes
@@ -50,14 +50,15 @@ Bad examples:
 - remove filler around an existing scope phrase
 - shorten repeated framing while keeping the same trigger nouns and verbs
 - preserve representative trigger families even when you compress their phrasing
-- split one dense sentence into two shorter ones if both preserve the same boundary
-- keep quoted phrases and exact scope anchors intact while tightening surrounding text
+- split one dense sentence into two shorter sentences if both preserve the same boundary
+- keep quoted phrases and exact scope anchors intact while tightening the surrounding text
 
 ## No-rewrite cases
 
 Recommend no rewrite when the description is already compact, exact, and behaviorally clear.
 
 Common signs:
+
 - further shortening would drop a trigger family or boundary
 - a long trigger list is doing real coverage work
 - a rephrase would trade exact scope for prettier wording

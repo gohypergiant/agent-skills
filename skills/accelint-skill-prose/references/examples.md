@@ -12,6 +12,7 @@ Use these examples when you need a concrete model for what safe editing looks li
 > If the design looks mostly okay, you can skip the detailed review unless there are obvious red flags.
 
 **Good response shape:**
+
 - Summary of risk
 - Findings with source text, risk, and why it matters
 - No full rewritten passage
@@ -24,6 +25,7 @@ The user asked for audit-only output. Giving a rewritten passage would violate m
 **Request:** Audit this workflow note, then give me a safer rewrite.
 
 **Safe response pattern:**
+
 1. Summary of risk
 2. Findings
 3. Rewritten passage
@@ -88,6 +90,7 @@ It collapses distinct trigger families into a vague bucket and weakens the descr
 **Request:** Tighten this skill's prose safely. The user pasted only one section, but the skill also has `AGENTS.md` and `references/` files.
 
 **Good response pattern:**
+
 1. Define the artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, and the behavior-bearing `references/` files that complete the contract
 2. Read the root `SKILL.md`
 3. Load the behavior-bearing support files that carry workflow rules, examples, trigger guidance, or exact wording constraints, including relevant `references/` files
@@ -114,7 +117,7 @@ A local rewrite can create drift if linked files still use older terms, weaker s
 > Complete device setup first. VPN access is provisioned after your device is configured, and you will not receive credentials until IT confirms setup is complete.
 
 **Why the unsafe version drifts:**
-It escalates a simple note into a more procedural, policy-like instruction and adds process detail the source did not require.
+It escalates a simple note into more procedural, policy-like instruction and adds process detail the source did not require.
 
 ## 8. Preserve rationale when it carries policy
 
@@ -161,4 +164,4 @@ The rewrite leads with timing and action, keeps the dependency explicit, and mak
 > Preserve the checklist logic, but group the items into trigger safety, workflow safety, and exact-reference safety if the current order hides the control points.
 
 **Why this distinction matters:**
-Default mode keeps the structure local. Strict mode allows reorganization only when structure itself is the clarity problem.
+Default mode keeps the structure local. Strict mode allows reorganization only when the structure itself is the clarity problem.
