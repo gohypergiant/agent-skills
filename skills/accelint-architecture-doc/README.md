@@ -41,25 +41,35 @@ The skill detects file state, chooses the mode, scans for evidence, asks necessa
 
 ## How it works
 
-**Phase 0: Scope and File Detection**
-- Detect monorepo scope (root or package-level)
-- Check whether ARCHITECTURE.md exists and follows template
-- Choose mode: create, refresh, or restructure
+### Step 0: Track progress
+For create, refresh, or restructure workflows, start with a short checklist and update it after each major step.
 
-**Phase 1: Discovery**
-- Scan five domains in parallel when possible: project identity, tech stack, infrastructure, data stores, testing
-- Infer from package.json, docker-compose.yml, IaC configs, CI workflows, ORM schemas
-- Tag findings as `INFERRED [source]` or `UNKNOWN`
+### Step 1: Detect scope and related files
+1. Detect monorepo scope, root or package-level.
+2. Check for `openspec/config.yml` or `openspec/config.yaml` before mode detection.
 
-**Phase 2: Targeted Interview**
-- Ask only about `UNKNOWN` fields (deployment, security, roadmap)
-- Group related questions into conversational turns
+### Step 2: Detect mode and apply the correct gate
+1. Check whether `ARCHITECTURE.md` exists and follows the template.
+2. Choose mode: create, refresh, or restructure.
+3. In restructure mode, stop and wait for the user's explicit `(a)`, `(b)`, or `(c)` choice before you modify the file.
 
-**Phase 3: Preview and Write**
-- Show complete ARCHITECTURE.md with inference source annotations
-- Confirm before writing
-- Strip annotations from final file
-- Update agent behavior docs (AGENTS.md or CLAUDE.md) to reference the new file
+### Step 3: Run discovery and merge findings
+1. Scan five domains in parallel when possible: project identity, tech stack, infrastructure, data stores, and testing.
+2. Infer from `package.json`, `docker-compose.yml`, IaC configs, CI workflows, and ORM schemas.
+3. Tag findings as `INFERRED [source]` or `UNKNOWN`.
+
+### Step 4: Ask the targeted interview questions
+1. Ask only about `UNKNOWN` fields and confirmed drift gaps.
+2. Group related questions into conversational turns.
+
+### Step 5: Show the preview and wait for confirmation
+1. Show the complete `ARCHITECTURE.md` with inference source annotations.
+2. Treat the preview as a required checkpoint, not a courtesy.
+
+### Step 6: Write the approved files and summarize open TODOs
+1. Confirm before writing.
+2. Strip annotations from the final file.
+3. Update agent behavior docs, `AGENTS.md` or `CLAUDE.md`, to reference the new file when needed.
 
 ## Output structure
 
@@ -147,7 +157,7 @@ The skill includes 11 eval scenarios in `evals/evals.json` covering create, refr
 
 ## Version
 
-Current version: 1.1.2
+Current version: 1.2.0
 
 See `CHANGELOG.md` for release history.
 

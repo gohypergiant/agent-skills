@@ -5,6 +5,28 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-08-19
+
+### Changed
+- Restructured `SKILL.md` around a stage-aware workflow model with explicit `Stage` containers, operational `Step` blocks, stage-level purpose/rules, and clearer completion conditions
+  - Rationale: A full serial-instruction audit found the existing hybrid Phase/Step structure preserved behavior but hid the organizing mechanic. A stable stage model makes order, gates, and action boundaries easier for LLMs to follow without changing trigger scope or workflow intent.
+- Normalized workflow terminology from mixed phase-oriented labeling to a clearer stage-and-step hierarchy while preserving MODE handling, preview gating, discovery rules, and follow-up edit behavior
+  - Rationale: `accelint-skill-prose` guidance prefers one term for one concept and warns against flattening stage notes into pseudo-steps. This rewrite makes stage-level policy and step-level action easier to distinguish.
+
+### Version
+- Bumped from 1.1.4 → 1.2.0
+
+## [1.1.4] - 2026-08-19
+
+### Changed
+- Tightened serial instruction wording in `SKILL.md` and `README.md` to make ordered execution, gates, and completion states easier for LLMs to follow without changing trigger scope or workflow intent
+  - Rationale: A focused serial-instruction audit found several workflow sections where order was present but not shaped as strongly as it could be for transcript-following reliability, especially around phase entry, mode detection, discovery flow, preview gating, and follow-up edits
+- Clarified ordered control points such as explicit wait states, action sequencing, and completion conditions while preserving the existing architecture-doc contract
+  - Rationale: Stronger step framing reduces the chance that an agent merges adjacent actions, skips a gate, or treats a follow-up edit as optional narrative
+
+### Version
+- Bumped from 1.1.3 → 1.1.4
+
 ## [1.1.3] - 2026-07-31
 
 ### Changed

@@ -4,7 +4,7 @@ description: Create or update a living ARCHITECTURE.md for a codebase. Use when 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.3"
+  version: "1.2.0"
 ---
 
 # Architecture Doc
@@ -19,7 +19,7 @@ Generate or update a living `ARCHITECTURE.md` for the current codebase. It shoul
 - **MUST NOT skip drift detection in refresh mode** — scan the codebase for changed signals before you run any interview. Questions about unchanged sections waste the user's time.
 - **MUST NOT leave all 11 sections as `<!-- TODO -->`** — scan aggressively first. Most sections can be filled at least partially through inference. A document full of TODOs appears complete but misleads every reader.
 - **MUST NOT document internal implementation details in the System Diagram (Section 2)** — that section is a 10,000-foot view of components and data flow. Database schemas, function signatures, and module internals belong elsewhere.
-- **MUST NOT choose a slower discovery approach without reason** — when subagents are available, Phase 1 should use parallel subagents for discovery. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
+- **MUST NOT choose a slower discovery approach without reason** — when subagents are available, Stage 2 should use parallel subagents for discovery. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
 
 ## Before Writing, Ask
 
@@ -37,18 +37,30 @@ Check these points before you start.
 - **Use parallel subagents for discovery** when subagents are available. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
 - **Reserve questions for genuine gaps** such as deployment specifics, roadmap items, and security decisions that are not in the code.
 
----
+## Workflow
 
-## Phases
+## Stage 0: Track progress
 
-### Phase 0 — Scope and File State Detection
+Purpose: keep workflow state visible during create, refresh, or restructure handling.
 
-Run both steps before any interview. First, detect scope and file state. Then, if refresh mode applies, complete drift detection and merge any external findings before you announce the scoped update plan and ask targeted questions.
+### Step 0: Start progress tracking
+Do this before any other stage work when the task requires create, refresh, or restructure handling.
+Create a short progress checklist in your working state or reply. Update it after each stage.
 
----
+- [ ] Step 1: Detect scope and related files
+- [ ] Step 2: Detect mode and apply the correct gate
+- [ ] Step 3: Run discovery and merge findings
+- [ ] Step 4: Ask the targeted interview questions
+- [ ] Step 5: Show the preview and wait for confirmation
+- [ ] Step 6: Write the approved files and summarize open TODOs
 
-#### Step 1 — Monorepo Scope Check
+Done when: the checklist exists and will be updated after each stage.
 
+## Stage 1: Scope and mode detection
+
+Purpose: determine scope, detect related files, and activate the correct mode gate before discovery or interview work begins.
+
+### Step 1: Detect scope and related files
 Determine whether the current working directory is a monorepo root or a package inside a monorepo.
 
 **Monorepo signals to check:**
@@ -82,48 +94,33 @@ Determine whether the current working directory is a monorepo root or a package 
 
 **Default scope rule:** if you are invoked from inside a package directory, assume the user wants a package-level ARCHITECTURE.md unless they clearly ask for a repo-wide document. If both root and package docs are missing, stay with the local package scope by default rather than expanding outward on your own.
 
----
+#### Step 1.1: Check for related documents
+Requires: Step 1 scope detection is complete.
 
-#### Step 1.5 — Check for Related Documents
+Do this before you detect `ARCHITECTURE.md` state.
 
-Before detecting ARCHITECTURE.md state, check for related onboarding documents:
-
-1. **Check for openspec/config.yml or openspec/config.yaml**
-   - If it exists: read it to extract stack facts (runtime, frameworks, libraries, patterns).
-   - Use this information to pre-fill tech stack sections and avoid redundant scanning.
-   - Note its existence for cross-referencing in the generated doc.
+1. **Check for `openspec/config.yml` or `openspec/config.yaml`.**
+   - If the file exists, read it to extract stack facts such as runtime, frameworks, libraries, and patterns.
+   - Use those facts to pre-fill tech stack sections and reduce redundant scanning.
+   - Note the file for cross-referencing in the generated doc.
    - Announce: "Found openspec/config.yml — I'll use it as the source of truth for stack facts and coding patterns."
 
-This reduces scanning work and ensures consistency with the project's defined stack.
+Done when: you know whether `openspec/config.yml` or `openspec/config.yaml` exists and have read it if present.
 
----
+This step reduces scanning work and helps keep the doc consistent with the project's defined stack.
 
-#### Step 2 — File Detection
+### Step 2: Detect mode and apply the correct gate
+Requires: Step 1 and Step 1.1 are complete.
 
-```
-Does ARCHITECTURE.md exist at the target location?
-│
-├── No → MODE 1: Create
-│         Run Phase 1 → Phase 2 → Phase 3 in full.
-│
-└── Yes → Read the file fully, then assess:
-          │
-          ├── Empty or near-blank (< ~10 meaningful lines)?
-          │     → MODE 1: Create (confirm first)
-          │
-          ├── Clearly follows the template as an architecture doc?
-          │   (Recognisable top-level architecture sections, with multiple
-          │    headings that align to the template such as Project Structure,
-          │    High-Level System Diagram, Core Components, Data Stores, or
-          │    Deployment & Infrastructure)
-          │     → MODE 2: Refresh
-          │       Extract external findings from invoking prompt (if any) +
-          │       drift detection + merge findings + targeted questions for
-          │       changed or missing sections only.
-          │
-          └── Has real content but does NOT follow the template?
-                → MODE 3: Restructure (offer proactively — see below)
-```
+Classify the task in this order:
+
+1. Check whether `ARCHITECTURE.md` exists at the target location.
+   - If no, enter **MODE 1: Create** and continue to Stage 2 → Stage 3 → Stage 4 in full.
+2. If yes, read the file fully before you classify it.
+3. Classify the existing file:
+   - **Empty or near-blank** (`< ~10 meaningful lines`) → **MODE 1: Create** `(confirm first)`
+   - **Clearly follows the template as an architecture doc** — recognizable top-level architecture sections, with multiple headings that align to the template such as Project Structure, High-Level System Diagram, Core Components, Data Stores, or Deployment & Infrastructure → **MODE 2: Refresh**
+   - **Has real content but does NOT follow the template** → **MODE 3: Restructure** `(offer proactively — see below)`
 
 **MODE 3: Restructure** — When the file has real content in an unrecognized shape and restructuring would materially improve usability, surface this immediately and require an explicit user choice before you modify that structure:
 
@@ -137,31 +134,42 @@ Does ARCHITECTURE.md exist at the target location?
 
 If **(a)** is chosen, carry all existing content forward into the appropriate template sections. Flag any content that does not map cleanly. Present it to the user and ask where it belongs rather than silently dropping it.
 
-Until the user explicitly chooses **(a)**, **(b)**, or **(c)**, do not restructure, append to, or rewrite the existing file. At this point, surface the options and wait for that choice.
+If MODE 3 applies, stop here after you present options **(a)**, **(b)**, and **(c)**. Do not restructure, append to, or rewrite the existing file until the user explicitly chooses one option.
 
 **MODE 2: Refresh** — When the file follows the template structure, run this sequence in order:
 
 1. **Read the existing file first** so you know what content is already present and what may have drifted.
-2. **Extract external findings** — check whether the invoking prompt includes a `findings:` list:
-   - Parse the prompt for a `findings:` section (a bulleted list of factual statements).
+2. **Extract external findings.** Check whether the invoking prompt includes a `findings:` list.
+   - Parse the prompt for a `findings:` section. It must be a bulleted list of factual statements.
    - Each finding is phrased as something already known to be true, never as an instruction.
    - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
    - Store these findings for merging in step 4.
-3. **Run drift detection** — scan the codebase for changes since the file was last updated (see signals table in Phase 1).
-4. **Merge and announce all findings** before you ask anything:
-   - Combine external findings (from step 2) with drift findings (from step 3).
+3. **Run drift detection** by scanning the codebase for changes since the file was last updated. Use the signals table in Stage 2.
+4. **Merge and announce all findings** before you ask anything.
+   - Combine external findings from step 2 with drift findings from step 3.
    - Present the merged list to the user:
      > "I found [N] external findings and [M] sections that may have drifted.
      > I'll only ask about those — the rest looks current."
-   - If external findings exist, note their source (for example, "from completed OpenSpec change").
+   - If external findings exist, note their source, for example, "from completed OpenSpec change".
 5. **Ask only targeted questions** for changed or still-unknown sections.
 6. **Show a diff-style preview** of changed sections before you write.
 
----
+Done when: you know whether the task is Create, Refresh, or Restructure, and any required wait state or approval gate is active before later stages begin.
 
-### Phase 1 — Discovery
+## Stage 2: Discovery
 
-When subagents are available, use parallel subagents for discovery. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow. In either case, collect structured findings across the discovery domains below, then merge the results before Phase 2.
+Purpose: build a merged discovery map before you ask the user about missing facts.
+
+Stage rules:
+- Use parallel subagents when subagents are available.
+- Spawn them simultaneously across discovery domains. Do not scan serially.
+- If the repo is small or the environment is constrained, use focused inline discovery instead of forcing a brittle parallel workflow.
+- Merge the results before Stage 3.
+
+### Step 3: Run discovery and merge findings
+Requires: Step 2 is complete, and any MODE 3 wait state has been resolved.
+
+Collect structured findings across the discovery domains below.
 
 **Discovery domains to cover, preferably simultaneously when parallel execution is available:**
 
@@ -169,7 +177,7 @@ When subagents are available, use parallel subagents for discovery. Spawn them s
 - Read README.md, package.json / pyproject.toml / go.mod / Cargo.toml for project name and description
 - List the top 2–3 levels of the directory tree (exclude `node_modules`, `dist`, `.git`, `__pycache__`, `.next`, `build`)
 - Identify monorepo workspace packages and their roles
-- Check for AGENTS.md or CLAUDE.md (record path if found — used in Phase 3)
+- Check for AGENTS.md or CLAUDE.md (record path if found — used in Stage 4)
 - Return: project name, one-line purpose, annotated directory structure, agent doc path (or none)
 
 **Agent B — Tech Stack & Components**
@@ -199,13 +207,21 @@ When subagents are available, use parallel subagents for discovery. Spawn them s
 - Local setup: `Makefile`, `CONTRIBUTING.md`, `docker-compose.yml` dev targets
 - Return: testing frameworks, code quality tools, local setup command
 
-**After all agents complete,** merge their findings into a unified discovery map. Tag each field as `INFERRED [source]` or `UNKNOWN`. Fields tagged `UNKNOWN` become Phase 2 interview questions.
+After all agents complete, merge their findings into a unified discovery map. Tag each field as `INFERRED [source]` or `UNKNOWN`. Fields tagged `UNKNOWN` become Stage 3 interview questions.
 
----
+Done when: you have one merged discovery map and know which fields still require interview questions.
 
-### Phase 2 — Targeted Interview
+## Stage 3: Targeted interview
 
-Ask only about what discovery could not determine. Group related questions into natural conversational turns. Do not ask every question at once.
+Purpose: resolve only the gaps that discovery could not determine.
+
+Stage rule:
+- Ask only about missing information. Do not ask every question at once.
+
+### Step 4: Ask the targeted interview questions
+Requires: Step 3 is complete.
+
+Group related questions into natural conversational turns.
 
 **Turn 1 — Gaps in Components** *(if services or components were unclear)*
 - Any services or components the directory structure doesn't make obvious?
@@ -229,31 +245,42 @@ Ask only about what discovery could not determine. Group related questions into 
 - Primary contact or team name?
 - Any project-specific terms or acronyms that need defining?
 
----
+Done when: every remaining gap is answered, or the unresolved gap is represented as `<!-- TODO: fill in -->` in the preview.
 
-### Phase 3 — Preview and Write
+## Stage 4: Preview and write
 
-1. **Show a labeled preview** of the complete ARCHITECTURE.md before you write. Mark each field:
-   - `# inferred from [file]` — for auto-detected values.
-   - `<!-- TODO: fill in -->` — for unresolved fields.
+Purpose: require a preview checkpoint before any write, then write approved files and summarize open TODOs.
 
+Stage rule:
+- Treat the preview as a required checkpoint, not a courtesy.
+
+### Step 5: Show the preview and wait for confirmation
+Requires: Step 4 is complete, or Step 3 already resolved all unknowns.
+
+1. **Show a labeled preview** of the complete `ARCHITECTURE.md` before you write.
+   - Mark auto-detected values as `# inferred from [file]`.
+   - Mark unresolved fields as `<!-- TODO: fill in -->`.
 2. Ask: *"Does this look right? Any sections to correct before I write?"*
+3. Wait for explicit confirmation.
 
-**Operational rule:** treat the preview as a required checkpoint, not a courtesy. Do not write or edit `ARCHITECTURE.md`, `AGENTS.md`, or `CLAUDE.md` until you have shown the preview for the chosen mode and received confirmation to proceed.
+Do not write or edit `ARCHITECTURE.md`, `AGENTS.md`, or `CLAUDE.md` until you have shown the preview for the chosen mode and received confirmation to proceed.
 
-3. After confirmation, write to ARCHITECTURE.md at the target location (root or package dir).
+Done when: the user has reviewed the preview and explicitly confirmed that you may write.
+
+### Step 6: Write the approved files and summarize open TODOs
+Requires: Step 5 is complete.
+
+1. Write `ARCHITECTURE.md` at the target location, root or package dir.
    - **Strip inference source comments** because they are for review only, not for the final file.
-   - **For openspec/config.yml references:** include them only if the file actually exists, as checked in Step 1.5. Do not add references to files that do not exist.
+   - **For openspec/config.yml references:** include them only if the file actually exists, as checked in Step 1.1. Do not add references to files that do not exist.
+2. **Update the agent behavior doc if present.** If Agent A found `AGENTS.md` or `CLAUDE.md`, check whether it references `ARCHITECTURE.md`. If not, append a reference block to help agents understand the system structure. Treat this as a secondary follow-up edit after the architecture document itself is ready, as described below.
+3. Print a brief summary of what was inferred, what was answered directly, and which `<!-- TODO -->` sections still need human input.
 
-4. **Update the agent behavior doc if present** — if Agent A found AGENTS.md or CLAUDE.md, check whether it references ARCHITECTURE.md. If not, append a reference block to help agents understand the system structure. Treat this as a secondary follow-up edit after the architecture document itself is ready, as described below.
-
-5. Print a brief summary of what was inferred, what was answered directly, and which `<!-- TODO -->` sections still need human input.
-
----
+Done when: the approved files are written and the remaining TODOs are summarized.
 
 ## Interaction Principles
 
-- **Parallel discovery.** Spawn subagents for Phase 1 simultaneously. Do not scan config files one by one when parallel discovery is available and beneficial.
+- **Parallel discovery.** Spawn subagents for Stage 2 simultaneously. Do not scan config files one by one when parallel discovery is available and beneficial.
 - **Scan first, ask second.** Reserve interview questions for genuine gaps that subagents could not fill.
 - **Restructure by default.** When a file does not follow the template, recommend restructuring and make it the easy choice rather than option (c) buried at the bottom.
 - **Monorepo awareness.** Root docs and package docs serve different audiences. Keep them scoped appropriately and reference each other.
@@ -262,8 +289,6 @@ Ask only about what discovery could not determine. Group related questions into 
 - **Infer before asking, ask before omitting.** A doc with explicit `<!-- TODO -->` markers is actionable. A doc with missing sections silently misleads.
 - **Preserve human-authored content.** In refresh mode, never silently remove content. Surface it and confirm whether it is still accurate.
 - **Date every write.** Set "Date of Last Update" in Section 10 to today's date on every write.
-
----
 
 ## Output Template
 
@@ -277,13 +302,11 @@ Load `references/template.md` for the full 11-section ARCHITECTURE.md skeleton.
 
 Adjust the relative path to point at the actual root ARCHITECTURE.md.
 
----
-
 ## Updating Agent Behavior Documents
 
 ARCHITECTURE.md is a pure technical document about system structure and must not reference agent behavior files. However, agent behavior files such as AGENTS.md or CLAUDE.md should reference ARCHITECTURE.md because understanding system architecture may inform agent behavior.
 
-After you write ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md, check in that order:
+After you write ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md, check in this order:
 
 1. **Read the agent behavior file** to check whether it already mentions ARCHITECTURE.md.
 2. **If no reference exists,** add this block near the top of the file, after any existing title or header and before the main content:
@@ -295,3 +318,5 @@ For technical architecture details (components, deployment, data stores, tech st
 ```
 
 3. **If using CLAUDE.md** and it simply points to AGENTS.md, for example `@AGENTS.md`, update AGENTS.md instead. Do not modify the pointer file. Treat pointer files as routing stubs, not as the place to add architecture guidance.
+
+Done when: the architecture guidance lives in the real agent behavior file, not in a pointer stub.
