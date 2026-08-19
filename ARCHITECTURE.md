@@ -4,13 +4,13 @@ This document serves as a critical, living reference designed to equip agents an
 
 ## 1. Project Structure
 
+```text
 agent-skills/
 ├── skills/                               # Canonical source of truth for maintained agent skills
 │   ├── accelint-ac-to-playwright/        # TypeScript-backed skill package with CLI tooling for AC-to-Playwright conversion
 │   ├── accelint-architecture-doc/        # Skill for generating and refreshing ARCHITECTURE.md documents
 │   ├── accelint-archive-synthesis/       # Skill content for archive synthesis workflows
 │   ├── accelint-design-foundation/       # Skill content for design-system and styling guidance
-│   ├── accelint-nextjs-best-practices/   # Skill content for Next.js guidance
 │   ├── ...                               # Additional skill directories following the same pattern
 │   └── accelint-ts-testing/              # Skill content for TypeScript/Vitest testing guidance
 ├── .agents/
@@ -33,16 +33,22 @@ agent-skills/
 ├── CONTRIBUTING.md                       # Contributor workflow guidance
 ├── README.md                             # Repository overview and working conventions
 └── ARCHITECTURE.md                       # This document
+```
 
 ## 2. High-Level System Diagram
 
-[Maintainers] --> [skills/ source directories] --> [.agents/skills symlink layer] --> [Local agent harnesses]
-         \
-          +--> [docs/content/docs MDX content] --> [Next.js + Fumadocs docs app] --> [Vercel-hosted site]
-                                                                                 \
-                                                                                  +--> [LLM/text/search routes]
+```text
+[Skill Authors / Maintainers]
+           |
+           v
+   [skills/ source directories] ----> [.agents/skills symlink layer] ----> [Local agent harnesses]
+           |
+           +----> [docs/content/docs MDX content] ----> [Next.js + Fumadocs docs app] ----> [Vercel-hosted docs site]
+                                                            |
+                                                            +----> [Search API + llms.txt / markdown export routes]
 
-[GitHub Repository] --> [GitHub Actions CI] --> [Validation for skill package changes]
+[GitHub Repository] ----> [GitHub Actions CI] ----> [Validation for accelint-ac-to-playwright package]
+```
 
 ## 3. Core Components
 
@@ -62,7 +68,7 @@ agent-skills/
 
 **Name:** Embedded Docs App Route Handlers
 
-**Description:** Lightweight server-side functionality inside the Next.js app that serves search, LLM text endpoints, and generated documentation-adjacent responses. This repo does not contain a separate standalone backend service.
+**Description:** Lightweight server-side functionality inside the Next.js app that serves search, LLM text endpoints, markdown export routes, and generated Open Graph assets. This repository does not contain a separate standalone backend service.
 
 **Technologies:** Next.js App Router route handlers, TypeScript
 
@@ -72,7 +78,7 @@ agent-skills/
 
 **Name:** accelint-ac-to-playwright Tooling Package
 
-**Description:** A TypeScript-based utility package within the `skills/` tree that provides CLI commands for converting acceptance criteria into JSON test plans and Playwright spec artifacts. It is part of the repository’s authored skill ecosystem rather than a deployed service.
+**Description:** A TypeScript-based utility package within the `skills/` tree that provides CLI commands for converting acceptance criteria into JSON test plans and Playwright spec artifacts. It is part of the repository's authored skill ecosystem rather than a deployed service.
 
 **Technologies:** Node.js, TypeScript, Zod, Vitest
 
@@ -120,23 +126,23 @@ agent-skills/
 
 ## 6. Deployment & Infrastructure
 
-**Cloud Provider:** Vercel
+**Cloud Provider:** Vercel for the docs site only
 
 **Key Services Used:** Vercel hosting for the Next.js docs application, GitHub for source control and automation
 
 **CI/CD Pipeline:** GitHub Actions — `.github/workflows/vitest.yml`
 
-**Monitoring & Logging:** None currently documented
+**Monitoring & Logging:** <!-- TODO: fill in -->
 
 ## 7. Security Considerations
 
-**Authentication:** No application-level authentication detected or documented for the public docs site
+**Authentication:** No application-level authentication is documented or detected for the public docs site; repository contribution access is managed through GitHub accounts, SSH, and SSO policies outside the application runtime
 
-**Authorization:** No application-level authorization model documented
+**Authorization:** No application-level authorization model is documented for the docs site; repository write access is governed by GitHub permissions and pull request workflow
 
 **Data Encryption:** TLS in transit is assumed for GitHub- and Vercel-hosted surfaces; <!-- TODO: fill in if stricter guarantees or policies should be documented -->
 
-**Key Security Tools / Practices:** Git-based review workflow, GitHub Actions validation for `skills/accelint-ac-to-playwright`, repository ignores for local/generated artifacts
+**Key Security Tools / Practices:** Git-based review workflow, GitHub Actions validation for `skills/accelint-ac-to-playwright`, repository guidance forbidding committed secrets or credentials
 
 ## 8. Development & Testing Environment
 
@@ -158,9 +164,9 @@ agent-skills/
 
 **Repository URL:** https://github.com/gohypergiant/agent-skills
 
-**Primary Contact / Team:** Lyntris (formerly Accelint, formerly Hypergiant)
+**Primary Contact / Team:** Lyntris
 
-**Date of Last Update:** 2026-07-24
+**Date of Last Update:** 2026-08-19
 
 ## 11. Glossary / Acronyms
 
@@ -170,4 +176,4 @@ agent-skills/
 | Fumadocs | The documentation framework used by the `docs/` app to render and organize MDX-based documentation |
 | LLM Route | A machine-readable endpoint such as `llms.txt` or related text routes intended for LLM/tool consumption rather than normal page browsing |
 | Symlink Layer | The `.agents/skills/` directory that points back to canonical `skills/` directories so local harnesses consume the same sources |
-| QRSPI | A spec-planning workflow used in this repository’s skill ecosystem for structured change planning and execution |
+| QRSPI | A spec-planning workflow used in this repository's skill ecosystem for structured change planning and execution |
