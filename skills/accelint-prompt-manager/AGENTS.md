@@ -113,6 +113,8 @@ Follow this sequence:
 ## Workflow Summary
 
 ```
+Step 0: Verify Intent
+  ↓ Confirm prompt optimization, or stop and hand task execution back to the user
 Step 1: Intake & Assessment
   ↓ Extract intent, calibrate skill level, detect complexity
 Step 2: Pattern Detection
@@ -120,7 +122,7 @@ Step 2: Pattern Detection
 Step 3: Framework Selection & Optimization
   ↓ Apply CO-STAR/RISEN/RODES silently, use safe techniques
 Step 4: Validation & Handoff
-  ↓ Quality checks, flag remaining ambiguities, recommend execution mode
+  ↓ Quality checks, flag remaining ambiguities, deliver the optimized prompt, then offer post-delivery options
 ```
 
 ## Important Context

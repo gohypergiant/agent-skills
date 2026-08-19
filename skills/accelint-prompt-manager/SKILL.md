@@ -4,7 +4,7 @@ description: Turn user-provided requests, drafts, or prompt text into clearer, m
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.4.2"
+  version: "2.4.3"
 allowed-tools: Read AskUserQuestion Write Bash
 ---
 
@@ -26,7 +26,7 @@ Workflow summary:
 2. Identify ambiguities, missing constraints, trade-offs, and complexity.
 3. Create an optimized prompt, or ask targeted clarifying questions when needed.
 4. Deliver the optimized prompt directly to the user.
-5. Optionally save the optimized prompt or copy it to the clipboard.
+5. After delivery, optionally save the optimized prompt or copy it to the clipboard.
 
 Primary delivery:
 - Always present the optimized prompt first in your response, inside a markdown code block for easy copying.
@@ -106,6 +106,11 @@ Follow this sequence:
 2. Detect which reference, if any, matches the task.
 3. Load only the matching references you need.
 
+For workflow-bearing prose in this file:
+- Keep the ordered logic in `SKILL.md`.
+- Use references for thresholds, examples, heuristics, and extended rationale.
+- If a step depends on another step, keep that dependency explicit in the step body.
+
 Use these reference-loading rules:
 
 - **Credit-killing patterns detected?** → Load `references/credit-killing-patterns.md`
@@ -134,29 +139,29 @@ Load `references/complexity-detection.md` and `references/plan-mode-triggers.md`
 Use this progress checklist to track optimization:
 
 ```
+- [ ] Step 0: Verify Intent
 - [ ] Step 1: Intake & Assessment
 - [ ] Step 2: Pattern Detection
 - [ ] Step 3: Framework Selection & Optimization
 - [ ] Step 4: Validation & Handoff
 ```
 
-### Step 0: Verify Intent (Gate Question)
-
+### Step 0: Verify Intent
 Ask this gate question before Step 1 unless a skip condition applies:
 
 "I specialize in optimizing prompts to make them clearer and more actionable. Is that what you need, or did you want me to help with the task itself?"
 
-If the user wants prompt optimization, proceed to Step 1.
-
-If the user wants task execution, say, "I only optimize prompts—I do not execute the tasks they describe. Please exit this skill and I'll help you with the task itself." Then stop. Do not continue inside this skill.
+- If the user wants prompt optimization, continue to Step 1.
+- If the user wants task execution, say, "I only optimize prompts—I do not execute the tasks they describe. Please exit this skill and I'll help you with the task itself." Then stop. Do not continue inside this skill.
 
 Skip this gate question when:
 - The user explicitly requests prompt optimization ("optimize this prompt", "improve my prompt", "make this clearer")
 - The user provides a prompt in quotes or code blocks with meta-instructions
 - The context clearly indicates prompt optimization, such as framework discussion or questions about CO-STAR, RISEN, or RODES
 
-### Step 1: Intake & Assessment
+Done when: The skill has confirmed prompt optimization, or it has stopped and handed execution back to the user.
 
+### Step 1: Intake & Assessment
 **Goal:** Determine whether the user wants prompt optimization or task execution. Then understand intent, skill level, task complexity, and execution context.
 
 **Actions:**
@@ -170,22 +175,20 @@ Skip this gate question when:
    - **Simple:** Single clear objective, <3 steps, no ambiguity
    - **Moderate:** Some ambiguity, 3-5 steps, few dependencies
    - **Complex:** >3 interdependent decisions OR >5 sequential steps
-5. **Identify Execution Context** — Where and how will this run?
+5. **Identify Execution Context** — Determine where and how the prompt will run:
    - Interactive conversation vs batch API call
    - Model type and capabilities
    - Available tools and integrations
    - Token budget constraints
 
-**For Complex Tasks:** Recommend plan mode inside the optimized prompt or as part of your guidance before handoff. Explain: "This task involves [X dependencies and Y sequential steps]. Plan mode will help design the approach before execution and prevent rework."
+**Gate:**
+- If the task is complex, recommend plan mode inside the optimized prompt or in guidance before handoff. Explain: "This task involves [X dependencies and Y sequential steps]. Plan mode will help design the approach before execution and prevent rework."
+- If the user explicitly declines plan mode, continue to Step 2 with a note about complexity. Do not recommend plan mode again unless new information materially changes the complexity assessment.
+- If the request is extremely vague, ask the minimum foundational questions needed to identify the artifact, audience, goal, and constraints before you continue.
 
-**If the user explicitly declines plan mode:** Continue to the next Step with a note about complexity. Do not recommend plan mode again unless new information changes the complexity assessment materially.
-
-**For Extremely Vague Requests:** Ask foundational questions before optimizing. Start with the minimum set needed to identify the artifact, audience, goal, and constraints.
-
-**Output:** Clear understanding of request type, intent, user calibration, complexity level, and execution context.
+Done when: You have a clear understanding of request type, intent, user calibration, complexity level, and execution context.
 
 ### Step 2: Pattern Detection
-
 **Goal:** Identify credit-killing patterns, ambiguities, and trade-offs that undermine prompt effectiveness.
 
 **Actions:**
@@ -199,9 +202,9 @@ Skip this gate question when:
    - Front-loaded long context
    - Ambiguous pronouns in steps
 
-   If 3+ patterns are detected, load `references/credit-killing-patterns.md` before you continue with the rest of this phase.
+   If 3+ patterns are detected, load `references/credit-killing-patterns.md` before you continue with the rest of this step.
 
-2. **Flag Ambiguities** — List terms/constraints with multiple interpretations and decide whether you can resolve them with a safe default or need to ask the user first:
+2. **Flag Ambiguities** — List terms or constraints with multiple interpretations. Decide whether you can resolve each one with a safe default or must ask the user first:
    - "Comprehensive" — All edge cases [+time] vs common scenarios [balanced] vs overview [+speed]?
    - "Fast" — Response time, development time, or execution time?
    - "Simple" — Minimal code, easy to understand, or few dependencies?
@@ -214,21 +217,21 @@ Skip this gate question when:
    - Creativity vs structure
    - Token efficiency vs clarity
 
-   Present trade-offs explicitly; never assume user preference.
+   Present trade-offs explicitly. Never assume user preference.
 
-4. **Assess Missing Context** — What critical information is absent?
+4. **Assess Missing Context** — Identify critical information that is absent:
    - Target audience undefined
    - Success criteria unspecified
    - Constraints missing
    - Format requirements unclear
 
-**For newcomers:** Explain what you are detecting and why it matters.
-**For experts:** Cite pattern names directly.
+**Calibration:**
+- For newcomers, explain what you are detecting and why it matters.
+- For experts, cite pattern names directly.
 
-**Output:** Categorized list of issues (patterns, ambiguities, trade-offs, missing context) with severity levels and a decision on whether clarification is required.
+Done when: You have a categorized list of patterns, ambiguities, trade-offs, and missing context, plus a decision on whether clarification is required.
 
 ### Step 3: Framework Selection & Optimization
-
 **Goal:** Apply the appropriate framework (CO-STAR, RISEN, or RODES) and safe optimization techniques to create a clear, actionable prompt.
 
 **Actions:**
@@ -239,7 +242,7 @@ Skip this gate question when:
 
    If framework selection is unclear, load `references/frameworks.md` before you choose the framework.
 
-2. **Apply Framework Silently** — Route user intent through framework structure WITHOUT naming it:
+2. **Apply Framework Silently** — Route user intent through framework structure without naming it:
    - Extract: Context, Objective, Style, Tone, Audience, Response format (CO-STAR)
    - Extract: Role, Instructions, Steps, End goal, Narrowing (RISEN)
    - Extract: Role, Objective, Details, Examples, Sense check (RODES)
@@ -247,7 +250,7 @@ Skip this gate question when:
 3. **Apply Safe Techniques** — After you select the framework, use proven optimization methods:
    - **Specificity injection:** Replace vague terms with concrete criteria
    - **Constraint addition:** Define boundaries for creative freedom
-   - **Context positioning:** Critical info at start/end, not middle
+   - **Context positioning:** Put critical info at the start or end, not the middle
    - **Pronoun elimination:** Replace "it/this/that" with specific nouns
    - **Success criteria definition:** Pin to measurable outcomes
 
@@ -268,14 +271,13 @@ Skip this gate question when:
    - System prompt: Permanent guidelines, avoid temporal references
    - Tool integration: Structured format, clear input/output specs
 
-**Output:** An optimized prompt that addresses all detected issues, applies the appropriate framework structure, and matches the execution context.
+Done when: You have an optimized prompt that addresses the Step 2 issues, applies the appropriate framework structure, and matches the execution context.
 
 ### Step 4: Validation & Handoff
-
 **Goal:** Quality-check the optimized prompt and provide clear next steps.
 
 **Actions:**
-1. **Run Quality Checks:**
+1. **Run Quality Checks**
    - ✓ All ambiguities resolved or flagged for user decision
    - ✓ Success criteria are concrete and measurable
    - ✓ Constraints are specified where needed
@@ -290,12 +292,12 @@ Skip this gate question when:
    - Recommend a default when reasonable.
    - Get user confirmation before proceeding when the choice materially changes the prompt.
 
-3. **Recommend Execution Mode:**
+3. **Recommend Execution Mode**
    - **Simple tasks:** Execute directly with the optimized prompt.
    - **Moderate tasks:** Proceed with execution and monitor for issues.
    - **Complex tasks:** Use plan mode, if not already recommended.
 
-4. **Deliver the Optimized Prompt Directly:**
+4. **Deliver the Optimized Prompt Directly**
    - If critical information is missing, ask targeted questions first instead of fabricating details. Wait for the user's answer before you deliver the final optimized prompt.
    - If you already have enough information, present the optimized prompt first.
    - For newcomers: Keep questions and notes in plain language. Show a before/after comparison only when it helps.
@@ -303,8 +305,10 @@ Skip this gate question when:
    - **MUST:** Once you are ready to deliver, always present the optimized prompt first in a markdown code block. This ensures easy copying and prevents workflow blockage.
    - Use triple backticks with the `markdown` language identifier for clean formatting.
 
-5. **Offer Post-Delivery Options:**
-   After you deliver the optimized prompt, offer:
+5. **Offer Post-Delivery Options**
+   Do this only after Step 4 is complete and the optimized prompt is already delivered.
+
+   Offer:
    - "Would you like me to save this to a markdown file?"
    - "Should I copy this to your clipboard?"
    - "Or both?"
@@ -320,14 +324,14 @@ Skip this gate question when:
 
    **For refinements:** When the user asks to refine the prompt, deliver the refined version first. Then repeat these post-delivery options.
 
-6. **Offer to Iterate:**
+6. **Offer to Iterate**
    - "Would you like me to refine any specific aspect of this prompt?"
    - "Should I adjust the optimization for a different execution context?"
    - "Do you want to see alternative approaches to structuring this prompt?"
 
    **NEVER offer to execute the task.** Your job is prompt optimization plus optional save or copy.
 
-**Output:** Validated, executable prompt delivered directly in your response, plus clear next steps.
+Done when: The optimized prompt is validated, delivered directly in the response, and followed by any optional post-delivery actions.
 
 ## Freedom Calibration
 
@@ -356,8 +360,8 @@ When optimizing prompts that handle user input, consider injection attacks. Vali
 
 Use these defaults unless the user or context clearly calls for something else:
 
-- **Explicit optimization request:** Skip the gate question, optimize directly, and ask only the clarifying questions needed to avoid a bad prompt.
-- **Implicit or ambiguous request:** Use the gate question to separate prompt optimization from task execution.
-- **Extremely vague request:** Ask foundational questions such as artifact type, audience, purpose, constraints, and success criteria before drafting.
-- **High-complexity execution request:** Recommend plan mode in the optimized prompt or guidance because the downstream task needs design before execution.
-- **Prompt already strong:** Make only small, high-value edits rather than forcing a full framework rewrite.
+1. **Explicit optimization request** — Skip the gate question. Optimize directly. Ask only the clarifying questions needed to avoid a bad prompt.
+2. **Implicit or ambiguous request** — Use the gate question to separate prompt optimization from task execution.
+3. **Extremely vague request** — Ask foundational questions such as artifact type, audience, purpose, constraints, and success criteria before drafting.
+4. **High-complexity execution request** — Recommend plan mode in the optimized prompt or guidance because the downstream task needs design before execution.
+5. **Prompt already strong** — Make only small, high-value edits rather than forcing a full framework rewrite.

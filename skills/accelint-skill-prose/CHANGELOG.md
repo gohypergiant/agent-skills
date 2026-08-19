@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.1] - 2026-08-19
+
+### Changed
+- Reworked the serial-order guidance in `SKILL.md` so the detection and restructuring flow now uses explicit `### Step N` blocks with `Requires:` and `Done when:` checkpoints, making the order easier for agents to follow under load.
+- Reworked `SKILL.md` self-check instructions from a numbered verification list into named `### Step N` sections so long compliance checks expose state, preserve gates, and reduce hidden multi-action lines.
+- Updated `references/serial-instruction-guidance.md` to mirror the same stronger ordered-step shape for workflow classification, structure selection, and branch handling.
+
+### Version
+- Patch release at `0.8.1`.
+
 ## [0.8.0] - 2026-08-04
 
 ### Changed

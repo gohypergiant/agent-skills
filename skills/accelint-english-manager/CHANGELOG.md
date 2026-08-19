@@ -4,6 +4,12 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
+## [1.3.8] - 2026-08-19
+
+### Changed
+- Tightened serial instruction flow in `SKILL.md` so ordered workflows use clearer `Requires:` and `Done when:` checkpoints, more explicit completion conditions, and stronger step-by-step gating in drafting, revision, and audit paths.
+- Reworked `references/serial-instruction-guidance.md` so the guidance itself follows an explicit ordered-step shape for structure choice, dependency markers, stage-container use, branch routing, and delivery-check retry order.
+
 ## [1.3.7] - 2026-08-03
 
 ### Changed

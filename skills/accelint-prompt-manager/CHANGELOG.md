@@ -5,6 +5,18 @@ All notable changes to the accelint-prompt-manager skill will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.3] - 2026-08-19
+
+### Changed
+- **Serial workflow restructuring for stronger execution fidelity** — rewrote ordered workflow sections to make gates, dependencies, and completion boundaries more explicit without changing skill behavior
+  - Added `Step 0` to the progress checklist and aligned the workflow body around explicit `Done when:` boundaries
+  - Clarified that save/copy actions happen only after prompt delivery
+  - Tightened `How to Use` so `SKILL.md` keeps the ordered logic and references hold thresholds, heuristics, and examples
+  - Updated `AGENTS.md` workflow summary to match the root workflow order and post-delivery sequencing
+
+### Version
+- Bumped from 2.4.2 → 2.4.3 (patch version: behavior-preserving serial-instruction tightening)
+
 ## [2.4.2] - 2026-08-03
 
 ### Changed

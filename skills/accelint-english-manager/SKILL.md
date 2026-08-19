@@ -4,7 +4,7 @@ description: Use when the user wants prose rewritten, tightened, audited, simpli
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.7"
+  version: "1.3.8"
 ---
 
 # English Manager
@@ -36,28 +36,28 @@ These outrank style preferences.
 Choose the smallest fitting path before you edit.
 
 ### Step 1: Ask for the mode first
-For drafting or rewriting tasks, ask the user which mode they want before you edit, unless the user already specified the mode explicitly.
+Do this first for drafting or rewriting tasks unless the user already specified the mode explicitly.
 
 Offer these choices:
 - **`mode=default`** — local rewrite by default, plain and direct
 - **`mode=strict`** — stricter technical control, structural rewrite allowed when needed
 
 If the user did not choose a mode, ask a short clarifying question instead of assuming.
-
-For audit-only requests, you may proceed without asking for a mode if the user clearly wants review rather than a rewrite.
-Do not rewrite until the mode is known.
-If the audit later expands into a rewrite, ask for the mode before rewriting.
+Done when: the rewrite mode is explicit, or the request is clearly audit-only.
 
 ### Step 2: Choose the output mode
-Do this after Step 1.
+Requires: Step 1 is complete when the request needs a rewrite mode.
 
+Choose one output mode before you edit:
 - **Audit only** — review the text without rewriting it unless the user asks.
 - **Rewrite only** — return cleaner final text directly.
 - **Audit plus rewrite** — give findings first, then the rewrite.
 
 If the user asks for only the rewrite, return only the rewrite. Do not return audit notes unless the user asked for them.
+Done when: the output mode is explicit.
 
 ### Step 3: Preserve the constraints
+Requires: Step 2 is complete.
 Do this before you rewrite or restructure anything.
 
 Extract and protect these first:
@@ -69,9 +69,10 @@ Extract and protect these first:
 - quoted or technical text that must stay exact
 
 If a style rule conflicts with an explicit user constraint, the constraint wins.
+Done when: the protected constraints are identified.
 
 ### Step 4: Choose the scope through the mode
-Requires: Steps 1 to 3 are complete.
+Requires: Step 3 is complete.
 
 Let the mode set your default rewrite scope.
 
@@ -79,6 +80,7 @@ Let the mode set your default rewrite scope.
 - **`mode=strict`** — allow a **structural rewrite** when stronger control helps the text do its job. Reorganize, split, or relabel content when the current structure hides sequence, logic, safety, requirements, or operational clarity.
 
 Do not treat `mode=strict` as permission to broaden the task casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asks for a broader rewrite.
+Done when: the allowed rewrite scope is clear.
 
 ## Default writing method
 
@@ -156,6 +158,8 @@ If the user asks for strict STE-style review:
 4. Cite rule numbers only from the part of `references/ste-rules.md` that you actually loaded.
 5. If you did not load the relevant rule text, do not cite rule numbers.
 
+Do not combine these actions into one sentence. Keep the order explicit.
+
 If the user asks for "plain English," "simple English," "clean this up," or a similar generic cleanup request without naming a mode, treat that as a plain-language goal, not as implicit `mode=strict`.
 
 ## Serial-order detection and handling
@@ -228,10 +232,12 @@ Done when: the rewrite mode is explicit, or the request is truly audit-only.
 ### Step 2: Choose the output mode
 Requires: Step 1 is complete when the request needs a rewrite mode.
 Choose `Audit only`, `Rewrite only`, or `Audit plus rewrite` before you draft.
+Done when: the output mode is explicit.
 
 ### Step 3: Extract the constraints
 Requires: Steps 1 and 2 are complete.
 Identify the meaning, audience, tone, format, and exact wording that must stay fixed before you draft.
+Done when: the protected constraints are identified.
 
 ### Step 4: Apply the mode
 Requires: Step 3 is complete.
@@ -241,20 +247,24 @@ Done when: the allowed rewrite scope is clear.
 ### Step 5: Draft in direct English
 Requires: Steps 1 to 4 are complete.
 Write in plain, direct English that preserves the user's intended meaning, audience, tone, and explicit constraints.
+Done when: the draft does the same job as the source.
 
 ### Step 6: Keep repeated terms stable
 Requires: Step 5 is complete.
 Use one term for one concept. Do not rotate synonyms for style.
+Done when: repeated concepts use stable terms.
 
 ### Step 7: Make the action path easy to scan
 Requires: Steps 5 and 6 are complete.
 Do this when the reader must act.
 If the text contains ordered actions, load `references/serial-instruction-guidance.md` and make the order explicit.
+Done when: ordered actions are visible as ordered actions.
 
 ### Step 8: Run the self-check before delivery
 Requires: Steps 1 to 7 are complete.
 Do not deliver before Step 8 is complete.
 If the self-check fails, return to the earliest affected step.
+Done when: the self-check passes.
 
 ### For revising existing text
 
@@ -287,14 +297,19 @@ Done when: the allowed rewrite scope is clear.
 
 ### Step 4: Tighten the wording with the smallest safe change
 Requires: Steps 1 to 3 are complete.
+Do one safe rewrite pass that preserves the source job, meaning, tone, audience, and explicit constraints.
+Done when: the draft is clearer without changing the job.
 
 ### Step 5: Remove filler, stale phrasing, and avoidable abstraction
 Requires: Step 4 is complete.
+Remove wording that adds fog without adding meaning.
+Done when: the remaining wording is carrying meaning or control.
 
 ### Step 6: Split overloaded sentences or restructure only when substitution alone will not work
 Requires: Steps 4 and 5 are complete.
 If the source hides sequence, gates, or branch logic, load `references/serial-instruction-guidance.md` and rewrite the sequence explicitly.
 If sequence checks fail, return to Step 4.
+Done when: the workflow cannot be read as unordered advice.
 
 ### Step 7: Recheck pronouns, modality, and untouchables
 Requires: Steps 4 to 6 are complete.
@@ -304,22 +319,32 @@ Done when: referents are clear and obligation strength still matches the source.
 Requires: Steps 1 to 7 are complete.
 Do not deliver before Step 8 is complete.
 If the self-check fails, return to the earliest affected step.
+Done when: the self-check passes.
 
 ### For checking text instead of rewriting it
 
 ### Step 1: Identify the highest-risk issues first
 Put meaning drift, ambiguity, hidden actions, obligation drift, and weak sequencing first.
+Done when: the highest-risk issues are ranked.
 
 ### Step 2: Keep the review proportional to the request
+Requires: Step 1 is complete.
+Done when: the audit depth matches the request.
 
 ### Step 3: Use a stricter, rule-based audit format only when the user asks for it or the text is high-consequence
+Requires: Steps 1 and 2 are complete.
+Done when: the audit shape matches the risk and request.
 
 ### Step 4: Load the right references before citing them
+Requires: Step 3 is complete.
 If the user asked for STE checking, load only the relevant part of `references/ste-rules.md` that you need and do not invent rule numbers.
 If the text contains ordered actions or weak sequencing cues, load `references/serial-instruction-guidance.md` before you judge whether the sequence is clear enough.
+Done when: every cited rule comes from a loaded reference.
 
 ### Step 5: Run the self-check before delivery
+Requires: Steps 1 to 4 are complete.
 Do not deliver before Step 5 is complete.
+Done when: the self-check passes.
 
 ## Conflict resolution
 

@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, polishing, or
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.8.0"
+  version: "0.8.1"
 ---
 
 # Skill Prose
@@ -219,7 +219,10 @@ Done when: You can name the files that complete the behavior contract, or you ha
 
 Treat sequence as behavior when the text tells the agent or reader to do one thing before another.
 
-When you tighten workflow-bearing prose, classify each unit before you restructure it:
+Load `references/serial-instruction-guidance.md` before you edit workflow-bearing prose whose order, approval timing, validation loop, branch logic, or reference-loading sequence matters. Keep `SKILL.md` operational. Use the reference for the detailed detection pass, structure rules, and edge cases.
+
+### Step 1: Classify each workflow unit before you restructure it
+Classify each unit as one of these:
 - **Action** — do something now
 - **Gate** — stop, wait, require, or branch
 - **Readiness check** — confirm outputs exist or state is complete
@@ -228,13 +231,19 @@ When you tighten workflow-bearing prose, classify each unit before you restructu
 - **Landmark checkpoint** — a named pause or review moment that downstream prose may reference
 
 Do not give all six categories the same structural weight.
+Done when: every unit you may reshape has a category.
 
+### Step 2: Detect ordered behavior before you tighten it
+Requires: Step 1 is complete.
 Detect and strengthen these cases:
 - **explicit serial instructions** — numbered steps, `Step 1`, `first/next/then/finally`, `before/after/until`, `requires`, `done when`, `return to`, `do not proceed until`
 - **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, or a paragraph mixes discovery, decision, rewrite, and verification
 - **sequencing cues in skill files** — choose output mode before rewrite mode, define the artifact set before cross-file edits, load references before citing them, run self-check before delivery, ask first before edits that need approval
 - **sequencing cues in general prose** — procedural paragraphs, approval notes, policy instructions, workflow warnings, and bullets that are really ordered tasks
+Done when: you can name the ordered actions, gates, checks, and branches that the rewrite must preserve.
 
+### Step 3: Choose the smallest ordered structure that keeps compliance visible
+Requires: Step 2 is complete.
 When order matters:
 - make the order explicit
 - use a numbered list for 2 to 3 short ordered steps
@@ -248,7 +257,10 @@ When order matters:
 - put conditions before actions when that makes timing clearer
 - replace emphasis-only warnings with enforceable gates when a later action depends on an earlier check
 - never leave ordered work in plain bullets
+Done when: the workflow shape makes the intended order, gates, and retry path hard to miss.
 
+### Step 4: Preserve stage mechanics and reject filler steps
+Requires: Step 3 is complete.
 For stage-based workflows:
 - if the document already names stages or phases in multiple places, treat that as evidence of an existing organizing mechanic
 - prefer a `## Stage:` container or equivalent higher-level heading when several consecutive items share one phase purpose
@@ -260,8 +272,7 @@ For stage-based workflows:
 Transition-step rule:
 - a transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on
 - a transition step is not acceptable if the surrounding stage container already makes the navigation obvious
-
-Load `references/serial-instruction-guidance.md` before you edit workflow-bearing prose whose order, approval timing, validation loop, branch logic, or reference-loading sequence matters. Keep `SKILL.md` operational. Use the reference for the detailed detection pass, structure rules, and edge cases.
+Done when: stage notes stay at stage level, operational steps stay operational, and any structural rewrite is disclosed as structural.
 
 ## Rewrite method
 
@@ -563,22 +574,55 @@ Create a short checklist in your working state or reply and update it after each
 This step is not optional.
 Do not deliver before this check is complete.
 
-1. Re-read the trigger or scope language. Would it still route the same requests?
-2. Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
-3. Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, `important`, `mandatory`, and `required`. Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
-4. Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
-5. Re-check every exact token, command, path, field name, identifier, example, and behavior-bearing verb that the source relied on.
-6. Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS.md`, and any inspected instruction files before deciding the artifact set was complete.
-7. Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract.
-8. If you changed any file in a folder-level rewrite, confirm that you ran a dedicated local-tightening sweep across the other inspected behavior-bearing files before you left them unchanged.
-9. If any inspected behavior-bearing file stayed unchanged, classify the reason exactly as `Already near minimum safe form`, `Rewrite would add drift risk without meaningful clarity gain`, or `Local-tightening sweep incomplete`. Do not use a generic `No edit needed` classification.
-10. If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
-11. Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
-12. If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
-13. If the text contains explicit or implied ordered instructions, confirm that the order, gates, branch destinations, and return paths are still visible as ordered behavior.
-14. Confirm that you did not create numbered steps that are really stage notes, preserve numbering by padding filler steps, or bury the first real operation behind transition-only steps.
-15. If the rewrite changed stages, checkpoints, numbering architecture, or overview/checklist alignment, confirm that you classified it as structural rather than presenting it as local cleanup.
-16. If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
+### Step 1: Re-read the trigger or scope language
+Would it still route the same requests?
+
+### Step 2: Check for accidental synonym drift
+Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
+
+### Step 3: Check obligation and severity terms
+Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, `important`, `mandatory`, and `required`.
+Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
+
+### Step 4: Check referents
+Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
+
+### Step 5: Re-check exact tokens and behavior-bearing verbs
+Re-check every exact token, command, path, field name, identifier, example, and behavior-bearing verb that the source relied on.
+
+### Step 6: Confirm artifact-set discovery
+Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS.md`, and any inspected instruction files before deciding the artifact set was complete.
+
+### Step 7: Confirm folder-level coverage
+Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract.
+
+### Step 8: Confirm local-tightening sweep status
+Requires: Step 7 is complete.
+If you changed any file in a folder-level rewrite, confirm that you ran a dedicated local-tightening sweep across the other inspected behavior-bearing files before you left them unchanged.
+
+### Step 9: Confirm unchanged-file classification if needed
+If any inspected behavior-bearing file stayed unchanged, classify the reason exactly as `Already near minimum safe form`, `Rewrite would add drift risk without meaningful clarity gain`, or `Local-tightening sweep incomplete`. Do not use a generic `No edit needed` classification.
+
+### Step 10: Confirm incomplete-discovery disclosure if needed
+If discovery was inconclusive at any point, confirm that you retried discovery or explicitly told the user about the incomplete crawl before proceeding.
+
+### Step 11: Confirm rationale preservation
+Confirm that rationale sentences tied to guardrails, approval gates, or timing rules were preserved when they still carry policy meaning.
+
+### Step 12: Confirm structural-behavior equivalence
+If the rewrite changed structure, ask whether an agent following only the new version would behave the same way.
+
+### Step 13: Confirm ordered behavior is still visible
+If the text contains explicit or implied ordered instructions, confirm that the order, gates, branch destinations, and return paths are still visible as ordered behavior.
+
+### Step 14: Confirm no pseudo-step inflation or filler numbering
+Confirm that you did not create numbered steps that are really stage notes, preserve numbering by padding filler steps, or bury the first real operation behind transition-only steps.
+
+### Step 15: Confirm structural-rewrite disclosure if needed
+If the rewrite changed stages, checkpoints, numbering architecture, or overview/checklist alignment, confirm that you classified it as structural rather than presenting it as local cleanup.
+
+### Step 16: Confirm audit-only output stayed findings-only
+If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
 
 ## Limits
 
