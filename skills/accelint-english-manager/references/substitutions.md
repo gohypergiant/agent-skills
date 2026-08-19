@@ -122,4 +122,4 @@ Watch for phrases that often survive because they sound polished:
 - "flexible"
 - "seamless"
 
-These terms are not weak because they are long. They are weak because they often hide the actual claim. Replace them with evidence or a concrete behavior.
+These terms are not weak because they are long. They are weak because they often hide the real claim. Replace them with evidence or a concrete behavior.

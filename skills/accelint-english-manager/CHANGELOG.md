@@ -4,6 +4,39 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
+## [1.3.7] - 2026-08-03
+
+### Changed
+- Updated `references/serial-instruction-guidance.md` to prefer neutral stage-container wording (`Stage` or a descriptive section heading) instead of `Phase` when describing higher-level workflow containers. This is a low-risk precaution based on repo evidence that some agents treat phase-style headings as checkpoint boundaries.
+
+## [1.3.6] - 2026-08-03
+
+### Changed
+- Tightened the serial-instruction guidance in `SKILL.md` to align more closely with the house standard: numbered lists for 2 to 3 short steps, `Step 0` plus a checklist for 4 or more steps, explicit `Requires:` and `Done when:` guidance, and a stronger prohibition against plain bullets for ordered work.
+- Upgraded the revision workflow in `SKILL.md` to model `Step 0` progress tracking, clearer dependencies, done conditions, and explicit loop-back behavior when sequencing checks fail.
+- Tightened `references/serial-instruction-guidance.md` so `Step 0` is the default for 4 or more ordered steps and the prohibition on plain bullets is stated more absolutely.
+
+## [1.3.5] - 2026-08-03
+
+### Changed
+- Reworked `SKILL.md` so the main operating flow uses explicit step ordering, stronger sequencing language, and clearer gates around mode selection, rewriting, auditing, and pre-delivery checks.
+- Added a dedicated serial-instruction section to `SKILL.md` so explicit and implied ordered actions are detected and strengthened instead of left in soft paragraph form.
+- Added `references/serial-instruction-guidance.md` for progressive disclosure of sequencing heuristics, structure rules, branching guidance, and delivery checks for ordered prose.
+
+## [1.3.4] - 2026-07-31
+
+### Changed
+- Tightened `README.md` so the quick-start guidance matches the skill's actual mode-selection workflow and points readers to `SKILL.md` for canonical trigger boundaries.
+- Reduced duplication between `README.md`, `references/examples.md`, and `references/checklist.md` by clarifying each file's role and trimming repeated instructional framing.
+- Updated audit-only guidance in `SKILL.md` and `references/examples.md` to use finding language that stays audit-first instead of implying an automatic rewrite.
+
+## [1.3.3] - 2026-07-30
+
+### Changed
+- Tightened `SKILL.md` mode-selection wording so the skill asks for a mode without overusing RFC 2119 language in its own prose, while preserving the same workflow.
+- Clarified that generic cleanup requests such as "plain English" or "clean this up" should stay on the default plain-language path unless the user explicitly asks for strict mode.
+- Added an explicit limit that the skill must not invent new requirements, commitments, or product behavior while improving prose.
+
 ## [1.3.2] - 2026-07-30
 
 ### Changed
