@@ -1,5 +1,66 @@
 # Changelog
 
+## [0.8.0] - 2026-08-04
+
+### Changed
+- Updated `SKILL.md` to classify workflow prose into action, gate, readiness check, stage note, branch handler, and landmark checkpoint before restructuring, reducing the risk of pseudo-step inflation during strict rewrites.
+- Added stage-aware rewrite guidance to `SKILL.md`, including when to prefer `## Stage:` containers, when to preserve landmark checkpoint numbers, and when a workflow rewrite must be surfaced as structural instead of local cleanup.
+- Expanded the decision tests and required self-check in `SKILL.md` to catch filler numbering, buried first actions, duplicated stage rules, and unannounced structural changes.
+- Updated `references/serial-instruction-guidance.md` with stronger rules for multi-stage workflows, transition-step qualification, landmark-preservation tradeoffs, and post-rewrite audit questions for pseudo-step inflation.
+- Updated `references/checklist.md` so workflow-safety and output-mode checks explicitly catch stage-note promotion, numbering placeholders, and structural rewrites presented as local cleanup.
+
+### Version
+- Minor release at `0.8.0`.
+
+## [0.7.13] - 2026-08-03
+
+### Changed
+- Updated `references/serial-instruction-guidance.md` to prefer neutral stage-container wording (`Stage` or a descriptive section heading) instead of `Phase` when discussing higher-level workflow containers. This is a low-risk precaution based on repo evidence that some agents treat phase-style headings as checkpoint boundaries.
+
+### Version
+- Patch release at `0.7.13`.
+
+## [0.7.12] - 2026-08-03
+
+### Changed
+- Tightened the serial-order rules in `SKILL.md` to align more closely with the house standard: numbered lists for 2 to 3 short steps, `Step 0` plus a checklist for 4 or more steps, stronger `Requires:` and `Done when:` expectations, and a harder rule against plain bullets for ordered work.
+- Added explicit `Step 0` progress tracking to the required self-check workflow so long verification sequences have visible state and better skip observability.
+- Tightened `references/serial-instruction-guidance.md` so `Step 0` is the default for 4 or more ordered steps and the plain-bullets rule is stated as a hard prohibition.
+
+### Version
+- Patch release at `0.7.12`.
+
+## [0.7.11] - 2026-08-03
+
+### Changed
+- Reworked `SKILL.md` to express key operating flows as explicit ordered steps with stronger dependency and gating language around output-mode selection, artifact discovery, rewrite sequencing, and pre-delivery checks.
+- Added a dedicated serial-order section to `SKILL.md` so explicit and implied sequencing cues in skills, prompts, and general prose are detected and strengthened instead of left as soft paragraph logic.
+- Added `references/serial-instruction-guidance.md` for progressive disclosure of sequencing detection, preferred structures, branch handling, and audit questions for workflow-bearing prose.
+
+### Version
+- Patch release at `0.7.11`.
+
+## [0.7.10] - 2026-07-31
+
+### Fixed
+- Tightened the `SKILL.md` frontmatter description so trigger routing more clearly prefers `accelint-skill-prose` when wording controls behavior, while preserving the existing boundary against broader content strategy, policy work, and ordinary prose cleanup.
+- Reduced a few repeated explanatory lines in `SKILL.md` so the root contract is easier to scan without changing workflow semantics, guardrail strength, or progressive-disclosure handoffs.
+- Added concise maintainer guidance to `README.md` about eval coverage, version alignment, and when to keep changes minimal because no benchmark or transcript evidence justifies broader rewrites.
+- Applied a strict-mode local prose pass to `SKILL.md` and `references/checklist.md`, excluding frontmatter as required, to clarify root-first artifact discovery and improve local sentence flow without changing the behavior contract.
+
+### Version
+- Patch release at `0.7.10`.
+
+## [0.7.9] - 2026-07-30
+
+### Fixed
+- Tightened `assets/output-template.md` so unchanged behavior-bearing artifact-set files must use the exact unchanged-file classifications required by the root skill, and clarified that the template `Why:` field must carry that classification.
+- Applied a strict-mode prose pass across `SKILL.md` and the behavior-bearing `references/*.md` files to improve scanability, local sentence structure, and repeated phrasing without changing trigger coverage, workflow semantics, guardrail strength, or exact technical references.
+- Expanded `evals/evals.json` with additional cases for audit-only output-mode violations, `mode=default` local rewrite limits, folder-level artifact discovery, frontmatter boundary drift, exact verb preservation in workflow warnings, and unchanged-file classification checks.
+
+### Version
+- Patch release at `0.7.9`.
+
 ## [0.7.8] - 2026-07-30
 
 ### Fixed

@@ -1,6 +1,6 @@
 # Skill prose checklist
 
-Run this before you deliver an audit or rewrite.
+Run this checklist before you deliver an audit or rewrite.
 
 ## 1. Trigger safety
 
@@ -16,6 +16,9 @@ Run this before you deliver an audit or rewrite.
 - Did any approval gate, timing rule, or condition become less clear?
 - Did any warning lose the reason the step matters?
 - Did any behavior-bearing verb change meaning, such as `stop` → `pause`, `wait` → `delay`, or `must` → `should`?
+- Did any numbered step become a stage note, transition-only filler, or numbering placeholder?
+- Is the first real operation still easy to find?
+- If the document already had stages or phases, did the rewrite preserve that organizing mechanic or explicitly justify changing it?
 
 ## 3. Guardrail strength
 
@@ -64,7 +67,7 @@ Check that these stayed exact unless the user asked otherwise:
 ## 8. Cross-file consistency
 
 - If the task covered a skill folder, did you define the default artifact set clearly: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract?
-- Did you follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
+- Did you read the root `SKILL.md` first, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
 - Did you audit the full behavior-bearing artifact set rather than only the quoted excerpt, and were those files eligible for edit when consistency required it?
 - Did you rewrite any artifact-set files that needed updates so terminology, severity language, workflow wording, examples, and progressive-disclosure handoffs stayed aligned?
 - Did you also check local sentence-structure quality in each behavior-bearing file, rather than treating cross-file alignment as the only rewrite criterion?
@@ -77,12 +80,12 @@ Check that these stayed exact unless the user asked otherwise:
 - Did you keep output mode separate from rewrite mode?
 - If the request was audit-only, did you avoid rewriting the full passage?
 - If the request was rewrite-only, did you avoid prepending audit notes?
-- If the rewrite used `mode=default`, did you keep the structure local unless structure itself hid behavior?
+- If the rewrite used `mode=default`, did you keep the structure local unless the structure itself hid behavior?
 - If the rewrite used `mode=strict`, did you reorganize only as far as needed to clarify behavior?
+- If the rewrite changed stage boundaries, checkpoint placement, numbering architecture, or overview/checklist alignment, did you classify it as structural instead of presenting it as local cleanup?
 - If the safest result was no rewrite, did you say so explicitly instead of forcing a cosmetic edit?
 
 ## 10. Final question
 
 - Is this behaviorally safer than an ordinary prose edit?
 - If risk remains, should you revise less or recommend no rewrite?
-
