@@ -36,6 +36,7 @@ Shape workflow prose so it:
 - leads with the action or timing boundary
 - keeps one step or decision per line when possible
 - keeps approval gates and stop points explicit
+- makes fallback conditions and exception paths operational rather than qualitative
 - keeps rationale near the rule when the rationale prevents misuse
 
 ## 3. Guardrails and hard stops

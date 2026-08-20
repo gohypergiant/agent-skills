@@ -5,6 +5,19 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-08-20
+
+### Changed
+- Tightened `SKILL.md` and `README.md` so Stage 2 discovery now uses an objective branch based only on subagent availability, removing qualitative fallback cues and weaker modal wording from the parallel-vs-inline discovery rule
+  - Rationale: The prior wording still allowed subjective escape hatches such as `without reason`, `preferably`, and similar softer cues that could let a model self-justify serial or inline discovery when parallel subagents were available
+- Clarified refresh and restructure control points in `SKILL.md`, including when to offer restructure, when roadmap questions apply during refresh, and how to describe simultaneous discovery domains
+  - Rationale: The final audit found a few remaining transcript-sensitive ambiguities where broad timing language or always-ask phrasing could steer the model into unnecessary steps or inconsistent refresh questioning
+- Aligned `README.md` with the canonical skill behavior for no-serial discovery and `CLAUDE.md` pointer-stub handling
+  - Rationale: Keeping the README behaviorally consistent with `SKILL.md` reduces drift during quick maintainer review and preserves the exact follow-up edit contract
+
+### Version
+- Bumped from 1.2.0 → 1.2.1
+
 ## [1.2.0] - 2026-08-19
 
 ### Changed

@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, polishing, or
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.9.0"
+  version: "0.9.2"
 ---
 
 # Skill Prose
@@ -47,6 +47,8 @@ Use `assets/output-template.md` for all outputs.
 Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it, or replace it only with wording that keeps the same behavior.
 
 Rationale is not filler by default. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose. Preserve rationale by retention or strict equivalence, not by elaboration. Do not introduce new harms, failure modes, usability claims, maintainability claims, robustness claims, workflow-stability judgments, or environment qualifiers unless the source already states them.
+
+Qualitative execution cues are behavior-bearing when they act as hidden gates, fallback conditions, or permission slips. Words and phrases such as `small`, `large`, `simple`, `complex`, `constrained environment`, `practical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, and `without reason` can let the model self-justify behavior unless the surrounding text makes the condition operational enough to preserve the same branch. Do not preserve these cues by default just because they are already present. Do not treat a rewrite from one qualitative branch term to another as a real fix. For example, `small`, `constrained`, and `brittle` do not become operational just because they change to `practical` or `impractical`. In audit mode, flag these cues when they steer execution without an operational boundary. In rewrite mode, either remove them, replace them with source-supported operational conditions, or classify them as unresolved policy ambiguity if no lossless rewrite is possible.
 
 ## Untouchables
 
@@ -94,6 +96,8 @@ Do not simplify these casually.
 - **Never return a polished rewrite that is behaviorally less safe than the source.**
 - **Never slip a rewrite into audit-only mode.**
 - **Never introduce new qualifiers, thresholds, fallback branches, environmental assumptions, or discretionary conditions unless the source already contains them or the user explicitly asked to add them.**
+- **Never preserve qualitative gate wording by default when it creates a hidden branch, discretionary fallback, or self-justifying exception.**
+- **Never treat one qualitative branch term as a safe replacement for another unless the source itself defines the replacement operationally.**
 - **Never add new rationale, failure modes, usability claims, maintainability claims, robustness claims, or workflow-stability judgments unless the source already states them.**
 - **Never convert a warning, rationale, note, or descriptive statement into a new gate, prerequisite, checkpoint, or branch unless the source already states that dependency explicitly.**
 - **Never propagate stylistic preferences across files unless a concrete mismatch in trigger scope, workflow semantics, guardrail strength, exact references, or behavior-bearing terminology would otherwise remain.**
@@ -122,6 +126,8 @@ Keep them separate. Output mode controls the deliverable. Rewrite mode controls 
 
 ### Output mode
 
+Choose the output mode first. Output mode controls the deliverable, not the rewrite scope.
+
 #### Audit only
 
 Always include the consistent report from `assets/output-template.md`.
@@ -132,7 +138,7 @@ Do not rewrite the text unless the user explicitly asks for a rewrite.
 
 Do not include replacement wording, "safer" rewrites, or suggested revised sentences in the deliverable. If you need to point to a safer pattern, describe the risk in principle instead of drafting substitute text.
 
-A brief alternative may appear only when the user explicitly asked for examples. In those cases, keep it at fragment level, not sentence level. Use source-quoted evidence rather than drafted replacement wording whenever possible. Do not let it become a stealth rewrite of the passage.
+In audit-only mode, do not draft replacement text. If the user explicitly asked for examples, quote the source and name the safer pattern without proposing substitute wording.
 
 #### Rewrite only
 
@@ -143,6 +149,8 @@ Use this mode when the user wants cleaner final text directly.
 Use this mode when the user wants both findings and a safer revision.
 
 ### Rewrite mode
+
+Choose the rewrite mode after the output mode.
 
 For rewrite tasks, ask the user which rewrite mode they want unless the user already made the scope clear.
 
@@ -184,7 +192,7 @@ Strict mode is not permission to broaden scope casually. In both modes, keep the
 Use these lenses when they match the text:
 
 - **Frontmatter description tightening** — Use this focus when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
-- **Workflow or guardrail tightening** — Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, or exact execution rules.
+- **Workflow or guardrail tightening** — Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, exact execution rules, or fallback conditions that need operational wording.
 
 ## Before you edit
 
@@ -203,6 +211,7 @@ Look for:
 - hard requirements
 - paths, commands, identifiers, fields, keys, flags, and examples
 - quoted wording that must stay exact
+- qualitative wording that may act as a hidden gate, fallback condition, exception, or permission slip
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
 
@@ -241,7 +250,7 @@ Done when: every unit you may reshape has a category.
 Requires: Step 1 is complete.
 Detect and make these cases explicit without adding new behavior:
 - **explicit serial instructions** — numbered steps, `Step 1`, `first/next/then/finally`, `before/after/until`, `requires`, `done when`, `return to`, `do not proceed until`
-- **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, or a paragraph mixes discovery, decision, rewrite, and verification
+- **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, a qualitative cue acts as a hidden fallback condition, or a paragraph mixes discovery, decision, rewrite, and verification
 - **sequencing cues in skill files** — choose output mode before rewrite mode, define the artifact set before cross-file edits, load references before citing them, run self-check before delivery, ask first before edits that need approval
 - **sequencing cues in general prose** — procedural paragraphs, approval notes, policy instructions, workflow warnings, and bullets that are really ordered tasks
 Done when: you can name the ordered actions, gates, checks, and branches that the rewrite must preserve.
@@ -371,6 +380,7 @@ Check for:
 - before/after timing
 - approval dependencies
 - conditions that gate an action
+- qualitative fallback or exception wording that can gate an action without an operational boundary
 - warnings that explain why a step matters
 - verbs that carry behavior, such as `stop`, `pause`, `wait`, `proceed`, `skip`, `require`, or `allow`
 - stage boundaries or phase markers that already organize the workflow
@@ -481,7 +491,7 @@ Focus first on:
 - exact-reference loss
 - only then general clarity issues
 
-Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 terms when describing the strength of a rule or rewrite recommendation. Use severity labels only when they help rank audit findings rather than define behavior. Reserve labels like `Critical` for issues likely to materially change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
+Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 terms when describing the strength of a rule or rewrite recommendation. Use severity labels only when they help rank audit findings rather than define behavior. Reserve labels like `Critical` for issues likely to change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
 
 ### Rewrite only
 
@@ -502,6 +512,8 @@ Give the risk summary first. Then give the rewrite. Then give the completed repo
 Load references only when needed.
 
 When the user asks you to work on a skill, crawl the skill folder first. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
+
+Do the crawl in order. Read the local `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files.
 
 For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md` first. Then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
@@ -538,6 +550,7 @@ Before you deliver, ask:
 - Did any requirement become softer?
 - Did any exact token disappear?
 - Did any behavior-bearing verb drift into a softer or different action?
+- Did any qualitative cue remain even though it still acts as a hidden gate, fallback condition, or permission slip?
 - Did any rationale sentence get cut even though it explained a guardrail or timing rule?
 - Did any example that defines scope get removed?
 - Did I introduce any new qualifier, exception, threshold, fallback branch, or environmental assumption?
@@ -563,6 +576,7 @@ Do this before any other work when the verification workflow has 4 or more real 
 Create a short checklist in your working state or reply and update it after each step.
 
 - [ ] Step 1: Re-read the trigger or scope language
+- [ ] Step 1.5: Check qualitative gates and fallback cues
 - [ ] Step 2: Check for accidental synonym drift
 - [ ] Step 3: Check obligation and severity terms
 - [ ] Step 4: Check referents
@@ -584,6 +598,10 @@ Do not deliver before this check is complete.
 
 ### Step 1: Re-read the trigger or scope language
 Would it still route the same requests?
+
+### Step 1.5: Check qualitative gates and fallback cues
+Search for qualitative words and phrases that may act as hidden gates, exceptions, or permission slips, such as `small`, `large`, `simple`, `complex`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, `without reason`, and environment-shaping phrases like `constrained environment`.
+Confirm that each remaining use is either source-supported and operationally bounded, or explicitly flagged as unresolved ambiguity. Confirm that no qualitative branch term was merely replaced with another qualitative branch term.
 
 ### Step 2: Check for accidental synonym drift
 Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.

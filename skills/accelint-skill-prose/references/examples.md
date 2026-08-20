@@ -165,3 +165,23 @@ The rewrite leads with timing and action, keeps the dependency explicit, and mak
 
 **Why this distinction matters:**
 Default mode keeps the structure local. Strict mode allows reorganization only when the structure itself is the clarity problem.
+
+## 12. Remove qualitative fallback cues when they steer execution
+
+**Before:**
+> For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
+
+**Intermediate but still unsafe rewrite:**
+> When subagents are unavailable or impractical in the current execution context, use focused inline discovery instead.
+
+**Why this is still unsafe:**
+`Impractical` is still a qualitative branch term. It leaves discretionary room for the model to self-justify the fallback.
+
+**Safer rewrite:**
+> When subagents are unavailable, use focused inline discovery instead.
+
+**Why this is safer:**
+The source sentence uses qualitative cues such as `small`, `constrained`, and `brittle` to steer a fallback branch. Replacing them with `impractical` still leaves the branch under-specified. The safer rewrite keeps the fallback and removes the qualitative gate.
+
+**Audit finding pattern:**
+> The fallback condition is under-specified. Qualitative wording such as `small repos`, `constrained environments`, `brittle`, or `impractical` can act as a hidden permission slip. Tighten the branch condition or flag it as unresolved policy ambiguity.

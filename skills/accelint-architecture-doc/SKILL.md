@@ -1,10 +1,10 @@
 ---
 name: accelint-architecture-doc
-description: Create or update a living ARCHITECTURE.md for a codebase. Use when the user wants to write, refresh, restructure, or maintain an architecture document; capture how the system is organized across tech stack, deployment model, services, components, and data stores; or turn codebase findings into durable architecture docs for engineers or agents. Trigger on requests such as write an architecture doc, document this system, create or update ARCHITECTURE.md, give me a technical overview of this repo, or map out how this app is put together, even when the file is not named. Prefer this skill for file-producing architecture documentation, not for generic architecture advice, implementation planning, or diagram-only brainstorming unless that is clearly part of updating the document.
+description: Create or update a living ARCHITECTURE.md for a codebase. Use when the user wants to write, refresh, restructure, or maintain an architecture document; document how the system is organized across tech stack, deployment model, services, components, and data stores; or turn codebase findings into durable architecture docs for engineers or agents. Trigger on requests such as write an architecture doc, document this system, create or update ARCHITECTURE.md, give me a technical overview of this repo, or map out how this app is put together, even when the file is not named. Prefer this skill for file-producing architecture documentation, not for generic architecture advice, implementation planning, or diagram-only brainstorming unless that work is clearly part of updating the document.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # Architecture Doc
@@ -19,11 +19,12 @@ Generate or update a living `ARCHITECTURE.md` for the current codebase. It shoul
 - **MUST NOT skip drift detection in refresh mode** — scan the codebase for changed signals before you run any interview. Questions about unchanged sections waste the user's time.
 - **MUST NOT leave all 11 sections as `<!-- TODO -->`** — scan aggressively first. Most sections can be filled at least partially through inference. A document full of TODOs appears complete but misleads every reader.
 - **MUST NOT document internal implementation details in the System Diagram (Section 2)** — that section is a 10,000-foot view of components and data flow. Database schemas, function signatures, and module internals belong elsewhere.
-- **MUST NOT choose a slower discovery approach without reason** — when subagents are available, Stage 2 should use parallel subagents for discovery. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
+- **MUST use parallel subagents for Stage 2 discovery when subagents are available** — spawn them simultaneously across discovery domains. Do not scan serially. If subagents are unavailable, use focused inline discovery instead.
 
 ## Before Writing, Ask
 
 Check these points before you start.
+Do them in order.
 
 ### Is this root or package level?
 - **Are we at the repo root or inside a monorepo package?** Check for `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, or a `workspaces` field in `package.json`. If you are inside a package, also check whether a root-level ARCHITECTURE.md already exists.
@@ -31,10 +32,10 @@ Check these points before you start.
 
 ### Is this a create, restructure, or refresh?
 - **Does ARCHITECTURE.md already exist?** If yes, read it before you scan so you know what is accurate and what has drifted.
-- **Does it follow the template?** If not, proactively offer to restructure it before you do anything else.
+- **Does it follow the template?** If not, proactively offer to restructure it before you modify the file structure.
 
 ### What can I infer vs. what must I ask?
-- **Use parallel subagents for discovery** when subagents are available. Spawn them simultaneously across discovery domains — don't scan serially. For small repos or constrained environments, use focused inline discovery instead of forcing a brittle parallel workflow.
+- **Use parallel subagents for discovery** when subagents are available. Spawn them simultaneously across discovery domains. Do not scan serially. If subagents are unavailable, use focused inline discovery instead.
 - **Reserve questions for genuine gaps** such as deployment specifics, roadmap items, and security decisions that are not in the code.
 
 ## Workflow
@@ -62,6 +63,7 @@ Purpose: determine scope, detect related files, and activate the correct mode ga
 
 ### Step 1: Detect scope and related files
 Determine whether the current working directory is a monorepo root or a package inside a monorepo.
+Do this before you detect mode.
 
 **Monorepo signals to check:**
 
@@ -105,9 +107,9 @@ Do this before you detect `ARCHITECTURE.md` state.
    - Note the file for cross-referencing in the generated doc.
    - Announce: "Found openspec/config.yml — I'll use it as the source of truth for stack facts and coding patterns."
 
-Done when: you know whether `openspec/config.yml` or `openspec/config.yaml` exists and have read it if present.
-
 This step reduces scanning work and helps keep the doc consistent with the project's defined stack.
+
+Done when: you know whether `openspec/config.yml` or `openspec/config.yaml` exists and have read it if present.
 
 ### Step 2: Detect mode and apply the correct gate
 Requires: Step 1 and Step 1.1 are complete.
@@ -119,10 +121,10 @@ Classify the task in this order:
 2. If yes, read the file fully before you classify it.
 3. Classify the existing file:
    - **Empty or near-blank** (`< ~10 meaningful lines`) → **MODE 1: Create** `(confirm first)`
-   - **Clearly follows the template as an architecture doc** — recognizable top-level architecture sections, with multiple headings that align to the template such as Project Structure, High-Level System Diagram, Core Components, Data Stores, or Deployment & Infrastructure → **MODE 2: Refresh**
+   - **Clearly follows the template as an architecture doc** — recognizable top-level architecture sections, with multiple headings that align to the template, such as Project Structure, High-Level System Diagram, Core Components, Data Stores, or Deployment & Infrastructure → **MODE 2: Refresh**
    - **Has real content but does NOT follow the template** → **MODE 3: Restructure** `(offer proactively — see below)`
 
-**MODE 3: Restructure** — When the file has real content in an unrecognized shape and restructuring would materially improve usability, surface this immediately and require an explicit user choice before you modify that structure:
+**MODE 3: Restructure** — When the file has real content in an unrecognized shape and restructuring would materially improve usability, surface this immediately. Require an explicit user choice before you modify that structure:
 
 > "ARCHITECTURE.md exists but doesn't follow the standard template structure. I recommend restructuring it — this makes it consistent for agents and engineers onboarding to the codebase. How would you like to proceed?
 >
@@ -152,6 +154,7 @@ If MODE 3 applies, stop here after you present options **(a)**, **(b)**, and **(
      > I'll only ask about those — the rest looks current."
    - If external findings exist, note their source, for example, "from completed OpenSpec change".
 5. **Ask only targeted questions** for changed or still-unknown sections.
+   - In refresh mode, ask Turn 4 only if the roadmap or future-plans content is missing, stale, or user-signaled as changed.
 6. **Show a diff-style preview** of changed sections before you write.
 
 Done when: you know whether the task is Create, Refresh, or Restructure, and any required wait state or approval gate is active before later stages begin.
@@ -163,15 +166,16 @@ Purpose: build a merged discovery map before you ask the user about missing fact
 Stage rules:
 - Use parallel subagents when subagents are available.
 - Spawn them simultaneously across discovery domains. Do not scan serially.
-- If the repo is small or the environment is constrained, use focused inline discovery instead of forcing a brittle parallel workflow.
+- If subagents are unavailable, use focused inline discovery instead.
 - Merge the results before Stage 3.
 
 ### Step 3: Run discovery and merge findings
 Requires: Step 2 is complete, and any MODE 3 wait state has been resolved.
 
 Collect structured findings across the discovery domains below.
+Do not start Stage 3 until you have merged the discovery results.
 
-**Discovery domains to cover, preferably simultaneously when parallel execution is available:**
+**Discovery domains to cover simultaneously when subagents are available:**
 
 **Agent A — Project Identity & Structure**
 - Read README.md, package.json / pyproject.toml / go.mod / Cargo.toml for project name and description
@@ -208,6 +212,7 @@ Collect structured findings across the discovery domains below.
 - Return: testing frameworks, code quality tools, local setup command
 
 After all agents complete, merge their findings into a unified discovery map. Tag each field as `INFERRED [source]` or `UNKNOWN`. Fields tagged `UNKNOWN` become Stage 3 interview questions.
+Do not ask interview questions until this merged map exists.
 
 Done when: you have one merged discovery map and know which fields still require interview questions.
 
@@ -222,6 +227,7 @@ Stage rule:
 Requires: Step 3 is complete.
 
 Group related questions into natural conversational turns.
+Ask only the turns that match remaining gaps.
 
 **Turn 1 — Gaps in Components** *(if services or components were unclear)*
 - Any services or components the directory structure doesn't make obvious?
@@ -264,6 +270,7 @@ Requires: Step 4 is complete, or Step 3 already resolved all unknowns.
 3. Wait for explicit confirmation.
 
 Do not write or edit `ARCHITECTURE.md`, `AGENTS.md`, or `CLAUDE.md` until you have shown the preview for the chosen mode and received confirmation to proceed.
+Do not treat silence, partial feedback, or implied approval as confirmation.
 
 Done when: the user has reviewed the preview and explicitly confirmed that you may write.
 
@@ -280,7 +287,7 @@ Done when: the approved files are written and the remaining TODOs are summarized
 
 ## Interaction Principles
 
-- **Parallel discovery.** Spawn subagents for Stage 2 simultaneously. Do not scan config files one by one when parallel discovery is available and beneficial.
+- **Parallel discovery.** When subagents are available, spawn them for Stage 2 simultaneously. Do not scan config files one by one in that case.
 - **Scan first, ask second.** Reserve interview questions for genuine gaps that subagents could not fill.
 - **Restructure by default.** When a file does not follow the template, recommend restructuring and make it the easy choice rather than option (c) buried at the bottom.
 - **Monorepo awareness.** Root docs and package docs serve different audiences. Keep them scoped appropriately and reference each other.
@@ -318,5 +325,6 @@ For technical architecture details (components, deployment, data stores, tech st
 ```
 
 3. **If using CLAUDE.md** and it simply points to AGENTS.md, for example `@AGENTS.md`, update AGENTS.md instead. Do not modify the pointer file. Treat pointer files as routing stubs, not as the place to add architecture guidance.
+4. **If no real agent behavior file exists,** do not create one as part of this skill. Limit the write to the approved architecture document.
 
 Done when: the architecture guidance lives in the real agent behavior file, not in a pointer stub.

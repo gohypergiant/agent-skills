@@ -37,7 +37,7 @@ Update ARCHITECTURE.md to reflect the new Redis caching layer
 Restructure our architecture doc into the standard template
 ```
 
-The skill detects file state, chooses the mode, scans for evidence, asks necessary questions, shows a preview, and writes after confirmation.
+The skill detects file state, chooses the mode, scans for evidence, asks only necessary questions, shows a preview, and writes after confirmation.
 
 ## How it works
 
@@ -51,25 +51,28 @@ For create, refresh, or restructure workflows, start with a short checklist and 
 ### Step 2: Detect mode and apply the correct gate
 1. Check whether `ARCHITECTURE.md` exists and follows the template.
 2. Choose mode: create, refresh, or restructure.
-3. In restructure mode, stop and wait for the user's explicit `(a)`, `(b)`, or `(c)` choice before you modify the file.
+3. In restructure mode, stop and wait for the user's explicit `(a)`, `(b)`, or `(c)` choice before you modify the file structure.
 
 ### Step 3: Run discovery and merge findings
-1. Scan five domains in parallel when possible: project identity, tech stack, infrastructure, data stores, and testing.
-2. Infer from `package.json`, `docker-compose.yml`, IaC configs, CI workflows, and ORM schemas.
-3. Tag findings as `INFERRED [source]` or `UNKNOWN`.
+1. When subagents are available, scan the discovery domains in parallel. Do not scan serially in that case. If subagents are unavailable, use focused inline discovery instead.
+2. Infer from `package.json`, `docker-compose.yml`, IaC configs, CI workflows, ORM schemas, auth files, and integration signals.
+3. Merge the results before you start the interview.
+4. Tag findings as `INFERRED [source]` or `UNKNOWN`.
 
 ### Step 4: Ask the targeted interview questions
 1. Ask only about `UNKNOWN` fields and confirmed drift gaps.
 2. Group related questions into conversational turns.
+3. Ask only the turns that match remaining gaps.
 
 ### Step 5: Show the preview and wait for confirmation
 1. Show the complete `ARCHITECTURE.md` with inference source annotations.
 2. Treat the preview as a required checkpoint, not a courtesy.
+3. Wait for explicit confirmation before you write.
 
 ### Step 6: Write the approved files and summarize open TODOs
 1. Confirm before writing.
 2. Strip annotations from the final file.
-3. Update agent behavior docs, `AGENTS.md` or `CLAUDE.md`, to reference the new file when needed.
+3. Update the real agent behavior file, `AGENTS.md` or `CLAUDE.md`, to reference the new file when needed. If `CLAUDE.md` is only a pointer stub to `AGENTS.md`, update `AGENTS.md` instead and do not modify the pointer file. Do not create a new agent behavior file as part of this skill.
 
 ## Output structure
 
@@ -106,7 +109,8 @@ See `references/template.md` for the full skeleton.
 
 **Agent behavior integration**
 - Check for AGENTS.md or CLAUDE.md
-- Add reference to ARCHITECTURE.md if missing
+- Add a reference to ARCHITECTURE.md if the real agent behavior file exists and the reference is missing
+- Do not create a new agent behavior file as part of this skill
 
 **OpenSpec awareness**
 - Read openspec/config.yml or openspec/config.yaml when present

@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.9.2] - 2026-08-20
+
+### Changed
+- Hardened `SKILL.md` against qualitative execution drift by treating hidden qualitative gates and qualitative-term substitution as explicit failure modes, and by tightening the audit-only rule so examples no longer permit drafted replacement wording
+- Updated `README.md` to reflect the full behavior-bearing artifact set more accurately, including `references/serial-instruction-guidance.md`, and clarified that progressive-disclosure references can complete the behavior contract
+- Tightened `references/rfc-2119.md` so applicability is conditional up front, reducing the chance that obligation normalization is applied before the source requirement level is explicit enough to preserve exactly
+
+### Version
+- Patch release at `0.9.2`.
+
+## [0.9.1] - 2026-08-20
+
+### Changed
+- Tightened `SKILL.md` output-mode and rewrite-mode guidance so the required selection order is explicit at the point of use, reducing the chance that agents reverse the controls during audit-plus-rewrite work.
+- Clarified the root `SKILL.md` progressive-disclosure section so folder crawls state the required read order before broadening to other behavior-bearing files.
+- Tightened `references/checklist.md` so the cross-file consistency check verifies root-first discovery as a distinct checkpoint instead of burying it inside one longer question.
+
+### Version
+- Patch release at `0.9.1`.
+
 ## [0.9.0] - 2026-08-20
 
 ### Changed

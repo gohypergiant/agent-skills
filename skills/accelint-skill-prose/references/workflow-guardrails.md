@@ -51,6 +51,8 @@ Keep these exact unless the user explicitly asks otherwise:
 - replacing an example with generic prose
 - replacing exact rationale with a vague safety summary
 - replacing a behavior-bearing verb with a near-synonym that changes permission, timing, or obligation strength
+- preserving qualitative gate wording that still lets the model self-justify a fallback, exception, or looser path
+- replacing one qualitative branch term with another and treating that rewrite as resolved
 
 ## Safe moves
 
@@ -67,6 +69,8 @@ Before you deliver, ask:
 
 - Did `stop`, `wait`, `skip`, `proceed`, or similar verbs change to a softer or different action?
 - Did a requirement verb like `must` become advice like `should`?
+- Did any qualitative cue such as `practical`, `impractical`, `reasonable`, `beneficial`, `small`, or `if needed` remain as a hidden permission slip?
+- Did you merely swap one qualitative branch term for another?
 - Would the rewritten version let the agent act earlier, later, or more optionally than before?
 
 ## Delivery rule

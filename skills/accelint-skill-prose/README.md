@@ -69,7 +69,7 @@ If you use this skill for audit-only, rewrite-only, or audit-plus-rewrite work, 
 
 ### `references/*.md`
 
-Progressive-disclosure reference files that the root skill loads when needed.
+Progressive-disclosure reference files that can complete the behavior contract when the root skill depends on them.
 
 | File | Purpose |
 |------|---------|
@@ -78,6 +78,7 @@ Progressive-disclosure reference files that the root skill loads when needed.
 | `references/examples.md` | Worked examples of safe audits, rewrites, and no-rewrite decisions |
 | `references/frontmatter-descriptions.md` | Safe tightening rules for frontmatter descriptions and trigger language |
 | `references/rfc-2119.md` | Guidance for obligation-strength normalization without changing behavior |
+| `references/serial-instruction-guidance.md` | Detection and handling rules for serial instructions, gates, branches, and stage-aware workflow structure |
 | `references/ste-compatible-rules.md` | Selective Simplified Technical English patterns adapted for behavior-preserving edits |
 | `references/workflow-guardrails.md` | Guidance for workflow order, approval gates, rationale, and behavior-bearing verbs |
 
@@ -146,6 +147,7 @@ skills/accelint-skill-prose/
     ├── examples.md
     ├── frontmatter-descriptions.md
     ├── rfc-2119.md
+    ├── serial-instruction-guidance.md
     ├── ste-compatible-rules.md
     └── workflow-guardrails.md
 ```

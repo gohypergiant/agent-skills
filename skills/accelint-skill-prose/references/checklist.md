@@ -17,6 +17,7 @@ Run this checklist before you deliver an audit or rewrite.
 - If the source included a reason the step matters, did the rewrite preserve it without adding a new reason?
 - Did any behavior-bearing verb change meaning, such as `stop` → `pause`, `wait` → `delay`, or `must` → `should`?
 - Did I invent any qualifier, exception, threshold, fallback case, or environmental assumption?
+- Did any qualitative wording remain even though it still acts as a hidden gate, fallback case, exception, or permission slip?
 - Did I add any source-unsupported rationale, failure mode, or benefit claim?
 - Did I create a stronger gate or branch than the source explicitly stated?
 - Did any numbered step become a stage note, transition-only filler, or numbering placeholder?
@@ -49,6 +50,8 @@ Check that these stayed exact unless the user asked otherwise:
 - Did you pick one term for each repeated concept and keep it?
 - Did any accidental synonym drift appear after editing?
 - Are scope-defining verbs still the same ones the source used where that distinction matters?
+- Did you audit qualitative terms such as `small`, `complex`, `practical`, `impractical`, `beneficial`, `significant`, `materially`, `if needed`, `when appropriate`, or `without reason` for hidden branching behavior?
+- Did you avoid treating one qualitative branch term as a sufficient fix for another?
 
 ## 6. Audit severity calibration
 
@@ -71,7 +74,8 @@ Check that these stayed exact unless the user asked otherwise:
 ## 8. Cross-file consistency
 
 - If the task covered a skill folder, did you define the default artifact set clearly: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract?
-- Did you read the root `SKILL.md` first, then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
+- Did you read the root `SKILL.md` first?
+- After that, did you follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other inspected instruction files before broadening to the rest of the behavior-bearing file set?
 - Did you audit the full behavior-bearing artifact set rather than only the quoted excerpt, and were those files eligible for edit when consistency required it?
 - Did you rewrite any artifact-set files that needed updates so terminology, severity language, workflow wording, examples, and progressive-disclosure handoffs stayed aligned?
 - Did you also check local sentence-structure quality in each behavior-bearing file, rather than treating cross-file alignment as the only rewrite criterion?
