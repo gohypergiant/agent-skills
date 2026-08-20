@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.7.0] - 2026-08-19
+
+### Added
+- **`--verbose` flag for audit trail** — Users can now pass `--verbose` to save questions and answers to `q-and-a.md`
+  - Flag parsing: Step 1 now checks for `--verbose` in user input and stores the flag state
+  - Q&A document creation: Step 25 (if `--verbose` was set) writes `openspec/changes/<change-name>/q-and-a.md` containing research questions from step 12 and research answers from step 16
+  - File format: Markdown document with ISO 8601 timestamp, questions section, and answers section
+  - Rationale: Provides traceability by capturing the raw questions and research that informed design artifacts, creating an audit trail for understanding context and decision-making
+  - Completion message now mentions `q-and-a.md` when `--verbose` was used
+  - Usage:
+    - `/accelint-qrspi-propose <ticket text>` — No q-and-a.md created (default behavior)
+    - `/accelint-qrspi-propose --verbose <ticket text>` — Creates q-and-a.md audit trail
+
+### Changed
+- **Step numbering** — All steps renumbered to maintain flat numbering scheme (no sub-numbering like 24a)
+  - Previous: Steps 1-24, 25, 26-47
+  - New: Steps 1-26 (added verbose flag handling), 27-48
+  - Rationale: Sub-numbering (e.g., 24a) was causing agents to skip steps; flat numbering prevents this issue
+  - Updated all internal cross-references throughout the skill (workflow diagram, error handling, NEVER Do section)
+
+### Version
+- Bumped from 1.6.1 → 1.7.0
+
 ## [1.6.1] - 2026-07-29
 
 ### Changed
