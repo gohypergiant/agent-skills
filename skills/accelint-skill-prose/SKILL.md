@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, polishing, or
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.9.2"
+  version: "0.9.3"
 ---
 
 # Skill Prose
@@ -48,7 +48,7 @@ Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb c
 
 Rationale is not filler by default. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose. Preserve rationale by retention or strict equivalence, not by elaboration. Do not introduce new harms, failure modes, usability claims, maintainability claims, robustness claims, workflow-stability judgments, or environment qualifiers unless the source already states them.
 
-Qualitative execution cues are behavior-bearing when they act as hidden gates, fallback conditions, or permission slips. Words and phrases such as `small`, `large`, `simple`, `complex`, `constrained environment`, `practical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, and `without reason` can let the model self-justify behavior unless the surrounding text makes the condition operational enough to preserve the same branch. Do not preserve these cues by default just because they are already present. Do not treat a rewrite from one qualitative branch term to another as a real fix. For example, `small`, `constrained`, and `brittle` do not become operational just because they change to `practical` or `impractical`. In audit mode, flag these cues when they steer execution without an operational boundary. In rewrite mode, either remove them, replace them with source-supported operational conditions, or classify them as unresolved policy ambiguity if no lossless rewrite is possible.
+Qualitative execution cues are behavior-bearing when they act as hidden gates, fallback conditions, or permission slips. Words and phrases such as `small`, `large`, `simple`, `complex`, `constrained environment`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, and `without reason` can let the model self-justify behavior unless the surrounding text makes the condition operational enough to preserve the same branch. Do not preserve these cues by default just because they are already present. Do not treat a rewrite from one qualitative branch term to another as a real fix. For example, `small`, `constrained`, and `brittle` do not become operational just because they change to `practical` or `impractical`. In audit mode, flag these cues when they steer execution without an operational boundary. In rewrite mode, either remove them, replace them with source-supported operational conditions, or classify them as unresolved policy ambiguity if no lossless rewrite is possible.
 
 ## Untouchables
 
@@ -601,7 +601,7 @@ Would it still route the same requests?
 
 ### Step 1.5: Check qualitative gates and fallback cues
 Search for qualitative words and phrases that may act as hidden gates, exceptions, or permission slips, such as `small`, `large`, `simple`, `complex`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, `without reason`, and environment-shaping phrases like `constrained environment`.
-Confirm that each remaining use is either source-supported and operationally bounded, or explicitly flagged as unresolved ambiguity. Confirm that no qualitative branch term was merely replaced with another qualitative branch term.
+Confirm that each remaining use is either source-supported and operationally bounded, or explicitly flagged as unresolved policy ambiguity. Confirm that no qualitative branch term was merely replaced with another qualitative branch term.
 
 ### Step 2: Check for accidental synonym drift
 Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.

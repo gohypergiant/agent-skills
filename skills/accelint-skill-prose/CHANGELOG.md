@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.3] - 2026-08-20
+
+### Changed
+- Tightened `SKILL.md` so the qualitative-cue examples now include `impractical` in the root failure-mode list, and so the self-check uses the same `unresolved policy ambiguity` classification as the rewrite guidance
+
+### Version
+- Patch release at `0.9.3`.
+
 ## [0.9.2] - 2026-08-20
 
 ### Changed
