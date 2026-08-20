@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.0] - 2026-08-20
+
+### Changed
+- Hardened `SKILL.md` against rewrite drift by adding explicit hard stops for invented qualifiers, fallback branches, rationale, and inferred gates, and by narrowing strict-mode reorganization to source-supported clarification only.
+- Tightened `SKILL.md` guidance for rationale preservation, terminology normalization, artifact-set propagation, and decision tests so the skill prefers source evidence, lossless compression, and audit-first handling whenever clarification would require inference.
+- Reworked `references/serial-instruction-guidance.md`, `references/rfc-2119.md`, and `references/ste-compatible-rules.md` to remove inference-heavy strengthening patterns, prevent descriptive-to-imperative drift, and restrict obligation normalization to source-explicit cases.
+- Updated `references/artifact-patterns.md`, `references/examples.md`, `references/workflow-guardrails.md`, `references/checklist.md`, and `references/frontmatter-descriptions.md` so examples, rationale, severity checks, and cross-file review guidance no longer authorize qualitative additions, hidden gates, or broader trigger summaries during prose cleanup.
+
+### Version
+- Minor release at `0.9.0`.
+
 ## [0.8.1] - 2026-08-19
 
 ### Changed

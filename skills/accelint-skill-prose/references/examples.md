@@ -110,7 +110,7 @@ A local rewrite can create drift if linked files still use older terms, weaker s
 **Safe rewrite:**
 > VPN access happens after device setup.
 
-**Also safe if a small emphasis cue helps scanability:**
+**Also safe if the user explicitly asked for scanability help and the emphasis cue adds no meaning, process detail, or policy force:**
 > **VPN access happens after device setup.**
 
 **Unsafe rewrite:**
@@ -142,7 +142,7 @@ It drops the rationale that explains what risk the timing rule prevents. That re
 > Do not weaken approval gates during cleanup. Approval gates control when work may proceed.
 
 **Why this is useful:**
-The rewrite keeps the prohibition, then makes the protected behavior explicit. It teaches the reader what the rule preserves, not only what to avoid.
+The rewrite keeps the prohibition, then may restate the protected behavior only when that behavior is already explicit in the source or directly entailed by nearby source text. It must not add new rationale, diagnoses, or qualitative judgments.
 
 ## 10. Positive rewrite method for workflow prose
 

@@ -14,8 +14,11 @@ Run this checklist before you deliver an audit or rewrite.
 - Would an agent following only the rewrite behave the same way?
 - Did any step move earlier or later?
 - Did any approval gate, timing rule, or condition become less clear?
-- Did any warning lose the reason the step matters?
+- If the source included a reason the step matters, did the rewrite preserve it without adding a new reason?
 - Did any behavior-bearing verb change meaning, such as `stop` → `pause`, `wait` → `delay`, or `must` → `should`?
+- Did I invent any qualifier, exception, threshold, fallback case, or environmental assumption?
+- Did I add any source-unsupported rationale, failure mode, or benefit claim?
+- Did I create a stronger gate or branch than the source explicitly stated?
 - Did any numbered step become a stage note, transition-only filler, or numbering placeholder?
 - Is the first real operation still easy to find?
 - If the document already had stages or phases, did the rewrite preserve that organizing mechanic or explicitly justify changing it?
@@ -25,6 +28,7 @@ Run this checklist before you deliver an audit or rewrite.
 - Did any `must`, `do not`, `never`, `required`, or `critical` wording get softer?
 - Did any prohibition become advice?
 - Did any safety caveat disappear?
+- Did I infer a requirement level from emphasis language alone?
 
 ## 4. Exact-reference safety
 
@@ -49,7 +53,7 @@ Check that these stayed exact unless the user asked otherwise:
 ## 6. Audit severity calibration
 
 - If you used severity labels, do they match real behavior risk rather than rhetorical emphasis?
-- Is `Critical` reserved for issues likely to materially change trigger routing, workflow behavior, approval handling, or safety boundaries?
+- Is `Critical` reserved for issues likely to change trigger routing, workflow behavior, approval handling, or safety boundaries?
 - Would a calmer label still communicate the same risk just as well?
 
 ## 7. Clarity and tightening

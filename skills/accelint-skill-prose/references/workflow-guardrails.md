@@ -12,8 +12,8 @@ Ask:
 
 - If an agent followed only the rewritten text, would it behave the same way?
 - Did the rewrite preserve order, gates, conditions, and rationale?
-- Did you update every artifact-set file that needed changes, rather than checking support files without rewriting them?
-- Did you judge each behavior-bearing file on its own local clarity, not only on whether it stayed aligned with the rest of the folder?
+- Did you check whether any artifact-set file required changes for behavioral consistency, without forcing edits where preservation is safer?
+- Did you judge each behavior-bearing file on its own local clarity, but only after behavior preservation and concrete consistency checks passed?
 
 ## Preserve exactly when important
 
@@ -58,7 +58,8 @@ Keep these exact unless the user explicitly asks otherwise:
 - move the condition before the command when the timing stays the same
 - cut filler that does not change why the rule exists
 - preserve exact tokens inline while tightening surrounding prose
-- keep rationale sentences, but tighten them locally when the policy stays the same
+- keep source rationale sentences, and tighten them only by removing non-behavioral filler
+- do not add new justifications, consequences, or evaluative language
 
 ## Verb-sensitivity quick check
 
