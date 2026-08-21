@@ -4,7 +4,7 @@ description: Use this skill when the user wants to start the formal QRSPI/OpenSp
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.7.0"
+  version: "1.8.0"
 ---
 
 # Accelint QRSPI
@@ -74,12 +74,13 @@ Capture frontmatter at step 31 after Checkpoint 1 approval, not before. `design.
 Execute these steps in order without stopping between them:
 
 1. **Validate user input and parse flags**: Check if the user provided a ticket, feature request, or idea in their prompt (either as skill arguments or in their message). Also check for the `--verbose` flag.
-   
+
    **Flag parsing:**
    - Check if the user's input contains `--verbose` (with or without other content)
-   - Store the verbose flag state for use in step 24a
+   - Store the verbose flag state for use in step 25
    - Remove `--verbose` from the input before extracting the ticket description
-   
+   - Store the original input text (after flag removal) for use in step 25 — this will be saved to trace.md if --verbose was set
+
    **Validation:**
    If the prompt is empty or contains only the skill invocation with no actual content (after removing flags):
    ```
@@ -90,9 +91,9 @@ Execute these steps in order without stopping between them:
    - An idea or problem statement ("Users complain about slow search...")
 
    Then I'll use QRSPI to break it down into a structured plan.
-   
+
    Optional flags:
-   --verbose    Save questions and answers to q-and-a.md for audit trail
+   --verbose    Save input, questions, and answers to trace.md for audit trail
    ```
    Exit the skill and wait for the user to provide input. Do NOT proceed with internal examples or placeholder content.
 
@@ -153,6 +154,18 @@ Execute these steps in order without stopping between them:
    [paste ONLY the research questions from step 12]
 
    Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
+
+   **Use `sem impact` for dependency analysis**
+
+   If research questions mention specific code entities (functions, classes, types, constants), check whether the `sem` CLI tool is available by running `which sem`.
+
+   If available, use `sem impact <token>` (baseline format, not JSON) to gather deterministic dependency data:
+   - Where the entity is defined (file:line)
+   - What it depends on (all dependencies)
+   - What depends on it (all call sites and references)
+   - Transitive impact (how many entities are affected)
+
+   Include this impact analysis in your research findings. This ensures the design phase has complete dependency information and won't miss references or call sites.
    ```
 
 15. Wait for the sub-agent to complete and return the research document
@@ -219,17 +232,18 @@ Execute these steps in order without stopping between them:
 
 24. Verify the design.md file exists at the reported path
 
-25. **If `--verbose` flag was set in step 1**: Create a `q-and-a.md` audit trail file in the change folder before proceeding to the checkpoint.
+25. **If `--verbose` flag was set in step 1**: Create a `trace.md` audit trail file in the change folder before proceeding to the checkpoint.
 
-   **Purpose**: Provides traceability by capturing the raw questions and research answers that informed the design artifacts.
+   **Purpose**: Provides traceability by capturing the initial input, raw questions, and research answers that informed the design artifacts. This closes the loop from "what was entered → what was asked → what was answered".
 
-   **File location**: `openspec/changes/<change-name>/q-and-a.md`
+   **File location**: `openspec/changes/<change-name>/trace.md`
 
    **Requirements**:
-   
+
    - You MUST use the Write tool to create this file
-   - The file MUST be written to `openspec/changes/<change-name>/q-and-a.md` (where `<change-name>` is the slug from step 23)
+   - The file MUST be written to `openspec/changes/<change-name>/trace.md` (where `<change-name>` is the slug from step 23)
    - The content MUST include an ISO 8601 timestamp indicating when the document was generated
+   - The content MUST include the original ticket/feature/idea text that the user provided (from step 1, after flag removal)
    - The content MUST include the complete research questions from step 12
    - The content MUST include the complete research findings from step 16
    - You MUST NOT modify `proposal.md` or `design.md` as part of this step — this is a separate audit document
@@ -237,22 +251,28 @@ Execute these steps in order without stopping between them:
 
    **Content structure**:
    ```markdown
-   # Questions and Answers Audit Trail
-   
+   # QRSPI Trace Audit Trail
+
    Generated: <ISO 8601 timestamp>
-   
-   This document captures the questions and research answers that informed the design artifacts in this change. It provides an audit trail for understanding the context and decision-making process.
-   
+
+   This document captures the complete QRSPI flow: the initial input, the questions generated, and the research answers that informed the design artifacts. It provides an audit trail for understanding the context and decision-making process.
+
    ---
-   
+
+   ## Initial Input
+
+   [paste the original ticket/feature/idea text from step 1, after removing the --verbose flag]
+
+   ---
+
    ## Research Questions
-   
+
    [paste questions from step 12]
-   
+
    ---
-   
+
    ## Research Answers
-   
+
    [paste research findings from step 16]
    ```
 
@@ -531,7 +551,7 @@ Execute these steps in order without stopping between them:
    - openspec/changes/<change-slug>/specs/*
    - openspec/changes/<change-slug>/tasks.md
    [If --verbose was used:]
-   - openspec/changes/<change-slug>/q-and-a.md (audit trail)
+   - openspec/changes/<change-slug>/trace.md (audit trail)
 
    Next steps:
    1. Review the artifacts one more time if needed
