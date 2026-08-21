@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.3.1"
 ---
 
 # Accelint QRSPI Archive
@@ -118,7 +118,23 @@ Goal: confirm the archive operation's inputs are shaped correctly before touchin
 
    This is evaluated per change in a bulk-archive batch — one change needing confirmation doesn't block preflight for the others.
 
-3. **Verification Task B — Purpose heading convention.** For every capability named across all `specs_touched` lists in this batch, confirm `openspec/specs/<capability>/spec.md` contains a `## Purpose` or `### Purpose` heading. Index updates read this heading directly for the Purpose column, and spec writing relies on it existing to decide where a `## Related Specs` section belongs. If a spec is missing the heading, do not invent placeholder purpose text — ask the user whether to (a) add a placeholder like `_purpose not yet documented_` for now, or (b) fix the spec first. Fixing first is almost always better: a guessed purpose written into the index by this skill becomes content nobody actually authored, and it will look authoritative to the next reader.
+3. **Verification Task B — Purpose heading convention.** For every capability named across all `specs_touched` lists in this batch, check whether `openspec/specs/<capability>/spec.md` contains a heading that describes its purpose:
+   
+   **Acceptable headings (check in this order, first match wins):**
+   - `## Purpose` or `### Purpose`
+   - `## Overview` or `### Overview`
+   
+   Treat Overview and Purpose as semantically equivalent — both describe what the capability does and why it exists, which is what index updates and spec writing need.
+   
+   **If none of these headings exist:**
+   Ask the user how to handle it:
+   - (a) Add a placeholder `## Purpose` heading with text `_Purpose not yet documented_` for now
+   - (b) Pause so they can add the heading themselves first
+   - (c) Read the spec content and generate a `## Purpose` heading based on what the spec describes
+   
+   Option (c) is usually best when the spec has meaningful content — the agent can synthesize a purpose statement from what's already documented. Option (b) is better for specs that are stubs or need domain expertise to describe accurately. Option (a) is a last resort when you need to unblock immediately but will need to come back and fix it later.
+   
+   **Note:** This check applies only to capabilities that already have MAIN specs at `openspec/specs/<capability>/spec.md`. Brand-new capabilities (per step 4) don't have MAIN specs yet, so skip this check for them — they'll get their Purpose heading when their spec is created during archive.
 
 4. For any capability in `specs_touched` that has no `openspec/specs/<capability>/` directory yet — a brand-new capability introduced by this change — note it separately. Step 19 will need to create its `spec.md` frontmatter from scratch rather than editing an existing file, and step 20's Purpose column will need the user to supply a value manually since nothing exists yet to read.
 
@@ -257,9 +273,14 @@ Always spawn one subagent per touched capability to do this — every time, not 
    content entirely — this section is never hand-maintained).
 
    For each partner in the sorted related: list, read its spec.md file to
-   extract the ## Purpose or ### Purpose heading text. Format each line as:
+   extract the purpose heading text. Check for these headings in order:
+   - ## Purpose or ### Purpose
+   - ## Overview or ### Overview
+   
+   Use whichever is found first (Overview and Purpose are semantically equivalent).
+   Format each line as:
 
-     - [<partner>](../<partner>/spec.md) - <Purpose heading text>
+     - [<partner>](../<partner>/spec.md) - <Purpose or Overview heading text>
 
    Example format (one entry per line, alphabetically sorted by partner name):
 
@@ -270,16 +291,17 @@ Always spawn one subagent per touched capability to do this — every time, not 
 
    The format is: markdown link with partner name as link text, relative
    path to its spec.md, then space-dash-space (not em-dash), then the
-   first sentence or paragraph from that partner's ## Purpose or ### Purpose heading.
+   first sentence or paragraph from that partner's purpose heading (## Purpose, ### Purpose, ## Overview, or ### Overview).
 
    If no ## Related Specs heading exists, insert one at the end of the file.
 
    Report back ONLY: the file path, whether the write was a no-op
    (byte-identical to what was already there) or an actual change, the
-   final related: list you wrote, and the capability's current ## Purpose
-   or `### Purpose`heading text (a sentence or short paragraph — you're not
-   writing this, just reading it back so the parent doesn't have to reopen
-   this file for index updates). Do not return the file's full contents.
+   final related: list you wrote, and the capability's current purpose
+   heading text (from ## Purpose, ### Purpose, ## Overview, or ### Overview
+   — whichever exists, a sentence or short paragraph — you're not writing
+   this, just reading it back so the parent doesn't have to reopen this
+   file for index updates). Do not return the file's full contents.
    ```
 
 23. If the capability has no prior `spec.md` (a brand-new capability per preflight step 4), the subagent starts from an empty frontmatter block instead of reading an existing one — same prompt otherwise.

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.8.1] - 2026-08-21
+
+### Fixed
+- **Strengthened `created_at` timestamp writing in step 31** — Added explicit step-by-step instructions to ensure timestamp is consistently written
+  - Broke down step 31 into explicit substeps: (a) read current design.md, (b) extract data, (c) write frontmatter with Edit tool, (d) verify formatting, (e) verify write succeeded, (f) handle missing data
+  - Added clear instructions for when frontmatter exists vs. needs to be created fresh
+  - Mandates using Edit tool with explicit before/after states
+  - Includes retry logic and error handling if write fails
+  - Rationale: Previous instructions showed what to write but didn't mandate how to write it, leading to inconsistent timestamp creation. Explicit tool instructions ensure `created_at` is written every time.
+- **Added prohibition against skipping `created_at`** — Enhanced NEVER Do section to explicitly forbid proceeding without timestamp
+  - Added rule: "NEVER skip writing the `created_at` timestamp — This field is required by both accelint-qrspi-apply and accelint-qrspi-archive"
+  - Clarifies that missing `created_at` breaks downstream timestamp tracking (started_at, completed_at)
+  - Rationale: Makes it clear this is a required field that must be written, not an optional convenience
+
+### Version
+- Bumped from 1.8.0 → 1.8.1
+
 ## [1.8.0] - 2026-08-21
 
 ### Changed
