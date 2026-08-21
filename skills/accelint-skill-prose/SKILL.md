@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, polishing, or
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.9.3"
+  version: "0.9.4"
 ---
 
 # Skill Prose
@@ -124,9 +124,9 @@ Do them in order.
 Do not reverse these steps.
 Keep them separate. Output mode controls the deliverable. Rewrite mode controls the rewrite scope.
 
-### Output mode
+### Operating control 1: Choose the output mode
 
-Choose the output mode first. Output mode controls the deliverable, not the rewrite scope.
+Output mode controls the deliverable, not the rewrite scope.
 
 #### Audit only
 
@@ -148,7 +148,7 @@ Use this mode when the user wants cleaner final text directly.
 
 Use this mode when the user wants both findings and a safer revision.
 
-### Rewrite mode
+### Operating control 2: Choose the rewrite mode
 
 Choose the rewrite mode after the output mode.
 
@@ -161,7 +161,7 @@ Offer these modes:
 
 For audit-only requests, you may proceed without asking for a rewrite mode. If the task expands into a rewrite, ask for the rewrite mode before you rewrite.
 
-### Apply the rewrite mode
+### Operating control 3: Apply the rewrite mode
 
 #### `mode=default`
 
@@ -187,7 +187,7 @@ Behavior:
 
 Strict mode is not permission to broaden scope casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asked for a broader rewrite.
 
-### Artifact focus
+### Operating control 4: Choose the artifact focus
 
 Use these lenses when they match the text:
 
@@ -196,7 +196,7 @@ Use these lenses when they match the text:
 
 ## Before you edit
 
-### Step 1: Extract what must stay fixed
+### Before-you-edit step 1: Extract what must stay fixed
 Do this before you tighten, reorder, or relabel anything.
 
 First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit when the source already treats those terms as equivalent. Common clusters include trigger / invoke / activate, audit / review / analyze, field / key / property, and workflow-role terms such as stage / step / gate / checkpoint / branch / readiness check. Do not normalize two source terms into one if they may differ in permission, timing, scope, or workflow role.
@@ -215,8 +215,8 @@ Look for:
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
 
-### Step 2: Define the artifact set when the task covers a skill folder
-Requires: Step 1 is complete.
+### Before-you-edit step 2: Define the artifact set when the task covers a skill folder
+Requires: Complete Before-you-edit step 1.
 
 Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Add other linked instruction files when the root file depends on them for trigger scope, workflow order, guardrails, examples that define scope, or exact-reference meaning. Do not infer contract significance from perceived usefulness alone.
 
@@ -234,7 +234,7 @@ Treat sequence as behavior when the text tells the agent or reader to do one thi
 
 Load `references/serial-instruction-guidance.md` before you edit workflow-bearing prose whose order, approval timing, validation loop, branch logic, or reference-loading sequence matters. Keep `SKILL.md` operational. Use the reference for the detailed detection pass, structure rules, and edge cases.
 
-### Step 1: Classify each workflow unit before you restructure it
+### Serial-order step 1: Classify each workflow unit before you restructure it
 Classify each unit as one of these:
 - **Action** — do something now
 - **Gate** — stop, wait, require, or branch
@@ -244,19 +244,19 @@ Classify each unit as one of these:
 - **Landmark checkpoint** — a named pause or review moment that downstream prose may reference
 
 Do not give all six categories the same structural weight.
-Done when: every unit you may reshape has a category.
+Done when: Every unit you may reshape has a category.
 
-### Step 2: Detect ordered behavior before you tighten it
-Requires: Step 1 is complete.
+### Serial-order step 2: Detect ordered behavior before you tighten it
+Requires: Complete Serial-order step 1.
 Detect and make these cases explicit without adding new behavior:
 - **explicit serial instructions** — numbered steps, `Step 1`, `first/next/then/finally`, `before/after/until`, `requires`, `done when`, `return to`, `do not proceed until`
 - **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, a qualitative cue acts as a hidden fallback condition, or a paragraph mixes discovery, decision, rewrite, and verification
 - **sequencing cues in skill files** — choose output mode before rewrite mode, define the artifact set before cross-file edits, load references before citing them, run self-check before delivery, ask first before edits that need approval
 - **sequencing cues in general prose** — procedural paragraphs, approval notes, policy instructions, workflow warnings, and bullets that are really ordered tasks
-Done when: you can name the ordered actions, gates, checks, and branches that the rewrite must preserve.
+Done when: You can name the ordered actions, gates, checks, and branches that the rewrite must preserve.
 
-### Step 3: Choose the smallest ordered structure that keeps compliance visible
-Requires: Step 2 is complete.
+### Serial-order step 3: Choose the smallest ordered structure that keeps compliance visible
+Requires: Complete Serial-order step 2.
 When order matters:
 - make the order explicit
 - use a numbered list for 2 to 3 short ordered steps
@@ -270,10 +270,10 @@ When order matters:
 - put conditions before actions when that makes timing clearer
 - restate an enforceable gate only when the source already makes the dependency mandatory through explicit timing, requirement, or stop/wait language
 - never leave ordered work in plain bullets
-Done when: the workflow shape makes the intended order, gates, and retry path hard to miss.
+Done when: The workflow shape makes the intended order, gates, and retry path hard to miss.
 
-### Step 4: Preserve stage mechanics and reject filler steps
-Requires: Step 3 is complete.
+### Serial-order step 4: Preserve stage mechanics and reject filler steps
+Requires: Complete Serial-order step 3.
 For stage-based workflows:
 - if the document already names stages or phases in multiple places, treat that as evidence of an existing organizing mechanic
 - prefer a `## Stage:` container or equivalent higher-level heading when several consecutive items share one phase purpose
@@ -285,13 +285,13 @@ For stage-based workflows:
 Transition-step rule:
 - a transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on
 - a transition step is not acceptable if the surrounding stage container already makes the navigation obvious
-Done when: stage notes stay at stage level, operational steps stay operational, and any structural rewrite is disclosed as structural.
+Done when: Stage notes stay at stage level, operational steps stay operational, and any structural rewrite is disclosed as structural.
 
 ## Rewrite method
 
 Use this method whenever you rewrite behavior-defining prose.
 
-### Step 1: Lead with the operational point
+### Rewrite-method step 1: Lead with the operational point
 Start with the rule, action, boundary, or decision the reader must understand.
 
 - In descriptions, surface the scope logic early.
@@ -301,15 +301,15 @@ Start with the rule, action, boundary, or decision the reader must understand.
 
 Do not add a preamble when the instruction works better without one.
 
-### Step 2: Keep one term for one concept
-Requires: Step 1 is complete.
+### Rewrite-method step 2: Keep one term for one concept
+Requires: Complete Rewrite-method step 1.
 
 Pick one term for each repeated behavior-bearing concept and keep it stable.
 
 Do not rotate synonyms for style if those synonyms could suggest different scope, timing, or force.
 
-### Step 3: Match the sentence shape to the job
-Requires: Steps 1 and 2 are complete.
+### Rewrite-method step 3: Match the sentence shape to the job
+Requires: Complete Rewrite-method steps 1 and 2.
 
 Choose the clearest accurate sentence shape for the artifact.
 
@@ -319,34 +319,34 @@ Choose the clearest accurate sentence shape for the artifact.
 - **Rationale** — explain why the rule exists without burying the rule itself.
 - **Examples** — keep only examples that anchor scope, edge cases, or expected behavior.
 
-### Step 4: Separate instruction from explanation when it helps
-Requires: Steps 1 to 3 are complete.
+### Rewrite-method step 4: Separate instruction from explanation when it helps
+Requires: Complete Rewrite-method steps 1 to 3.
 
 Procedural text tells the agent what to do. Descriptive text explains what something means, why a rule exists, or when a rule applies.
 
 Separate them when that makes behavior easier to follow. Do not force everything into imperative form if that would narrow policy text, flatten rationale, or blur scope.
 
-### Step 5: Put conditions before commands when that clarifies the logic
-Requires: Steps 1 to 4 are complete.
+### Rewrite-method step 5: Put conditions before commands when that clarifies the logic
+Requires: Complete Rewrite-method steps 1 to 4.
 
 If a rule depends on a condition, put the condition first when doing so makes the logic easier to follow and does not change timing or emphasis.
 
-### Step 6: Preserve exact obligation strength
-Requires: Steps 1 to 5 are complete.
+### Rewrite-method step 6: Preserve exact obligation strength
+Requires: Complete Rewrite-method steps 1 to 5.
 
 Keep requirement, recommendation, permission, and prohibition at the same level.
 
 Preserve original obligation wording by default. Use RFC 2119 terms only when the user explicitly asked for normalization or when the source already states the obligation level unambiguously and the conversion is strictly lossless. Do not normalize severity labels mechanically or just to sound more formal.
 
-### Step 7: Keep the action path easy to scan
-Requires: Steps 1 to 6 are complete.
+### Rewrite-method step 7: Keep the action path easy to scan
+Requires: Complete Rewrite-method steps 1 to 6.
 
 Use short paragraphs, clean lists, and bounded sentences when they make the behavior easier to audit.
 
 Do not reshape source text just to make it feel lighter. Scanability helps only when it preserves the same behavior.
 
-### Step 8: Use the smallest structure that makes the rule clear
-Requires: Steps 1 to 7 are complete.
+### Rewrite-method step 8: Use the smallest structure that makes the rule clear
+Requires: Complete Rewrite-method steps 1 to 7.
 
 Do not over-edit. Improve the prose enough to make the intended behavior easier to follow and harder to misread.
 
@@ -468,7 +468,7 @@ If the text is already compact, exact, and behaviorally clear, prefer an explici
 
 Rewrite mode controls how far you may reshape the source. Output mode controls what you return to the user.
 
-For your own responses, you may borrow lightweight cognitive-load reduction patterns when they improve response navigation without changing claim strength. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries.
+For your own responses, you may use lightweight navigation aids when they improve scanability without changing claim strength. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries.
 
 Formatting help applies to the response only, not to the source text or its policy content. Do not let response-formatting choices override audit accuracy. Do not reshape source text just to make it feel more ADHD-friendly unless the user explicitly asked for that delivery style.
 
@@ -513,9 +513,9 @@ Load references only when needed.
 
 When the user asks you to work on a skill, crawl the skill folder first. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
 
-Do the crawl in order. Read the local `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files.
+For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`.
 
-For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md` first. Then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
+Do the crawl in order. Read the local `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
 When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite other artifact-set files only when a source-preserving inconsistency would otherwise remain after the requested edit, such as a mismatch in terminology, obligation level, examples that define scope, workflow wording, or progressive-disclosure handoffs.
 
@@ -575,23 +575,22 @@ If the task is audit-only, also ask: did I accidentally draft replacement wordin
 Do this before any other work when the verification workflow has 4 or more real actions.
 Create a short checklist in your working state or reply and update it after each step.
 
-- [ ] Step 1: Re-read the trigger or scope language
-- [ ] Step 1.5: Check qualitative gates and fallback cues
-- [ ] Step 2: Check for accidental synonym drift
-- [ ] Step 3: Check obligation and severity terms
-- [ ] Step 4: Check referents
-- [ ] Step 5: Re-check exact tokens and behavior-bearing verbs
-- [ ] Step 6: Confirm artifact-set discovery
-- [ ] Step 7: Confirm folder-level coverage
-- [ ] Step 8: Confirm local-tightening sweep status
-- [ ] Step 9: Confirm unchanged-file classification if needed
-- [ ] Step 10: Confirm incomplete-discovery disclosure if needed
-- [ ] Step 11: Confirm rationale preservation
-- [ ] Step 12: Confirm structural-behavior equivalence
-- [ ] Step 13: Confirm ordered behavior is still visible
-- [ ] Step 14: Confirm no pseudo-step inflation or filler numbering
-- [ ] Step 15: Confirm structural-rewrite disclosure if needed
-- [ ] Step 16: Confirm audit-only output stayed findings-only
+- [ ] Re-read the trigger or scope language
+- [ ] Check qualitative gates, fallback cues, and accidental synonym drift
+- [ ] Check obligation and severity terms
+- [ ] Check referents
+- [ ] Re-check exact tokens and behavior-bearing verbs
+- [ ] Confirm artifact-set discovery
+- [ ] Confirm folder-level coverage
+- [ ] Confirm local-tightening sweep status
+- [ ] Confirm unchanged-file classification if needed
+- [ ] Confirm incomplete-discovery disclosure if needed
+- [ ] Confirm rationale preservation
+- [ ] Confirm structural-behavior equivalence
+- [ ] Confirm ordered behavior is still visible
+- [ ] Confirm no pseudo-step inflation or filler numbering
+- [ ] Confirm structural-rewrite disclosure if needed
+- [ ] Confirm audit-only output stayed findings-only
 
 This step is not optional.
 Do not deliver before this check is complete.
@@ -599,15 +598,13 @@ Do not deliver before this check is complete.
 ### Step 1: Re-read the trigger or scope language
 Would it still route the same requests?
 
-### Step 1.5: Check qualitative gates and fallback cues
+### Step 2: Check qualitative gates, fallback cues, and accidental synonym drift
 Search for qualitative words and phrases that may act as hidden gates, exceptions, or permission slips, such as `small`, `large`, `simple`, `complex`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, `without reason`, and environment-shaping phrases like `constrained environment`.
 Confirm that each remaining use is either source-supported and operationally bounded, or explicitly flagged as unresolved policy ambiguity. Confirm that no qualitative branch term was merely replaced with another qualitative branch term.
-
-### Step 2: Check for accidental synonym drift
 Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
 
 ### Step 3: Check obligation and severity terms
-Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, `important`, `mandatory`, and `required`.
+Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `never`, `critical`, `important`, `mandatory`, and `required`.
 Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the source already made the obligation level explicit enough to preserve exactly. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
 
 ### Step 4: Check referents
@@ -623,7 +620,7 @@ Confirm that you followed explicit links and references from `SKILL.md`, `AGENTS
 Confirm that folder-level work covered the full artifact set: root `SKILL.md`, sibling `AGENTS.md` if present, relevant behavior-bearing `references/*.md`, and any other linked instruction files needed to preserve the contract.
 
 ### Step 8: Confirm local-tightening sweep status
-Requires: Step 7 is complete.
+Requires: Complete self-check Step 7.
 If you changed any file in a folder-level rewrite, confirm that you ran a dedicated local-tightening sweep across the other inspected behavior-bearing files before you left them unchanged.
 
 ### Step 9: Confirm unchanged-file classification if needed
@@ -649,17 +646,3 @@ If the rewrite changed stages, checkpoints, numbering architecture, or overview/
 
 ### Step 16: Confirm audit-only output stayed findings-only
 If the task was audit-only, confirm that you did not include sentence-level replacement text unless the user explicitly requested examples.
-
-## Limits
-
-This skill is not a full Simplified Technical English enforcement pass, and it is not a general ADHD-friendly rewriting mode. Use compatible ideas from those disciplines selectively and subordinate them to behavior preservation.
-
-This skill improves behavior-defining prose safely. It does not replace domain review.
-
-When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or other concrete mismatches that would change the behavior contract. If you changed any file in the artifact set, run a consistency check across the other inspected behavior-bearing files before you leave them unchanged. Edit those files only when needed so the folder remains internally consistent without propagating optional stylistic preferences before you deliver the work.
-
-Cross-file alignment is required, but it is not sufficient. Local clarity inside each behavior-bearing file matters only after behavior preservation and concrete consistency checks pass.
-
-If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
-
-This skill does not impose arbitrary word-count limits, blanket modal bans, or creative-writing style rules. Use compact wording where it improves clarity, but preserve precision when precision is the behavior.

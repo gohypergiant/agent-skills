@@ -69,7 +69,7 @@ If you use this skill for audit-only, rewrite-only, or audit-plus-rewrite work, 
 
 ### `references/*.md`
 
-Progressive-disclosure reference files that can complete the behavior contract when the root skill depends on them.
+Progressive-disclosure reference files that can complete the behavior contract when the root `SKILL.md` depends on them.
 
 | File | Purpose |
 |------|---------|
@@ -90,7 +90,7 @@ Version history for the skill. This repo uses file-driven versioning for skills,
 
 Evaluation prompts that exercise the skill's behavior. This file is more useful to maintainers than end users, but it is also the best source of real request examples in this package.
 
-The current eval set covers multiple risk classes, including audit-only compliance, frontmatter boundary preservation, workflow verb sensitivity, folder-level artifact discovery, unchanged-file classification, and exact-reference preservation.
+The current eval set covers multiple risk classes, including audit-only compliance, frontmatter boundary preservation, workflow verb sensitivity, folder-level artifact discovery, unchanged-file classification, exact-reference preservation, and qualitative-gate detection.
 
 ## Examples
 
