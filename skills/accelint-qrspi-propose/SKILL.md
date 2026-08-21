@@ -4,7 +4,7 @@ description: Use this skill when the user wants to start the formal QRSPI/OpenSp
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.8.0"
+  version: "1.8.1"
 ---
 
 # Accelint QRSPI
@@ -312,29 +312,50 @@ Execute these steps in order without stopping between them:
 
 31. **Capture specs_touched/decisions frontmatter.** Once the user has approved (a) or confirmed their manual edits are complete (c), design.md is in its final form for this planning pass — capture its `specs_touched` and `decisions` as structured YAML frontmatter now, not any earlier, so an edit made during this same checkpoint can't leave the frontmatter stale against content that changed after it was written.
 
-   - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (specs/tasks generation happens in steps 32-42), so there's nothing else to derive it from.
-   - **`decisions`**: design.md's own decision content — the choices, rationale, and alternatives the design phase already worked through — restructured into a list of `{id, choice, rationale, alternatives}` entries. This is structuring content that's already there, not writing new design content.
-   - **`created_at`**: ISO 8601 timestamp marking when this change was created (now, at the moment the user approves the design). Use `new Date().toISOString()` format. This is the first of three timestamps used to measure time spent in the QRSPI flow (created_at → started_at → completed_at).
-   - Write all into design.md's YAML frontmatter:
+   **Step-by-step process:**
 
-     ```yaml
-     ---
-     change: <change-name-from-step-23>
-     created_at: "2026-08-17T15:23:45.123Z"
-     specs_touched: [capability-a, capability-b]
-     decisions:
-       - id: D1
-         choice: <short decision summary>
-         rationale: <why this over the alternatives>
-         alternatives: [<option>, <option>]
-     ---
-     ```
+   a. **Read the current design.md file** to see what exists:
+      ```bash
+      Read openspec/changes/<change-name-from-step-23>/design.md
+      ```
+   
+   b. **Extract the data you need to write:**
+      - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (specs/tasks generation happens in steps 32-42), so there's nothing else to derive it from.
+      - **`decisions`**: design.md's own decision content — the choices, rationale, and alternatives the design phase already worked through — restructured into a list of `{id, choice, rationale, alternatives}` entries. This is structuring content that's already there, not writing new design content.
+      - **`created_at`**: ISO 8601 timestamp marking when this change was created (now, at the moment the user approves the design). Generate this using the current timestamp in ISO 8601 format (e.g., "2026-08-17T15:23:45.123Z"). This is the first of three timestamps used to measure time spent in the QRSPI flow (created_at → started_at → completed_at).
 
-   **CRITICAL: Use inline array syntax for specs_touched** — Write `specs_touched: [cap-a, cap-b]` NOT multi-line YAML with hyphens. This keeps frontmatter format consistent with other fields that use inline arrays.
-
-   - If design.md already starts with a frontmatter block (e.g. OpenSpec's own metadata), merge into it rather than writing a second block.
-   - If `specs_touched` or a clear decisions list can't be confidently read out of the approved design.md/proposal.md, don't guess at either — tell the user what's missing and ask them to add it to design.md directly. A design doc without a clear decisions trail is worth flagging on its own terms, and `accelint-qrspi-archive` needs this frontmatter later to do its cross-capability linking.
-   - This frontmatter is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, not part of the design content `/opsx:continue` generates — writing it here doesn't fall under the "never generate artifacts yourself" rule (see NEVER Do This). Nothing in proposal.md's or design.md's actual content gets created or altered by this step; only the frontmatter block does.
+   c. **Write the frontmatter using the Edit tool:**
+   
+      - If design.md has NO frontmatter yet, add a complete frontmatter block at the top:
+        ```yaml
+        ---
+        change: <change-name-from-step-23>
+        created_at: "2026-08-17T15:23:45.123Z"
+        specs_touched: [capability-a, capability-b]
+        decisions:
+          - id: D1
+            choice: <short decision summary>
+            rationale: <why this over the alternatives>
+            alternatives: [<option>, <option>]
+        ---
+        ```
+      
+      - If design.md already has frontmatter (e.g., OpenSpec's own metadata), merge the new fields into the existing block using the Edit tool. Do NOT create a second frontmatter block.
+   
+   d. **CRITICAL formatting requirements:**
+      - **Use inline array syntax for specs_touched**: Write `specs_touched: [cap-a, cap-b]` NOT multi-line YAML with hyphens. This keeps frontmatter format consistent.
+      - **Preserve existing frontmatter fields**: If there are other fields already present, keep them unchanged.
+      - **Decisions use block syntax**: The `decisions` list uses multi-line YAML with hyphens for each entry (see example above).
+   
+   e. **Verify the write succeeded:**
+      - After using the Edit tool, check that the operation completed without errors
+      - If the Edit tool reports an error, try reading the file again and re-attempting the write
+      - If the write fails repeatedly, inform the user and ask them to add the frontmatter manually
+   
+   f. **Handle missing data gracefully:**
+      - If `specs_touched` or a clear decisions list can't be confidently read out of the approved design.md/proposal.md, don't guess at either — tell the user what's missing and ask them to add it to design.md directly. A design doc without a clear decisions trail is worth flagging on its own terms, and `accelint-qrspi-archive` needs this frontmatter later to do its cross-capability linking.
+   
+   **Why this matters:** This frontmatter is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, not part of the design content `/opsx:continue` generates — writing it here doesn't fall under the "never generate artifacts yourself" rule (see NEVER Do This). Nothing in proposal.md's or design.md's actual content gets created or altered by this step; only the frontmatter block does.
 
 32. REQUIRED: If the user does not explicitly approve (says "looks good", "approve", "continue", etc.), DO NOT move forward. This checkpoint is mandatory. Skipping it bypasses the core value of QRSPI methodology.
 
@@ -641,7 +662,9 @@ If any of these are missing, guide the user to set them up before running this s
 
 **NEVER continue to specs/tasks without design approval** — Step 27 is a required checkpoint. If you skip the design review and generate tasks immediately, you miss the "brain surgery" moment, where corrections are cheap. Fixing design issues after code is written costs review cycles and rework.
 
-**NEVER capture `specs_touched`/`decisions` frontmatter before `design.md` is in its final, approved state** — Step 31 runs only after (a) approval or (c) confirmed manual edits, never during a (b) request-edits loop or speculatively ahead of approval. Capturing it against a draft that is still being revised creates exactly the stale metadata `accelint-qrspi-archive` depends on this skill not producing.
+**NEVER capture `specs_touched`/`decisions`/`created_at` frontmatter before `design.md` is in its final, approved state** — Step 31 runs only after (a) approval or (c) confirmed manual edits, never during a (b) request-edits loop or speculatively ahead of approval. Capturing it against a draft that is still being revised creates exactly the stale metadata `accelint-qrspi-archive` depends on this skill not producing.
+
+**NEVER skip writing the `created_at` timestamp** — This field is required by both `accelint-qrspi-apply` (to track when implementation started) and `accelint-qrspi-archive` (to track the full lifecycle). If the Edit tool fails when writing frontmatter, retry or ask the user to add it manually — do not proceed without it. A missing `created_at` breaks downstream timestamp tracking.
 
 **NEVER guess `specs_touched` or `decisions` when they cannot be confidently read out of the approved `design.md` or `proposal.md`** — ask the user to add what is missing to `design.md` directly instead. A silently invented capability list is worse than a visible gap, because `accelint-qrspi-archive` will trust this frontmatter as the author's explicit statement of scope.
 
