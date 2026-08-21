@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.8.0] - 2026-08-21
+
+### Changed
+- **Enhanced `--verbose` audit trail** — Renamed `q-and-a.md` to `trace.md` and expanded content to include initial input
+  - File renamed: `openspec/changes/<change-name>/q-and-a.md` → `openspec/changes/<change-name>/trace.md`
+  - Added initial input capture: Step 1 now stores the original ticket/feature/idea text (after flag removal) for inclusion in trace file
+  - Expanded trace structure: Now contains Initial Input section (new), Research Questions section, and Research Answers section
+  - Updated document title: "Questions and Answers Audit Trail" → "QRSPI Trace Audit Trail"
+  - Rationale: Closes the loop from "what was entered → what was asked → what was answered", providing complete traceability of the QRSPI flow from initial input through research to design
+  - Updated help text and completion messages to reference `trace.md` instead of `q-and-a.md`
+- **Added `sem impact` guidance for dependency analysis** — Research sub-agent (step 14) now includes instructions to use `sem` CLI tool when available
+  - Checks for `sem` CLI availability with `which sem`
+  - Uses `sem impact <token>` for deterministic dependency data when research questions mention specific code entities
+  - Gathers: entity definition location, dependencies, call sites/references, transitive impact
+  - Rationale: Ensures design phase has complete dependency information and won't miss references or call sites
+
+### Version
+- Bumped from 1.7.0 → 1.8.0
+
 ## [1.7.0] - 2026-08-19
 
 ### Added
