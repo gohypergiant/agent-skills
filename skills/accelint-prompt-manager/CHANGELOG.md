@@ -5,6 +5,22 @@ All notable changes to the accelint-prompt-manager skill will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.4] - 2026-08-21
+
+### Added
+- **Focused self-check pass for skill-safe wording changes** — added a dedicated end-of-skill review checklist to catch wording changes that can silently alter behavior
+  - Added serial-instruction, obligation-strength, exact-reference, and cross-file-consistency passes so future edits re-check workflow order, guardrails, and referenced identifiers before handoff
+  - Rationale: this skill is behavior-defining prose, so small wording changes need an explicit final scrutiny step to prevent accidental semantic drift
+
+### Changed
+- **Structured top-level guidance for better scanability without behavior change** — converted narrative guidance under `Your Role and Output` into explicit subsections
+  - Promoted workflow summary, primary delivery, clarification, post-delivery, and example guidance into their own headings so agents can find critical rules faster
+  - Normalized spacing and list formatting around workflow steps to keep the ordered instructions easier to scan
+
+
+### Version
+- Bumped from 2.4.3 → 2.4.4 (patch version: behavior-preserving structure and self-check additions)
+
 ## [2.4.3] - 2026-08-19
 
 ### Changed

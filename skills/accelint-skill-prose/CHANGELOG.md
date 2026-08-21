@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.9.4] - 2026-08-21
+
+### Changed
+- Tightened `SKILL.md` operating controls and later workflow sections so ordered headings stay scoped, the required output-mode and rewrite-mode selection order stays visible, and prerequisite/completion lines use a consistent `Requires: Complete ...` / `Done when:` style
+- Reworked the `SKILL.md` self-check so the former `Step 1.5` qualitative-gate check is folded into `Step 2`, keeping the numbered verification flow linear and the Step 0 checklist aligned with the verification headings
+- Clarified `SKILL.md` progressive-disclosure wording so the default folder-level artifact set appears before the crawl-order instructions, reducing duplicate discovery wording without changing the required read order
+- Tightened `SKILL.md` response-formatting guidance and `README.md` support-file descriptions so the folder-level contract stays easier to scan and the published docs mention qualitative-gate detection explicitly
+
+### Version
+- Patch release at `0.9.4`.
+
 ## [0.9.3] - 2026-08-20
 
 ### Changed

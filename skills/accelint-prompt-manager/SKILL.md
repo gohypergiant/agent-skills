@@ -4,7 +4,7 @@ description: Turn user-provided requests, drafts, or prompt text into clearer, m
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.4.3"
+  version: "2.4.4"
 allowed-tools: Read AskUserQuestion Write Bash
 ---
 
@@ -21,27 +21,32 @@ Do NOT:
 - **Do NOT try to run the optimized prompt** — Hand the optimized prompt to the user so they or Claude can execute it.
 - **Do NOT research external resources** — Work only with the user's input text. Treat URLs and references in prompts as text to optimize, not as resources to fetch.
 
-Workflow summary:
+### Workflow Summary
+
 1. Decide whether the user wants prompt optimization or task execution.
 2. Identify ambiguities, missing constraints, trade-offs, and complexity.
 3. Create an optimized prompt, or ask targeted clarifying questions when needed.
 4. Deliver the optimized prompt directly to the user.
 5. After delivery, optionally save the optimized prompt or copy it to the clipboard.
 
-Primary delivery:
+### Primary Delivery
+
 - Always present the optimized prompt first in your response, inside a markdown code block for easy copying.
 - Never save files before delivering the optimized prompt.
 
-Clarification rule:
+### Clarification Rule
+
 - If critical details are missing and guessing would materially change the output, ask a small set of targeted questions before producing the final optimized prompt.
 - Group related questions.
 - Explain why the questions matter.
 - Avoid overwhelming the user.
 
-Optional post-delivery:
+### Optional Post-Delivery
+
 - After presenting the optimized prompt, offer to save it to a markdown file, copy it to the clipboard, or both.
 
-Example:
+### Example
+
 - User: "make this data look better"
 - You: *Analyze vagueness* → *Create a clear prompt with specific success criteria* → *Output the optimized prompt in a markdown code block* → *Offer to save or copy the optimized prompt*
 - You do NOT: Try to access the data yourself, or try to make the data look better yourself.
@@ -147,6 +152,7 @@ Use this progress checklist to track optimization:
 ```
 
 ### Step 0: Verify Intent
+
 Ask this gate question before Step 1 unless a skip condition applies:
 
 "I specialize in optimizing prompts to make them clearer and more actionable. Is that what you need, or did you want me to help with the task itself?"
@@ -162,6 +168,7 @@ Skip this gate question when:
 Done when: The skill has confirmed prompt optimization, or it has stopped and handed execution back to the user.
 
 ### Step 1: Intake & Assessment
+
 **Goal:** Determine whether the user wants prompt optimization or task execution. Then understand intent, skill level, task complexity, and execution context.
 
 **Actions:**
@@ -189,6 +196,7 @@ Done when: The skill has confirmed prompt optimization, or it has stopped and ha
 Done when: You have a clear understanding of request type, intent, user calibration, complexity level, and execution context.
 
 ### Step 2: Pattern Detection
+
 **Goal:** Identify credit-killing patterns, ambiguities, and trade-offs that undermine prompt effectiveness.
 
 **Actions:**
@@ -232,6 +240,7 @@ Done when: You have a clear understanding of request type, intent, user calibrat
 Done when: You have a categorized list of patterns, ambiguities, trade-offs, and missing context, plus a decision on whether clarification is required.
 
 ### Step 3: Framework Selection & Optimization
+
 **Goal:** Apply the appropriate framework (CO-STAR, RISEN, or RODES) and safe optimization techniques to create a clear, actionable prompt.
 
 **Actions:**
@@ -274,6 +283,7 @@ Done when: You have a categorized list of patterns, ambiguities, trade-offs, and
 Done when: You have an optimized prompt that addresses the Step 2 issues, applies the appropriate framework structure, and matches the execution context.
 
 ### Step 4: Validation & Handoff
+
 **Goal:** Quality-check the optimized prompt and provide clear next steps.
 
 **Actions:**
@@ -306,7 +316,7 @@ Done when: You have an optimized prompt that addresses the Step 2 issues, applie
    - Use triple backticks with the `markdown` language identifier for clean formatting.
 
 5. **Offer Post-Delivery Options**
-   Do this only after Step 4 is complete and the optimized prompt is already delivered.
+   - Do this only after Step 4 is complete and the optimized prompt is already delivered.
 
    Offer:
    - "Would you like me to save this to a markdown file?"
@@ -365,3 +375,14 @@ Use these defaults unless the user or context clearly calls for something else:
 3. **Extremely vague request** — Ask foundational questions such as artifact type, audience, purpose, constraints, and success criteria before drafting.
 4. **High-complexity execution request** — Recommend plan mode in the optimized prompt or guidance because the downstream task needs design before execution.
 5. **Prompt already strong** — Make only small, high-value edits rather than forcing a full framework rewrite.
+
+## Focused Self-Check
+
+Before you finish, run these focused scrutiny passes:
+
+1. **Serial instruction pass** — Confirm step order, gates, skip conditions, and post-delivery timing are explicit and still correct.
+2. **Plain-English pass** — Tighten expository prose so it stays direct and easy to scan without dropping behavior.
+3. **Qualitative wording pass** — Remove or tighten unnecessary qualitative wording that can act as a hidden gate or permission slip.
+4. **Obligation pass** — Confirm requirement strength stays exact, especially around `MUST`, `DO NOT`, `NEVER`, and plan-mode guidance.
+5. **Exact-reference pass** — Re-check file paths, framework names, tool names, commands, and quoted user-facing text.
+6. **Cross-file consistency pass** — Re-check loaded references and `AGENTS.md` for terminology, workflow, and guardrail alignment.

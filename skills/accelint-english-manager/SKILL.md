@@ -4,7 +4,7 @@ description: Use when the user wants prose rewritten, tightened, audited, simpli
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.8"
+  version: "1.3.9"
 ---
 
 # English Manager
@@ -25,7 +25,7 @@ Use these together. They are not separate modes.
 These outrank style preferences.
 
 - Preserve the user's meaning before you optimize wording.
-- Preserve requested tone, audience fit, and explicit format constraints.
+- Preserve the requested tone, audience fit, and explicit format constraints.
 - Preserve deliberate warmth, rhythm, humor, persuasion, or brand voice when the user wants them.
 - Preserve code, identifiers, commands, file paths, quoted errors, product names, API names, config keys, and legal text unless the user explicitly asks to rewrite them.
 - Keep real uncertainty, real nuance, and real obligation levels. Do not make text sound simpler by making it less true.
@@ -181,7 +181,7 @@ When order matters:
 - add a named failure route when a later step must wait for a passing check
 - split `do X and then Y` into separate steps when that improves compliance
 - put conditions before actions when that makes timing clearer
-- replace emphasis-only warnings with enforceable gates when a later action depends on an earlier check
+- replace emphasis-only warnings with enforceable gates only when a later action already depends on an earlier check
 - never leave ordered work in plain bullets
 
 Load `references/serial-instruction-guidance.md` before you rewrite or audit any text with real workflow order, gating, branching, or validation loops. Keep `SKILL.md` operational. Use the reference for deeper detection logic, structure rules, and edge cases.
@@ -257,7 +257,7 @@ Done when: repeated concepts use stable terms.
 ### Step 7: Make the action path easy to scan
 Requires: Steps 5 and 6 are complete.
 Do this when the reader must act.
-If the text contains ordered actions, load `references/serial-instruction-guidance.md` and make the order explicit.
+If the text contains ordered actions, load `references/serial-instruction-guidance.md` before you make the order explicit.
 Done when: ordered actions are visible as ordered actions.
 
 ### Step 8: Run the self-check before delivery
@@ -307,7 +307,7 @@ Done when: the remaining wording is carrying meaning or control.
 
 ### Step 6: Split overloaded sentences or restructure only when substitution alone will not work
 Requires: Steps 4 and 5 are complete.
-If the source hides sequence, gates, or branch logic, load `references/serial-instruction-guidance.md` and rewrite the sequence explicitly.
+If the source hides sequence, gates, or branch logic, load `references/serial-instruction-guidance.md` before you rewrite the sequence explicitly.
 If sequence checks fail, return to Step 4.
 Done when: the workflow cannot be read as unordered advice.
 
@@ -337,7 +337,7 @@ Done when: the audit shape matches the risk and request.
 
 ### Step 4: Load the right references before citing them
 Requires: Step 3 is complete.
-If the user asked for STE checking, load only the relevant part of `references/ste-rules.md` that you need and do not invent rule numbers.
+If the user asked for STE checking, load only the relevant part of `references/ste-rules.md` that you need. Do not invent rule numbers.
 If the text contains ordered actions or weak sequencing cues, load `references/serial-instruction-guidance.md` before you judge whether the sequence is clear enough.
 Done when: every cited rule comes from a loaded reference.
 
@@ -373,6 +373,7 @@ Before you deliver, confirm:
 6. Any required gate, dependency, or validation step still blocks the later step clearly.
 7. The final answer matches the requested output mode.
 8. The final answer matches the requested rewrite mode.
+9. Any remaining qualitative wording still has a clear operational role and does not act as a hidden gate.
 
 For a deeper mechanical pass, load `references/checklist.md`.
 
