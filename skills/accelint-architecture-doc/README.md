@@ -63,6 +63,7 @@ For create, refresh, or restructure workflows, start with a short checklist and 
 1. Ask only about `UNKNOWN` fields and confirmed drift gaps.
 2. Group related questions into conversational turns.
 3. Ask only the turns that match remaining gaps.
+4. Always ask the roadmap turn because roadmap and future-plans information cannot be inferred.
 
 ### Step 5: Show the preview and wait for confirmation
 1. Show the complete `ARCHITECTURE.md` with inference source annotations.
@@ -161,7 +162,7 @@ The skill includes 11 eval scenarios in `evals/evals.json` covering create, refr
 
 ## Version
 
-Current version: 1.2.0
+Current version: 1.2.2
 
 See `CHANGELOG.md` for release history.
 

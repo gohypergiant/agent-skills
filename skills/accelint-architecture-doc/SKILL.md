@@ -4,7 +4,7 @@ description: Create or update a living ARCHITECTURE.md for a codebase. Use when 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.1"
+  version: "1.2.2"
 ---
 
 # Architecture Doc
@@ -21,7 +21,7 @@ Generate or update a living `ARCHITECTURE.md` for the current codebase. It shoul
 - **MUST NOT document internal implementation details in the System Diagram (Section 2)** — that section is a 10,000-foot view of components and data flow. Database schemas, function signatures, and module internals belong elsewhere.
 - **MUST use parallel subagents for Stage 2 discovery when subagents are available** — spawn them simultaneously across discovery domains. Do not scan serially. If subagents are unavailable, use focused inline discovery instead.
 
-## Before Writing, Ask
+## Before writing, ask
 
 Check these points before you start.
 Do them in order.
@@ -124,7 +124,7 @@ Classify the task in this order:
    - **Clearly follows the template as an architecture doc** — recognizable top-level architecture sections, with multiple headings that align to the template, such as Project Structure, High-Level System Diagram, Core Components, Data Stores, or Deployment & Infrastructure → **MODE 2: Refresh**
    - **Has real content but does NOT follow the template** → **MODE 3: Restructure** `(offer proactively — see below)`
 
-**MODE 3: Restructure** — When the file has real content in an unrecognized shape and restructuring would materially improve usability, surface this immediately. Require an explicit user choice before you modify that structure:
+**MODE 3: Restructure** — When the file has real content in an unrecognized shape and restructuring would improve usability, surface this immediately. Require an explicit user choice before you modify that structure:
 
 > "ARCHITECTURE.md exists but doesn't follow the standard template structure. I recommend restructuring it — this makes it consistent for agents and engineers onboarding to the codebase. How would you like to proceed?
 >
