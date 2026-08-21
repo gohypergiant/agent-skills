@@ -4,6 +4,12 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to semantic versioning.
 
+## [1.3.9] - 2026-08-21
+
+### Changed
+- Tightened `SKILL.md` so reference-loading order is explicit in drafting, revision, and audit workflows, and so serial-order guidance does not imply a new permission to upgrade warnings into gates.
+- Added a final self-check on qualitative wording so hidden gates and fallback cues are more likely to be caught before delivery.
+
 ## [1.3.8] - 2026-08-19
 
 ### Changed
