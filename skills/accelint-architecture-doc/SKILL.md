@@ -311,20 +311,29 @@ Adjust the relative path to point at the actual root ARCHITECTURE.md.
 
 ## Updating Agent Behavior Documents
 
-ARCHITECTURE.md is a pure technical document about system structure and must not reference agent behavior files. However, agent behavior files such as AGENTS.md or CLAUDE.md should reference ARCHITECTURE.md because understanding system architecture may inform agent behavior.
+`ARCHITECTURE.md` is a technical document about system structure. Do not reference agent behavior files from it. Agent behavior files such as `AGENTS.md` or `CLAUDE.md` should reference `ARCHITECTURE.md` because system structure may inform agent behavior.
 
-After you write ARCHITECTURE.md, if Agent A found AGENTS.md or CLAUDE.md, check in this order:
+After you write `ARCHITECTURE.md`, if Agent A found `AGENTS.md` or `CLAUDE.md`, do this in order:
 
-1. **Read the agent behavior file** to check whether it already mentions ARCHITECTURE.md.
-2. **If no reference exists,** add this block near the top of the file, after any existing title or header and before the main content:
+1. **Read the agent behavior file** and check whether it already mentions `ARCHITECTURE.md`.
+2. **If using `CLAUDE.md`** and it simply points to `AGENTS.md`, for example `@AGENTS.md`, update `AGENTS.md` instead. Do not modify the pointer file. Treat pointer files as routing stubs, not as the place to add architecture guidance.
+3. **If no `ARCHITECTURE.md` reference exists,** add or update a `## Related Documentation` section that follows the same structure used by `accelint-onboard-agents` (bottom of file):
 
 ```markdown
-## System Architecture
+## Related Documentation
 
-For technical architecture details (components, deployment, data stores, tech stack), see [ARCHITECTURE.md](./ARCHITECTURE.md).
+- **ARCHITECTURE.md** — System architecture, deployment overview, component interactions
+  _(Reference this when behavioral decisions depend on understanding system structure)_
 ```
 
-3. **If using CLAUDE.md** and it simply points to AGENTS.md, for example `@AGENTS.md`, update AGENTS.md instead. Do not modify the pointer file. Treat pointer files as routing stubs, not as the place to add architecture guidance.
-4. **If no real agent behavior file exists,** do not create one as part of this skill. Limit the write to the approved architecture document.
+4. **Keep the section format exact.** Use the title `## Related Documentation`. Format each entry as:
 
-Done when: the architecture guidance lives in the real agent behavior file, not in a pointer stub.
+```markdown
+- **<filename>** — description
+  _(Condition or scenario by which this file is used)_
+```
+
+5. **If a `## Related Documentation` section already exists,** add the `ARCHITECTURE.md` entry to that list instead of creating a duplicate section. Preserve the existing list style. Keep the explanatory usage note on its own indented line.
+6. **If no real agent behavior file exists,** do not create one as part of this skill. Limit the write to the approved architecture document.
+
+Done when: the architecture guidance lives in the real agent behavior file, uses the `## Related Documentation` structure, and does not modify a pointer stub.
