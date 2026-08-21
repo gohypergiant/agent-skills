@@ -1,0 +1,23 @@
+{
+  "skill_name": "epistemic-mapper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We just signed a contract to hand this prototype to a new engineering team next month. Please build an EPISTEMIC-MAP.md for this repo so we can separate what is actually validated from what is still assumed or unknown. Read the docs and the code, synthesize cross-cutting handoff risks, and update AGENTS.md with a related-docs pointer if it is missing.",
+      "expected_output": "Creates or updates a canonical EPISTEMIC-MAP.md generated via scripts/merge_epistemic_map.py, with facts, questions, assumptions, risks, and an epistemic backlog; cross-links from AGENTS.md or CLAUDE.md are offered or added if appropriate.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Can you map what we actually know versus what we are merely assuming in the billing and onboarding parts of this prototype? I want a handoff risk map, not a generic architecture summary. Use the project's epistemic mapping workflow and capture explicit open questions separately from silent assumptions.",
+      "expected_output": "Uses the epistemic-mapper workflow to inspect relevant docs and code modules, classify findings into the four quadrants, and write them into EPISTEMIC-MAP.md rather than producing an ad-hoc summary.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Before the original builder rolls off, make us a knowledge-gap document for this repo. I need to know which claims are evidenced, which TODOs are already-known unknowns, which behaviors the code silently relies on, and which systemic risks only appear when you look across multiple modules together.",
+      "expected_output": "Triggers the epistemic-mapper skill, performs source discovery and quadrant-based extraction, includes a dedicated synthesis pass for unknown-unknown risks, and produces or refreshes EPISTEMIC-MAP.md as the durable handoff artifact.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "skill_name": "constraints-extractor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Please extract the real project constraints from this repo's docs and create a canonical `CONSTRAINTS.md`. I do not want a generic summary of architecture choices or team preferences. Scan the normal documentation locations, separate externally-imposed boundaries from internal conventions, show me a preview grouped by category, and only then write the file.",
+      "expected_output": "Invokes the constraints-extractor skill, scans conventional documentation sources, applies the forcing-function test to distinguish real constraints from preferences, previews categorized findings and near-misses before writing, and creates or updates a canonical CONSTRAINTS.md via the merge workflow.",
+      "files": [],
+      "expectations": [
+        "Treats the task as constraints extraction rather than as a generic documentation summary or architecture review.",
+        "Searches for an existing CONSTRAINTS.md and determines the authoritative output path before extraction begins.",
+        "Discovers conventional source documents such as docs/, README.md, AGENTS.md or CLAUDE.md, ARCHITECTURE.md, and decision-record folders when present.",
+        "Applies the forcing-function test and excludes team preferences or current-state facts that lack an external enforcer and external cost.",
+        "Provides a preview grouped by category, including near-misses and any conflicts, before writing CONSTRAINTS.md."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We need a constraints pass before planning the next release. Read `docs/SECURITY.md`, `docs/COMPLIANCE.md`, `adr/0007-govcloud.md`, and `AGENTS.md`, then synthesize only the externally imposed boundaries into `CONSTRAINTS.md`. If two docs disagree, don't resolve it silently. Also call out anything that looks important but is actually just an internal preference so we can move it somewhere else.",
+      "expected_output": "Invokes the constraints-extractor skill for an explicit source set, extracts only externally imposed constraints with evidence, preserves disagreements as CONFLICTING findings rather than choosing a winner, and surfaces near-miss preferences separately from the file content.",
+      "files": ["docs/SECURITY.md", "docs/COMPLIANCE.md", "adr/0007-govcloud.md", "AGENTS.md"],
+      "expectations": [
+        "Accepts the user-provided source list as additive input for the extraction pass rather than ignoring it.",
+        "Includes evidence citations for every extracted constraint instead of writing unsourced assertions.",
+        "Surfaces incompatible claims as CONFLICTING entries with both sides visible rather than silently picking one document as truth.",
+        "Routes near-miss items such as internal process or style preferences into preview-only feedback instead of writing them into CONSTRAINTS.md.",
+        "Keeps the final output focused on canonical constraints categories and evidence-backed findings."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Can you document what actually constrains this project? Please scan the repo docs, but do not crawl the whole `openspec/changes/archive/` folder by default because it's huge. If there is already a `CONSTRAINTS.md`, read it first and merge new findings into it. Before you write anything, show me which constraints are new, which ones just gained more supporting evidence, and which statements you rejected as non-constraints.",
+      "expected_output": "Invokes the constraints-extractor skill, avoids broad archive crawling unless specific archive files are named, reads any existing CONSTRAINTS.md before updating it, correlates new findings with existing entries, and previews new constraints, corroboration, and rejected near-misses before running the merge step.",
+      "files": ["openspec/changes/archive/"],
+      "expectations": [
+        "Avoids automatically scanning the entire openspec/changes/archive/ directory unless the user explicitly names individual archive files.",
+        "Reads an existing CONSTRAINTS.md before updating it and treats hand-edited existing content as authoritative unless new evidence creates a conflict.",
+        "Correlates duplicate findings across documents so stronger evidence increases support for one constraint rather than creating duplicate entries.",
+        "Shows a pre-write summary that distinguishes new constraints, corroborated existing constraints, conflicting entries, and near-misses.",
+        "Uses the deterministic merge workflow for writes instead of hand-formatting or appending ad hoc content to CONSTRAINTS.md."
+      ]
+    }
+  ]
+}
