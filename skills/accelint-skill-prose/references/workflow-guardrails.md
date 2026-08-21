@@ -12,8 +12,8 @@ Ask:
 
 - If an agent followed only the rewritten text, would it behave the same way?
 - Did the rewrite preserve order, gates, conditions, and rationale?
-- Did you update every artifact-set file that needed changes, rather than checking support files without rewriting them?
-- Did you judge each behavior-bearing file on its own local clarity, not only on whether it stayed aligned with the rest of the folder?
+- Did you check whether any artifact-set file required changes for behavioral consistency, without forcing edits where preservation is safer?
+- Did you judge each behavior-bearing file on its own local clarity, but only after behavior preservation and concrete consistency checks passed?
 
 ## Preserve exactly when important
 
@@ -51,6 +51,8 @@ Keep these exact unless the user explicitly asks otherwise:
 - replacing an example with generic prose
 - replacing exact rationale with a vague safety summary
 - replacing a behavior-bearing verb with a near-synonym that changes permission, timing, or obligation strength
+- preserving qualitative gate wording that still lets the model self-justify a fallback, exception, or looser path
+- replacing one qualitative branch term with another and treating that rewrite as resolved
 
 ## Safe moves
 
@@ -58,7 +60,8 @@ Keep these exact unless the user explicitly asks otherwise:
 - move the condition before the command when the timing stays the same
 - cut filler that does not change why the rule exists
 - preserve exact tokens inline while tightening surrounding prose
-- keep rationale sentences, but tighten them locally when the policy stays the same
+- keep source rationale sentences, and tighten them only by removing non-behavioral filler
+- do not add new justifications, consequences, or evaluative language
 
 ## Verb-sensitivity quick check
 
@@ -66,6 +69,8 @@ Before you deliver, ask:
 
 - Did `stop`, `wait`, `skip`, `proceed`, or similar verbs change to a softer or different action?
 - Did a requirement verb like `must` become advice like `should`?
+- Did any qualitative cue such as `practical`, `impractical`, `reasonable`, `beneficial`, `small`, or `if needed` remain as a hidden permission slip?
+- Did you merely swap one qualitative branch term for another?
 - Would the rewritten version let the agent act earlier, later, or more optionally than before?
 
 ## Delivery rule

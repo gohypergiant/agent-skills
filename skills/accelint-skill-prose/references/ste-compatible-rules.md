@@ -88,8 +88,10 @@ In behavior-defining prose, concise but underspecified is worse than slightly lo
 
 Active voice usually makes behavior clearer.
 
-**Before:** The description can be tightened after the trigger phrases are reviewed.
-**After:** Review the trigger phrases, then tighten the description.
+**Before:** The description is clearer after the trigger phrases are reviewed.
+**After:** After the trigger phrases are reviewed, the description is clearer.
+
+Do not convert descriptive, permissive, or policy text into imperative procedure unless the source is already procedural.
 
 Keep passive wording when the actor is unknown, intentionally unspecified, or when active voice would distort scope.
 
@@ -103,7 +105,7 @@ Do not force descriptive or policy text into commands if that would make the rul
 
 ## 7. Put the condition before the command when it helps
 
-When a rule depends on a condition, put the condition first if doing so makes the logic clearer.
+When a rule depends on a condition, put the condition first if doing so makes the logic clearer. Do not invent unstated conditions.
 
 **Before:** Split the sentence if the trigger phrase is buried.
 **After:** If the trigger phrase is buried, split the sentence.

@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.9.3] - 2026-08-20
+
+### Changed
+- Tightened `SKILL.md` so the qualitative-cue examples now include `impractical` in the root failure-mode list, and so the self-check uses the same `unresolved policy ambiguity` classification as the rewrite guidance
+
+### Version
+- Patch release at `0.9.3`.
+
+## [0.9.2] - 2026-08-20
+
+### Changed
+- Hardened `SKILL.md` against qualitative execution drift by treating hidden qualitative gates and qualitative-term substitution as explicit failure modes, and by tightening the audit-only rule so examples no longer permit drafted replacement wording
+- Updated `README.md` to reflect the full behavior-bearing artifact set more accurately, including `references/serial-instruction-guidance.md`, and clarified that progressive-disclosure references can complete the behavior contract
+- Tightened `references/rfc-2119.md` so applicability is conditional up front, reducing the chance that obligation normalization is applied before the source requirement level is explicit enough to preserve exactly
+
+### Version
+- Patch release at `0.9.2`.
+
+## [0.9.1] - 2026-08-20
+
+### Changed
+- Tightened `SKILL.md` output-mode and rewrite-mode guidance so the required selection order is explicit at the point of use, reducing the chance that agents reverse the controls during audit-plus-rewrite work.
+- Clarified the root `SKILL.md` progressive-disclosure section so folder crawls state the required read order before broadening to other behavior-bearing files.
+- Tightened `references/checklist.md` so the cross-file consistency check verifies root-first discovery as a distinct checkpoint instead of burying it inside one longer question.
+
+### Version
+- Patch release at `0.9.1`.
+
+## [0.9.0] - 2026-08-20
+
+### Changed
+- Hardened `SKILL.md` against rewrite drift by adding explicit hard stops for invented qualifiers, fallback branches, rationale, and inferred gates, and by narrowing strict-mode reorganization to source-supported clarification only.
+- Tightened `SKILL.md` guidance for rationale preservation, terminology normalization, artifact-set propagation, and decision tests so the skill prefers source evidence, lossless compression, and audit-first handling whenever clarification would require inference.
+- Reworked `references/serial-instruction-guidance.md`, `references/rfc-2119.md`, and `references/ste-compatible-rules.md` to remove inference-heavy strengthening patterns, prevent descriptive-to-imperative drift, and restrict obligation normalization to source-explicit cases.
+- Updated `references/artifact-patterns.md`, `references/examples.md`, `references/workflow-guardrails.md`, `references/checklist.md`, and `references/frontmatter-descriptions.md` so examples, rationale, severity checks, and cross-file review guidance no longer authorize qualitative additions, hidden gates, or broader trigger summaries during prose cleanup.
+
+### Version
+- Minor release at `0.9.0`.
+
 ## [0.8.1] - 2026-08-19
 
 ### Changed

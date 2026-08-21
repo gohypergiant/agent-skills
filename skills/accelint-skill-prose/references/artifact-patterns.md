@@ -36,6 +36,7 @@ Shape workflow prose so it:
 - leads with the action or timing boundary
 - keeps one step or decision per line when possible
 - keeps approval gates and stop points explicit
+- makes fallback conditions and exception paths operational rather than qualitative
 - keeps rationale near the rule when the rationale prevents misuse
 
 ## 3. Guardrails and hard stops
@@ -48,8 +49,9 @@ Shape guardrails so they:
 
 - state the prohibition or requirement directly
 - preserve the original obligation level
-- name the protected behavior or risk when that helps compliance
+- preserve the source-stated protected behavior or risk when that helps compliance
 - keep exceptions explicit rather than implied
+- do not add new risk framing, policy rationale, or qualitative judgments
 
 ## 4. Rationale paragraphs
 
@@ -58,20 +60,23 @@ Goal: explain why a rule exists without burying the rule itself.
 Shape rationale so it:
 
 - follows or sits next to the rule it supports
-- names the failure mode the rule prevents
+- preserves any failure mode the source already names
 - stays descriptive rather than turning into a second procedure
 - keeps policy meaning intact even when tightened
+- does not invent new failure modes, diagnoses, or qualitative judgments
 
 ## 5. Examples
 
 Goal: keep examples only when they do real behavior work.
 
-Keep examples when they:
+Keep existing examples when they:
 
 - define scope
 - mark a boundary case
 - show exact output shape
 - prevent a common misread
+
+Do not add new examples or boundary cases unless the user explicitly requested expansion.
 
 Remove or tighten examples only when they are redundant and not doing scope or behavior work.
 
@@ -83,6 +88,7 @@ Shape findings so they:
 
 - lead with the highest-risk issue
 - identify the source text or section clearly
-- explain the behavior risk
+- explain the behavior risk using source-grounded reasoning
 - distinguish trigger risk, workflow risk, guardrail risk, and exactness risk
 - include replacement wording only when the user asked for examples
+- do not add speculative benefits, usability claims, or inferred repo-context judgments not stated in the source

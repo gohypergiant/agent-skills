@@ -49,7 +49,7 @@ Bad examples:
 
 - remove filler around an existing scope phrase
 - shorten repeated framing while keeping the same trigger nouns and verbs
-- preserve representative trigger families even when you compress their phrasing
+- preserve every trigger family the source covers; do not replace concrete trigger families with broader summaries unless the user explicitly asked for that compression
 - split one dense sentence into two shorter sentences if both preserve the same boundary
 - keep quoted phrases and exact scope anchors intact while tightening the surrounding text
 

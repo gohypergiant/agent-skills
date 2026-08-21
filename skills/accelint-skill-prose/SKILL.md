@@ -4,7 +4,7 @@ description: Use when creating, auditing, tightening, simplifying, polishing, or
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.8.1"
+  version: "0.9.3"
 ---
 
 # Skill Prose
@@ -26,7 +26,7 @@ Make the prose easier to follow, easier to audit, and harder to misread while pr
 
 Keep one term for one concept. Do not rotate terms just to avoid repetition. In skill prose, stable terminology is part of the behavior contract.
 
-Use compatible ideas from Simplified Technical English when they help, such as short explicit sentences, consistent terminology, active voice by default, and clear separation between instructions and explanation. Do not apply controlled-language rules mechanically if that would erase rationale, flatten scope, or weaken behavioral precision.
+Use compatible ideas from Simplified Technical English only for local, behavior-preserving clarity improvements that pass the Decision tests below, such as short explicit sentences, consistent terminology, active voice by default, and clear separation between instructions and explanation. Do not use these patterns to add qualifiers, explain intent, supply rationale, or reshape policy. Do not apply controlled-language rules mechanically if that would erase rationale, flatten scope, or weaken behavioral precision.
 
 This skill extends general English editing with extra safety for:
 
@@ -46,7 +46,9 @@ Use `assets/output-template.md` for all outputs.
 
 Behavioral drift is not limited to paths, fields, and quoted tokens. If a verb changes what an agent may do, when it may do it, or how strongly a rule applies, that verb is behavior-bearing. Preserve it, or replace it only with wording that keeps the same behavior.
 
-Rationale is not filler by default. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose.
+Rationale is not filler by default. If a sentence explains why a guardrail exists, why a checkpoint matters, or what risk a timing rule prevents, preserve that rationale unless the user explicitly asked to change the policy rather than tighten the prose. Preserve rationale by retention or strict equivalence, not by elaboration. Do not introduce new harms, failure modes, usability claims, maintainability claims, robustness claims, workflow-stability judgments, or environment qualifiers unless the source already states them.
+
+Qualitative execution cues are behavior-bearing when they act as hidden gates, fallback conditions, or permission slips. Words and phrases such as `small`, `large`, `simple`, `complex`, `constrained environment`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, and `without reason` can let the model self-justify behavior unless the surrounding text makes the condition operational enough to preserve the same branch. Do not preserve these cues by default just because they are already present. Do not treat a rewrite from one qualitative branch term to another as a real fix. For example, `small`, `constrained`, and `brittle` do not become operational just because they change to `practical` or `impractical`. In audit mode, flag these cues when they steer execution without an operational boundary. In rewrite mode, either remove them, replace them with source-supported operational conditions, or classify them as unresolved policy ambiguity if no lossless rewrite is possible.
 
 ## Untouchables
 
@@ -93,6 +95,12 @@ Do not simplify these casually.
 - **Never remove an example if it defines scope, behavior, or edge-case coverage.**
 - **Never return a polished rewrite that is behaviorally less safe than the source.**
 - **Never slip a rewrite into audit-only mode.**
+- **Never introduce new qualifiers, thresholds, fallback branches, environmental assumptions, or discretionary conditions unless the source already contains them or the user explicitly asked to add them.**
+- **Never preserve qualitative gate wording by default when it creates a hidden branch, discretionary fallback, or self-justifying exception.**
+- **Never treat one qualitative branch term as a safe replacement for another unless the source itself defines the replacement operationally.**
+- **Never add new rationale, failure modes, usability claims, maintainability claims, robustness claims, or workflow-stability judgments unless the source already states them.**
+- **Never convert a warning, rationale, note, or descriptive statement into a new gate, prerequisite, checkpoint, or branch unless the source already states that dependency explicitly.**
+- **Never propagate stylistic preferences across files unless a concrete mismatch in trigger scope, workflow semantics, guardrail strength, exact references, or behavior-bearing terminology would otherwise remain.**
 
 ## Priority order
 
@@ -118,6 +126,8 @@ Keep them separate. Output mode controls the deliverable. Rewrite mode controls 
 
 ### Output mode
 
+Choose the output mode first. Output mode controls the deliverable, not the rewrite scope.
+
 #### Audit only
 
 Always include the consistent report from `assets/output-template.md`.
@@ -128,7 +138,7 @@ Do not rewrite the text unless the user explicitly asks for a rewrite.
 
 Do not include replacement wording, "safer" rewrites, or suggested revised sentences in the deliverable. If you need to point to a safer pattern, describe the risk in principle instead of drafting substitute text.
 
-A brief alternative may appear only when the user explicitly asked for examples, or when a single phrase is necessary evidence for why the source is risky. In those cases, keep it at fragment level, not sentence level. Do not let it become a stealth rewrite of the passage.
+In audit-only mode, do not draft replacement text. If the user explicitly asked for examples, quote the source and name the safer pattern without proposing substitute wording.
 
 #### Rewrite only
 
@@ -139,6 +149,8 @@ Use this mode when the user wants cleaner final text directly.
 Use this mode when the user wants both findings and a safer revision.
 
 ### Rewrite mode
+
+Choose the rewrite mode after the output mode.
 
 For rewrite tasks, ask the user which rewrite mode they want unless the user already made the scope clear.
 
@@ -164,14 +176,14 @@ Behavior:
 
 #### `mode=strict`
 
-Use this mode when the user wants stronger control, stricter standardization, or when local edits cannot fix repeated ambiguity, mixed severity language, buried workflow logic, or unstable terminology.
+Use this mode only when local edits cannot make the source behavior clear without structural reorganization, such as repeated ambiguity, mixed severity language, buried workflow logic, or unstable terminology.
 
 Behavior:
 
 - preserve behavior, but allow structural rewrite when the structure itself causes ambiguity
-- separate instructions, rationale, warnings, and examples when that improves control
-- normalize terminology and obligation language more deliberately across the edited artifact set
-- reorganize only as far as needed to make trigger scope, workflow order, and guardrail strength easier to follow
+- separate instructions, rationale, warnings, and examples when that exposes existing logic more clearly without adding new policy
+- normalize terminology more deliberately across the edited artifact set only when the source already treats the concepts as equivalent
+- reorganize only as far as needed to make existing trigger scope, workflow order, and guardrail strength easier to follow without adding conditions, criteria, or decision tests not already stated or strictly implied by explicit dependencies in the source
 
 Strict mode is not permission to broaden scope casually. In both modes, keep the smallest change that solves the real problem unless the user explicitly asked for a broader rewrite.
 
@@ -180,14 +192,14 @@ Strict mode is not permission to broaden scope casually. In both modes, keep the
 Use these lenses when they match the text:
 
 - **Frontmatter description tightening** — Use this focus when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
-- **Workflow or guardrail tightening** — Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, or exact execution rules.
+- **Workflow or guardrail tightening** — Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, exact execution rules, or fallback conditions that need operational wording.
 
 ## Before you edit
 
 ### Step 1: Extract what must stay fixed
 Do this before you tighten, reorder, or relabel anything.
 
-First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit. Common clusters include trigger / invoke / activate, audit / review / analyze, field / key / property, and workflow-role terms such as stage / step / gate / checkpoint / branch / readiness check.
+First, normalize vocabulary for the concepts that matter. Pick one term for each repeated concept and keep it throughout the edit when the source already treats those terms as equivalent. Common clusters include trigger / invoke / activate, audit / review / analyze, field / key / property, and workflow-role terms such as stage / step / gate / checkpoint / branch / readiness check. Do not normalize two source terms into one if they may differ in permission, timing, scope, or workflow role.
 
 Look for:
 
@@ -199,19 +211,20 @@ Look for:
 - hard requirements
 - paths, commands, identifiers, fields, keys, flags, and examples
 - quoted wording that must stay exact
+- qualitative wording that may act as a hidden gate, fallback condition, exception, or permission slip
 
 If the request says to preserve trigger coverage, exact meaning, or specific tokens, raise the preservation threshold further.
 
 ### Step 2: Define the artifact set when the task covers a skill folder
 Requires: Step 1 is complete.
 
-Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Add other linked instruction files only when they complete the contract.
+Default to the root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Add other linked instruction files when the root file depends on them for trigger scope, workflow order, guardrails, examples that define scope, or exact-reference meaning. Do not infer contract significance from perceived usefulness alone.
 
 Read the root `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and other instruction files. After that, broaden to a recursive crawl of likely behavior-bearing support files in the skill folder. This includes linked files and other likely behavior-bearing files such as content under `references/`, templates, checklists, and instruction artifacts, even if the user did not paste them inline.
 
 Do not assume the visible excerpt is the full contract.
 
-If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
+If file discovery is inconclusive, treat that as unresolved rather than as evidence that no support files exist. Retry once with a simpler listing method or direct directory inspection. If you still cannot establish the file set, tell the user that the crawl is incomplete before you rewrite anything that could require cross-file alignment.
 
 Done when: You can name the files that complete the behavior contract, or you have disclosed that the crawl is incomplete.
 
@@ -235,9 +248,9 @@ Done when: every unit you may reshape has a category.
 
 ### Step 2: Detect ordered behavior before you tighten it
 Requires: Step 1 is complete.
-Detect and strengthen these cases:
+Detect and make these cases explicit without adding new behavior:
 - **explicit serial instructions** — numbered steps, `Step 1`, `first/next/then/finally`, `before/after/until`, `requires`, `done when`, `return to`, `do not proceed until`
-- **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, or a paragraph mixes discovery, decision, rewrite, and verification
+- **implied step ordering** — one sentence hides multiple actions, one action uses the output of another, a warning implies an unstated gate, a qualitative cue acts as a hidden fallback condition, or a paragraph mixes discovery, decision, rewrite, and verification
 - **sequencing cues in skill files** — choose output mode before rewrite mode, define the artifact set before cross-file edits, load references before citing them, run self-check before delivery, ask first before edits that need approval
 - **sequencing cues in general prose** — procedural paragraphs, approval notes, policy instructions, workflow warnings, and bullets that are really ordered tasks
 Done when: you can name the ordered actions, gates, checks, and branches that the rewrite must preserve.
@@ -255,7 +268,7 @@ When order matters:
 - add a named failure route when a later step must wait for a passing check
 - split `do X and then Y` into separate steps when compliance would be safer
 - put conditions before actions when that makes timing clearer
-- replace emphasis-only warnings with enforceable gates when a later action depends on an earlier check
+- restate an enforceable gate only when the source already makes the dependency mandatory through explicit timing, requirement, or stop/wait language
 - never leave ordered work in plain bullets
 Done when: the workflow shape makes the intended order, gates, and retry path hard to miss.
 
@@ -323,7 +336,7 @@ Requires: Steps 1 to 5 are complete.
 
 Keep requirement, recommendation, permission, and prohibition at the same level.
 
-Use RFC 2119 terms when they genuinely clarify normative force. Do not normalize severity labels mechanically or just to sound more formal.
+Preserve original obligation wording by default. Use RFC 2119 terms only when the user explicitly asked for normalization or when the source already states the obligation level unambiguously and the conversion is strictly lossless. Do not normalize severity labels mechanically or just to sound more formal.
 
 ### Step 7: Keep the action path easy to scan
 Requires: Steps 1 to 6 are complete.
@@ -367,6 +380,7 @@ Check for:
 - before/after timing
 - approval dependencies
 - conditions that gate an action
+- qualitative fallback or exception wording that can gate an action without an operational boundary
 - warnings that explain why a step matters
 - verbs that carry behavior, such as `stop`, `pause`, `wait`, `proceed`, `skip`, `require`, or `allow`
 - stage boundaries or phase markers that already organize the workflow
@@ -397,9 +411,9 @@ If the source names a specific token like `specs_touched/decisions`, keep that t
 
 ### 4. Preserve hard-stop strength
 
-If the source contains words like `must`, `do not`, `never`, `required`, `critical`, or `important`, preserve the same obligation level.
+If the source contains words like `must`, `do not`, `never`, `required`, or severity labels such as `critical` and `important`, preserve the same obligation level.
 
-When rewriting behavior-defining prose, normalize informal severity labels to RFC 2119 terms when that clarification improves control and matches the real requirement level. For example, rewrite `critical` to `MUST` or `REQUIRED` when the source expresses an absolute requirement, and rewrite `important` to `SHOULD` or `RECOMMENDED` when the source expresses a strong recommendation. Apply this to heading-level or banner-level labels like `MANDATORY CHECKPOINT`, `CRITICAL STEP`, or `IMPORTANT` too, not only sentence-level prose. Do not apply this mechanically to quoted text, exact tokens, or other untouchables that must stay exact. Do not normalize just for tone or formality. If you preserve an informal severity label, do so for an exactness reason, not just because the original wording feels emphatic.
+When rewriting behavior-defining prose, preserve original obligation wording by default. Convert informal severity labels to RFC 2119 terms only when the user explicitly requested standardization or the source already pairs the label with unmistakable normative language, and the conversion is strictly lossless. Apply this cautiously to heading-level or banner-level labels like `MANDATORY CHECKPOINT`, `CRITICAL STEP`, or `IMPORTANT` too, not only sentence-level prose. Do not apply this mechanically to quoted text, exact tokens, or other untouchables that must stay exact. Do not normalize just for tone or formality. Never infer requirement level from rhetorical emphasis alone.
 
 A clearer version must preserve the same obligation level.
 
@@ -454,9 +468,9 @@ If the text is already compact, exact, and behaviorally clear, prefer an explici
 
 Rewrite mode controls how far you may reshape the source. Output mode controls what you return to the user.
 
-For your own responses, you may borrow lightweight cognitive-load reduction patterns when they help the user act on the result. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries.
+For your own responses, you may borrow lightweight cognitive-load reduction patterns when they improve response navigation without changing claim strength. Good examples include numbered findings, explicit next steps, and brief progress-visible summaries.
 
-Do not let response-formatting choices override audit accuracy. Do not reshape source text just to make it feel more ADHD-friendly unless the user explicitly asked for that delivery style.
+Formatting help applies to the response only, not to the source text or its policy content. Do not let response-formatting choices override audit accuracy. Do not reshape source text just to make it feel more ADHD-friendly unless the user explicitly asked for that delivery style.
 
 ### Audit only
 
@@ -477,7 +491,7 @@ Focus first on:
 - exact-reference loss
 - only then general clarity issues
 
-Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 terms when describing the strength of a rule or rewrite recommendation. Use severity labels only when they help rank audit findings rather than define behavior. Reserve labels like `Critical` for issues likely to materially change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
+Use calibrated obligation and severity language, not theatrics. Prefer RFC 2119 terms when describing the strength of a rule or rewrite recommendation. Use severity labels only when they help rank audit findings rather than define behavior. Reserve labels like `Critical` for issues likely to change agent behavior, trigger routing, workflow execution, approval handling, or safety boundaries.
 
 ### Rewrite only
 
@@ -499,11 +513,13 @@ Load references only when needed.
 
 When the user asks you to work on a skill, crawl the skill folder first. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
 
+Do the crawl in order. Read the local `SKILL.md` first. Then follow explicit links and references from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files.
+
 For folder-level work, the default artifact set is the local `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing Markdown under `references/`. Read the local `SKILL.md` first. Then inspect files linked from `SKILL.md`, `AGENTS.md`, and adjacent instruction files before you broaden to other likely behavior-bearing files such as `references/` content, templates, checklists, or adjacent instruction files.
 
-When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite any artifact-set files that need updates so terminology, severity language, examples, workflow wording, progressive-disclosure handoffs, and local sentence structure stay internally consistent and easy to follow.
+When the task covers a skill folder, audit the artifact set, not only the quoted excerpt. Rewrite other artifact-set files only when a source-preserving inconsistency would otherwise remain after the requested edit, such as a mismatch in terminology, obligation level, examples that define scope, workflow wording, or progressive-disclosure handoffs.
 
-If you changed any file in the artifact set, run a dedicated local-tightening sweep across the other inspected behavior-bearing files before you conclude that they should stay unchanged. This sweep is separate from cross-file alignment. Check each unchanged file for low-risk sentence-structure, scanability, terminology, and wording improvements that preserve behavior exactly.
+If you changed any file in the artifact set, run a consistency check across the other inspected behavior-bearing files before you conclude that they should stay unchanged. This check is separate from cross-file alignment. Rewrite another file only if the first change would otherwise create a concrete mismatch in trigger scope, workflow semantics, obligation level, exact references, or behavior-bearing terminology. Do not propagate optional stylistic preferences across files.
 
 If you leave an inspected behavior-bearing file unchanged, classify the reason explicitly as one of these:
 - `Already near minimum safe form`
@@ -512,7 +528,7 @@ If you leave an inspected behavior-bearing file unchanged, classify the reason e
 
 Do not collapse these into a generic `No edit needed`.
 
-Treat local sentence-structure quality as part of the decision, not as a cosmetic afterthought. A file can be behaviorally aligned across the folder and still need a rewrite if its own prose makes the contract harder to follow than necessary.
+Consider local sentence structure only after behavior-preservation checks pass and only for low-risk, local edits. A file can be behaviorally aligned across the folder and still justify a rewrite, but do not rewrite solely to improve prose quality if the file is already behaviorally clear.
 
 Load references only when needed:
 
@@ -521,7 +537,7 @@ Load references only when needed:
 - `references/frontmatter-descriptions.md` — description tightening, trigger-family preservation, and trigger-scope safety
 - `references/workflow-guardrails.md` — workflow, approval, rationale, verb-sensitivity, and exact-reference preservation
 - `references/ste-compatible-rules.md` — selective Simplified Technical English patterns adapted for behavior-preserving prompt editing
-- `references/rfc-2119.md` — normalize informal severity labels into RFC 2119 obligation terms without changing behavior strength
+- `references/rfc-2119.md` — audit or normalize informal severity labels only when the source obligation level is already explicit enough to preserve exactly
 - `references/examples.md` — before/after examples for audit-only, no-rewrite, guardrails, and frontmatter-safe tightening
 - `references/artifact-patterns.md` — positive rewrite patterns for descriptions, workflows, guardrails, rationale, examples, and audit findings
 
@@ -534,8 +550,13 @@ Before you deliver, ask:
 - Did any requirement become softer?
 - Did any exact token disappear?
 - Did any behavior-bearing verb drift into a softer or different action?
+- Did any qualitative cue remain even though it still acts as a hidden gate, fallback condition, or permission slip?
 - Did any rationale sentence get cut even though it explained a guardrail or timing rule?
 - Did any example that defines scope get removed?
+- Did I introduce any new qualifier, exception, threshold, fallback branch, or environmental assumption?
+- Did I add any rationale, diagnosis, or claimed benefit that the source did not state?
+- Did I convert descriptive text into a stronger operational rule?
+- Did I infer obligation level from tone, emphasis, or structure rather than explicit wording?
 - Did I create any numbered steps that are really stage notes?
 - Did I preserve numbering at the cost of weak filler steps?
 - Is the first real operation easy to find?
@@ -555,6 +576,7 @@ Do this before any other work when the verification workflow has 4 or more real 
 Create a short checklist in your working state or reply and update it after each step.
 
 - [ ] Step 1: Re-read the trigger or scope language
+- [ ] Step 1.5: Check qualitative gates and fallback cues
 - [ ] Step 2: Check for accidental synonym drift
 - [ ] Step 3: Check obligation and severity terms
 - [ ] Step 4: Check referents
@@ -577,12 +599,16 @@ Do not deliver before this check is complete.
 ### Step 1: Re-read the trigger or scope language
 Would it still route the same requests?
 
+### Step 1.5: Check qualitative gates and fallback cues
+Search for qualitative words and phrases that may act as hidden gates, exceptions, or permission slips, such as `small`, `large`, `simple`, `complex`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, `without reason`, and environment-shaping phrases like `constrained environment`.
+Confirm that each remaining use is either source-supported and operationally bounded, or explicitly flagged as unresolved policy ambiguity. Confirm that no qualitative branch term was merely replaced with another qualitative branch term.
+
 ### Step 2: Check for accidental synonym drift
 Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
 
 ### Step 3: Check obligation and severity terms
 Search for `MUST`, `REQUIRED`, `MUST NOT`, `SHOULD`, `RECOMMENDED`, `MAY`, `OPTIONAL`, `avoid`, `critical`, `important`, `mandatory`, and `required`.
-Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the chosen RFC 2119 term matches the real requirement level rather than rhetorical emphasis. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
+Confirm obligation strength did not shift by accident. Check headings, banners, and checkpoint labels too, not just sentence-level prose. If you normalized severity labels, confirm the source already made the obligation level explicit enough to preserve exactly. If you preserved an informal severity label like `MANDATORY` or `CRITICAL`, confirm you had an exactness reason to do so.
 
 ### Step 4: Check referents
 Search for `this`, `it`, and `they`. Make sure each referent is clear in context.
@@ -630,9 +656,9 @@ This skill is not a full Simplified Technical English enforcement pass, and it i
 
 This skill improves behavior-defining prose safely. It does not replace domain review.
 
-When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or sentence structures that make the behavior harder to follow than necessary. If you changed any file in the artifact set, do a dedicated local-tightening sweep of the other inspected behavior-bearing files before you leave them unchanged. Edit those files when needed so the folder remains internally consistent and locally clear before you deliver the work.
+When a rewrite covers a skill folder, check whether the rest of the inspected artifact set — including the root `SKILL.md`, sibling `AGENTS.md`, `references/` content, and other behavior-bearing support files — now uses stale terminology, inconsistent severity language, mismatched examples, broken progressive-disclosure handoffs, or other concrete mismatches that would change the behavior contract. If you changed any file in the artifact set, run a consistency check across the other inspected behavior-bearing files before you leave them unchanged. Edit those files only when needed so the folder remains internally consistent without propagating optional stylistic preferences before you deliver the work.
 
-Cross-file alignment is required, but it is not sufficient. Local clarity inside each behavior-bearing file is also part of safe delivery.
+Cross-file alignment is required, but it is not sufficient. Local clarity inside each behavior-bearing file matters only after behavior preservation and concrete consistency checks pass.
 
 If the user wants broad content strategy, new workflow design, or repo-wide policy changes, do not smuggle those changes in through prose cleanup. Surface them explicitly.
 

@@ -101,11 +101,11 @@ Apply these rules in order when you rewrite serial instructions.
 3. Do not create a numbered step if it only restates stage purpose, repeats a nearby context rule, announces the next phase, or preserves numbering without operational value.
 4. If a step heading only labels a principle, convert that principle into an action the agent or reader can execute, or demote it to a stage note.
 5. Never leave ordered work in plain bullets. Replace plain bullets with ordered steps when the work is not actually optional or unordered.
-6. Move conditions before actions when that makes timing clearer without changing behavior.
-7. Replace emphasis-only warnings with enforceable gates when the workflow depends on order.
+6. Move conditions before actions when that makes timing clearer without changing behavior, using only source-stated conditions.
+7. Replace emphasis-only warnings with enforceable gates only when the source already states that dependency explicitly elsewhere. Do not create new gates from inferred intent alone.
 8. Keep approval, validation, and retry logic explicit.
 9. Keep sequencing cues in the operational file. Move heuristics, examples, and edge cases to references.
-10. If the source contract is weakly ordered but clearly intends sequence, strengthen the wording. Do not preserve weak sequencing just because it is already present.
+10. If the source explicitly establishes sequence but states it weakly, clarify that sequence without adding new steps, rationale, constraints, or qualitative judgments. If sequence is only inferred rather than explicit, flag the ambiguity in audit mode or ask before strengthening it.
 11. Preserve landmark step numbers when they are reused across the file or tied to checkpoints, but do not pad the workflow with weak filler steps only to keep numbering contiguous.
 12. Treat a rewrite as structural when it changes stage boundaries, numbering architecture, checkpoint placement, or overview/checklist alignment.
 13. A transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on.
