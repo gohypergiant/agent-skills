@@ -1,5 +1,7 @@
 # Acceptance criteria guidelines
 
+**When to load this file:** Load when generating JSON plans from AC or running assessment mode. This file contains the authoritative AC writing rules and mappings that inform both assessment and conversion.
+
 ## File structure
 
 - Individual tests: one file can contain multiple AC. One AC maps to one test. AC can be written either in bullet format in an `.md` file or in Gherkin format in a `.feature` file.

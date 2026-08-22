@@ -53,3 +53,23 @@ export const targetValidator = z.string().superRefine((target, ctx) => {
     return;
   }
 });
+
+/**
+ * Validates an array of targets and returns valid/invalid lists
+ */
+export function validateTargetArray(targets: Array<{ line: number; target: string }>) {
+  const valid = [];
+  const invalid = [];
+
+  for (const item of targets) {
+    const result = targetValidator.safeParse(item.target);
+    if (result.success) {
+      valid.push(item);
+    } else {
+      const errorMessage = result.error?.issues?.[0]?.message || "Unknown validation error";
+      invalid.push({ ...item, error: errorMessage });
+    }
+  }
+
+  return { valid, invalid };
+}
