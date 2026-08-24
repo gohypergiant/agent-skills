@@ -1,0 +1,30 @@
+# Expected issues for BAD-AC.feature — consumed by AssessmentQualityMetric.
+# BAD-AC is fundamentally not conversion-ready: 8 severe errors. The correct
+# SUT behavior in conversion mode is to HALT with an assessment-style report
+# and emit no JSON plan.
+fixture: BAD-AC.feature
+expected_issues:
+  - line: 3
+    issue: "Scenario has no name"
+    fix: "Name the scenario after the behavior under test"
+  - line: 4
+    issue: "First-person phrasing 'I open the app and click around' with no Gherkin keyword — unparseable, no mappable action or target"
+    fix: "Rewrite in third person with a keyword, a specific verb, and a target"
+  - line: 5
+    issue: "Vague verb 'interact' and vague target 'the widget thing'; line also lacks a step keyword"
+    fix: "Use a mappable verb (click/fill/select) and the '<intent> <component> on the <area>' target pattern"
+  - line: 6
+    issue: "Speculative outcome 'it should probably work fine' is not verifiable"
+    fix: "Assert an exact, observable outcome (quoted text in a named component)"
+  - line: 7
+    issue: "Given step appears after a Then step — initial context must precede actions and outcomes"
+    fix: "Move the Given to the top of the scenario or into Background"
+  - line: 8
+    issue: "'does the export process' names no mappable action"
+    fix: "Spell out the imperative steps (clicks, fills, selects) that perform the export"
+  - line: 11
+    issue: "Vague verb 'uses the form' and the following step 'stuff happens' describe no action at all"
+    fix: "Replace with explicit, imperative action steps"
+  - line: 14
+    issue: "Second When/Then set after the first Then — this is a second test hiding in one scenario, and its assertions ('somewhere', 'or similar', 'it works') are unverifiable"
+    fix: "Split into a separate scenario with exact assertions"

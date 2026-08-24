@@ -1,0 +1,24 @@
+"""Generate metric (GATED): faithfulness via Ragas. Skipped unless `-m live`.
+
+Requires a wired runner.generate() and a Ragas-compatible proxy-backed judge
+(wiring snippet in references/frameworks/ragas.md). Record-only until calibrated.
+"""
+
+import pytest
+
+
+@pytest.mark.live
+def test_faithfulness_on_answerable(gold_entries):
+    from metrics.faithfulness_ragas import FaithfulnessMetric
+    import runner  # your wired adapters
+
+    # TODO: build your proxy-backed judge (LangchainLLMWrapper) and pass it in.
+    metric = FaithfulnessMetric(judge_model=None, threshold=0.0)
+
+    answerable = [e for e in gold_entries if e.get("answerable")]
+    for e in answerable:
+        gen = runner.generate(e["question"])
+        metric.measure(e["question"], gen["answer"], gen["contexts"])
+        # record-only: we assert it ran and produced a score, not a threshold yet
+        assert 0.0 <= metric.score <= 1.0
+        print(f"{e['id']}: {metric.reason}")

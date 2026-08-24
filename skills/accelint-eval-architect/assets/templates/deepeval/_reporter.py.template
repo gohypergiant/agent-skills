@@ -1,0 +1,97 @@
+"""Compact scorecard reporter for __SKILL_NAME__.
+
+Trimmed from the accelint-ac-to-playwright reporter: per-dimension PASS/FAIL
+tables + a JSON artifact. For the full version (persona rollup, latency
+percentiles) see that skill's evals/_reporter.py.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import textwrap
+from collections import defaultdict
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+# Preferred display order; dimensions not listed here still render (appended
+# alphabetically) — recording a new dimension must never silently hide it.
+DIMENSION_ORDER = ("correctness", "pitfalls")
+_W = 92
+_BAR = "=" * _W
+_DIV = "-" * _W
+
+
+class ScorecardCollector:
+    def __init__(self) -> None:
+        self.started = datetime.now(timezone.utc)
+        self.metrics: list[dict[str, Any]] = []
+        self.judge_alias = os.getenv("JUDGE_MODEL_ALIAS", "<unset>")
+        self.sut_model = os.getenv("SUT_MODEL_ID", "<unset>")
+
+    def record(self, *, name, score, threshold, dimension, reason=None, passed=None, rubric_hash=None, rubric_source=None):
+        if passed is None:
+            passed = float(score) >= float(threshold)
+        metric_data = {
+            "name": name, "score": float(score), "threshold": float(threshold),
+            "passed": bool(passed), "dimension": dimension,
+            "reason": " ".join(reason.split()) if reason else None,
+        }
+        # Only include rubric_hash/rubric_source for judge metrics (absent for deterministic)
+        if rubric_hash is not None:
+            metric_data["rubric_hash"] = rubric_hash
+        if rubric_source is not None:
+            metric_data["rubric_source"] = rubric_source
+        self.metrics.append(metric_data)
+
+    def report(self) -> dict[str, Any]:
+        passed = sum(1 for m in self.metrics if m["passed"])
+        return {
+            "schema_version": 2,
+            "run_started_at": self.started.isoformat(),
+            "judge_model_alias": self.judge_alias,
+            "sut_model_id": self.sut_model,
+            "metrics": self.metrics,
+            "summary": {"total": len(self.metrics), "passed": passed,
+                        "failed": len(self.metrics) - passed},
+        }
+
+
+def render(report: dict[str, Any]) -> str:
+    out = [_BAR, "EVAL SCORECARD — __SKILL_NAME__", _BAR,
+           f"Run    {report['run_started_at']}",
+           f"SUT    {report['sut_model_id']}    Judge {report['judge_model_alias']}", ""]
+    by_dim: dict[str, list] = defaultdict(list)
+    for m in report["metrics"]:
+        by_dim[m["dimension"]].append(m)
+    ordered = list(DIMENSION_ORDER) + sorted(d for d in by_dim if d not in DIMENSION_ORDER)
+    for dim in ordered:
+        rows = by_dim.get(dim)
+        if not rows:
+            continue
+        out += [dim.title(), _DIV,
+                f"{'Status':<6}  {'Metric':<28}  {'Score':>6}  {'Thresh':>7}"]
+        for m in rows:
+            status = "PASS" if m["passed"] else "FAIL"
+            out.append(f"{status:<6}  {m['name'][:28]:<28}  {m['score']:>6.2f}  ≥ {m['threshold']:>4.2f}")
+        out.append("")
+    fails = [m for m in report["metrics"] if not m["passed"] and m["reason"]]
+    if fails:
+        out += ["Failure details", _DIV]
+        for i, m in enumerate(fails, 1):
+            out.append(f"[{i}] {m['name']}  score {m['score']:.2f} < {m['threshold']:.2f}")
+            out += textwrap.wrap(m["reason"], width=88,
+                                 initial_indent="    ", subsequent_indent="    ")
+            out.append("")
+    s = report["summary"]
+    out += [f"Summary: {s['passed']} passed, {s['failed']} failed of {s['total']}", _BAR]
+    return "\n".join(out)
+
+
+def write_artifact(report: dict[str, Any], results_dir: Path) -> Path:
+    results_dir.mkdir(parents=True, exist_ok=True)
+    stamp = report["run_started_at"].replace(":", "").replace("-", "")
+    path = results_dir / f"run-{stamp}.json"
+    path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    return path

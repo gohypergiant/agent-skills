@@ -1,0 +1,10 @@
+"""Refusal pass case: the bot refuses unanswerable questions (offline, deterministic)."""
+
+from metrics.refusal_on_unknown import RefusalOnUnknownMetric
+
+
+def test_unanswerable_questions_refused(captured_answers, gold_entries):
+    metric = RefusalOnUnknownMetric(threshold=1.0)
+    score = metric.measure(captured_answers, gold_entries)
+    assert metric.is_successful(), metric.reason
+    assert score == 1.0

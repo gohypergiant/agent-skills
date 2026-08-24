@@ -1,0 +1,38 @@
+"""Content-based corpus hash — the drift tripwire for the gold set.
+
+Mirrors the algorithm in the eval-architect skill's ``bootstrap_goldset.py``
+EXACTLY; the two must stay in lockstep or drift detection silently breaks:
+sha256, updated per file in order sorted by POSIX relative path from the corpus
+root, with ``relpath.encode() + b"\\0" + file_bytes``, final ``hexdigest()[:16]``.
+
+Raw file bytes are hashed for every file type, so a same-size content edit
+still changes the hash (a name+size hash would miss it).
+"""
+
+from __future__ import annotations
+
+import hashlib
+from pathlib import Path
+
+
+def compute_corpus_hash(corpus_dir: Path) -> str:
+    """Return the 16-hex-char content hash of every file under ``corpus_dir``."""
+    h = hashlib.sha256()
+    files = sorted(
+        (p for p in corpus_dir.rglob("*") if p.is_file()),
+        key=lambda p: p.relative_to(corpus_dir).as_posix(),
+    )
+    for f in files:
+        rel = f.relative_to(corpus_dir).as_posix()
+        h.update(rel.encode())
+        h.update(b"\0")
+        h.update(f.read_bytes())
+    return h.hexdigest()[:16]
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) != 2 or not Path(sys.argv[1]).is_dir():
+        raise SystemExit("usage: corpus_hash.py <corpus_dir>")
+    print(compute_corpus_hash(Path(sys.argv[1])))

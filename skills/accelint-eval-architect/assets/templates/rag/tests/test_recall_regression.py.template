@@ -1,0 +1,13 @@
+"""Retrieve regression: PROVES teeth — a missed supporting passage drops recall."""
+
+from metrics.recall_at_k import RecallAtKMetric
+
+
+def test_missed_passage_fails_recall(captured_retrieval, gold_entries):
+    broken = dict(captured_retrieval)
+    broken["q2"] = ["x9-spec#c999", "x9-spec#c998"]  # supporting passage NOT retrieved
+    metric = RecallAtKMetric(k=5, threshold=1.0)
+    score = metric.measure(broken, gold_entries)
+    assert not metric.is_successful()
+    assert score < 1.0
+    assert "q2" in metric.reason
