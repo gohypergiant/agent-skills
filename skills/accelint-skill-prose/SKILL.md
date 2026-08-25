@@ -191,7 +191,7 @@ Strict mode is not permission to broaden scope casually. In both modes, keep the
 
 Use these lenses when they match the text:
 
-- **Frontmatter description tightening** — Use this focus when the text controls triggering. Treat the description like compact behavioral logic, not like a marketing blurb.
+- **Frontmatter description tightening** — Use this focus when the text controls triggering. Treat the description as compact behavioral logic, not as a marketing blurb.
 - **Workflow or guardrail tightening** — Use this focus when the prose defines step order, approval dependencies, decision points, safety limits, exact execution rules, or fallback conditions that need operational wording.
 
 ## Before you edit
@@ -311,7 +311,7 @@ Do not rotate synonyms for style if those synonyms could suggest different scope
 ### Rewrite-method step 3: Match the sentence shape to the job
 Requires: Complete Rewrite-method steps 1 and 2.
 
-Choose the clearest accurate sentence shape for the artifact.
+Choose the clearest sentence shape that stays accurate for the artifact.
 
 - **Descriptions** — keep the trigger family, boundary, and artifact scope explicit.
 - **Procedures** — keep one action or decision per step when possible.
@@ -370,7 +370,7 @@ If a phrase does trigger work, keep it, or replace it only with wording that pre
 
 ### 2. Treat workflow prose as executable guidance
 
-If an agent followed only the rewritten text, it should behave the same way.
+If an agent followed only the rewritten text, the agent should behave the same way.
 
 Separate procedural text from descriptive text when that distinction helps clarity. Procedural text tells the agent what to do. Descriptive text explains what something means, why a guardrail exists, or when a rule applies. Do not force descriptive or policy text into imperative form if that would change behavior or make the constraint sound narrower than it is.
 
@@ -425,7 +425,7 @@ Bad pattern:
 
 ### 5. Prefer minimal safe tightening
 
-If you can cut a word, cut it only when that word does not anchor trigger scope, differentiate the skill from adjacent skills, preserve a workflow step, or carry exact technical meaning.
+Cut a word only when that word does not anchor trigger scope, differentiate the skill from adjacent skills, preserve a workflow step, or carry exact technical meaning.
 
 Use direct English. Cut filler, stale phrasing, and avoidable abstraction.
 
@@ -509,7 +509,7 @@ Give the risk summary first. Then give the rewrite. Then give the completed repo
 
 ## Progressive disclosure
 
-Load references only when needed.
+Load references only when the task needs them.
 
 When the user asks you to work on a skill, crawl the skill folder first. Treat the skill folder as one behavior contract distributed across an artifact set, not as a root file with optional extras.
 
@@ -599,7 +599,7 @@ Do not deliver before this check is complete.
 Would it still route the same requests?
 
 ### Step 2: Check qualitative gates, fallback cues, and accidental synonym drift
-Search for qualitative words and phrases that may act as hidden gates, exceptions, or permission slips, such as `small`, `large`, `simple`, `complex`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, `without reason`, and environment-shaping phrases like `constrained environment`.
+Search for qualitative words and phrases that may act as hidden gates, exceptions, or permission slips, such as `small`, `large`, `simple`, `complex`, `practical`, `impractical`, `reasonable`, `brittle`, `significant`, `materially`, `beneficial`, `if needed`, `when appropriate`, `without reason`, and environment-shaping phrases such as `constrained environment`.
 Confirm that each remaining use is either source-supported and operationally bounded, or explicitly flagged as unresolved policy ambiguity. Confirm that no qualitative branch term was merely replaced with another qualitative branch term.
 Search for terms you did not choose during vocabulary normalization. Replace accidental synonym drift.
 
