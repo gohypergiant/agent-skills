@@ -47,6 +47,7 @@ a repo root by accident.
 import argparse
 import difflib
 import json
+import os
 import re
 import sys
 from datetime import date
@@ -128,6 +129,32 @@ def require_absolute(path_str: str, flag_name: str) -> Path:
             "and are how stray files end up in the repo root."
         )
     return path
+
+
+def relativize_path(source_path: str, output_dir: Path) -> str:
+    """Convert an absolute path to a relative path from the project root.
+
+    If the source path is already relative, return it as-is.
+    If it's absolute, try to make it relative to the output directory
+    (assumed to be the project root).
+    """
+    if not source_path:
+        return source_path
+
+    source_path_obj = Path(source_path)
+
+    # If already relative, return as-is
+    if not source_path_obj.is_absolute():
+        return source_path
+
+    # Try to make relative to the output directory (project root)
+    try:
+        project_root = output_dir.resolve()
+        relative = source_path_obj.resolve().relative_to(project_root)
+        return str(relative)
+    except (ValueError, RuntimeError):
+        # If the path is outside the project root, return the original
+        return source_path
 
 
 def normalize_text(text: str) -> str:
@@ -236,7 +263,7 @@ def validate_entry(entry: dict, source_file: str) -> None:
                     )
 
 
-def load_findings(paths: list) -> list:
+def load_findings(paths: list, output_dir: Path) -> list:
     entries = []
     for path in paths:
         if not path.exists():
@@ -269,6 +296,9 @@ def load_findings(paths: list) -> list:
             if entry.get("reasoning"):
                 entry["reasoning"] = normalize_text(entry["reasoning"])
             for ev in entry.get("evidence", []):
+                # Relativize the source path
+                if "source" in ev:
+                    ev["source"] = relativize_path(ev["source"], output_dir)
                 for field_name in ("source", "location", "detail"):
                     if field_name in ev:
                         ev[field_name] = normalize_text(ev[field_name])
@@ -623,7 +653,7 @@ def main():
         output_dir = require_absolute(args.output_dir, "--output-dir")
 
         output_file = output_dir / "EPISTEMIC-MAP.md"
-        new_entries = load_findings(findings_paths)
+        new_entries = load_findings(findings_paths, output_dir)
         prior_entries = load_state(output_file)
 
         today = date.today().isoformat()

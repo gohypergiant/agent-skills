@@ -4,7 +4,7 @@ description: "Build or update a canonical EPISTEMIC-MAP.md sorting a project's k
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Epistemic Mapper
@@ -214,9 +214,10 @@ Risk is out of scope for this wave; a subagent looking at one file has no
 way to tell a real systemic risk from an isolated oddity.
 
 Every Fact, Question, and Assumption needs at least one evidence pointer —
-a file, a line range or section, and a short quote or paraphrase of what's
-there. No evidence, no entry. This mirrors `constraints-extractor`: ambiguity
-is fine, an unsupported claim is not.
+a file (relative path from the project root, not an absolute path), a line
+range or section, and a short quote or paraphrase of what's there. No
+evidence, no entry. This mirrors `constraints-extractor`: ambiguity is fine,
+an unsupported claim is not.
 
 Subagents write scratch findings to **absolute paths only** (e.g.
 `/tmp/epistemic-mapper/<source-id>.json`) — never a relative path, which
