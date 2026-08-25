@@ -562,7 +562,7 @@ Tier 0: raw/                   openspec/changes/archive/*.md (immutable log)
 Tier 1: wiki/ pages            openspec/specs/<capability>/spec.md (current understanding)
 Tier 2: CLAUDE.md index        config.yaml + ARCHITECTURE.md + AGENTS.md + README.md (hub docs)
 
-Op: ingest                 →   <skill_invocation><skill>opsx:archive</skill></skill_invocation> + qrspi-apply Phase 4
+Op: ingest                 →   <skill_invocation><skill>openspec-archive-change</skill></skill_invocation> + qrspi-apply Phase 4
 Op: query                  →   artifact load at propose/apply time
 Op: lint                   →   accelint-archive-synthesis (this skill)
 ```

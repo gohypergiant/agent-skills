@@ -168,9 +168,9 @@ decisions:
 
 ### Load Project Context
 
-**Goal**: Load project context from `openspec/config.yaml` to inject into sub-agent prompts. This compensates for OpenSpec CLI's limitation where the `apply` command doesn't automatically load project context (unlike artifact creation commands).
+**Goal**: Load project context from `openspec/config.yaml` to inject into sub-agent prompts. This compensates for OpenSpec CLI's limitation where the `apply` skill doesn't automatically load project context (unlike artifact creation skills).
 
-**Background**: OpenSpec's `openspec instructions apply` command does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). This means sub-agents implementing tasks don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. We work around this limitation by manually loading and injecting the context.
+**Background**: OpenSpec's `openspec instructions apply` skill does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). This means sub-agents implementing tasks don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. We work around this limitation by manually loading and injecting the context.
 
 16. Check if `openspec/config.yaml` exists:
    ```bash
@@ -243,15 +243,15 @@ For each level in the dependency graph (starting from level 0):
      </project_context>
 
      <skill_invocation>
-       <skill>opsx:apply</skill>
+       <skill>openspec-apply-change</skill>
        <args><change-name></args>
      </skill_invocation>
 
      IMPORTANT: This is a skill invocation directive, NOT a shell command.
-     Execute the internal skill "opsx:apply" — do not attempt to run this as a terminal command.
+     Execute the internal skill "openspec-apply-change" — do not attempt to run this as a terminal command.
 
-     CRITICAL: You MUST use the opsx:apply skill to implement tasks.
-     DO NOT implement tasks directly yourself. The opsx:apply workflow will
+     CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
+     DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
      load context and guide implementation.
 
      IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
@@ -291,15 +291,15 @@ For each level with multiple independent slices:
    </project_context>
 
    <skill_invocation>
-     <skill>opsx:apply</skill>
+     <skill>openspec-apply-change</skill>
      <args><change-name></args>
    </skill_invocation>
 
    IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "opsx:apply" — do not attempt to run this as a terminal command.
+   Execute the internal skill "openspec-apply-change" — do not attempt to run this as a terminal command.
 
-   CRITICAL: You MUST use the opsx:apply skill to implement tasks.
-   DO NOT implement tasks directly yourself. The opsx:apply workflow will
+   CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
+   DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
    load context and guide implementation.
 
    IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
@@ -639,12 +639,12 @@ decisions:
 36. Call the verify skill:
    ```
    <skill_invocation>
-     <skill>opsx:verify</skill>
+     <skill>openspec-verify-change</skill>
      <args><change-name></args>
    </skill_invocation>
 
    IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "opsx:verify" — do not attempt to run this as a terminal command.
+   Execute the internal skill "openspec-verify-change" — do not attempt to run this as a terminal command.
    ```
 
 37. The verify command will:
@@ -828,7 +828,7 @@ Running verification...
 
 **Next Steps:**
 1. Fix critical issues
-2. Re-run verification: `<skill_invocation><skill>opsx:verify</skill><args>auth-refactor</args></skill_invocation>`
+2. Re-run verification: `<skill_invocation><skill>openspec-verify-change</skill><args>auth-refactor</args></skill_invocation>`
 3. Or re-invoke this skill to retry
 
 Not ready to archive until critical issues are resolved.

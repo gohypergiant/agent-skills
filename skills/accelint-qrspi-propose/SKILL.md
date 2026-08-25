@@ -15,7 +15,7 @@ Automate the QRSPI + OpenSpec planning workflow. This skill applies the methodol
 
 **Automates**: The planning phase of spec-driven development using QRSPI
 **Scope**: Questions → Research → Design → Structure/Plan (stops before implementation)
-**Output**: A complete OpenSpec change ready for the opsx:apply skill
+**Output**: A complete OpenSpec change ready for the accelint-qrspi-apply skill
 
 **Does NOT**: Implement code, run tests, create PRs, or archive changes
 
@@ -131,11 +131,11 @@ Execute these steps in order without stopping between them:
 
    ```
    <skill_invocation>
-     <skill>opsx:explore</skill>
+     <skill>openspec-explore</skill>
    </skill_invocation>
 
    IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "opsx:explore" — do not attempt to run this as a terminal command.
+   Execute the internal skill "openspec-explore" — do not attempt to run this as a terminal command.
 
    I have this ticket:
 
@@ -155,11 +155,11 @@ Execute these steps in order without stopping between them:
 
    ```
    <skill_invocation>
-     <skill>opsx:explore</skill>
+     <skill>openspec-explore</skill>
    </skill_invocation>
 
    IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "opsx:explore" — do not attempt to run this as a terminal command.
+   Execute the internal skill "openspec-explore" — do not attempt to run this as a terminal command.
 
    [paste ONLY the research questions from step 12]
 
@@ -207,45 +207,45 @@ Execute these steps in order without stopping between them:
    Agent Behavior Context:
    [paste relevant sections from CLAUDE.md/AGENTS.md]
 
-   CRITICAL: You MUST use opsx commands to create and generate artifacts.
-   DO NOT create files or write artifact content yourself. The opsx commands
+   CRITICAL: You MUST invoke OpenSpec skills to create and generate artifacts.
+   DO NOT create files or write artifact content yourself. The OpenSpec skills
    will handle artifact generation following OpenSpec's configured rules.
 
    Now create the OpenSpec change with proposal and design artifacts:
 
-   1. Run the opsx:new skill to create the change (OpenSpec will prompt for a slug):
+   1. Invoke the openspec-new-change skill to create the change (OpenSpec will prompt for a slug):
       <skill_invocation>
-        <skill>opsx:new</skill>
+        <skill>openspec-new-change</skill>
       </skill_invocation>
 
       IMPORTANT: This is a skill invocation directive, NOT a shell command.
-      Execute the internal skill "opsx:new" — do not attempt to run this as a terminal command.
+      Execute the internal skill "openspec-new-change" — do not attempt to run this as a terminal command.
 
    2. CRITICAL: Capture the change name/slug from the output and use it in all subsequent commands
 
-   3. Run the opsx:continue skill ONCE with the change name to generate proposal.md ONLY:
+   3. Run the openspec-continue-change skill ONCE with the change name to generate proposal.md ONLY:
       <skill_invocation>
-        <skill>opsx:continue</skill>
+        <skill>openspec-continue-change</skill>
         <args><change-name></args>
       </skill_invocation>
 
       IMPORTANT: This is a skill invocation directive, NOT a shell command.
-      Execute the internal skill "opsx:continue" — do not attempt to run this as a terminal command.
+      Execute the internal skill "openspec-continue-change" — do not attempt to run this as a terminal command.
 
-   4. Run the opsx:continue skill ONCE with the change name to generate design.md ONLY:
+   4. Run the openspec-continue-change skill ONCE with the change name to generate design.md ONLY:
       <skill_invocation>
-        <skill>opsx:continue</skill>
+        <skill>openspec-continue-change</skill>
         <args><change-name></args>
       </skill_invocation>
 
       IMPORTANT: This is a skill invocation directive, NOT a shell command.
-      Execute the internal skill "opsx:continue" — do not attempt to run this as a terminal command.
+      Execute the internal skill "openspec-continue-change" — do not attempt to run this as a terminal command.
 
    5. STOP after design.md - do NOT generate specs or tasks yet
 
-   IMPORTANT: Let opsx:continue generate proposal.md and design.md using the
-   OpenSpec workflow. DO NOT write these files yourself. The opsx:continue
-   command handles artifact generation based on config.yaml rules.
+   IMPORTANT: Let openspec-continue-change generate proposal.md and design.md using the
+   OpenSpec workflow. DO NOT write these files yourself. The openspec-continue-change
+   skill handles artifact generation based on config.yaml rules.
 
    After design.md is generated (and ONLY proposal.md and design.md exist),
    report completion, the CHANGE NAME, and the path to the design file.
@@ -389,7 +389,7 @@ Execute these steps in order without stopping between them:
    f. **Handle missing data gracefully:**
       - If `specs_touched` or a clear decisions list can't be confidently read out of the approved design.md/proposal.md, don't guess at either — tell the user what's missing and ask them to add it to design.md directly. A design doc without a clear decisions trail is worth flagging on its own terms, and `accelint-qrspi-archive` needs this frontmatter later to do its cross-capability linking.
    
-   **Why this matters:** This frontmatter is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, not part of the design content the opsx:continue skill generates — writing it here doesn't fall under the "never generate artifacts yourself" rule (see NEVER Do This). Nothing in proposal.md's or design.md's actual content gets created or altered by this step; only the frontmatter block does.
+   **Why this matters:** This frontmatter is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, not part of the design content the openspec-continue-change skill generates — writing it here doesn't fall under the "never generate artifacts yourself" rule (see NEVER Do This). Nothing in proposal.md's or design.md's actual content gets created or altered by this step; only the frontmatter block does.
 
 32. REQUIRED: If the user does not explicitly approve (says "looks good", "approve", "continue", etc.), DO NOT move forward. This checkpoint is mandatory. Skipping it bypasses the core value of QRSPI methodology.
 
@@ -428,32 +428,32 @@ Execute these steps in order without stopping between them:
    Agent Behavior Context:
    [paste relevant sections from CLAUDE.md/AGENTS.md]
 
-   CRITICAL: You MUST use opsx:continue commands to generate artifacts.
-   DO NOT generate specs or tasks.md content yourself. The opsx:continue command
+   CRITICAL: You MUST invoke the openspec-continue-change skill to generate artifacts.
+   DO NOT generate specs or tasks.md content yourself. The openspec-continue-change skill
    will handle artifact generation following OpenSpec's configured rules.
 
    Now generate the remaining OpenSpec artifacts:
 
-   1. Run the opsx:continue skill with the change name to generate specs/* (delta specs):
+   1. Run the openspec-continue-change skill with the change name to generate specs/* (delta specs):
       <skill_invocation>
-        <skill>opsx:continue</skill>
+        <skill>openspec-continue-change</skill>
         <args><change-name></args>
       </skill_invocation>
 
       IMPORTANT: This is a skill invocation directive, NOT a shell command.
-      Execute the internal skill "opsx:continue" — do not attempt to run this as a terminal command.
+      Execute the internal skill "openspec-continue-change" — do not attempt to run this as a terminal command.
 
-   2. Run the opsx:continue skill with the change name to generate tasks.md:
+   2. Run the openspec-continue-change skill with the change name to generate tasks.md:
       <skill_invocation>
-        <skill>opsx:continue</skill>
+        <skill>openspec-continue-change</skill>
         <args><change-name></args>
       </skill_invocation>
 
       IMPORTANT: This is a skill invocation directive, NOT a shell command.
-      Execute the internal skill "opsx:continue" — do not attempt to run this as a terminal command.
+      Execute the internal skill "openspec-continue-change" — do not attempt to run this as a terminal command.
 
-   IMPORTANT: Let opsx:continue generate tasks.md using the OpenSpec workflow.
-   DO NOT write tasks.md yourself. The opsx:continue command handles this.
+   IMPORTANT: Let openspec-continue-change generate tasks.md using the OpenSpec workflow.
+   DO NOT write tasks.md yourself. The openspec-continue-change skill handles this.
 
    After tasks.md is generated, the parent agent will validate vertical slicing
    and add a "## Parallelization Strategy" section if needed.
@@ -512,7 +512,7 @@ Execute these steps in order without stopping between them:
 
 42. If horizontal or mixed slicing is detected, **automatically convert to vertical slices**:
 
-   REQUIRED: The `qrspi-apply` skill requires vertical slicing. If the opsx:continue skill generated horizontal slices, you MUST restructure them before presenting them to the user.
+   REQUIRED: The `qrspi-apply` skill requires vertical slicing. If the openspec-continue-change skill generated horizontal slices, you MUST restructure them before presenting them to the user.
 
    **Conversion process**:
 
@@ -708,9 +708,9 @@ If any of these are missing, guide the user to set them up before running this s
 
 ## NEVER Do This
 
-**NEVER generate artifacts yourself** — Always use the opsx skills (`opsx:new`, `opsx:continue`) to create `proposal.md`, `design.md`, `specs/*`, and `tasks.md`. The opsx workflow handles artifact generation under OpenSpec's configured rules. If you write artifacts directly, you bypass the project's design, spec, and task rules and create inconsistent outputs. The one narrow exception is step 30's `specs_touched`/`decisions` frontmatter block. That block is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, derived from content opsx:continue already generated and already approved by the user — not new design content. Even there, only the YAML frontmatter block is written; the `design.md` body is never touched by this step.
+**NEVER generate artifacts yourself** — Always invoke the OpenSpec skills (`openspec-new-change`, `openspec-continue-change`) to create `proposal.md`, `design.md`, `specs/*`, and `tasks.md`. The OpenSpec workflow handles artifact generation under OpenSpec's configured rules. If you write artifacts directly, you bypass the project's design, spec, and task rules and create inconsistent outputs. The one narrow exception is step 30's `specs_touched`/`decisions` frontmatter block. That block is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, derived from content openspec-continue-change already generated and already approved by the user — not new design content. Even there, only the YAML frontmatter block is written; the `design.md` body is never touched by this step.
 
-**NEVER generate `tasks.md` from scratch** — Always use the opsx:continue skill to create the initial `tasks.md`. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If opsx:continue generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) by following the validation guidance in step 42. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert it to numbered lists or plain bullets.
+**NEVER generate `tasks.md` from scratch** — Always invoke the openspec-continue-change skill to create the initial `tasks.md`. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If openspec-continue-change generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) by following the validation guidance in step 42. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert it to numbered lists or plain bullets.
 
 **NEVER use numbered lists or plain bullets in `tasks.md`** — All subtasks MUST use markdown checklist format: `- [ ] instruction`. The `qrspi-apply` skill tracks completion by checking and unchecking these boxes. If you see numbered lists (`1. 2. 3.`) or plain bullets (`-` without `[ ]`), convert them to `- [ ] ...` format.
 

@@ -160,22 +160,22 @@ This does give something up: opsx:archive's own internal work — comparing delt
    For single change:
    ```xml
    <skill_invocation>
-     <skill>opsx:archive</skill>
+     <skill>openspec-archive-change</skill>
      <args>change-name</args>
    </skill_invocation>
    
    IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "opsx:archive" — do not attempt to run this as a terminal command.
+   Execute the internal skill "openspec-archive-change" — do not attempt to run this as a terminal command.
    ```
 
    For bulk archive:
    ```xml
    <skill_invocation>
-     <skill>opsx:bulk-archive</skill>
+     <skill>openspec-bulk-archive-change</skill>
    </skill_invocation>
    
    IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "opsx:bulk-archive" — do not attempt to run this as a terminal command.
+   Execute the internal skill "openspec-bulk-archive-change" — do not attempt to run this as a terminal command.
    ```
 
 10. **If the run branches internally** — most commonly by handing off to a separate sync skill partway through — that's normal, expected shape for this command, not a sign that anything has gone wrong or that the task is finished. Stay with it: once the branch completes, pick back up with archive's own remaining steps (merging delta specs into the main specs, moving the change into `openspec/changes/archive/`) rather than treating the branch's completion as the end of this section.
@@ -508,12 +508,12 @@ Skill: Running preflight checks...
 ✓ Both capabilities have a ## Purpose/### Purpose heading
 
 <skill_invocation>
-  <skill>opsx:archive</skill>
+  <skill>openspec-archive-change</skill>
   <args>add-live-sync</args>
 </skill_invocation>
 
 IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "opsx:archive" — do not attempt to run this as a terminal command.
+Execute the internal skill "openspec-archive-change" — do not attempt to run this as a terminal command.
 
 Sync now? (y/n) → yes
 ✓ Synced delta specs, resuming opsx:archive's remaining steps...
@@ -585,12 +585,12 @@ User: (a)
 Skill: Confirmed. Writing this into design.md's frontmatter, then proceeding...
 
 <skill_invocation>
-  <skill>opsx:archive</skill>
+  <skill>openspec-archive-change</skill>
   <args>enhance-mock-consistency-rule</args>
 </skill_invocation>
 
 IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "opsx:archive" — do not attempt to run this as a terminal command.
+Execute the internal skill "openspec-archive-change" — do not attempt to run this as a terminal command.
 
 ✓ opsx:archive enhance-mock-consistency-rule merged, archived to
   openspec/changes/archive/2026-07-07-enhance-mock-consistency-rule/
@@ -606,11 +606,11 @@ Skill: Running preflight checks across 2 pending changes...
 ✓ All design.md frontmatter valid
 
 <skill_invocation>
-  <skill>opsx:bulk-archive</skill>
+  <skill>openspec-bulk-archive-change</skill>
 </skill_invocation>
 
 IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "opsx:bulk-archive" — do not attempt to run this as a terminal command.
+Execute the internal skill "openspec-bulk-archive-change" — do not attempt to run this as a terminal command.
 
 Sync now? (y/n) → yes
 ⚠ add-dark-mode and update-footer both touch specs/ui/ — archive both,
