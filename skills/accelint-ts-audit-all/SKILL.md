@@ -4,7 +4,7 @@ description: Comprehensive TypeScript file audit system. Command-only skill (no 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Audit All
@@ -140,8 +140,14 @@ For each file in the pending list, follow this exact sequence:
 #### Phase 1: Initial Test Coverage
 
 **Step 1: Run accelint-ts-testing skill**
-```bash
-/skill accelint-ts-testing <file-path>
+```xml
+<skill_invocation>
+  <skill>accelint-ts-testing</skill>
+  <args>file-path</args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-ts-testing" — do not attempt to run this as a terminal command.
 ```
 
 **Step 2: Interactive Changes**
@@ -173,9 +179,19 @@ For each file in the pending list, follow this exact sequence:
 **Step 3: Run BOTH skills in parallel**
 
 CRITICAL: Run these together to avoid contradictory suggestions:
-```bash
-/skill accelint-ts-best-practices <file-path>
-/skill accelint-ts-performance <file-path>
+```xml
+<skill_invocation>
+  <skill>accelint-ts-best-practices</skill>
+  <args>file-path</args>
+</skill_invocation>
+
+<skill_invocation>
+  <skill>accelint-ts-performance</skill>
+  <args>file-path</args>
+</skill_invocation>
+
+IMPORTANT: These are skill invocation directives, NOT shell commands.
+Execute the internal skills "accelint-ts-best-practices" and "accelint-ts-performance" — do not attempt to run these as terminal commands.
 ```
 
 **Step 4: Interactive Changes**
@@ -230,8 +246,14 @@ If verification passes, skip to documenting results. Otherwise:
 #### Phase 4: Documentation
 
 **Step 7: Run accelint-ts-documentation skill**
-```bash
-/skill accelint-ts-documentation <file-path>
+```xml
+<skill_invocation>
+  <skill>accelint-ts-documentation</skill>
+  <args>file-path</args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-ts-documentation" — do not attempt to run this as a terminal command.
 ```
 
 **Step 8: Interactive Changes**

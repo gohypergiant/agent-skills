@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0] - 2026-08-25
+
+### Added
+- Cross-platform agent compatibility through XML-based skill invocation format
+- Explicit negative instructions to prevent misinterpretation as shell commands
+
+### Changed
+- Migrated from harness-specific slash-command syntax (`/skill-name`) to agent-agnostic XML invocation format
+- Ensures compatibility across Claude Code, Codex, Pi, and other agent harnesses
+
 ## [1.3.1] - 2026-08-21
 
 ### Fixed

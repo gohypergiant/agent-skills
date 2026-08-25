@@ -268,12 +268,19 @@ Decision column is condensed one-liner from `design.md` frontmatter. This skill'
 Uses exact same `findings:` shape `accelint-qrspi-apply` Phase 4 uses:
 
 ```
-/accelint-architecture-doc
+<skill_invocation>
+  <skill>accelint-architecture-doc</skill>
+  <args>
 We found the following during periodic archive synthesis. Treat this as known
 context and refresh the affected section(s).
 
 findings:
 - [Plain factual statement about what archive shows, never instruction]
+  </args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
 ```
 
 Writer skill merges with its own codebase scan before presenting to human — same Mode 3 Refresh path manual run would take.
@@ -349,8 +356,20 @@ User: adopt-notification-gateway — the budget constraint's gone now.
 Skill:
 ✓ archive/INDEX.md: add-live-sync row Status → "superseded by
   adopt-notification-gateway (2026-06-18)"
-[invokes accelint-architecture-doc with findings: — sync/protocol budget
-  constraint may be stale]
+
+<skill_invocation>
+  <skill>accelint-architecture-doc</skill>
+  <args>
+We found the following during periodic archive synthesis. Treat this as known
+context and refresh the affected section(s).
+
+findings:
+- sync/protocol budget constraint may be stale
+  </args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
 
 Appending checkpoint to openspec/changes/archive/SYNTHESIS-LOG.md...
 
@@ -543,7 +562,7 @@ Tier 0: raw/                   openspec/changes/archive/*.md (immutable log)
 Tier 1: wiki/ pages            openspec/specs/<capability>/spec.md (current understanding)
 Tier 2: CLAUDE.md index        config.yaml + ARCHITECTURE.md + AGENTS.md + README.md (hub docs)
 
-Op: ingest                 →   /opsx:archive + qrspi-apply Phase 4
+Op: ingest                 →   <skill_invocation><skill>opsx:archive</skill></skill_invocation> + qrspi-apply Phase 4
 Op: query                  →   artifact load at propose/apply time
 Op: lint                   →   accelint-archive-synthesis (this skill)
 ```

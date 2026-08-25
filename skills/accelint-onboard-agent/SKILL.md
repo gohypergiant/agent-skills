@@ -4,7 +4,7 @@ description: Interactively onboard a project to agent-driven development by runn
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Onboard Agents
@@ -289,7 +289,7 @@ behavioral constraints and confirm rather than asking again.
 - Versioning workflow? (when to bump, who approves changelog?)
 
 **Turn 4 — OpenSpec / Spec-Driven Workflow** *(skip if not using OpenSpec)*
-- When should the agent invoke `/opsx:propose`?
+- When should the agent invoke `opsx:propose`?
   *Good default: "for any new feature or non-trivial change".*
 - When is a spec required vs. optional?
 - Should the agent reference existing specs before creating new patterns?
@@ -347,7 +347,7 @@ appropriate.
   a footer `BREAKING CHANGE:` block?"
 
 **Spec-Driven Development (OpenSpec) → suggest confirming:**
-- "For non-trivial changes, I'll start with `/opsx:propose` before writing
+- "For non-trivial changes, I'll start with `opsx:propose` before writing
   any code; should I also require a design artifact for changes touching more
   than N files?"
 - "Should I link task IDs or spec refs in commit messages?"
@@ -393,7 +393,7 @@ to complete, then merge results before Phase 4.
 - Return: migration guardrails if migrations exist, secret handling practices
 
 **Agent E — OpenSpec & Development Workflow**
-- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `/opsx:*` references in docs or CLAUDE.md
+- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `opsx:*` skill references in docs or CLAUDE.md
 - Return: OpenSpec usage status, when to invoke spec workflow
 
 **After all agents complete:** merge their findings into a unified discovery map.
@@ -480,7 +480,9 @@ architectural decisions."]
 
 ### New Features
 [step-by-step procedure, e.g.:]
-1. Start with `/opsx:propose` for any non-trivial change
+1. Start with `<skill_invocation><skill>opsx:propose</skill></skill_invocation>` for any non-trivial change
+   *(IMPORTANT: This is a skill invocation directive, NOT a shell command.
+   Execute the internal skill "opsx:propose" — do not attempt to run this as a terminal command.)*
 2. Get proposal reviewed before writing code
 3. Run `pnpm check` and `pnpm test` after each meaningful change
 4. Open a draft PR early; mark ready only after CI passes
@@ -493,8 +495,10 @@ Follow Test-Driven Development to ensure the bug is fixed and does not regress:
    before touching any production code
 2. **Fix the root cause** — not the symptom
 3. **Confirm the test passes** — validate the fix
-4. **Follow OpenSpec process** — use `/opsx:explore` for investigation if
+4. **Follow OpenSpec process** — use `<skill_invocation><skill>opsx:explore</skill></skill_invocation>` for investigation if
    the root cause is non-obvious
+   *(IMPORTANT: This is a skill invocation directive, NOT a shell command.
+   Execute the internal skill "opsx:explore" — do not attempt to run this as a terminal command.)*
 5. Hand off to engineer for PR
 
 ### Pre-Commit Checklist

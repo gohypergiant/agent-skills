@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the OpenSpec CLI, sub-agent support, and a project already onboarded with accelint-qrspi-archive so that openspec/changes/archive/INDEX.md and openspec/specs/INDEX.md exist and are populated. Routing confirmed findings requires the shared findings - interface (Mode 3 Refresh support) in whichever writer skill(s) a given finding targets; without it, this skill still produces its report but degrades to manual guidance for that step.
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.2.0"
 ---
 
 # Accelint Archive Synthesis
@@ -72,7 +72,9 @@ This file is not a column of either index and is never touched by `accelint-qrsp
 Routing a confirmed finding to a writer skill uses the exact same `findings:` shape `accelint-qrspi-apply` Step 5 already uses — this skill is the interface's second caller, not a new one:
 
 ```
-/accelint-architecture-doc
+<skill_invocation>
+  <skill>accelint-architecture-doc</skill>
+  <args>
 We found the following during periodic archive synthesis. Treat this as known
 context and refresh the affected section(s).
 
@@ -82,6 +84,11 @@ findings:
   message broker, but adopt-websocket-gateway (2026-09-14) later adopted a
   message broker for an unrelated capability — worth confirming the original
   budget constraint still holds before sync/protocol's spec is next touched"]
+  </args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
 ```
 
 The writer skill merges this with its own codebase scan before presenting anything to the human — same Mode 3 Refresh path a manual run would take. Nothing about invoking it here is special-cased for this skill. This interface is used for decision-drift and structural-coupling findings only — index reconciliation findings (Step 4) never route through it, since a stale `specs/INDEX.md` row isn't a hub-doc content gap; see Step 8 for what happens to those instead.
@@ -492,16 +499,41 @@ User: adopt-notification-gateway — the budget constraint's gone now.
 Skill:
 ✓ archive/INDEX.md: add-live-sync row Status → "superseded by
   adopt-notification-gateway (2026-06-18)"
-[invokes accelint-architecture-doc with findings: — sync/protocol budget
-  constraint may be stale]
+
+<skill_invocation>
+  <skill>accelint-architecture-doc</skill>
+  <args>
+We found the following during periodic archive synthesis. Treat this as known
+context and refresh the affected section(s).
+
+findings:
+- sync/protocol budget constraint may be stale
+  </args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
+
 ✓ Finding 2 confirmed.
 ✓ specs/INDEX.md: cache/layer row patched — related: [cli-core] →
   [cli-core, rule-engine] (Purpose unchanged, last_touched_by left
   exactly as it was — this patch isn't an archived change, so
   attribution doesn't move)
 ✓ Finding 3 confirmed.
-[invokes accelint-architecture-doc with findings: — sync/protocol
-  structural coupling, routed to Known Technical Debt review]
+
+<skill_invocation>
+  <skill>accelint-architecture-doc</skill>
+  <args>
+We found the following during periodic archive synthesis. Treat this as known
+context and refresh the affected section(s).
+
+findings:
+- sync/protocol structural coupling, routed to Known Technical Debt review
+  </args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
 
 Appending checkpoint to openspec/changes/archive/SYNTHESIS-LOG.md...
 

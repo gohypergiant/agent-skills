@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.5.0"
+  version: "1.7.0"
 ---
 
 # Accelint QRSPI Apply
@@ -27,7 +27,7 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 - Sub-agent support (for parallel execution)
 - The expanded OpenSpec workflows (`explore`, `new`, `continue`) enabled
 
-**Important**: This skill is specifically designed for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use the regular `/opsx:apply` command directly.
+**Important**: This skill is specifically designed for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use the regular `opsx:apply` skill directly.
 
 ## Workflow Overview
 
@@ -63,7 +63,7 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
    ```bash
    openspec status --change "<name>" --json
    ```
-   If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `/opsx:continue` to generate tasks before applying."
+   If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `opsx:continue` to generate tasks before applying."
 
 ### Record Implementation Start
 
@@ -242,10 +242,16 @@ For each level in the dependency graph (starting from level 0):
      {INJECTED_CONFIG_CONTEXT}
      </project_context>
 
-     /opsx:apply <change-name>
+     <skill_invocation>
+       <skill>opsx:apply</skill>
+       <args><change-name></args>
+     </skill_invocation>
 
-     CRITICAL: You MUST use the /opsx:apply command to implement tasks.
-     DO NOT implement tasks directly yourself. The /opsx:apply workflow will
+     IMPORTANT: This is a skill invocation directive, NOT a shell command.
+     Execute the internal skill "opsx:apply" — do not attempt to run this as a terminal command.
+
+     CRITICAL: You MUST use the opsx:apply skill to implement tasks.
+     DO NOT implement tasks directly yourself. The opsx:apply workflow will
      load context and guide implementation.
 
      IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
@@ -284,10 +290,16 @@ For each level with multiple independent slices:
    {INJECTED_CONFIG_CONTEXT}
    </project_context>
 
-   /opsx:apply <change-name>
+   <skill_invocation>
+     <skill>opsx:apply</skill>
+     <args><change-name></args>
+   </skill_invocation>
 
-   CRITICAL: You MUST use the /opsx:apply command to implement tasks.
-   DO NOT implement tasks directly yourself. The /opsx:apply workflow will
+   IMPORTANT: This is a skill invocation directive, NOT a shell command.
+   Execute the internal skill "opsx:apply" — do not attempt to run this as a terminal command.
+
+   CRITICAL: You MUST use the opsx:apply skill to implement tasks.
+   DO NOT implement tasks directly yourself. The opsx:apply workflow will
    load context and guide implementation.
 
    IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
@@ -344,9 +356,9 @@ For each level with multiple independent slices:
    Progress is tracked in tasks.md checkboxes.
    ```
 
-**Slice targeting approach**: OpenSpec's `/opsx:apply` command does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
+**Slice targeting approach**: OpenSpec's `opsx:apply` skill does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
 
-1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `/opsx:apply <change-name>`, which:
+1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `opsx:apply <change-name>`, which:
    - Runs `openspec instructions apply --change "<name>" --json` to get context
    - Loads all context files (proposal, design, specs, tasks)
    - Provides dynamic instructions based on current state
@@ -402,13 +414,18 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
-     /accelint-onboard-openspec
-     We have just completed the change spec openspec/changes/<change-name>.
+     <skill_invocation>
+       <skill>accelint-onboard-openspec</skill>
+       <args>We have just completed the change spec openspec/changes/<change-name>.
 
      findings:
      - [Decision 1 rephrased as fact, e.g., "config.yaml's Anti-Patterns section says to avoid polling, but this change chose polling for stated reasons"]
      - [Decision 2 rephrased as fact]
-     ...
+     ...</args>
+     </skill_invocation>
+
+     IMPORTANT: This is a skill invocation directive, NOT a shell command.
+     Execute the internal skill "accelint-onboard-openspec" — do not attempt to run this as a terminal command.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -432,13 +449,18 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
-     /accelint-architecture-doc
-     We have just completed the change spec openspec/changes/<change-name>.
+     <skill_invocation>
+       <skill>accelint-architecture-doc</skill>
+       <args>We have just completed the change spec openspec/changes/<change-name>.
 
      findings:
      - [Decision 1 rephrased as fact]
      - [Decision 2 rephrased as fact]
-     ...
+     ...</args>
+     </skill_invocation>
+
+     IMPORTANT: This is a skill invocation directive, NOT a shell command.
+     Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -463,13 +485,18 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
-     /accelint-onboard-agent
-     We have just completed the change spec openspec/changes/<change-name>.
+     <skill_invocation>
+       <skill>accelint-onboard-agent</skill>
+       <args>We have just completed the change spec openspec/changes/<change-name>.
 
      findings:
      - [Decision 1 rephrased as fact]
      - [Decision 2 rephrased as fact]
-     ...
+     ...</args>
+     </skill_invocation>
+
+     IMPORTANT: This is a skill invocation directive, NOT a shell command.
+     Execute the internal skill "accelint-onboard-agent" — do not attempt to run this as a terminal command.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -493,13 +520,18 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
-     /accelint-readme-writer
-     We have just completed the change spec openspec/changes/<change-name>.
+     <skill_invocation>
+       <skill>accelint-readme-writer</skill>
+       <args>We have just completed the change spec openspec/changes/<change-name>.
 
      findings:
      - [Decision 1 rephrased as fact]
      - [Decision 2 rephrased as fact]
-     ...
+     ...</args>
+     </skill_invocation>
+
+     IMPORTANT: This is a skill invocation directive, NOT a shell command.
+     Execute the internal skill "accelint-readme-writer" — do not attempt to run this as a terminal command.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -604,9 +636,15 @@ decisions:
 
 **CRITICAL**: This is the FINAL step. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this step.
 
-36. Call the verify command:
+36. Call the verify skill:
    ```
-   /opsx:verify <change-name>
+   <skill_invocation>
+     <skill>opsx:verify</skill>
+     <args><change-name></args>
+   </skill_invocation>
+
+   IMPORTANT: This is a skill invocation directive, NOT a shell command.
+   Execute the internal skill "opsx:verify" — do not attempt to run this as a terminal command.
    ```
 
 37. The verify command will:
@@ -653,7 +691,7 @@ If no parallelization strategy is found, the skill runs tasks sequentially. This
 
 ### Verification Before Archive
 
-The skill always runs `/opsx:verify` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
+The skill always runs `opsx:verify` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
 
 ### Human-in-the-Loop
 
@@ -697,9 +735,9 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 **NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 28-32) complete successfully, immediately proceed to recording the completion timestamp (Steps 33-35), then to verification (Step 36). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 25). Do not treat completion of living document updates or timestamp recording as signals to stop and wait — they are signals to continue to the next step.
 
-**NEVER implement tasks directly** — Always delegate to `/opsx:apply` command via sub-agents. The /opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
+**NEVER implement tasks directly** — Always delegate to `opsx:apply` skill via sub-agents. The opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
 
-**NEVER skip verification** — Verification using `/opsx:verify` (Step 36) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
+**NEVER skip verification** — Verification using `opsx:verify` (Step 36) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
 
 **NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
 
@@ -760,7 +798,7 @@ All requirements implemented. No critical issues found.
 ### Next Steps
 1. Review the changes: `git diff`
 2. Run tests: `pnpm test`
-3. Archive this change: `/accelint-qrspi-archive remove-security-ruleset`
+3. Archive this change: `<skill_invocation><skill>accelint-qrspi-archive</skill><args>remove-security-ruleset</args></skill_invocation>`
 
 Ready to archive!
 ```
@@ -790,7 +828,7 @@ Running verification...
 
 **Next Steps:**
 1. Fix critical issues
-2. Re-run verification: `/opsx:verify auth-refactor`
+2. Re-run verification: `<skill_invocation><skill>opsx:verify</skill><args>auth-refactor</args></skill_invocation>`
 3. Or re-invoke this skill to retry
 
 Not ready to archive until critical issues are resolved.
@@ -826,3 +864,56 @@ Running verification...
 **Change:** update-readme
 All tasks complete. Ready to archive!
 ```
+
+## File Changes Summary
+
+After verification completes, generate a structured diff summary for the user. This summary provides a scannable overview of all code-level changes without descriptions.
+
+**CRITICAL**: This summary is MANDATORY after the verification report. Do not skip it.
+
+41. Run `git diff` to capture all changes made during this implementation
+
+42. Parse the archived change spec from `openspec/archive/<change-name>/` to understand the change's scope
+
+43. Generate a structured token-level change list following this exact format:
+
+   **Template:**
+   ```
+   File Changes Made In This Change:
+   <token_type>   <file_name>:<line_number>   <symbol_name>   <[change_type]>
+   ```
+
+   **Rules:**
+   - **Token Types**: function, constant, type, test, class, interface, enum, etc.
+   - **Change Types**: [added], [modified], [deleted]
+   - **Line Numbers**: Use "Ln " prefix (e.g., "Ln 234")
+   - **Source Directory Only**: Only list items from the source directory (e.g., `src/`, `lib/`). Exclude config files, build artifacts, and generated files.
+   - **Test Granularity**: For test changes, list only the `describe` block token. Do NOT list individual `it` or `test` cases — they add noise without value.
+   - **No Collapsing**: DO NOT summarize or collapse multiple changes into one line. Each token gets its own line.
+   - **Sorting**: Sort by change type (added, then modified, then deleted)
+   - **Justification**: Perfectly align columns with minimum 3 spaces between columns
+   - **No Additional Content**: ONLY provide the template above — no headers, no summary paragraphs, no explanations
+
+   **Example output:**
+   ```
+   File Changes Made In This Change:
+   test       index.test.ts:Ln 234      ensureGrammar                [added]
+   test       index.test.ts:Ln 291      ensureGrammars               [added]
+   constant   language-constants.ts     EXTENSION_TO_LANGUAGE        [added]
+   constant   language-constants.ts     LANGUAGE_EXTENSIONS          [added]
+   function   index.ts:Ln 89            ensureGrammar                [added]
+   function   index.ts:Ln 112           ensureGrammars               [added]
+   function   scan.ts:Ln 45             detectLanguagesInFiles       [added]
+   type       errors.ts:Ln 12           AuditKitError                [modified]
+   function   errors.ts:Ln 65           formatError                  [modified]
+   function   index.test.ts:Ln 23       expectErrWithType            [modified]
+   constant   index.ts:Ln 15            LANGUAGE_MAP                 [modified]
+   constant   index.ts:Ln 28            SUPPORTED_EXTENSIONS         [modified]
+   function   index.ts:Ln 156           getWasmPath                  [modified]
+   function   scan.ts:Ln 632            executeScan                  [modified]
+   function   language-detection.ts     EXTENSION_TO_LANGUAGE        [deleted]
+   ```
+
+44. Present the file changes summary immediately after the verification report
+
+**Output**: Justified, sorted token-level change list showing all additions, modifications, and deletions in source code

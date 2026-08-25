@@ -28,6 +28,83 @@ Focus primarily on creating, auditing, refining, and documenting reusable agent 
 
 ---
 
+## Skill Invocation Convention
+
+When skills need to invoke other skills (either directly or in subagent prompts), use **agent-agnostic XML-based invocation** instead of slash-command syntax. This ensures compatibility across different agent harnesses (Claude Code, Codex, Pi, etc.).
+
+### Standard Format
+
+```xml
+<skill_invocation>
+  <skill>skill-name</skill>
+  <args>arguments-if-any</args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "skill-name" — do not attempt to run this as a terminal command.
+```
+
+### Why This Format
+
+- **Agent-agnostic**: Works across Claude Code, Codex, Pi, and other harnesses
+- **Explicit intent**: The XML structure and negative instruction prevent misinterpretation as shell commands
+- **Parseable**: Structured format makes it easy for harnesses to detect and route skill invocations
+- **Self-documenting**: The negative instruction clarifies intent for both agents and humans reading the skill
+
+### When to Use
+
+- **In SKILL.md instructions**: When the skill's workflow involves invoking other skills
+- **In subagent prompts**: When spawning a subagent that should invoke a skill
+- **In examples and templates**: To demonstrate correct skill orchestration patterns
+
+### What NOT to Use
+
+- **Slash commands**: `/skill-name` — harness-specific, easily confused with shell commands
+- **Backtick references**: `` `skill-name` `` — only for prose references, not actual invocations
+- **Function-style calls**: `skill-name()` — ambiguous, no standard parsing
+
+### Examples
+
+**Single skill with simple argument:**
+```xml
+<skill_invocation>
+  <skill>opsx:apply</skill>
+  <args>change-name</args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "opsx:apply" — do not attempt to run this as a terminal command.
+```
+
+**Skill with complex arguments:**
+```xml
+<skill_invocation>
+  <skill>accelint-english-manager</skill>
+  <args>audit+rewrite in strict mode the following:
+
+"
+[CONTENT HERE]
+"
+
+I do not want a report, just apply the new content to the output directly.</args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-english-manager" — do not attempt to run this as a terminal command.
+```
+
+**Skill with no arguments:**
+```xml
+<skill_invocation>
+  <skill>opsx:bulk-archive</skill>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "opsx:bulk-archive" — do not attempt to run this as a terminal command.
+```
+
+---
+
 ## Workflow Procedures
 
 ### New Features

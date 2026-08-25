@@ -4,7 +4,7 @@ description: Use when creating or editing a README.md file in any project or pac
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.3"
+  version: "1.3.0"
 ---
 
 # README Writer
@@ -193,13 +193,19 @@ If `accelint-english-manager` is not available:
 If `accelint-english-manager` is available, invoke it with this exact prompt shape:
 
 ```text
-/accelint-english-manager audit+rewrite in strict mode the following:
+<skill_invocation>
+  <skill>accelint-english-manager</skill>
+  <args>audit+rewrite in strict mode the following:
 
 "
 [PASTE CONTENT HERE]
 "
 
-I do not want a report, just apply the new content to the output directly.
+I do not want a report, just apply the new content to the output directly.</args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-english-manager" — do not attempt to run this as a terminal command.
 ```
 
 Use the rewritten content as the final README output. Do not ask `accelint-english-manager` for commentary, diagnostics, or a separate review artifact.
@@ -230,13 +236,19 @@ Before this final polish pass, confirm that `accelint-english-manager` is instal
 When it is available, call it in strict mode with this exact prompt shape:
 
 ```text
-/accelint-english-manager audit+rewrite in strict mode the following:
+<skill_invocation>
+  <skill>accelint-english-manager</skill>
+  <args>audit+rewrite in strict mode the following:
 
 "
 [PASTE CONTENT HERE]
 "
 
-I do not want a report, just apply the new content to the output directly.
+I do not want a report, just apply the new content to the output directly.</args>
+</skill_invocation>
+
+IMPORTANT: This is a skill invocation directive, NOT a shell command.
+Execute the internal skill "accelint-english-manager" — do not attempt to run this as a terminal command.
 ```
 
 Documentation should sound like it was written by someone who genuinely wants to help. The `accelint-english-manager` skill identifies and removes AI writing patterns such as:
