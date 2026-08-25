@@ -1,0 +1,23 @@
+# Expected assertion targets for PERFECT-AC.feature conversions.
+# 19 unique targets — target_coverage requires every one in the plan
+# (historical runs recorded 'All 19 required targets found').
+must_have_targets:
+  - page.button.toggle-interface
+  - drawer.div.settings-panel
+  - modal.text.welcome
+  - card.text.tutorial
+  - header.text.banner
+  - page.button.item
+  - page.text.selection
+  - form.button.login
+  - form.input.email
+  - form.input.password
+  - form.dropdown.plan
+  - page.text.success
+  - toast.text.success
+  - modal.text.distance
+  - page.text.position
+  - nav.link.refresh
+  - header.text.status
+  - card.button.info
+  - card.text.tooltip

@@ -1,0 +1,73 @@
+"""SUT runner for __SKILL_NAME__: a single-shot completion via LiteLLM.
+
+Inline the skill's SKILL.md (+ any schema the skill normally reads from disk)
+into the system prompt — the eval has no file tools. If the skill normally writes
+files or asks for paths, OVERRIDE that here with eval-mode instructions asking for
+inline output, and verify compliance with a permission_compliance metric.
+"""
+
+import os
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Literal
+
+from litellm import completion
+
+
+class SUTError(Exception):
+    pass
+
+
+def build_system_prompt() -> tuple[str, dict]:
+    skill_root = Path(__file__).parent.parent
+    parts = [(skill_root / "SKILL.md").read_text(encoding="utf-8")]
+    # Inline any reference/schema the skill normally reads from disk:
+    # parts.append((skill_root / "references" / "__SCHEMA_FILE__").read_text(encoding="utf-8"))
+    system_prompt = "\n\n---\n\n".join(parts)
+    return system_prompt, {}
+
+
+def invoke_sut(fixture_path: Path, mode: Literal["__MODE__"],
+               temperature: float = 0.0, max_tokens: int = 8192) -> dict:
+    model_id = os.getenv("SUT_MODEL_ID")
+    api_base = os.getenv("SUT_LITELLM_BASE_URL")
+    api_key = os.getenv("LITELLM_API_KEY")
+    if not model_id:
+        raise SUTError("SUT_MODEL_ID not set.")
+
+    system_prompt, _ = build_system_prompt()
+    fixture = fixture_path.read_text(encoding="utf-8")
+
+    # EVAL-MODE OVERRIDE: if the skill writes files / asks for output dirs in its
+    # normal flow, replace that instruction here with "emit output inline".
+    user_message = f"__USER_MESSAGE_TEMPLATE__\n\n{fixture}"
+
+    kwargs = {
+        "model": model_id,
+        "messages": [{"role": "system", "content": system_prompt},
+                     {"role": "user", "content": user_message}],
+        "temperature": temperature, "max_tokens": max_tokens,
+    }
+    if api_base:
+        kwargs["api_base"] = api_base
+        kwargs["api_key"] = api_key
+        kwargs["custom_llm_provider"] = "openai"  # custom proxy
+
+    try:
+        t0 = time.perf_counter()
+        resp = completion(**kwargs)
+        latency = time.perf_counter() - t0
+    except Exception as e:
+        raise SUTError(f"SUT invocation failed: {e}")
+
+    usage = getattr(resp, "usage", None)
+    return {
+        "output": resp.choices[0].message.content,
+        "metadata": {
+            "sut_model_id": model_id, "mode": mode,
+            "latency_seconds": round(latency, 3),
+            "total_tokens": getattr(usage, "total_tokens", None) if usage else None,
+            "run_timestamp": datetime.now(timezone.utc).isoformat(),
+        },
+    }

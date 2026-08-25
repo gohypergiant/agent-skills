@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.3.1] - 2026-08-21
+
+### Fixed
+- **Made Purpose heading check more flexible in Preflight Task B** — Now accepts `## Overview` as equivalent to `## Purpose`
+  - Updated step 3 to check for headings in this order: `## Purpose`, `### Purpose`, `## Overview`, `### Overview` (first match wins)
+  - Treats Overview and Purpose as semantically equivalent — both describe what the capability does
+  - Updated spec writing subagent prompt (step 22) to extract from either Purpose or Overview headings
+  - Updated report collection (step 24) to accept purpose text from any of these heading types
+  - Rationale: Some specs use `## Overview` instead of `## Purpose` for the same semantic purpose. Treating them as equivalent eliminates false-negative preflight failures.
+- **Added agent-generated Purpose option** — When no Purpose/Overview heading exists, now offers three choices instead of two
+  - Option (a): Add placeholder `## Purpose` with `_Purpose not yet documented_` (quick unblock)
+  - Option (b): Pause so user can add heading themselves (best for specs needing domain expertise)
+  - Option (c): Read spec content and generate `## Purpose` heading based on what the spec describes (NEW — usually best when spec has meaningful content)
+  - Rationale: Agent-generated purpose is more practical than placeholder text and saves user time when spec already has documentation to synthesize from
+- **Clarified brand-new capability handling** — Made explicit that Purpose check only applies to capabilities with existing MAIN specs
+  - Added note to step 3: "This check applies only to capabilities that already have MAIN specs at openspec/specs/<capability>/spec.md"
+  - Brand-new capabilities (per step 4) skip Purpose check entirely since they don't have MAIN specs yet
+  - Rationale: Eliminates confusion about when Purpose check should run vs. when it's not applicable
+
+### Version
+- Bumped from 1.3.0 → 1.3.1
+
 ## [1.3.0] - 2026-07-24
 
 ### Changed

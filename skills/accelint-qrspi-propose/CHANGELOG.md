@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.8.1] - 2026-08-21
+
+### Fixed
+- **Strengthened `created_at` timestamp writing in step 31** — Added explicit step-by-step instructions to ensure timestamp is consistently written
+  - Broke down step 31 into explicit substeps: (a) read current design.md, (b) extract data, (c) write frontmatter with Edit tool, (d) verify formatting, (e) verify write succeeded, (f) handle missing data
+  - Added clear instructions for when frontmatter exists vs. needs to be created fresh
+  - Mandates using Edit tool with explicit before/after states
+  - Includes retry logic and error handling if write fails
+  - Rationale: Previous instructions showed what to write but didn't mandate how to write it, leading to inconsistent timestamp creation. Explicit tool instructions ensure `created_at` is written every time.
+- **Added prohibition against skipping `created_at`** — Enhanced NEVER Do section to explicitly forbid proceeding without timestamp
+  - Added rule: "NEVER skip writing the `created_at` timestamp — This field is required by both accelint-qrspi-apply and accelint-qrspi-archive"
+  - Clarifies that missing `created_at` breaks downstream timestamp tracking (started_at, completed_at)
+  - Rationale: Makes it clear this is a required field that must be written, not an optional convenience
+
+### Version
+- Bumped from 1.8.0 → 1.8.1
+
+## [1.8.0] - 2026-08-21
+
+### Changed
+- **Enhanced `--verbose` audit trail** — Renamed `q-and-a.md` to `trace.md` and expanded content to include initial input
+  - File renamed: `openspec/changes/<change-name>/q-and-a.md` → `openspec/changes/<change-name>/trace.md`
+  - Added initial input capture: Step 1 now stores the original ticket/feature/idea text (after flag removal) for inclusion in trace file
+  - Expanded trace structure: Now contains Initial Input section (new), Research Questions section, and Research Answers section
+  - Updated document title: "Questions and Answers Audit Trail" → "QRSPI Trace Audit Trail"
+  - Rationale: Closes the loop from "what was entered → what was asked → what was answered", providing complete traceability of the QRSPI flow from initial input through research to design
+  - Updated help text and completion messages to reference `trace.md` instead of `q-and-a.md`
+- **Added `sem impact` guidance for dependency analysis** — Research sub-agent (step 14) now includes instructions to use `sem` CLI tool when available
+  - Checks for `sem` CLI availability with `which sem`
+  - Uses `sem impact <token>` for deterministic dependency data when research questions mention specific code entities
+  - Gathers: entity definition location, dependencies, call sites/references, transitive impact
+  - Rationale: Ensures design phase has complete dependency information and won't miss references or call sites
+
+### Version
+- Bumped from 1.7.0 → 1.8.0
+
 ## [1.7.0] - 2026-08-19
 
 ### Added
