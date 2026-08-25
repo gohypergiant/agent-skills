@@ -4,7 +4,7 @@ description: "Extract explicit and implicit constraints (compliance, security, h
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Constraints Extractor
@@ -202,10 +202,11 @@ Each subagent:
      `CONFLICTING` only gets assigned during the Single Correlation Pass
      below, when two extracted findings disagree; a single-document
      subagent can't see that on its own.
-   - `evidence` — a list of citations, each with `file`, `location` (a
-     line number or range where the source has real line numbers, a
-     short section anchor otherwise), and `note` (one required sentence
-     on what that specific citation shows — this becomes the entry's
+   - `evidence` — a list of citations, each with `file` (relative path
+     from the project root, not an absolute path), `location` (a line
+     number or range where the source has real line numbers, a short
+     section anchor otherwise), and `note` (one required sentence on
+     what that specific citation shows — this becomes the entry's
      `Evidence notes` bullet for that citation, so it needs to earn its
      own line, not just restate the statement).
    - `affects` — optional list of bare tokens (rule IDs, other

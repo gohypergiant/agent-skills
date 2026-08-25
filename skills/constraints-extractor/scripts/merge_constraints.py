@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -163,6 +164,32 @@ def parse_citation(token: str) -> tuple[str, str]:
         file_part, _, location = text.rpartition(":")
         return file_part.strip(), location.strip()
     return text, ""
+
+
+def relativize_path(file_path: str, target_path: Path) -> str:
+    """Convert an absolute path to a relative path from the project root.
+
+    If the file path is already relative, return it as-is.
+    If it's absolute, try to make it relative to the directory containing
+    the target CONSTRAINTS.md file (assumed to be the project root).
+    """
+    if not file_path:
+        return file_path
+
+    file_path_obj = Path(file_path)
+
+    # If already relative, return as-is
+    if not file_path_obj.is_absolute():
+        return file_path
+
+    # Try to make relative to the target's parent directory (project root)
+    try:
+        project_root = target_path.parent.resolve()
+        relative = file_path_obj.resolve().relative_to(project_root)
+        return str(relative)
+    except (ValueError, RuntimeError):
+        # If the path is outside the project root, return the original
+        return file_path
 
 
 # ---------------------------------------------------------------------------
@@ -596,7 +623,7 @@ def _dedupe_evidence(evidence: list[EvidenceItem]) -> list[EvidenceItem]:
     return result
 
 
-def merge_findings(categories: dict[str, dict[str, Entry]], valid_findings: list[dict]) -> None:
+def merge_findings(categories: dict[str, dict[str, Entry]], valid_findings: list[dict], target_path: Path) -> None:
     # Index existing entries by (category, normalized title) for matching,
     # and track every ID in use per category so new entries never collide.
     by_title: dict[tuple[str, str], Entry] = {}
@@ -616,7 +643,7 @@ def merge_findings(categories: dict[str, dict[str, Entry]], valid_findings: list
                 Claim(
                     letter=chr(ord("A") + i),
                     statement=c.get("statement", ""),
-                    file=c.get("file", ""),
+                    file=relativize_path(c.get("file", ""), target_path),
                     location=c.get("location", ""),
                 )
                 for i, c in enumerate(finding["claims"])
@@ -636,7 +663,14 @@ def merge_findings(categories: dict[str, dict[str, Entry]], valid_findings: list
                 existing["claims"] = claims
             continue
 
-        new_evidence = [EvidenceItem(file=e["file"], location=e.get("location", ""), note=e.get("note", "")) for e in finding["evidence"]]
+        new_evidence = [
+            EvidenceItem(
+                file=relativize_path(e["file"], target_path),
+                location=e.get("location", ""),
+                note=e.get("note", "")
+            )
+            for e in finding["evidence"]
+        ]
 
         if existing is None:
             entry_id = next_id(ids_by_category[slug], slug)
@@ -832,7 +866,7 @@ def main() -> int:
         current_date = "<!-- TODO: fill in -->"
 
     categories = parse_existing(existing_text)
-    merge_findings(categories, valid_findings)
+    merge_findings(categories, valid_findings, args.target)
 
     date = args.date or current_date
     output = render(categories, date)
