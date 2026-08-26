@@ -4,14 +4,14 @@ Generates `AGENTS.md` or `CLAUDE.md` files through an interactive interview. The
 
 ## What it does
 
-The skill runs a conversational interview covering agent role, communication preferences, workflow procedures, and guardrails. It tries to infer answers from your codebase (commit conventions from commitlint.config.ts, pre-commit checks from Husky hooks) before asking questions.
+The skill runs a conversational interview covering agent behavior, communication preferences, workflow procedures, and guardrails. It tries to infer answers from your codebase (commit conventions from commitlint.config.ts, pre-commit checks from Husky hooks) before asking questions.
 
 Three modes:
 - Create — New file from scratch
 - Import — Work with existing content that does not match the template through restructure, append, or dry-run paths
 - Refresh — Update a file that matches the expected structure through targeted refresh or full refresh paths
 
-The output is *behavior* only. Stack details, architecture patterns, and coding standards belong in `openspec/config.yaml`, not here.
+The output is the agent behavior layer only. Project DNA, system structure, constraints, assumptions, and internal terminology belong in canonical companion documents such as `openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, `CONSTRAINTS.md`, `EPISTEMIC-MAP.md`, and `JARGON.md`, not in `AGENTS.md` or `CLAUDE.md`.
 
 ## When to use it
 
@@ -207,4 +207,4 @@ Changes in 1.5.0:
 - `accelint-architecture-doc` — Creates architecture documentation
 - `init` — Quick CLAUDE.md setup without the interview
 
-Use this skill when you want the full structured interview. Use `/init` when you just need something basic.
+Use this skill when you want the full structured interview. Use `init` when you just need something basic.

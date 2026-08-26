@@ -454,7 +454,7 @@ Ask only for material that belongs in the template. Do not invent extra AGENTS.m
 
 Use Smart Defaults only after the relevant template fields have been gathered or strongly inferred. Surface them as confirmation prompts, not as standing policy. If repository evidence or direct user answers already settle a default, do not ask about it again.
 
-Treat defaults as fallback prompts, not standing policy. Defaults must yield to stronger repository evidence, direct user answers, the canonical template, and still-consistent existing guidance.
+Treat defaults as fallback prompts, not standing policy. Defaults yield to stronger repository evidence, direct user answers, the canonical template, and still-consistent existing guidance.
 
 **Turborepo + PNPM monorepo → suggest confirming:**
 - "I'll assume you want `pnpm -w` (workspace root) for adding shared deps and `pnpm --filter <pkg>` for package-scoped deps; correct?"
@@ -478,9 +478,9 @@ Treat defaults as fallback prompts, not standing policy. Defaults must yield to 
 
 Enter this step only after the mode-specific interview work above is complete, and only for sections that still have unresolved behavioral gaps. Skip this step when the chosen path already has enough confirmed information and no remaining unresolved sections require inference.
 
-After the interview, audit every canonical template section and required template field defined in `./assets/template.md` that still has no answer, including `## Quality bar for finished work`, `## Related Documentation`, and `## Maintenance guidance` where applicable. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before you ask again or leave a `<!-- TODO: fill in -->`. A behavioral file with explicit TODOs is actionable. A file with missing required template sections silently shapes agent behavior in unpredictable ways.
+After the interview, audit every canonical template section and required template field from `./assets/template.md` that still has no answer, including `## Quality bar for finished work`, `## Related Documentation`, and `## Maintenance guidance` where applicable. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before you ask again or leave a `<!-- TODO: fill in -->`. A behavioral file with explicit TODOs is actionable. A file with missing required template sections silently shapes agent behavior in unpredictable ways.
 
-Discovery fills behavioral gaps. It does not maximize output surface area. Gather broadly when needed, but carry forward only findings that survive the final inclusion rule.
+Discovery fills behavioral gaps. It does not maximize output surface area. Gather broadly when needed, but carry forward only findings that pass the final inclusion rule.
 
 Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses on one behavioral domain and returns structured findings. Wait for all agents to complete. Then merge the results before Preview and Write.
 
@@ -573,7 +573,7 @@ Only after the review gate is satisfied, write to `AGENTS.md` or `CLAUDE.md` in 
 
 Those comments are for review only and must not appear in the final file.
 
-For the `## Related Documentation` section, include links only for files that exist in the repository and materially help agent behavior. Check each candidate file before including its link. Adapt or remove the template's illustrative bullets (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `openspec/config.yaml`, `JARGON.md`, and any other canonical doc placeholder) based on actual repository files. If both `openspec/config.yml` and `openspec/config.yaml` are absent, do not include either path.
+For the `## Related Documentation` section, include links only for files that exist in the repository and materially help agent behavior. Check each candidate file before you include its link. Adapt or remove the template's illustrative bullets (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `openspec/config.yaml`, `JARGON.md`, and any other canonical doc placeholder) based on actual repository files. If both `openspec/config.yml` and `openspec/config.yaml` are absent, do not include either path.
 
 Done when: the confirmed file is written without review-only comments.
 
@@ -621,7 +621,7 @@ Before you consider the onboarding complete, verify that the generated file:
 - **Iterative.** Let the user amend answers before the final write.
 - **Preview before writing.** Always show the full generated `AGENTS.md` or `CLAUDE.md` and get explicit confirmation before touching the filesystem.
 - **Infer before asking, ask before omitting.** A file with explicit TODOs is actionable. A file with missing sections silently shapes agent behavior in unpredictable ways.
-- **Proportionality matters.** Use the lightest workflow that still produces a reliable result. Narrow refreshes should stay narrow unless they expose wider drift.
+- **Proportionality matters.** Use the lightest workflow that still produces a reliable result. Keep narrow refreshes narrow unless they expose wider drift.
 - **Do not cross the layer boundary.** If the user volunteers stack facts during this interview, acknowledge them and note they belong in `openspec/config.yml` or `openspec/config.yaml`, not `AGENTS.md` or `CLAUDE.md`. Offer to run the `accelint-onboard-openspec` skill for that content.
 - **Monorepo: reference, do not duplicate.** If a root-level `AGENTS.md` or `CLAUDE.md` exists, package-level files should reference it and add only what is specific to that package. Repeated instructions across root and package files inflate context on every agent invocation, so keep package files additive, not redundant.
 - **Synthesize, then preview.** The user should review the cleaned final draft, not raw assembled notes.
