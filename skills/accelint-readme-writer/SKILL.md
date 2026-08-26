@@ -204,8 +204,8 @@ If `accelint-english-manager` is available, invoke it with this exact prompt sha
 I do not want a report, just apply the new content to the output directly.</args>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-english-manager" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("accelint-english-manager") and the args content shown above.
 ```
 
 Use the rewritten content as the final README output. Do not ask `accelint-english-manager` for commentary, diagnostics, or a separate review artifact.
@@ -247,8 +247,8 @@ When it is available, call it in strict mode with this exact prompt shape:
 I do not want a report, just apply the new content to the output directly.</args>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-english-manager" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("accelint-english-manager") and the args content shown above.
 ```
 
 Documentation should sound like it was written by someone who genuinely wants to help. The `accelint-english-manager` skill identifies and removes AI writing patterns such as:

@@ -87,8 +87,8 @@ findings:
   </args>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("accelint-architecture-doc") and the args content shown above.
 ```
 
 The writer skill merges this with its own codebase scan before presenting anything to the human — same Mode 3 Refresh path a manual run would take. Nothing about invoking it here is special-cased for this skill. This interface is used for decision-drift and structural-coupling findings only — index reconciliation findings (Step 4) never route through it, since a stale `specs/INDEX.md` row isn't a hub-doc content gap; see Step 8 for what happens to those instead.
@@ -511,8 +511,8 @@ findings:
   </args>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("accelint-architecture-doc") and the args content shown above.
 
 ✓ Finding 2 confirmed.
 ✓ specs/INDEX.md: cache/layer row patched — related: [cli-core] →
@@ -532,8 +532,8 @@ findings:
   </args>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("accelint-architecture-doc") and the args content shown above.
 
 Appending checkpoint to openspec/changes/archive/SYNTHESIS-LOG.md...
 

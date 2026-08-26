@@ -58,10 +58,10 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
    openspec list --json
    ```
    Parse the JSON and use **AskUserQuestion** to let the user select the change
-4. Announce: "Applying change: `<name>`" and how to override (e.g., re-invoke with different name)
+4. Announce: "Applying change: `[name]`" and how to override (e.g., re-invoke with different name)
 5. Check that tasks.md exists:
    ```bash
-   openspec status --change "<name>" --json
+   openspec status --change "[name]" --json
    ```
    If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `opsx:continue` to generate tasks before applying."
 
@@ -69,7 +69,7 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 
 **Goal**: Mark when implementation begins for telemetry tracking.
 
-6. Read the design.md file from `openspec/changes/<change-name>/design.md` to check if `started_at` timestamp exists in frontmatter
+6. Read the design.md file from `openspec/changes/[change-name]/design.md` to check if `started_at` timestamp exists in frontmatter
 
 7. If `started_at` is NOT present in the frontmatter (first time applying this change):
    - Add the `started_at` timestamp to the frontmatter using ISO 8601 format
@@ -85,15 +85,15 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 **Example frontmatter after adding started_at:**
 ```yaml
 ---
-change: <change-name>
+change: [change-name]
 created_at: "2026-08-17T15:00:00.000Z"
 started_at: "2026-08-17T16:30:00.000Z"
 specs_touched: [capability-a, capability-b]
 decisions:
   - id: D1
-    choice: <decision>
-    rationale: <why>
-    alternatives: [<option>]
+    choice: [decision]
+    rationale: [why]
+    alternatives: [[option]]
 ---
 ```
 
@@ -103,7 +103,7 @@ decisions:
 
 **Goal**: Extract task structure and identify parallel vs sequential execution opportunities. Detect if work has already started and resume from the correct level.
 
-9. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
+9. Read the tasks.md file from `openspec/changes/[change-name]/tasks.md`
 
 10. **Validate checklist format** (CRITICAL for progress tracking):
    - Check that tasks use markdown checklist format: `- [ ] task` or `- [x] task`
@@ -228,14 +228,14 @@ rules:
 
 ### Execute Tasks (Sequential + Parallel)
 
-**Goal**: Implement tasks following the dependency graph, spawning parallel sub-agents where possible.
+**Goal**: Implement tasks following the dependency graph, spawning parallel sub-agents where possible using the Agent tool.
 
 **Sequential execution** (when tasks have dependencies):
 
 For each level in the dependency graph (starting from level 0):
 
 21. If the level has only one slice:
-   - Spawn a single sub-agent with this prompt (inject project context loaded in step 16):
+   - Use the Agent tool to spawn a single sub-agent with this prompt (inject project context loaded in step 16):
      ```
      <project_context>
      <!-- Background constraints for your implementation. Do NOT copy into code. -->
@@ -244,11 +244,12 @@ For each level in the dependency graph (starting from level 0):
 
      <skill_invocation>
        <skill>openspec-apply-change</skill>
-       <args><change-name></args>
+       <args>[change-name]</args>
      </skill_invocation>
 
-     IMPORTANT: This is a skill invocation directive, NOT a shell command.
-     Execute the internal skill "openspec-apply-change" — do not attempt to run this as a terminal command.
+     IMPORTANT: Pass this entire block (including the <skill_invocation> XML tags) as literal text
+     in the sub-agent's prompt. The sub-agent will interpret the XML directive and use the Skill
+     tool internally to pass the skill name ("openspec-apply-change"") and any args.
 
      CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
      DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
@@ -283,7 +284,7 @@ For each level in the dependency graph (starting from level 0):
 
 For each level with multiple independent slices:
 
-23. Spawn all sub-agents in parallel in a single turn (one per slice, inject project context from earlier steps):
+23. Use the Agent tool to spawn all sub-agents in parallel in a single turn (one per slice, inject project context from earlier steps):
    ```
    <project_context>
    <!-- Background constraints for your implementation. Do NOT copy into code. -->
@@ -292,11 +293,12 @@ For each level with multiple independent slices:
 
    <skill_invocation>
      <skill>openspec-apply-change</skill>
-     <args><change-name></args>
+     <args>[change-name]</args>
    </skill_invocation>
 
-   IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "openspec-apply-change" — do not attempt to run this as a terminal command.
+   IMPORTANT: Pass this entire block (including the <skill_invocation> XML tags) as literal text
+   in the sub-agent's prompt. The sub-agent will interpret the XML directive and use the Skill tool
+   internally to pass the skill name ("openspec-apply-change") and any args.
 
    CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
    DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
@@ -358,8 +360,8 @@ For each level with multiple independent slices:
 
 **Slice targeting approach**: OpenSpec's `opsx:apply` skill does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
 
-1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `opsx:apply <change-name>`, which:
-   - Runs `openspec instructions apply --change "<name>" --json` to get context
+1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `opsx:apply [change-name]`, which:
+   - Runs `openspec instructions apply --change "[name]" --json` to get context
    - Loads all context files (proposal, design, specs, tasks)
    - Provides dynamic instructions based on current state
    - Handles task progress tracking and status checks
@@ -400,23 +402,23 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
    **Step 3a: Check if update is needed first**
    - Read the change artifacts to understand what was implemented:
-     * `openspec/changes/<change-name>/proposal.md`
-     * `openspec/changes/<change-name>/design.md`
+     * `openspec/changes/[change-name]/proposal.md`
+     * `openspec/changes/[change-name]/design.md`
    - Assess whether this change introduces content that would affect the document
    - If the change is trivial (typos, comments) or doesn't touch the document's scope, skip to the next document
 
    **Step 3b: Update the document if needed**
 
-   **For OpenSpec config** (`<repo-root>/openspec/config.yaml`):
+   **For OpenSpec config** (`[repo-root]/openspec/config.yaml`):
    - Check if `accelint-onboard-openspec` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
      <skill_invocation>
        <skill>accelint-onboard-openspec</skill>
-       <args>We have just completed the change spec openspec/changes/<change-name>.
+       <args>We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact, e.g., "config.yaml's Anti-Patterns section says to avoid polling, but this change chose polling for stated reasons"]
@@ -424,14 +426,14 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      ...</args>
      </skill_invocation>
 
-     IMPORTANT: This is a skill invocation directive, NOT a shell command.
-     Execute the internal skill "accelint-onboard-openspec" — do not attempt to run this as a terminal command.
+     IMPORTANT: Use the Skill tool to invoke this skill directly.
+     Pass the skill name ("accelint-onboard-openspec") and any args.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
-     - `openspec/changes/<change-name>/proposal.md`
-     - `openspec/changes/<change-name>/design.md`
+     - `openspec/changes/[change-name]/proposal.md`
+     - `openspec/changes/[change-name]/design.md`
 
      Then read `openspec/config.yaml` and update manually focusing on **project DNA (WHAT the project is)**:
      - **Tech Stack section**: Add new dependencies, frameworks, or libraries introduced by this change with versions
@@ -442,16 +444,16 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - **Per-artifact rules** (`rules:` section): Update if this change affects proposal/design/tasks/spec requirements
      - **DO NOT** add agent behavior (commit conventions, workflow steps, tool preferences belong in AGENTS.md)
 
-   **For ARCHITECTURE.md** (`<repo-root>/ARCHITECTURE.md`) — IF it exists:
+   **For ARCHITECTURE.md** (`[repo-root]/ARCHITECTURE.md`) — IF it exists:
    - Check if `accelint-architecture-doc` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
      <skill_invocation>
        <skill>accelint-architecture-doc</skill>
-       <args>We have just completed the change spec openspec/changes/<change-name>.
+       <args>We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact]
@@ -459,14 +461,14 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      ...</args>
      </skill_invocation>
 
-     IMPORTANT: This is a skill invocation directive, NOT a shell command.
-     Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
+     IMPORTANT: Use the Skill tool to invoke this skill directly.
+     Pass the skill name ("accelint-architecture-doc") and any args.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
-     - `openspec/changes/<change-name>/proposal.md`
-     - `openspec/changes/<change-name>/design.md`
+     - `openspec/changes/[change-name]/proposal.md`
+     - `openspec/changes/[change-name]/design.md`
 
      Then read `ARCHITECTURE.md` and update manually focusing on **system structure (HOW components relate)**:
      - **Section 1 (Project Structure)**: Update directory tree if new top-level directories or significant reorganization occurred
@@ -478,16 +480,16 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - **Section 8 (Technology Stack)**: Update if this change introduced new runtime dependencies or frameworks
      - **DO NOT** add coding patterns, testing conventions, or agent behavior (those belong in config.yaml or AGENTS.md)
 
-   **For AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
+   **For AGENTS.md** (`[repo-root]/AGENTS.md`) — IF it exists:
    - Check if `accelint-onboard-agent` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
      <skill_invocation>
        <skill>accelint-onboard-agent</skill>
-       <args>We have just completed the change spec openspec/changes/<change-name>.
+       <args>We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact]
@@ -495,14 +497,14 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      ...</args>
      </skill_invocation>
 
-     IMPORTANT: This is a skill invocation directive, NOT a shell command.
-     Execute the internal skill "accelint-onboard-agent" — do not attempt to run this as a terminal command.
+     IMPORTANT: Use the Skill tool to invoke this skill directly.
+     Pass the skill name ("accelint-onboard-agent") and any args.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
-     - `openspec/changes/<change-name>/proposal.md`
-     - `openspec/changes/<change-name>/design.md`
+     - `openspec/changes/[change-name]/proposal.md`
+     - `openspec/changes/[change-name]/design.md`
 
      Then read `AGENTS.md` and update manually focusing on **agent behavior (HOW agents should act)**:
      - **Workflow Procedures section**: Update if this change introduces new workflow steps (e.g., new pre-commit checks, new PR requirements)
@@ -513,16 +515,16 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - **Commit Messages section**: Update if commit convention changed
      - **DO NOT** add tech stack facts, domain concepts, or coding patterns (those belong in config.yaml)
 
-   **For README.md** (`<repo-root>/README.md`) — IF it exists:
+   **For README.md** (`[repo-root]/README.md`) — IF it exists:
    - Check if `accelint-readme-writer` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```
      <skill_invocation>
        <skill>accelint-readme-writer</skill>
-       <args>We have just completed the change spec openspec/changes/<change-name>.
+       <args>We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact]
@@ -530,14 +532,14 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      ...</args>
      </skill_invocation>
 
-     IMPORTANT: This is a skill invocation directive, NOT a shell command.
-     Execute the internal skill "accelint-readme-writer" — do not attempt to run this as a terminal command.
+     IMPORTANT: Use the Skill tool to invoke this skill directly.
+     Pass the skill name ("accelint-readme-writer") and any args.
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
-     - `openspec/changes/<change-name>/proposal.md`
-     - `openspec/changes/<change-name>/design.md`
+     - `openspec/changes/[change-name]/proposal.md`
+     - `openspec/changes/[change-name]/design.md`
 
      Then read `README.md` and update manually focusing on **user-facing documentation**:
      - **Installation section**: Update commands if new dependencies or setup steps were added
@@ -600,7 +602,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
 **IMPORTANT**: This step runs immediately after living document updates and before verification. Do not wait for user input.
 
-33. Read the design.md file from `openspec/changes/<change-name>/design.md`
+33. Read the design.md file from `openspec/changes/[change-name]/design.md`
 
 34. Add the `completed_at` timestamp to the frontmatter using ISO 8601 format:
    - Use current timestamp: `new Date().toISOString()` (e.g., "2026-08-17T17:45:00.000Z")
@@ -613,16 +615,16 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 **Example frontmatter after adding completed_at:**
 ```yaml
 ---
-change: <change-name>
+change: [change-name]
 created_at: "2026-08-17T15:00:00.000Z"
 started_at: "2026-08-17T16:30:00.000Z"
 completed_at: "2026-08-17T17:45:00.000Z"
 specs_touched: [capability-a, capability-b]
 decisions:
   - id: D1
-    choice: <decision>
-    rationale: <why>
-    alternatives: [<option>]
+    choice: [decision]
+    rationale: [why]
+    alternatives: [[option]]
 ---
 ```
 
@@ -640,11 +642,11 @@ decisions:
    ```
    <skill_invocation>
      <skill>openspec-verify-change</skill>
-     <args><change-name></args>
+     <args>[change-name]</args>
    </skill_invocation>
 
-   IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "openspec-verify-change" — do not attempt to run this as a terminal command.
+   IMPORTANT: Use the Skill tool to invoke this skill directly.
+   Pass the skill name ("openspec-verify-change") and any args.
    ```
 
 37. The verify command will:
@@ -873,7 +875,7 @@ After verification completes, generate a structured diff summary for the user. T
 
 41. Run `git diff` to capture all changes made during this implementation
 
-42. Parse the archived change spec from `openspec/archive/<change-name>/` to understand the change's scope
+42. Parse the archived change spec from `openspec/archive/[change-name]/` to understand the change's scope
 
 43. Generate a structured token-level change list following this exact format:
 

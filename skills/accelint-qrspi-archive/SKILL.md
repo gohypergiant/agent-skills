@@ -1,6 +1,6 @@
 ---
 name: accelint-qrspi-archive
-description: Archive an OpenSpec change end-to-end. This skill invokes opsx:archive or opsx:bulk-archive itself to perform the native merge, then immediately follows up with the cross-capability linking and running indices OpenSpec doesn't build on its own — linking every capability a change touched via a shared `related:` frontmatter list, keeping `openspec/specs/INDEX.md` current, and appending a row to `openspec/changes/archive/INDEX.md`. Use this skill whenever the user wants to archive a change, says "archive this change", "bulk archive these changes", "run opsx:archive", "run opsx:bulk-archive", "update the specs index", "cross-link the specs", or wants the archived-change changelog kept current. This skill is purely additive on the linking side — it never prunes a `related:` entry and never changes a change's `Status` column after the initial write; that pruning/synthesis work belongs to `accelint-archive-synthesis`.
+description: Archive an OpenSpec change end-to-end. This skill invokes openspec-archive or openspec-bulk-archive itself to perform the native merge, then immediately follows up with the cross-capability linking and running indices OpenSpec doesn't build on its own — linking every capability a change touched via a shared `related:` frontmatter list, keeping `openspec/specs/INDEX.md` current, and appending a row to `openspec/changes/archive/INDEX.md`. Use this skill whenever the user wants to archive a change, says "archive this change", "bulk archive these changes", "run openspec-archive", "run openspec-bulk-archive", "update the specs index", "cross-link the specs", or wants the archived-change changelog kept current. This skill is purely additive on the linking side — it never prunes a `related:` entry and never changes a change's `Status` column after the initial write; that pruning/synthesis work belongs to `accelint-archive-synthesis`.
 license: Apache-2.0
 compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
 metadata:
@@ -10,13 +10,13 @@ metadata:
 
 # Accelint QRSPI Archive
 
-Archive an OpenSpec change and follow it with the cross-capability linking and index bookkeeping OpenSpec doesn't do on its own. This skill invokes opsx:archive or opsx:bulk-archive itself — it's the entry point for archiving a change, not a step that reacts after someone has already archived one — waits for the merge to fully resolve, and then links every pair of capabilities the change touched via a shared `related:` frontmatter list, keeps a single running index of all specs up to date, and appends to an append-only changelog of every archived change.
+Archive an OpenSpec change and follow it with the cross-capability linking and index bookkeeping OpenSpec doesn't do on its own. This skill invokes openspec-archive or openspec-bulk-archive itself — it's the entry point for archiving a change, not a step that reacts after someone has already archived one — waits for the merge to fully resolve, and then links every pair of capabilities the change touched via a shared `related:` frontmatter list, keeps a single running index of all specs up to date, and appends to an append-only changelog of every archived change.
 
-Cross-linking has to happen after the merge resolves, not before it, which is exactly why this skill runs the native command itself as its own first phase rather than treating "a merge happened" as some external event to watch for. A delta spec in `openspec/changes/<slug>/specs/` is still provisional — opsx:bulk-archive may resolve conflicts across several changes in chronological order before a capability's spec reaches its final shape. Only the merged, archived spec is worth indexing; anything computed earlier would be linking against content that might still change underneath it.
+Cross-linking has to happen after the merge resolves, not before it, which is exactly why this skill runs the native command itself as its own first phase rather than treating "a merge happened" as some external event to watch for. A delta spec in `openspec/changes/[slug]/specs/` is still provisional — openspec-bulk-archive may resolve conflicts across several changes in chronological order before a capability's spec reaches its final shape. Only the merged, archived spec is worth indexing; anything computed earlier would be linking against content that might still change underneath it.
 
 ## What This Skill Does
 
-**Automates**: the full archive operation for one or more OpenSpec changes in a single invocation — invoking opsx:archive or opsx:bulk-archive itself, then immediately following up with cross-capability linking and index maintenance.
+**Automates**: the full archive operation for one or more OpenSpec changes in a single invocation — invoking openspec-archive or openspec-bulk-archive itself, then immediately following up with cross-capability linking and index maintenance.
 **Scope**: everything from "archive this change" through updated indices. This skill calls the native command itself during archive and extraction; it does not wait for the merge to have happened some other way first.
 **Output**: the change(s) archived via OpenSpec's own merge, plus updated `related:` frontmatter and a regenerated `## Related Specs` section on every touched spec, an updated `openspec/specs/INDEX.md` (patched for the capabilities this batch touched, or built fresh project-wide the first time the file doesn't exist yet), and one appended row per archived change in `openspec/changes/archive/INDEX.md`.
 **Does NOT**: implement the merge or conflict-resolution logic itself (that's OpenSpec's own, which this skill invokes via the native command rather than reimplementing), prune any `related:` entry, change a change's `Status` column after its initial write, reorder existing changelog rows, or shell out to the OpenSpec CLI to read local spec files (plain file reads are sufficient — see Explicitly Out of Scope).
@@ -25,8 +25,8 @@ Cross-linking has to happen after the merge resolves, not before it, which is ex
 
 - OpenSpec CLI installed and initialized, with one or more changes ready to archive.
 - Sub-agent support, for per-capability spec writes only — those always run as subagents, unconditionally, and this is a hard requirement for normal operation there, not an optional speedup for large batches (see Error Handling for the degraded fallback if unavailable). Archive and extraction never uses a subagent, regardless of whether sub-agent support exists — see the Archive and Extract section for why.
-- Each change's `openspec/changes/<slug>/design.md` has YAML frontmatter including `specs_touched` (a non-empty list of capability names) and `decisions` (a list of `{id, choice, rationale, alternatives}` entries).
-- Every capability named in any `specs_touched` list already has `openspec/specs/<capability>/spec.md` with a `## Purpose` or `### Purpose` heading in its body — this skill reads that heading rather than duplicating purpose text into frontmatter, and rewriting the correct behavior depends on that heading actually being there (verified in preflight checks, Task B).
+- Each change's `openspec/changes/[slug]/design.md` has YAML frontmatter including `specs_touched` (a non-empty list of capability names) and `decisions` (a list of `{id, choice, rationale, alternatives}` entries).
+- Every capability named in any `specs_touched` list already has `openspec/specs/[capability]/spec.md` with a `## Purpose` or `### Purpose` heading in its body — this skill reads that heading rather than duplicating purpose text into frontmatter, and rewriting the correct behavior depends on that heading actually being there (verified in preflight checks, Task B).
 
 If any of these are missing, report the gap and guide the user to resolve it before proceeding — do not silently substitute a guessed default for a missing field. This applies as-is to spec writing's sub-agent support and a touched spec's missing `## Purpose` or `### Purpose` heading. A change's missing `specs_touched`/`decisions` frontmatter is handled differently: preflight Task A derives a candidate from the change's own files and gets the author's explicit confirmation before writing it, rather than stopping outright — see Task A below for why a hard stop isn't actually necessary here, and why it still isn't a silent guess.
 
@@ -38,7 +38,7 @@ If any of these are missing, report the gap and guide the user to resolve it bef
 ├────────────────────────────────────────────────────────────────────────┤
 │  0 Preflight        Verify frontmatter + Purpose         Go / no-go    │
 │                     headings before touching anything                  │
-│  1 Archive+Extract  Run opsx:archive or opsx:bulk-         Change     │
+│  1 Archive+Extract  Run openspec-archive or openspec-bulk-  Change     │
 │                     archive yourself, in this context      records     │
 │                     (never a subagent); stay with any                  │
 │                     internal sync branch until archive's               │
@@ -61,7 +61,7 @@ If any of these are missing, report the gap and guide the user to resolve it bef
 │  7 Report           Summarize what changed                 Summary     │
 └────────────────────────────────────────────────────────────────────────┘
 
-Critical: for opsx:bulk-archive, validation through reporting run exactly ONCE, after every
+Critical: for openspec-bulk-archive, validation through reporting run exactly ONCE, after every
 merge in the batch has resolved — never once per intermediate merge. Running
 early would compute pairs against a specs_touched set that hasn't finished
 accumulating cross-change conflicts, and would patch INDEX.md against a
@@ -74,9 +74,9 @@ out of the parent's context on every run, the same pattern
 accelint-qrspi-propose and accelint-qrspi-apply use.
 
 Archive and extraction is the mirror image: it never delegates to a subagent, regardless of
-batch size or whether sub-agent support is even available. opsx:archive and
-opsx:bulk-archive are themselves agent-driven, multi-step skills — not a
-single deterministic CLI call — and a subagent handed instructions to run opsx:archive
+batch size or whether sub-agent support is even available. openspec-archive and
+openspec-bulk-archive are themselves agent-driven, multi-step skills — not a
+single deterministic CLI call — and a subagent handed instructions to run openspec-archive
 has no reliable way to resume that skill's own remaining steps once it
 branches internally into something like a separate sync skill, and no way
 to surface an interactive prompt back to the user if one comes up. Both of
@@ -92,9 +92,9 @@ Execute these steps in order without stopping between them unless an error occur
 
 Goal: confirm the archive operation's inputs are shaped correctly before touching any spec or index file. Task A is a narrow exception: once the author confirms a derived `specs_touched`/`decisions` candidate, it writes that back into `design.md` — that's filling in an input step 7 expects to already be there.
 
-1. Determine scope: a single-change archive (opsx:archive with a change name) or a bulk archive (opsx:bulk-archive) spanning several pending changes.
+1. Determine scope: a single-change archive (openspec-archive with a change name) or a bulk archive (openspec-bulk-archive) spanning several pending changes.
 
-2. **Verification Task A — design.md frontmatter.** For every change about to be archived, read `openspec/changes/<slug>/design.md` and confirm its frontmatter contains a non-empty `specs_touched` list and a `decisions` list where each entry has at least `id` and `choice`:
+2. **Verification Task A — design.md frontmatter.** For every change about to be archived, read `openspec/changes/[slug]/design.md` and confirm its frontmatter contains a non-empty `specs_touched` list and a `decisions` list where each entry has at least `id` and `choice`:
 
    ```yaml
    ---
@@ -112,31 +112,31 @@ Goal: confirm the archive operation's inputs are shaped correctly before touchin
 
    If frontmatter is missing or malformed for a change, this skill still does not silently substitute a guessed value — the change's author has to make that call explicitly, not this skill. But a hard stop with no path forward isn't the only way to get that explicit confirmation, and most of the time the missing field is recoverable from material the change's own author already wrote:
 
-   - **Derive a candidate.** For `specs_touched`, look at the change's `proposal.md` capability declarations and the delta spec directories under `openspec/changes/<slug>/specs/`. For `decisions`, look at any Decisions section in `proposal.md` or decision prose already present in `design.md`.
+   - **Derive a candidate.** For `specs_touched`, look at the change's `proposal.md` capability declarations and the delta spec directories under `openspec/changes/[slug]/specs/`. For `decisions`, look at any Decisions section in `proposal.md` or decision prose already present in `design.md`.
    - **Present it for confirmation — don't write it yet.** Show the derived candidate to the user and ask them to (a) confirm it as written, (b) edit it first, or (c) pause so they can fix `design.md` themselves and re-invoke this skill later. Only once the user picks (a) or (b) does the candidate become the value this skill writes into `design.md`'s frontmatter — at that point it's the same explicit author confirmation the well-formed case gets for free, just captured one step later than at propose time.
    - **Stop outright, with no candidate offered**, only when there's nothing in the change's own files to derive from — e.g. an empty delta specs directory and no capability declarations anywhere in `proposal.md`. In that case, report exactly which change and which field is missing, the same as before.
 
    This is evaluated per change in a bulk-archive batch — one change needing confirmation doesn't block preflight for the others.
 
-3. **Verification Task B — Purpose heading convention.** For every capability named across all `specs_touched` lists in this batch, check whether `openspec/specs/<capability>/spec.md` contains a heading that describes its purpose:
-   
+3. **Verification Task B — Purpose heading convention.** For every capability named across all `specs_touched` lists in this batch, check whether `openspec/specs/[capability]/spec.md` contains a heading that describes its purpose:
+
    **Acceptable headings (check in this order, first match wins):**
    - `## Purpose` or `### Purpose`
    - `## Overview` or `### Overview`
-   
+
    Treat Overview and Purpose as semantically equivalent — both describe what the capability does and why it exists, which is what index updates and spec writing need.
-   
+
    **If none of these headings exist:**
    Ask the user how to handle it:
    - (a) Add a placeholder `## Purpose` heading with text `_Purpose not yet documented_` for now
    - (b) Pause so they can add the heading themselves first
    - (c) Read the spec content and generate a `## Purpose` heading based on what the spec describes
-   
-   Option (c) is usually best when the spec has meaningful content — the agent can synthesize a purpose statement from what's already documented. Option (b) is better for specs that are stubs or need domain expertise to describe accurately. Option (a) is a last resort when you need to unblock immediately but will need to come back and fix it later.
-   
-   **Note:** This check applies only to capabilities that already have MAIN specs at `openspec/specs/<capability>/spec.md`. Brand-new capabilities (per step 4) don't have MAIN specs yet, so skip this check for them — they'll get their Purpose heading when their spec is created during archive.
 
-4. For any capability in `specs_touched` that has no `openspec/specs/<capability>/` directory yet — a brand-new capability introduced by this change — note it separately. Step 19 will need to create its `spec.md` frontmatter from scratch rather than editing an existing file, and step 20's Purpose column will need the user to supply a value manually since nothing exists yet to read.
+   Option (c) is usually best when the spec has meaningful content — the agent can synthesize a purpose statement from what's already documented. Option (b) is better for specs that are stubs or need domain expertise to describe accurately. Option (a) is a last resort when you need to unblock immediately but will need to come back and fix it later.
+
+   **Note:** This check applies only to capabilities that already have MAIN specs at `openspec/specs/[capability]/spec.md`. Brand-new capabilities (per step 4) don't have MAIN specs yet, so skip this check for them — they'll get their Purpose heading when their spec is created during archive.
+
+4. For any capability in `specs_touched` that has no `openspec/specs/[capability]/` directory yet — a brand-new capability introduced by this change — note it separately. Step 19 will need to create its `spec.md` frontmatter from scratch rather than editing an existing file, and step 20's Purpose column will need the user to supply a value manually since nothing exists yet to read.
 
 5. Report the preflight summary before proceeding: changes in scope, capabilities touched, and any Task A or Task B outcomes. If Task A ends in a stop for any change — the user chose to pause and fix `design.md` themselves, or no candidate could be derived at all — do not proceed to step 6 for that change. A Task A candidate the user confirmed counts as passing, the same as frontmatter that was already well-formed. If Task B fails for some capability, that's fine to resolve later — steps 6-17 don't touch spec bodies, so only flag it as blocking once step 18 is about to reach that capability.
 
@@ -146,14 +146,14 @@ Goal: confirm the archive operation's inputs are shaped correctly before touchin
 
 This step never runs as a subagent, regardless of batch size and regardless of whether sub-agent support is available at all. That's a reversal of this skill's `1.0.0` behavior, made after running into two concrete failure modes in practice:
 
-- **opsx:archive and opsx:bulk-archive are agent-driven skills, not a single deterministic CLI call.** They read project state, decide what needs syncing, and — when a sync is needed — hand off internally to a separate sync skill before returning to finish the rest of the archive workflow (merging delta specs, moving the change into `openspec/changes/archive/`). A subagent given instructions to run opsx:archive has no reliable way to tell "I finished the sync skill this archive step referred me to" apart from "I finished the thing I was actually asked to do" — there's no caller to check back with mid-task. In practice this showed up exactly that way: the subagent ran the sync step, considered its job done, and returned control without ever reaching the merge. Running archive directly in this context means the same agent that issued the instruction is the one watching it branch into sync, so it can recognize the branch for what it is and carry on to archive's remaining steps once sync finishes — the same continuity a person would have running the command themselves.
-- **A subagent can't surface an interactive prompt to the user.** opsx:archive and opsx:bulk-archive may raise more than the routine sync y/n — opsx:bulk-archive in particular can prompt for confirmation before merging changes that touch overlapping specs (see step 2 below). A subagent that hits a prompt like that is stuck: it can't hand the question to the user and get a real answer, and guessing on the user's behalf is worse than not proceeding. Running archive inline means any such prompt lands in the same conversation the user is already in.
+- **openspec-archive and openspec-bulk-archive are agent-driven skills, not a single deterministic CLI call.** They read project state, decide what needs syncing, and — when a sync is needed — hand off internally to a separate sync skill before returning to finish the rest of the archive workflow (merging delta specs, moving the change into `openspec/changes/archive/`). A subagent given instructions to run openspec-archive has no reliable way to tell "I finished the sync skill this archive step referred me to" apart from "I finished the thing I was actually asked to do" — there's no caller to check back with mid-task. In practice this showed up exactly that way: the subagent ran the sync step, considered its job done, and returned control without ever reaching the merge. Running archive directly in this context means the same agent that issued the instruction is the one watching it branch into sync, so it can recognize the branch for what it is and carry on to archive's remaining steps once sync finishes — the same continuity a person would have running the command themselves.
+- **A subagent can't surface an interactive prompt to the user.** openspec-archive and openspec-bulk-archive may raise more than the routine sync y/n — openspec-bulk-archive in particular can prompt for confirmation before merging changes that touch overlapping specs (see step 2 below). A subagent that hits a prompt like that is stuck: it can't hand the question to the user and get a real answer, and guessing on the user's behalf is worse than not proceeding. Running archive inline means any such prompt lands in the same conversation the user is already in.
 
-This does give something up: opsx:archive's own internal work — comparing delta specs against main specs, resolving bulk-archive's cross-change ordering — now happens directly in this context instead of being absorbed by an isolated subagent, so more of it enters context than the `1.0.0` design intended. That's an accepted cost of correctness over context economy, not an oversight; spec writing still isolates its own, typically larger, per-capability file content in a subagent exactly as before, so this cost is confined to the archive step's own scope. Do **not** work around this by shelling out to `openspec archive`/`openspec bulk-archive` directly instead of the opsx:archive/opsx:bulk-archive skill — the skill is where OpenSpec's own delta-spec comparison and edge-case judgment actually live (bulk-archive's conflict resolution isn't reproducible with a bare CLI flag), and bypassing it back to a raw CLI call would throw away the same hybrid-agent judgment this skill exists to keep.
+This does give something up: openspec-archive's own internal work — comparing delta specs against main specs, resolving bulk-archive's cross-change ordering — now happens directly in this context instead of being absorbed by an isolated subagent, so more of it enters context than the `1.0.0` design intended. That's an accepted cost of correctness over context economy, not an oversight; spec writing still isolates its own, typically larger, per-capability file content in a subagent exactly as before, so this cost is confined to the archive step's own scope. Do **not** work around this by shelling out to `openspec archive`/`openspec bulk-archive` directly instead of the openspec-archive/openspec-bulk-archive skill — the skill is where OpenSpec's own delta-spec comparison and edge-case judgment actually live (bulk-archive's conflict resolution isn't reproducible with a bare CLI flag), and bypassing it back to a raw CLI call would throw away the same hybrid-agent judgment this skill exists to keep.
 
-7. Determine scope: a single-change archive (opsx:archive with a change name) or a bulk archive (opsx:bulk-archive) spanning several pending changes.
+7. Determine scope: a single-change archive (openspec-archive with a change name) or a bulk archive (openspec-bulk-archive) spanning several pending changes.
 
-8. **Known interactive prompt — always sync.** opsx:archive and opsx:bulk-archive will, more often than not, pause mid-run to ask whether to sync. Always answer yes, every time it comes up — this is a routine part of the archive operation completing, not a decision point that needs the user's input. This is the one interactive prompt you always answer yourself.
+8. **Known interactive prompt — always sync.** openspec-archive and openspec-bulk-archive will, more often than not, pause mid-run to ask whether to sync. Always answer yes, every time it comes up — this is a routine part of the archive operation completing, not a decision point that needs the user's input. This is the one interactive prompt you always answer yourself.
 
 9. Run the appropriate skill invocation:
 
@@ -161,11 +161,11 @@ This does give something up: opsx:archive's own internal work — comparing delt
    ```xml
    <skill_invocation>
      <skill>openspec-archive-change</skill>
-     <args>change-name</args>
+     <args>[change-name]</args>
    </skill_invocation>
-   
-   IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "openspec-archive-change" — do not attempt to run this as a terminal command.
+
+   IMPORTANT: Use the Skill tool to invoke this skill directly.
+   Pass the skill name ("openspec-archive-change") and any args.
    ```
 
    For bulk archive:
@@ -173,14 +173,14 @@ This does give something up: opsx:archive's own internal work — comparing delt
    <skill_invocation>
      <skill>openspec-bulk-archive-change</skill>
    </skill_invocation>
-   
-   IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "openspec-bulk-archive-change" — do not attempt to run this as a terminal command.
+
+   IMPORTANT: Use the Skill tool to invoke this skill directly.
+   Pass the skill name ("openspec-bulk-archive-change").
    ```
 
 10. **If the run branches internally** — most commonly by handing off to a separate sync skill partway through — that's normal, expected shape for this command, not a sign that anything has gone wrong or that the task is finished. Stay with it: once the branch completes, pick back up with archive's own remaining steps (merging delta specs into the main specs, moving the change into `openspec/changes/archive/`) rather than treating the branch's completion as the end of this section.
 
-11. **If any other interactive prompt comes up** — most commonly opsx:bulk-archive asking for confirmation before merging changes that touch overlapping specs — that's a real question only the user can answer, unlike the routine sync prompt in step 8. Surface it to the user directly and wait for their answer before continuing.
+11. **If any other interactive prompt comes up** — most commonly openspec-bulk-archive asking for confirmation before merging changes that touch overlapping specs — that's a real question only the user can answer, unlike the routine sync prompt in step 8. Surface it to the user directly and wait for their answer before continuing.
 
 12. Wait until every merge in this operation has fully resolved. For a bulk archive, this means ALL changes in the batch, not just the first.
 
@@ -267,22 +267,22 @@ This does give something up: opsx:archive's own internal work — comparing delt
 
 Always spawn one subagent per touched capability to do this — every time, not conditionally on how many capabilities are involved. Each capability's edit is fully independent once the new-partner map is fixed (the same independence `accelint-qrspi-apply` relies on to parallelize slices), and doing the read/merge/write inside a subagent keeps that spec's full contents out of the parent's context whether this is a one-capability archive or a forty-capability bulk-archive. Making this a threshold-based judgment call ("parallelize if there are many capabilities, otherwise just edit inline") means the parent's context cost varies run to run for no good reason; delegating unconditionally makes it flat. It also means this subagent, not the parent, is the one place that ever reads a spec's current `related:` value — which is exactly why the merge-with-existing-entries logic belongs here rather than in cross-link computation.
 
-22. For each touched capability, spawn a subagent with this prompt (the parent supplies only the *newly contributed* partner names from cross-link computation — not a final list; the subagent is the one that merges those against whatever the file already has):
+22. For each touched capability, use the Agent tool to spawn a subagent with this prompt (the parent supplies only the *newly contributed* partner names from cross-link computation — not a final list; the subagent is the one that merges those against whatever the file already has):
 
    ```
-   Update openspec/specs/<capability>/spec.md only. Do not touch any other file.
+   Update openspec/specs/[capability]/spec.md only. Do not touch any other file.
 
    Read this file's current related: value from its frontmatter (treat it as
    empty if the file has no frontmatter yet — this may be a brand-new
    capability). Union it with these newly contributed partners:
-   [<partner>, <partner>, ...]. Never drop an entry that was already there.
+   [[partner], [partner], ...]. Never drop an entry that was already there.
    Sort the resulting full set alphabetically and write it in flow style on
    one line — that's what keeps a no-op run byte-identical and a genuine
    addition a clean one-line diff.
 
    Also set:
-     last_touched_by: <change-name>
-     last_touched_on: <date>
+     last_touched_by: [change-name]
+     last_touched_on: [date]
    as plain overwrites of whatever was there before, not an accumulated
    history.
 
@@ -297,11 +297,11 @@ Always spawn one subagent per touched capability to do this — every time, not 
    extract the purpose heading text. Check for these headings in order:
    - ## Purpose or ### Purpose
    - ## Overview or ### Overview
-   
+
    Use whichever is found first (Overview and Purpose are semantically equivalent).
    Format each line as:
 
-     - [<partner>](../<partner>/spec.md) - <Purpose or Overview heading text>
+     - [[partner]](../[partner]/spec.md) - <Purpose or Overview heading text>
 
    Example format (one entry per line, alphabetically sorted by partner name):
 
@@ -384,7 +384,7 @@ A patched `specs/INDEX.md` can still drift from reality for reasons outside this
    - "**Status Legend:**" or similar explanatory text
    - Horizontal rules (`---`) after the table
    - Any other prose, metadata, or summary content
-   
+
    If such trailing content exists in either file from a prior run, delete it. The canonical INDEX.md format is: optional preamble, then table, then end-of-file. Nothing may appear after the last data row.
 
 32. This is the one file in this skill's output that may not exist yet before the very first archive — create it with a header row and separator row (and no trailing content) if missing.
@@ -421,17 +421,17 @@ A patched `specs/INDEX.md` can still drift from reality for reasons outside this
 
 A quick-reference summary — each of these is explained in full where it's actually applied (Implementation Steps) or enforced (NEVER Do This); this is just the index.
 
-- **Cross-linking happens at archive time, not propose time.** A delta spec is provisional until opsx:bulk-archive resolves conflicts in order; only the merged, archived spec is worth indexing.
+- **Cross-linking happens at archive time, not propose time.** A delta spec is provisional until openspec-bulk-archive resolves conflicts in order; only the merged, archived spec is worth indexing.
 - **`specs_touched`/`decisions` frontmatter belongs to propose time, not archive time.** `accelint-qrspi-propose` is where this is supposed to get written, as part of the change's own design work. Task A's derive-and-confirm path exists for changes that didn't go through that flow — a fallback with the author's confirmation still required, not this skill's primary way of getting that data.
 - **This skill only adds.** Pruning a `related:` entry or changing an existing `Status` value is `accelint-archive-synthesis`'s job — both need cross-change judgment and human confirmation this skill doesn't have.
 - **Every write is idempotent.** Flow-style sorted `related:` and row-level patching of `specs/INDEX.md` mean a re-run against unchanged inputs is byte-identical, so retrying after a partial failure never duplicates entries or rows.
 - **`specs/INDEX.md` is patched row-by-row for the capabilities touched this run (built wholesale only on first bootstrap); `changes/archive/INDEX.md` is append-only.** One describes current state, the other describes history — treating either the other way corrupts history or lets the index drift. Verifying `specs/INDEX.md` against every `spec.md` on disk, corpus-wide, isn't something this skill does, and isn't currently something `accelint-archive-synthesis` does either — its existing checks read the index as ground truth rather than auditing it. That's a gap worth closing there someday, not a job for this skill's per-archive hot path.
-- **Spec writing always delegates to subagents, never conditionally; archive and extraction never does, unconditionally.** Unconditional delegation for spec writing keeps the parent's context cost flat regardless of batch size, the same discipline `accelint-qrspi-propose` and `accelint-qrspi-apply` use for every file-touching operation. Archive runs inline for the opposite reason: opsx:archive/opsx:bulk-archive are agent-driven and can branch or prompt mid-run, and only the context the user is actually in can follow that branch through or answer that prompt.
+- **Spec writing always delegates to subagents, never conditionally; archive and extraction never does, unconditionally.** Unconditional delegation for spec writing keeps the parent's context cost flat regardless of batch size, the same discipline `accelint-qrspi-propose` and `accelint-qrspi-apply` use for every file-touching operation. Archive runs inline for the opposite reason: openspec-archive/openspec-bulk-archive are agent-driven and can branch or prompt mid-run, and only the context the user is actually in can follow that branch through or answer that prompt.
 
 ## Explicitly Out of Scope
 
-- **No OpenSpec CLI dependency for reading local specs.** `openspec/specs/<capability>/spec.md` is a normal file at a known path; plain file reads are sufficient; no need to shell out to the CLI for something this direct.
-- **No shelling out to `openspec archive`/`openspec bulk-archive` as a substitute for the opsx:archive/opsx:bulk-archive skill.** The bare CLI command isn't an equivalent shortcut — the skill is where OpenSpec's own delta-spec comparison and bulk-archive conflict resolution actually happen. Archive always goes through the skill, never the raw CLI, even though running it inline (see the Archive and Extract section) already gives up some of the context-isolation the old subagent design had; trading that isolation for a CLI call that skips real judgment would be a worse trade, not a better one.
+- **No OpenSpec CLI dependency for reading local specs.** `openspec/specs/[capability]/spec.md` is a normal file at a known path; plain file reads are sufficient; no need to shell out to the CLI for something this direct.
+- **No shelling out to `openspec archive`/`openspec bulk-archive` as a substitute for the openspec-archive/openspec-bulk-archive skill.** The bare CLI command isn't an equivalent shortcut — the skill is where OpenSpec's own delta-spec comparison and bulk-archive conflict resolution actually happen. Archive always goes through the skill, never the raw CLI, even though running it inline (see the Archive and Extract section) already gives up some of the context-isolation the old subagent design had; trading that isolation for a CLI call that skips real judgment would be a worse trade, not a better one.
 - **No per-edge relationship metadata.** A `related:` entry doesn't carry a reason or a timestamp of its own — that context already lives in the originating change's `design.md` and its row in `changes/archive/INDEX.md`, reachable by grepping if ever needed.
 - **No automatic pruning of `related:`.** Only additive. Removal is `accelint-archive-synthesis`'s job, and only with human confirmation.
 - **No directionality in the relation.** Co-touch is inherently symmetric, so it's always computed as all-pairs, never as a dependency direction — "A depends on B" is a different kind of edge this skill doesn't model at all.
@@ -450,7 +450,7 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **Native command reports unresolved conflicts**: the archive step stops and reports the conflict verbatim to the user immediately without proceeding to extraction (archive step 8); do not proceed to validation.
 
-**opsx:archive or opsx:bulk-archive branches internally mid-run** (most commonly into a separate sync skill): this is normal, expected shape for the command, not a failure — see archive section steps 4-5. Stay with it and resume archive's own remaining steps once the branch completes; if the branch (or anything else during the run) raises a prompt beyond the routine sync y/n, surface it to the user and wait for their answer rather than guessing.
+**openspec-archive or openspec-bulk-archive branches internally mid-run** (most commonly into a separate sync skill): this is normal, expected shape for the command, not a failure — see archive section steps 4-5. Stay with it and resume archive's own remaining steps once the branch completes; if the branch (or anything else during the run) raises a prompt beyond the routine sync y/n, surface it to the user and wait for their answer rather than guessing.
 
 **No subagent support available for spec writing** (e.g. an environment without sub-agent support): fall back to performing spec-writing steps directly in this context instead of one subagent per capability. Warn the user explicitly that this run will hold full `spec.md` contents in context as a result — this is a degraded fallback for spec writing only, not the intended default there, and normal operation should always prefer subagents for spec writing. This has no bearing on the archive step, which already runs in this context unconditionally by design regardless of sub-agent availability — see the Archive and Extract section.
 
@@ -488,13 +488,13 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **NEVER unsort or use block-style YAML for `related:`** — flow style, single line, alphabetically sorted. This is what keeps a no-op run byte-identical and makes a genuine addition show up as a clean, reviewable diff.
 
-**NEVER decline, skip, or second-guess a sync prompt during opsx:archive or opsx:bulk-archive** — always answer yes. It comes up more often than not, and it's a routine part of the archive operation completing, not a decision point that needs the parent's or the user's input.
+**NEVER decline, skip, or second-guess a sync prompt during openspec-archive or openspec-bulk-archive** — always answer yes. It comes up more often than not, and it's a routine part of the archive operation completing, not a decision point that needs the parent's or the user's input.
 
-**NEVER spawn a subagent for archive and extraction, even when sub-agent support is available** — always run opsx:archive or opsx:bulk-archive directly in this context. A subagent handed that instruction has no reliable way to resume the command's own remaining steps after it branches internally (e.g. into a separate sync skill), and no way to surface an interactive prompt back to the user — both of which have caused this skill to stop mid-archive in practice. See the Archive and Extract section for the full account.
+**NEVER spawn a subagent for archive and extraction, even when sub-agent support is available** — always run openspec-archive or openspec-bulk-archive directly in this context. A subagent handed that instruction has no reliable way to resume the command's own remaining steps after it branches internally (e.g. into a separate sync skill), and no way to surface an interactive prompt back to the user — both of which have caused this skill to stop mid-archive in practice. See the Archive and Extract section for the full account.
 
 **NEVER run spec writing directly in this context when subagents are available** — always delegate, regardless of how small the batch is. This isn't about parallelizing large batches; it's about keeping raw `spec.md` contents out of the orchestrating context on every single run, the same discipline `accelint-qrspi-propose` and `accelint-qrspi-apply` apply unconditionally.
 
-**NEVER treat a mid-run branch in opsx:archive/opsx:bulk-archive (most commonly its own sync skill) as the end of the archive step** — resume the command's remaining steps once the branch completes. Concluding the branch itself was the whole task is exactly the failure mode that motivated running archive inline in the first place.
+**NEVER treat a mid-run branch in openspec-archive/openspec-bulk-archive (most commonly its own sync skill) as the end of the archive step** — resume the command's remaining steps once the branch completes. Concluding the branch itself was the whole task is exactly the failure mode that motivated running archive inline in the first place.
 
 ## Example Usage
 
@@ -512,12 +512,12 @@ Skill: Running preflight checks...
   <args>add-live-sync</args>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "openspec-archive-change" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("openspec-archive-change") and any args.
 
 Sync now? (y/n) → yes
-✓ Synced delta specs, resuming opsx:archive's remaining steps...
-✓ opsx:archive add-live-sync merged, archived to
+✓ Synced delta specs, resuming openspec-archive's remaining steps...
+✓ openspec-archive add-live-sync merged, archived to
   openspec/changes/archive/2026-03-02-add-live-sync/
 ✓ Extracted: specs_touched, decisions from design.md frontmatter
 
@@ -589,10 +589,10 @@ Skill: Confirmed. Writing this into design.md's frontmatter, then proceeding...
   <args>enhance-mock-consistency-rule</args>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "openspec-archive-change" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("openspec-archive-change") and any args.
 
-✓ opsx:archive enhance-mock-consistency-rule merged, archived to
+✓ openspec-archive enhance-mock-consistency-rule merged, archived to
   openspec/changes/archive/2026-07-07-enhance-mock-consistency-rule/
 ...
 ```
@@ -609,8 +609,8 @@ Skill: Running preflight checks across 2 pending changes...
   <skill>openspec-bulk-archive-change</skill>
 </skill_invocation>
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "openspec-bulk-archive-change" — do not attempt to run this as a terminal command.
+IMPORTANT: Use the Skill tool to invoke this skill directly.
+Pass the skill name ("openspec-bulk-archive-change").
 
 Sync now? (y/n) → yes
 ⚠ add-dark-mode and update-footer both touch specs/ui/ — archive both,
@@ -626,4 +626,4 @@ Skill: ✓ Archived add-dark-mode, then update-footer, specs/ui/ merged in that 
 ...
 ```
 
-This is the scenario archive running inline actually unlocks: a subagent handed instructions to run opsx:bulk-archive has no way to relay that ordering question to the user and get a real answer back, so it either stalls or has to guess. Running archive in this context means the question reaches the person who can actually answer it.
+This is the scenario archive running inline actually unlocks: a subagent handed instructions to run openspec-bulk-archive has no way to relay that ordering question to the user and get a real answer back, so it either stalls or has to guess. Running archive in this context means the question reaches the person who can actually answer it.

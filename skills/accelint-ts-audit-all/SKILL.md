@@ -143,7 +143,7 @@ For each file in the pending list, follow this exact sequence:
 ```xml
 <skill_invocation>
   <skill>accelint-ts-testing</skill>
-  <args>file-path</args>
+  <args>[file-path]</args>
 </skill_invocation>
 
 IMPORTANT: This is a skill invocation directive, NOT a shell command.
@@ -182,12 +182,12 @@ CRITICAL: Run these together to avoid contradictory suggestions:
 ```xml
 <skill_invocation>
   <skill>accelint-ts-best-practices</skill>
-  <args>file-path</args>
+  <args>[file-path]</args>
 </skill_invocation>
 
 <skill_invocation>
   <skill>accelint-ts-performance</skill>
-  <args>file-path</args>
+  <args>[file-path]</args>
 </skill_invocation>
 
 IMPORTANT: These are skill invocation directives, NOT shell commands.
@@ -249,7 +249,7 @@ If verification passes, skip to documenting results. Otherwise:
 ```xml
 <skill_invocation>
   <skill>accelint-ts-documentation</skill>
-  <args>file-path</args>
+  <args>[file-path]</args>
 </skill_invocation>
 
 IMPORTANT: This is a skill invocation directive, NOT a shell command.

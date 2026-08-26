@@ -289,7 +289,7 @@ behavioral constraints and confirm rather than asking again.
 - Versioning workflow? (when to bump, who approves changelog?)
 
 **Turn 4 — OpenSpec / Spec-Driven Workflow** *(skip if not using OpenSpec)*
-- When should the agent invoke `opsx:propose`?
+- When should the agent invoke `openspec-propose`?
   *Good default: "for any new feature or non-trivial change".*
 - When is a spec required vs. optional?
 - Should the agent reference existing specs before creating new patterns?
@@ -331,7 +331,7 @@ appropriate.
 
 **Turborepo + PNPM monorepo → suggest confirming:**
 - "I'll assume you want `pnpm -w` (workspace root) for adding shared deps
-  and `pnpm --filter <pkg>` for package-scoped deps; correct?"
+  and `pnpm --filter [pkg]` for package-scoped deps; correct?"
 - "For tasks, I'll default to `pnpm turbo run build --filter=...` rather
   than running package scripts directly; correct?"
 
@@ -347,7 +347,7 @@ appropriate.
   a footer `BREAKING CHANGE:` block?"
 
 **Spec-Driven Development (OpenSpec) → suggest confirming:**
-- "For non-trivial changes, I'll start with `opsx:propose` before writing
+- "For non-trivial changes, I'll start with `openspec-propose` before writing
   any code; should I also require a design artifact for changes touching more
   than N files?"
 - "Should I link task IDs or spec refs in commit messages?"
@@ -393,7 +393,7 @@ to complete, then merge results before Phase 4.
 - Return: migration guardrails if migrations exist, secret handling practices
 
 **Agent E — OpenSpec & Development Workflow**
-- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `opsx:*` skill references in docs or CLAUDE.md
+- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `openspec-*` skill references in docs or CLAUDE.md
 - Return: OpenSpec usage status, when to invoke spec workflow
 
 **After all agents complete:** merge their findings into a unified discovery map.
@@ -481,8 +481,8 @@ architectural decisions."]
 ### New Features
 [step-by-step procedure, e.g.:]
 1. Start with `<skill_invocation><skill>openspec-propose</skill></skill_invocation>` for any non-trivial change
-   *(IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "openspec-propose" — do not attempt to run this as a terminal command.)*
+   *(IMPORTANT: Use the Skill tool to invoke this skill directly.
+   Pass the skill name ("openspec-propose") and any args.)*
 2. Get proposal reviewed before writing code
 3. Run `pnpm check` and `pnpm test` after each meaningful change
 4. Open a draft PR early; mark ready only after CI passes
@@ -497,15 +497,15 @@ Follow Test-Driven Development to ensure the bug is fixed and does not regress:
 3. **Confirm the test passes** — validate the fix
 4. **Follow OpenSpec process** — use `<skill_invocation><skill>openspec-explore</skill></skill_invocation>` for investigation if
    the root cause is non-obvious
-   *(IMPORTANT: This is a skill invocation directive, NOT a shell command.
-   Execute the internal skill "openspec-explore" — do not attempt to run this as a terminal command.)*
+   *(IMPORTANT: Use the Skill tool to invoke this skill directly.
+   Pass the skill name ("openspec-explore") and any args.)*
 5. Hand off to engineer for PR
 
 ### Pre-Commit Checklist
 - [ ] [check, e.g., `pnpm typecheck`]
 - [ ] [check, e.g., `pnpm lint`]
 - [ ] [check, e.g., `pnpm test`]
-- [ ] *(TypeScript/JavaScript)* Type check test files: `tsc --noEmit <test-file>.test.ts`
+- [ ] *(TypeScript/JavaScript)* Type check test files: `tsc --noEmit [test-file].test.ts`
 
 ### Commit Messages
 Convention: [e.g., Conventional Commits]
@@ -568,7 +568,7 @@ with placeholder text.
 - **Package manager**: [e.g., always use `pnpm`; never `npm` or `yarn`]
 - **Test runner**: [e.g., `vitest` — never `jest`]
 - **Linting / formatting**: [e.g., `biome` — never `prettier` or `eslint` separately]
-- **Task runner**: [e.g., `pnpm turbo run <task> --filter=<pkg>`]
+- **Task runner**: [e.g., `pnpm turbo run [task] --filter=[pkg]`]
 - **Version control**: [e.g., `git` via CLI — no GUI wrappers]
 
 ### TypeScript/Testing Preferences (if applicable)

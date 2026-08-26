@@ -59,7 +59,7 @@ Step 1: Test coverage analysis
 ```xml
 <skill_invocation>
   <skill>accelint-ts-testing</skill>
-  <args>path/to/file.ts</args>
+  <args>[path/to/file.ts]</args>
 </skill_invocation>
 
 IMPORTANT: This is a skill invocation directive, NOT a shell command.
@@ -72,12 +72,12 @@ Step 3: Analyze code quality (run both in parallel)
 ```xml
 <skill_invocation>
   <skill>accelint-ts-best-practices</skill>
-  <args>path/to/file.ts</args>
+  <args>[path/to/file.ts]</args>
 </skill_invocation>
 
 <skill_invocation>
   <skill>accelint-ts-performance</skill>
-  <args>path/to/file.ts</args>
+  <args>[path/to/file.ts]</args>
 </skill_invocation>
 
 IMPORTANT: These are skill invocation directives, NOT shell commands.
@@ -98,7 +98,7 @@ Step 7: Documentation pass
 ```xml
 <skill_invocation>
   <skill>accelint-ts-documentation</skill>
-  <args>path/to/file.ts</args>
+  <args>[path/to/file.ts]</args>
 </skill_invocation>
 
 IMPORTANT: This is a skill invocation directive, NOT a shell command.
