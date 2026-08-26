@@ -1,4 +1,4 @@
-# accelint-onboard-agent
+# accelint-onboard-agents
 
 Generates `AGENTS.md` or `CLAUDE.md` files through an interactive interview. These files tell AI coding agents how to behave in your project — workflow conventions, communication style, decision-making rules.
 
@@ -121,13 +121,13 @@ Common mistakes this skill doesn't make:
 ## Installation
 
 ```bash
-npx skills add https://github.com/accelint/agent-skills --skill accelint-onboard-agent
+npx skills add https://github.com/accelint/agent-skills --skill accelint-onboard-agents
 ```
 
 ## Usage
 
 ```
-/accelint-onboard-agent
+/accelint-onboard-agents
 ```
 
 Or just say "Help me set up AGENTS.md for this project".

@@ -283,7 +283,7 @@ openspec/specs/cache/layer/spec.md, which no longer exists.
 
 - A contradiction over **tech stack, dependencies, or coding/architecture patterns** → `accelint-onboard-openspec` (`openspec/config.yaml`).
 - A contradiction over **system structure, components, or data flow** → `accelint-architecture-doc` (`ARCHITECTURE.md`). This is also always the target for structural coupling findings, landing in that skill's existing Known Technical Debt interview slot.
-- A contradiction over **agent workflow or behavior** → `accelint-onboard-agent` (`AGENTS.md`).
+- A contradiction over **agent workflow or behavior** → `accelint-onboard-agents` (`AGENTS.md`).
 - A contradiction over **user-facing setup or usage** → `accelint-readme-writer` (`README.md`).
 
 A single finding can legitimately target more than one — invoke each relevant writer skill separately, with the same finding rephrased once per invocation to fit that doc's own focus, exactly as `accelint-qrspi-apply` Step 5 already treats each hub doc as an independent target rather than a single combined update. Each invocation succeeds or fails on its own — one writer skill being unavailable or erroring never blocks or rolls back a separate, successful invocation of another (see Error Handling for the specific case of a routing failure after `Status` has already been written).

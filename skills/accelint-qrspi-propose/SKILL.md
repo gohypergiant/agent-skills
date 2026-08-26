@@ -646,7 +646,7 @@ This skill assumes the project has:
 1. OpenSpec installed and initialized (`openspec/` directory exists)
 2. `openspec/config.yaml` configured (ideally via `accelint-onboard-openspec` skill)
 3. Expanded OpenSpec profile enabled
-4. `AGENTS.md` or `CLAUDE.md` defining agent behavior (ideally via `accelint-onboard-agent` skill)
+4. `AGENTS.md` or `CLAUDE.md` defining agent behavior (ideally via `accelint-onboard-agents` skill)
 
 If any of these are missing, guide the user to set them up before running this skill.
 

@@ -144,7 +144,7 @@ These are the maintained skills currently in the repo:
 - `accelint-archive-synthesis`
 - `accelint-design-foundation`
 - `accelint-nextjs-best-practices`
-- `accelint-onboard-agent`
+- `accelint-onboard-agents`
 - `accelint-onboard-openspec`
 - `accelint-persona-review`
 - `accelint-prompt-manager`
