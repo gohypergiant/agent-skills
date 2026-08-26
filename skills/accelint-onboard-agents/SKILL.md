@@ -60,7 +60,7 @@ Persona or identity framing is optional. Use it only when it improves behavior. 
 
 - **NEVER run codebase discovery serially** — when discovery is needed, use parallel subagents for different behavioral domains. Serial scanning wastes time on codebases with many config files spread across directories.
 - **NEVER skip needed discovery before asking questions** — infer behavioral conventions from the codebase before adding avoidable questions to the interview. A question about commit format when `commitlint.config.ts` exists wastes the user's time. For narrow refreshes, do only the scoped discovery the request needs.
-- **NEVER omit sections from the generated AGENTS.md** — if a section cannot be inferred or answered, mark it with `<!-- TODO: fill in -->` rather than leaving it out. Missing sections silently shape agent behavior in unpredictable ways.
+- **NEVER omit required template sections from the generated AGENTS.md** — if a required section from `./assets/template.md` cannot be inferred or answered, keep that section and mark unresolved fields with `<!-- TODO: fill in -->` rather than leaving the section out. Omit optional sections only when `./assets/template.md` explicitly allows it. Missing required template sections silently shape agent behavior in unpredictable ways.
 - **NEVER duplicate root-level instructions in package-level files** — if a monorepo root `AGENTS.md` or `CLAUDE.md` exists, package files should reference it and add only what is package-specific. Repeated instructions inflate context on every agent invocation.
 - **NEVER preserve conflicting standing rules only because both were found** — resolve conflicts using source precedence, or surface the unresolved issue in preview instead of emitting both as authoritative guidance.
 - **NEVER write the final file without showing a preview** — the user must see inferred values with source annotations and confirm before any filesystem write.
@@ -153,8 +153,8 @@ Does a local AGENTS.md (or CLAUDE.md) exist in the current directory?
           │       Ask: "AGENTS.md exists but appears empty — should I
           │       populate it from scratch, or preserve any current content?"
           │
-          ├── Contains recognized template sections?
-          │   (`## Role & Identity`, `## Guardrails`, `## Workflow Procedures`, etc.)
+          ├── Contains the canonical template shape from `./assets/template.md`?
+          │   (two or more canonical section headings, in recognizably template-based form)
           │     → MODE 3: Refresh
           │
           └── Contains real content in an unrecognized shape?
@@ -173,9 +173,8 @@ If the user chooses **start fresh**, switch immediately to Mode 1. Treat the exi
 
 If the user chooses **work with what's there**, continue into the detected Mode 2 or Mode 3 path.
 
-**Recognized template sections** (any two or more = recognized shape):
-`## Role & Identity`, `## Communication`, `## Workflow Procedures`,
-`## Decision Heuristics`, `## Tool Preferences`, `## Guardrails`
+**Recognized template shape** (any two or more canonical section headings from `./assets/template.md` = recognized shape):
+Treat `./assets/template.md` as the canonical structure reference for recognition, refresh, and audit behavior. Use section headings exactly as defined there, preserve the template's canonical order for all required sections, and keep optional headings such as `## Optional review-specific rules` and `## Maintenance guidance` only when the template allows them.
 
 #### Branch eligibility — Targeted refresh inside Mode 3
 
@@ -235,8 +234,9 @@ Before you modify or synthesize anything, present the user with these three opti
 > `openspec/config.yaml` instead, run a targeted interview to fill gaps,
 > and produce a merged file ready to replace the current one.
 >
-> **(b) Append** — I'll run the full interview and add this skill's sections
-> below your existing content without modifying what's already there.
+> **(b) Append** — I'll run the full interview and append a template-aligned
+> `AGENTS.md` block based on `./assets/template.md` below your existing content
+> without modifying what's already there.
 >
 > **(c) Dry run** — I'll run the full interview and show you exactly what I
 > would have generated, with no changes to the filesystem. Use this to
@@ -253,12 +253,13 @@ Branch handling:
 Run these steps in order:
 
 1. Read the file in full.
-2. Map each existing section onto the skill's template sections.
-3. Flag any content that violates the separation-of-concerns boundary, such as stack facts, tech versions, or domain descriptions. These belong in `openspec/config.yaml`.
+2. Map each existing section onto the canonical template sections from `./assets/template.md`.
+3. Preserve the template's section order and only keep optional sections that the template explicitly allows, such as `## Optional review-specific rules`.
+4. Flag any content that violates the separation-of-concerns boundary, such as stack facts, tech versions, or domain descriptions. These belong in `openspec/config.yaml`.
    - For each violation, ask: *"This describes [X] — that's project DNA and belongs in `config.yaml`. Should I move it there and leave a reference here?"*
-4. Run a targeted interview that covers only the gaps, meaning sections with no existing coverage.
-5. Apply the source-precedence rule and remove duplicate, conflicting, or adjacent-doc material before preview.
-6. Show a merged preview before writing. Inferred or existing content is labelled `# from existing file`; new content is labelled `# new`.
+5. Run a targeted interview that covers only the gaps, meaning canonical template sections or required template fields from `./assets/template.md` with no existing coverage.
+6. Apply the source-precedence rule and remove duplicate, conflicting, or adjacent-doc material before preview.
+7. Show a merged preview before writing. Inferred or existing content is labelled `# from existing file`; new content is labelled `# new`.
 
 Done when: the merged preview is ready for user review.
 
@@ -270,7 +271,7 @@ Run these steps in order:
 2. Smart defaults
 3. Parallel codebase discovery
 4. Preview and write
-5. In the final output, append the generated sections below a `---` divider and a comment: `<!-- Added by accelint-onboard-agents skill -->`.
+5. In the final output, append the generated template-aligned block below a `---` divider and a comment: `<!-- Added by accelint-onboard-agents skill -->`.
 
 Even in append mode, do not add conflicting standing guidance without surfacing the conflict in preview.
 
@@ -376,63 +377,61 @@ Done when: the changed-section preview is ready for review and the file is ready
 
 ### Step 3 — Mode-Specific Discovery and Interview
 
-Use the interview only after mode selection is complete. Run it conversationally. Do not dump all questions at once. Group questions into natural topic turns. If the user describes a workflow, infer related behavioral constraints and confirm them instead of asking again. Keep questions proportional to the request size. Do not ask for information that strong repository evidence already answers.
+Use the interview only after mode selection is complete. Run it conversationally. Do not dump all questions at once. Group questions into natural topic turns that map directly to the canonical template in `./assets/template.md`. That template is the source of truth for section names, section order, required-versus-optional sections, placeholder handling, and default scaffolding. If the user describes a workflow, infer related behavioral constraints and confirm them instead of asking again. Keep questions proportional to the request size. Do not ask for information that strong repository evidence already answers.
 
-**Turn 1 — Role & Identity**
-- What role should the agent play, if any role framing is useful? ("senior TypeScript engineer", "full-stack developer", "pair programmer", "code reviewer", etc.)
-- Is the agent scoped to a specific domain? ("focuses on the rendering pipeline", "works across the full monorepo", etc.)
-- Any role constraints? ("never makes architectural decisions alone")
-- If role framing is not useful, keep this section brief and operational rather than ornamental.
+Ask only for material that belongs in the template. Do not invent extra AGENTS.md sections to hold answers the template does not define. If a topic is optional in the template, confirm whether it should be kept, adapted, or omitted based on what `./assets/template.md` allows. When consolidating answers across turns, map them back into the exact canonical sections defined in `./assets/template.md`.
 
-**Turn 2 — Communication Style**
-- How verbose should responses be? (concise summaries, detailed explanations, adaptive to the question?)
-- Preferred format for code changes? (show diffs, show full files, inline comments, separate explanation block?)
-- How should the agent handle uncertainty? ("state assumption and proceed", "always ask before proceeding", "ask for scope-changing uncertainty only"?)
-- Should the agent explain its reasoning, or just act?
+**Turn 1 — What to optimize for**
+- What durable priorities should the agent optimize for in this repository?
+  *(Examples: follow repo workflows instead of guessing, prefer small scoped changes, make work traceable, stay aligned with existing patterns.)*
+- Are there repository-specific priorities that materially affect agent behavior?
+- Should the agent emphasize simplicity, speed, safety, reviewability, or some other standing priority?
 
-**Turn 3 — Workflow Procedures**
-- What is the standard flow for a new feature? (for example propose → spec → design → implement → test → PR)
-- For bug fixes, is the flow different?
-- What checks must always run before committing? (type-check, lint, tests?)
-- Any PR conventions? (size limits, labels, draft vs. ready, review requests?)
-- Commit message convention? (Conventional Commits, gitmoji, free-form, with example format?)
-- Versioning workflow? (when to bump, who approves changelog?)
+**Turn 2 — How to communicate**
+- How should the agent communicate? (concise, direct, collaborative, adaptive, etc.)
+- When making changes, are there required reporting expectations beyond what the template already says?
+- How should the agent handle missing information or uncertainty? (state assumptions and proceed narrowly, ask first, ask only for high-risk ambiguity?)
 
-**Turn 4 — OpenSpec / Spec-Driven Workflow** *(skip if not using OpenSpec)*
-- When should the agent invoke `/opsx:propose`?
-  *Good default: "for any new feature or non-trivial change".*
-- When is a spec required vs. optional?
-- Should the agent reference existing specs before creating new patterns?
-- How should the agent handle a task that has no existing spec?
+**Turn 3 — How to work**
+- Before making changes, what must the agent read, confirm, or state first?
+- While making changes, are there standing workflow expectations beyond the template defaults?
+- Before completing a task, what verification, scope checks, or safety checks must always happen?
+- If the repo uses OpenSpec or another spec-driven workflow, capture the behavior here only as durable agent workflow guidance, and link to canonical docs for deeper process details.
+
+**Turn 4 — Repository-specific commands and entry points**
+- What commands should the agent prefer for setup, build, test, lint/format, and task running?
+- Are there path conventions, package-manager rules, or command invocation patterns that are easy to get wrong?
+- Are there any commands the agent should avoid in favor of specific repo entry points?
 
 **Turn 5 — Decision Heuristics**
 - When should the agent ask vs. proceed autonomously?
   *Good prompts: "deleting files", "changing public APIs", "modifying migrations", "adding new dependencies".*
-- Any operations that require explicit human sign-off before acting?
-- How should scope creep be handled if discovered mid-task?
-- If two approaches are equally valid, should the agent pick one, ask, or present both?
+- If scope grows mid-task, what is the default action?
+- If evidence is incomplete or multiple implementations are valid, should the agent choose, ask, or present tradeoffs?
 
-**Turn 6 — Tool & Command Preferences**
-- Any tool-level preferences the agent should honor?
-  *Examples: "prefer vitest over jest", "use pnpm, never npm", "biome for formatting, never prettier".*
-- Any CLI commands the agent should always or never run?
-  *Examples: "never run `git push --force`", "always use `pnpm` not `npm run`".*
-- Any environment setup the agent should validate before starting?
+**Turn 6 — Approval and safety boundaries**
+- What actions require approval before proceeding because they are risky, costly, hard to reverse, or affect shared systems?
+- What hard safety boundaries must always be preserved?
+  *Examples: never commit secrets, ask before schema or migration changes, do not act on production without approval.*
+- Are there sandboxing, remote-environment, publishing, or externally relied-on information boundaries that should be documented here?
 
-**Turn 7 — Guardrails**
-- Hard "never" rules? (operations that are always off-limits)
-  *Examples: "never force-push to main", "never delete migration files", "never commit secrets".*
-- Soft "always ask first" rules?
-  *Examples: "ask before modifying `package.json` scripts", "ask before changing shared utility packages".*
-- Any security-sensitive areas that require special handling?
+**Turn 7 — Quality bar for finished work**
+- What checks are required before work is considered done?
+- What evidence should the agent report back?
+- Are there review or handoff expectations specific to this repo?
+
+**Turn 8 — Optional review-specific rules, related documentation, and maintenance guidance**
+- Does this repository use `AGENTS.md` to guide code review behavior strongly enough to keep `## Optional review-specific rules`, or should that optional section be omitted?
+- Which canonical documents should appear in `## Related Documentation`, if they actually exist?
+- Is there repository-specific maintenance guidance to add under `## Maintenance guidance`, or should the template defaults stand as written?
 
 ---
 
 ### Smart Defaults
 
-Use Smart Defaults only after the relevant workflow answers have been gathered or strongly inferred. Surface them as confirmation prompts, not as standing policy. If repository evidence or direct user answers already settle a default, do not ask it again.
+Use Smart Defaults only after the relevant template fields have been gathered or strongly inferred. Surface them as confirmation prompts, not as standing policy. If repository evidence or direct user answers already settle a default, do not ask it again.
 
-Treat defaults as fallback prompts, not standing policy. Defaults must yield to stronger repository evidence, direct user answers, and still-consistent existing guidance.
+Treat defaults as fallback prompts, not standing policy. Defaults must yield to stronger repository evidence, direct user answers, the canonical template, and still-consistent existing guidance.
 
 **Turborepo + PNPM monorepo → suggest confirming:**
 - "I'll assume you want `pnpm -w` (workspace root) for adding shared deps and `pnpm --filter <pkg>` for package-scoped deps; correct?"
@@ -456,7 +455,7 @@ Treat defaults as fallback prompts, not standing policy. Defaults must yield to 
 
 Enter this step only after the mode-specific interview work above is complete, and only for sections that still have unresolved behavioral gaps. Skip this step when the chosen path already has enough confirmed information and no remaining unresolved sections require inference.
 
-After the interview, audit every `AGENTS.md` section that still has no answer. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before asking again or leaving a `# TODO`. A behavioral file with explicit TODOs is actionable. A file with missing sections silently shapes agent behavior in unpredictable ways.
+After the interview, audit every canonical template section and required template field defined in `./assets/template.md` that still has no answer, including `## Quality bar for finished work`, `## Related Documentation`, and `## Maintenance guidance` where applicable. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before asking again or leaving a `<!-- TODO: fill in -->`. A behavioral file with explicit TODOs is actionable. A file with missing required template sections silently shapes agent behavior in unpredictable ways.
 
 Discovery is for filling behavioral gaps, not for maximizing output surface area. Gather broadly when needed, but carry forward only findings that survive the final inclusion rule.
 
@@ -493,7 +492,7 @@ Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses 
 - Return: OpenSpec usage status, when to invoke spec workflow
 
 **After all agents complete:** merge their findings into a unified discovery map.
-Tag each field as `# inferred from [source]` or leave it empty if unknown. Fields that remain empty after discovery become explicit `<!-- TODO: fill in -->` markers in the generated file.
+Tag each template field as `# inferred from [source]` or leave it empty if unknown. Fields that remain empty after discovery become explicit `<!-- TODO: fill in -->` markers in the generated file, and optional template sections should be omitted only when the template explicitly allows removal.
 
 **Preview with source annotations:**
 
@@ -530,7 +529,9 @@ Done when: the draft is cleaned and ready for preview.
 Show the full labeled preview of the cleaned `AGENTS.md` or `CLAUDE.md` before writing anything.
 
 - Inferred values carry their source comment.
-- Unresolved sections carry `<!-- TODO: fill in -->`.
+- Unresolved template fields carry `<!-- TODO: fill in -->`.
+- Required template sections from `./assets/template.md` remain present in template order.
+- Optional sections are kept only when they still serve the repository and `./assets/template.md` allows them.
 - For refresh flows, you may show changed sections first, but the full labeled preview is still required before any write.
 
 This gives the user a complete confidence map.
@@ -549,7 +550,7 @@ Only after the review gate is satisfied, write to `AGENTS.md` or `CLAUDE.md` in 
 
 Those comments are for review only and must not appear in the final file.
 
-For the Related Documentation section, include links only for files that exist in the repository. Check each file (`openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, `README.md`) before including its link. If both `openspec/config.yml` and `openspec/config.yaml` are absent, do not include either path.
+For the `## Related Documentation` section, include links only for files that exist in the repository and materially help agent behavior. Check each candidate file before including its link. Adapt or remove the template's illustrative bullets (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `openspec/config.yaml`, `JARGON.md`, and any other canonical doc placeholder) based on actual repository files. If both `openspec/config.yml` and `openspec/config.yaml` are absent, do not include either path.
 
 Done when: the confirmed file is written without review-only comments.
 
@@ -562,151 +563,11 @@ Done when: the user has the final write summary.
 
 ## AGENTS.md Template
 
-Use this exact structure. Fill every `[placeholder]` with content from the interview or codebase inference. If a field cannot be resolved by either source, replace its placeholder with `<!-- TODO: fill in -->`. Never omit the section. Every section shapes global agent behavior.
+Read and use the canonical template at: `./assets/template.md`
 
-Keep each section as lean as possible while still being useful. Template examples are illustrative defaults, not automatic policy. Carry them into the final file only when they are confirmed, strongly inferred, or necessary as durable behavioral guidance.
+Treat that file as the source of truth for AGENTS.md structure, including exact section names, section order, required-versus-optional sections, placeholder handling, and default scaffolding. When generating, importing, restructuring, appending, auditing, or refreshing `AGENTS.md`, map all structure-sensitive behavior back to that template rather than to examples, checklists, or embedded section lists in this skill.
 
-```markdown
-# Agent Behavior
-
-> NOTE: This file governs HOW the agent behaves. Project facts (stack,
-> architecture, domain concepts, coding standards) belong in
-> `openspec/config.yml` or `openspec/config.yaml`, not here. See the separation of concerns in
-> the OpenSpec documentation.
-
----
-
-## Role & Identity
-
-[One-sentence role definition if behaviorally useful, e.g., "You are a senior TypeScript engineer
-working across the @accelint/* monorepo."]
-
-[Scope constraints, if any, e.g., "Focus on rendering pipeline packages
-(@accelint/standard-toolkit, @accelint/layer-orchestration). Escalate cross-cutting
-architectural decisions."]
-
-[If role framing adds little value, keep this section brief and concrete rather than decorative.]
-
----
-
-## Communication
-
-- **Response style**: [preferred level of detail]
-- **Code changes**: [preferred presentation format]
-- **Uncertainty**: [when to ask vs. proceed]
-- **Reasoning**: [explain reasoning before acting / explain only when useful / other]
-
----
-
-## Workflow Procedures
-
-### New Features
-[step-by-step procedure, e.g.:]
-1. Start with `/opsx:propose` for any non-trivial change
-2. Get proposal reviewed before writing code
-3. Run `pnpm check` and `pnpm test` after each meaningful change
-4. Open a draft PR early; mark ready only after CI passes
-
-### Bug Fixes
-[project-specific bug-fix workflow]
-
-[If TDD is confirmed or strongly inferred, express it here clearly. Do not assume a full TDD doctrine unless supported.]
-
-### Pre-Commit Checklist
-- [ ] [check, e.g., `pnpm typecheck`]
-- [ ] [check, e.g., `pnpm lint`]
-- [ ] [check, e.g., `pnpm test`]
-- [ ] [additional checks only if evidenced or confirmed]
-
-### Commit Messages
-Convention: [e.g., Conventional Commits]
-Format: `[type]([scope]): [description]`
-Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`[, additional types]
-Example: `feat(layer): add WebGPU fallback for Safari`
-
-### PR Conventions
-- [size guideline, e.g., "prefer small, focused PRs over large changesets"]
-- [label convention, if any]
-- [review request convention, if any]
-
-### Versioning
-- [when and how to bump versions, e.g., "use `pnpm changeset` for any
-  user-facing change; patch for fixes, minor for features, major for
-  breaking changes"]
-
-### Completion Summary
-
-[Describe any required end-of-task summary format only if it is expected in this repo.]
-
----
-
-## Decision Heuristics
-
-| Situation | Default Action |
-|---|---|
-| Uncertain about scope | [ask / proceed with stated assumption] |
-| Deleting files | [always ask first] |
-| Changing public API | [always ask first] |
-| Adding a new dependency | [ask, state rationale] |
-| Modifying shared utilities | [ask, list affected packages] |
-| Discovering scope creep mid-task | [pause and surface to user] |
-| Two equally valid approaches | [pick one and state choice / ask] |
-| [additional recurring situations only if behaviorally useful] | [default action] |
-
----
-
-## Tool Preferences
-
-- **Package manager**: [e.g., always use `pnpm`; never `npm` or `yarn`]
-- **Test runner**: [e.g., `vitest`]
-- **Linting / formatting**: [e.g., `biome`]
-- **Task runner**: [e.g., `pnpm turbo run <task> --filter=<pkg>`]
-- **Version control**: [e.g., `git` via CLI]
-
-### TypeScript/Testing Preferences (if applicable)
-- [Include only durable, repo-supported preferences.]
-- [Do not add stack-specific doctrine unless confirmed or strongly inferred.]
-
-[additional tool preferences]
-
----
-
-## Guardrails
-
-### Never (hard stops — no exceptions)
-- [ ] Never force-push to any branch
-- [ ] Never commit secrets, tokens, or credentials
-- [ ] Never break backward compatibility without explicit approval
-- [ ] Never remove public exports, types, or functions without asking
-- [ ] Never run destructive operations (deletes, truncates, drops) without
-      confirmation
-- [ ] [additional project-specific hard stops]
-
-### Always Ask First (soft gates)
-- [ ] Before making performance trade-offs in hot paths
-- [ ] Before implementing architectural changes
-- [ ] Before adding any new dependency to `package.json`
-- [ ] Before deleting any tracked file
-- [ ] Before modifying `package.json` scripts in a shared package
-- [ ] Before changing a migration file
-- [ ] [additional project-specific soft gates]
-
-### Security Sensitivity
-- [any areas requiring special care, e.g., "treat all environment variable
-  names as sensitive — never log them, even in debug output"]
-
----
-
-## Related Documentation
-
-<!-- Include only files that actually exist in the repository -->
-
-- **openspec/config.yml** or **openspec/config.yaml** — Project DNA: stack facts, coding patterns, domain concepts
-  *(Include only the path that exists. Separation of concerns: this file defines WHAT the project is; AGENTS.md defines HOW agents behave)*
-- **ARCHITECTURE.md** — System architecture, deployment overview, component interactions
-  *(Reference this when behavioral decisions depend on understanding system structure)*
-- **README.md** — Installation, quick start, usage guide for developers
-```
+When generating or refreshing `AGENTS.md`, follow the template exactly, fill placeholders from confirmed answers or repository evidence, replace unresolved placeholders with `<!-- TODO: fill in -->`, keep required template sections, and omit optional sections only when the template explicitly allows it. Keep the final file lean and behavior-focused rather than copying illustrative text verbatim unless it is confirmed or strongly inferred.
 
 ---
 
@@ -715,7 +576,7 @@ Example: `feat(layer): add WebGPU fallback for Safari`
 Before you consider the onboarding complete, verify that the generated file:
 
 - preserves the behavior/project-DNA separation and redirects stack facts to `openspec/config.yml` or `openspec/config.yaml`
-- covers every template section, using `<!-- TODO: fill in -->` where facts remain unknown
+- covers every required template section from `./assets/template.md` in the template's order, using `<!-- TODO: fill in -->` where facts remain unknown
 - references root-level agent guidance instead of duplicating it in monorepo package files
 - includes only related-document links that exist in the repository
 - resolves contradictions using source precedence instead of preserving competing standing rules
@@ -723,6 +584,7 @@ Before you consider the onboarding complete, verify that the generated file:
 - removes low-value, unstable, handbook-style, or adjacent-doc material that does not materially steer agent behavior
 - keeps sections lean and behavior-layer focused rather than padded for surface completeness
 - treats template examples and defaults as illustrative scaffolding, not automatic policy
+- preserves optional template sections only when they still fit the repository and the template allows them
 - shows a full preview before any filesystem write and strips inference comments from the final file
 
 ---
