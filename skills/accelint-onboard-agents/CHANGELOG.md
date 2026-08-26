@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.0] - 2026-08-26
+
+### Added
+- **Import path branches clarified** — README and skill guidance now describe the restructure, append, and dry-run paths explicitly
+- **Refresh path branches clarified** — README and skill guidance now describe targeted refresh versus full refresh explicitly
+- **Companion-document detection coverage clarified** — README now names `CONSTRAINTS.md`, `EPISTEMIC-MAP.md`, and `JARGON.md` alongside `openspec/config.yml`, `openspec/config.yaml`, and `ARCHITECTURE.md`
+
+### Changed
+- **Workflow terminology aligned** — README now uses the same step-based workflow framing as `SKILL.md` instead of the older phase-based summary
+- **Version history aligned** — README version history now reflects the current skill version and the major behavior changes already present in `SKILL.md`
+- **Related Documentation description tightened** — README now says the generated file includes only canonical documents that actually exist and materially help agent behavior
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
 ## [1.4.0] - 2026-07-08
 
 ### Added

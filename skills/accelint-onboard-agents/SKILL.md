@@ -203,9 +203,9 @@ Treat `./assets/template.md` as the canonical structure reference for recognitio
 
 Only after the Mode 3 intent gate is satisfied, decide whether the request qualifies for targeted refresh.
 
-If a recognized local file exists and the user requests one bounded update with a known target section or issue, route within Mode 3 to a targeted refresh path instead of the full refresh flow.
+If a recognized local file exists and the user requests one bounded update with a known target section or issue, route within Mode 3 to the targeted refresh path instead of the full refresh flow.
 
-Use targeted refresh when the request is already within this skill's boundary and is clearly bounded, such as:
+Use targeted refresh only when the request is already within this skill's boundary and is clearly bounded, such as:
 
 - one known contradiction to fix
 - one section to update from newly confirmed evidence
@@ -452,7 +452,7 @@ Ask only for material that belongs in the template. Do not invent extra AGENTS.m
 
 ### Smart Defaults
 
-Use Smart Defaults only after the relevant template fields have been gathered or strongly inferred. Surface them as confirmation prompts, not as standing policy. If repository evidence or direct user answers already settle a default, do not ask it again.
+Use Smart Defaults only after the relevant template fields have been gathered or strongly inferred. Surface them as confirmation prompts, not as standing policy. If repository evidence or direct user answers already settle a default, do not ask about it again.
 
 Treat defaults as fallback prompts, not standing policy. Defaults must yield to stronger repository evidence, direct user answers, the canonical template, and still-consistent existing guidance.
 
@@ -478,11 +478,11 @@ Treat defaults as fallback prompts, not standing policy. Defaults must yield to 
 
 Enter this step only after the mode-specific interview work above is complete, and only for sections that still have unresolved behavioral gaps. Skip this step when the chosen path already has enough confirmed information and no remaining unresolved sections require inference.
 
-After the interview, audit every canonical template section and required template field defined in `./assets/template.md` that still has no answer, including `## Quality bar for finished work`, `## Related Documentation`, and `## Maintenance guidance` where applicable. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before asking again or leaving a `<!-- TODO: fill in -->`. A behavioral file with explicit TODOs is actionable. A file with missing required template sections silently shapes agent behavior in unpredictable ways.
+After the interview, audit every canonical template section and required template field defined in `./assets/template.md` that still has no answer, including `## Quality bar for finished work`, `## Related Documentation`, and `## Maintenance guidance` where applicable. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before you ask again or leave a `<!-- TODO: fill in -->`. A behavioral file with explicit TODOs is actionable. A file with missing required template sections silently shapes agent behavior in unpredictable ways.
 
-Discovery is for filling behavioral gaps, not for maximizing output surface area. Gather broadly when needed, but carry forward only findings that survive the final inclusion rule.
+Discovery fills behavioral gaps. It does not maximize output surface area. Gather broadly when needed, but carry forward only findings that survive the final inclusion rule.
 
-Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses on one behavioral domain and returns structured findings. Wait for all agents to complete, then merge results before Preview and Write.
+Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses on one behavioral domain and returns structured findings. Wait for all agents to complete. Then merge the results before Preview and Write.
 
 **Spawn these agents at the same time:**
 
@@ -620,7 +620,7 @@ Before you consider the onboarding complete, verify that the generated file:
 - **Examples reduce ambiguity.** When asking about decision heuristics, offer concrete scenarios so the user can pattern-match.
 - **Iterative.** Let the user amend answers before the final write.
 - **Preview before writing.** Always show the full generated `AGENTS.md` or `CLAUDE.md` and get explicit confirmation before touching the filesystem.
-- **Infer before asking, ask before omitting.** A file with explicit TODOs is actionable. A file with missing sections silently degrades every interaction it governs.
+- **Infer before asking, ask before omitting.** A file with explicit TODOs is actionable. A file with missing sections silently shapes agent behavior in unpredictable ways.
 - **Proportionality matters.** Use the lightest workflow that still produces a reliable result. Narrow refreshes should stay narrow unless they expose wider drift.
 - **Do not cross the layer boundary.** If the user volunteers stack facts during this interview, acknowledge them and note they belong in `openspec/config.yml` or `openspec/config.yaml`, not `AGENTS.md` or `CLAUDE.md`. Offer to run the `accelint-onboard-openspec` skill for that content.
 - **Monorepo: reference, do not duplicate.** If a root-level `AGENTS.md` or `CLAUDE.md` exists, package-level files should reference it and add only what is specific to that package. Repeated instructions across root and package files inflate context on every agent invocation, so keep package files additive, not redundant.
