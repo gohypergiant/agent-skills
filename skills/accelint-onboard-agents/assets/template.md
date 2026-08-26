@@ -1,23 +1,23 @@
 # AGENTS.md
 
 > This file defines repository-specific agent behavior.
-> Keep it limited to durable, non-obvious instructions that materially change agent behavior.
-> Do not use this file as a general project handbook; link to canonical docs for project facts, architecture, onboarding, and other reference material.
-> If a rule must hold with zero exceptions, enforce it in CI, hooks, scripts, permissions, or other deterministic controls when available.
+> Keep it limited to durable, non-obvious instructions that materially affect agent behavior.
+> Do not use this file as a general project handbook. Link to canonical docs for project facts, architecture, onboarding, and other reference material.
+> If a rule must hold with zero exceptions, enforce it in CI, hooks, scripts, permissions, or other deterministic controls.
 
 ## What to optimize for
 
 - Follow repository-specific workflows and commands instead of guessing.
 - Prefer simple, scoped changes over broad or speculative refactors.
-- Make actions traceable: say what you checked, what you changed, and what you verified.
-- Surface uncertainty honestly; do not invent facts or claim success without evidence.
-- Keep behavior aligned with existing repository patterns unless asked to change them.
+- Make work traceable: say what you checked, what you changed, and what you verified.
+- State uncertainty honestly. Do not invent facts or claim success without evidence.
+- Stay aligned with existing repository patterns unless asked to change them.
 
 ## How to communicate
 
 - Be [concise / direct / collaborative / other repo preference]. <!-- TODO: fill in -->
-- When making changes, explain what changed, why, how it was verified, and any remaining risks or open questions.
-- If information is missing or ambiguous, say so explicitly and either ask or proceed with narrow, stated assumptions. <!-- TODO: fill in -->
+- When making changes, explain what changed, why it changed, how you verified it, and any remaining risks or open questions.
+- If information is missing or unclear, say so directly and either ask or proceed with narrow, stated assumptions. <!-- TODO: fill in -->
 - Do not speculate about code, files, or behavior you have not inspected.
 
 ## How to work
@@ -25,21 +25,21 @@
 ### Before making changes
 
 - Read the relevant code and nearby repository documentation first.
-- Use the repository's actual commands, paths, and conventions where known. <!-- TODO: fill in -->
-- If the requested change is large, risky, or unclear, state an approach before implementing. <!-- TODO: fill in -->
+- Use the repository's actual commands, paths, and conventions when known. <!-- TODO: fill in -->
+- If the requested change is large, risky, or unclear, state your approach before implementing. <!-- TODO: fill in -->
 - Keep scope tight unless broader changes are explicitly approved or clearly necessary.
 
 ### While making changes
 
 - Prefer the simplest approach that fits existing patterns.
 - Avoid over-engineering and avoid changing unrelated code.
-- Use specialized or delegated workflows only when they materially help; avoid duplicated or conflicting parallel edits.
+- Use specialized or delegated workflows only when they materially help. Avoid duplicated work and conflicting parallel edits.
 - When repository-specific commands or tools matter, use the preferred entry points below instead of ad hoc alternatives.
 
-### Before declaring completion
+### Before completing the task
 
 - Run the relevant verification steps. <!-- TODO: fill in -->
-- Check that changes are limited to the intended scope.
+- Check that changes stay within the intended scope.
 - Confirm no secrets, credentials, or sensitive values were introduced.
 - Report the verification evidence, not just the conclusion.
 
@@ -65,7 +65,7 @@
 
 ## Approval and safety boundaries
 
-Ask before proceeding when an action is costly, risky, hard to reverse, affects shared systems, or changes information other people rely on.
+Ask before proceeding when an action is costly, risky, hard to reverse, affects shared systems, or changes information other people rely on. Do not take those actions until you have approval.
 
 Examples to keep or adapt:
 - adding or upgrading production/runtime dependencies <!-- TODO: fill in -->
@@ -83,16 +83,11 @@ Always preserve these boundaries:
 
 ## Quality bar for finished work
 
-A change is not done until it meets the repository's expected quality bar.
+A change is not done until it meets the repository's expected quality bar and you report the required evidence.
 
 - **Required checks to run:** [tests, lint, format, typecheck, or other checks] <!-- TODO: fill in -->
 - **Required evidence to report:** [commands run, outputs observed, screenshots if relevant, remaining gaps] <!-- TODO: fill in -->
 - **Review or handoff expectations:** [repo-specific expectations] <!-- TODO: fill in -->
-
-## Local additions
-
-- Keep repository-wide behavior in this file.
-- Add only local exceptions or stricter rules in closer files when needed; do not duplicate this guidance.
 
 ## Optional review-specific rules
 
@@ -103,17 +98,16 @@ A change is not done until it meets the repository's expected quality bar.
 
 <!-- Include only files that actually exist and materially help the agent behave correctly. Use this section to point to source-of-truth documents instead of copying their content here. -->
 
-- **`README.md`** — General project context, setup, and day-to-day developer usage. <!-- TODO: keep, rewrite, or remove -->
 - **`ARCHITECTURE.md`** — System structure, major components, deployment model, and design rationale. <!-- TODO: keep, rewrite, or remove -->
 - **`CONSTRAINTS.md`** — Hard external boundaries such as compliance, security, hosting, or stakeholder constraints. <!-- TODO: keep, rewrite, or remove -->
 - **`openspec/config.yaml`** — Project facts such as stack, architecture facts, coding patterns, or domain concepts that belong outside the behavior layer. <!-- TODO: keep, rewrite, or remove -->
-- **`JARGON.md`** — Internal terminology, acronyms, and shorthand used in the project; consult when repository language is not self-explanatory. <!-- TODO: keep, rewrite, or remove -->
+- **`JARGON.md`** — Internal terminology, acronyms, and shorthand used in the project. Consult it when repository language is not self-explanatory. <!-- TODO: keep, rewrite, or remove -->
 - **`[other canonical doc]`** — [What it provides and when the agent should consult it.] <!-- TODO: fill in or remove -->
 
 ## Maintenance guidance
 
 - Add instructions only when they prevent repeated mistakes, resolve real ambiguity, or capture durable repository behavior.
 - Remove or rewrite rules that become stale, noisy, redundant, or ignored.
-- Move narrow guidance closer to the code when global instructions start to bloat.
+- Move narrow guidance closer to the code if global instructions start to bloat.
 - Prefer concrete, verifiable instructions over aspirational slogans.
-- If a section cannot yet be filled responsibly, leave `<!-- TODO: fill in -->` rather than inventing unsupported guidance.
+- If a section cannot yet be filled in based on evidence, leave `<!-- TODO: fill in -->` rather than inventing unsupported guidance.
