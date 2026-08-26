@@ -152,25 +152,37 @@ Apply these limits during this check:
 
 Only after Checks 1 and 2 are complete, detect the local `AGENTS.md` or `CLAUDE.md` state.
 
+Run this check in order:
+
+1. Check whether a local `AGENTS.md` or `CLAUDE.md` exists in the current directory.
+2. If neither file exists, select **Mode 1: Create** and run the full interview from scratch.
+3. If a local file exists, read it before classifying the mode.
+4. After you read the file, classify it exactly once:
+   - If it is empty or near-blank, meaning fewer than about 10 meaningful lines, select **Mode 1: Create** with overwrite confirmation.
+     Ask: *"AGENTS.md exists but appears empty — should I populate it from scratch, or preserve any current content?"*
+   - If it contains the canonical template shape from `./assets/template.md`, meaning two or more canonical section headings in recognizably template-based form, select **Mode 3: Refresh**.
+   - If it contains real content in an unrecognized shape, select **Mode 2: Import**.
+
+Use the diagram below as a quick classification aid. The ordered list above is authoritative.
+
 ```text
-Does a local AGENTS.md (or CLAUDE.md) exist in the current directory?
+Local `AGENTS.md` or `CLAUDE.md` in current directory?
 │
-├── No → MODE 1: Create
-│         Full interview from scratch.
+├── No
+│   └── MODE 1: Create
+│       Full interview from scratch.
 │
-└── Yes → Read the file, then assess:
-          │
-          ├── Empty or near-blank (fewer than about 10 meaningful lines)?
-          │     → MODE 1: Create (with overwrite confirmation)
-          │       Ask: "AGENTS.md exists but appears empty — should I
-          │       populate it from scratch, or preserve any current content?"
-          │
-          ├── Contains the canonical template shape from `./assets/template.md`?
-          │   (two or more canonical section headings, in recognizably template-based form)
-          │     → MODE 3: Refresh
-          │
-          └── Contains real content in an unrecognized shape?
-                → MODE 2: Import
+└── Yes
+    ├── Read the file first
+    └── Then classify:
+        ├── Empty or near-blank (< about 10 meaningful lines)
+        │   └── MODE 1: Create
+        │       Ask: "AGENTS.md exists but appears empty — should I populate it from scratch, or preserve any current content?"
+        ├── Canonical template shape from `./assets/template.md`
+        │   └── MODE 3: Refresh
+        │       Two or more canonical section headings in recognizably template-based form.
+        └── Real content in an unrecognized shape
+            └── MODE 2: Import
 ```
 
 #### Gate — Ask the intent question for Mode 2 and Mode 3
