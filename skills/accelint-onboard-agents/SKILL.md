@@ -14,24 +14,20 @@ Guide the user through a conversational interview that produces a complete, proj
 ## Separation of Concerns
 
 This skill produces the **behavior layer** of the agent instruction stack.
-It complements the `accelint-onboard-openspec` skill, which produces the
-**project DNA layer** (`openspec/config.yml` or `openspec/config.yaml`). These layers must not
-duplicate each other.
 
-Keep content here only when it directly improves recurring agent behavior.
-If a detail is better described as project background, stack fact,
-architecture explanation, process handbook material, or nearby reference
-documentation, prefer the canonical document and link to it instead of
-restating it here.
+Keep content here only when it directly improves recurring agent behavior. If a detail is better described as project background, stack fact, architecture explanation, process handbook material, or nearby reference documentation, use the canonical companion document and link to it instead of restating it here.  These layers must not duplicate each other.
 
-Use the rule below to decide what stays in this file and what belongs in a
-canonical companion document.
+Canonical companion documents may include `openspec/config.yml` or `openspec/config.yaml` for project DNA, `ARCHITECTURE.md` for system structure, `CONSTRAINTS.md` for externally imposed boundaries, `EPISTEMIC-MAP.md` for validated facts vs open questions and assumptions, and `JARGON.md` for internal terminology.
+
+Use the rule below to decide what stays in this file and what belongs in a canonical companion document.
 
 ### Hard Rule: What Does NOT Belong Here
 
-If information answers "what is the project?" rather than "how should the agent behave?", it belongs in `openspec/config.yml` or `openspec/config.yaml`, not here.
+If material does not answer "how should the agent behave?", it does not belong in `AGENTS.md` or `CLAUDE.md`.
 
-| Belongs in AGENTS.md | Belongs in config.yaml |
+Move that material to the appropriate canonical companion document when one exists, or leave it out of the behavior file rather than turning `AGENTS.md` into a general project handbook.
+
+| Belongs in AGENTS.md | Belongs in a canonical companion document |
 |---|---|
 | "Always run `pnpm check` before committing" | "Package manager: pnpm" |
 | "Use Conventional Commits" | "TypeScript 5.x, strict mode" |
@@ -39,6 +35,8 @@ If information answers "what is the project?" rather than "how should the agent 
 | "Prefer small, focused PRs" | "`type` over `interface`" |
 | "Work as a senior TS engineer when useful" | "Domain: geospatial visualization" |
 | "Never force-push to main" | "Testing: Vitest + @testing-library" |
+| "Read `ARCHITECTURE.md` before changing deployment-related code" | "Service topology and deployment model" |
+| "Check `CONSTRAINTS.md` before changing compliance-sensitive flows" | "The actual compliance or stakeholder constraint itself" |
 
 ### Final Inclusion Rule
 
@@ -125,16 +123,30 @@ If a root-level `AGENTS.md` or `CLAUDE.md` exists above the current directory:
 
 #### Check 2 — Check for related documents
 
-After the monorepo root check and before local file-state detection, check for related onboarding documents.
+After the monorepo root check and before local file-state detection, check for canonical companion documents that either:
+
+- help enforce the behavior-layer boundary, or
+- belong in the final `## Related Documentation` section.
+
+Check these companion documents in order:
 
 1. Check for `openspec/config.yml` or `openspec/config.yaml`.
    - If either file exists, read it to understand the project's stack and patterns.
-   - Note its existence for the "Related Documentation" section.
-   - Announce: "Found `openspec/config.yml` or `openspec/config.yaml` — I'll reference it for the separation-of-concerns boundary."
+   - Note its existence for the `## Related Documentation` section.
+   - Announce: "Found `openspec/config.yml` or `openspec/config.yaml` — I'll use it to maintain the behavior/project-DNA boundary."
 2. Check for `ARCHITECTURE.md`.
    - If it exists, read it to understand the system structure.
-   - Note its existence for the "Related Documentation" section.
-   - Announce: "Found `ARCHITECTURE.md` — I'll reference it in the behavioral docs."
+   - Note its existence for the `## Related Documentation` section.
+   - Announce: "Found `ARCHITECTURE.md` — I'll use it when behavior guidance depends on system structure."
+3. Check for other canonical companion documents, especially `CONSTRAINTS.md`, `EPISTEMIC-MAP.md`, and `JARGON.md`.
+   - If one exists, read it only when it is likely to materially affect behavior guidance, approval boundaries, or agent-facing terminology.
+   - Note any that exist for the final `## Related Documentation` section.
+
+Apply these limits during this check:
+
+- Do not turn this step into a broad handbook scan.
+- Detect canonical companion documents; do not absorb their full contents into `AGENTS.md`.
+- Read only what is needed to keep the behavior file accurate, scoped, and well-linked.
 
 #### Check 3 — Detect the local file state
 
@@ -165,9 +177,8 @@ Does a local AGENTS.md (or CLAUDE.md) exist in the current directory?
 
 If Step 1 detects Mode 2 or Mode 3, ask this before any other discovery, drift scan, or interview step for that mode:
 
-> "Before I start — would you like to **start fresh**, treating the
-> existing file as a reference only *(recommended)*, or **work with what's
-> already there**?"
+> "Before I start — would you like to **start fresh**, treating the existing file 
+> as a reference only *(recommended)*, or **work with what's already there**?"
 
 If the user chooses **start fresh**, switch immediately to Mode 1. Treat the existing file as a read-only reference. Carry forward any content from the existing file that is still accurate. Do not silently discard it. Regenerate the structure from scratch.
 
