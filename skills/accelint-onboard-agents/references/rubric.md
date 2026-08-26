@@ -1,14 +1,6 @@
-# Rubric for Evaluating `AGENTS.md` Files and the `accelint-onboard-agents` Skill
+# Rubric for Evaluating `AGENTS.md` Files with the `accelint-onboard-agents` Skill
 
-Use this rubric to evaluate two related things:
-
-1. the quality of an `AGENTS.md` file as a behavior guide for coding agents, and
-2. how effectively the `accelint-onboard-agents` skill produces `AGENTS.md` files that follow best practices.
-
-Use the same categories for both review targets, but shift the evidence:
-
-- When reviewing an **`AGENTS.md` file**, score the file itself.
-- When reviewing the **`accelint-onboard-agents` skill**, score the skill instructions first. Then use example outputs as evidence for whether the skill produces strong `AGENTS.md` files consistently.
+Use this rubric to evaluate the quality of an `AGENTS.md` file as a behavior guide for coding agents.
 
 This is a review heuristic, not a validated measurement instrument. It is meant to make evaluation more consistent, more explicit, and easier to compare across projects.
 
@@ -24,34 +16,21 @@ A strong `AGENTS.md` file should help an agent behave well inside a specific pro
 - remain easy to scan and maintain,
 - and avoid treating advisory prose as technical enforcement.
 
-A strong onboarding skill for `AGENTS.md` should reliably produce files with those qualities.
 
 ## How to use this rubric
 
-### Step 1: Choose the review target
-Score one of these targets:
-
-- **Target A: `AGENTS.md` file review**
-- **Target B: `accelint-onboard-agents` skill review**
-
-Done when: the target is explicit.
-
-### Step 2: Gather the right evidence
-Requires: Step 1 is complete.
-
-Use the smallest evidence set that supports a fair review.
-
-#### If the target is Target A
+### Step 1: Confirm the review artifact
 Review:
 - the `AGENTS.md` file,
 - any nearby agent-instruction wrappers such as `CLAUDE.md` if present,
 - and any linked project documents only when needed to verify scope, facts, or references.
 
-#### If the target is Target B
-Review:
-- `SKILL.md`,
-- any onboarding templates, prompts, or supporting assets the skill uses,
-- and example `AGENTS.md` outputs if they exist.
+Done when: the review artifact is explicit.
+
+### Step 2: Gather the right evidence
+Requires: Step 1 is complete.
+
+Use the smallest evidence set that supports a fair review.
 
 Done when: the evidence is sufficient to score the categories without guessing.
 
@@ -111,7 +90,7 @@ Use these bands after completing Step 5:
 **Weight: 22%**
 
 ### What this measures
-Whether the `AGENTS.md` file, or the skill that generates it, stays focused on agent behavior guidance instead of turning into a general project handbook.
+Whether the `AGENTS.md` file stays focused on agent behavior guidance instead of turning into a general project handbook.
 
 ### Why it matters
 `AGENTS.md` is most effective when it defines how an agent should work: communication style, workflow rules, approval boundaries, validation expectations, guardrails, and decision heuristics. It gets weaker when it absorbs architecture docs, product specs, onboarding manuals, or other material that belongs elsewhere.
@@ -145,7 +124,7 @@ Whether the `AGENTS.md` file, or the skill that generates it, stays focused on a
 **Weight: 14%**
 
 ### What this measures
-Whether the file or skill produces guidance that is easy to scan, internally coherent, and structurally disciplined.
+Whether the file produces guidance that is easy to scan, internally coherent, and structurally disciplined.
 
 ### Why it matters
 Agents and humans both need to find the right instruction quickly. Duplicate sections, bloated prose, buried rules, and inconsistent headings reduce practical usefulness.
@@ -247,7 +226,7 @@ An agent should not invent project rules. Strong guidance either encodes verifie
 **Weight: 14%**
 
 ### What this measures
-Whether the file or skill handles safety, approvals, and mandatory controls at the right level.
+Whether the file handles safety, approvals, and mandatory controls at the right level.
 
 ### Why it matters
 A guidance file can shape behavior, but it cannot enforce everything. Strong `AGENTS.md` guidance makes approval boundaries and safety expectations clear without pretending prose alone is a hard control system.
@@ -286,32 +265,24 @@ Whether the guidance works in practice.
 ### Why it matters
 A well-written skill or template is not enough if the resulting `AGENTS.md` files are bloated, confusing, mis-scoped, or inconsistent.
 
-### For `AGENTS.md` review
 Score whether the file itself appears behaviorally useful, practical, and likely to improve agent performance in the real project.
-
-### For skill review
-Score whether examples or observed outputs show that the skill reliably produces strong `AGENTS.md` files.
 
 ### Weak
 - The output is bloated, contradictory, generic, or hard to use.
 - The file does not clearly improve agent behavior.
-- For skill review: examples undermine confidence in the skill.
 
 ### Adequate
 - The output is useful overall, but uneven.
 - It solves concrete problems while leaving recurring clarity or scope issues.
-- For skill review: examples show partial success, not consistent control.
 
 ### Strong
 - The output is clearly useful in practice.
 - It supports better agent behavior without obvious drift or clutter.
-- For skill review: examples consistently validate the skill’s approach.
 
 ### Indicators to look for
 - Concrete, usable outputs.
 - Low contradiction and low duplication.
 - Clear signs the file would change agent behavior in a meaningful way.
-- Cross-example consistency for skill review.
 
 ---
 
@@ -319,7 +290,7 @@ Score whether examples or observed outputs show that the skill reliably produces
 **Weight: 8%**
 
 ### What this measures
-Whether the file or skill can stay correct as the project, tooling, and agent ecosystem change.
+Whether the file can stay correct as the project, tooling, and agent ecosystem change.
 
 ### Why it matters
 Agent guidance tends to decay when it is too brittle, too specific, too duplicated, or too tied to short-lived tools or models.
@@ -376,7 +347,7 @@ Use these notes to keep scoring consistent:
 
 ## What strong results should look like
 
-A strong `AGENTS.md` file, or a strong skill that produces one, should:
+A strong `AGENTS.md` file should:
 
 - keep the focus on agent behavior,
 - make important decisions easier and safer,
