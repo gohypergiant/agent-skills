@@ -480,9 +480,7 @@ architectural decisions."]
 
 ### New Features
 [step-by-step procedure, e.g.:]
-1. Start with `<skill_invocation><skill>openspec-propose</skill></skill_invocation>` for any non-trivial change
-   *(IMPORTANT: Use the Skill tool to invoke this skill directly.
-   Pass the skill name ("openspec-propose") and any args.)*
+1. Start with the `accelint-qrspi-propose` skill for any non-trivial change
 2. Get proposal reviewed before writing code
 3. Run `pnpm check` and `pnpm test` after each meaningful change
 4. Open a draft PR early; mark ready only after CI passes
@@ -495,10 +493,8 @@ Follow Test-Driven Development to ensure the bug is fixed and does not regress:
    before touching any production code
 2. **Fix the root cause** — not the symptom
 3. **Confirm the test passes** — validate the fix
-4. **Follow OpenSpec process** — use `<skill_invocation><skill>openspec-explore</skill></skill_invocation>` for investigation if
+4. **Follow OpenSpec process** — use the `openspec-explore` skill for investigation if
    the root cause is non-obvious
-   *(IMPORTANT: Use the Skill tool to invoke this skill directly.
-   Pass the skill name ("openspec-explore") and any args.)*
 5. Hand off to engineer for PR
 
 ### Pre-Commit Checklist

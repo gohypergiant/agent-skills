@@ -83,7 +83,7 @@ Execute these steps in order without stopping between them.
 
    **Validation:**
    If the prompt is empty or contains only the skill invocation with no actual content (after removing flags):
-   ```
+   ```text
    I need a ticket or feature description to plan. Please provide:
 
    - A ticket ID and description (e.g., "ATI-123: Add user authentication...")
@@ -104,7 +104,7 @@ Execute these steps in order without stopping between them.
 4. Check if the `workflows:` section contains all three required workflows: `explore`, `new`, and `continue`
 
 5. If any are missing:
-   ```
+   ```text
    This skill requires the expanded OpenSpec workflows (explore, new, continue).
 
    Your current workflows: [list what's enabled]
@@ -127,38 +127,17 @@ Execute these steps in order without stopping between them.
 **SILENT EXECUTION BLOCK: STEPS 8-24**
 
 The following steps execute INTERNALLY without user-facing output:
-- Use the Agent tool to spawn sub-agents with prompts containing `<skill_invocation>` directives
-- The sub-agents will interpret those directives and use the Skill tool internally
-- Store results silently in memory
-- Show only brief one-sentence progress updates ("Generating questions...", "Researching codebase...")
-- Do NOT display questions, research findings, or artifact generation details
+- Use the Agent tool to spawn sub-agents with prompts containing
+  ```text
+  Invoke the openspec-explore skill.
 
-The FIRST user-facing output is at step 27 (design review checkpoint).
----
+  I have this ticket:
 
-8. **Generate research questions** (Context isolation: the agent sees ONLY the ticket, not prior codebase knowledge or research. This prevents solution-first thinking)
+  [paste full ticket description here]
 
-9. Accept the ticket description from the user (passed as the skill argument or prompted if missing)
-
-10. Use the Agent tool to spawn a sub-agent with this exact prompt:
-
-   ```
-   <skill_invocation>
-     <skill>openspec-explore</skill>
-     <args>
-   I have this ticket:
-
-   [paste full ticket description here]
-
-   Generate a list of research questions that will tell us everything we need
-   to know before building this. Do not propose any solutions. Questions only.
-     </args>
-   </skill_invocation>
-
-   IMPORTANT: Pass this entire block (including the <skill_invocation> XML tags) as literal text
-   in the sub-agent's prompt. The sub-agent will interpret the XML directive and use the Skill tool
-   internally to pass the skill name ("openspec-explore") and any args.
-   ```
+  Generate a list of research questions that will tell us everything we need
+  to know before building this. Do not propose any solutions. Questions only.
+  ```
 
 11. Wait for the sub-agent (spawned via Agent tool) to complete and return the questions (INTERNAL STEP: Do NOT display the questions to the user)
 
@@ -168,32 +147,25 @@ The FIRST user-facing output is at step 27 (design review checkpoint).
 
 14. Use the Agent tool to spawn a NEW sub-agent (fresh context) with this exact prompt:
 
-   ```
-   <skill_invocation>
-     <skill>openspec-explore</skill>
-     <args>
-   [paste ONLY the research questions from step 12]
+  ```text
+  Invoke the openspec-explore skill.
 
-   Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/[capability]/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
+  [paste ONLY the research questions from step 12]
 
-   **Use `sem impact` for dependency analysis**
+  Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/[capability]/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
 
-   If research questions mention specific code entities (functions, classes, types, constants), check whether the `sem` CLI tool is available by running `which sem`.
+  **Use `sem impact` for dependency analysis**
 
-   If available, use `sem impact [token]` (baseline format, not JSON) to gather deterministic dependency data:
-   - Where the entity is defined (file:line)
-   - What it depends on (all dependencies)
-   - What depends on it (all call sites and references)
-   - Transitive impact (how many entities are affected)
+  If research questions mention specific code entities (functions, classes, types, constants), check whether the `sem` CLI tool is available by running `which sem`.
 
-   Include this impact analysis in your research findings. This ensures the design phase has complete dependency information and won't miss references or call sites.
-     </args>
-   </skill_invocation>
+  If available, use `sem impact [token]` (baseline format, not JSON) to gather deterministic dependency data:
+  - Where the entity is defined (file:line)
+  - What it depends on (all dependencies)
+  - What depends on it (all call sites and references)
+  - Transitive impact (how many entities are affected)
 
-   IMPORTANT: Pass this entire block (including the <skill_invocation> XML tags) as literal text
-   in the sub-agent's prompt. The sub-agent will interpret the XML directive and use the Skill tool
-   internally to pass the skill name ("openspec-explore") and any args.
-   ```
+  Include this impact analysis in your research findings. This ensures the design phase has complete dependency information and won't miss references or call sites.
+  ```
 
 15. Wait for the sub-agent to complete and return the research document (INTERNAL STEP: Do NOT display the research findings to the user)
 
@@ -207,73 +179,60 @@ The FIRST user-facing output is at step 27 (design review checkpoint).
 
 20. Use the Agent tool to spawn a sub-agent with this exact prompt:
 
-   ```
-   You are generating OpenSpec artifacts based on QRSPI research. You have access
-   to the research questions and answers, but NOT the original ticket text. This
-   prevents solution bias.
+  ```text
+  You are generating OpenSpec artifacts based on QRSPI research. You have access
+  to the research questions and answers, but NOT the original ticket text. This
+  prevents solution bias.
 
-   Research Questions and Answers:
-   [paste questions from step 12]
+  Research Questions and Answers:
+  [paste questions from step 12]
 
-   Research Findings:
-   [paste research doc from step 16]
+  Research Findings:
+  [paste research doc from step 16]
 
-   OpenSpec Design Rules (from config.yaml):
-   [paste the rules.design section verbatim]
+  OpenSpec Design Rules (from config.yaml):
+  [paste the rules.design section verbatim]
 
-   Agent Behavior Context:
-   [paste relevant sections from CLAUDE.md/AGENTS.md]
+  Agent Behavior Context:
+  [paste relevant sections from CLAUDE.md/AGENTS.md]
 
-   CRITICAL: You MUST invoke OpenSpec skills to create and generate artifacts.
-   DO NOT create files or write artifact content yourself. The OpenSpec skills
-   will handle artifact generation following OpenSpec's configured rules.
+  CRITICAL: You MUST invoke OpenSpec skills to create and generate artifacts.
+  DO NOT create files or write artifact content yourself. The OpenSpec skills
+  will handle artifact generation following OpenSpec's configured rules.
 
-   Now create the OpenSpec change with proposal and design artifacts:
+  Now create the OpenSpec change with proposal and design artifacts:
 
-   1. Invoke the openspec-new-change skill to create the change (OpenSpec will prompt for a slug):
-      <skill_invocation>
-        <skill>openspec-new-change</skill>
-      </skill_invocation>
+  1. Invoke the openspec-new-change skill to create the change (OpenSpec will prompt for a slug):
+     Invoke the openspec-new-change skill.
 
-      IMPORTANT: Use the Skill tool to invoke this skill directly.
-      Pass the skill name "openspec-new-change" and any args.
+  2. CRITICAL: Capture the change name/slug from the output and use it in all subsequent commands
 
-   2. CRITICAL: Capture the change name/slug from the output and use it in all subsequent commands
+  3. Run the openspec-continue-change skill ONCE with the change name to generate proposal.md ONLY:
+     Invoke the openspec-continue-change skill.
 
-   3. Run the openspec-continue-change skill ONCE with the change name to generate proposal.md ONLY:
-      <skill_invocation>
-        <skill>openspec-continue-change</skill>
-        <args>[change-name]</args>
-      </skill_invocation>
+     [change-name]
 
-      IMPORTANT: Use the Skill tool to invoke this skill directly.
-      Pass the skill name "openspec-continue-change" and any args.
+  4. Run the openspec-continue-change skill ONCE with the change name to generate design.md ONLY:
+     Invoke the openspec-continue-change skill.
 
-   4. Run the openspec-continue-change skill ONCE with the change name to generate design.md ONLY:
-      <skill_invocation>
-        <skill>openspec-continue-change</skill>
-        <args>[change-name]</args>
-      </skill_invocation>
+     [change-name]
 
-      IMPORTANT: Use the Skill tool to invoke this skill directly.
-      Pass the skill name "openspec-continue-change" and any args.
+  5. STOP after design.md - do NOT generate specs or tasks yet
 
-   5. STOP after design.md - do NOT generate specs or tasks yet
+  IMPORTANT: Let openspec-continue-change generate proposal.md and design.md using the
+  OpenSpec workflow. DO NOT write these files yourself. The openspec-continue-change
+  skill handles artifact generation based on config.yaml rules.
 
-   IMPORTANT: Let openspec-continue-change generate proposal.md and design.md using the
-   OpenSpec workflow. DO NOT write these files yourself. The openspec-continue-change
-   skill handles artifact generation based on config.yaml rules.
+  After design.md is generated (and ONLY proposal.md and design.md exist),
+  report completion, the CHANGE NAME, and the path to the design file.
 
-   After design.md is generated (and ONLY proposal.md and design.md exist),
-   report completion, the CHANGE NAME, and the path to the design file.
+  IMPORTANT: You MUST report the change name explicitly at the end like:
+  "Change name: [slug]"
 
-   IMPORTANT: You MUST report the change name explicitly at the end like:
-   "Change name: [slug]"
-
-   CRITICAL: STOP AFTER GENERATING DESIGN.MD. DO NOT CONTINUE TO SPECS OR TASKS.
-   Your job ends here. The parent agent will handle the checkpoint and further steps.
-   If you generate specs/* or tasks.md, you will bypass the mandatory design review.
-   ```
+  CRITICAL: STOP AFTER GENERATING DESIGN.MD. DO NOT CONTINUE TO SPECS OR TASKS.
+  Your job ends here. The parent agent will handle the checkpoint and further steps.
+  If you generate specs/* or tasks.md, you will bypass the mandatory design review.
+  ```
 
 21. Wait for the sub-agent to complete (INTERNAL STEP: Do NOT display artifact generation details to the user)
 
@@ -335,7 +294,7 @@ The FIRST user-facing output is at step 27 (design review checkpoint).
 
 29. Present it to the user with this framing:
 
-   ```
+   ```text
    Design artifact generated. Please review for:
 
    - Wrong pattern references (did I find the legacy way instead of the current way?)
@@ -414,82 +373,25 @@ The FIRST user-facing output is at step 27 (design review checkpoint).
 **SILENT EXECUTION BLOCK: STEPS 33-43**
 
 The following steps execute INTERNALLY without user-facing output:
-- Use the Agent tool to spawn sub-agents with prompts containing `<skill_invocation>` directives
-- The sub-agents will interpret those directives and use the Skill tool internally
-- Store results silently
-- Show only brief one-sentence progress updates ("Generating specs and tasks...")
-- Do NOT display spec/task generation details
+- Use the Agent tool to spawn sub-agents with prompts containing
+  ```text
+  Invoke the openspec-continue-change skill.
 
-The FIRST user-facing output is at step 44 (tasks review checkpoint).
----
+  [change-name]
 
-33. **Generate specs and tasks** (Context isolation: continue to keep the ticket out of context. Use Agent tool to spawn a sub-agent with questions + research + approved design.md)
+  2. Run the openspec-continue-change skill with the change name to generate tasks.md:
+     Invoke the openspec-continue-change skill.
 
-34. Read the (possibly user-edited) design.md file from step 31
+     [change-name]
 
-35. Read `openspec/config.yaml` to extract the `rules.spec` and `rules.tasks` sections
+  IMPORTANT: Let openspec-continue-change generate tasks.md using the OpenSpec workflow.
+  DO NOT write tasks.md yourself. The openspec-continue-change skill handles this.
 
-36. Read `CLAUDE.md` or `AGENTS.md` for agent behavior context
+  After tasks.md is generated, the parent agent will validate vertical slicing
+  and add a "## Parallelization Strategy" section if needed.
 
-37. Use the Agent tool to spawn a sub-agent with this exact prompt:
-
-   ```
-   You are generating OpenSpec specs and tasks based on QRSPI research and an
-   approved design. You have access to research and design, but NOT the original
-   ticket text.
-
-   CHANGE NAME: <change-name-from-step-23>
-
-   Research Questions and Answers:
-   [paste questions from step 12]
-
-   Research Findings:
-   [paste research doc from step 16]
-
-   Approved Design:
-   [paste design.md content]
-
-   OpenSpec Spec Rules (from config.yaml):
-   [paste the rules.spec section verbatim]
-
-   OpenSpec Tasks Rules (from config.yaml):
-   [paste the rules.tasks section verbatim]
-
-   Agent Behavior Context:
-   [paste relevant sections from CLAUDE.md/AGENTS.md]
-
-   CRITICAL: You MUST invoke the openspec-continue-change skill to generate artifacts.
-   DO NOT generate specs or tasks.md content yourself. The openspec-continue-change skill
-   will handle artifact generation following OpenSpec's configured rules.
-
-   Now generate the remaining OpenSpec artifacts:
-
-   1. Run the openspec-continue-change skill with the change name to generate specs/* (delta specs):
-      <skill_invocation>
-        <skill>openspec-continue-change</skill>
-        <args>[change-name]</args>
-      </skill_invocation>
-
-      IMPORTANT: Use the Skill tool to invoke this skill directly.
-      Pass the skill name "openspec-continue-change" and any args.
-
-   2. Run the openspec-continue-change skill with the change name to generate tasks.md:
-      <skill_invocation>
-        <skill>openspec-continue-change</skill>
-        <args>[change-name]</args>
-      </skill_invocation>
-
-      IMPORTANT: Use the Skill tool to invoke this skill directly.
-      Pass the skill name "openspec-continue-change" and any args.
-
-   IMPORTANT: Let openspec-continue-change generate tasks.md using the OpenSpec workflow.
-   DO NOT write tasks.md yourself. The openspec-continue-change skill handles this.
-
-   After tasks.md is generated, the parent agent will validate vertical slicing
-   and add a "## Parallelization Strategy" section if needed.
-
-   After tasks.md is generated, report completion and the path to the tasks file.
-   ```
+  After tasks.md is generated, report completion and the path to the tasks file.
+  ```
 
 38. Wait for the sub-agent to complete (INTERNAL STEP: Do NOT display artifact generation details to the user)
 
@@ -618,7 +520,7 @@ The FIRST user-facing output is at step 44 (tasks review checkpoint).
 
 44. ⚠️ **REQUIRED CHECKPOINT: Tasks Review** - Present `tasks.md` to the user for final approval:
 
-   ```
+   ```text
    Specs and tasks generated.
 
    [If auto-converted:]
@@ -640,7 +542,7 @@ The FIRST user-facing output is at step 44 (tasks review checkpoint).
 
 47. **Completion** - After tasks.md is approved, announce completion:
 
-   ```
+   ```text
    ✅ QRSPI planning phase complete.
 
    Change name: <change-name-from-step-23>
@@ -656,14 +558,7 @@ The FIRST user-facing output is at step 44 (tasks review checkpoint).
    Next steps:
    1. Review the artifacts one more time if needed
    2. Run `/clear` to start fresh context for implementation
-   3. Invoke the accelint-qrspi-apply skill to begin implementation:
-      <skill_invocation>
-        <skill>accelint-qrspi-apply</skill>
-        <args>[change-name]</args>
-      </skill_invocation>
-
-      IMPORTANT: Use the Skill tool to invoke this skill directly.
-      Pass the skill name "accelint-qrspi-apply" and any args.
+   3. Invoke the accelint-qrspi-apply skill with [change-name] to begin implementation.
 
    This allows you to create multiple specs before implementation and
    maintains proper context management.
@@ -760,8 +655,9 @@ If any of these are missing, guide the user to set them up before running this s
 
 ## Example Usage
 
-```
+```text
 User: I want to plan this ticket using QRSPI:
 
 ## ATI-12: smart-ls CLI tool
 Create a CLI tool that returns structured directory listings as JSON...
+```

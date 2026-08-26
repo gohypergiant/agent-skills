@@ -72,7 +72,7 @@ The skill works with any corpus size but warns if fewer than ~10 archived change
 │  Structural       Median related-count across specs/INDEX.md,       Candidate │
 │  Coupling         flag outliers ≥5 and ≥2× median                   findings  │
 │  Compile Report   Assemble CRITICAL / WARNING / SUGGESTION          Draft     │
-│                   findings, /opsx:verify register                   report    │
+│                   findings, openspec-verify-change register                   report    │
 │  Human Review     Present report; human confirms, dismisses, or     Confirmed │
 │                   defers each finding                               findings  │
 │  Route            Update Status (confirmed contradictions only)     Docs +    │
@@ -137,7 +137,7 @@ Surfaces capabilities whose `related:` count suggests boundary overgrowth — at
 
 ### Phase 4: Compile Report
 
-Assembles everything into one report using `/opsx:verify`'s CRITICAL/WARNING/SUGGESTION register:
+Assembles everything into one report using `openspec-verify-change`'s CRITICAL/WARNING/SUGGESTION register:
 
 ```
 ## Archive Synthesis Report — <date>
@@ -268,30 +268,24 @@ Decision column is condensed one-liner from `design.md` frontmatter. This skill'
 Uses exact same `findings:` shape `accelint-qrspi-apply` Phase 4 uses:
 
 ```
-<skill_invocation>
-  <skill>accelint-architecture-doc</skill>
-  <args>
+Invoke the accelint-architecture-doc skill.
+
 We found the following during periodic archive synthesis. Treat this as known
 context and refresh the affected section(s).
 
 findings:
 - [Plain factual statement about what archive shows, never instruction]
-  </args>
-</skill_invocation>
-
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
 ```
 
 Writer skill merges with its own codebase scan before presenting to human — same Mode 3 Refresh path manual run would take.
 
 **Rephrasing discipline**: Every findings: line is plain fact about what archive shows ("sync/protocol's stated budget constraint may no longer hold, given later message-broker adoption"), never instruction ("update sync/protocol's spec to remove constraint") — that would pre-empt writer skill's Mode 3 interview.
 
-### Relationship to `/opsx:verify`
+### Relationship to `openspec-verify-change`
 
 Borrows CRITICAL/WARNING/SUGGESTION register deliberately so reports read as familiar artifacts. But they check fundamentally different things:
 
-- `/opsx:verify`: Forward-looking, per-change, before archival (does implementation match its own design.md/tasks.md?)
+- `openspec-verify-change`: Forward-looking, per-change, before archival (does implementation match its own design.md/tasks.md?)
 - This skill: Backward-looking, cross-archive, periodic (does archive agree with itself?)
 
 Complementary, not redundant. A change can pass verification cleanly and still surface in decision-drift finding years later.
@@ -357,19 +351,13 @@ Skill:
 ✓ archive/INDEX.md: add-live-sync row Status → "superseded by
   adopt-notification-gateway (2026-06-18)"
 
-<skill_invocation>
-  <skill>accelint-architecture-doc</skill>
-  <args>
+Invoke the accelint-architecture-doc skill.
+
 We found the following during periodic archive synthesis. Treat this as known
 context and refresh the affected section(s).
 
 findings:
 - sync/protocol budget constraint may be stale
-  </args>
-</skill_invocation>
-
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-architecture-doc" — do not attempt to run this as a terminal command.
 
 Appending checkpoint to openspec/changes/archive/SYNTHESIS-LOG.md...
 
@@ -536,7 +524,7 @@ Check the archive cadence after first few runs. If 15 changes means checking twi
 
 Trust dismissed-pair tracking. A decision-drift dismissal is permanent (pair never re-flagged). A structural coupling dismissal is not (count rechecked every run).
 
-The verification report format matches `/opsx:verify` deliberately. Both check correctness, just at different scopes.
+The verification report format matches `openspec-verify-change` deliberately. Both check correctness, just at different scopes.
 
 When a finding targets multiple docs, each writer skill invocation is independent. One succeeding doesn't depend on another.
 
@@ -562,7 +550,7 @@ Tier 0: raw/                   openspec/changes/archive/*.md (immutable log)
 Tier 1: wiki/ pages            openspec/specs/<capability>/spec.md (current understanding)
 Tier 2: CLAUDE.md index        config.yaml + ARCHITECTURE.md + AGENTS.md + README.md (hub docs)
 
-Op: ingest                 →   <skill_invocation><skill>openspec-archive-change</skill></skill_invocation> + qrspi-apply Phase 4
+Op: ingest                 →   openspec-archive-change + qrspi-apply Phase 4
 Op: query                  →   artifact load at propose/apply time
 Op: lint                   →   accelint-archive-synthesis (this skill)
 ```

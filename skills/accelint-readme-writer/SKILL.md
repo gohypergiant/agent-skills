@@ -193,19 +193,15 @@ If `accelint-english-manager` is not available:
 If `accelint-english-manager` is available, invoke it with this exact prompt shape:
 
 ```text
-<skill_invocation>
-  <skill>accelint-english-manager</skill>
-  <args>audit+rewrite in strict mode the following:
+Invoke the accelint-english-manager skill.
+
+audit+rewrite in strict mode the following:
 
 "
 [PASTE CONTENT HERE]
 "
 
-I do not want a report, just apply the new content to the output directly.</args>
-</skill_invocation>
-
-IMPORTANT: Use the Skill tool to invoke this skill directly.
-Pass the skill name ("accelint-english-manager") and the args content shown above.
+I do not want a report, just apply the new content to the output directly.
 ```
 
 Use the rewritten content as the final README output. Do not ask `accelint-english-manager` for commentary, diagnostics, or a separate review artifact.
@@ -236,19 +232,15 @@ Before this final polish pass, confirm that `accelint-english-manager` is instal
 When it is available, call it in strict mode with this exact prompt shape:
 
 ```text
-<skill_invocation>
-  <skill>accelint-english-manager</skill>
-  <args>audit+rewrite in strict mode the following:
+Invoke the accelint-english-manager skill.
+
+audit+rewrite in strict mode the following:
 
 "
 [PASTE CONTENT HERE]
 "
 
-I do not want a report, just apply the new content to the output directly.</args>
-</skill_invocation>
-
-IMPORTANT: Use the Skill tool to invoke this skill directly.
-Pass the skill name ("accelint-english-manager") and the args content shown above.
+I do not want a report, just apply the new content to the output directly.
 ```
 
 Documentation should sound like it was written by someone who genuinely wants to help. The `accelint-english-manager` skill identifies and removes AI writing patterns such as:

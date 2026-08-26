@@ -56,53 +56,19 @@ For each code file, you MUST follow this sequence:
 **Process:**
 
 Step 1: Test coverage analysis
-```xml
-<skill_invocation>
-  <skill>accelint-ts-testing</skill>
-  <args>[path/to/file.ts]</args>
-</skill_invocation>
+```text
+Invoke the accelint-ts-testing skill.
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-ts-testing" — do not attempt to run this as a terminal command.
+[path/to/file.ts]
 ```
 
 Step 2: Apply user-selected test improvements
 
 Step 3: Analyze code quality (run both in parallel)
-```xml
-<skill_invocation>
-  <skill>accelint-ts-best-practices</skill>
-  <args>[path/to/file.ts]</args>
-</skill_invocation>
+```text
+Invoke the accelint-ts-best-practices skill.
 
-<skill_invocation>
-  <skill>accelint-ts-performance</skill>
-  <args>[path/to/file.ts]</args>
-</skill_invocation>
-
-IMPORTANT: These are skill invocation directives, NOT shell commands.
-Execute the internal skills "accelint-ts-best-practices" and "accelint-ts-performance" — do not attempt to run these as terminal commands.
-```
-
-Step 4: Apply changes interactively with user approval
-
-Step 5: Verify with tests
-```bash
-{exact test command}
-{exact build command}
-```
-
-Step 6: Apply changes interactively with user approval (if needed)
-
-Step 7: Documentation pass
-```xml
-<skill_invocation>
-  <skill>accelint-ts-documentation</skill>
-  <args>[path/to/file.ts]</args>
-</skill_invocation>
-
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-ts-documentation" — do not attempt to run this as a terminal command.
+[path/to/file.ts]
 ```
 
 Step 8: Apply changes interactively with user approval

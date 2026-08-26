@@ -140,14 +140,10 @@ For each file in the pending list, follow this exact sequence:
 #### Phase 1: Initial Test Coverage
 
 **Step 1: Run accelint-ts-testing skill**
-```xml
-<skill_invocation>
-  <skill>accelint-ts-testing</skill>
-  <args>[file-path]</args>
-</skill_invocation>
+```text
+Invoke the accelint-ts-testing skill.
 
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-ts-testing" — do not attempt to run this as a terminal command.
+[file-path]
 ```
 
 **Step 2: Interactive Changes**
@@ -179,81 +175,10 @@ Execute the internal skill "accelint-ts-testing" — do not attempt to run this 
 **Step 3: Run BOTH skills in parallel**
 
 CRITICAL: Run these together to avoid contradictory suggestions:
-```xml
-<skill_invocation>
-  <skill>accelint-ts-best-practices</skill>
-  <args>[file-path]</args>
-</skill_invocation>
+```text
+Invoke the accelint-ts-best-practices skill.
 
-<skill_invocation>
-  <skill>accelint-ts-performance</skill>
-  <args>[file-path]</args>
-</skill_invocation>
-
-IMPORTANT: These are skill invocation directives, NOT shell commands.
-Execute the internal skills "accelint-ts-best-practices" and "accelint-ts-performance" — do not attempt to run these as terminal commands.
-```
-
-**Step 4: Interactive Changes**
-- Review both sets of recommendations
-- **If recommendations overlap:**
-  - Try to merge them into single fix if possible
-  - If conflicting, present both and let user choose
-
-**BLOCKING - Interactive Approval Required:**
-> You MUST complete all three checkpoints before proceeding:
-> 1. ✅ Display emoji severity table with ALL issues from BOTH skills (see "Interactive Change Approval Pattern")
-> 2. ✅ Show detailed before/after code for EVERY issue
-> 3. ✅ Ask "Apply which issues?" with numbered list acceptance
-> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
-
-- Apply accepted changes
-- Add `// PERF:` comments only where they add genuine insight
-- Document in "Current File - Detailed Progress"
-- Update status to show Step 3 ✅, Step 4 ✅
-- **SAVE PROGRESS to audit-process file NOW before continuing**
-
-#### Phase 3: Verify Changes
-
-**Step 5: Run verification commands**
-
-⚠️ **CRITICAL:** Use EXACT commands from audit-process file "Verification Commands" section. DO NOT improvise or run one-off commands.
-
-Run ALL verification commands documented in audit-process file:
-```bash
-# Example commands (MUST match audit-process file exactly):
-cd <project-root>; npm test
-cd <project-root>; npm run build
-cd <project-root>; npm run lint
-```
-
-**Step 6: Interactive Changes (if needed)**
-
-If verification passes, skip to documenting results. Otherwise:
-
-**BLOCKING - Interactive Approval Required:**
-> You MUST complete all three checkpoints before proceeding:
-> 1. ✅ Display emoji severity table with ALL verification failures (see "Interactive Change Approval Pattern")
-> 2. ✅ Show detailed before/after code for EVERY issue
-> 3. ✅ Ask "Apply which fixes?" with numbered list acceptance
-> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
-
-- Apply accepted changes
-- Document results in "Current File - Detailed Progress"
-- Update status to show Step 5 ✅, Step 6 ✅
-- **SAVE PROGRESS to audit-process file NOW before continuing**
-
-#### Phase 4: Documentation
-
-**Step 7: Run accelint-ts-documentation skill**
-```xml
-<skill_invocation>
-  <skill>accelint-ts-documentation</skill>
-  <args>[file-path]</args>
-</skill_invocation>
-
-IMPORTANT: This is a skill invocation directive, NOT a shell command.
-Execute the internal skill "accelint-ts-documentation" — do not attempt to run this as a terminal command.
+[file-path]
 ```
 
 **Step 8: Interactive Changes**

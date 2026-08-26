@@ -27,7 +27,7 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 - Sub-agent support (for parallel execution)
 - The expanded OpenSpec workflows (`explore`, `new`, `continue`) enabled
 
-**Important**: This skill is specifically designed for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use the regular `opsx:apply` skill directly.
+**Important**: This skill is specifically designed for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use the regular `openspec-apply-change` skill directly.
 
 ## Workflow Overview
 
@@ -63,7 +63,7 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
    ```bash
    openspec status --change "[name]" --json
    ```
-   If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `opsx:continue` to generate tasks before applying."
+   If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `openspec-continue-change` to generate tasks before applying."
 
 ### Record Implementation Start
 
@@ -236,20 +236,15 @@ For each level in the dependency graph (starting from level 0):
 
 21. If the level has only one slice:
    - Use the Agent tool to spawn a single sub-agent with this prompt (inject project context loaded in step 16):
-     ```
+     ```text
      <project_context>
      <!-- Background constraints for your implementation. Do NOT copy into code. -->
      {INJECTED_CONFIG_CONTEXT}
      </project_context>
 
-     <skill_invocation>
-       <skill>openspec-apply-change</skill>
-       <args>[change-name]</args>
-     </skill_invocation>
+     Invoke the openspec-apply-change skill.
 
-     IMPORTANT: Pass this entire block (including the <skill_invocation> XML tags) as literal text
-     in the sub-agent's prompt. The sub-agent will interpret the XML directive and use the Skill
-     tool internally to pass the skill name ("openspec-apply-change"") and any args.
+     [change-name]
 
      CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
      DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
@@ -285,20 +280,15 @@ For each level in the dependency graph (starting from level 0):
 For each level with multiple independent slices:
 
 23. Use the Agent tool to spawn all sub-agents in parallel in a single turn (one per slice, inject project context from earlier steps):
-   ```
+   ```text
    <project_context>
    <!-- Background constraints for your implementation. Do NOT copy into code. -->
    {INJECTED_CONFIG_CONTEXT}
    </project_context>
 
-   <skill_invocation>
-     <skill>openspec-apply-change</skill>
-     <args>[change-name]</args>
-   </skill_invocation>
+   Invoke the openspec-apply-change skill.
 
-   IMPORTANT: Pass this entire block (including the <skill_invocation> XML tags) as literal text
-   in the sub-agent's prompt. The sub-agent will interpret the XML directive and use the Skill tool
-   internally to pass the skill name ("openspec-apply-change") and any args.
+   [change-name]
 
    CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
    DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
@@ -331,7 +321,7 @@ For each level with multiple independent slices:
 24. Track completion as each sub-agent finishes
 
 25. **Context management decision point** - When all slices in the level are done, pause and offer context management:
-   ```
+   ```text
    ✅ Level N complete
 
    Completed slices:
@@ -347,18 +337,18 @@ For each level with multiple independent slices:
    ```
 
 26. If user chooses (b), instruct them:
-   ```
+   ```text
    Run `/clear` to reset context, then re-invoke this skill.
    I'll detect that Level N is complete and resume from Level N+1.
    ```
 
 27. If user chooses (c), exit and remind them how to resume:
-   ```
+   ```text
    Paused at Level N+1. To resume, re-invoke this skill.
    Progress is tracked in tasks.md checkboxes.
    ```
 
-**Slice targeting approach**: OpenSpec's `opsx:apply` skill does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
+**Slice targeting approach**: OpenSpec's `openspec-apply-change` skill does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
 
 1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `opsx:apply [change-name]`, which:
    - Runs `openspec instructions apply --change "[name]" --json` to get context
@@ -415,19 +405,15 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
-     ```
-     <skill_invocation>
-       <skill>accelint-onboard-openspec</skill>
-       <args>We have just completed the change spec openspec/changes/[change-name].
+     ```text
+     Invoke the accelint-onboard-openspec skill.
+
+     We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact, e.g., "config.yaml's Anti-Patterns section says to avoid polling, but this change chose polling for stated reasons"]
      - [Decision 2 rephrased as fact]
-     ...</args>
-     </skill_invocation>
-
-     IMPORTANT: Use the Skill tool to invoke this skill directly.
-     Pass the skill name ("accelint-onboard-openspec") and any args.
+     ...
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -450,19 +436,15 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
-     ```
-     <skill_invocation>
-       <skill>accelint-architecture-doc</skill>
-       <args>We have just completed the change spec openspec/changes/[change-name].
+     ```text
+     Invoke the accelint-architecture-doc skill.
+
+     We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact]
      - [Decision 2 rephrased as fact]
-     ...</args>
-     </skill_invocation>
-
-     IMPORTANT: Use the Skill tool to invoke this skill directly.
-     Pass the skill name ("accelint-architecture-doc") and any args.
+     ...
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -486,19 +468,15 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
-     ```
-     <skill_invocation>
-       <skill>accelint-onboard-agent</skill>
-       <args>We have just completed the change spec openspec/changes/[change-name].
+     ```text
+     Invoke the accelint-onboard-agent skill.
+
+     We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact]
      - [Decision 2 rephrased as fact]
-     ...</args>
-     </skill_invocation>
-
-     IMPORTANT: Use the Skill tool to invoke this skill directly.
-     Pass the skill name ("accelint-onboard-agent") and any args.
+     ...
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -521,19 +499,15 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      1. Read `openspec/changes/[change-name]/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
-     ```
-     <skill_invocation>
-       <skill>accelint-readme-writer</skill>
-       <args>We have just completed the change spec openspec/changes/[change-name].
+     ```text
+     Invoke the accelint-readme-writer skill.
+
+     We have just completed the change spec openspec/changes/[change-name].
 
      findings:
      - [Decision 1 rephrased as fact]
      - [Decision 2 rephrased as fact]
-     ...</args>
-     </skill_invocation>
-
-     IMPORTANT: Use the Skill tool to invoke this skill directly.
-     Pass the skill name ("accelint-readme-writer") and any args.
+     ...
      ```
      The skill will merge these findings with its own codebase scan before presenting to the human.
 
@@ -567,7 +541,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 32. Present summary (then immediately continue to recording completion timestamp):
 
    - If no updates were needed:
-     ```
+     ```text
      📝 Living documents checked — no updates needed for this change
 
      Checked documents:
@@ -580,7 +554,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      ```
 
    - If updates were made:
-     ```
+     ```text
      📝 Living documents updated
 
      Updated documents:
@@ -639,14 +613,10 @@ decisions:
 **CRITICAL**: This is the FINAL step. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this step.
 
 36. Call the verify skill:
-   ```
-   <skill_invocation>
-     <skill>openspec-verify-change</skill>
-     <args>[change-name]</args>
-   </skill_invocation>
+   ```text
+   Invoke the openspec-verify-change skill.
 
-   IMPORTANT: Use the Skill tool to invoke this skill directly.
-   Pass the skill name ("openspec-verify-change") and any args.
+   [change-name]
    ```
 
 37. The verify command will:
@@ -681,7 +651,7 @@ The skill supports pause/clear/resume workflow at dependency level boundaries:
 - **Progress tracking**: Task completion is tracked in tasks.md via checkboxes, making progress durable across context clears
 - **Rationale**: Sub-agents can accumulate significant context. Between dependency levels, the orchestrating agent can clear context while preserving work progress via task checkboxes.
 
-**Why this matters**: Long implementations with many slices can bloat context. By offering pause points between levels, users maintain the flexibility to clear context (like in serial `opsx:apply`) while still benefiting from parallelization within each level.
+**Why this matters**: Long implementations with many slices can bloat context. By offering pause points between levels, users maintain the flexibility to clear context (like in serial `openspec-apply-change`) while still benefiting from parallelization within each level.
 
 ### Intelligent Parallelization
 
@@ -693,7 +663,7 @@ If no parallelization strategy is found, the skill runs tasks sequentially. This
 
 ### Verification Before Archive
 
-The skill always runs `opsx:verify` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
+The skill always runs `openspec-verify-change` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
 
 ### Human-in-the-Loop
 
@@ -737,9 +707,9 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 **NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 28-32) complete successfully, immediately proceed to recording the completion timestamp (Steps 33-35), then to verification (Step 36). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 25). Do not treat completion of living document updates or timestamp recording as signals to stop and wait — they are signals to continue to the next step.
 
-**NEVER implement tasks directly** — Always delegate to `opsx:apply` skill via sub-agents. The opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
+**NEVER implement tasks directly** — Always delegate to `openspec-apply-change` skill via sub-agents. The opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
 
-**NEVER skip verification** — Verification using `opsx:verify` (Step 36) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
+**NEVER skip verification** — Verification using `openspec-verify-change` (Step 36) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
 
 **NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
 
@@ -800,7 +770,7 @@ All requirements implemented. No critical issues found.
 ### Next Steps
 1. Review the changes: `git diff`
 2. Run tests: `pnpm test`
-3. Archive this change: `<skill_invocation><skill>accelint-qrspi-archive</skill><args>remove-security-ruleset</args></skill_invocation>`
+3. Archive this change: Invoke the `accelint-qrspi-archive` skill with `remove-security-ruleset`
 
 Ready to archive!
 ```
@@ -830,7 +800,7 @@ Running verification...
 
 **Next Steps:**
 1. Fix critical issues
-2. Re-run verification: `<skill_invocation><skill>openspec-verify-change</skill><args>auth-refactor</args></skill_invocation>`
+2. Re-run verification: Invoke the `openspec-verify-change` skill with `auth-refactor`
 3. Or re-invoke this skill to retry
 
 Not ready to archive until critical issues are resolved.

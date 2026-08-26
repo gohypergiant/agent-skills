@@ -3,8 +3,8 @@
 ## [1.3.0] - 2026-08-25
 
 ### Added
-- Cross-platform agent compatibility through XML-based skill invocation format for accelint-english-manager
-- Explicit negative instructions to prevent misinterpretation as shell commands
+- Cross-platform agent compatibility through prose-based skill invocation format for accelint-english-manager
+- Simple, reliable prose format that works across all agent harnesses
 
 ### Changed
 - Migrated accelint-english-manager invocations from slash-command syntax to agent-agnostic XML invocation format
