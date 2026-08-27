@@ -617,7 +617,15 @@ Done when: the confirmed file is written without review-only comments.
 
 After the write is complete, evaluate the generated file against `./references/rubric.md`.
 
-Use the rubric as a structured post-write review, not as a ceremonial mention. Review the generated `AGENTS.md` or `CLAUDE.md`, applying the same rubric to `CLAUDE.md` when that is the generated agent-instruction file. Consult same-directory or root-level agent-instruction wrappers and directly linked related docs only when needed to verify scope or references, and score every rubric category on the 0-5 scale before applying the category weights with this formula: `(raw score / 5) × category weight`.
+Use the rubric as a structured post-write review, not as a ceremonial mention. Review the generated `AGENTS.md` or `CLAUDE.md`. If the generated file is `CLAUDE.md`, apply the same rubric to it as the repository's agent-instruction file. Consult same-directory or root-level agent-instruction wrappers and directly linked related docs only when needed to verify scope or references.
+
+Run the review in this order:
+
+1. Confirm the review artifact.
+2. Gather only the evidence needed to score fairly.
+3. Score every rubric category on the 0-5 scale.
+4. Apply the category weights with this formula: `(raw score / 5) × category weight`.
+5. Add review notes and the non-scored effectiveness check.
 
 Produce a concise review result for the user that includes:
 
@@ -638,7 +646,7 @@ Use the result to drive the user-facing completion behavior:
 
 - If the grade is **A**, tell the user you graded the generated `AGENTS.md` or `CLAUDE.md` and found the quality to be strong.
 - If the grade is **B**, tell the user in a simple note that you graded the generated `AGENTS.md` or `CLAUDE.md` and found the quality to be adequate.
-- If the grade is **below B**, warn the user that the file is below the desired quality bar and provide concrete remediation recommendations tied to the weakest rubric categories. The remediation guidance should be actionable, concise, and prioritized. Also offer to revise the file to address the highest-impact issues.
+- If the grade is **below B**, warn the user that the file is below the desired quality bar and provide concrete remediation recommendations tied to the weakest rubric categories. Keep the remediation guidance actionable, concise, and prioritized. Also offer to revise the file to address the highest-impact issues.
 
 Do not overstate certainty. If part of the score depends on incomplete repository evidence, say so briefly.
 
