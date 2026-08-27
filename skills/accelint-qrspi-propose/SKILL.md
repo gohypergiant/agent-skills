@@ -235,11 +235,11 @@ Execute these steps in order without stopping between them.
 
 21. Wait for the sub-agent to complete
 
-22. Extract the change name/slug from the sub-agent output silently (look for "Change name:" or parse from the file path)
+22. Extract the change name/slug from the sub-agent output (look for "Change name:" or parse from the file path)
 
 23. Store the change name — it will be passed to later steps
 
-24. Verify the design.md file exists at the reported path.
+24. Verify the design.md file exists at the reported path
 
 25. **If `--verbose` flag was set in step 1**: Create a `trace.md` audit trail file in the change folder before proceeding to the checkpoint.
 
