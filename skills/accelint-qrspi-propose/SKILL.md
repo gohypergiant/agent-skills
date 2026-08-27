@@ -185,16 +185,16 @@ Execute these steps in order without stopping between them.
   prevents solution bias.
 
   Research Questions and Answers:
-  <paste questions from step 12>
+  <paste the research questions from step 12>
 
   Research Findings:
   <paste research doc from step 16>
 
   OpenSpec Design Rules (from config.yaml):
-  <paste the rules.design section verbatim>
+  <paste the rules.design section verbatim from step 18>
 
   Agent Behavior Context:
-  <paste relevant sections from CLAUDE.md/AGENTS.md>
+  <paste relevant sections from CLAUDE.md/AGENTS.md from step 19>
 
   CRITICAL: You MUST invoke OpenSpec skills to create and generate artifacts.
   DO NOT create files or write artifact content yourself. The OpenSpec skills
