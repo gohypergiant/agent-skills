@@ -15,7 +15,7 @@ Guide the user through a conversational interview that produces a complete, proj
 
 This skill produces the **behavior layer** of the agent instruction stack.
 
-Keep content here only when it directly improves recurring agent behavior. If a detail is better described as project background, stack fact, architecture explanation, process handbook material, or nearby reference documentation, use the canonical companion document and link to it instead of restating it here.  These layers must not duplicate each other.
+Keep content here only when it directly improves recurring agent behavior. If a detail is better described as project background, stack fact, architecture explanation, process handbook material, or nearby reference documentation, use a canonical companion document and link to it instead of restating it here.  These layers must not duplicate each other.
 
 Canonical companion documents may include `openspec/config.yml` or `openspec/config.yaml` for project DNA, `ARCHITECTURE.md` for system structure, `CONSTRAINTS.md` for externally imposed boundaries, `EPISTEMIC-MAP.md` for validated facts vs open questions and assumptions, and `JARGON.md` for internal terminology.
 
@@ -253,13 +253,12 @@ Before you modify or synthesize anything, present the user with these three opti
 > How would you like to proceed?
 >
 > **(a) Restructure** — I'll import your existing content, map it onto this
-> skill's template sections, flag any material that belongs in
-> `openspec/config.yaml` instead, run a targeted interview to fill gaps,
+> skill's template sections, flag any material that belongs in a canonical
+> companion document instead, run a targeted interview to fill gaps,
 > and produce a merged file ready to replace the current one.
 >
 > **(b) Append** — I'll run the full interview and append a template-aligned
-> `AGENTS.md` block based on `./assets/template.md` below your existing content
-> without modifying what's already there.
+> `AGENTS.md` block below your existing content without modifying what's already there.
 >
 > **(c) Dry run** — I'll run the full interview and show you exactly what I
 > would have generated, with no changes to the filesystem. Use this to
@@ -278,8 +277,8 @@ Run these steps in order:
 1. Read the file in full.
 2. Map each existing section onto the canonical template sections from `./assets/template.md`.
 3. Preserve the template's section order and only keep optional sections that the template explicitly allows, such as `## Optional review-specific rules`.
-4. Flag any content that violates the separation-of-concerns boundary, such as stack facts, tech versions, or domain descriptions. These belong in `openspec/config.yaml`.
-   - For each violation, ask: *"This describes [X] — that's project DNA and belongs in `config.yaml`. Should I move it there and leave a reference here?"*
+4. Flag any content that violates the separation-of-concerns boundary, such as stack facts, tech versions, domain descriptions, constraints, assumptions, or internal terminology. Move that material to the appropriate canonical companion document.
+   - For each violation, ask: *"This describes [X] — that belongs in a canonical companion document rather than `AGENTS.md` or `CLAUDE.md`. Should I move it to the appropriate document and leave a reference here?"*
 5. Run a targeted interview that covers only the gaps, meaning canonical template sections or required template fields from `./assets/template.md` with no existing coverage.
 6. Apply the source-precedence rule and remove duplicate, conflicting, or adjacent-doc material before preview.
 7. Show a merged preview before writing. Inferred or existing content is labelled `# from existing file`; new content is labelled `# new`.
@@ -355,6 +354,8 @@ Check whether the invoking prompt includes a `findings:` list.
 ###### Refresh Step 2 — Run drift detection
 
 Scan the codebase for changes since the file was last updated.
+
+Use the signals below as common examples, not as an exhaustive list.
 
 | Signal | Where to look |
 |---|---|
@@ -452,25 +453,51 @@ Ask only for material that belongs in the template. Do not invent extra AGENTS.m
 
 ### Smart Defaults
 
-Use Smart Defaults only after the relevant template fields have been gathered or strongly inferred. Surface them as confirmation prompts, not as standing policy. If repository evidence or direct user answers already settle a default, do not ask about it again.
+Use Smart Defaults only to reduce avoidable interview load after you have already checked for stronger evidence.
 
-Treat defaults as fallback prompts, not standing policy. Defaults yield to stronger repository evidence, direct user answers, the canonical template, and still-consistent existing guidance.
+A Smart Default is a confirmation prompt, not standing policy. Use one only when:
 
-**Turborepo + PNPM monorepo → suggest confirming:**
-- "I'll assume you want `pnpm -w` (workspace root) for adding shared deps and `pnpm --filter <pkg>` for package-scoped deps; correct?"
-- "For tasks, I'll default to `pnpm turbo run build --filter=...` rather than running package scripts directly; correct?"
+- the relevant template field still needs an answer
+- direct user input does not already answer it
+- repository evidence does not already answer it
+- the default helps the user confirm a likely convention faster than asking from scratch
 
-**GitHub Actions CI → suggest confirming:**
-- "Should I wait for CI to pass before treating a PR as mergeable?"
-- "Any required status checks the agent should reference before marking work done?"
+Do not use Smart Defaults to introduce new policy, broaden scope, or carry ecosystem assumptions into the generated file.
 
-**Conventional Commits → suggest confirming:**
-- "I'll use `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:` — any additional types your team uses (for example `perf:`, `ci:`)?"
-- "Are breaking changes annotated with `!` suffix (for example `feat!:`) or with a footer `BREAKING CHANGE:` block?"
+Apply these rules:
 
-**Spec-Driven Development (OpenSpec) → suggest confirming:**
-- "For non-trivial changes, I'll start with `/opsx:propose` before writing any code; should I also require a design artifact for changes touching more than N files?"
-- "Should I link task IDs or spec refs in commit messages?"
+1. **Stronger evidence wins first.**
+   If direct user input, repository evidence, the canonical template, or still-consistent existing guidance already answers the field, do not offer a default for that field.
+2. **Offer defaults as prompts, not conclusions.**
+   Phrase the default as something to confirm, reject, or refine. Do not present it as adopted policy.
+3. **Keep the default proportional to the evidence.**
+   Prefer narrow prompts that test one likely convention at a time. Do not turn one repository signal into a broad workflow bundle.
+4. **Keep examples illustrative.**
+   The example prompts below show common patterns. They are not an exhaustive checklist and they are not required in every run.
+5. **Do not preserve a default after the user or repository disproves it.**
+   Replace it with the stronger answer, or leave `<!-- TODO: fill in -->` if the field still cannot be confirmed.
+
+#### Example prompt patterns
+
+Use patterns like these only when they match the repository evidence already gathered.
+
+**If the repo appears to use a PNPM monorepo:**
+- "I found signs of a PNPM workspace. Should I treat workspace-root and package-scoped dependency changes differently in the generated guidance?"
+- "Do you want the agent to prefer workspace-aware task commands when package selection matters?"
+
+**If the repo appears to use GitHub Actions for CI:**
+- "I found GitHub Actions workflows. Should the generated guidance require the agent to report or wait on specific CI checks before considering work complete?"
+- "Are there required status checks or PR gates that should appear in the file?"
+
+**If the repo appears to use Conventional Commits:**
+- "I found commit-convention signals. Should the file tell the agent to use Conventional Commits, and are there repo-specific types or breaking-change rules to note?"
+- "Are scope usage or footer conventions important enough to make explicit?"
+
+**If the repo appears to use OpenSpec or another spec-driven workflow:**
+- "I found signs of a spec-driven workflow. Which parts of that workflow are durable agent behavior that belong in `AGENTS.md`, and which parts should stay in canonical project documentation?"
+- "For non-trivial changes, should the agent start with the documented spec workflow before implementation?"
+
+Done when: likely conventions have been confirmed, rejected, or replaced with stronger evidence, and no unconfirmed default has been carried into standing guidance.
 
 ---
 
@@ -510,9 +537,10 @@ Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses 
 - Secret handling: `.env.example`, `.gitignore` patterns, presence of `dotenv` or vault tooling
 - Return: migration guardrails if migrations exist, secret handling practices
 
-**Agent E — OpenSpec & Development Workflow**
-- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `/opsx:*` references in docs or CLAUDE.md
-- Return: OpenSpec usage status, when to invoke spec workflow
+**Agent E — OpenSpec and spec-driven workflow**
+- OpenSpec signals: `openspec/` directory, `openspec/config.yml`, `openspec/config.yaml`, and any `/opsx:*` or `/openspec-*` references
+- Related workflow evidence: companion documents only when they define durable agent workflow expectations relevant to spec-driven work
+- Return: whether a spec-driven workflow is in use, which parts belong in durable agent behavior guidance, and when the agent should invoke that workflow
 
 **After all agents complete:** merge their findings into a unified discovery map.
 Tag each template field as `# inferred from [source]` or leave it empty if unknown. Fields that remain empty after discovery become explicit `<!-- TODO: fill in -->` markers in the generated file, and optional template sections should be omitted only when the template explicitly allows removal.
@@ -573,7 +601,7 @@ Only after the review gate is satisfied, write to `AGENTS.md` or `CLAUDE.md` in 
 
 Those comments are for review only and must not appear in the final file.
 
-For the `## Related Documentation` section, include links only for files that exist in the repository and materially help agent behavior. Check each candidate file before you include its link. Adapt or remove the template's illustrative bullets (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `openspec/config.yaml`, `JARGON.md`, and any other canonical doc placeholder) based on actual repository files. If both `openspec/config.yml` and `openspec/config.yaml` are absent, do not include either path.
+For the `## Related Documentation` section, include links only for files that exist in the repository and materially help agent behavior. Check each candidate file before you include its link. Adapt or remove the template's illustrative bullets (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `openspec/config.yaml`, `JARGON.md`, and any other canonical doc placeholder) based on actual repository files. If `openspec/config.yml` or `openspec/config.yaml` are absent, do not include either path.
 
 Done when: the confirmed file is written without review-only comments.
 
@@ -582,6 +610,7 @@ Done when: the confirmed file is written without review-only comments.
 After the write is complete, print a brief summary of what was generated, what was inferred versus answered directly, and which `<!-- TODO -->` sections still need human input.
 
 Done when: the user has the final write summary.
+
 ---
 
 ## AGENTS.md Template
@@ -598,7 +627,7 @@ When generating or refreshing `AGENTS.md`, follow the template exactly, fill pla
 
 Before you consider the onboarding complete, verify that the generated file:
 
-- preserves the behavior/project-DNA separation and redirects stack facts to `openspec/config.yml` or `openspec/config.yaml`
+- preserves the behavior/project-DNA separation and redirects non-behavior material to the appropriate canonical companion document, such as `openspec/config.yml`, `openspec/config.yaml`, `ARCHITECTURE.md`, `CONSTRAINTS.md`, `EPISTEMIC-MAP.md`, or `JARGON.md`
 - covers every required template section from `./assets/template.md` in the template's order, using `<!-- TODO: fill in -->` where facts remain unknown
 - references root-level agent guidance instead of duplicating it in monorepo package files
 - includes only related-document links that exist in the repository
@@ -615,13 +644,13 @@ Before you consider the onboarding complete, verify that the generated file:
 ## Interaction Principles
 
 - **Parallel discovery.** When discovery is needed, spawn subagents at the same time. Do not scan config files one by one.
-- **Conversational, not interrogative.** Bundle related questions into a single turn. Use natural language, not bullet-dump question lists.
+- **Conversational, not interrogative.** Bundle related questions into a single turn. Use plain-English expository language, not bullet-dump question lists.
 - **Infer and confirm.** "You mentioned Husky — I'll assume the pre-commit hook runs `pnpm check`; can you confirm?" is better than asking from scratch.
 - **Examples reduce ambiguity.** When asking about decision heuristics, offer concrete scenarios so the user can pattern-match.
 - **Iterative.** Let the user amend answers before the final write.
 - **Preview before writing.** Always show the full generated `AGENTS.md` or `CLAUDE.md` and get explicit confirmation before touching the filesystem.
 - **Infer before asking, ask before omitting.** A file with explicit TODOs is actionable. A file with missing sections silently shapes agent behavior in unpredictable ways.
 - **Proportionality matters.** Use the lightest workflow that still produces a reliable result. Keep narrow refreshes narrow unless they expose wider drift.
-- **Do not cross the layer boundary.** If the user volunteers stack facts during this interview, acknowledge them and note they belong in `openspec/config.yml` or `openspec/config.yaml`, not `AGENTS.md` or `CLAUDE.md`. Offer to run the `accelint-onboard-openspec` skill for that content.
+- **Do not cross the layer boundary.** If the user volunteers non-behavior material during this interview, acknowledge it and note that it belongs in the appropriate canonical companion document, not `AGENTS.md` or `CLAUDE.md`. Route project DNA to `openspec/config.yml` or `openspec/config.yaml` with `accelint-onboard-openspec`, system structure to `ARCHITECTURE.md` with `accelint-architecture-doc`, internal terminology to `JARGON.md` with `jargon-extractor`, assumptions and risks to `EPISTEMIC-MAP.md` with `epistemic-mapper`, and external boundaries to `CONSTRAINTS.md` with `constraints-extractor`.
 - **Monorepo: reference, do not duplicate.** If a root-level `AGENTS.md` or `CLAUDE.md` exists, package-level files should reference it and add only what is specific to that package. Repeated instructions across root and package files inflate context on every agent invocation, so keep package files additive, not redundant.
 - **Synthesize, then preview.** The user should review the cleaned final draft, not raw assembled notes.
