@@ -613,9 +613,40 @@ For the `## Related Documentation` section, include links only for files that ex
 
 Done when: the confirmed file is written without review-only comments.
 
-#### Step 4 — Print the completion summary
+#### Step 4 — Run the AGENTS.md or CLAUDE.md quality check
 
-After the write is complete, print a brief summary of what was generated, what was inferred versus answered directly, and which `<!-- TODO -->` sections still need human input.
+After the write is complete, evaluate the generated file against `./references/rubric.md`.
+
+Use the rubric as a structured post-write review, not as a ceremonial mention. Review the generated `AGENTS.md` or `CLAUDE.md`, applying the same rubric to `CLAUDE.md` when that is the generated agent-instruction file. Consult same-directory or root-level agent-instruction wrappers and directly linked related docs only when needed to verify scope or references, and score every rubric category on the 0-5 scale before applying the category weights with this formula: `(raw score / 5) × category weight`.
+
+Produce a concise review result for the user that includes:
+
+- the reviewed file path
+- the total weighted score out of 100
+- the corresponding letter grade using this scale:
+  - **A** = 90-100
+  - **B** = 75-89
+  - **C** = 60-74
+  - **D** = 40-59
+  - **F** = 0-39
+- 2-4 brief strengths
+- the weakest rubric categories with their raw scores
+- the highest-risk weaknesses, if any
+- a short non-scored effectiveness note covering whether the file is likely to change agent behavior in practice
+
+Use the result to drive the user-facing completion behavior:
+
+- If the grade is **A**, tell the user you graded the generated `AGENTS.md` or `CLAUDE.md` and found the quality to be strong.
+- If the grade is **B**, tell the user in a simple note that you graded the generated `AGENTS.md` or `CLAUDE.md` and found the quality to be adequate.
+- If the grade is **below B**, warn the user that the file is below the desired quality bar and provide concrete remediation recommendations tied to the weakest rubric categories. The remediation guidance should be actionable, concise, and prioritized. Also offer to revise the file to address the highest-impact issues.
+
+Do not overstate certainty. If part of the score depends on incomplete repository evidence, say so briefly.
+
+Done when: the user has both the generated file and the post-write quality assessment.
+
+#### Step 5 — Print the completion summary
+
+After the write and quality check are complete, print a brief summary of what was generated, what was inferred versus answered directly, which `<!-- TODO -->` sections still need human input, and the quality-check outcome.
 
 Done when: the user has the final write summary.
 
@@ -646,6 +677,7 @@ Before you consider the onboarding complete, verify that the generated file:
 - treats template examples and defaults as illustrative scaffolding, not automatic policy
 - preserves optional template sections only when they still fit the repository and the template allows them
 - shows a full preview before any filesystem write and strips inference comments from the final file
+- is reviewed against `./references/rubric.md` after writing, with the resulting quality note or remediation guidance surfaced to the user
 
 ---
 
