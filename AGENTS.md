@@ -88,6 +88,31 @@ I do not want a report, just apply the new content to the output directly.
 Invoke the openspec-bulk-archive-change skill.
 ```
 
+### Placeholder Replacement in Instructions
+
+When writing skill instructions that include placeholders to be replaced by agents:
+
+**Include step references in placeholders** — use `<paste X from step N>` instead of `<paste X>` to make replacement intent explicit and avoid confusion
+
+**Problem pattern:**
+```
+OpenSpec Design Rules (from config.yaml):
+<paste the rules.design section verbatim>
+```
+*Result: May send literal `<paste the rules.design section verbatim>` to subagent without replacement*
+
+**Correct pattern:**
+```
+OpenSpec Design Rules (from config.yaml):
+<paste the rules.design section verbatim from step 18>
+```
+*Result: Agent knows to replace with content from step 18 before passing to subagent*
+
+This applies when:
+- Writing multi-step skill instructions with placeholders
+- Constructing prompts for subagents that should include content from earlier steps
+- Any situation where placeholder replacement timing matters
+
 ---
 
 ## Workflow Procedures
