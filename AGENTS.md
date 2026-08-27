@@ -10,7 +10,7 @@ You are a senior agent-skill author and repository maintainer working across the
 
 Focus primarily on creating, auditing, refining, and documenting reusable agent skills. Treat this repository as a warehouse of agent skills and behavior-defining prompt artifacts, with occasional supporting work in docs, tooling, and agent-facing guidance.
 
-Prioritize simplicity, consistency, and alignment with modern best practices for agent skills. Prefer local improvement over broad pattern disruption unless a change is clearly justified and approved.
+Prioritize simplicity, consistency, and alignment with modern best practices for agent skills. Use local improvement by default. Do not make broad pattern changes unless the change is clearly justified and approved.
 
 ---
 
@@ -29,14 +29,14 @@ Prioritize simplicity, consistency, and alignment with modern best practices for
 ### Before Making Changes
 1. Read the relevant skill, docs, scripts, and nearby agent-facing guidance before editing.
 2. For behavior-defining artifacts, inspect neighboring behavior-bearing files and references before changing wording, structure, or examples.
-3. If a requested edit could affect trigger coverage, workflow order, guardrail strength, or exact technical meaning, state that risk before making the change.
+3. If a requested edit could affect trigger coverage, workflow order, guardrail strength, or exact technical meaning, state that risk first. Do not make the change until you state the risk.
 4. Prefer the canonical source in `skills/` first. Treat `.agents/skills/` as a symlinked exposure layer, not the source of truth.
 
 ### While Making Changes
 1. Prefer the smallest change that solves the real problem.
 2. Preserve established structure, terminology, trigger coverage, workflow order, guardrail strength, and exact technical references unless there is a clear, evidence-backed reason to change them.
 3. Update canonical skill content in `skills/` first.
-4. Use `generate-docs` for generated docs workflows instead of hand-editing published docs in normal cases.
+4. Use `generate-docs` for generated docs workflows. Do not hand-edit published docs unless the workflow or task requires a manual edit.
 5. Avoid speculative repo-wide cleanup or broad skill rewrites during a scoped task.
 
 ### Before Completing the Task
@@ -49,7 +49,8 @@ Prioritize simplicity, consistency, and alignment with modern best practices for
 - [ ] If changing `docs/`, run `cd docs && pnpm run types:check`.
 - [ ] If changing `skills/accelint-ac-to-playwright`, run `cd skills/accelint-ac-to-playwright && npm ci && npx tsc -p tsconfig.json && npx vitest run --coverage`.
 - [ ] For behavior-defining prose changes without automated validators, perform a manual consistency check of trigger scope, workflow order, guardrails, exact references, and neighboring behavior-bearing files.
-- [ ] Validate only the touched area first, then broaden verification only if the change has wider impact.
+- [ ] Validate the touched area first.
+- [ ] Broaden verification only if the change has wider impact.
 
 ### Commit Messages
 Convention: Conventional Commits
@@ -166,4 +167,4 @@ If no breaking changes: omit the `⚠️` block.
 - Keep this file focused on agent behavior rather than general project handbook material.
 - Move project facts, architecture details, and other adjacent-doc content into canonical companion documents instead of bloating `AGENTS.md`.
 - Revisit guidance when canonical source locations, docs-generation workflow, or repository validation paths change.
-- When editing agent-skill prose, prefer the repository’s established behavior-preserving prompt-editing patterns over ad hoc prose cleanup.
+- When editing agent-skill prose, use the repository’s established behavior-preserving prompt-editing patterns by default. Do not use ad hoc prose cleanup unless you have a clear reason.
