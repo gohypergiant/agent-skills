@@ -351,13 +351,8 @@ Skill:
 ✓ archive/INDEX.md: add-live-sync row Status → "superseded by
   adopt-notification-gateway (2026-06-18)"
 
-Invoke the accelint-architecture-doc skill.
-
-We found the following during periodic archive synthesis. Treat this as known
-context and refresh the affected section(s).
-
-findings:
-- sync/protocol budget constraint may be stale
+[invokes accelint-architecture-doc with findings: — sync/protocol budget
+  constraint may be stale]
 
 Appending checkpoint to openspec/changes/archive/SYNTHESIS-LOG.md...
 

@@ -331,7 +331,7 @@ appropriate.
 
 **Turborepo + PNPM monorepo → suggest confirming:**
 - "I'll assume you want `pnpm -w` (workspace root) for adding shared deps
-  and `pnpm --filter [pkg]` for package-scoped deps; correct?"
+  and `pnpm --filter <pkg>` for package-scoped deps; correct?"
 - "For tasks, I'll default to `pnpm turbo run build --filter=...` rather
   than running package scripts directly; correct?"
 
@@ -501,11 +501,11 @@ Follow Test-Driven Development to ensure the bug is fixed and does not regress:
 - [ ] [check, e.g., `pnpm typecheck`]
 - [ ] [check, e.g., `pnpm lint`]
 - [ ] [check, e.g., `pnpm test`]
-- [ ] *(TypeScript/JavaScript)* Type check test files: `tsc --noEmit [test-file].test.ts`
+- [ ] *(TypeScript/JavaScript)* Type check test files: `tsc --noEmit <test-file>.test.ts`
 
 ### Commit Messages
 Convention: [e.g., Conventional Commits]
-Format: `[type]([scope]): [description]`
+Format: `<type>(<scope>): <description>`
 Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`[, additional types]
 Example: `feat(layer): add WebGPU fallback for Safari`
 
@@ -564,7 +564,7 @@ with placeholder text.
 - **Package manager**: [e.g., always use `pnpm`; never `npm` or `yarn`]
 - **Test runner**: [e.g., `vitest` — never `jest`]
 - **Linting / formatting**: [e.g., `biome` — never `prettier` or `eslint` separately]
-- **Task runner**: [e.g., `pnpm turbo run [task] --filter=[pkg]`]
+- **Task runner**: [e.g., `pnpm turbo run <task> --filter=<pkg>`]
 - **Version control**: [e.g., `git` via CLI — no GUI wrappers]
 
 ### TypeScript/Testing Preferences (if applicable)
