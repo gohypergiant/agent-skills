@@ -99,7 +99,11 @@ If a narrower branch explicitly tells you to skip a later step, follow that bran
 
 ### Step 1 — File State Detection
 
-Complete all three checks below before asking any interview question or choosing a mode. Never silently pick a mode. Always tell the user which mode you detected and confirm before continuing.
+Complete all three checks below before asking any interview question or choosing a mode.
+
+- Do not silently pick a mode.
+- Always tell the user which mode you detected.
+- Confirm before you continue.
 
 #### Check 1 — Monorepo root check
 
@@ -139,13 +143,13 @@ Check these companion documents in order:
    - Note its existence for the `## Related Documentation` section.
    - Announce: "Found `ARCHITECTURE.md` — I'll use it when behavior guidance depends on system structure."
 3. Check for other canonical companion documents, especially `CONSTRAINTS.md`, `EPISTEMIC-MAP.md`, and `JARGON.md`.
-   - If one exists, read it only when it is likely to materially affect behavior guidance, approval boundaries, or agent-facing terminology.
+   - If one exists, read it only when the document is likely to materially affect behavior guidance, approval boundaries, or agent-facing terminology.
    - Note any that exist for the final `## Related Documentation` section.
 
 Apply these limits during this check:
 
 - Do not turn this step into a broad handbook scan.
-- Detect canonical companion documents; do not absorb their full contents into `AGENTS.md`.
+- Detect canonical companion documents. Do not absorb their full contents into `AGENTS.md`.
 - Read only what is needed to keep the behavior file accurate, scoped, and well-linked.
 
 #### Check 3 — Detect the local file state
@@ -189,10 +193,14 @@ Local `AGENTS.md` or `CLAUDE.md` in current directory?
 
 If Step 1 detects Mode 2 or Mode 3, ask this before any other discovery, drift scan, or interview step for that mode:
 
-> "Before I start — would you like to **start fresh**, treating the existing file 
-> as a reference only *(recommended)*, or **work with what's already there**?"
+> "Before I start — would you like to **start fresh**, treating the existing file as a reference only *(recommended)*, or **work with what's already there**?"
 
-If the user chooses **start fresh**, switch immediately to Mode 1. Treat the existing file as a read-only reference. Carry forward any content from the existing file that is still accurate. Do not silently discard it. Regenerate the structure from scratch.
+If the user chooses **start fresh**, switch immediately to Mode 1.
+
+- Treat the existing file as a read-only reference.
+- Carry forward any content from the existing file that is still accurate.
+- Do not silently discard it.
+- Regenerate the structure from scratch.
 
 If the user chooses **work with what's there**, continue into the detected Mode 2 or Mode 3 path.
 
@@ -203,7 +211,7 @@ Treat `./assets/template.md` as the canonical structure reference for recognitio
 
 Only after the Mode 3 intent gate is satisfied, decide whether the request qualifies for targeted refresh.
 
-If a recognized local file exists and the user requests one bounded update with a known target section or issue, route within Mode 3 to the targeted refresh path instead of the full refresh flow.
+If a recognized local file exists and the user requests one bounded update with a known target section or issue, use the targeted refresh path inside Mode 3 instead of the full refresh flow.
 
 Use targeted refresh only when the request is already within this skill's boundary and is clearly bounded, such as:
 
@@ -497,7 +505,7 @@ Use patterns like these only when they match the repository evidence already gat
 - "I found signs of a spec-driven workflow. Which parts of that workflow are durable agent behavior that belong in `AGENTS.md`, and which parts should stay in canonical project documentation?"
 - "For non-trivial changes, should the agent start with the documented spec workflow before implementation?"
 
-Done when: likely conventions have been confirmed, rejected, or replaced with stronger evidence, and no unconfirmed default has been carried into standing guidance.
+Done when: likely conventions are confirmed, rejected, or replaced with stronger evidence, and no unconfirmed default has been carried into standing guidance.
 
 ---
 
