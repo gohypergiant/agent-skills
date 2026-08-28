@@ -262,7 +262,7 @@ Execute these steps in order without stopping between them.
    ```markdown
    # QRSPI Trace Audit Trail
 
-   Generated: [paste current ISO 8601 timestamp]
+   Generated: [paste current ISO 8601 timestamp with Z suffix, generated using: python3 -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))"]
 
    This document captures the complete QRSPI flow: the initial input, the questions generated, and the research answers that informed the design artifacts. It provides an audit trail for understanding the context and decision-making process.
 
@@ -331,7 +331,11 @@ Execute these steps in order without stopping between them.
    b. **Extract the data you need to write:**
       - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (specs/tasks generation happens in steps 32-42), so there's nothing else to derive it from.
       - **`decisions`**: design.md's own decision content — the choices, rationale, and alternatives the design phase already worked through — restructured into a list of `{id, choice, rationale, alternatives}` entries. This is structuring content that's already there, not writing new design content.
-      - **`created_at`**: ISO 8601 timestamp marking when this change was created (now, at the moment the user approves the design). Generate this using the current timestamp in ISO 8601 format (e.g., "2026-08-17T15:23:45.123Z"). This is the first of three timestamps used to measure time spent in the QRSPI flow (created_at → started_at → completed_at).
+      - **`created_at`**: ISO 8601 timestamp with Z suffix marking when this change was created (now, at the moment the user approves the design). Generate this deterministically using:
+        ```bash
+        python3 -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))"
+        ```
+        This is the first of three timestamps used to measure time spent in the QRSPI flow (created_at → started_at → completed_at).
 
    c. **Write the frontmatter using the Edit tool:**
 
@@ -470,6 +474,51 @@ Execute these steps in order without stopping between them.
    - Size: Prefer 3-5 major slices; more than 5 suggests scope is too large
    - Duration: Max 2 hours per subtask; break larger work into smaller subtasks
 
+   **CRITICAL: Testing Throughout (not just at the end)**:
+
+   EVERY vertical slice must include testing steps. If testing only appears in the
+   final slice, the structure is actually horizontal slices masquerading as vertical.
+
+   ✓ CORRECT - Testing in every slice:
+   ```
+   Slice 1: Mock API + working frontend
+   - [ ] Build mock API endpoint
+   - [ ] Create frontend component
+   - [ ] Test: Verify UI renders and responds to mock data
+
+   Slice 2: Wire real service layer
+   - [ ] Add service layer implementation
+   - [ ] Connect frontend to service
+   - [ ] Test: Verify real data flows from service to UI
+
+   Slice 3: Add database integration
+   - [ ] Add database queries
+   - [ ] Update service to use database
+   - [ ] Test: Verify data persists and loads correctly
+   ```
+
+   ✗ WRONG - All testing deferred to the end:
+   ```
+   Slice 1: Mock API + working frontend
+   - [ ] Build mock API endpoint
+   - [ ] Create frontend component
+
+   Slice 2: Wire real service layer
+   - [ ] Add service layer implementation
+   - [ ] Connect frontend to service
+
+   Slice 3: Add database integration
+   - [ ] Add database queries
+   - [ ] Update service to use database
+   - [ ] Test everything end-to-end  ← RED FLAG: Only testing appears here
+   ```
+
+   **When validating tasks.md**, check that:
+   - EACH slice has explicit test steps within that slice
+   - Test steps verify the slice's specific deliverable (not just "run tests")
+   - No slice consists purely of building without testing
+   - The final slice is NOT just "test everything" — that's a sign of horizontal work
+
 42. If horizontal or mixed slicing is detected, **automatically convert to vertical slices**:
 
    REQUIRED: The `qrspi-apply` skill requires vertical slicing. If the openspec-continue-change skill generated horizontal slices, you MUST restructure them before presenting them to the user.
@@ -491,19 +540,26 @@ Execute these steps in order without stopping between them.
       Do NOT use numbered lists (1. 2. 3.) or plain bullets (- without [ ]).
       The qrspi-apply skill depends on this format to track task completion.
 
-   c) **Preserve parallelization opportunities**: Structure slices to be independent
+   c) **Ensure EVERY slice includes testing steps**: Check that each slice has explicit
+      test subtasks within that slice, not just at the end. If testing only appears
+      in the final slice, add test steps to each earlier slice:
+      - Each slice should have one or more `- [ ] Test: <what to verify>` subtasks
+      - Test steps should verify the slice's specific deliverable
+      - Don't create a final "test everything" slice — testing belongs throughout
+
+   d) **Preserve parallelization opportunities**: Structure slices to be independent
       - Good: "Slice 1: auth flow" and "Slice 2: data export flow" are independent
       - Bad: "Slice 1: database schema" must complete before "Slice 2: service layer"
 
-   d) **Update Parallelization Strategy (if it exists)**: If the tasks.md already has
+   e) **Update Parallelization Strategy (if it exists)**: If the tasks.md already has
       a "## Parallelization Strategy" section, revise it to reflect the new slice
       structure (which slices can run in parallel, which have dependencies).
       Note: If the section doesn't exist, it will be added in step 43.
 
-   e) **Write changes to tasks.md**: Edit the file in place using the Edit tool
+   f) **Write changes to tasks.md**: Edit the file in place using the Edit tool
 
-   f) **Show diff to user**: Display what changed and explain why (e.g., "Converted
-      from layer-based to feature-based slices for better parallelization")
+   g) **Show diff to user**: Display what changed and explain why (e.g., "Converted
+      from layer-based to feature-based slices and added testing steps to each slice")
 
 43. **REQUIRED: Check for and add Parallelization Strategy section**:
 

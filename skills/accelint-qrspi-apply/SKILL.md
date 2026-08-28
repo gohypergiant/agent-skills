@@ -72,9 +72,12 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 6. Read the design.md file from `openspec/changes/<change-name>/design.md` to check if `started_at` timestamp exists in frontmatter
 
 7. If `started_at` is NOT present in the frontmatter (first time applying this change):
-   - Add the `started_at` timestamp to the frontmatter using ISO 8601 format
-   - Use current timestamp: `new Date().toISOString()` (e.g., "2026-08-17T15:23:45.123Z")
-   - CRITICAL: Insert `started_at` immediately after the `created_at` field to keep all timestamps grouped together
+   - Add the `started_at` timestamp to the frontmatter using ISO 8601 format with Z suffix
+   - CRITICAL: Generate the timestamp deterministically using this command:
+     ```bash
+     python3 -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))"
+     ```
+   - Insert `started_at` immediately after the `created_at` field to keep all timestamps grouped together
    - Preserve all other frontmatter fields (change, created_at, specs_touched, decisions) in their original order
    - Inform user: "Recording implementation start time..."
 
@@ -578,9 +581,12 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
 33. Read the design.md file from `openspec/changes/<change-name>/design.md`
 
-34. Add the `completed_at` timestamp to the frontmatter using ISO 8601 format:
-   - Use current timestamp: `new Date().toISOString()` (e.g., "2026-08-17T17:45:00.000Z")
-   - CRITICAL: Insert `completed_at` immediately after the `started_at` field to keep all timestamps grouped together
+34. Add the `completed_at` timestamp to the frontmatter using ISO 8601 format with Z suffix:
+   - CRITICAL: Generate the timestamp deterministically using this command:
+     ```bash
+     python3 -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))"
+     ```
+   - Insert `completed_at` immediately after the `started_at` field to keep all timestamps grouped together
    - Preserve all other frontmatter fields (change, created_at, started_at, specs_touched, decisions) in their original order
    - This marks the moment implementation finished, right before verification begins
 
