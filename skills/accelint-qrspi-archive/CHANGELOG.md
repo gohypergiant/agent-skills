@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.5.0] - 2026-08-31
+
+### Added
+- **Strengthened synthesis suggestion mechanism** — Upgraded from passive informational prose to RFC 2119-style actionable directives
+  - Replaced weak "ℹ Consider running accelint-archive-synthesis" with directive format: "⚠️ You SHOULD run accelint-archive-synthesis now"
+  - Rationale: Agents trained on RFC 2119 keywords (MUST/SHOULD) reliably recognize these as actionable directives, while passive prose like "Consider" is often ignored
+- **Dual-trigger synthesis threshold system** — Now fires when either 50 changes accumulate OR 30 working days elapse since last synthesis run, whichever comes first
+  - Change threshold: 50 archived changes since last synthesis checkpoint
+  - Time threshold: 30 working days (6 weeks × 5 working days/week)
+  - Rationale: High-velocity projects need periodic linting before decision drift accumulates too deeply; lower-velocity projects need time-based nudges to ensure review happens even when change volume is low
+- **SYNTHESIS-LOG.md checkpoint tracking** — Reads last synthesis run date and row count from `openspec/changes/archive/SYNTHESIS-LOG.md`
+  - Parses most recent checkpoint under "## Run History" section
+  - First-run handling: treats missing log as (epoch, 0 rows) baseline
+  - Working days calculation: total calendar days minus weekend days (Saturdays/Sundays)
+- **Subagent-based calculation** — Delegates all threshold calculation to subagent, keeping parent context clean
+  - Subagent returns structured JSON with trigger status and metrics
+  - Parent uses response for output formatting only
+  - Follows same pattern as spec writing (step 22) and other isolated operations
+
+### Changed
+- **New step 36** — Added synthesis trigger check as dedicated step after archive reporting (step 34-35)
+  - Three distinct output formats: threshold exceeded, threshold not exceeded, first-run case
+  - Clear metrics shown: change delta, time delta, checkpoint info, current state
+  - Includes rationale for dual-trigger approach in output
+- **Hard-coded thresholds** — 50 changes and 30 working days are now explicit constants for clear tuning
+  - Not "reasoned defaults" subject to adjustment — these are the defined thresholds
+  - Can be changed directly in skill instructions if project cadence requires different values
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
 ## [1.4.0] - 2026-08-25
 
 ### Added

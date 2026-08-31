@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
 metadata:
   author: accelint
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Accelint QRSPI Archive
@@ -407,6 +407,101 @@ A patched `specs/INDEX.md` can still drift from reality for reasons outside this
 35. If any capability was left with a placeholder purpose or skipped entirely because preflight Task B never resolved, call that out explicitly here rather than letting it disappear into the diff.
 
 **Output**: a human-readable summary of every file this skill touched.
+
+36. **Check synthesis trigger thresholds** — spawn a subagent to determine whether the archive corpus has grown or aged enough to warrant running `accelint-archive-synthesis`, using a dual-trigger system that fires when either 50 changes have accumulated OR 30 working days have elapsed since the last synthesis run, whichever comes first.
+
+   This check runs after every archive operation (both single-change and bulk) to ensure synthesis suggestions surface at the right cadence. The dual-trigger approach addresses two distinct synthesis needs: high-velocity projects that archive many changes quickly need periodic linting before decision drift accumulates too deeply, while lower-velocity projects need time-based nudges to ensure the archive corpus gets reviewed periodically even when change volume is low.
+
+   Spawn a subagent with this prompt:
+
+   ```text
+   Check whether accelint-archive-synthesis should run based on dual-trigger thresholds.
+
+   Current date: <YYYY-MM-DD from system context>
+
+   Thresholds (hard-coded):
+   - Change threshold: 50 archived changes since last synthesis run
+   - Time threshold: 30 working days since last synthesis run
+
+   Trigger condition: (change_delta >= 50) OR (time_delta >= 30 working days)
+
+   Steps:
+
+   1. Read openspec/changes/archive/SYNTHESIS-LOG.md if it exists.
+      - Parse the last line under "## Run History" section
+      - Extract: checkpoint date (YYYY-MM-DD) and row count (after "checked through row")
+      - If file doesn't exist or section is empty, this is first-run: no baseline
+
+   2. Count current archive size:
+      - Use: grep -c "^|" openspec/changes/archive/INDEX.md
+      - Subtract 2 (header and separator rows) = current archived change count
+
+   3. Calculate deltas:
+      - Change delta = current row count - checkpoint row count
+      - Time delta (working days):
+        * Calculate calendar days between checkpoint date and current date
+        * Subtract weekend days (Saturdays and Sundays) in that period
+        * Result = working days elapsed
+
+   4. Apply trigger logic:
+      - trigger_exceeded = (change_delta >= 50) OR (time_delta >= 30)
+
+   Return ONLY this structured response (no explanation):
+
+   {
+     "trigger_exceeded": true/false,
+     "first_run": true/false,
+     "change_delta": N,
+     "time_delta": X,
+     "last_checkpoint_date": "YYYY-MM-DD" or null,
+     "last_checkpoint_row": N or 0,
+     "current_row": N
+   }
+   ```
+
+   Once the subagent returns, use its response to construct the appropriate output:
+
+   **When trigger_exceeded = true AND first_run = false:**
+
+   ```
+   ⚠️  SYNTHESIS CHECKPOINT THRESHOLD EXCEEDED
+
+   You SHOULD run accelint-archive-synthesis now:
+   - Changes since last synthesis: <change_delta> (threshold: 50)
+   - Working days since last synthesis: <time_delta> (threshold: 30)
+   - Last checkpoint: <last_checkpoint_date> at row <last_checkpoint_row>
+   - Current state: row <current_row>
+
+   High-velocity projects need periodic linting before decision drift accumulates
+   too deeply. Lower-velocity projects need time-based nudges to ensure the
+   archive corpus gets reviewed periodically even when change volume is low.
+
+   Invoke the accelint-archive-synthesis skill to run the synthesis check.
+   ```
+
+   **When trigger_exceeded = false:**
+
+   ```
+   ✓ Synthesis check: <change_delta> changes since last run (<last_checkpoint_date>), <time_delta> working days elapsed
+     Thresholds: 50 changes OR 30 working days, whichever first
+   ```
+
+   **When first_run = true:**
+
+   ```
+   ⚠️  SYNTHESIS CHECKPOINT NOTICE
+
+   This project has <current_row> archived changes but no synthesis checkpoint exists yet
+   (openspec/changes/archive/SYNTHESIS-LOG.md not found).
+
+   You SHOULD run accelint-archive-synthesis to establish the first baseline.
+   The synthesis skill will check for decision drift, index reconciliation issues,
+   and structural coupling across the full archive corpus.
+
+   Invoke the accelint-archive-synthesis skill to run the initial synthesis check.
+   ```
+
+   The RFC 2119 SHOULD language (not passive "Consider" prose) ensures agents reliably recognize this as an actionable directive rather than informational commentary. The subagent handles all calculation complexity, returning only the minimal data needed for output formatting.
 
 ## Key Principles
 
