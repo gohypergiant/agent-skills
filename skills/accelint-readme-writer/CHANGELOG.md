@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0] - 2026-08-25
+
+### Added
+- Cross-platform agent compatibility through prose-based skill invocation format for accelint-english-manager
+- Simple, reliable prose format that works across all agent harnesses
+
+### Changed
+- Migrated accelint-english-manager invocations from slash-command syntax to agent-agnostic XML invocation format
+- Updated two invocation locations (lines 196 and 239) with structured XML format
+- Ensures compatibility across Claude Code, Codex, Pi, and other agent harnesses
+
+### Version
+- Bumped from 1.2.3 → 1.2.4
+
 ## [1.2.3] - 2026-07-30
 
 ### Changed

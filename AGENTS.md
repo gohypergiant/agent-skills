@@ -28,6 +28,93 @@ Focus primarily on creating, auditing, refining, and documenting reusable agent 
 
 ---
 
+## Skill Invocation Convention
+
+When skills need to invoke other skills (either directly or in subagent prompts), use **prose-based invocation**. This approach is simple, agent-agnostic, and works reliably across different harnesses (Claude Code, Codex, Pi, etc.).
+
+### Standard Format
+
+Use natural language to direct skill invocation:
+
+```
+Invoke the [skill-name] skill.
+
+[any arguments or context for the skill]
+```
+
+### Why This Format
+
+- **Simple and clear**: Uses natural language that agents understand reliably
+- **Agent-agnostic**: Works across Claude Code, Codex, Pi, and other harnesses
+- **Flexible**: Easily accommodates complex arguments and contextual information
+- **Proven**: After testing structured approaches (XML, slash commands), prose proved most reliable
+
+### When to Use
+
+- **In SKILL.md instructions**: When the skill's workflow involves invoking other skills
+- **In subagent prompts**: When spawning a subagent that should invoke a skill
+- **In examples and templates**: To demonstrate correct skill orchestration patterns
+
+### What NOT to Use
+
+- **Slash commands**: `/skill-name` — harness-specific, not reliable across platforms
+- **XML tags**: `<skill_invocation>` — overly complex, doesn't work reliably
+- **Function-style calls**: `skill-name()` — ambiguous, no standard parsing
+
+### Examples
+
+**Skill with simple argument:**
+```
+Invoke the openspec-apply-change skill.
+
+change-name
+```
+
+**Skill with complex arguments:**
+```
+Invoke the accelint-english-manager skill.
+
+audit+rewrite in strict mode the following:
+
+"
+[CONTENT HERE]
+"
+
+I do not want a report, just apply the new content to the output directly.
+```
+
+**Skill with no arguments:**
+```
+Invoke the openspec-bulk-archive-change skill.
+```
+
+### Placeholder Replacement in Instructions
+
+When writing skill instructions that include placeholders to be replaced by agents:
+
+**Include step references in placeholders** — use `<paste X from step N>` instead of `<paste X>` to make replacement intent explicit and avoid confusion
+
+**Problem pattern:**
+```
+OpenSpec Design Rules (from config.yaml):
+<paste the rules.design section verbatim>
+```
+*Result: May send literal `<paste the rules.design section verbatim>` to subagent without replacement*
+
+**Correct pattern:**
+```
+OpenSpec Design Rules (from config.yaml):
+<paste the rules.design section verbatim from step 18>
+```
+*Result: Agent knows to replace with content from step 18 before passing to subagent*
+
+This applies when:
+- Writing multi-step skill instructions with placeholders
+- Constructing prompts for subagents that should include content from earlier steps
+- Any situation where placeholder replacement timing matters
+
+---
+
 ## Workflow Procedures
 
 ### New Features

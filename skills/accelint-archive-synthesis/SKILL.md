@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the OpenSpec CLI, sub-agent support, and a project already onboarded with accelint-qrspi-archive so that openspec/changes/archive/INDEX.md and openspec/specs/INDEX.md exist and are populated. Routing confirmed findings requires the shared findings - interface (Mode 3 Refresh support) in whichever writer skill(s) a given finding targets; without it, this skill still produces its report but degrades to manual guidance for that step.
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.2.0"
 ---
 
 # Accelint Archive Synthesis
@@ -18,7 +18,7 @@ That backward-looking scope is also what keeps this skill's footprint small and 
 
 **Automates**: a periodic, corpus-wide consistency check across every archived OpenSpec change, surfacing contradictions between past decisions, flagging capabilities that have become structurally over-coupled, and flagging `specs/INDEX.md` rows that have drifted from the `spec.md` files they summarize.
 **Scope**: `openspec/changes/archive/INDEX.md`, `openspec/specs/INDEX.md`, and — for the reconciliation check only — a lightweight read of each `spec.md`'s `## Purpose` heading and `related:` frontmatter. This skill never originates a change, never implements a fix, and never edits a hub doc itself.
-**Output**: a CRITICAL / WARNING / SUGGESTION report in the same register as `/opsx:verify`, plus, only after a human confirms a specific finding, a `Status` column update on the relevant archive row, a single-row patch or removal on `specs/INDEX.md`, and/or an independent invocation of the affected writer skill(s) via the shared `findings:` interface — see Step 8 for which finding types get which.
+**Output**: a CRITICAL / WARNING / SUGGESTION report in the same register as `openspec-verify-change`, plus, only after a human confirms a specific finding, a `Status` column update on the relevant archive row, a single-row patch or removal on `specs/INDEX.md`, and/or an independent invocation of the affected writer skill(s) via the shared `findings:` interface — see Step 8 for which finding types get which.
 **Does NOT**: run automatically, run as a blocking step inside any other skill's workflow, rewrite any document directly, write any `archive/INDEX.md` column other than `Status`, write to `specs/INDEX.md` beyond a single confirmed row's patch or removal, introduce any severity or status state beyond CRITICAL/WARNING/SUGGESTION and current/superseded, or reconcile a contradiction on its own judgment without a human confirming which side of it stands.
 
 ## Prerequisites
@@ -71,8 +71,9 @@ This file is not a column of either index and is never touched by `accelint-qrsp
 
 Routing a confirmed finding to a writer skill uses the exact same `findings:` shape `accelint-qrspi-apply` Step 5 already uses — this skill is the interface's second caller, not a new one:
 
-```
-/accelint-architecture-doc
+```text
+Invoke the accelint-architecture-doc skill.
+
 We found the following during periodic archive synthesis. Treat this as known
 context and refresh the affected section(s).
 
@@ -88,9 +89,9 @@ The writer skill merges this with its own codebase scan before presenting anythi
 
 **Rephrasing discipline.** Every line inside `findings:` is a plain factual statement about what the archive shows, never an instruction and never a conclusion the writer skill hasn't reached itself yet. "sync/protocol's stated budget constraint may no longer hold, given a later change's message-broker adoption" is correctly phrased; "update sync/protocol's spec to remove the budget constraint" is not — that second phrasing pre-empts the writer skill's own Mode 3 interview, which is exactly the judgment call this skill's Steps 7/8 split exists to keep with a human, not hand to a downstream skill as a foregone conclusion.
 
-## Relationship to `/opsx:verify`
+## Relationship to `openspec-verify-change`
 
-This skill borrows `/opsx:verify`'s CRITICAL/WARNING/SUGGESTION register deliberately, so a report from either reads as a familiar artifact — but the two check fundamentally different things. `/opsx:verify` runs once, per change, before that change archives: forward-looking, scoped to whether one implementation matches its own `design.md` and `tasks.md`. This skill runs periodically, across the whole archive, after changes have already landed: backward-looking, scoped to whether the archive as a whole still agrees with itself. A change can pass `/opsx:verify` cleanly the day it archives and still surface in a decision-drift finding two years later, once enough later changes touch related capabilities. The two are complementary, not redundant, and neither substitutes for the other.
+This skill borrows `openspec-verify-change`'s CRITICAL/WARNING/SUGGESTION register deliberately, so a report from either reads as a familiar artifact — but the two check fundamentally different things. `openspec-verify-change` runs once, per change, before that change archives: forward-looking, scoped to whether one implementation matches its own `design.md` and `tasks.md`. This skill runs periodically, across the whole archive, after changes have already landed: backward-looking, scoped to whether the archive as a whole still agrees with itself. A change can pass `openspec-verify-change` cleanly the day it archives and still surface in a decision-drift finding two years later, once enough later changes touch related capabilities. The two are complementary, not redundant, and neither substitutes for the other.
 
 ## Workflow Overview
 
@@ -112,7 +113,7 @@ This skill borrows `/opsx:verify`'s CRITICAL/WARNING/SUGGESTION register deliber
 │  5 Structural     Median related-count across specs/INDEX.md,       Candidate │
 │    coupling       flag outliers ≥5 and ≥2× median                   findings  │
 │  6 Compile report Assemble CRITICAL / WARNING / SUGGESTION          Draft     │
-│                   findings, /opsx:verify register                   report    │
+│                   findings, openspec-verify-change register         report    │
 │  7 Human review   Present report; human confirms, dismisses, or     Confirmed │
 │                   defers each finding                               findings  │
 │  8 Route          Update Status, or patch/remove a specs/INDEX.md   Docs +    │
@@ -213,9 +214,9 @@ Compute the median `related:` list length across every row loaded in Step 2. Fla
 
    Worked example: across 22 capability rows, related-counts of `[1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 10, 11, 14, 14]` sort to a median of 6 (the 11th and 12th of 22 values, both 6). The floor is `max(5, 2 × 6) = 12`, so only the two rows at 14 clear it — everything from 11 down, including the two rows already at 6, stays unflagged. This is exactly the kind of distribution Verification Task C checks against: if every project's median clustered near 1 or 2 instead, the fixed floor of 5 alone would already flag most of the corpus regardless of the 2× multiplier, which is precisely the mismatch Task C exists to surface.
 
-6. **Compile Report — assemble everything Steps 3, 4, and 5 found into one report, in the same CRITICAL / WARNING / SUGGESTION register `/opsx:verify` already uses, so it reads as a familiar artifact rather than a new report format to learn.**
+6. **Compile Report — assemble everything Steps 3, 4, and 5 found into one report, in the same CRITICAL / WARNING / SUGGESTION register `openspec-verify-change` already uses, so it reads as a familiar artifact rather than a new report format to learn.**
 
-```
+```text
 ## Archive Synthesis Report — <date>
 
 Corpus: <N> archived changes, <M> capabilities, checked back to <last synthesis
@@ -492,16 +493,29 @@ User: adopt-notification-gateway — the budget constraint's gone now.
 Skill:
 ✓ archive/INDEX.md: add-live-sync row Status → "superseded by
   adopt-notification-gateway (2026-06-18)"
-[invokes accelint-architecture-doc with findings: — sync/protocol budget
-  constraint may be stale]
+
+Invoke the accelint-architecture-doc skill.
+
+We found the following during periodic archive synthesis. Treat this as known
+context and refresh the affected section(s).
+
+findings:
+- sync/protocol budget constraint may be stale
+
 ✓ Finding 2 confirmed.
 ✓ specs/INDEX.md: cache/layer row patched — related: [cli-core] →
   [cli-core, rule-engine] (Purpose unchanged, last_touched_by left
   exactly as it was — this patch isn't an archived change, so
   attribution doesn't move)
 ✓ Finding 3 confirmed.
-[invokes accelint-architecture-doc with findings: — sync/protocol
-  structural coupling, routed to Known Technical Debt review]
+
+Invoke the accelint-architecture-doc skill.
+
+We found the following during periodic archive synthesis. Treat this as known
+context and refresh the affected section(s).
+
+findings:
+- sync/protocol structural coupling, routed to Known Technical Debt review
 
 Appending checkpoint to openspec/changes/archive/SYNTHESIS-LOG.md...
 

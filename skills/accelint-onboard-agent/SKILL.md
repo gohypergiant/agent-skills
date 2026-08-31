@@ -4,7 +4,7 @@ description: Interactively onboard a project to agent-driven development by runn
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Onboard Agents
@@ -289,7 +289,7 @@ behavioral constraints and confirm rather than asking again.
 - Versioning workflow? (when to bump, who approves changelog?)
 
 **Turn 4 — OpenSpec / Spec-Driven Workflow** *(skip if not using OpenSpec)*
-- When should the agent invoke `/opsx:propose`?
+- When should the agent invoke `openspec-propose`?
   *Good default: "for any new feature or non-trivial change".*
 - When is a spec required vs. optional?
 - Should the agent reference existing specs before creating new patterns?
@@ -347,7 +347,7 @@ appropriate.
   a footer `BREAKING CHANGE:` block?"
 
 **Spec-Driven Development (OpenSpec) → suggest confirming:**
-- "For non-trivial changes, I'll start with `/opsx:propose` before writing
+- "For non-trivial changes, I'll start with `openspec-propose` before writing
   any code; should I also require a design artifact for changes touching more
   than N files?"
 - "Should I link task IDs or spec refs in commit messages?"
@@ -393,7 +393,7 @@ to complete, then merge results before Phase 4.
 - Return: migration guardrails if migrations exist, secret handling practices
 
 **Agent E — OpenSpec & Development Workflow**
-- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `/opsx:*` references in docs or CLAUDE.md
+- OpenSpec: `openspec/` directory, `openspec/config.yaml`, any `openspec-*` skill references in docs or CLAUDE.md
 - Return: OpenSpec usage status, when to invoke spec workflow
 
 **After all agents complete:** merge their findings into a unified discovery map.
@@ -480,7 +480,7 @@ architectural decisions."]
 
 ### New Features
 [step-by-step procedure, e.g.:]
-1. Start with `/opsx:propose` for any non-trivial change
+1. Start with the `accelint-qrspi-propose` skill for any non-trivial change
 2. Get proposal reviewed before writing code
 3. Run `pnpm check` and `pnpm test` after each meaningful change
 4. Open a draft PR early; mark ready only after CI passes
@@ -493,7 +493,7 @@ Follow Test-Driven Development to ensure the bug is fixed and does not regress:
    before touching any production code
 2. **Fix the root cause** — not the symptom
 3. **Confirm the test passes** — validate the fix
-4. **Follow OpenSpec process** — use `/opsx:explore` for investigation if
+4. **Follow OpenSpec process** — use the `openspec-explore` skill for investigation if
    the root cause is non-obvious
 5. Hand off to engineer for PR
 
@@ -505,7 +505,7 @@ Follow Test-Driven Development to ensure the bug is fixed and does not regress:
 
 ### Commit Messages
 Convention: [e.g., Conventional Commits]
-Format: `[type]([scope]): [description]`
+Format: `<type>(<scope>): <description>`
 Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`[, additional types]
 Example: `feat(layer): add WebGPU fallback for Safari`
 

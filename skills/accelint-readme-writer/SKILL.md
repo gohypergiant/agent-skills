@@ -4,7 +4,7 @@ description: Use when creating or editing a README.md file in any project or pac
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.3"
+  version: "1.3.0"
 ---
 
 # README Writer
@@ -193,7 +193,9 @@ If `accelint-english-manager` is not available:
 If `accelint-english-manager` is available, invoke it with this exact prompt shape:
 
 ```text
-/accelint-english-manager audit+rewrite in strict mode the following:
+Invoke the accelint-english-manager skill.
+
+audit+rewrite in strict mode the following:
 
 "
 [PASTE CONTENT HERE]
@@ -230,7 +232,9 @@ Before this final polish pass, confirm that `accelint-english-manager` is instal
 When it is available, call it in strict mode with this exact prompt shape:
 
 ```text
-/accelint-english-manager audit+rewrite in strict mode the following:
+Invoke the accelint-english-manager skill.
+
+audit+rewrite in strict mode the following:
 
 "
 [PASTE CONTENT HERE]

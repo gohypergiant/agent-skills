@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0] - 2026-08-25
+
+### Added
+- Cross-platform agent compatibility through prose-based skill invocation format
+- Simple, reliable prose format that works across all agent harnesses
+
+### Changed
+- Migrated from harness-specific slash-command syntax (`/skill-name`) to agent-agnostic prose invocation format
+- Ensures compatibility across Claude Code, Codex, Pi, and other agent harnesses
+
 ## [1.1.1] - 2026-07-24
 
 ### Fixed
