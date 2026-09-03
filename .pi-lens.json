@@ -1,0 +1,8 @@
+{
+  "autofix": {
+    "enabled": false
+  },
+  "format": {
+    "enabled": false
+  }
+}

@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires the OpenSpec CLI. Per-capability spec writes require sub-agent support — see the skill body for the degraded fallback if unavailable. Native archive always runs directly in the invoking agent's own context, never as a subagent, regardless of sub-agent availability. Each change's design.md should carry specs_touched and decisions frontmatter — ideally written by accelint-qrspi-propose at design time — but preflight Task A can derive and confirm it when a change didn't go through that flow. Each touched spec must already have a ## Purpose or ### Purpose heading in its body.
 metadata:
   author: accelint
-  version: "1.5.0"
+  version: "1.5.1"
 ---
 
 # Accelint QRSPI Archive
@@ -309,18 +309,21 @@ Always spawn one subagent per touched capability to do this — every time, not 
 
    Report back ONLY: the file path, whether the write was a no-op
    (byte-identical to what was already there) or an actual change, the
-   final related: list you wrote, and the capability's current purpose
-   heading text (from ## Purpose, ### Purpose, ## Overview, or ### Overview
-   — whichever exists, a sentence or short paragraph — you're not writing
-   this, just reading it back so the parent doesn't have to reopen this
-   file for index updates). Do not return the file's full contents.
+   final related: list you wrote, and an index-ready purpose summary for
+   this capability derived from its current heading text (from ## Purpose,
+   ### Purpose, ## Overview, or ### Overview — whichever exists). Use a
+   single concise sentence suitable for a table cell. Prefer the first
+   sentence if it is already concise; otherwise compress the heading text
+   to one sentence. You're not writing this back into the spec — just
+   reading and compressing it so the parent doesn't have to reopen the
+   file for index updates. Do not return the file's full contents.
    ```
 
 23. If the capability has no prior `spec.md` (a brand-new capability per preflight step 4), the subagent starts from an empty frontmatter block instead of reading an existing one — same prompt otherwise.
 
-24. Collect each subagent's short report (file, no-op vs. changed, final `related:` list, and Purpose heading text) for index updates and reporting. Index updates reuse the `related:` and Purpose values directly from this report instead of reopening the file; the final report draws only on the no-op/changed status. Nothing else about the write needs to enter the parent's context — a reported no-op is the expected signal that this capability wasn't actually affected by this batch, not something to double-check by re-reading the file.
+24. Collect each subagent's short report (file, no-op vs. changed, final `related:` list, and index-ready purpose summary) for index updates and reporting. Index updates reuse the `related:` and Purpose values directly from this report instead of reopening the file; the final report draws only on the no-op/changed status. Nothing else about the write needs to enter the parent's context — a reported no-op is the expected signal that this capability wasn't actually affected by this batch, not something to double-check by re-reading the file.
 
-**Output**: every touched capability's `spec.md` updated in place (existing `related:` entries preserved, new ones unioned in and sorted), or confirmed unchanged, with only a short status line plus its `related:`/Purpose values — the small payload for index updates — entering the parent's context.
+**Output**: every touched capability's `spec.md` updated in place (existing `related:` entries preserved, new ones unioned in and sorted), or confirmed unchanged, with only a short status line plus its `related:`/single-sentence Purpose summary values — the small payload for index updates — entering the parent's context.
 
 **Update openspec/specs/INDEX.md**
 
@@ -332,7 +335,7 @@ Always spawn one subagent per touched capability to do this — every time, not 
    - **Brand-new capability** (per preflight step 4): grep for capability-name cells to find the first existing row that sorts after the new one alphabetically, and insert the new row immediately before it (or append at the end if it sorts last) with no blank line before or after the insertion. All data rows must remain contiguous with no blank lines between them. This still only touches one new line — locating the insertion point doesn't require loading row content, just the capability-name column.
    - Every row for every untouched capability is never opened, matched, or rewritten — not just "left identical" as an outcome of a full rebuild, but literally never touched by this operation.
 
-26. Build each row without cross-row padding — single-space cell separation (`| sync/protocol | Defines the live-sync wire proto | ui/status-indicator | add-live-sync |`), not aligned to the widest value in each column:
+26. Build each row without cross-row padding — single-space cell separation (`| sync/protocol | Defines the live-sync wire proto | ui/status-indicator | add-live-sync |`), not aligned to the widest value in each column. The `Purpose` cell should be a single concise sentence suitable for a table cell, reusing the index-ready summary returned by the spec-writing subagent rather than a full paragraph from the spec heading:
 
    ```markdown
    | Capability | Purpose | Related | Last touched by |
@@ -364,7 +367,7 @@ A patched `specs/INDEX.md` can still drift from reality for reasons outside this
    ```
 
    - `Date` is the archive folder's `YYYY-MM-DD` prefix — the same source used in validation, never anything read out of `design.md`.
-   - `Decision` is a one-line summary of `decisions[].choice`. If a change recorded more than one decision, concatenate the choices with semicolons (e.g. `polling with 5s interval; client-side dedup on reconnect`) rather than picking just one — every decision the design phase made deserves to survive into the permanent record, even compressed to a phrase.
+   - `Decision` is a compact archive-index summary derived from `decisions[].choice`, not a verbatim copy when the source is verbose. Rewrite each choice into the terse fragment style used by existing archive rows. Do not copy rationale, alternatives, examples, caveats, or explanatory prose into the index. If a change recorded more than one decision, normalize each choice first, then concatenate them with semicolons (e.g. `polling with 5s interval; client-side dedup on reconnect`) rather than picking just one.
    - `Status` is written as `current` and this skill never touches that column again after this initial write, for this row or any other. Transitions like `current` → `superseded` belong to `accelint-archive-synthesis`, which has the cross-change context needed to know when a decision has actually been superseded — this skill only ever sees one archive operation at a time and can't safely make that call.
 
 30. **Locate the insertion point — the end of the table data rows, with no blank lines between rows.** Find the header row (`| Change | Date | ... |`), its separator (`| --- | --- | ... |`), and the contiguous block of data rows that follows. Insert the new row(s) immediately after the last of those data rows, with no blank line before the new row. All data rows must be contiguous with no blank lines between them — blank lines between entries corrupt the table structure and must never be written. This applies to both `changes/archive/INDEX.md` and `specs/INDEX.md`.
@@ -558,9 +561,13 @@ A quick-reference summary — each of these is explained in full where it's actu
 
 **NEVER change an existing `Status` value in `changes/archive/INDEX.md`** — write `current` once, at creation, and never touch that column again for that row. Transitions belong to `accelint-archive-synthesis`.
 
+**NEVER copy full decision prose into `openspec/changes/archive/INDEX.md`** — that file is a compact changelog, not a second copy of `design.md`. Reduce each decision to a terse archive-row fragment before writing it.
+
 **NEVER read `Date` from `design.md`** — always use the archive folder's own `YYYY-MM-DD` prefix. A change can sit in review for weeks before it's archived, so anything `design.md` says about dates will be stale by the time this skill runs.
 
 **NEVER duplicate `capability` or `purpose` into a spec's frontmatter** — both already exist as the file's own path and its `## Purpose` or `### Purpose` heading. Restating either creates a second source of truth that will eventually disagree with the first.
+
+**NEVER paste full Purpose/Overview paragraphs into `openspec/specs/INDEX.md`** — use a single concise sentence suitable for a table cell, not a full paragraph copied from the spec.
 
 **NEVER hand-maintain `## Related Specs`** — always regenerate it wholesale from the `related:` frontmatter that was just written. Treating it as independently editable content invites drift between what the frontmatter says and what the body shows.
 
