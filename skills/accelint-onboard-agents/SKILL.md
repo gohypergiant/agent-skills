@@ -15,7 +15,7 @@ Guide the user through a conversational interview that produces a complete, proj
 
 This skill produces the **behavior layer** of the agent instruction stack.
 
-Keep content here only when it directly improves recurring agent behavior. If a detail is better described as project background, stack fact, architecture explanation, process handbook material, or nearby reference documentation, use a canonical companion document and link to it instead of restating it here.  These layers must not duplicate each other.
+Keep content here only when it directly improves recurring agent behavior. If a detail is better described as project background, stack fact, architecture explanation, process handbook material, or nearby reference documentation, use a canonical companion document and link to it instead of restating it here. These layers must not duplicate each other.
 
 Canonical companion documents may include `openspec/config.yml` or `openspec/config.yaml` for project DNA, `ARCHITECTURE.md` for system structure, `CONSTRAINTS.md` for externally imposed boundaries, `EPISTEMIC-MAP.md` for validated facts vs open questions and assumptions, and `JARGON.md` for internal terminology.
 
@@ -85,27 +85,49 @@ Apply this rule every time:
 
 ---
 
-## Workflow
+## Workflow at a Glance
 
 Follow this workflow in order. Do not skip ahead. Complete each gate before moving to the next step.
 
-1. File state detection
-2. Mode selection
-3. Mode-specific discovery and interview
-4. Parallel codebase discovery, but only if that mode still has unresolved behavioral gaps
-5. Preview and write
+### Step 0: Start progress tracking
+
+Do this before any other workflow step.
+
+Create a progress checklist with your task-tracking tool. If no tool is available, copy the checklist below into your working state or reply. Update it after each completed step or branch handoff.
+
+- [ ] Step 1: Check for a monorepo root instruction file
+- [ ] Step 2: Check for related documents
+- [ ] Step 3: Detect the local file state
+- [ ] Step 4: Handle the start-fresh intent gate when Mode 2 or Mode 3 was detected
+- [ ] Step 5: Choose the branch inside Mode 2 or Mode 3 when needed
+- [ ] Step 6: Run the selected mode playbook
+- [ ] Step 7: Fill remaining behavioral gaps with parallel discovery if needed
+- [ ] Step 8: Run the final editorial pass
+- [ ] Step 9: Show the full labeled preview and collect review feedback
+- [ ] Step 10: Write the confirmed file when this path writes output
+- [ ] Step 11: Run the post-write quality check when a file was written
+- [ ] Step 12: Print the completion summary
+
+Important sequencing rule:
+- **Step 1**, **Step 2**, and **Step 3** determine the local file state and detect the mode.
+- **Step 4** and **Step 5** confirm the user's intent and choose the branch inside that detected mode.
+- **Step 6** executes exactly one mode playbook.
+- **Step 7** runs only if required template fields still have unresolved behavioral gaps.
+- **Step 8** through **Step 12** finish the preview, write, and review flow.
 
 If a narrower branch explicitly tells you to skip a later step, follow that branch. Otherwise, keep this order.
 
-### Step 1 — File State Detection
+---
 
-Complete all three checks below before asking any interview question or choosing a mode.
+## Stage 1 — Detect the Starting State
+
+Complete Stage 1 before you ask any interview question or enter any mode-specific path.
 
 - Do not silently pick a mode.
 - Always tell the user which mode you detected.
 - Confirm before you continue.
 
-#### Check 1 — Monorepo root check
+### Step 1: Check for a monorepo root instruction file
 
 Before you assess the local file, determine whether the current working directory is a package inside a monorepo.
 
@@ -125,9 +147,9 @@ If a root-level `AGENTS.md` or `CLAUDE.md` exists above the current directory:
 
    If the user says no, emit a reference in the generated file rather than repeating the content. If the user flags additions or overrides, ask the normal turn questions scoped to what is missing or different.
 
-#### Check 2 — Check for related documents
+### Step 2: Check for related documents
 
-After the monorepo root check and before local file-state detection, check for canonical companion documents that either:
+After Step 1 and before local file-state detection, check for canonical companion documents that either:
 
 - help enforce the behavior-layer boundary, or
 - belong in the final `## Related Documentation` section.
@@ -152,20 +174,24 @@ Apply these limits during this check:
 - Detect canonical companion documents. Do not absorb their full contents into `AGENTS.md`.
 - Read only what is needed to keep the behavior file accurate, scoped, and well-linked.
 
-#### Check 3 — Detect the local file state
+### Step 3: Detect the local file state
 
-Only after Checks 1 and 2 are complete, detect the local `AGENTS.md` or `CLAUDE.md` state.
+Requires: Steps 1 and 2 are complete.
+
+Detect the local `AGENTS.md` or `CLAUDE.md` state.
 
 Run this check in order:
 
 1. Check whether a local `AGENTS.md` or `CLAUDE.md` exists in the current directory.
-2. If neither file exists, select **Mode 1: Create** and run the full interview from scratch.
+2. If neither file exists, select **Mode 1: Create**.
 3. If a local file exists, read it before classifying the mode.
 4. After you read the file, classify it exactly once:
    - If it is empty or near-blank, meaning fewer than about 10 meaningful lines, select **Mode 1: Create** with overwrite confirmation.
      Ask: *"AGENTS.md exists but appears empty — should I populate it from scratch, or preserve any current content?"*
    - If it contains the canonical template shape from `./assets/template.md`, meaning two or more canonical section headings in recognizably template-based form, select **Mode 3: Refresh**.
    - If it contains real content in an unrecognized shape, select **Mode 2: Import**.
+
+Treat `./assets/template.md` as the canonical structure reference for recognition, refresh, and audit behavior. Use section headings exactly as defined there, preserve the template's canonical order for all required sections, and keep optional headings such as `## Optional review-specific rules` and `## Maintenance guidance` only when the template allows them.
 
 Use the diagram below as a quick classification aid. The ordered list above is authoritative.
 
@@ -189,73 +215,43 @@ Local `AGENTS.md` or `CLAUDE.md` in current directory?
             └── MODE 2: Import
 ```
 
-#### Gate — Ask the intent question for Mode 2 and Mode 3
+Done when: the file state and detected mode are explicit.
 
-If Step 1 detects Mode 2 or Mode 3, ask this before any other discovery, drift scan, or interview step for that mode:
+---
+
+## Stage 2 — Confirm the Operating Path
+
+Complete Stage 2 before you start discovery, drift scanning, or any mode-specific interview.
+
+### Step 4: Handle the start-fresh intent gate
+
+Requires: Step 3 is complete.
+
+If Step 3 detected **Mode 2** or **Mode 3**, ask this first:
 
 > "Before I start — would you like to **start fresh**, treating the existing file as a reference only *(recommended)*, or **work with what's already there**?"
 
-If the user chooses **start fresh**, switch immediately to Mode 1.
+If the user chooses **start fresh**, switch immediately to **Mode 1: Create**.
 
 - Treat the existing file as a read-only reference.
 - Carry forward any content from the existing file that is still accurate.
 - Do not silently discard it.
 - Regenerate the structure from scratch.
+- Then go to **Step 6a**.
 
-If the user chooses **work with what's there**, continue into the detected Mode 2 or Mode 3 path.
+If the user chooses **work with what's there**:
+- if Step 3 detected **Mode 2**, go to **Step 5a**
+- if Step 3 detected **Mode 3**, go to **Step 5b**
 
-**Recognized template shape** (any two or more canonical section headings from `./assets/template.md` = recognized shape):
-Treat `./assets/template.md` as the canonical structure reference for recognition, refresh, and audit behavior. Use section headings exactly as defined there, preserve the template's canonical order for all required sections, and keep optional headings such as `## Optional review-specific rules` and `## Maintenance guidance` only when the template allows them.
+If Step 3 already selected **Mode 1**, skip Step 4 and Step 5. Go directly to **Step 6a**.
 
-#### Branch eligibility — Targeted refresh inside Mode 3
+Done when: the start-fresh decision is explicit whenever Mode 2 or Mode 3 was detected.
 
-Only after the Mode 3 intent gate is satisfied, decide whether the request qualifies for targeted refresh.
+### Step 5a: Choose the Mode 2 branch
 
-If a recognized local file exists and the user requests one bounded update with a known target section or issue, use the targeted refresh path inside Mode 3 instead of the full refresh flow.
+Requires: Step 4 routed here from **Mode 2**.
 
-Use targeted refresh only when the request is already within this skill's boundary and is clearly bounded, such as:
-
-- one known contradiction to fix
-- one section to update from newly confirmed evidence
-- one outdated rule to remove or soften
-- one narrow addition that belongs in an existing section
-- one wrapper or conversion update where the surrounding structure is unchanged
-
-In targeted refresh mode:
-
-- inspect the affected section or sections first
-- do the scoped discovery needed for that update
-- avoid the full interview and full regeneration unless missing context requires it
-- preserve the rest of the file unless the narrow update exposes broader contradiction or drift
-- still require preview before write
-- still apply the same conflict-resolution and editorial-pass rules as broader update paths
-
-Done when: the file state, selected mode, and any targeted-refresh branch are explicit before the discovery interview or refresh analysis begins.
-
----
-
-### Step 2 — Mode Selection
-
-After Step 1 is complete and any required intent gate is answered, follow exactly one mode below.
-
-#### Mode 1: Create
-
-Run this path in order:
-
-1. Discovery interview
-2. Smart defaults
-3. Parallel codebase discovery
-4. Preview and write
-
-Use this mode for a fresh repo, an empty or near-blank file that the user wants populated, or an explicit **start fresh** choice.
-
----
-
-#### Mode 2: Import (build on what's there)
-
-Use this mode only when the file has real content that this skill did not generate and the user chose to work with the existing file.
-
-Before you modify or synthesize anything, present the user with these three options:
+Present these three options before you modify or synthesize anything:
 
 > "This AGENTS.md has existing content with a structure I don't recognize.
 > How would you like to proceed?
@@ -272,144 +268,43 @@ Before you modify or synthesize anything, present the user with these three opti
 > would have generated, with no changes to the filesystem. Use this to
 > evaluate fit before committing."
 
-Branch handling:
-- If the user chooses **(a)**, follow the restructure path below.
-- If the user chooses **(b)**, follow the append path below.
-- If the user chooses **(c)**, follow the dry-run path below.
+Branch routing:
+- If the user chooses **(a)**, go to **Step 6b**.
+- If the user chooses **(b)**, go to **Step 6c**.
+- If the user chooses **(c)**, go to **Step 6d**.
 - Do not start any branch until the user has chosen one.
 
-##### Branch (a) — Restructure
+Done when: the Mode 2 branch is explicit.
 
-Run these steps in order:
+### Step 5b: Choose the Mode 3 refresh path
 
-1. Read the file in full.
-2. Map each existing section onto the canonical template sections from `./assets/template.md`.
-3. Preserve the template's section order and only keep optional sections that the template explicitly allows, such as `## Optional review-specific rules`.
-4. Flag any content that violates the separation-of-concerns boundary, such as stack facts, tech versions, domain descriptions, constraints, assumptions, or internal terminology. Move that material to the appropriate canonical companion document.
-   - For each violation, ask: *"This describes [X] — that belongs in a canonical companion document rather than `AGENTS.md` or `CLAUDE.md`. Should I move it to the appropriate document and leave a reference here?"*
-5. Run a targeted interview that covers only the gaps, meaning canonical template sections or required template fields from `./assets/template.md` with no existing coverage.
-6. Apply the source-precedence rule and remove duplicate, conflicting, or adjacent-doc material before preview.
-7. Show a merged preview before writing. Inferred or existing content is labelled `# from existing file`; new content is labelled `# new`.
+Requires: Step 4 routed here from **Mode 3**.
 
-Done when: the merged preview is ready for user review.
+Only after the Mode 3 intent gate is satisfied, choose exactly one refresh path:
 
-##### Branch (b) — Append
+- **Targeted refresh** — use this when the request is already within this skill's boundary and is clearly bounded, such as:
+  - one known contradiction to fix
+  - one section to update from newly confirmed evidence
+  - one outdated rule to remove or soften
+  - one narrow addition that belongs in an existing section
+  - one wrapper or conversion update where the surrounding structure is unchanged
+- **Full refresh** — use this when the request is broad, the file may have drifted in several places, or the narrow update reveals a contradiction, cross-section dependency, or inconsistency that requires broader review.
 
-Run these steps in order:
+Branch routing:
+- If the request qualifies for targeted refresh, go to **Step 6e**.
+- Otherwise, go to **Step 6f**.
 
-1. Discovery interview
-2. Smart defaults
-3. Parallel codebase discovery
-4. Preview and write
-5. In the final output, append the generated template-aligned block below a `---` divider and a comment: `<!-- Added by accelint-onboard-agents skill -->`.
-
-Even in append mode, do not add conflicting standing guidance without surfacing the conflict in preview.
-
-Done when: the appended preview is ready for user review.
-
-##### Branch (c) — Dry run
-
-Run these steps in order:
-
-1. Discovery interview
-2. Smart defaults
-3. Parallel codebase discovery
-4. Preview gate only from Preview and Write
-
-Then stop. Present the output in the conversation and explicitly state: "No files were changed."
-
-Offer to re-run as (a) or (b) if the user is satisfied.
-
-Done when: the dry-run output is shown and the no-write status is explicit.
+Done when: the Mode 3 refresh path is explicit before refresh analysis begins.
 
 ---
 
-#### Mode 3: Refresh (build on what's there)
+## Stage 3 — Run the Selected Mode Playbook
 
-Use this mode only when the file matches the skill's expected shape and the user chose to work with the existing file.
+Run exactly one Step 6 branch.
 
-Choose exactly one refresh path after the Mode 3 intent gate:
+### Shared interview block for interview-based paths
 
-- **Targeted refresh** for one bounded update where the affected area is already known
-- **Full refresh** when the request is broad, the file may have drifted in several places, or the narrow update reveals a contradiction, cross-section dependency, or inconsistency that requires broader review
-
-If the request began as targeted refresh, skip the full drift and TODO sweep unless the narrow update reveals a contradiction, cross-section dependency, or inconsistency that requires escalation to the full refresh flow.
-
-##### Targeted refresh flow
-
-Run these steps in order:
-
-1. Inspect the affected section or sections.
-2. Do only the scoped discovery needed for that bounded update.
-3. Ask only the questions needed to resolve that update.
-4. Apply source precedence and the final editorial pass to the affected material and any directly dependent sections.
-5. Show preview before any write.
-6. If the update reveals broader contradiction or drift, escalate immediately to the full refresh flow before writing.
-
-Done when: the narrowed preview is ready for user review or the work has been escalated to full refresh.
-
-##### Full refresh flow
-
-###### Refresh Step 1 — Extract external findings
-
-Check whether the invoking prompt includes a `findings:` list.
-
-- Parse the prompt for a `findings:` section, meaning a bulleted list of factual statements.
-- Each finding is phrased as something already known to be true, never as an instruction.
-- Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
-- Store these findings for merging in Refresh Step 4.
-
-###### Refresh Step 2 — Run drift detection
-
-Scan the codebase for changes since the file was last updated.
-
-Use the signals below as common examples, not as an exhaustive list.
-
-| Signal | Where to look |
-|---|---|
-| New packages added | `package.json`, workspace `package.json` files |
-| CI checks changed | `.github/workflows/` — new required gates? |
-| Husky hooks modified | `.husky/` — new pre-commit steps? |
-| New migration directory | `migrations/`, `prisma/migrations/`, `alembic/` |
-| Versioning tooling added | `.changeset/`, `.releaserc*` |
-| OpenSpec added or removed | `openspec/` directory presence |
-| New protected branches | `.github/branch-protection*`, README |
-
-###### Refresh Step 3 — Surface unresolved TODOs
-
-Find all `<!-- TODO: fill in -->` markers left from the previous run and surface them as targeted questions.
-
-###### Refresh Step 4 — Merge and announce findings before asking anything
-
-Combine external findings from Refresh Step 1, drift findings from Refresh Step 2, and TODOs from Refresh Step 3.
-
-Present the merged list to the user:
-
-> "I found [N] external findings, [M] sections that may have drifted, and [P] unresolved TODOs.
-> I'll only ask about those — the rest looks current."
-
-If external findings exist, note their source, for example "from completed OpenSpec change".
-
-Done when: the merged finding set is visible before the next refresh interview turn.
-
-###### Refresh Step 5 — Interview, then preview the changed sections first
-
-Only after Refresh Step 4 is complete:
-
-- run the targeted refresh interview for the merged finding set
-- apply source precedence
-- prune duplication and low-value carry-forward text
-- show a diff-style preview that includes only changed sections first
-- do not re-emit unchanged sections in that first refresh preview
-- still produce the full labeled preview required by Preview and Write before any write
-
-Done when: the changed-section preview is ready for review and the file is ready for the full labeled preview in Preview and Write.
-
----
-
-### Step 3 — Mode-Specific Discovery and Interview
-
-Use the interview only after mode selection is complete. Run it conversationally. Do not dump all questions at once. Group questions into natural topic turns that map directly to the canonical template in `./assets/template.md`. That template is the source of truth for section names, section order, required-versus-optional sections, placeholder handling, and default scaffolding. If the user describes a workflow, infer related behavioral constraints and confirm them instead of asking again. Keep questions proportional to the request size. Do not ask for information that strong repository evidence already answers.
+Use the interview only after Stages 1 and 2 are complete. Run it conversationally. Do not dump all questions at once. Group questions into natural topic turns that map directly to the canonical template in `./assets/template.md`. That template is the source of truth for section names, section order, required-versus-optional sections, placeholder handling, and default scaffolding. If the user describes a workflow, infer related behavioral constraints and confirm them instead of asking again. Keep questions proportional to the request size. Do not ask for information that strong repository evidence already answers.
 
 Ask only for material that belongs in the template. Do not invent extra AGENTS.md sections to hold answers the template does not define. If a topic is optional in the template, confirm whether it should be kept, adapted, or omitted based on what `./assets/template.md` allows. When consolidating answers across turns, map them back into the exact canonical sections defined in `./assets/template.md`.
 
@@ -457,9 +352,7 @@ Ask only for material that belongs in the template. Do not invent extra AGENTS.m
 - Which canonical documents should appear in `## Related Documentation`, if they actually exist?
 - Is there repository-specific maintenance guidance to add under `## Maintenance guidance`, or should the template defaults stand as written?
 
----
-
-### Smart Defaults
+### Shared smart-defaults block for interview-based paths
 
 Use Smart Defaults only to reduce avoidable interview load after you have already checked for stronger evidence.
 
@@ -507,17 +400,152 @@ Use patterns like these only when they match the repository evidence already gat
 
 Done when: likely conventions are confirmed, rejected, or replaced with stronger evidence, and no unconfirmed default has been carried into standing guidance.
 
+### Step 6a: Run Mode 1 — Create
+
+Use this branch for a fresh repo, an empty or near-blank file that the user wants populated, or an explicit **start fresh** choice.
+
+Run this branch in order:
+
+1. Run the **Shared interview block for interview-based paths**.
+2. Run the **Shared smart-defaults block for interview-based paths**.
+3. If unresolved required template fields remain, go to **Step 7**.
+4. Otherwise, go to **Step 8**.
+
+Done when: the interview answers and any confirmed smart defaults are ready for gap-filling discovery or the draft is ready for the final editorial pass.
+
+### Step 6b: Run Mode 2 — Restructure
+
+Use this branch only when the file has real content that this skill did not generate and the user chose **(a) Restructure**.
+
+Run this branch in order:
+
+1. Read the file in full.
+2. Map each existing section onto the canonical template sections from `./assets/template.md`.
+3. Preserve the template's section order and only keep optional sections that the template explicitly allows, such as `## Optional review-specific rules`.
+4. Flag any content that violates the separation-of-concerns boundary, such as stack facts, tech versions, domain descriptions, constraints, assumptions, or internal terminology. Move that material to the appropriate canonical companion document.
+   - For each violation, ask: *"This describes [X] — that belongs in a canonical companion document rather than `AGENTS.md` or `CLAUDE.md`. Should I move it to the appropriate document and leave a reference here?"*
+5. Run the **Shared interview block for interview-based paths** only for uncovered gaps, meaning canonical template sections or required template fields from `./assets/template.md` with no existing coverage.
+6. Apply the source-precedence rule and remove duplicate, conflicting, or adjacent-doc material before preview.
+7. If required template fields still lack answers after Step 6, go to **Step 7**.
+8. Otherwise, go to **Step 8**.
+9. In **Step 9**, show a merged preview before writing. Carried-forward content is labelled `# from existing file`; new content is labelled `# new`.
+
+Done when: the merged draft is ready for the final editorial pass or any remaining gaps have been routed to Step 7.
+
+### Step 6c: Run Mode 2 — Append
+
+Use this branch only when the file has real content that this skill did not generate and the user chose **(b) Append**.
+
+Run this branch in order:
+
+1. Run the **Shared interview block for interview-based paths**.
+2. Run the **Shared smart-defaults block for interview-based paths**.
+3. If unresolved required template fields remain, go to **Step 7**.
+4. Otherwise, go to **Step 8**.
+5. In **Step 10**, append the generated template-aligned block below a `---` divider and a comment: `<!-- Added by accelint-onboard-agents skill -->`.
+
+Even in append mode, do not add conflicting standing guidance without surfacing the conflict in preview.
+
+Done when: the appended draft is ready for the final editorial pass or any remaining gaps have been routed to Step 7.
+
+### Step 6d: Run Mode 2 — Dry run
+
+Use this branch only when the file has real content that this skill did not generate and the user chose **(c) Dry run**.
+
+Run this branch in order:
+
+1. Run the **Shared interview block for interview-based paths**.
+2. Run the **Shared smart-defaults block for interview-based paths**.
+3. If unresolved required template fields remain, go to **Step 7**.
+4. Otherwise, go to **Step 8**.
+5. In **Step 9**, stop after the labeled preview.
+6. Present the output in the conversation and explicitly state: "No files were changed."
+7. Offer to re-run as **(a) Restructure** or **(b) Append** if the user is satisfied.
+8. Skip **Step 10** and **Step 11**. Go directly to **Step 12** after Step 9.
+
+Done when: the dry-run draft is ready for the final editorial pass or any remaining gaps have been routed to Step 7.
+
+### Step 6e: Run Mode 3 — Targeted refresh
+
+Use this branch only when the file matches the skill's expected shape, the user chose to work with the existing file, and the request is one bounded update with a known target section or issue.
+
+Run this branch in order:
+
+1. Inspect the affected section or sections first.
+2. Do only the scoped discovery needed for that bounded update.
+3. Ask only the questions needed to resolve that update.
+4. Avoid the full interview and full regeneration unless missing context requires it.
+5. Preserve the rest of the file unless the narrow update exposes broader contradiction or drift.
+6. Apply source precedence and the final editorial pass to the affected material and any directly dependent sections.
+7. If the update reveals broader contradiction or drift, go to **Step 6f** before continuing.
+8. If the bounded update still leaves unresolved required template fields, go to **Step 7**.
+9. Otherwise, go to **Step 8**.
+
+Done when: the targeted-refresh draft is ready for the final editorial pass, the work has been escalated to Step 6f, or any remaining required gaps have been routed to Step 7.
+
+### Step 6f: Run Mode 3 — Full refresh
+
+Use this branch only when the file matches the skill's expected shape, the user chose to work with the existing file, and targeted refresh is not sufficient.
+
+Run this branch in order:
+
+1. **Extract external findings.**
+   - Check whether the invoking prompt includes a `findings:` list.
+   - Parse the prompt for a `findings:` section, meaning a bulleted list of factual statements.
+   - Each finding is phrased as something already known to be true, never as an instruction.
+   - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
+   - Store these findings for later merging.
+2. **Run drift detection.**
+   Scan the codebase for changes since the file was last updated.
+
+   Use the signals below as common examples, not as an exhaustive list.
+
+   | Signal | Where to look |
+   |---|---|
+   | New packages added | `package.json`, workspace `package.json` files |
+   | CI checks changed | `.github/workflows/` — new required gates? |
+   | Husky hooks modified | `.husky/` — new pre-commit steps? |
+   | New migration directory | `migrations/`, `prisma/migrations/`, `alembic/` |
+   | Versioning tooling added | `.changeset/`, `.releaserc*` |
+   | OpenSpec added or removed | `openspec/` directory presence |
+   | New protected branches | `.github/branch-protection*`, README |
+3. **Surface unresolved TODOs.**
+   Find all `<!-- TODO: fill in -->` markers left from the previous run and surface them as targeted questions.
+4. **Merge and announce findings before asking anything.**
+   Combine the external findings from Step 6f.1, the drift findings from Step 6f.2, and the TODOs from Step 6f.3.
+
+   Present the merged list to the user:
+
+   > "I found [N] external findings, [M] sections that may have drifted, and [P] unresolved TODOs.
+   > I'll only ask about those — the rest looks current."
+
+   If external findings exist, note their source, for example "from completed OpenSpec change".
+5. **Run the refresh interview, then preview the changed sections first.**
+   Only after Step 6f.4 is complete:
+   - run the targeted refresh interview for the merged finding set
+   - apply source precedence
+   - prune duplication and low-value carry-forward text
+   - show a diff-style preview that includes only changed sections first
+   - do not re-emit unchanged sections in that first refresh preview
+   - still produce the full labeled preview required by Step 9 before any write
+6. If the refresh still leaves unresolved required template fields, go to **Step 7**.
+7. Otherwise, go to **Step 8**.
+
+Done when: the changed-section draft is ready for the final editorial pass, with any remaining required gaps routed to Step 7 and the full labeled preview still pending in Step 9.
+
 ---
 
-### Step 4 — Parallel Codebase Discovery (fill gaps before generating)
+## Stage 4 — Fill Remaining Behavioral Gaps with Parallel Discovery
 
-Enter this step only after the mode-specific interview work above is complete, and only for sections that still have unresolved behavioral gaps. Skip this step when the chosen path already has enough confirmed information and no remaining unresolved sections require inference.
+### Step 7: Fill remaining behavioral gaps with parallel discovery
 
-After the interview, audit every canonical template section and required template field from `./assets/template.md` that still has no answer, including `## Quality bar for finished work`, `## Related Documentation`, and `## Maintenance guidance` where applicable. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before you ask again or leave a `<!-- TODO: fill in -->`. A behavioral file with explicit TODOs is actionable. A file with missing required template sections silently shapes agent behavior in unpredictable ways.
+Run Step 7 only after one Step 6 branch is complete, and only for canonical template sections or required template fields that still have unresolved behavioral gaps. If the selected Step 6 branch already has enough confirmed information, skip Step 7 and go directly to **Step 8**.
+
+Audit every canonical template section and required template field from `./assets/template.md` that still has no answer, including `## Quality bar for finished work`, `## Related Documentation`, and `## Maintenance guidance` where applicable. For each gap, try to derive the behavioral intent directly from the codebase by using parallel subagents before you ask again or leave a `<!-- TODO: fill in -->`. A behavioral file with explicit TODOs is actionable. A file with missing required template sections silently shapes agent behavior in unpredictable ways.
 
 Discovery fills behavioral gaps. It does not maximize output surface area. Gather broadly when needed, but carry forward only findings that pass the final inclusion rule.
 
-Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses on one behavioral domain and returns structured findings. Wait for all agents to complete. Then merge the results before Preview and Write.
+Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses on one behavioral domain and returns structured findings. Wait for all agents to complete. Then merge the results before Step 8.
 
 **Spawn these agents at the same time:**
 
@@ -564,13 +592,15 @@ After you merge discovery results, show a preview with trailing comments on infe
 
 **If a field cannot be inferred** — for example decision heuristics, communication style, or role definition — mark it with `<!-- TODO: fill in -->` rather than omitting the section.
 
+Done when: remaining behavioral gaps are either resolved from repository evidence or left as explicit TODOs before Step 8.
+
 ---
 
-### Step 5 — Preview and Write
+## Stage 5 — Preview, Write, and Quality-Check
 
-Do not enter this step until all earlier required steps for the chosen path are complete.
+Do not enter Stage 5 until all earlier required steps for the chosen path are complete.
 
-#### Step 1 — Run the mandatory final editorial pass before preview
+### Step 8: Run the mandatory final editorial pass before preview
 
 Clean the assembled draft before the user reviews it.
 
@@ -583,11 +613,12 @@ Clean the assembled draft before the user reviews it.
 
 Done when: the draft is cleaned and ready for preview.
 
-#### Step 2 — Show the labeled preview before any write
+### Step 9: Show the labeled preview and collect review feedback
 
 Show the full labeled preview of the cleaned `AGENTS.md` or `CLAUDE.md` before writing anything.
 
 - Inferred values carry their source comment.
+- For **Step 6b**, carried-forward content is labelled `# from existing file`; new content is labelled `# new`.
 - Unresolved template fields carry `<!-- TODO: fill in -->`.
 - Required template sections from `./assets/template.md` remain present in template order.
 - Optional sections are kept only when they still serve the repository and `./assets/template.md` allows them.
@@ -603,7 +634,11 @@ In non-interactive or headless contexts, still produce the full labeled preview 
 
 Do not write the file until this gate is satisfied or the context is explicitly non-interactive.
 
-#### Step 3 — Write the confirmed file
+Done when: the review gate is satisfied, or the context is explicitly non-interactive.
+
+### Step 10: Write the confirmed file
+
+Run this step only for branches that write output. Skip it for **Step 6d**.
 
 Only after the review gate is satisfied, write to `AGENTS.md` or `CLAUDE.md` in the target directory being onboarded, **stripping the inference source comments**.
 
@@ -613,7 +648,9 @@ For the `## Related Documentation` section, include links only for files that ex
 
 Done when: the confirmed file is written without review-only comments.
 
-#### Step 4 — Run the AGENTS.md or CLAUDE.md quality check
+### Step 11: Run the AGENTS.md or CLAUDE.md quality check
+
+Run this step only after Step 10 writes the file. Skip it for **Step 6d**.
 
 After the write is complete, evaluate the generated file against `./references/rubric.md`.
 
@@ -652,14 +689,17 @@ Do not overstate certainty. If part of the score depends on incomplete repositor
 
 Done when: the user has both the generated file and the post-write quality assessment.
 
-#### Step 5 — Print the completion summary
+### Step 12: Print the completion summary
+
+Run this step only after the applicable previous step is complete.
 
 After the write and quality check are complete, print a brief summary of what was generated, what was inferred versus answered directly, which `<!-- TODO -->` sections still need human input, and the quality-check outcome.
 
-Done when: the user has the final write summary.
+For **Step 6d**, print the same brief summary except for the write and quality-check outcome, and keep the no-write status explicit.
+
+Done when: the user has the final completion summary.
 
 ---
-
 ## AGENTS.md Template
 
 Read and use the canonical template at: `./assets/template.md`
