@@ -466,13 +466,13 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - **DO NOT** add coding patterns, testing conventions, or agent behavior (those belong in config.yaml or AGENTS.md)
 
    **For AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
-   - Check if `accelint-onboard-agent` skill is installed
+   - Check if `accelint-onboard-agents` skill is installed
    - If skill is available:
      1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
      2. For each decision, rephrase as a plain factual statement (not an instruction)
      3. Invoke the skill with findings:
      ```text
-     Invoke the accelint-onboard-agent skill.
+     Invoke the accelint-onboard-agents skill.
 
      We have just completed the change spec openspec/changes/<change-name>.
 
@@ -563,7 +563,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      Updated documents:
      - openspec/config.yaml [via accelint-onboard-openspec / manually / skipped]
      - ARCHITECTURE.md [via accelint-architecture-doc / manually / skipped]
-     - AGENTS.md [via accelint-onboard-agent / manually / skipped]
+     - AGENTS.md [via accelint-onboard-agents / manually / skipped]
      - README.md [via accelint-readme-writer / manually / skipped]
 
      These changes ensure documentation stays synchronized with implementation.

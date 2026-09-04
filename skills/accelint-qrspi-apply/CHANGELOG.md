@@ -61,7 +61,7 @@
 ## [1.4.0] - 2026-07-08
 
 ### Changed
-- **Living document update invocations now pass change decisions as findings** — All documentation skill invocations (accelint-onboard-openspec, accelint-architecture-doc, accelint-onboard-agent, accelint-readme-writer) now extract decisions from design.md frontmatter and pass them as `findings:` list
+- **Living document update invocations now pass change decisions as findings** — All documentation skill invocations (accelint-onboard-openspec, accelint-architecture-doc, accelint-onboard-agents, accelint-readme-writer) now extract decisions from design.md frontmatter and pass them as `findings:` list
   - Step 3a of each living document update now includes:
     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
     2. For each decision, rephrase as a plain factual statement (not an instruction)
@@ -88,7 +88,7 @@
   - **Removed Phase 6: Report and Next Steps** — verification report now serves as final output
   - Rationale: Running documentation updates before verification allows verification to check documentation completeness
 - **Simplified living document update execution** — Removed sub-agent wrapper for documentation updates
-  - Skills (`accelint-onboard-openspec`, `accelint-architecture-doc`, `accelint-onboard-agent`, `accelint-readme-writer`) now invoked directly in main flow
+  - Skills (`accelint-onboard-openspec`, `accelint-architecture-doc`, `accelint-onboard-agents`, `accelint-readme-writer`) now invoked directly in main flow
   - Removed explicit reading of change artifacts before skill invocation
   - Skills now receive change path in invocation: `We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the [document] is current and up to date.`
   - Skills read proposal/design themselves during exploration phase

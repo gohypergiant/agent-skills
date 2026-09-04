@@ -43,7 +43,7 @@
       "title": "Project Onboarding",
       "description": "Set up agent behavior, project configuration, and architectural docs.",
       "skills": [
-        "accelint-onboard-agent",
+        "accelint-onboard-agents",
         "accelint-onboard-openspec",
         "accelint-architecture-doc"
       ]

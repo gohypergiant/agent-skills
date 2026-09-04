@@ -41,7 +41,7 @@ This skill requires:
 2. **accelint-qrspi-archive** - In regular use (produces the indexes this skill reads)
 3. **Archive indexes** - Both `openspec/changes/archive/INDEX.md` and `openspec/specs/INDEX.md` exist with at least one row
 4. **Sub-agent support** - For reading `design.md` files without polluting parent context
-5. **Writer skills with findings interface** - `accelint-architecture-doc`, `accelint-onboard-openspec`, `accelint-onboard-agent`, `accelint-readme-writer` supporting Mode 3 Refresh with `findings:` input
+5. **Writer skills with findings interface** - `accelint-architecture-doc`, `accelint-onboard-openspec`, `accelint-onboard-agents`, `accelint-readme-writer` supporting Mode 3 Refresh with `findings:` input
 
 ### Check archive state:
 
@@ -201,7 +201,7 @@ Hands off to where they can change something, using shared `findings:` interface
 3. Invoke writer skill(s) whose hub doc covers affected capability:
    - Tech stack/dependencies/patterns → `accelint-onboard-openspec` (config.yaml)
    - System structure/components → `accelint-architecture-doc` (ARCHITECTURE.md)
-   - Agent workflow/behavior → `accelint-onboard-agent` (AGENTS.md)
+   - Agent workflow/behavior → `accelint-onboard-agents` (AGENTS.md)
    - User-facing docs → `accelint-readme-writer` (README.md)
 
 Single finding can target multiple writer skills. Each invocation succeeds/fails independently.
@@ -531,7 +531,7 @@ If unsure whether an old decision still holds, run this manually rather than wai
 - `accelint-qrspi-apply` - Implement changes with parallelization, Phase 4 uses same findings: interface
 - `accelint-onboard-openspec` - Update config.yaml (routing target for tech stack drift)
 - `accelint-architecture-doc` - Update ARCHITECTURE.md (routing target for structure/coupling drift)
-- `accelint-onboard-agent` - Update AGENTS.md (routing target for behavior drift)
+- `accelint-onboard-agents` - Update AGENTS.md (routing target for behavior drift)
 - `accelint-readme-writer` - Update README.md (routing target for user-facing drift)
 
 ## Architecture Context

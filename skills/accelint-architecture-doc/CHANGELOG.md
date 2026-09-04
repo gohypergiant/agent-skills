@@ -127,6 +127,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Date every write" principle — always sets Section 10 date to today on each write
 
 ### Rationale
-- Modelled after `accelint-onboard-agent` and `accelint-onboard-openspec` patterns (Phase 0/1/2/3 structure, Mode 1/2/3 detection, infer-before-asking principle)
+- Modelled after `accelint-onboard-agents` and `accelint-onboard-openspec` patterns (Phase 0/1/2/3 structure, Mode 1/2/3 detection, infer-before-asking principle)
 - Living document update path is the primary use case, not just initial creation — most invocations will be refreshes
 - Codebase scanning is prioritised over interviewing to minimise user burden; questions are reserved for content that cannot be mechanically derived (roadmap, security decisions, deployment specifics not in IaC)

@@ -214,7 +214,7 @@ The skill assumes your project has:
 1. OpenSpec installed (`openspec/` directory exists)
 2. config.yaml configured with rules for design, specs, tasks (ideally via `accelint-onboard-openspec`)
 3. Expanded profile enabled (workflows include `explore`, `new`, `continue`)
-4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agent`)
+4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agents`)
 
 If anything is missing, the skill will guide you through setup.
 
@@ -239,6 +239,6 @@ Do not rush to implementation. It is fine to create multiple specs before coding
 ## Related Skills
 
 - `accelint-onboard-openspec` - Set up OpenSpec configuration for your project
-- `accelint-onboard-agent` - Create AGENTS.md with behavior rules
+- `accelint-onboard-agents` - Create AGENTS.md with behavior rules
 - `accelint-qrspi-apply` - Implement tasks from the generated change
 - `opsx:verify` - Verify implementation matches artifacts before archiving
