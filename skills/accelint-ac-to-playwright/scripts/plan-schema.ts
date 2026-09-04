@@ -1,3 +1,8 @@
+/**
+ * When to load this file: Load when generating JSON plans or running assessment mode.
+ * Contains schema and validation logic for test plans.
+ */
+
 import { z } from "zod";
 import { modifierKeyValidator, pressKeyValidator } from "./keyboard-key-validator";
 import { mouseButtonValidator, wheelDirectionValidator } from "./mouse-validator";
