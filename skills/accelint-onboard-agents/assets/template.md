@@ -35,7 +35,8 @@
 
 - Prefer the simplest approach that fits existing patterns.
 - Avoid over-engineering and avoid changing unrelated code.
-- Use specialized or delegated workflows only when they materially help. Avoid duplicated work and conflicting parallel edits.
+- Use specialized or delegated workflows only when they materially help.
+- Avoid duplicated work and conflicting parallel edits.
 - When repository-specific commands or tools matter, use the preferred entry points below instead of ad hoc alternatives.
 
 ### Before completing the task
