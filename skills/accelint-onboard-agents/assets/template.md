@@ -24,7 +24,9 @@
 
 ### Before making changes
 
-- Read the relevant code and nearby repository documentation first.
+- Determine the target area from the request.
+- Inspect the target code, its directly related callers or dependencies, relevant tests, and documentation. Check the applicable `README.md`, `docs/` or `documentation/`, manifests, configuration, and CI workflows when they govern the change or its verification.
+- If sources conflict or leave a question unanswered, verify against current code or configuration and state the uncertainty before proceeding.
 - Use the repository's actual commands, paths, and conventions when known. <!-- TODO: fill in -->
 - If the requested change is large, risky, or unclear, state your approach before implementing. <!-- TODO: fill in -->
 - Keep scope tight unless broader changes are explicitly approved or clearly necessary.
