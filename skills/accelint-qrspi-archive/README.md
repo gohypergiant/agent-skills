@@ -133,7 +133,7 @@ Each subagent:
 3. Sorts the full set alphabetically, writes in flow style (one line for clean diffs)
 4. Updates `last_touched_by` and `last_touched_on` (overwrites previous values)
 5. Regenerates `## Related Specs` section from the sorted `related:` list (wholesale replacement)
-6. Reports back: file path, no-op vs. changed, final `related:` list (not full contents)
+6. Reports back: file path, no-op vs. changed, final `related:` list, and an index-ready single-sentence purpose summary for the capability (not full contents)
 
 For brand-new capabilities (no prior spec.md), creates frontmatter from scratch.
 
@@ -142,7 +142,7 @@ For brand-new capabilities (no prior spec.md), creates frontmatter from scratch.
 Regenerates the complete specs index wholesale (never patched):
 
 1. Lists every directory under `openspec/specs/`
-2. Reads three things from each spec: `## Purpose` heading body, `related:` frontmatter, `last_touched_by`
+2. Reads three things from each spec: an index-ready single-sentence summary derived from the `## Purpose` heading body, `related:` frontmatter, and `last_touched_by`
 3. Emits full table sorted by capability name:
 
 ```markdown
@@ -161,7 +161,7 @@ Logs one durable row per archived change. This file is history — append-only, 
 For each change from Phase 2:
 1. Constructs one row with: `Change | Date | Decision | Specs touched | Status`
 2. `Date` comes from archive folder's `YYYY-MM-DD` prefix (never from `design.md`)
-3. `Decision` is a one-line summary of `decisions[].choice` (concatenate with semicolons if multiple)
+3. `Decision` is a compact archive-index summary derived from `decisions[].choice` — rewrite verbose choices into terse fragments first, then concatenate with semicolons if multiple
 4. `Status` written as `current` — this skill never touches that column again
 5. Appends to `openspec/changes/archive/INDEX.md` (creates with header if missing)
 

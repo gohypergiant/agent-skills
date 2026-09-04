@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.1] - 2026-09-03
+
+### Changed
+- **Tightened archive INDEX decision prose** — Decision rows now explicitly require compact archive-style summaries derived from `decisions[].choice`, not verbatim copies of verbose source prose
+  - Added guidance to rewrite each choice into terse fragments before semicolon-joining multiple decisions
+  - Explicitly forbids copying rationale, alternatives, examples, caveats, or explanatory prose into `openspec/changes/archive/INDEX.md`
+  - Rationale: Real archive index rows use compact semicolon-separated fragments; preserving full decision prose makes the changelog noisy and inconsistent with existing entries
+- **Tightened specs INDEX purpose prose** — Purpose cells now explicitly require a single concise sentence suitable for a table cell
+  - Spec-writing subagents now report an index-ready purpose summary instead of a sentence-or-paragraph excerpt from the heading body
+  - README guidance now mirrors the same single-sentence purpose-summary rule
+  - Rationale: Real specs index rows use descriptive but bounded single-sentence summaries; allowing paragraph-length carryover makes `openspec/specs/INDEX.md` harder to scan
+
+### Version
+- Bumped from 1.5.0 → 1.5.1
+
 ## [1.5.0] - 2026-08-31
 
 ### Added
