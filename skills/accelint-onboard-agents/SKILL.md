@@ -40,15 +40,15 @@ Move that material to the appropriate canonical companion document when one exis
 
 ### Final Inclusion Rule
 
-Only include guidance in the final `AGENTS.md` or `CLAUDE.md` when it earns a permanent place. Keep it only if it is:
+Only include guidance in the final `AGENTS.md` or `CLAUDE.md` when it earns a permanent place. A detail earns that place only when it:
 
-- behavior-shaping
-- recurring, not one-off
-- non-obvious or not easy to infer
-- durable enough for standing guidance
-- worth loading into every agent session
+- changes how the agent should behave
+- applies to recurring work, not a one-off task
+- prevents the agent from making a repository-specific mistake or unsupported assumption
+- is durable enough for standing guidance
+- is valuable enough to load in every agent session
 
-If a detail is true but low-value, unstable, better housed elsewhere, or not behavior-shaping, leave it out, link to the canonical document, or use `<!-- TODO: fill in -->` instead of padding the file.
+Do not include a detail just because the agent might not know it already. Include it only when it describes a repository-specific rule or exception that affects how the agent should work. Otherwise, leave it out or link to the canonical document that contains it.
 
 Persona or identity framing is optional. Use it only when it improves behavior. Do not let role language replace operational guidance.
 
