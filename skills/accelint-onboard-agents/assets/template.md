@@ -15,7 +15,7 @@
 
 ## How to communicate
 
-- Be [concise / direct / collaborative / other repo preference]. <!-- TODO: fill in -->
+- Be [concise, expository, conversational, adaptive, or other preference]. <!-- TODO: fill in -->
 - When making changes, explain what changed, why it changed, how you verified it, and any remaining risks or open questions.
 - If information is missing or unclear, say so directly and either ask or proceed with narrow, stated assumptions. <!-- TODO: fill in -->
 - Do not speculate about code, files, or behavior you have not inspected.
@@ -27,8 +27,8 @@
 - Determine the target area from the request.
 - Inspect the target code, its directly related callers or dependencies, relevant tests, and documentation. Check the applicable `README.md`, `docs/` or `documentation/`, manifests, configuration, and CI workflows when they govern the change or its verification.
 - If sources conflict or leave a question unanswered, verify against current code or configuration and state the uncertainty before proceeding.
-- Use the repository's actual commands, paths, and conventions when known. <!-- TODO: fill in -->
-- If the requested change is large, risky, or unclear, state your approach before implementing. <!-- TODO: fill in -->
+- Use the repository's actual commands, paths, and conventions when known.
+- If the requested change is large, risky, or unclear, state your approach before implementing. Bias towards proven methodologies such as QRSPI (Question, Research, Structure, Plan, Implement) or SDD (Spec Driven Development).
 - Keep scope tight unless broader changes are explicitly approved or clearly necessary.
 
 ### While making changes
