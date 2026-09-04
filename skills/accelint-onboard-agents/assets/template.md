@@ -5,6 +5,14 @@
 > Do not use this file as a general project handbook. Link to canonical docs for project facts, architecture, onboarding, and other reference material.
 > If a rule must hold with zero exceptions, enforce it in CI, hooks, scripts, permissions, or other deterministic controls.
 
+## Maintenance guidance
+
+- Add instructions only when they prevent repeated mistakes, resolve real ambiguity, or capture durable repository behavior.
+- Remove or rewrite rules that become stale, noisy, redundant, or ignored.
+- Move narrow guidance closer to the code if global instructions start to bloat.
+- Prefer concrete, verifiable instructions over aspirational slogans.
+- If a section cannot yet be filled in based on evidence, leave `<!-- TODO: fill in -->` rather than inventing unsupported guidance.
+
 ## What to optimize for
 
 - Follow repository-specific workflows and commands instead of guessing.
@@ -106,11 +114,3 @@ A change is not done until it meets the repository's expected quality bar and yo
 - **`openspec/config.yaml`** — Project facts such as stack, architecture facts, coding patterns, or domain concepts that belong outside the behavior layer. <!-- TODO: keep, rewrite, or remove -->
 - **`JARGON.md`** — Internal terminology, acronyms, and shorthand used in the project. Consult it when repository language is not self-explanatory. <!-- TODO: keep, rewrite, or remove -->
 - **`[other canonical doc]`** — [What it provides and when the agent should consult it.] <!-- TODO: fill in or remove -->
-
-## Maintenance guidance
-
-- Add instructions only when they prevent repeated mistakes, resolve real ambiguity, or capture durable repository behavior.
-- Remove or rewrite rules that become stale, noisy, redundant, or ignored.
-- Move narrow guidance closer to the code if global instructions start to bloat.
-- Prefer concrete, verifiable instructions over aspirational slogans.
-- If a section cannot yet be filled in based on evidence, leave `<!-- TODO: fill in -->` rather than inventing unsupported guidance.
