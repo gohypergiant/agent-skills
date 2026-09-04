@@ -39,6 +39,12 @@
 - If the requested change is large, risky, or unclear, state your approach before implementing. Bias towards proven methodologies such as QRSPI (Question, Research, Structure, Plan, Implement) or SDD (Spec Driven Development).
 - Keep scope tight unless broader changes are explicitly approved or clearly necessary.
 
+If the `openspec-` skills are available:
+- Use `openspec-explore` skill for invigation, exploration, and research
+
+If the `openspec-` and `accelint-qrspi-propose` skills are available:
+- Use `accelint-qrspi-propose` for any non trivial change
+
 ### While making changes
 
 - Prefer the simplest approach that fits existing patterns.
@@ -47,12 +53,18 @@
 - Avoid duplicated work and conflicting parallel edits.
 - When repository-specific commands or tools matter, use the preferred entry points below instead of ad hoc alternatives.
 
+If the `openspec-` and `accelint-qrspi-apply` skills are available:
+- Use `accelint-qrspi-apply` to generate code for the qrspi proposal
+
 ### Before completing the task
 
 - Run the relevant verification steps. <!-- TODO: fill in -->
 - Check that changes stay within the intended scope.
 - Confirm no secrets, credentials, or sensitive values were introduced.
 - Report the verification evidence, not just the conclusion.
+
+If the `openspec-` and `accelint-qrspi-archive` skills are available:
+- Use `accelint-qrspi-archive` to archive the qrspi changes and proposal
 
 ## Repository-specific commands and entry points
 

@@ -586,7 +586,7 @@ Spawn discovery subagents in parallel. Do not scan serially. Each agent focuses 
 - Return: migration guardrails if migrations exist, secret handling practices
 
 **Agent E — OpenSpec and spec-driven workflow**
-- OpenSpec signals: `openspec/` directory, `openspec/config.yml`, `openspec/config.yaml`, and any `/opsx:*` or `/openspec-*` references
+- OpenSpec signals: `openspec/` directory, `openspec/config.yml`, `openspec/config.yaml`, and any `opsx:*` or `openspec-*` skill references
 - Related workflow evidence: companion documents only when they define durable agent workflow expectations relevant to spec-driven work
 - Return: whether a spec-driven workflow is in use, which parts belong in durable agent behavior guidance, and when the agent should invoke that workflow
 

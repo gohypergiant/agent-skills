@@ -1,5 +1,61 @@
 # Changelog
 
+## [1.5.1] - 2026-09-03
+
+### Changed
+- **Tightened archive INDEX decision prose** — Decision rows now explicitly require compact archive-style summaries derived from `decisions[].choice`, not verbatim copies of verbose source prose
+  - Added guidance to rewrite each choice into terse fragments before semicolon-joining multiple decisions
+  - Explicitly forbids copying rationale, alternatives, examples, caveats, or explanatory prose into `openspec/changes/archive/INDEX.md`
+  - Rationale: Real archive index rows use compact semicolon-separated fragments; preserving full decision prose makes the changelog noisy and inconsistent with existing entries
+- **Tightened specs INDEX purpose prose** — Purpose cells now explicitly require a single concise sentence suitable for a table cell
+  - Spec-writing subagents now report an index-ready purpose summary instead of a sentence-or-paragraph excerpt from the heading body
+  - README guidance now mirrors the same single-sentence purpose-summary rule
+  - Rationale: Real specs index rows use descriptive but bounded single-sentence summaries; allowing paragraph-length carryover makes `openspec/specs/INDEX.md` harder to scan
+
+### Version
+- Bumped from 1.5.0 → 1.5.1
+
+## [1.5.0] - 2026-08-31
+
+### Added
+- **Strengthened synthesis suggestion mechanism** — Upgraded from passive informational prose to RFC 2119-style actionable directives
+  - Replaced weak "ℹ Consider running accelint-archive-synthesis" with directive format: "⚠️ You SHOULD run accelint-archive-synthesis now"
+  - Rationale: Agents trained on RFC 2119 keywords (MUST/SHOULD) reliably recognize these as actionable directives, while passive prose like "Consider" is often ignored
+- **Dual-trigger synthesis threshold system** — Now fires when either 50 changes accumulate OR 30 working days elapse since last synthesis run, whichever comes first
+  - Change threshold: 50 archived changes since last synthesis checkpoint
+  - Time threshold: 30 working days (6 weeks × 5 working days/week)
+  - Rationale: High-velocity projects need periodic linting before decision drift accumulates too deeply; lower-velocity projects need time-based nudges to ensure review happens even when change volume is low
+- **SYNTHESIS-LOG.md checkpoint tracking** — Reads last synthesis run date and row count from `openspec/changes/archive/SYNTHESIS-LOG.md`
+  - Parses most recent checkpoint under "## Run History" section
+  - First-run handling: treats missing log as (epoch, 0 rows) baseline
+  - Working days calculation: total calendar days minus weekend days (Saturdays/Sundays)
+- **Subagent-based calculation** — Delegates all threshold calculation to subagent, keeping parent context clean
+  - Subagent returns structured JSON with trigger status and metrics
+  - Parent uses response for output formatting only
+  - Follows same pattern as spec writing (step 22) and other isolated operations
+
+### Changed
+- **New step 36** — Added synthesis trigger check as dedicated step after archive reporting (step 34-35)
+  - Three distinct output formats: threshold exceeded, threshold not exceeded, first-run case
+  - Clear metrics shown: change delta, time delta, checkpoint info, current state
+  - Includes rationale for dual-trigger approach in output
+- **Hard-coded thresholds** — 50 changes and 30 working days are now explicit constants for clear tuning
+  - Not "reasoned defaults" subject to adjustment — these are the defined thresholds
+  - Can be changed directly in skill instructions if project cadence requires different values
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
+## [1.4.0] - 2026-08-25
+
+### Added
+- Cross-platform agent compatibility through prose-based skill invocation format
+- Simple, reliable prose format that works across all agent harnesses
+
+### Changed
+- Migrated from harness-specific slash-command syntax (`/skill-name`) to agent-agnostic prose invocation format
+- Ensures compatibility across Claude Code, Codex, Pi, and other agent harnesses
+
 ## [1.3.1] - 2026-08-21
 
 ### Fixed
