@@ -4,7 +4,7 @@ description: Onboard a repository to agent-driven development by creating or ref
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # Onboard Agents
@@ -243,6 +243,9 @@ If the user chooses **start fresh**, switch immediately to **Mode 1: Create**.
 - Treat the existing file as a read-only reference.
 - Carry forward any content from the existing file that is still accurate.
 - Do not silently discard it.
+- Use the template to control the new file’s top-level structure, not to decide whether existing guidance may remain.
+- If existing guidance passes the Final Inclusion Rule but has no dedicated template heading, place it in the canonical section that governs that behavior.
+- Do not add a top-level section or discard the guidance only because the template does not name it.
 - Regenerate the structure from scratch.
 - Then go to **Step 6a**.
 

@@ -2,6 +2,11 @@
 
 All notable changes to this skill are documented in this file.
 
+## [1.7.0] - 2026-09-04
+
+### Changed
+- **Start-fresh guidance retention clarified** — Required agents to use the canonical template for top-level structure only, preserve qualifying existing guidance by mapping it into the relevant canonical section, and avoid discarding it solely because the template does not name it.
+
 ## [1.6.0] - 2026-09-04
 
 ### Added
