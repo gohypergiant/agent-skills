@@ -4,7 +4,7 @@ description: Onboard a repository to agent-driven development by creating or ref
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.5.1"
+  version: "1.6.0"
 ---
 
 # Onboard Agents

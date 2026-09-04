@@ -192,14 +192,9 @@ Example: `feat(layer): add WebGPU fallback for Safari`
 
 See [CHANGELOG.md](CHANGELOG.md) for details.
 
-Current version: 1.5.0
+Current version: 1.6.0
 
-Changes in 1.5.0:
-- Added import subpaths for restructure, append, and dry-run handling
-- Added refresh subpaths for targeted refresh and full refresh
-- Added companion-document detection and clearer behavior-layer boundary handling
-- Added refresh support for external `findings:` input and merged drift/TODO surfacing
-- Added mandatory editorial cleanup before preview
+For the complete version history, see [CHANGELOG.md](CHANGELOG.md).
 
 ## Related skills
 

@@ -1,83 +1,53 @@
 # Changelog
 
+All notable changes to this skill are documented in this file.
+
+## [1.6.0] - 2026-09-04
+
+### Added
+- **Canonical template and review rubric** — Added `assets/template.md` as the source of truth for generated agent-instruction structure and `references/rubric.md` for the required post-write quality assessment.
+- **Conflict-resolution precedence** — Added an explicit order for reconciling user answers, repository policy, evidence-backed inference, existing guidance, defaults, and unresolved TODOs.
+- **Post-write quality assessment** — Added weighted rubric scoring, letter grades, and outcome-specific user guidance after generated `AGENTS.md` or `CLAUDE.md` files are written.
+- **Expanded decision and safety scaffolding** — Added maintenance guidance, performance-sensitive-change rules, optional review-specific rules, and more decision-heuristic coverage to the canonical template.
+
+### Changed
+- **Skill renamed** — Renamed `accelint-onboard-agent` to `accelint-onboard-agents` and updated the skill’s references and examples.
+- **Workflow restructured into explicit stages and steps** — Replaced the phase-based workflow with ordered stages and Steps 0–12, including progress tracking, operating-path confirmation, mode-specific playbooks, preview gating, and post-write review.
+- **Create, import, and refresh paths made more explicit** — Clarified start-fresh, restructure, append, dry-run, targeted-refresh, and full-refresh routing, including which discovery and interview work each path requires.
+- **Template handling tightened** — Required sections now follow the canonical template; optional sections are retained only when the template allows them and they fit the repository.
+- **Discovery and draft synthesis clarified** — Limited parallel discovery to unresolved behavioral gaps and required the final editorial pass to deduplicate guidance, resolve conflicts, and remove adjacent-document material before preview.
+
 ## [1.5.1] - 2026-08-26
 
 ### Changed
 - **Mode-aware existing-file prompt aligned** — Mode 2 recommends starting fresh for imports, Mode 3 recommends working with the existing file for refreshes, and the Step 4 labels and routing language use the same option names.
 
-### Version
-- Bumped from 1.5.0 → 1.5.1
-
 ## [1.5.0] - 2026-08-26
 
 ### Added
-- **Import path branches clarified** — README and skill guidance now describe the restructure, append, and dry-run paths explicitly
-- **Refresh path branches clarified** — README and skill guidance now describe targeted refresh versus full refresh explicitly
-- **Companion-document detection coverage clarified** — README now names `CONSTRAINTS.md`, `EPISTEMIC-MAP.md`, and `JARGON.md` alongside `openspec/config.yml`, `openspec/config.yaml`, and `ARCHITECTURE.md`
+- **Import path branches clarified** — Added explicit restructure, append, and dry-run paths for existing non-template files.
+- **Refresh path branches clarified** — Added targeted-refresh and full-refresh paths for files that follow the expected structure.
+- **Companion-document detection coverage clarified** — Added `CONSTRAINTS.md`, `EPISTEMIC-MAP.md`, and `JARGON.md` alongside `openspec/config.yml`, `openspec/config.yaml`, and `ARCHITECTURE.md`.
+- **Cross-platform invocation guidance** — Added prose-based skill invocation guidance that works across agent harnesses.
 
 ### Changed
-- **Workflow terminology aligned** — README now uses the same step-based workflow framing as `SKILL.md` instead of the older phase-based summary
-- **Version history aligned** — README version history now reflects the current skill version and the major behavior changes already present in `SKILL.md`
-- **Related Documentation description tightened** — README now says the generated file includes only canonical documents that actually exist and materially help agent behavior
-
-### Version
-- Bumped from 1.4.0 → 1.5.0
-## [1.5.0] - 2026-08-25
-
-### Added
-- Cross-platform agent compatibility through prose-based skill invocation format
-- Simple, reliable prose format that works across all agent harnesses
-
-### Changed
-- Migrated from harness-specific slash-command syntax (`/skill-name`) to agent-agnostic prose invocation format
-- Ensures compatibility across Claude Code, Codex, Pi, and other agent harnesses
+- **Workflow terminology aligned** — Updated README workflow terminology to use the skill’s step-based framing instead of the older phase-based summary.
+- **Related-document guidance tightened** — Clarified that generated files include only canonical documents that exist and materially help agent behavior.
+- **Skill invocation made agent-agnostic** — Replaced harness-specific slash-command syntax (`/skill-name`) with prose-based invocation guidance.
 
 ## [1.4.0] - 2026-07-08
 
 ### Added
-- **External findings support in refresh mode** — skill now accepts `findings:` list from invoking prompt
-  - Parses invoking prompt for a `findings:` section (bulleted list of factual statements)
-  - Each finding is phrased as something already known to be true, never as an instruction
-  - Example: "config.yaml's Anti-Patterns section says to avoid polling, but two archived changes chose polling for stated reasons"
-  - Findings are merged with drift detection and unresolved TODOs before presenting to user
-  - Allows upstream workflows (e.g., `accelint-qrspi-apply`) to pass change-specific context that should influence AGENTS.md updates
-  - If external findings exist, notes their source (e.g., "from completed OpenSpec change")
-  - Rationale: AGENTS.md refresh after completing OpenSpec changes should incorporate behavioral decisions made during that change. Without external findings, the skill would only detect drift via file/config changes but miss workflow or policy decisions that haven't yet manifested in tracked files.
+- **External findings support in refresh mode** — The skill accepts a `findings:` list from the invoking prompt, merges factual findings with drift detection and unresolved TODOs, and identifies the findings’ source when available.
 
 ### Changed
-- **Refresh mode workflow expanded** — now includes 5-step process instead of 4-step
-  - Step 1: Extract external findings from invoking prompt (if any)
-  - Step 2: Drift detection (scan codebase for changes)
-  - Step 3: Unresolved TODOs (find placeholder markers)
-  - Step 4: Merge and announce all findings (external + drift + TODOs) before asking anything
-  - Step 5: After targeted interview, show diff-style preview before writing
-  - Rationale: Explicit merge step makes it clear that external findings, drift findings, and TODOs are treated equally, and announcing them together upfront gives the user full context before the interview begins
-
-### Version
-- Bumped from 1.3.0 → 1.4.0
+- **Refresh workflow expanded** — The refresh flow extracts external findings, scans for drift, surfaces TODOs, announces the merged findings before interviewing, and shows a diff-style preview before writing.
 
 ## [1.3.0] - 2026-05-11
 
-### Changed
-- **Replaced serial codebase discovery with parallel subagents in Phase 3**
-  - Rationale: Serial scanning wastes time on codebases with many config files spread across directories. Parallel discovery pattern from `accelint-architecture-doc` significantly improves performance.
-  - Now spawns 5 subagents simultaneously:
-    - Agent A: Version control & commit conventions
-    - Agent B: CI/CD & pre-commit workflows  
-    - Agent C: Testing & code quality
-    - Agent D: Security & migrations
-    - Agent E: OpenSpec & development workflow
-  - Each agent focuses on one behavioral domain and returns structured findings
-  - Results are merged after all agents complete before Phase 4
-
 ### Added
-- **NEVER Do section** with anti-patterns including:
-  - Never run codebase discovery serially
-  - Never skip discovery before asking questions
-  - Never omit sections from generated AGENTS.md
-  - Never duplicate root-level instructions in package files
-  - Never write final file without showing preview
-- **Parallel discovery** principle added to Interaction Principles section
+- **Parallel discovery** — Added five parallel discovery domains: version control and commits; CI/CD and pre-commit workflows; testing and code quality; security and migrations; and OpenSpec and development workflow.
+- **Onboarding safeguards** — Added guidance against serial discovery, skipped discovery, omitted generated-file sections, duplicated root instructions in package files, and writes without a preview.
 
-### Version
-- Bumped from 1.2 → 1.3
+### Changed
+- **Discovery execution** — Replaced serial codebase discovery with parallel subagents and merged their findings before draft generation.
