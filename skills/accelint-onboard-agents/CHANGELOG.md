@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1] - 2026-08-26
+
+### Changed
+- **Mode-aware existing-file prompt aligned** — Mode 2 recommends starting fresh for imports, Mode 3 recommends working with the existing file for refreshes, and the Step 4 labels and routing language use the same option names.
+
+### Version
+- Bumped from 1.5.0 → 1.5.1
+
 ## [1.5.0] - 2026-08-26
 
 ### Added

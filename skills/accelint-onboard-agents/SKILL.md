@@ -4,7 +4,7 @@ description: Onboard a repository to agent-driven development by creating or ref
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.5.0"
+  version: "1.5.1"
 ---
 
 # Onboard Agents
@@ -98,7 +98,7 @@ Create a progress checklist with your task-tracking tool. If no tool is availabl
 - [ ] Step 1: Check for a monorepo root instruction file
 - [ ] Step 2: Check for related documents
 - [ ] Step 3: Detect the local file state
-- [ ] Step 4: Handle the start-fresh intent gate when Mode 2 or Mode 3 was detected
+- [ ] Step 4: Confirm how to use the existing file when Mode 2 or Mode 3 was detected
 - [ ] Step 5: Choose the branch inside Mode 2 or Mode 3 when needed
 - [ ] Step 6: Run the selected mode playbook
 - [ ] Step 7: Fill remaining behavioral gaps with parallel discovery if needed
@@ -223,13 +223,21 @@ Done when: the file state and detected mode are explicit.
 
 Complete Stage 2 before you start discovery, drift scanning, or any mode-specific interview.
 
-### Step 4: Handle the start-fresh intent gate
+### Step 4: Confirm how to use the existing file
 
 Requires: Step 3 is complete.
 
-If Step 3 detected **Mode 2** or **Mode 3**, ask this first:
+If Step 3 detected **Mode 2**, ask this first:
 
-> "Before I start — would you like to **start fresh**, treating the existing file as a reference only *(recommended)*, or **work with what's already there**?"
+> "Before I start, this file has content that does not follow the canonical template.
+> Would you like to **start fresh**, treating the existing file as a reference only
+> *(recommended for an import)*, or **work with the existing file**?"
+
+If Step 3 detected **Mode 3**, ask this first:
+
+> "Before I start, this file already follows the canonical template.
+> Would you like to **work with the existing file** *(recommended for a refresh)*,
+> or **start fresh**, treating it as a reference only?"
 
 If the user chooses **start fresh**, switch immediately to **Mode 1: Create**.
 
@@ -239,13 +247,13 @@ If the user chooses **start fresh**, switch immediately to **Mode 1: Create**.
 - Regenerate the structure from scratch.
 - Then go to **Step 6a**.
 
-If the user chooses **work with what's there**:
+If the user chooses **work with the existing file**:
 - if Step 3 detected **Mode 2**, go to **Step 5a**
 - if Step 3 detected **Mode 3**, go to **Step 5b**
 
 If Step 3 already selected **Mode 1**, skip Step 4 and Step 5. Go directly to **Step 6a**.
 
-Done when: the start-fresh decision is explicit whenever Mode 2 or Mode 3 was detected.
+Done when: the choice between **start fresh** and **work with the existing file** is explicit whenever Mode 2 or Mode 3 was detected.
 
 ### Step 5a: Choose the Mode 2 branch
 
