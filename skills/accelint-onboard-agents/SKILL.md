@@ -143,9 +143,8 @@ If a root-level `AGENTS.md` or `CLAUDE.md` exists above the current directory:
 4. During the interview, at the start of each turn, state what the root file already covers for that section before asking any questions:
 
    > "The root `AGENTS.md` or `CLAUDE.md` defines [summary of this section's content].
-   > Does this package need to add to or override any of that?"
 
-   If the user says no, emit a reference in the generated file rather than repeating the content. If the user flags additions or overrides, ask the normal turn questions scoped to what is missing or different.
+   Emit a reference in the generated file rather than repeating the content. If the user flags additions or overrides, ask the normal turn questions scoped to what is missing or different.
 
 ### Step 2: Check for related documents
 
