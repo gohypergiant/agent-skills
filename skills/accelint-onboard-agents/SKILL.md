@@ -315,9 +315,13 @@ Ask only for material that belongs in the template. Do not invent extra AGENTS.m
 - Should the agent emphasize simplicity, speed, safety, reviewability, or some other standing priority?
 
 **Turn 2 — How to communicate**
-- How should the agent communicate? (concise, direct, collaborative, adaptive, etc.)
+- How should the agent communicate? 
+   *(Examples: concise, expository, conversational, adaptive)*
+- Should the agent explain its reasoning, or just act?
 - When making changes, are there required reporting expectations beyond what the template already says?
-- How should the agent handle missing information or uncertainty? (state assumptions and proceed narrowly, ask first, ask only for high-risk ambiguity?)
+   *(Examples: show diffs, show full files, inline comments, separate explanation block?)*
+- How should the agent handle missing information or uncertainty? 
+   *(Examples: state assumptions and proceed narrowly, always aske bfore proceeding, ask for scope-changing uncertainty only?)*
 
 **Turn 3 — How to work**
 - Before making changes, what must the agent read, confirm, or state first?
