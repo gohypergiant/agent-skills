@@ -73,6 +73,8 @@
 | A larger refactor becomes tempting during scoped work | [Do not expand scope without approval.] <!-- TODO: fill in --> |
 | Evidence is incomplete | [State what could not be verified and use TODOs instead of inventing rules.] <!-- TODO: fill in --> |
 | Multiple valid implementations exist | [Prefer the simplest option that fits existing patterns.] <!-- TODO: fill in --> |
+| Performance trade-offs (readability vs. speed, allocations) | [Always escalate — explain options, let engineer decide] <!-- TODO: fill in --> |
+| Architectural decisions (patterns, layer types, data flow, rendering pipeline) | [Always escalate before implementing] <!-- TODO: fill in --> |
 
 ## Approval and safety boundaries
 
