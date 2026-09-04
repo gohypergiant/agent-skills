@@ -25,7 +25,7 @@ Use the rule below to decide what stays in this file and what belongs in a canon
 
 If material does not answer "how should the agent behave?", it does not belong in `AGENTS.md` or `CLAUDE.md`.
 
-Move that material to the appropriate canonical companion document when one exists, or leave it out of the behavior file rather than turning `AGENTS.md` into a general project handbook.
+Move that material to the appropriate canonical companion document when one exists, or leave it out.
 
 | Belongs in AGENTS.md | Belongs in a canonical companion document |
 |---|---|
