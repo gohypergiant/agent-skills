@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.1] - 2026-09-08
+
+### Fixed
+- Restored the frontmatter `description` with explicit behavior-defining guidance scope, preservation requirements, and boundaries against ordinary prose cleanup and trigger-performance optimization.
+
+### Version
+- Patch release at `0.11.1`.
+
 ## [0.11.0] - 2026-09-08
 
 ### Changed

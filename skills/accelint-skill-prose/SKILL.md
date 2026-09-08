@@ -1,9 +1,19 @@
 ---
 name: accelint-skill-prose
+description: >-
+  Use when auditing or revising behavior-defining agent guidance—such as `SKILL.md`,
+  `AGENTS.md`, `CLAUDE.md`, prompt templates, workflow instructions, guardrails, and
+  behavior-bearing references—where wording controls trigger scope, workflow order,
+  approval semantics, guardrail strength, or exact technical meaning. Prefer this skill
+  over general prose editing when clarity must improve without changing behavior,
+  including ambiguity audits and edits that preserve exact paths, commands, fields,
+  identifiers, and scope-defining examples. Do not use it for broader content strategy,
+  policy design, domain review, ordinary low-risk prose cleanup, or optimizing a skill
+  description’s trigger performance.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.11.0"
+  version: "0.11.1"
 ---
 
 # Skill Prose
