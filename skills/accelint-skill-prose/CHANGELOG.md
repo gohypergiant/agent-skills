@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.11.0] - 2026-09-08
+
+### Changed
+- Replaced selectable audit, rewrite, and strict modes with one mandatory strict workflow: audit every applicable rubric, record actionable recommendations, synthesize a prioritized rewrite proposal, produce a behavior-preserving rewritten version, and validate it against the same requirements.
+- Added narrow report-visibility controls: `--quiet` and unambiguous no-report requests suppress only the user-facing audit and report. They never skip auditing, grading, recommendations, rewrite-proposal synthesis, rewriting, or validation; a generic request for concision does not suppress reporting.
+- Required every finding recommendation to identify a specific wording, structure, or requirement change, explain behavior-preservation intent when relevant, and provide an actionable rewrite direction.
+- Updated the delivery template, README, rubric references, and eval coverage for unified workflow terminology, permanent strict safeguards, prioritized rewrite proposals, and report visibility.
+
+### Version
+- Minor release at `0.11.0`.
+
+## [0.10.1] - 2026-09-08
+
+### Changed
+- Renamed `references/rfc-2119.md` to `references/normative-language.md` with `git mv` after explicit approval. The new name accurately covers the rubric's RFC 8174 and ordinary-English obligation analysis; updated `SKILL.md`, `README.md`, and `evals/evals.json` references.
+
+### Version
+- Patch release at `0.10.1`.
+
+## [0.10.0] - 2026-09-08
+
+### Changed
+- Replaced progressive-disclosure reference loading with mandatory, category-level rubric audits for normative-language and obligation precision; serial instruction and workflow integrity; STE-compatible clarity and usability; and user-question and waiting behavior.
+- Added category-level grades, cited evidence, finding states, concrete recommendations, change classifications, and uncertainty requirements to `SKILL.md` and `assets/output-template.md`.
+- Updated `references/rfc-2119.md` in place as an RFC 8174-based normative-language rubric, preserving its path while adding the all-caps applicability rule and contextual treatment of ordinary-English obligation language.
+- Transformed `references/serial-instruction-guidance.md` and `references/ste-compatible-rules.md` into mandatory rubrics, and added `references/user-question-waiting.md` for decision, waiting, blocked-work, and safe-default analysis.
+- Allowed bounded behavior-preserving structural rewrites when cited evidence shows that structure causes instruction skipping, ambiguity, or ineffective behavior; edits that change protected behavior still require approval.
+- Removed the `description` frontmatter text from `SKILL.md`; agent-skill description optimization is managed elsewhere.
+- Updated `README.md`, `evals/evals.json`, and the output template to reflect mandatory rubric coverage and the replaced reference set.
+
+### Removed
+- Removed the obsolete progressive-disclosure references `references/frontmatter-descriptions.md`, `references/workflow-guardrails.md`, `references/artifact-patterns.md`, `references/examples.md`, and `references/checklist.md` after explicit approval for the tracked-file deletions.
+
+### Version
+- Minor release at `0.10.0`.
+
 ## [0.9.4] - 2026-08-21
 
 ### Changed

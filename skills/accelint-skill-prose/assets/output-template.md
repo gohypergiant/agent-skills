@@ -1,61 +1,97 @@
 # accelint-skill-prose output template
 
-Use this template for all `accelint-skill-prose` outputs.
+Complete this template for every `accelint-skill-prose` invocation. Show it by default; omit it from the user-facing response only under the report-visibility rule in `../SKILL.md`.
 
-Keep the report factual. Do not imply that a file was reviewed, changed, or left unchanged unless you actually inspected it.
+Keep the report factual. Do not imply that a file was inspected, a category was assessed, a finding was verified, or a user approved a change unless that happened.
 
-## Required behavior
+## Required report content
 
-- Report what changed and why.
-- Report what did not change and why when that file was in the artifact set.
-- Keep paths exact.
-- Keep reasons tied to behavior safety, clarity, consistency, local sentence-structure quality, trigger coverage, workflow semantics, guardrail strength, or exact technical meaning.
-- If discovery was incomplete, say so explicitly.
-- If no other artifact-set files changed, say that directly.
+- State that the unified strict workflow was completed and whether report visibility was default or suppressed.
+- List the complete artifact set or disclose incomplete discovery.
+- Report every mandatory rubric category separately.
+- For every category, include grade, state, cited evidence, behavior risk or no-change rationale, an actionable recommendation, change classification, and uncertainty.
+- For every finding, make the recommendation name the specific wording, structure, or requirement to change and the behavior-preservation intent when relevant.
+- Synthesize applicable recommendations into one prioritized, top-down rewrite proposal before the rewritten version.
+- Keep grades local and heuristic. Do not aggregate them into a claim that the audit is validated or complete when evidence is unresolved.
+- State all approval requests, decisions, and work blocked while awaiting a decision.
 
 ## Template
 
 ```md
 ## Summary
-- Task: [brief description of the work]
-- Output mode: [audit only | rewrite only | audit plus rewrite]
-- Rewrite mode: [mode=default | mode=strict | not applicable]
-- Artifact set reviewed: [list the files or say the crawl was incomplete]
+- Task: [brief description]
+- Workflow: [unified strict audit, recommendation, rewrite-proposal, rewrite, and validation workflow completed]
+- Report visibility: [default | suppressed by `--quiet` | suppressed by explicit no-report request]
+- Artifact set reviewed: [exact paths, or disclose incomplete discovery]
 
-## What changed
+## Mandatory rubric audit
+
+### 1. Normative-language and obligation precision
+- Grade: [0–5]
+- State: [finding | no issue found | unresolved | not applicable with evidence]
+- Evidence: [exact source text and path]
+- Risk or no-change rationale: [concrete explanation]
+- Recommendation: [specific, actionable change; include behavior-preservation intent when relevant]
+- Change classification: [wording-only | behavior-preserving structural rewrite | approval-required]
+- Uncertainty: [limitation or none]
+
+### 2. Serial instruction and workflow integrity
+- Grade: [0–5]
+- State: [finding | no issue found | unresolved | not applicable with evidence]
+- Evidence: [exact source text and path]
+- Risk or no-change rationale: [concrete explanation]
+- Recommendation: [specific, actionable change; include behavior-preservation intent when relevant]
+- Change classification: [wording-only | behavior-preserving structural rewrite | approval-required]
+- Uncertainty: [limitation or none]
+
+### 3. STE-compatible clarity and usability
+- Grade: [0–5]
+- State: [finding | no issue found | unresolved | not applicable with evidence]
+- Evidence: [exact source text and path]
+- Risk or no-change rationale: [concrete explanation]
+- Recommendation: [specific, actionable change; include behavior-preservation intent when relevant]
+- Change classification: [wording-only | behavior-preserving structural rewrite | approval-required]
+- Uncertainty: [limitation or none]
+
+### 4. User-question and waiting behavior
+- Grade: [0–5]
+- State: [finding | no issue found | unresolved | not applicable with evidence]
+- Evidence: [exact source text and path]
+- Risk or no-change rationale: [concrete explanation]
+- Recommendation: [specific, actionable change; include behavior-preservation intent when relevant]
+- Change classification: [wording-only | behavior-preserving structural rewrite | approval-required]
+- Uncertainty: [limitation or none]
+
+## Prioritized rewrite proposal
+
+1. [highest-priority proposed change, the recommendations it addresses, and its behavior-preservation intent]
+2. [next proposed change, the recommendations it addresses, and its behavior-preservation intent]
+3. [continue through every applicable recommendation, or state `No behavior-preserving change was warranted`]
+
+## Rewritten version
+
+[rewritten version, or the unchanged source when no behavior-preserving change was warranted]
+
+## Changes and approvals
 - `[exact/path/to/file]`
   - Changed: [yes/no]
-  - Why: [behavior-preserving reason for the change, or `Not changed` reason if this file belongs in the artifact set]
-  - Notes: [brief description of what changed, such as terminology normalization, structure tightening, guardrail clarification, or example preservation]
-
-## Other artifact-set files
-- `[exact/path/to/file]`
-  - Changed: [yes/no]
-  - Why: [why it was changed, or why it stayed unchanged]
-  - Notes: [brief detail]
-- `[exact/path/to/another-file]`
-  - Changed: [yes/no]
-  - Why: [why it was changed, or why it stayed unchanged]
-  - Notes: [brief detail]
+  - Why: [behavior-preserving reason or why no change was warranted]
+  - Change type: [wording-only | structural | approval-required]
+- Approval status: [approved change, pending approval, or none required]
+- Blocked work: [none, or exact work held pending an answer]
 
 ## Behavior check
-- Trigger coverage: [preserved / not applicable / incomplete verification]
-- Workflow semantics: [preserved / not applicable / incomplete verification]
-- Guardrail strength: [preserved / not applicable / incomplete verification]
-- Exact technical references: [preserved / not applicable / incomplete verification]
+- Trigger coverage: [preserved | explicitly approved change | incomplete verification]
+- Workflow semantics: [preserved | explicitly approved change | incomplete verification]
+- Guardrail strength: [preserved | explicitly approved change | incomplete verification]
+- Exact technical references: [preserved | explicitly approved change | incomplete verification]
 
 ## Risks or limits
-- [state any incomplete crawl, unresolved alignment question, or say `None noted`]
+- [state unresolved evidence, incomplete discovery, or `None noted`]
 ```
 
-## Usage notes
+## Report-visibility notes
 
-- For folder-level work, include the root `SKILL.md`, sibling `AGENTS.md` if present, relevant `references/*.md`, and any other linked instruction files you inspected.
-- When a behavior-bearing artifact-set file stays unchanged, use the `Why:` field to record the required unchanged-file classification exactly.
-- If a file stayed unchanged because it was already aligned, classify it explicitly as `Already near minimum safe form` or `Rewrite would add drift risk without meaningful clarity gain`, whichever is accurate.
-- If a file stayed unchanged because local-tightening follow-through is still pending, classify it explicitly as `Local-tightening sweep incomplete`.
-- If a file stayed unchanged because it was out of scope, say that directly.
-- If no `AGENTS.md` exists, do not fabricate an entry for it.
-- For audit-only outputs, give the audit findings first, then append this template.
-- For rewrite-only outputs, return the rewrite first, then append this template.
-- For audit-plus-rewrite outputs, give the risk summary first, then the rewrite, then append this template.
+- **Default:** Give the category-level audit and prioritized rewrite proposal, then the rewritten version, then this completed report and validation.
+- **`--quiet`:** Complete the same workflow internally and return only the rewritten version.
+- **Explicit no-report request:** Suppress the audit and report only when the user unambiguously asks not to show the audit, findings, or report. A generic request for a concise response does not suppress reporting.

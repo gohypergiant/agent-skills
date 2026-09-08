@@ -1,132 +1,57 @@
-# Serial-instruction guidance for behavior-defining prose
+# Serial-Instruction and Workflow-Integrity Rubric
 
-Use this reference when a skill, prompt, `AGENTS.md`, `CLAUDE.md`, workflow note, or guardrail text contains ordered actions, implied sequence, approval timing, validation loops, or branch logic.
+## Audit objective
 
-## Why this matters here
+Evaluate whether behavior-defining prose makes its established workflow order, prerequisites, gates, branches, and completion conditions observable without inventing new controls from formatting preferences or inferred intent.
 
-In behavior-defining prose, sequence is part of the contract.
+Sequence is behavior-bearing when the source explicitly states timing, dependency, approval, validation, branch, or output-use relationships. A heading, numbered item, warning, or rationale alone is not proof of a mandatory dependency.
 
-If the source says an agent must ask first, wait for approval, load references before rewriting, validate before delivery, or return to an earlier step after a failed check, that order is behavior-bearing. A rewrite that makes the prose cleaner but less ordered is a behavior change.
+## Observable criteria
 
-## Detection pass
+Evaluate and cite the target text for each applicable criterion:
 
-Run this pass before you edit workflow-bearing prose.
+1. **Ordered actions and prerequisites** — Identify explicit sequence markers, output dependencies, `before`/`after` rules, and required earlier results.
+2. **Gates and stop conditions** — Identify explicit `wait`, `stop`, `do not proceed`, approval, validation, and retry conditions. Do not turn a warning or rationale into a gate unless the source states the dependency.
+3. **Completion and failure routes** — Check whether later work relies on a completion condition or failure route that the prose makes visible.
+4. **Branches and rejoin points** — Check that conditional paths name their destinations and do not imply mutually exclusive actions must both occur.
+5. **Workflow-unit clarity** — Distinguish actions, gates, readiness checks, stage notes, and branch handlers. Flag mixed clauses or ambiguous referents only when they create plausible competing execution paths.
+6. **Structural equivalence** — When a rewrite changes stages, checkpoints, numbering, branch routes, or reference topology, compare those mechanics against the source and classify it as structural.
+7. **Bounded structural authority** — Check whether the prose allows an evidence-backed structural improvement when structure causes instruction skipping, ambiguity, or ineffective behavior, while preserving behavior by default.
 
-### 1. Detect explicit serial instructions
-Look for:
-- numbered lists
-- `Step 1`, `Stage 2`, `First`, `Next`, `Then`, `After`, `Finally`
-- `before`, `after`, `until`, `once`, `when`, `only then`
-- `requires`, `depends on`, `done when`
-- `if this fails, return to`
-- `do not proceed until`
-- approval gates such as `ask first`, `wait for confirmation`, `pause`, `stop`, or `resume`
+## Grade each category on the shared 0–5 scale
 
-### 2. Detect implied step ordering
-Look for:
-- one sentence that contains two or more actions joined by `and`, `then`, or commas
-- paragraphs that mix discovery, decision, rewrite, and verification in one block
-- warnings that imply a missing gate
-- references that must be loaded before a later action is safe
-- statements where one action clearly uses the result of an earlier action
+- **0 — Critical behavioral defect:** explicit wording permits, requires, or obscures behavior likely to alter scope, safety, approval, or execution order.
+- **1 — Major defect:** a material conflict or ambiguity makes compliance unreliable.
+- **2 — Needs revision:** a concrete workflow weakness could create drift, but the intended behavior is recoverable.
+- **3 — Adequate:** workflow mechanics are mostly clear; only bounded, lower-risk improvements remain.
+- **4 — Strong:** order, gates, branches, and completion conditions are precise and traceable; no material defect is found.
+- **5 — Exemplary:** strong plus explicit, consistent workflow mechanics and low ambiguity without redundant controls.
 
-### 3. Detect sequencing cues in skill files
-Look for:
-- output-mode selection before delivery rules
-- rewrite-mode selection before rewriting
-- artifact discovery before cross-file edits
-- reference-loading conditions before rule citation
-- self-check requirements before delivery
-- approval rules before edits that would broaden scope or change structure
+This local scale prioritizes findings. It is not a validated measurement instrument and must not conceal unresolved evidence.
 
-### 4. Detect sequencing cues in general prose
-Look for:
-- procedural guidance hidden inside paragraphs
-- policy or workflow notes that bury a timing rule inside rationale
-- branches written as straight lists
-- bullets that are really ordered tasks
-- banner warnings that try to enforce order without a gate
+## Required finding record
 
-## Preferred structures
+For this rubric, record:
 
-Choose the smallest structure that preserves behavior and makes the order hard to miss.
+- grade and finding state: `finding`, `no issue found`, `unresolved`, or `not applicable with evidence`;
+- exact source text for the action, dependency, gate, branch, or structural landmark;
+- the concrete execution risk and why it follows from that text;
+- a prioritized, actionable recommendation that names the specific action, dependency, gate, branch, or completion condition to change; explains the workflow order, approval, return route, or exact anchor that must be preserved; and gives a rewrite action; and
+- the change classification: wording-only, behavior-preserving structural rewrite, or approval-required change.
 
-### Step 1: Classify the workflow units
-Before you restructure workflow prose, classify each unit as an action, gate, readiness check, stage note, branch handler, or landmark checkpoint. Do not give all six categories the same structural weight.
-Done when: you know which units need ordered steps, which units stay at stage level, and which units act as gates or checks.
+## Recommendation and approval rules
 
-### Step 2: Choose the base structure by workflow length
-Requires: Step 1 is complete.
+- A **wording-only** recommendation may clarify an explicit sequence or referent without moving actions, changing a gate, or adding a condition.
+- A **behavior-preserving structural rewrite** is warranted only when cited structure—not only wording—causes a real ambiguity, hidden dependency, missed action, or ineffective behavior. Trace preserved actions, gates, approvals, rationales, exact anchors, branches, and return routes.
+- An **approval-required** change alters a source-established trigger, workflow order, checkpoint, approval rule, guardrail strength, exact technical meaning, or repository-defined boundary.
+- Recommend **no change** when order is already explicit and a restructure would only change presentation or add pseudo-steps.
 
-#### 2 to 3 short ordered steps
-Use a numbered list.
+## Remediation guide
 
-#### 4 or more ordered steps
-Use this pattern by default:
-
-### Step 0: Track progress
-Use a checklist or task-tracking step before the workflow.
-
-Then use:
-- `### Step N: Name`
-- `Requires:` for dependencies
-- `Done when:` for gates that later steps rely on
-- an explicit failure route such as `If this check fails, return to Step 3.`
-Done when: the reader can see the order, state, dependencies, and retry path without inferring them.
-
-### Step 3: Keep stage structure when the workflow already has it
-Requires: Step 2 is complete.
-If you need a higher-level container above ordered steps, prefer `## Stage:` or a descriptive section heading. Ordered steps still need their own numbered step headings inside that container.
-
-If the document already names stages or phases in more than one place, treat that as evidence of an existing organizing mechanic rather than flattening everything into peer numbered steps.
-Put phase purpose, context isolation, rationale, and entry conditions at stage level unless they need a standalone numbered checkpoint.
-Done when: stage notes stay as stage notes and step headings only carry operational work.
-
-### Step 4: Name every branch and rejoin point
-Requires: Step 3 is complete.
-Name each branch and the join point.
-
-Good pattern:
-- `If X, go to Step 4a.`
-- `If not X, go to Step 4b.`
-- `Both branches return to Step 5.`
-Done when: every branch names its destination and its rejoin point.
-
-## Rewrite rules
-
-Apply these rules in order when you rewrite serial instructions.
-
-1. Treat one step as one action. Split any step that says `and then`.
-2. Do not use empty step headings. Every `### Step N: Name` block must contain at least one operational sentence, gate, or completion condition.
-3. Do not create a numbered step if it only restates stage purpose, repeats a nearby context rule, announces the next phase, or preserves numbering without operational value.
-4. If a step heading only labels a principle, convert that principle into an action the agent or reader can execute, or demote it to a stage note.
-5. Never leave ordered work in plain bullets. Replace plain bullets with ordered steps when the work is not actually optional or unordered.
-6. Move conditions before actions when that makes timing clearer without changing behavior, using only source-stated conditions.
-7. Replace emphasis-only warnings with enforceable gates only when the source already states that dependency explicitly elsewhere. Do not create new gates from inferred intent alone.
-8. Keep approval, validation, and retry logic explicit.
-9. Keep sequencing cues in the operational file. Move heuristics, examples, and edge cases to references.
-10. If the source explicitly establishes sequence but states it weakly, clarify that sequence without adding new steps, rationale, constraints, or qualitative judgments. If sequence is only inferred rather than explicit, flag the ambiguity in audit mode or ask before strengthening it.
-11. Preserve landmark step numbers when they are reused across the file or tied to checkpoints, but do not pad the workflow with weak filler steps only to keep numbering contiguous.
-12. Treat a rewrite as structural when it changes stage boundaries, numbering architecture, checkpoint placement, or overview/checklist alignment.
-13. A transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on.
-
-## Audit questions
-
-Ask these before you finalize the edit:
-1. Could an agent now do these steps out of order and still claim compliance?
-2. Did any `ask first`, `wait`, `pause`, `stop`, `return`, or `do not proceed until` rule become softer?
-3. Did any step heading stay empty or act only as decoration instead of instruction?
-4. Did a paragraph still hide multiple actions that should be separate steps?
-5. Did any branch lose its named destination or rejoin point?
-6. Did any validation or approval rule stay as emphasis instead of becoming a gate?
-7. Did I create any numbered steps that are really stage notes, transition-only fillers, or numbering placeholders?
-8. Is the first real operation still easy to find?
-9. Would a stage container be safer than more peer numbered steps?
-10. If the rewrite changed stage boundaries, numbering, or checkpoints, did I surface it as structural?
-11. Would an agent reading only the rewritten text still follow the same order under load?
-
-## Notes for this skill
-
-Load this reference whenever workflow order, approval semantics, guardrail timing, reference-loading order, or validation loops are central to the edit.
-
-For small local edits, keep the main file compact. For heavier sequencing logic, keep the main `SKILL.md` operational and use this reference for the detection pass, structure rules, and edge cases.
+| Finding | Concrete remediation |
+|---|---|
+| Later work relies on an unstated earlier result | Cite both clauses; make the existing dependency explicit or report it as unresolved if the dependency is only inferred. |
+| Explicit gate is buried or softened | Surface the existing gate near the action it controls; preserve its timing and failure route. |
+| A branch has no destination or rejoin | Name the source-supported destination and rejoin point; ask before defining a missing branch policy. |
+| One clause combines conflicting workflow roles | Separate existing action, condition, and rationale only when their order remains traceable. |
+| Structure causes repeated ambiguity | Propose a bounded structural rewrite and trace its equivalence; request approval if it changes protected workflow mechanics. |
