@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.2] - 2026-09-08
+
+### Changed
+- Made Step 0's task tracker explicit by adding a checklist that mirrors the existing Steps 1–7 workflow. The checklist preserves the existing order, gates, and approval handling without adding new workflow steps.
+- Documented the conditional Step 0 tracker in `README.md` and added eval coverage for the workflow-aligned checklist.
+
+### Version
+- Patch release at `0.11.2`.
+
 ## [0.11.1] - 2026-09-08
 
 ### Fixed

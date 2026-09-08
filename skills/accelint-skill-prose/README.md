@@ -47,6 +47,8 @@ The category grades are local heuristic priorities, not validated scores. Each g
 
 ## Unified workflow and report visibility
 
+For a workflow with four or more real actions, the agent first creates and maintains the Step 0 task tracker, which mirrors the existing Steps 1–7 workflow.
+
 Every invocation completes the same strict workflow:
 
 1. audit the behavior-defining prose against every mandatory rubric;

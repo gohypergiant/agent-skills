@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.11.1"
+  version: "0.11.2"
 ---
 
 # Skill Prose
@@ -83,7 +83,15 @@ Quiet reporting changes visibility only. It never skips the audit, grading, reco
 
 ### Step 0: Track work
 
-For a workflow with four or more real actions, create and maintain a short task tracker before research or editing.
+Create and maintain this short task tracker before research or editing. Mark an item complete only after completing the corresponding step:
+
+- [ ] Step 1: Establish the artifact set and fixed behavior
+- [ ] Step 2: Run every mandatory rubric category
+- [ ] Step 3: Synthesize the prioritized rewrite proposal
+- [ ] Step 4: Decide whether to ask, wait, inspect, default, or proceed
+- [ ] Step 5: Choose the smallest safe change
+- [ ] Step 6: Edit and keep the artifact set aligned
+- [ ] Step 7: Validate before delivery
 
 ### Step 1: Establish the artifact set and fixed behavior
 

@@ -594,6 +594,21 @@
         "Preserves the prohibition on beginning deployment before approval.",
         "Preserves the rollback-plan reference."
       ]
+    },
+    {
+      "id": 46,
+      "prompt": "You are revising behavior-defining guidance with accelint-skill-prose. The work has four or more real actions. Before research or editing, what task tracker must you create and maintain?",
+      "expected_output": "A concise answer that requires the Step 0 checklist before research or editing, preserves the exact Steps 1–7 workflow order, and explains that an item is complete only after its corresponding step is complete.",
+      "files": [
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Requires a task tracker before research or editing when there are four or more real actions.",
+        "Names the exact Steps 1–7 workflow in order.",
+        "Preserves the exact Step 4 decision wording: 'Decide whether to ask, wait, inspect, default, or proceed'.",
+        "States that an item becomes complete only after its corresponding step is complete.",
+        "Does not add a tool-specific tracker requirement or a new workflow step."
+      ]
     }
   ]
 }
