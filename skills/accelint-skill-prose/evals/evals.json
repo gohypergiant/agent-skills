@@ -410,7 +410,7 @@
     {
       "id": 35,
       "prompt": "The user says: 'Audit this wording for ambiguity, but do not rewrite it.' How must accelint-skill-prose handle the request under its unified workflow?",
-      "expected_output": "A concise explanation that the request does not select an audit-only mode: the skill must audit, grade, recommend, synthesize a rewrite proposal, rewrite, and validate. It should show the audit/report by default unless the user explicitly invokes `--quiet` or unambiguously asks not to show the report.",
+      "expected_output": "A concise explanation that the request does not select an audit-only mode: the skill must audit, grade, recommend, synthesize a rewrite proposal, and rewrite. It should show the audit/report by default unless the user explicitly invokes `--quiet` or unambiguously asks not to show the report.",
       "files": [
         "SKILL.md",
         "assets/output-template.md",
@@ -418,7 +418,7 @@
       ],
       "expectations": [
         "States that audit-only is not an available mode.",
-        "States that auditing, grading, recommendations, rewrite-proposal synthesis, rewriting, and validation remain mandatory.",
+        "States that auditing, grading, recommendations, rewrite-proposal synthesis, and rewriting remain mandatory.",
         "States that report visibility, not the workflow, can be suppressed.",
         "Distinguishes an explicit no-report request from a generic request for concision."
       ]
@@ -471,14 +471,14 @@
         "States that `--quiet` suppresses only user-facing audit/report output.",
         "States that every mandatory rubric audit and grade still occurs.",
         "States that recommendations and the prioritized rewrite proposal still occur.",
-        "States that the rewrite and validation still occur.",
+        "States that the rewrite still occurs.",
         "States that only the rewritten version is returned."
       ]
     },
     {
       "id": 39,
       "prompt": "A user supplies `mode=default` alongside a request to tighten a four-item checklist whose third item is wordy. What workflow and rewrite constraints apply?",
-      "expected_output": "A concise explanation that `mode=default` is not a selectable control. The skill applies the mandatory high-assurance workflow, runs isolated rubric reviews and independent validation, makes the smallest behavior-preserving rewrite supported by evidence, preserves the checklist's order and hard requirements, and allows structural change only when cited evidence shows the structure causes instruction skipping, ambiguity, or ineffective behavior.",
+      "expected_output": "A concise explanation that `mode=default` is not a selectable control. The skill applies the mandatory review workflow and runs isolated rubric reviews, makes the smallest behavior-preserving rewrite supported by evidence, preserves the checklist's order and hard requirements, and allows structural change only when cited evidence shows the structure causes instruction skipping, ambiguity, or ineffective behavior.",
       "files": [
         "SKILL.md",
         "references/serial-instruction-guidance.md",
@@ -486,7 +486,7 @@
       ],
       "expectations": [
         "States that `mode=default` is not a selectable control.",
-        "States that the mandatory high-assurance workflow applies, including isolated rubric reviews and independent validation.",
+        "States that the mandatory review workflow applies, including isolated rubric reviews.",
         "Preserves checklist structure and item order unless a cited structural risk requires change.",
         "Explains that the wordy item receives the smallest behavior-preserving rewrite supported by evidence.",
         "Warns against obligation drift and unsupported broader reorganization."
@@ -513,7 +513,7 @@
     {
       "id": 41,
       "prompt": "Audit and revise this frontmatter rewrite for boundary drift. Do not use `--quiet`.\n\nOriginal description boundary: planning-only, no implementation.\nCandidate rewrite: 'Use this skill to plan or implement OpenSpec changes, then carry them through validation.'",
-      "expected_output": "A default unified-workflow response that identifies implementation-scope broadening, gives actionable boundary-preservation recommendations and a prioritized rewrite proposal, revises the candidate to retain the planning-only boundary, validates it, and shows the audit/report.",
+      "expected_output": "A default unified-workflow response that identifies implementation-scope broadening, gives actionable boundary-preservation recommendations and a prioritized rewrite proposal, revises the candidate to retain the planning-only boundary, outputs it, and shows the audit/report.",
       "files": [
         "SKILL.md",
         "references/ste-compatible-rules.md",
@@ -574,13 +574,13 @@
         "Does not treat concision as a no-report request.",
         "Shows the audit/report by default.",
         "Preserves the requirement to wait for explicit approval.",
-        "Completes the unified audit, recommendation, rewrite-proposal, rewrite, and validation workflow."
+        "Completes the unified audit, recommendation, rewrite-proposal, and rewrite workflow."
       ]
     },
     {
       "id": 45,
       "prompt": "Revise this behavior-defining instruction. No report: 'Do not begin deployment until the user approves the rollback plan.'",
-      "expected_output": "A rewritten instruction only, with no user-facing audit/report. The skill still completes the unified audit, actionable recommendations, prioritized rewrite proposal, and validation internally, and preserves the approval gate and rollback-plan reference.",
+      "expected_output": "A rewritten instruction only, with no user-facing audit/report. The skill still completes the unified audit, actionable recommendations, prioritized rewrite proposal, and rewrite internally, and preserves the approval gate and rollback-plan reference.",
       "files": [
         "SKILL.md",
         "assets/output-template.md",
@@ -590,7 +590,7 @@
       "expectations": [
         "Recognizes `No report` as an unambiguous report-suppression request.",
         "Returns only the rewritten version.",
-        "Completes the audit, grading, recommendations, rewrite proposal, and validation internally.",
+        "Completes the audit, grading, recommendations, rewrite proposal, and rewrite internally.",
         "Preserves the prohibition on beginning deployment before approval.",
         "Preserves the rollback-plan reference."
       ]
@@ -598,13 +598,13 @@
     {
       "id": 46,
       "prompt": "You are revising behavior-defining guidance with accelint-skill-prose. The work has four or more real actions. Before research or editing, what task tracker must you create and maintain?",
-      "expected_output": "A concise answer that requires the Step 0 checklist before research or editing, preserves the exact Steps 1–7 workflow order, and explains that an item is complete only after its corresponding step is complete.",
+      "expected_output": "A concise answer that requires the Step 0 checklist before research or editing, preserves the exact Steps 1–6 workflow order, and explains that an item is complete only after its corresponding step is complete.",
       "files": [
         "SKILL.md"
       ],
       "expectations": [
         "Requires a task tracker before research or editing when there are four or more real actions.",
-        "Names the exact Steps 1–7 workflow in order.",
+        "Names the exact Steps 1–6 workflow in order.",
         "Preserves the exact Step 4 decision wording: 'Decide whether to ask, wait, inspect, default, or proceed'.",
         "States that an item becomes complete only after its corresponding step is complete.",
         "Does not add a tool-specific tracker requirement or a new workflow step."
@@ -613,7 +613,7 @@
     {
       "id": 47,
       "prompt": "Before drafting a rewrite, how must accelint-skill-prose run its mandatory rubric audit?",
-      "expected_output": "A high-assurance workflow explanation that creates a fixed behavior ledger, launches four isolated fresh-context reviewers from the same source snapshot, gives every reviewer all mandatory materials, and prevents reviewers from seeing other grades, draft rewrites, or synthesis conclusions.",
+      "expected_output": "A mandatory review workflow explanation that creates a fixed behavior ledger, launches four isolated fresh-context reviewers from the same source snapshot, gives every reviewer all mandatory materials, and prevents reviewers from seeing other grades, draft rewrites, or synthesis conclusions.",
       "files": [
         "SKILL.md",
         "references/normative-language.md",
@@ -632,33 +632,17 @@
     {
       "id": 48,
       "prompt": "One isolated workflow-integrity reviewer fails before returning a source-cited record. What may accelint-skill-prose do next?",
-      "expected_output": "A degraded-assurance response that does not silently replace the reviewer with the parent agent. It may continue with completed roles, but must identify the unavailable role, the missing workflow coverage, the error or missing output, retry availability, and the fact that complete high-assurance coverage cannot be claimed.",
+      "expected_output": "An incomplete-review-coverage response that does not silently replace the reviewer with the parent agent. It may continue with completed reviews, but must identify the unavailable reviewer, the missing category coverage, the error or missing output, retry availability, and the resulting uncertainty.",
       "files": [
         "SKILL.md",
         "assets/output-template.md"
       ],
       "expectations": [
-        "Classifies the outcome as degraded assurance.",
-        "Does not claim complete high-assurance coverage.",
+        "Classifies the outcome as incomplete rubric coverage.",
+        "Does not imply that the missing review was completed.",
         "Does not silently substitute the parent agent's judgment for the failed reviewer.",
-        "Reports the unavailable role, lost coverage, error or missing output, and retry availability.",
+        "Reports the unavailable reviewer, lost category coverage, error or missing output, retry availability, and uncertainty.",
         "Allows continuation only with explicit disclosure."
-      ]
-    },
-    {
-      "id": 49,
-      "prompt": "After the synthesis role rewrites a behavior-defining instruction, what context and independence requirements apply to validation?",
-      "expected_output": "An explanation that a fresh independent validator receives the original artifact snapshot, behavior ledger, rewritten artifact, and all mandatory materials; it does not receive reviewer records, synthesis rationale, or the author's self-assessment; and it validates every mandatory rubric before delivery.",
-      "files": [
-        "SKILL.md",
-        "assets/output-template.md"
-      ],
-      "expectations": [
-        "Requires a fresh independent validator after the rewrite.",
-        "Requires original source, behavior ledger, rewritten artifact, and all mandatory materials.",
-        "Excludes reviewer records, synthesis rationale, and author self-assessment from validator context.",
-        "Requires validation across every mandatory rubric category.",
-        "Does not treat a missing validator as successful independent validation."
       ]
     },
     {
@@ -704,67 +688,6 @@
         "Does not automatically assign BCP 14 force to lowercase must.",
         "Does not treat ALWAYS as a BCP 14 keyword.",
         "Uses contextual evidence for lowercase and informal uppercase force."
-      ]
-    },
-    {
-      "id": 53,
-      "prompt": "A validation packet shows that only SKILL.md Step 6 changed. The validator claims the rewritten Step 6 duplicates discovery work but cites a Step 1 quote from the original artifact. Can this validation record be accepted?",
-      "expected_output": "No. The citation is wrong-version or wrong-location evidence for the claim, so the independent-validator record is invalid and cannot be accepted as completed validation.",
-      "files": [
-        "SKILL.md",
-        "assets/output-template.md",
-        "assets/validation-packet-template.md"
-      ],
-      "expectations": [
-        "Requires artifact version, path, heading or Step, quote, and claim-supported evidence.",
-        "Rejects the Step 1 citation for a Step 6 claim.",
-        "Classifies the validator record as invalid rather than passed.",
-        "Does not treat the invalid record as completed independent validation."
-      ]
-    },
-    {
-      "id": 54,
-      "prompt": "An independent validator returns a wrong-location citation. The unchanged validation packet is available. A fresh retry, isolated from the invalid record, returns complete packet-verified evidence. What assurance state is allowed?",
-      "expected_output": "The report discloses the invalid first attempt and states complete high-assurance coverage with recovered validator coverage, because the one permitted same-packet retry completed packet-verified independent validation.",
-      "files": [
-        "SKILL.md",
-        "assets/output-template.md"
-      ],
-      "expectations": [
-        "Allows at most one fresh retry for an invalid validator record.",
-        "Requires the unchanged validation packet.",
-        "Prohibits giving the retry the invalid record.",
-        "Requires disclosure of the rejected first attempt.",
-        "Allows recovered validator coverage only after packet verification."
-      ]
-    },
-    {
-      "id": 55,
-      "prompt": "An independent-validator record is invalid, but an artifact changes before the retry. May accelint-skill-prose reuse the original validation packet for the retry?",
-      "expected_output": "No. A changed packet prevents the same-packet retry. The report must use degraded assurance unless the workflow rebuilds the packet and runs a new validation pass.",
-      "files": [
-        "SKILL.md",
-        "assets/validation-packet-template.md"
-      ],
-      "expectations": [
-        "Rejects reuse of a changed validation packet.",
-        "Does not claim recovered coverage from a different artifact state.",
-        "Requires degraded assurance or a rebuilt packet and new validation pass."
-      ]
-    },
-    {
-      "id": 56,
-      "prompt": "The target artifacts contain uncommitted edits before accelint-skill-prose starts. How must the validation baseline be established?",
-      "expected_output": "The workflow records immutable identifiers or checksums for the actual Step 1 artifact snapshot and does not rely on repository HEAD to represent the original artifact set.",
-      "files": [
-        "SKILL.md",
-        "assets/validation-packet-template.md"
-      ],
-      "expectations": [
-        "Captures the actual Step 1 artifact set.",
-        "Requires immutable snapshot identifiers or checksums.",
-        "Does not assume git HEAD is the baseline.",
-        "Uses the resulting packet for Step 7 validation."
       ]
     }
   ]

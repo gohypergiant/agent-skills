@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.14.0] - 2026-09-08
+
+### Changed
+- Ended the required workflow at Step 6, which now edits, aligns, and outputs the rewrite after the isolated rubric reviews and source-grounded synthesis.
+- Replaced independent-validation assurance reporting with review-coverage reporting for the four isolated rubric reviewers.
+- Updated the README, output template, and evals to match the Step 1–6 workflow.
+
+### Removed
+- Removed Step 7 independent validation, validation-packet handling, validator retry and recovery rules, and their assurance-coverage reporting.
+- Removed `assets/validation-packet-template.md` and validation-specific eval cases.
+
+### Version
+- Minor release at `0.14.0`.
+
+## [0.13.1] - 2026-09-08
+
+### Changed
+- Clarified Step 0's forward reference to the required task tracker and Step 4's route to the operational decision criteria without changing workflow timing, approval behavior, or decision branches.
+
+### Version
+- Patch release at `0.13.1`.
+
 ## [0.13.0] - 2026-09-08
 
 ### Added

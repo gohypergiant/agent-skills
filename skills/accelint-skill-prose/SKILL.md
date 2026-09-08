@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.13.0"
+  version: "0.14.0"
 ---
 
 # Skill Prose
@@ -46,9 +46,9 @@ Treat behavior-bearing prose as an execution contract, not as ordinary style cop
 - **Never use a qualitative term as a substitute for an operational condition when it acts as a hidden gate, fallback, exception, or permission slip.**
 - **Never claim that a rubric grade is a validated measurement or that a finding proves runtime behavior.**
 - **Never treat an isolated reviewer’s output as verified evidence or average, vote on, or otherwise aggregate local grades.**
-- **Never hide an unavailable required reviewer or independent validator, or present degraded assurance as complete high-assurance coverage.**
+- **Never hide an unavailable required reviewer or present incomplete rubric coverage as complete.**
 - **Never begin work that depends on an unresolved user decision or required approval.**
-- **Never skip auditing, grading, recommendations, rewrite-proposal synthesis, rewriting, or validation because report visibility is suppressed.**
+- **Never skip auditing, grading, recommendations, rewrite-proposal synthesis, or rewriting because report visibility is suppressed.**
 
 ## Required materials
 
@@ -58,27 +58,22 @@ For every applicable audit, read all mandatory rubric references. Do not use pro
 - `references/serial-instruction-guidance.md` — serial-instruction and workflow-integrity rubric.
 - `references/ste-compatible-rules.md` — STE-compatible clarity and usability rubric.
 - `references/user-question-waiting.md` — user-question and waiting-behavior rubric.
-- `assets/output-template.md` — required delivery report.
 
 The rubric references use the same local 0–5 scale. Record each grade with cited evidence, a finding state, a concrete recommendation or no-change rationale, a change classification, and uncertainty. Grades prioritize work; they are not validated scores and must not be aggregated to hide incomplete or unresolved evidence.
 
-Every isolated rubric reviewer and independent validator MUST read the complete target artifact set and every file in **Required materials**. A reviewer focuses on one category but does not treat the other references as optional.
+Every isolated rubric reviewer MUST read the complete target artifact set and every file in **Required materials**. A reviewer focuses on one category but does not treat the other references as optional.
 
-## Mandatory high-assurance workflow and report visibility
+## Mandatory review workflow and report visibility
 
-Every invocation uses this one high-assurance workflow. It MUST establish fixed behavior from the source, run four isolated first-pass rubric reviews, synthesize source-grounded findings in a fresh context, produce one behavior-preserving rewrite, and validate that rewrite in a separate fresh context. The roles MUST NOT share prior grades, rewrite proposals, author rationale, or draft text until the synthesis or validation stage explicitly requires it.
+Every invocation uses this one review workflow. It MUST establish fixed behavior from the source, run four isolated first-pass rubric reviews, synthesize source-grounded findings in a fresh context, and produce one behavior-preserving rewrite. The roles MUST NOT share prior grades, rewrite proposals, author rationale, or draft text before synthesis.
 
 It may use a bounded, behavior-preserving structural rewrite only when cited evidence shows that structure causes instruction skipping, ambiguity, or ineffective behavior.
 
-### Required-role failure handling
+### Required-reviewer failure handling
 
-Attempt every required isolated reviewer and the independent validator. A role fails when it cannot start, cannot complete, or returns a required record without source-cited evidence. Do not silently substitute the parent’s own judgment for that role.
+Attempt every required isolated reviewer. A reviewer fails when it cannot start, cannot complete, or returns a required record without source-cited evidence. Do not silently substitute the parent’s own judgment for that reviewer.
 
-An independent-validator record is invalid when a citation is missing, stale, assigned to the wrong artifact version, assigned to the wrong heading or Step, or does not support its claim. Do not accept an invalid record as completed validation.
-
-For a failed isolated reviewer or a validator that cannot start or complete, continue only with the completed roles and label the work **degraded assurance**. Identify the unavailable role, its error or missing output, the category or validation coverage lost, and the resulting uncertainty in the delivery report. A degraded execution MAY produce a rewrite, but MUST NOT claim complete high-assurance coverage or a completed independent validation. Offer the user a retry when it is actionable.
-
-For an invalid independent-validator record, run at most one fresh retry only when the validation packet is unchanged. Give the retry the same packet and required materials, but not the invalid record, reviewer records, synthesis rationale, or author self-assessment. If the retry returns a complete, packet-verified record, report the invalid attempt and recovered coverage; the verified retry satisfies the independent-validation role. If the packet changed or the retry is invalid, unavailable, or incomplete, label the work **degraded assurance**.
+For a failed isolated reviewer, continue only with the completed reviews and report incomplete rubric coverage. Identify the unavailable reviewer, its error or missing output, the category coverage lost, and the resulting uncertainty in the delivery report. The work MAY produce a rewrite, but MUST NOT imply that the missing review was completed. Offer the user a retry when it is actionable.
 
 ### Report visibility
 
@@ -91,21 +86,20 @@ Suppress the user-facing audit and report only when either condition applies:
 
 A request to be concise, brief, or short does not suppress the audit and report. Do not infer suppression from a generic style preference.
 
-Quiet reporting changes visibility only. It never skips the audit, grading, recommendations, prioritized rewrite proposal, rewrite, or validation. Complete those steps internally, then return the rewritten version without the audit or report.
+Quiet reporting changes visibility only. It never skips the audit, grading, recommendations, prioritized rewrite proposal, or rewrite. Complete those steps internally, then return the rewritten version without the audit or report.
 
 ## Required workflow
 
 ### Step 0: Track work
 
-Create and maintain this short task tracker before research or editing. Mark an item complete only after completing the corresponding step:
+Create and maintain the following short task tracker before research or editing. Mark an item complete only after completing the corresponding step:
 
 - [ ] Step 1: Establish the artifact set and fixed behavior ledger
 - [ ] Step 2: Run four isolated mandatory rubric reviews
 - [ ] Step 3: Synthesize source-grounded findings and the prioritized rewrite proposal
 - [ ] Step 4: Decide whether to ask, wait, inspect, default, or proceed
 - [ ] Step 5: Choose the smallest safe change
-- [ ] Step 6: Edit and keep the artifact set aligned
-- [ ] Step 7: Run independent validation and report assurance coverage
+- [ ] Step 6: Edit, align, and output the rewrite
 
 ### Step 1: Establish the artifact set and fixed behavior
 
@@ -119,9 +113,9 @@ Create a fixed behavior ledger that records:
 - repeated behavior-bearing terms; and
 - incomplete discovery or conflicting source evidence.
 
-Create the original-artifact baseline for the validation packet. Record every artifact path with an immutable snapshot identifier or checksum. Do not rely on repository `HEAD`: the baseline must represent the artifact set actually inspected for this invocation.
+Create an immutable source snapshot that records every artifact path with an identifier or checksum. Do not rely on repository `HEAD`: the snapshot must represent the artifact set actually inspected for this invocation.
 
-Give every later role the same immutable artifact snapshot and behavior ledger. Do not add a proposed rewrite, another reviewer’s grade, or a synthesis rationale to an isolated reviewer’s context.
+Give every reviewer the same immutable artifact snapshot and behavior ledger. Do not add a proposed rewrite, another reviewer’s grade, or a synthesis rationale to an isolated reviewer’s context.
 
 Do not treat a visible excerpt as the complete contract. If discovery remains inconclusive after a direct retry, disclose the gap before recommending cross-file changes.
 
@@ -145,7 +139,7 @@ Each reviewer MUST return:
 
 Every finding recommendation must name the specific wording, structure, or requirement to change; explain the behavior-preservation intent when relevant; and give an action that can guide the rewrite. Do not use vague advice such as “make this clearer” without identifying the needed change.
 
-A category is not complete merely because the review found no issue. Cite the inspected evidence that supports `no issue found` or `not applicable with evidence`. Mark a reviewer that lacks its complete record or source-cited evidence as unavailable under **Required-role failure handling**.
+A category is not complete merely because the review found no issue. Cite the inspected evidence that supports `no issue found` or `not applicable with evidence`. Mark a reviewer that lacks its complete record or source-cited evidence as unavailable under **Required-reviewer failure handling**.
 
 ### Step 3: Synthesize source-grounded findings and the prioritized rewrite proposal
 
@@ -166,7 +160,7 @@ Order the proposal by behavior risk: trigger coverage and scope, workflow and ap
 
 ### Step 4: Decide whether to ask, wait, inspect, default, or proceed
 
-Ask and wait only when an unresolved decision materially changes the output or a safety or approval boundary requires it.
+Ask and wait only when an unresolved decision materially changes the output or a safety or approval boundary requires it. For operational expansions, see the `Decision criteria and examples` section in `references/user-question-waiting.md`.
 
 - **Inspect first** when repository or artifact evidence can resolve the uncertainty.
 - **Ask and wait** for blocking ambiguity, a required approval, or a material user preference. Explain why the answer matters, provide genuine options or a clear answer format, and name the branch-dependent work that is blocked.
@@ -186,21 +180,15 @@ Classify the recommendation before editing:
 
 When source evidence does not justify a safe change, preserve the original wording as the rewritten version and state that no behavior-preserving change was warranted. Do not use elegance, brevity, or formatting preference as sufficient justification for a structural rewrite.
 
-### Step 6: Edit and keep the artifact set aligned
+### Step 6: Edit, align, and output the rewrite
 
-The synthesis role drafts the one rewrite. Isolated reviewers and the independent validator do not author the final wording.
+The synthesis role drafts the one rewrite. Isolated reviewers do not author the final wording.
 
 Edit only the canonical source artifacts. For folder-level work, update the minimum behavior-bearing files needed to prevent a concrete mismatch in terminology, obligation, workflow, exact references, or rubric requirements.
 
-Complete the validation packet with `assets/validation-packet-template.md`. For each changed behavior-bearing section, record its path, heading or Step, original and rewritten excerpts, and immutable identifiers or checksums. Record unchanged artifacts as unchanged. This packet is a Step 7 input, not another mandatory material for isolated reviewers.
+Complete `assets/output-template.md` for every invocation. By default, present the review coverage, category-level audit, prioritized rewrite proposal, and rewritten version. If report visibility is suppressed, complete the same workflow and template internally, but return only the rewritten version.
 
-### Step 7: Run independent validation and report assurance coverage
-
-Launch a fresh independent validator after the rewrite. It receives the validation packet, original artifact snapshot, behavior ledger, rewritten artifact, and complete **Required materials**. It MUST NOT receive the reviewer records, synthesis rationale, or author self-assessment. It validates every rubric category and the checks below, then returns packet-verified results and uncertainty.
-
-For every validation claim, require the artifact version (`original` or `rewritten`), path, heading or Step, verbatim quote, claim supported, and packet-verification result. Before accepting the record, verify that each quote occurs in the named packet snapshot and location and supports the stated claim. Use available deterministic snapshot or diff tooling for this check. A missing, stale, wrong-version, wrong-location, or unsupported citation invalidates the validator record.
-
-Complete this check before delivering:
+Before output, confirm the following:
 
 - [ ] Every mandatory rubric category has either a complete grade, evidence, state, recommendation or no-change rationale, classification, and uncertainty record, or an unavailable-reviewer disclosure with `unresolved` state, lost coverage, and uncertainty.
 - [ ] Every finding recommendation identifies a specific change, its behavior-preservation intent when relevant, and an actionable rewrite direction.
@@ -212,15 +200,7 @@ Complete this check before delivering:
 - [ ] A structural rewrite has evidence, equivalence traceability, disclosure, and any required approval.
 - [ ] A user question was asked only when inspection could not resolve a material decision; blocked work did not begin while awaiting it.
 - [ ] Every required path in this skill exists.
-- [ ] The validation packet records the original baseline, rewritten artifact, changed-section map, and unchanged artifacts.
-- [ ] Every validator claim identifies its artifact version, path, heading or Step, verbatim quote, claim supported, and successful packet verification.
-- [ ] Any invalid validator record followed the bounded retry or degraded-assurance route.
 - [ ] The default delivery shows the audit and report; any suppression meets the narrow report-visibility rule and omits only user-facing audit/report content.
 - [ ] The delivery follows `assets/output-template.md`.
-- [ ] The report identifies complete high-assurance coverage, recovered validator coverage, or every unavailable reviewer or validator and its resulting degraded-assurance limit.
 
-## Delivery rules
-
-Complete `assets/output-template.md` for every invocation. By default, present the assurance state, category-level audit, prioritized rewrite proposal, rewritten version, and independent-validation result. If report visibility is suppressed, complete the same workflow and template internally, but return only the rewritten version.
-
-Identify whether the rewrite was wording-only or structural and state any approval obtained or still required. State `complete high-assurance coverage` only when all four isolated reviewers and the independent validator completed their required records, including a complete packet-verified retry that recovered an invalid validator record. Otherwise state `degraded assurance`, identify the unavailable role and coverage limit, and do not imply that it completed the missing review. If no change is warranted, say why in the default report with cited category evidence; do not manufacture a rewrite for cosmetic reasons.
+Identify whether the rewrite was wording-only or structural and state any approval obtained or still required. If a reviewer was unavailable, identify the reviewer and coverage limit without implying that it completed the missing review. If no change is warranted, say why in the default report with cited category evidence; do not manufacture a rewrite for cosmetic reasons.
