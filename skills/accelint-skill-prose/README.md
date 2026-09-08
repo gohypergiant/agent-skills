@@ -43,23 +43,25 @@ The canonical workflow requires all four rubric references for every applicable 
 | `references/user-question-waiting.md` | User-question and waiting-behavior rubric |
 | `assets/output-template.md` | Required report with category-level grades, evidence, recommendations, classifications, and uncertainty |
 
-The category grades are local heuristic priorities, not validated scores. Each grade remains paired with cited evidence, a finding state, a concrete recommendation or no-change rationale, a change classification, and uncertainty.
+The category grades are local heuristic priorities, not validated scores. Each grade remains paired with cited evidence, a finding state, a concrete recommendation or no-change rationale, a change classification, and uncertainty. The skill never averages or votes on them.
 
-## Unified workflow and report visibility
+## Mandatory high-assurance workflow and report visibility
 
 For a workflow with four or more real actions, the agent first creates and maintains the Step 0 task tracker, which mirrors the existing Steps 1–7 workflow.
 
-Every invocation completes the same strict workflow:
+Every invocation uses this one high-assurance workflow:
 
-1. audit the behavior-defining prose against every mandatory rubric;
-2. record findings, evidence, grades, and actionable recommendations;
-3. synthesize the applicable recommendations into a prioritized rewrite proposal;
-4. produce a behavior-preserving rewritten version; and
-5. validate the rewritten version against the same applicable requirements.
+1. establish a fixed behavior ledger from the complete artifact set;
+2. run four isolated rubric reviews from the same source snapshot;
+3. synthesize source-grounded findings and a prioritized rewrite proposal in a fresh context;
+4. produce one behavior-preserving rewritten version; and
+5. validate the rewrite with an independent fresh-context reviewer against every mandatory rubric.
 
-The skill has no audit-only, rewrite-only, audit-plus-rewrite, `mode=default`, or `mode=strict` controls. The former strict safeguards apply to every invocation, including bounded structural rewrites only when cited evidence shows that structure causes instruction skipping, ambiguity, or ineffective behavior.
+Each isolated reviewer and the independent validator reads the complete target artifact set and every mandatory reference. Initial reviewers do not receive another reviewer's grade, a draft rewrite, or the synthesis rationale. The synthesizer rereads source evidence and resolves conflicts without averaging or voting on local grades.
 
-By default, the skill shows the audit, rewrite proposal, rewritten version, and completed report. `--quiet`, or an unambiguous request not to show the audit, findings, or report, suppresses only the user-facing audit/report. A request to be concise does not suppress reporting. Quiet reporting never skips the audit, grading, recommendations, rewrite proposal, rewrite, or validation.
+The skill has no direct single-agent, audit-only, rewrite-only, audit-plus-rewrite, `mode=default`, `mode=strict`, or fallback-rewrite controls. It permits bounded structural rewrites only when cited evidence shows that the current structure causes instruction skipping, ambiguity, or ineffective behavior.
+
+If a required reviewer or validator cannot run or returns an incomplete record, the skill continues with explicit **degraded assurance**. The report names the missing role, lost coverage, and retry availability; it does not claim complete high-assurance coverage or independent validation. By default, the skill shows assurance coverage, the audit, rewrite proposal, rewritten version, and completed report. `--quiet`, or an unambiguous request not to show the audit, findings, or report, suppresses only user-facing audit/report content. A request to be concise does not suppress reporting.
 
 ## File layout
 
@@ -84,8 +86,8 @@ skills/accelint-skill-prose/
 If you update this skill:
 
 - keep `SKILL.md` `metadata.version` and `CHANGELOG.md` aligned;
-- update `evals/evals.json` when required rubric coverage, unified-workflow steps, report visibility, recommendation requirements, or approval behavior changes;
-- preserve the four mandatory rubric categories and their evidence-based reporting; and
+- update `evals/evals.json` when required-role isolation, rubric coverage, synthesis, independent validation, degraded-assurance handling, report visibility, recommendation requirements, or approval behavior changes;
+- preserve the four mandatory rubric categories, their evidence-based reporting, and the source-grounded conflict-resolution rule; and
 - prefer small, evidence-backed changes unless an approved structural rewrite is necessary.
 
 For the repository-wide contributor workflow, see [../../CONTRIBUTING.md](../../CONTRIBUTING.md).

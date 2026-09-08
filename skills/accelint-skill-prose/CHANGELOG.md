@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.12.0] - 2026-09-08
+
+### Added
+- Made the high-assurance review architecture mandatory for every invocation: a fixed behavior ledger, four isolated rubric reviewers, fresh source-grounded synthesis, one rewrite, and fresh independent all-rubric validation.
+- Added explicit assurance coverage and degraded-assurance reporting to the delivery template and evals.
+
+### Changed
+- Removed the direct single-agent workflow as an execution path. Each isolated reviewer and independent validator must read the complete artifact set and every mandatory reference, while initial reviewers remain blind to other reviewer output, drafts, and synthesis conclusions.
+- Defined source-grounded conflict resolution: the synthesis role must recheck source evidence and may not average or vote on local grades.
+- Defined degraded-assurance continuation when a required role cannot complete: disclose the unavailable role, error or missing output, lost coverage, and retry availability; do not claim complete high-assurance coverage or independent validation.
+  - Rationale: user-approved rigor-first workflow prioritizes context isolation, visible reviewer disagreement, and independent validation over the previous lower-cost direct path.
+  - Trade-off: every invocation requires substantially more model work and latency, and same-model reviewers can still share systematic errors.
+
+### Version
+- Minor release at `0.12.0`.
+
 ## [0.11.2] - 2026-09-08
 
 ### Changed

@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.11.2"
+  version: "0.12.0"
 ---
 
 # Skill Prose
@@ -45,6 +45,8 @@ Treat behavior-bearing prose as an execution contract, not as ordinary style cop
 - **Never turn a warning, rationale, note, or descriptive statement into a new gate, prerequisite, branch, or policy without source evidence.**
 - **Never use a qualitative term as a substitute for an operational condition when it acts as a hidden gate, fallback, exception, or permission slip.**
 - **Never claim that a rubric grade is a validated measurement or that a finding proves runtime behavior.**
+- **Never treat an isolated reviewer’s output as verified evidence or average, vote on, or otherwise aggregate local grades.**
+- **Never hide an unavailable required reviewer or independent validator, or present degraded assurance as complete high-assurance coverage.**
 - **Never begin work that depends on an unresolved user decision or required approval.**
 - **Never skip auditing, grading, recommendations, rewrite-proposal synthesis, rewriting, or validation because report visibility is suppressed.**
 
@@ -60,11 +62,19 @@ For every applicable audit, read all mandatory rubric references. Do not use pro
 
 The rubric references use the same local 0–5 scale. Record each grade with cited evidence, a finding state, a concrete recommendation or no-change rationale, a change classification, and uncertainty. Grades prioritize work; they are not validated scores and must not be aggregated to hide incomplete or unresolved evidence.
 
-## Unified workflow and report visibility
+Every isolated rubric reviewer and independent validator MUST read the complete target artifact set and every file in **Required materials**. A reviewer focuses on one category but does not treat the other references as optional.
 
-Every invocation uses the complete strict workflow. Audit the supplied behavior-defining prose, identify findings against every applicable rubric and guardrail, produce actionable recommendations, synthesize a prioritized rewrite proposal, rewrite the prose, and validate the rewritten version against the same applicable requirements.
+## Mandatory high-assurance workflow and report visibility
 
-The workflow has no audit-only, rewrite-only, or audit-plus-rewrite modes. It also has no user-selectable strict mode or fallback rewrite mode. Every invocation applies the existing strict safeguards: it may use a bounded, behavior-preserving structural rewrite only when cited evidence shows that structure causes instruction skipping, ambiguity, or ineffective behavior.
+Every invocation uses this one high-assurance workflow. It MUST establish fixed behavior from the source, run four isolated first-pass rubric reviews, synthesize source-grounded findings in a fresh context, produce one behavior-preserving rewrite, and validate that rewrite in a separate fresh context. The roles MUST NOT share prior grades, rewrite proposals, author rationale, or draft text until the synthesis or validation stage explicitly requires it.
+
+It may use a bounded, behavior-preserving structural rewrite only when cited evidence shows that structure causes instruction skipping, ambiguity, or ineffective behavior.
+
+### Required-role failure handling
+
+Attempt every required isolated reviewer and the independent validator. A role fails when it cannot start, cannot complete, or returns a required record without source-cited evidence. Do not silently substitute the parent’s own judgment for that role.
+
+If a required role fails, continue only with the completed roles and label the work **degraded assurance**. Identify the unavailable role, its error or missing output, the category or validation coverage lost, and the resulting uncertainty in the delivery report. A degraded execution MAY produce a rewrite, but MUST NOT claim complete high-assurance coverage or a completed independent validation. Offer the user a retry when it is actionable.
 
 ### Report visibility
 
@@ -85,19 +95,19 @@ Quiet reporting changes visibility only. It never skips the audit, grading, reco
 
 Create and maintain this short task tracker before research or editing. Mark an item complete only after completing the corresponding step:
 
-- [ ] Step 1: Establish the artifact set and fixed behavior
-- [ ] Step 2: Run every mandatory rubric category
-- [ ] Step 3: Synthesize the prioritized rewrite proposal
+- [ ] Step 1: Establish the artifact set and fixed behavior ledger
+- [ ] Step 2: Run four isolated mandatory rubric reviews
+- [ ] Step 3: Synthesize source-grounded findings and the prioritized rewrite proposal
 - [ ] Step 4: Decide whether to ask, wait, inspect, default, or proceed
 - [ ] Step 5: Choose the smallest safe change
 - [ ] Step 6: Edit and keep the artifact set aligned
-- [ ] Step 7: Validate before delivery
+- [ ] Step 7: Run independent validation and report assurance coverage
 
 ### Step 1: Establish the artifact set and fixed behavior
 
 Read the complete target artifact before recommending edits. For folder-level work, inspect the root `SKILL.md`, sibling `AGENTS.md` when present, and every behavior-bearing Markdown file under `references/`. Follow explicit links from those files and inspect other behavior-bearing templates or instructions that complete the contract.
 
-Record:
+Create a fixed behavior ledger that records:
 
 - explicit trigger phrases, scope boundaries, and user constraints;
 - actions, gates, approvals, branches, dependencies, and rationale;
@@ -105,18 +115,20 @@ Record:
 - repeated behavior-bearing terms; and
 - incomplete discovery or conflicting source evidence.
 
+Give every later role the same immutable artifact snapshot and behavior ledger. Do not add a proposed rewrite, another reviewer’s grade, or a synthesis rationale to an isolated reviewer’s context.
+
 Do not treat a visible excerpt as the complete contract. If discovery remains inconclusive after a direct retry, disclose the gap before recommending cross-file changes.
 
-### Step 2: Run every mandatory rubric category
+### Step 2: Run four isolated mandatory rubric reviews
 
-Read every file in **Required materials**, then evaluate all four rubric categories against the artifact set:
+Launch one fresh-context reviewer for each category. Each reviewer receives only the immutable artifact snapshot, behavior ledger, complete **Required materials**, and its assigned category. It MUST NOT receive another reviewer’s output, a rewrite proposal, a draft rewrite, or the parent’s preferred conclusion.
 
 1. normative-language and obligation precision;
 2. serial instruction and workflow integrity;
 3. STE-compatible clarity and usability; and
 4. user-question and waiting behavior.
 
-For every category, provide:
+Each reviewer MUST return:
 
 - a 0–5 grade;
 - a state: `finding`, `no issue found`, `unresolved`, or `not applicable with evidence`;
@@ -127,11 +139,15 @@ For every category, provide:
 
 Every finding recommendation must name the specific wording, structure, or requirement to change; explain the behavior-preservation intent when relevant; and give an action that can guide the rewrite. Do not use vague advice such as “make this clearer” without identifying the needed change.
 
-A category is not complete merely because the audit found no issue. Cite the inspected evidence that supports `no issue found` or `not applicable with evidence`.
+A category is not complete merely because the review found no issue. Cite the inspected evidence that supports `no issue found` or `not applicable with evidence`. Mark a reviewer that lacks its complete record or source-cited evidence as unavailable under **Required-role failure handling**.
 
-### Step 3: Synthesize the prioritized rewrite proposal
+### Step 3: Synthesize source-grounded findings and the prioritized rewrite proposal
 
-After every rubric category is complete, synthesize its applicable recommendations into one prioritized, top-down rewrite proposal before drafting the rewritten version.
+Use a fresh synthesis context. It MUST receive the immutable artifact snapshot, behavior ledger, complete **Required materials**, and completed reviewer records. It MUST reread the cited source evidence before accepting a finding; reviewer output is candidate evidence, not authority.
+
+Resolve overlap and disagreement by source evidence and the preservation priorities. Do not average grades, use a majority vote, or turn repeated unsupported recommendations into policy. If the source does not resolve a material conflict, record it as unresolved and follow Step 4 before drafting.
+
+After every available rubric review is complete, synthesize applicable recommendations into one prioritized, top-down rewrite proposal before drafting the rewritten version.
 
 For each proposed change, state:
 
@@ -166,15 +182,19 @@ When source evidence does not justify a safe change, preserve the original wordi
 
 ### Step 6: Edit and keep the artifact set aligned
 
+The synthesis role drafts the one rewrite. Isolated reviewers and the independent validator do not author the final wording.
+
 Edit only the canonical source artifacts. If the task covers a skill folder, update the minimum behavior-bearing files needed to prevent a concrete mismatch in terminology, obligation, workflow, exact references, or rubric requirements.
 
 Do not propagate cosmetic preferences. Do not directly edit `.agents/skills/`; refresh the exposure layer only through the repository script when required.
 
-### Step 7: Validate before delivery
+### Step 7: Run independent validation and report assurance coverage
+
+Launch a fresh independent validator after the rewrite. It receives the original artifact snapshot, behavior ledger, rewritten artifact, and complete **Required materials**. It MUST NOT receive the reviewer records, synthesis rationale, or author self-assessment. It validates every rubric category and the checks below, then returns source-cited results and uncertainty.
 
 Complete this check before delivering:
 
-- [ ] Every mandatory rubric category has a grade, evidence, state, recommendation or no-change rationale, classification, and uncertainty.
+- [ ] Every mandatory rubric category has either a complete grade, evidence, state, recommendation or no-change rationale, classification, and uncertainty record, or an unavailable-reviewer disclosure with `unresolved` state, lost coverage, and uncertainty.
 - [ ] Every finding recommendation identifies a specific change, its behavior-preservation intent when relevant, and an actionable rewrite direction.
 - [ ] The prioritized rewrite proposal addresses all applicable recommendations before the final rewrite.
 - [ ] Trigger coverage and boundary language are preserved, except for an explicitly approved change.
@@ -186,9 +206,10 @@ Complete this check before delivering:
 - [ ] Every required path in this skill exists.
 - [ ] The default delivery shows the audit and report; any suppression meets the narrow report-visibility rule and omits only user-facing audit/report content.
 - [ ] The delivery follows `assets/output-template.md`.
+- [ ] The report identifies complete high-assurance coverage or every unavailable reviewer or validator and its resulting degraded-assurance limit.
 
 ## Delivery rules
 
-Complete `assets/output-template.md` for every invocation. By default, present the category-level audit and prioritized rewrite proposal, then the rewritten version, then the completed delivery report and validation. If report visibility is suppressed, complete the same audit and template internally, but return only the rewritten version.
+Complete `assets/output-template.md` for every invocation. By default, present the assurance state, category-level audit, prioritized rewrite proposal, rewritten version, and independent-validation result. If report visibility is suppressed, complete the same workflow and template internally, but return only the rewritten version.
 
-Identify whether the rewrite was wording-only or structural and state any approval obtained or still required. If no change is warranted, say why in the default report with cited category evidence; do not manufacture a rewrite for cosmetic reasons.
+Identify whether the rewrite was wording-only or structural and state any approval obtained or still required. State `complete high-assurance coverage` only when all four isolated reviewers and the independent validator completed their required records. Otherwise state `degraded assurance`, identify the unavailable role and coverage limit, and do not imply that it completed the missing review. If no change is warranted, say why in the default report with cited category evidence; do not manufacture a rewrite for cosmetic reasons.
