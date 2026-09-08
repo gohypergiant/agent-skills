@@ -4,8 +4,6 @@
 
 Use this rubric as a behavior-preserving clarity lens. It is compatible with selected Simplified Technical English ideas, such as direct wording, stable terminology, explicit conditions, and clear actor/action relationships. It is **not** ASD-STE100 compliance guidance and must not be applied mechanically.
 
-The external Simple English, Orwell-writing, and ADHD-oriented skills that informed this rubric are supplementary examples only. They are not governing standards for behavior-defining prose.
-
 ## Audit objective
 
 Evaluate whether target prose is direct, scannable, and actionable while preserving trigger scope, workflow semantics, guardrail strength, rationale, and exact technical anchors.
