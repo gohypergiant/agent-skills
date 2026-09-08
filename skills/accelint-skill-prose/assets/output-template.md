@@ -1,7 +1,5 @@
 # accelint-skill-prose output template
 
-Complete this template for every `accelint-skill-prose` invocation. Show it by default; omit it from the user-facing response only under the report-visibility rule in `../SKILL.md`.
-
 Keep the report factual. Do not imply that a file was inspected, a category was assessed, a finding was verified, or a user approved a change unless that happened.
 
 ## Required report content
