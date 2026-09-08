@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.14.0"
+  version: "0.14.1"
 ---
 
 # Skill Prose
@@ -115,7 +115,7 @@ Create a fixed behavior ledger that records:
 
 Create an immutable source snapshot that records every artifact path with an identifier or checksum. Do not rely on repository `HEAD`: the snapshot must represent the artifact set actually inspected for this invocation.
 
-Give every reviewer the same immutable artifact snapshot and behavior ledger. Do not add a proposed rewrite, another reviewer’s grade, or a synthesis rationale to an isolated reviewer’s context.
+Give every reviewer the same immutable artifact snapshot and fixed behavior ledger. Do not add a proposed rewrite, another reviewer’s grade, or a synthesis rationale to an isolated reviewer’s context.
 
 Do not treat a visible excerpt as the complete contract. If discovery remains inconclusive after a direct retry, disclose the gap before recommending cross-file changes.
 
@@ -143,7 +143,7 @@ A category is not complete merely because the review found no issue. Cite the in
 
 ### Step 3: Synthesize source-grounded findings and the prioritized rewrite proposal
 
-Use a fresh synthesis context. It MUST receive the immutable artifact snapshot, behavior ledger, complete **Required materials**, and completed reviewer records. It MUST reread the cited source evidence before accepting a finding; reviewer output is candidate evidence, not authority.
+Complete Step 2 before beginning Step 3. Use a fresh synthesis context. It MUST receive the immutable artifact snapshot, fixed behavior ledger, complete **Required materials**, and completed reviewer records. It MUST reread the cited source evidence before accepting a finding; reviewer output is candidate evidence, not authority.
 
 Resolve overlap and disagreement by source evidence and the preservation priorities. Do not average grades, use a majority vote, or turn repeated unsupported recommendations into policy. If the source does not resolve a material conflict, record it as unresolved and follow Step 4 before drafting.
 

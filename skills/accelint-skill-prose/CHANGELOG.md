@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.14.1] - 2026-09-08
+
+### Changed
+- Made the existing Step 2-to-Step 3 completion dependency explicit before synthesis begins.
+- Standardized the Step 2 and Step 3 term `fixed behavior ledger` with Step 1.
+
+### Version
+- Patch release at `0.14.1`.
+
 ## [0.14.0] - 2026-09-08
 
 ### Changed
