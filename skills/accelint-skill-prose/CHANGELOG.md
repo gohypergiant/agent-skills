@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.13.0] - 2026-09-08
+
+### Added
+- Added `assets/validation-packet-template.md` and a Step 1/6/7 packet workflow that binds the actual original artifact baseline, rewritten artifact set, changed-section map, and unchanged artifacts to independent validation.
+- Added packet-verified citation requirements: every validator claim now identifies its artifact version, path, heading or Step, quote, supported claim, and verification result.
+- Added eval coverage for universal BCP 14 application, lower-case and informal-uppercase boundaries, wrong-step citations, bounded validator recovery, changed packets, and non-`HEAD` baselines.
+
+### Changed
+- Applied RFC 8174 / RFC 2119 BCP 14 interpretation to every target artifact without requiring an artifact-level adoption statement.
+  - Rationale: the former declaration check created an unnecessary applicability gate and inconsistent audit behavior.
+- Defined one fresh same-packet retry for an invalid independent-validator record. A complete, packet-verified retry recovers validator coverage; a changed packet or failed retry remains degraded assurance.
+  - Rationale: a validator previously cited Step 1 as current Step 6 evidence despite a Step 6-only diff. Provenance and bounded recovery make that error detectable without silently accepting it.
+
+### Version
+- Minor release at `0.13.0`.
+
+## [0.12.1] - 2026-09-08
+
+### Fixed
+- Standardized the folder-level condition in `SKILL.md` Step 6 with Step 1, preserving the existing requirement to update only the minimum behavior-bearing files needed to prevent a concrete mismatch.
+
+### Version
+- Patch release at `0.12.1`.
+
 ## [0.12.0] - 2026-09-08
 
 ### Added

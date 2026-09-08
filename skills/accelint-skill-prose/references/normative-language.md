@@ -2,7 +2,9 @@
 
 ## Authority and scope
 
-This rubric uses [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174.html), which updates RFC 2119, as the primary reference for BCP 14 terms. In an artifact that adopts BCP 14, `MUST`, `MUST NOT`, `SHOULD`, `SHOULD NOT`, and `MAY` have their RFC-defined meanings **only when they appear in all capitals**. RFC 8174 does not make lower-case words non-normative in ordinary English; it only does not assign them BCP 14's special meaning.
+This rubric applies BCP 14 as defined by [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174.html) and RFC 2119 to every target artifact audited by this skill. A target artifact does not need to declare adoption. The RFC-defined terms `MUST`, `MUST NOT`, `REQUIRED`, `SHALL`, `SHALL NOT`, `SHOULD`, `SHOULD NOT`, `RECOMMENDED`, `NOT RECOMMENDED`, `MAY`, and `OPTIONAL` have their RFC-defined meanings only when they appear in all capitals.
+
+Lower-case forms remain ordinary English. Informal uppercase terms such as `ALWAYS`, `NEVER`, `DO NOT`, `CRITICAL`, and `MANDATORY` are not BCP 14 keywords; assess and preserve their source-supported force contextually. Do not treat a missing adoption statement as a finding, prerequisite, exception, or uncertainty.
 
 Audit behavior-defining prose for obligation precision. Do not use this rubric to infer a requirement level from rhetorical emphasis alone or to normalize language mechanically.
 
@@ -14,8 +16,8 @@ Confirm that requirements, recommendations, permissions, prohibitions, and timin
 
 Evaluate and cite the target text for each applicable criterion:
 
-1. **BCP 14 applicability** — Identify whether the artifact explicitly adopts BCP 14. Interpret the defined all-caps terms accordingly only when it does.
-2. **Force preservation** — Check that `MUST`, `MUST NOT`, `SHOULD`, `SHOULD NOT`, `MAY`, `DO NOT`, and `NEVER` retain their source-supported strength after an edit.
+1. **BCP 14 interpretation** — Apply BCP 14 to RFC-defined all-caps terms in every target artifact. Do not use the presence or absence of an adoption statement as evidence of applicability.
+2. **Force preservation** — Check that RFC-defined all-caps terms retain their BCP 14 force and that lower-case or informal obligation language retains its source-supported ordinary-English force after an edit.
 3. **Softening and elevation** — Flag a mandatory rule softened into advice and optional guidance elevated into a requirement.
 4. **Context and applicability** — Check that obligation language names the actor, condition, scope, timing, or exception needed to apply it correctly.
 5. **Cross-section consistency** — Check for conflicting obligation levels, exceptions, or timing across headings, prose, examples, and linked behavior-bearing files.

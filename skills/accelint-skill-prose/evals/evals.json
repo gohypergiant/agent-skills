@@ -676,6 +676,96 @@
         "Records unresolved material conflict rather than inventing policy.",
         "Keeps protected behavior-preservation priorities in force."
       ]
+    },
+    {
+      "id": 51,
+      "prompt": "An artifact uses uppercase MUST and SHOULD but does not contain an RFC 8174 or BCP 14 adoption statement. How must accelint-skill-prose apply the normative-language rubric?",
+      "expected_output": "The rubric applies BCP 14 to the all-caps RFC-defined terms without treating the missing adoption statement as a finding, prerequisite, exception, or uncertainty.",
+      "files": [
+        "references/normative-language.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Applies BCP 14 to uppercase MUST and SHOULD.",
+        "Does not require an artifact-level adoption declaration.",
+        "Does not report a missing adoption statement as a finding or uncertainty.",
+        "Preserves contextual analysis for non-BCP wording."
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "Audit this wording under accelint-skill-prose: 'You must wait for approval. ALWAYS preserve the existing field names. The release MAY proceed after approval.'",
+      "expected_output": "An audit that gives BCP 14 meaning to uppercase MAY, treats lowercase must and informal uppercase ALWAYS as ordinary-English contextual obligations, and does not mechanically normalize either form.",
+      "files": [
+        "references/normative-language.md"
+      ],
+      "expectations": [
+        "Treats MAY as an RFC-defined all-caps term.",
+        "Does not automatically assign BCP 14 force to lowercase must.",
+        "Does not treat ALWAYS as a BCP 14 keyword.",
+        "Uses contextual evidence for lowercase and informal uppercase force."
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "A validation packet shows that only SKILL.md Step 6 changed. The validator claims the rewritten Step 6 duplicates discovery work but cites a Step 1 quote from the original artifact. Can this validation record be accepted?",
+      "expected_output": "No. The citation is wrong-version or wrong-location evidence for the claim, so the independent-validator record is invalid and cannot be accepted as completed validation.",
+      "files": [
+        "SKILL.md",
+        "assets/output-template.md",
+        "assets/validation-packet-template.md"
+      ],
+      "expectations": [
+        "Requires artifact version, path, heading or Step, quote, and claim-supported evidence.",
+        "Rejects the Step 1 citation for a Step 6 claim.",
+        "Classifies the validator record as invalid rather than passed.",
+        "Does not treat the invalid record as completed independent validation."
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "An independent validator returns a wrong-location citation. The unchanged validation packet is available. A fresh retry, isolated from the invalid record, returns complete packet-verified evidence. What assurance state is allowed?",
+      "expected_output": "The report discloses the invalid first attempt and states complete high-assurance coverage with recovered validator coverage, because the one permitted same-packet retry completed packet-verified independent validation.",
+      "files": [
+        "SKILL.md",
+        "assets/output-template.md"
+      ],
+      "expectations": [
+        "Allows at most one fresh retry for an invalid validator record.",
+        "Requires the unchanged validation packet.",
+        "Prohibits giving the retry the invalid record.",
+        "Requires disclosure of the rejected first attempt.",
+        "Allows recovered validator coverage only after packet verification."
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "An independent-validator record is invalid, but an artifact changes before the retry. May accelint-skill-prose reuse the original validation packet for the retry?",
+      "expected_output": "No. A changed packet prevents the same-packet retry. The report must use degraded assurance unless the workflow rebuilds the packet and runs a new validation pass.",
+      "files": [
+        "SKILL.md",
+        "assets/validation-packet-template.md"
+      ],
+      "expectations": [
+        "Rejects reuse of a changed validation packet.",
+        "Does not claim recovered coverage from a different artifact state.",
+        "Requires degraded assurance or a rebuilt packet and new validation pass."
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "The target artifacts contain uncommitted edits before accelint-skill-prose starts. How must the validation baseline be established?",
+      "expected_output": "The workflow records immutable identifiers or checksums for the actual Step 1 artifact snapshot and does not rely on repository HEAD to represent the original artifact set.",
+      "files": [
+        "SKILL.md",
+        "assets/validation-packet-template.md"
+      ],
+      "expectations": [
+        "Captures the actual Step 1 artifact set.",
+        "Requires immutable snapshot identifiers or checksums.",
+        "Does not assume git HEAD is the baseline.",
+        "Uses the resulting packet for Step 7 validation."
+      ]
     }
   ]
 }

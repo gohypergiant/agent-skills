@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.12.0"
+  version: "0.13.0"
 ---
 
 # Skill Prose
@@ -54,7 +54,7 @@ Treat behavior-bearing prose as an execution contract, not as ordinary style cop
 
 For every applicable audit, read all mandatory rubric references. Do not use progressive-disclosure thresholds, optional reference loading, or perceived relevance to skip a category.
 
-- `references/normative-language.md` — normative-language and obligation-precision rubric, updated for RFC 8174.
+- `references/normative-language.md` — normative-language and obligation-precision rubric that applies RFC 8174 / RFC 2119 BCP 14 interpretation to every target artifact.
 - `references/serial-instruction-guidance.md` — serial-instruction and workflow-integrity rubric.
 - `references/ste-compatible-rules.md` — STE-compatible clarity and usability rubric.
 - `references/user-question-waiting.md` — user-question and waiting-behavior rubric.
@@ -74,7 +74,11 @@ It may use a bounded, behavior-preserving structural rewrite only when cited evi
 
 Attempt every required isolated reviewer and the independent validator. A role fails when it cannot start, cannot complete, or returns a required record without source-cited evidence. Do not silently substitute the parent’s own judgment for that role.
 
-If a required role fails, continue only with the completed roles and label the work **degraded assurance**. Identify the unavailable role, its error or missing output, the category or validation coverage lost, and the resulting uncertainty in the delivery report. A degraded execution MAY produce a rewrite, but MUST NOT claim complete high-assurance coverage or a completed independent validation. Offer the user a retry when it is actionable.
+An independent-validator record is invalid when a citation is missing, stale, assigned to the wrong artifact version, assigned to the wrong heading or Step, or does not support its claim. Do not accept an invalid record as completed validation.
+
+For a failed isolated reviewer or a validator that cannot start or complete, continue only with the completed roles and label the work **degraded assurance**. Identify the unavailable role, its error or missing output, the category or validation coverage lost, and the resulting uncertainty in the delivery report. A degraded execution MAY produce a rewrite, but MUST NOT claim complete high-assurance coverage or a completed independent validation. Offer the user a retry when it is actionable.
+
+For an invalid independent-validator record, run at most one fresh retry only when the validation packet is unchanged. Give the retry the same packet and required materials, but not the invalid record, reviewer records, synthesis rationale, or author self-assessment. If the retry returns a complete, packet-verified record, report the invalid attempt and recovered coverage; the verified retry satisfies the independent-validation role. If the packet changed or the retry is invalid, unavailable, or incomplete, label the work **degraded assurance**.
 
 ### Report visibility
 
@@ -114,6 +118,8 @@ Create a fixed behavior ledger that records:
 - exact technical anchors and scope-defining examples;
 - repeated behavior-bearing terms; and
 - incomplete discovery or conflicting source evidence.
+
+Create the original-artifact baseline for the validation packet. Record every artifact path with an immutable snapshot identifier or checksum. Do not rely on repository `HEAD`: the baseline must represent the artifact set actually inspected for this invocation.
 
 Give every later role the same immutable artifact snapshot and behavior ledger. Do not add a proposed rewrite, another reviewer’s grade, or a synthesis rationale to an isolated reviewer’s context.
 
@@ -184,13 +190,15 @@ When source evidence does not justify a safe change, preserve the original wordi
 
 The synthesis role drafts the one rewrite. Isolated reviewers and the independent validator do not author the final wording.
 
-Edit only the canonical source artifacts. If the task covers a skill folder, update the minimum behavior-bearing files needed to prevent a concrete mismatch in terminology, obligation, workflow, exact references, or rubric requirements.
+Edit only the canonical source artifacts. For folder-level work, update the minimum behavior-bearing files needed to prevent a concrete mismatch in terminology, obligation, workflow, exact references, or rubric requirements.
 
-Do not propagate cosmetic preferences. Do not directly edit `.agents/skills/`; refresh the exposure layer only through the repository script when required.
+Complete the validation packet with `assets/validation-packet-template.md`. For each changed behavior-bearing section, record its path, heading or Step, original and rewritten excerpts, and immutable identifiers or checksums. Record unchanged artifacts as unchanged. This packet is a Step 7 input, not another mandatory material for isolated reviewers.
 
 ### Step 7: Run independent validation and report assurance coverage
 
-Launch a fresh independent validator after the rewrite. It receives the original artifact snapshot, behavior ledger, rewritten artifact, and complete **Required materials**. It MUST NOT receive the reviewer records, synthesis rationale, or author self-assessment. It validates every rubric category and the checks below, then returns source-cited results and uncertainty.
+Launch a fresh independent validator after the rewrite. It receives the validation packet, original artifact snapshot, behavior ledger, rewritten artifact, and complete **Required materials**. It MUST NOT receive the reviewer records, synthesis rationale, or author self-assessment. It validates every rubric category and the checks below, then returns packet-verified results and uncertainty.
+
+For every validation claim, require the artifact version (`original` or `rewritten`), path, heading or Step, verbatim quote, claim supported, and packet-verification result. Before accepting the record, verify that each quote occurs in the named packet snapshot and location and supports the stated claim. Use available deterministic snapshot or diff tooling for this check. A missing, stale, wrong-version, wrong-location, or unsupported citation invalidates the validator record.
 
 Complete this check before delivering:
 
@@ -204,12 +212,15 @@ Complete this check before delivering:
 - [ ] A structural rewrite has evidence, equivalence traceability, disclosure, and any required approval.
 - [ ] A user question was asked only when inspection could not resolve a material decision; blocked work did not begin while awaiting it.
 - [ ] Every required path in this skill exists.
+- [ ] The validation packet records the original baseline, rewritten artifact, changed-section map, and unchanged artifacts.
+- [ ] Every validator claim identifies its artifact version, path, heading or Step, verbatim quote, claim supported, and successful packet verification.
+- [ ] Any invalid validator record followed the bounded retry or degraded-assurance route.
 - [ ] The default delivery shows the audit and report; any suppression meets the narrow report-visibility rule and omits only user-facing audit/report content.
 - [ ] The delivery follows `assets/output-template.md`.
-- [ ] The report identifies complete high-assurance coverage or every unavailable reviewer or validator and its resulting degraded-assurance limit.
+- [ ] The report identifies complete high-assurance coverage, recovered validator coverage, or every unavailable reviewer or validator and its resulting degraded-assurance limit.
 
 ## Delivery rules
 
 Complete `assets/output-template.md` for every invocation. By default, present the assurance state, category-level audit, prioritized rewrite proposal, rewritten version, and independent-validation result. If report visibility is suppressed, complete the same workflow and template internally, but return only the rewritten version.
 
-Identify whether the rewrite was wording-only or structural and state any approval obtained or still required. State `complete high-assurance coverage` only when all four isolated reviewers and the independent validator completed their required records. Otherwise state `degraded assurance`, identify the unavailable role and coverage limit, and do not imply that it completed the missing review. If no change is warranted, say why in the default report with cited category evidence; do not manufacture a rewrite for cosmetic reasons.
+Identify whether the rewrite was wording-only or structural and state any approval obtained or still required. State `complete high-assurance coverage` only when all four isolated reviewers and the independent validator completed their required records, including a complete packet-verified retry that recovered an invalid validator record. Otherwise state `degraded assurance`, identify the unavailable role and coverage limit, and do not imply that it completed the missing review. If no change is warranted, say why in the default report with cited category evidence; do not manufacture a rewrite for cosmetic reasons.
