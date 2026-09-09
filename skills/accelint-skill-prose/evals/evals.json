@@ -689,6 +689,22 @@
         "Does not treat ALWAYS as a BCP 14 keyword.",
         "Uses contextual evidence for lowercase and informal uppercase force."
       ]
+    },
+    {
+      "id": 53,
+      "prompt": "You are the isolated serial-instruction and workflow-integrity reviewer in an accelint-skill-prose audit. What response format must you return to the parent orchestrator?",
+      "expected_output": "Exactly one valid JSON object, with no prose outside it, that identifies the assigned category and contains the grade, state, source-cited evidence, risk or no-change rationale, prioritized actionable recommendation, change classification, and uncertainty.",
+      "files": [
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Requires exactly one valid JSON object and no prose outside it.",
+        "Requires the category to exactly identify the assigned category.",
+        "Requires a grade from 0 through 5 and an allowed finding state.",
+        "Requires evidence records with exact path, location, verbatim quote, and relevance.",
+        "Requires the structured recommendation priority, action, and behavior-preservation intent fields.",
+        "States that invalid JSON, missing required fields, or missing source-cited evidence makes the reviewer unavailable."
+      ]
     }
   ]
 }

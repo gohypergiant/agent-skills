@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.14.1"
+  version: "0.10.0"
 ---
 
 # Skill Prose
@@ -71,7 +71,7 @@ It may use a bounded, behavior-preserving structural rewrite only when cited evi
 
 ### Required-reviewer failure handling
 
-Attempt every required isolated reviewer. A reviewer fails when it cannot start, cannot complete, or returns a required record without source-cited evidence. Do not silently substitute the parent’s own judgment for that reviewer.
+Attempt every required isolated reviewer. A reviewer fails when it cannot start, cannot complete, returns a response that is not valid JSON matching the required Step 2 payload, or returns a required record without source-cited evidence. Do not silently substitute the parent’s own judgment for that reviewer.
 
 For a failed isolated reviewer, continue only with the completed reviews and report incomplete rubric coverage. Identify the unavailable reviewer, its error or missing output, the category coverage lost, and the resulting uncertainty in the delivery report. The work MAY produce a rewrite, but MUST NOT imply that the missing review was completed. Offer the user a retry when it is actionable.
 
@@ -128,18 +128,37 @@ Launch one fresh-context reviewer for each category. Each reviewer receives only
 3. STE-compatible clarity and usability; and
 4. user-question and waiting behavior.
 
-Each reviewer MUST return:
+Each reviewer MUST return exactly one valid JSON object and no prose outside that object. The object MUST match this payload shape:
 
-- a 0–5 grade;
-- a state: `finding`, `no issue found`, `unresolved`, or `not applicable with evidence`;
-- exact evidence from the target text and relevant neighboring artifacts;
-- the concrete behavior risk or reason no change is warranted;
-- a prioritized, actionable recommendation; and
-- a change classification: wording-only, behavior-preserving structural rewrite, or approval-required change.
+```json
+{
+  "category": "<assigned category>",
+  "grade": 0,
+  "state": "finding | no issue found | unresolved | not applicable with evidence",
+  "evidence": [
+    {
+      "path": "<exact artifact path>",
+      "location": "<heading or line range>",
+      "quote": "<verbatim source text>",
+      "relevance": "<what this evidence supports>"
+    }
+  ],
+  "riskOrNoChangeRationale": "<concrete behavior risk or reason no change is warranted>",
+  "recommendation": {
+    "priority": "highest | high | medium | low | none",
+    "action": "<specific, actionable change or 'No change warranted.'>",
+    "behaviorPreservationIntent": "<behavior to preserve, or why no change is warranted>"
+  },
+  "changeClassification": "wording-only | behavior-preserving structural rewrite | approval-required change",
+  "uncertainty": "<limitation, or 'none'>"
+}
+```
+
+`category` MUST exactly identify the reviewer’s assigned category. `grade` MUST be an integer from 0 through 5. `state`, `recommendation.priority`, and `changeClassification` MUST use one of the listed values. `evidence` MUST contain every source-cited record needed to support the returned state. Use `recommendation.priority: "none"` only with a no-change recommendation.
 
 Every finding recommendation must name the specific wording, structure, or requirement to change; explain the behavior-preservation intent when relevant; and give an action that can guide the rewrite. Do not use vague advice such as “make this clearer” without identifying the needed change.
 
-A category is not complete merely because the review found no issue. Cite the inspected evidence that supports `no issue found` or `not applicable with evidence`. Mark a reviewer that lacks its complete record or source-cited evidence as unavailable under **Required-reviewer failure handling**.
+A category is not complete merely because the review found no issue. Cite the inspected evidence that supports `no issue found` or `not applicable with evidence`. Mark a reviewer that returns invalid JSON, lacks a required payload field, or lacks source-cited evidence as unavailable under **Required-reviewer failure handling**.
 
 ### Step 3: Synthesize source-grounded findings and the prioritized rewrite proposal
 

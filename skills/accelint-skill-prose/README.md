@@ -60,7 +60,7 @@ Each isolated reviewer reads the complete target artifact set and every mandator
 
 The skill has no direct single-agent, audit-only, rewrite-only, audit-plus-rewrite, `mode=default`, `mode=strict`, or fallback-rewrite controls. It permits bounded structural rewrites only when cited evidence shows that the current structure causes instruction skipping, ambiguity, or ineffective behavior.
 
-If a required reviewer cannot run or returns an incomplete record, the skill may continue with explicit incomplete rubric coverage. The report names the unavailable reviewer, lost category coverage, and retry availability; it does not imply that the missing review was completed. By default, the skill shows review coverage, the audit, rewrite proposal, rewritten version, and completed report. `--quiet`, or an unambiguous request not to show the audit, findings, or report, suppresses only user-facing audit/report content. A request to be concise does not suppress reporting.
+Each isolated reviewer returns exactly one valid JSON object containing its category, grade, state, source-cited evidence, rationale, recommendation, classification, and uncertainty. If a required reviewer cannot run or returns an invalid or incomplete JSON record, the skill may continue with explicit incomplete rubric coverage. The report names the unavailable reviewer, lost category coverage, and retry availability; it does not imply that the missing review was completed. By default, the skill shows review coverage, the audit, rewrite proposal, rewritten version, and completed report. `--quiet`, or an unambiguous request not to show the audit, findings, or report, suppresses only user-facing audit/report content. A request to be concise does not suppress reporting.
 
 ## File layout
 

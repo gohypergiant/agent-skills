@@ -1,128 +1,27 @@
 # Changelog
 
-## [0.14.1] - 2026-09-08
-
-### Changed
-- Made the existing Step 2-to-Step 3 completion dependency explicit before synthesis begins.
-- Standardized the Step 2 and Step 3 term `fixed behavior ledger` with Step 1.
-
-### Version
-- Patch release at `0.14.1`.
-
-## [0.14.0] - 2026-09-08
-
-### Changed
-- Ended the required workflow at Step 6, which now edits, aligns, and outputs the rewrite after the isolated rubric reviews and source-grounded synthesis.
-- Replaced independent-validation assurance reporting with review-coverage reporting for the four isolated rubric reviewers.
-- Updated the README, output template, and evals to match the Step 1–6 workflow.
-
-### Removed
-- Removed Step 7 independent validation, validation-packet handling, validator retry and recovery rules, and their assurance-coverage reporting.
-- Removed `assets/validation-packet-template.md` and validation-specific eval cases.
-
-### Version
-- Minor release at `0.14.0`.
-
-## [0.13.1] - 2026-09-08
-
-### Changed
-- Clarified Step 0's forward reference to the required task tracker and Step 4's route to the operational decision criteria without changing workflow timing, approval behavior, or decision branches.
-
-### Version
-- Patch release at `0.13.1`.
-
-## [0.13.0] - 2026-09-08
-
-### Added
-- Added `assets/validation-packet-template.md` and a Step 1/6/7 packet workflow that binds the actual original artifact baseline, rewritten artifact set, changed-section map, and unchanged artifacts to independent validation.
-- Added packet-verified citation requirements: every validator claim now identifies its artifact version, path, heading or Step, quote, supported claim, and verification result.
-- Added eval coverage for universal BCP 14 application, lower-case and informal-uppercase boundaries, wrong-step citations, bounded validator recovery, changed packets, and non-`HEAD` baselines.
-
-### Changed
-- Applied RFC 8174 / RFC 2119 BCP 14 interpretation to every target artifact without requiring an artifact-level adoption statement.
-  - Rationale: the former declaration check created an unnecessary applicability gate and inconsistent audit behavior.
-- Defined one fresh same-packet retry for an invalid independent-validator record. A complete, packet-verified retry recovers validator coverage; a changed packet or failed retry remains degraded assurance.
-  - Rationale: a validator previously cited Step 1 as current Step 6 evidence despite a Step 6-only diff. Provenance and bounded recovery make that error detectable without silently accepting it.
-
-### Version
-- Minor release at `0.13.0`.
-
-## [0.12.1] - 2026-09-08
-
-### Fixed
-- Standardized the folder-level condition in `SKILL.md` Step 6 with Step 1, preserving the existing requirement to update only the minimum behavior-bearing files needed to prevent a concrete mismatch.
-
-### Version
-- Patch release at `0.12.1`.
-
-## [0.12.0] - 2026-09-08
-
-### Added
-- Made the high-assurance review architecture mandatory for every invocation: a fixed behavior ledger, four isolated rubric reviewers, fresh source-grounded synthesis, one rewrite, and fresh independent all-rubric validation.
-- Added explicit assurance coverage and degraded-assurance reporting to the delivery template and evals.
-
-### Changed
-- Removed the direct single-agent workflow as an execution path. Each isolated reviewer and independent validator must read the complete artifact set and every mandatory reference, while initial reviewers remain blind to other reviewer output, drafts, and synthesis conclusions.
-- Defined source-grounded conflict resolution: the synthesis role must recheck source evidence and may not average or vote on local grades.
-- Defined degraded-assurance continuation when a required role cannot complete: disclose the unavailable role, error or missing output, lost coverage, and retry availability; do not claim complete high-assurance coverage or independent validation.
-  - Rationale: user-approved rigor-first workflow prioritizes context isolation, visible reviewer disagreement, and independent validation over the previous lower-cost direct path.
-  - Trade-off: every invocation requires substantially more model work and latency, and same-model reviewers can still share systematic errors.
-
-### Version
-- Minor release at `0.12.0`.
-
-## [0.11.2] - 2026-09-08
-
-### Changed
-- Made Step 0's task tracker explicit by adding a checklist that mirrors the existing Steps 1–7 workflow. The checklist preserves the existing order, gates, and approval handling without adding new workflow steps.
-- Documented the conditional Step 0 tracker in `README.md` and added eval coverage for the workflow-aligned checklist.
-
-### Version
-- Patch release at `0.11.2`.
-
-## [0.11.1] - 2026-09-08
-
-### Fixed
-- Restored the frontmatter `description` with explicit behavior-defining guidance scope, preservation requirements, and boundaries against ordinary prose cleanup and trigger-performance optimization.
-
-### Version
-- Patch release at `0.11.1`.
-
-## [0.11.0] - 2026-09-08
-
-### Changed
-- Replaced selectable audit, rewrite, and strict modes with one mandatory strict workflow: audit every applicable rubric, record actionable recommendations, synthesize a prioritized rewrite proposal, produce a behavior-preserving rewritten version, and validate it against the same requirements.
-- Added narrow report-visibility controls: `--quiet` and unambiguous no-report requests suppress only the user-facing audit and report. They never skip auditing, grading, recommendations, rewrite-proposal synthesis, rewriting, or validation; a generic request for concision does not suppress reporting.
-- Required every finding recommendation to identify a specific wording, structure, or requirement change, explain behavior-preservation intent when relevant, and provide an actionable rewrite direction.
-- Updated the delivery template, README, rubric references, and eval coverage for unified workflow terminology, permanent strict safeguards, prioritized rewrite proposals, and report visibility.
-
-### Version
-- Minor release at `0.11.0`.
-
-## [0.10.1] - 2026-09-08
-
-### Changed
-- Renamed `references/rfc-2119.md` to `references/normative-language.md` with `git mv` after explicit approval. The new name accurately covers the rubric's RFC 8174 and ordinary-English obligation analysis; updated `SKILL.md`, `README.md`, and `evals/evals.json` references.
-
-### Version
-- Patch release at `0.10.1`.
-
 ## [0.10.0] - 2026-09-08
 
+### Added
+- Made the high-assurance review workflow mandatory for every invocation: an immutable source snapshot and fixed behavior ledger, four isolated rubric reviewers, fresh source-grounded synthesis, and one behavior-preserving rewrite.
+- Added the `references/normative-language.md` and `references/user-question-waiting.md` rubrics. The existing serial-instruction and STE-compatible references now also serve as mandatory rubrics.
+- Required every isolated reviewer to return one valid JSON payload with the assigned category, grade, state, source-cited evidence, rationale, actionable recommendation, change classification, and uncertainty.
+- Added review-coverage and incomplete-review reporting to the delivery template and evals.
+
 ### Changed
-- Replaced progressive-disclosure reference loading with mandatory, category-level rubric audits for normative-language and obligation precision; serial instruction and workflow integrity; STE-compatible clarity and usability; and user-question and waiting behavior.
-- Added category-level grades, cited evidence, finding states, concrete recommendations, change classifications, and uncertainty requirements to `SKILL.md` and `assets/output-template.md`.
-- Updated `references/rfc-2119.md` in place as an RFC 8174-based normative-language rubric, preserving its path while adding the all-caps applicability rule and contextual treatment of ordinary-English obligation language.
-- Transformed `references/serial-instruction-guidance.md` and `references/ste-compatible-rules.md` into mandatory rubrics, and added `references/user-question-waiting.md` for decision, waiting, blocked-work, and safe-default analysis.
-- Allowed bounded behavior-preserving structural rewrites when cited evidence shows that structure causes instruction skipping, ambiguity, or ineffective behavior; edits that change protected behavior still require approval.
-- Removed the `description` frontmatter text from `SKILL.md`; agent-skill description optimization is managed elsewhere.
-- Updated `README.md`, `evals/evals.json`, and the output template to reflect mandatory rubric coverage and the replaced reference set.
+- Replaced progressive-disclosure loading and selectable audit or rewrite modes with one required Step 0–6 review workflow. It audits all four rubrics, synthesizes a prioritized rewrite proposal, and produces the rewrite; report visibility never skips those steps.
+- Clarified report visibility: `--quiet` and unambiguous no-report requests suppress only the user-facing audit and report. A concise request does not suppress them.
+- Applied RFC 8174 / RFC 2119 BCP 14 interpretation to applicable all-caps terms without requiring an artifact-level adoption statement, while retaining contextual analysis for ordinary-English obligations.
+- Renamed `references/rfc-2119.md` to `references/normative-language.md` and aligned `SKILL.md`, `README.md`, `assets/output-template.md`, and `evals/evals.json` with the final workflow and review-record contract.
+- Made invalid JSON, missing required payload fields, and missing source-cited evidence reviewer failures; synthesis continues only with explicit incomplete rubric coverage.
 
 ### Removed
-- Removed the obsolete progressive-disclosure references `references/frontmatter-descriptions.md`, `references/workflow-guardrails.md`, `references/artifact-patterns.md`, `references/examples.md`, and `references/checklist.md` after explicit approval for the tracked-file deletions.
+- Removed the obsolete progressive-disclosure references `references/frontmatter-descriptions.md`, `references/workflow-guardrails.md`, `references/artifact-patterns.md`, `references/examples.md`, and `references/checklist.md`.
+- Removed the superseded Step 7 independent-validation workflow, validation-packet template, validator retry rules, and validation-specific eval cases.
 
 ### Version
-- Minor release at `0.10.0`.
+- Minor release at `0.10.0`, the next semantic version after `0.9.4`.
+- Consolidated the previously separate `0.10.0` through `0.14.2` changelog entries into this release.
 
 ## [0.9.4] - 2026-08-21
 
