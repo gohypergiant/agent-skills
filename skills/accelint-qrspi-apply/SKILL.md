@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.7.0"
+  version: "1.7.1"
 ---
 
 # Accelint QRSPI Apply
@@ -261,6 +261,15 @@ For each level in the dependency graph (starting from level 0):
      Instructions:
      - Work ONLY on tasks in Slice N: [list slice N tasks/sections]
      - Do NOT implement tasks from other slices (Slices X, Y, Z will be handled separately)
+     - Before you add or change code, apply this simplicity ladder and stop at the first rung that holds:
+       1. Does this need to exist at all? Speculative need = skip it, say so in one line. (YAGNI)
+       2. Already in this codebase? A helper, util, type, or pattern that already lives here → reuse it. Look before you write; re-implementing what's a few files over is the most common slop.
+       3. Stdlib does it? Use it.
+       4. Native platform feature covers it? `<input type="date">` over a picker lib, CSS over JS, DB constraint over app code.
+       5. Already-installed dependency solves it? Use it. Never add a new one for what a few lines can do.
+       6. Can it be one line? One line.
+       7. Only then: the minimum code that works.
+     - Never simplify away trust-boundary input validation, error handling that prevents data loss, security checks, accessibility basics, or other explicit project constraints — the minimalism heuristics above never override this.
      - Apply the code patterns, conventions, and constraints from <project_context>
      - Follow the normal OpenSpec apply workflow:
        * OpenSpec will load context files (proposal, design, specs, tasks)
@@ -305,6 +314,15 @@ For each level with multiple independent slices:
    Instructions:
    - Work ONLY on tasks in Slice N: [list slice N tasks/sections]
    - Do NOT implement tasks from other slices - they are being handled in parallel
+   - Before you add or change code, apply this simplicity ladder and stop at the first rung that holds:
+     1. Does this need to exist at all? Speculative need = skip it, say so in one line. (YAGNI)
+     2. Already in this codebase? A helper, util, type, or pattern that already lives here → reuse it. Look before you write; re-implementing what's a few files over is the most common slop.
+     3. Stdlib does it? Use it.
+     4. Native platform feature covers it? `<input type="date">` over a picker lib, CSS over JS, DB constraint over app code.
+     5. Already-installed dependency solves it? Use it. Never add a new one for what a few lines can do.
+     6. Can it be one line? One line.
+     7. Only then: the minimum code that works.
+   - Never simplify away trust-boundary input validation, error handling that prevents data loss, security checks, accessibility basics, or other explicit project constraints — the minimalism heuristics above never override this.
    - Apply the code patterns, conventions, and constraints from <project_context>
    - Follow the normal OpenSpec apply workflow:
        * OpenSpec will load context files (proposal, design, specs, tasks)

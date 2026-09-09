@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.7.1] - 2026-09-09
+
+### Changed
+- Added ponytail's simplicity ladder to both Slice sub-agent prompt templates so each slice explicitly prefers the least invasive implementation that satisfies the task
+- Instructs slice agents to stop at the first rung that holds: skip speculative work, reuse nearby code, prefer stdlib and native platform features, avoid new dependencies, and only then write the minimum code that works
+- Added a safety rider to both Slice sub-agent prompt templates clarifying that the simplicity ladder never overrides trust-boundary input validation, data-loss-preventing error handling, security checks, accessibility basics, or other explicit project constraints
+
+### Rationale
+- Keeps parallel slice implementations narrowly scoped and reduces unnecessary helpers, abstractions, and dependencies during apply
+- Reinforces "change the bare minimum" at the exact point where the implementation work is delegated
+- Keeps the minimal-change guidance aligned with the repository's existing safety boundary: prefer the smallest implementation that works, but never by stripping away required safeguards
+
+### Version
+- Bumped from 1.7.0 → 1.7.1
+
 ## [1.7.0] - 2026-08-25
 
 ### Added
