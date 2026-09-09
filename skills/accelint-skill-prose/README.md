@@ -1,8 +1,8 @@
 # accelint-skill-prose
 
-Safely edit behavior-defining prompt artifacts without changing what they mean or how they behave.
+Audit and revise behavior-defining prompt artifacts while preserving what they mean and how they behave.
 
-This skill is part of the `gohypergiant/agent-skills` repository. Install it through the repo-wide skills flow, not as a standalone npm package.
+This skill is part of the `gohypergiant/agent-skills` repository. Install it through the repository-wide skills flow, not as a standalone npm package.
 
 ## Installation
 
@@ -18,119 +18,51 @@ npx skills add https://github.com/gohypergiant/agent-skills --skill accelint-ski
 pnpm dlx skills add https://github.com/gohypergiant/agent-skills --skill accelint-skill-prose
 ```
 
-This skill does not ship as a separate package with its own `package.json`.
+## What it audits
 
-## What is accelint-skill-prose?
+`accelint-skill-prose` evaluates wording that controls agent behavior, including `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, behavior-bearing references, prompt templates, workflow guidance, and guardrails.
 
-`accelint-skill-prose` edits prompt artifacts where wording controls behavior, not just style. That includes `SKILL.md` files, `AGENTS.md` or `CLAUDE.md` guidance, prompt templates, guardrails, workflow notes, and behavior-bearing Markdown in `references/` folders.
+Every applicable audit evaluates these mandatory categories:
 
-It makes those files easier to follow and audit without changing trigger coverage, workflow order, guardrail strength, or exact technical meaning.
+1. normative-language and obligation precision;
+2. serial instruction and workflow integrity;
+3. STE-compatible clarity and usability; and
+4. user-question and waiting behavior.
 
-## Why use it?
+The skill preserves trigger coverage, workflow and approval semantics, guardrail strength, and exact technical anchors before it pursues clarity or brevity. It can recommend a bounded structural rewrite when source evidence shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading; changes that alter protected behavior still require approval. Numbering, headings, checklists, XML, and similar format or placement conventions are not validated workflow controls unless the source or active harness makes them behavior-bearing. A prose grade does not validate runtime tool behavior or repeated-run reliability; state-changing workflow evaluation uses the serial rubric's companion local-evaluation boundary.
 
-Prompt cleanup is risky when the text also acts as execution logic. A sentence that reads better can still be a bad edit if it changes when a skill triggers, weakens a prohibition, or softens an approval gate.
+## Mandatory references
 
-This skill is built for that problem.
-
-- It treats frontmatter descriptions as trigger logic.
-- It treats workflow prose as executable guidance.
-- It treats paths, commands, field names, identifiers, and quoted text as exact behavior anchors.
-- It requires a structured self-check before delivery.
-
-Use it when you want safer prompt editing. If you only need general prose cleanup with no behavior risk, a general English-editing skill is usually a better fit.
-
-## API
-
-This skill is content-first. Its public surface is the skill folder and the behavior-bearing files inside it.
-
-### `SKILL.md`
-
-The canonical instructions for when to use the skill, how to choose output and rewrite modes, how to preserve behavior, and how to handle folder-level artifact sets.
-
-Key concepts documented there include:
-
-- output modes: `audit only`, `rewrite only`, `audit plus rewrite`
-- rewrite modes: `mode=default`, `mode=strict`
-- artifact-set discovery for skill-folder work
-- hard stops, priority order, and required self-checks
-
-### `assets/output-template.md`
-
-The required report template for `accelint-skill-prose` outputs.
-
-It defines the expected sections for:
-
-- summary
-- changed and unchanged files
-- behavior checks
-- risks or limits
-
-If you use this skill for audit-only, rewrite-only, or audit-plus-rewrite work, this template is part of the output contract.
-
-### `references/*.md`
-
-Progressive-disclosure reference files that can complete the behavior contract when the root `SKILL.md` depends on them.
+The canonical workflow requires all four rubric references for every applicable audit. They are not progressive-disclosure options.
 
 | File | Purpose |
-|------|---------|
-| `references/artifact-patterns.md` | Positive rewrite patterns for descriptions, workflows, guardrails, rationale, and examples |
-| `references/checklist.md` | Final pass checks for output-mode compliance, no-rewrite decisions, and cross-file consistency |
-| `references/examples.md` | Worked examples of safe audits, rewrites, and no-rewrite decisions |
-| `references/frontmatter-descriptions.md` | Safe tightening rules for frontmatter descriptions and trigger language |
-| `references/rfc-2119.md` | Guidance for obligation-strength normalization without changing behavior |
-| `references/serial-instruction-guidance.md` | Detection and handling rules for serial instructions, gates, branches, and stage-aware workflow structure |
-| `references/ste-compatible-rules.md` | Selective Simplified Technical English patterns adapted for behavior-preserving edits |
-| `references/workflow-guardrails.md` | Guidance for workflow order, approval gates, rationale, and behavior-bearing verbs |
+|---|---|
+| `references/normative-language.md` | RFC 8174 / RFC 2119 BCP 14 normative-language and obligation-precision rubric for every target artifact |
+| `references/serial-instruction-guidance.md` | Serial-instruction and workflow-integrity rubric |
+| `references/ste-compatible-rules.md` | STE-compatible clarity and usability rubric |
+| `references/user-question-waiting.md` | User-question and waiting-behavior rubric |
+| `assets/output-template.md` | Required report with category-level grades, evidence, recommendations, classifications, uncertainty, and review coverage |
 
-### `CHANGELOG.md`
+The category grades are local heuristic priorities, not validated scores. Each grade remains paired with cited evidence, a finding state, a concrete recommendation or no-change rationale, a change classification, and uncertainty. The skill never averages or votes on them.
 
-Version history for the skill. This repo uses file-driven versioning for skills, so the changelog and `metadata.version` in `SKILL.md` should stay aligned.
+## Mandatory review workflow and report visibility
 
-### `evals/evals.json`
+For a workflow with four or more real actions, the agent first creates and maintains the Step 0 task tracker, which mirrors the existing Steps 1–6 workflow.
 
-Evaluation prompts that exercise the skill's behavior. This file is more useful to maintainers than end users, but it is also the best source of real request examples in this package.
+Every invocation uses this one review workflow:
 
-The current eval set covers multiple risk classes, including audit-only compliance, frontmatter boundary preservation, workflow verb sensitivity, folder-level artifact discovery, unchanged-file classification, exact-reference preservation, and qualitative-gate detection.
+1. establish a fixed behavior ledger from the complete artifact set;
+2. run four isolated rubric reviews from the same source snapshot;
+3. synthesize source-grounded findings and a prioritized rewrite proposal in a fresh context; and
+4. produce one behavior-preserving rewritten version and output it.
 
-## Examples
+Each isolated reviewer reads the complete target artifact set and every mandatory reference. Initial reviewers do not receive another reviewer's grade, a draft rewrite, or the synthesis rationale. The synthesizer rereads source evidence and resolves conflicts without averaging or voting on local grades.
 
-These examples come from real eval prompts in `evals/evals.json`. They are the closest thing this package has to usage examples, and they are better than invented samples.
+The skill has no direct single-agent, audit-only, rewrite-only, audit-plus-rewrite, `mode=default`, `mode=strict`, or fallback-rewrite controls. It permits bounded structural rewrites only when cited source evidence shows that the current organization obscures a source-established workflow mechanic. A format-standardization claim requires local, reproducible evidence for the intended model and harness; a user-requested presentation change must not be presented as a validated reliability improvement.
 
-### Audit-only request
+Each isolated reviewer returns exactly one valid JSON object containing its category, grade, state, source-cited evidence, rationale, recommendation, classification, and uncertainty. If a required reviewer cannot run or returns an invalid or incomplete JSON record, the skill may continue with explicit incomplete rubric coverage. The report names the unavailable reviewer, lost category coverage, and retry availability; it does not imply that the missing review was completed. By default, the skill shows review coverage, the audit, rewrite proposal, rewritten version, and completed report. `--quiet`, or an unambiguous request not to show the audit, findings, or report, suppresses only user-facing audit/report content. A request to be concise does not suppress reporting.
 
-```text
-Audit this workflow prose for behavior risk. Do NOT provide a rewrite, only findings.
-```
-
-Use this when you want risk analysis without replacement text.
-
-### Rewrite-only request with exact preservation
-
-```text
-Tighten this instruction without changing step number, approval dependency, timing rule, exact tokens, or rationale. Return only the revised instruction in final output.
-```
-
-Use this when you want tight control over what must stay exact.
-
-### Frontmatter-description tightening
-
-```text
-Tighten this skill description without losing trigger phrases or task coverage. Keep it suitable for frontmatter. Return only the revised description in final output.
-```
-
-Use this when the wording in `description:` helps decide when a skill should trigger.
-
-### Folder-level skill audit
-
-```text
-Request: Tighten this skill's prose safely. The user pasted only one section, but the skill also has `AGENTS.md` and `references/` files.
-```
-
-Use this when a local rewrite could create drift across a whole skill folder.
-
-Source: `references/examples.md`
-
-## File Layout
+## File layout
 
 ```text
 skills/accelint-skill-prose/
@@ -142,31 +74,19 @@ skills/accelint-skill-prose/
 ├── evals/
 │   └── evals.json
 └── references/
-    ├── artifact-patterns.md
-    ├── checklist.md
-    ├── examples.md
-    ├── frontmatter-descriptions.md
-    ├── rfc-2119.md
+    ├── normative-language.md
     ├── serial-instruction-guidance.md
     ├── ste-compatible-rules.md
-    └── workflow-guardrails.md
+    └── user-question-waiting.md
 ```
 
-## Further Reading
-
-- [./SKILL.md](./SKILL.md) — canonical skill instructions
-- [./CHANGELOG.md](./CHANGELOG.md) — version history
-- [./assets/output-template.md](./assets/output-template.md) — required output template
-
-## License
-
-Apache 2.0 - see [../../LICENSE](../../LICENSE) for details.
-
-## Contributing
+## Maintenance
 
 If you update this skill:
-- keep `SKILL.md` `metadata.version` and `CHANGELOG.md` aligned
-- update `evals/evals.json` when you change trigger boundaries, output-mode rules, rewrite-mode behavior, or folder-level artifact-set expectations
-- prefer minimal, evidence-backed edits over broad rewrites unless benchmark, transcript, or review evidence justifies larger changes
 
-For the broader contributor workflow, see [../../CONTRIBUTING.md](../../CONTRIBUTING.md).
+- keep `SKILL.md` `metadata.version` and `CHANGELOG.md` aligned;
+- update `evals/evals.json` when required-reviewer isolation, rubric coverage, synthesis, review-coverage handling, report visibility, recommendation requirements, serial-workflow evidence boundaries, local-evaluation boundaries, or approval behavior changes;
+- preserve the four mandatory rubric categories, their evidence-based reporting, and the source-grounded conflict-resolution rule; and
+- prefer small, evidence-backed changes unless an approved structural rewrite is necessary.
+
+For the repository-wide contributor workflow, see [../../CONTRIBUTING.md](../../CONTRIBUTING.md).

@@ -1,5 +1,51 @@
 # Changelog
 
+## [0.10.0] - 2026-09-09
+
+### Added
+- Made the high-assurance review workflow mandatory for every invocation: an immutable source snapshot and fixed behavior ledger, four isolated rubric reviewers, fresh source-grounded synthesis, and one behavior-preserving rewrite.
+- Added the `references/normative-language.md` and `references/user-question-waiting.md` rubrics. The existing serial-instruction and STE-compatible references now also serve as mandatory rubrics.
+- Required every isolated reviewer to return one valid JSON payload with the assigned category, grade, state, source-cited evidence, rationale, actionable recommendation, change classification, and uncertainty.
+- Added review-coverage and incomplete-review reporting to the delivery template and evals.
+- Added serial-rubric evidence boundaries that distinguish source-established workflow mechanics from presentation conventions, require local reproducible evaluation before format standardization is presented as a reliability or compliance improvement, and preserve one-off user-requested presentation changes without unsupported reliability claims.
+- Added serial-rubric checks for explicit dependency handoffs, constrained rather than exact action order, conflicting repeated requirements, and scoped executable-control opportunities for high-consequence transitions.
+- Added eval coverage for unsupported format-reliability claims and dependency-aware partial ordering.
+- Added evidence-bounded serial-rubric guidance for avoidable redundant instruction density, format and instruction-placement claims, active progress trackers, untrusted-content authority limits, and locally tested decomposition with verified-result handoff.
+- Added a companion local-evaluation boundary for state-changing or high-consequence workflows. It distinguishes prose quality from target-state, trace, and repeated-run reliability; preserves source-valid independent and recovery paths; and prevents a one-run result from becoming a reliability claim.
+- Added remediation guidance for progress trackers, decomposition, instruction authority, invocation-aware external controls, format or placement claims, and state-changing workflow evaluation.
+- Added decision-contract audit coverage for branch-dependent semantic decisions: stable `decision_id`, finite accepted values, per-value effects, blocked work, validation, explicit unresolved outcomes, non-interactive handling, and safe resumption.
+- Added conditional audit coverage for interaction adapters and delegated discovery so semantic decision ownership remains with the parent agent and platform behavior is not assumed.
+- Added conditional audit coverage that prohibits passwords, API keys, access tokens, payment credentials, and similarly sensitive values in MCP form-mode elicitation.
+- Added decision-audit checks that require the inspected evidence and reason a branch remains unresolved before asking, and require the workflow to restate a validated value before running its associated branch.
+
+### Changed
+- Replaced progressive-disclosure loading and selectable audit or rewrite modes with one required Step 0–6 review workflow. It audits all four rubrics, synthesizes a prioritized rewrite proposal, and produces the rewrite; report visibility never skips those steps.
+- Clarified report visibility: `--quiet` and unambiguous no-report requests suppress only the user-facing audit and report. A concise request does not suppress them.
+- Applied RFC 8174 / RFC 2119 BCP 14 interpretation to applicable all-caps terms without requiring an artifact-level adoption statement, while retaining contextual analysis for ordinary-English obligations.
+- Renamed `references/rfc-2119.md` to `references/normative-language.md` and aligned `SKILL.md`, `README.md`, `assets/output-template.md`, and `evals/evals.json` with the final workflow and review-record contract.
+- Made invalid JSON, missing required payload fields, and missing source-cited evidence reviewer failures; synthesis continues only with explicit incomplete rubric coverage.
+- Reworked `references/serial-instruction-guidance.md` so structural rewrites require source evidence that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading.
+- Aligned `SKILL.md`, `README.md`, `references/ste-compatible-rules.md`, and `references/user-question-waiting.md` with the serial-rubric evidence boundary and inspect-first handling for unresolved branch policy.
+- Replaced unsupported wording about format-caused instruction skipping or ineffective behavior with source-grounded workflow conditions, while retaining behavior-preserving structural rewrite traceability.
+- Clarified that a behavior-preserving structural rewrite may reorganize or re-express a workflow mechanic only when the mechanic remains equivalent and traceable. Any change to a dependency, gate, approval, validation point, completion condition, route, or behavior-bearing reference is approval-required.
+- Expanded local-evidence requirements from format standards to format and instruction-placement standards.
+- Aligned `SKILL.md` Step 4 with the user-question rubric by requiring the effect of each offered option while preserving the clear-answer-format path.
+- Updated `README.md` to distinguish prose-rubric grades from runtime reliability and to require eval maintenance for the new local-evaluation boundary.
+- Reworked the user-question and waiting-behavior rubric around decision classification, inspection, decision contracts, explicit holds, validation and routing, unresolved outcomes, defaults, resumption, adapter boundaries, and subagent responsibilities.
+- Aligned `SKILL.md` Step 4 and its delivery checks with the portable decision-state policy: approvals and tool permissions remain separate from semantic branch selection, a displayed question is not a hold, and only a validated value may route a branch.
+- Corrected safe-default evaluation so an authoritative default or a non-committing, reversible action may support continuation; both must be labeled and neither may silently select a policy-bearing branch.
+- Updated decision-handling eval coverage for branch-decision contracts, explicit holds, invalid routing, non-interactive execution, and resumed sessions.
+- Strengthened adapter review criteria, decision examples, and remediation guidance to require active-mode and configuration availability and to preserve distinct `decline`, `cancel`, and `timeout` outcomes when the host supplies them.
+- Aligned incomplete-contract and remediation guidance with the portable decision-state policy without prescribing a harness-specific question mechanism.
+
+### Removed
+- Removed the obsolete progressive-disclosure references `references/frontmatter-descriptions.md`, `references/workflow-guardrails.md`, `references/artifact-patterns.md`, `references/examples.md`, and `references/checklist.md`.
+- Removed the superseded Step 7 independent-validation workflow, validation-packet template, validator retry rules, and validation-specific eval cases.
+
+### Version
+- Minor release at `0.10.0`, the next semantic version after `0.9.4`.
+- Collapsed the changes previously recorded under `0.11.0` through `0.14.0` into this release.
+
 ## [0.9.4] - 2026-08-21
 
 ### Changed

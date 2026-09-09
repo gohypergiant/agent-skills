@@ -1,132 +1,89 @@
-# Serial-instruction guidance for behavior-defining prose
+# Serial-Instruction and Workflow-Integrity Rubric
 
-Use this reference when a skill, prompt, `AGENTS.md`, `CLAUDE.md`, workflow note, or guardrail text contains ordered actions, implied sequence, approval timing, validation loops, or branch logic.
+## Audit objective
 
-## Why this matters here
+Evaluate whether behavior-defining prose makes its established workflow order, prerequisites, gates, branches, and completion conditions observable without inventing new controls from formatting preferences or inferred intent.
 
-In behavior-defining prose, sequence is part of the contract.
+Sequence is behavior-bearing when the source explicitly states a timing, data, approval, validation, state, branch, or output-use relationship. A heading, numbered item, warning, or rationale alone is not proof of a mandatory dependency.
 
-If the source says an agent must ask first, wait for approval, load references before rewriting, validate before delivery, or return to an earlier step after a failed check, that order is behavior-bearing. A rewrite that makes the prose cleaner but less ordered is a behavior change.
+## Evidence boundary
 
-## Detection pass
+Treat source-established dependencies, gates, approvals, validations, completion conditions, failure routes, branch rules, and behavior-bearing reference relationships as workflow mechanics. Treat numbering, heading levels, bullets, checklists, phase labels, XML, and similar presentation choices as format conventions unless the source or active harness makes them behavior-bearing.
 
-Run this pass before you edit workflow-bearing prose.
+The serial-instruction research supports explicit dependencies and observable checks, but does not establish that a particular format or instruction-placement convention improves serial execution. Do not describe a format or placement preference as a compliance improvement without local, reproducible evidence for the intended model and harness. A user-requested or source-established format or placement convention may be a presentation choice, but must not be presented as a validated reliability control.
 
-### 1. Detect explicit serial instructions
-Look for:
-- numbered lists
-- `Step 1`, `Stage 2`, `First`, `Next`, `Then`, `After`, `Finally`
-- `before`, `after`, `until`, `once`, `when`, `only then`
-- `requires`, `depends on`, `done when`
-- `if this fails, return to`
-- `do not proceed until`
-- approval gates such as `ask first`, `wait for confirmation`, `pause`, `stop`, or `resume`
+Treat an active progress tracker as operational state only when the source or active harness makes creating, exposing, updating, or consuming that state part of the workflow contract. Do not recommend a tracker by default or present it as a reliability control. A claim that a tracker improves serial completion is a local hypothesis that requires representative local evaluation; a passive checklist remains a presentation convention unless the source or harness makes it behavior-bearing.
 
-### 2. Detect implied step ordering
-Look for:
-- one sentence that contains two or more actions joined by `and`, `then`, or commas
-- paragraphs that mix discovery, decision, rewrite, and verification in one block
-- warnings that imply a missing gate
-- references that must be loaded before a later action is safe
-- statements where one action clearly uses the result of an earlier action
+When the target processes untrusted user or tool content, do not treat headings, format, document position, or in-document priority labels as evidence that trusted instructions will prevail. Distinguish a written authority rule from model, message-role, tool-permission, or harness enforcement. Report an authority-control limitation as a scoped model or harness concern; do not claim that a serial-format rewrite resolves it.
 
-### 3. Detect sequencing cues in skill files
-Look for:
-- output-mode selection before delivery rules
-- rewrite-mode selection before rewriting
-- artifact discovery before cross-file edits
-- reference-loading conditions before rule citation
-- self-check requirements before delivery
-- approval rules before edits that would broaden scope or change structure
+## Observable criteria
 
-### 4. Detect sequencing cues in general prose
-Look for:
-- procedural guidance hidden inside paragraphs
-- policy or workflow notes that bury a timing rule inside rationale
-- branches written as straight lists
-- bullets that are really ordered tasks
-- banner warnings that try to enforce order without a gate
+Evaluate and cite the target text for each applicable criterion:
 
-## Preferred structures
+1. **Explicit semantic dependencies** — Identify source-stated data, approval, validation, state, and output-use dependencies; `before`/`after` rules; and required earlier results. When a later action depends on an earlier result, check that the required prior result or release condition is named.
+2. **Gates and stop conditions** — Identify explicit `wait`, `stop`, `do not proceed`, approval, validation, and retry conditions. Do not turn a warning or rationale into a gate unless the source states the dependency.
+3. **Completion and failure routes** — When the source makes later work contingent on completion, validation, or approval, check that the prose exposes the success condition and the source-defined failure, retry, wait, or stop route. Do not invent a route when the source is silent.
+4. **Branches, rejoin points, and constrained order** — Check that conditional paths name their destinations and do not imply that mutually exclusive actions must both occur. Require a particular action order only when the source defines a dependency, authorization, safety property, or irreversible transition that makes the order material; otherwise permit independent actions, recovery paths, and other source-valid routes to the outcome.
+5. **Workflow-unit clarity and conflicting requirements** — Distinguish actions, gates, readiness checks, stage notes, and branch handlers. Flag mixed clauses or ambiguous referents when they create incompatible readings of the intended action, prerequisite, branch destination, timing, or completion condition. Also flag a repeated requirement when it adds no distinct source-established actor, condition, timing, route, exception, release condition, or obligation and creates avoidable instruction density. Do not remove repetition whose distinct control function is source-supported or unresolved. Do not use a fixed step, sentence, or document-length threshold.
+6. **Structural equivalence** — When a rewrite reorganizes or re-expresses the presentation of a source-established dependency, gate, approval, validation point, completion condition, failure route, branch route, rejoin point, or behavior-bearing reference relationship, compare those mechanics against the source. Classify it as behavior-preserving structural only when every mechanic remains equivalent and traceable. A rewrite that alters any of those mechanics is approval-required. Treat numbering, heading levels, list style, and similar format conventions as structural only when the source or active harness makes them behavior-bearing.
+7. **Evidence-bounded structural authority** — Check whether a proposed structural rewrite cites source evidence that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading. Research may support an evidence-informed hypothesis, but does not prove that a format or placement change improves compliance. Preserve behavior by default.
 
-Choose the smallest structure that preserves behavior and makes the order hard to miss.
+## Grade each category on the shared 0–5 scale
 
-### Step 1: Classify the workflow units
-Before you restructure workflow prose, classify each unit as an action, gate, readiness check, stage note, branch handler, or landmark checkpoint. Do not give all six categories the same structural weight.
-Done when: you know which units need ordered steps, which units stay at stage level, and which units act as gates or checks.
+- **0 — Critical behavioral defect:** explicit wording permits, requires, or obscures behavior likely to alter scope, safety, approval, or execution order.
+- **1 — Major defect:** a material conflict or ambiguity makes compliance unreliable.
+- **2 — Needs revision:** a concrete workflow weakness could create drift, but the intended behavior is recoverable.
+- **3 — Adequate:** workflow mechanics are mostly clear; only bounded, lower-risk improvements remain.
+- **4 — Strong:** order, gates, branches, and completion conditions are precise and traceable; no material defect is found.
+- **5 — Exemplary:** strong plus explicit, consistent workflow mechanics and low ambiguity without redundant controls.
 
-### Step 2: Choose the base structure by workflow length
-Requires: Step 1 is complete.
+This local scale prioritizes findings. It is not a validated measurement instrument and must not conceal unresolved evidence. A high prose grade does not establish tool execution, final state, trace compliance, or repeated-run reliability.
 
-#### 2 to 3 short ordered steps
-Use a numbered list.
+## Runtime and local-evaluation boundary
 
-#### 4 or more ordered steps
-Use this pattern by default:
+This rubric evaluates a written workflow contract. It does not validate a running agent, tool, model, or harness. When the user also asks to evaluate a state-changing or high-consequence workflow, use a companion local evaluation rather than inferring runtime reliability from the prose grade or one successful run.
 
-### Step 0: Track progress
-Use a checklist or task-tracking step before the workflow.
+For that companion evaluation:
 
-Then use:
-- `### Step N: Name`
-- `Requires:` for dependencies
-- `Done when:` for gates that later steps rely on
-- an explicit failure route such as `If this check fails, return to Step 3.`
-Done when: the reader can see the order, state, dependencies, and retry path without inferring them.
+- Check target state and repeated-run reliability.
+- Add an action-order or forbidden-transition assertion only when a source-defined dependency, authorization, safety property, or irreversible transition makes that path semantically material. Do not require one exact full trace when independent actions or recovery routes remain source-valid.
+- When an executable validator, script, tool schema, or harness guard is claimed to protect a transition, check the encoded condition and whether the workflow or harness requires its invocation at the needed time. Mere availability is not enforcement.
+- For a genuinely dependent reasoning task, a decomposition with explicit verified-result handoff may be locally tested. Do not recommend decomposition by default for independent work or work already externally validated.
+- Record the fixture, model and version, harness version, tools, prompt, dates, sample size, raw results, outcome assertions, trace assertions when applicable, retries, token use, and wall-clock time before presenting a convention as a reliability improvement.
 
-### Step 3: Keep stage structure when the workflow already has it
-Requires: Step 2 is complete.
-If you need a higher-level container above ordered steps, prefer `## Stage:` or a descriptive section heading. Ordered steps still need their own numbered step headings inside that container.
+These are evaluation-design controls, not a requirement to add a tracker, decomposition stage, validator, exact trace, or external guard to prose that does not already require one.
 
-If the document already names stages or phases in more than one place, treat that as evidence of an existing organizing mechanic rather than flattening everything into peer numbered steps.
-Put phase purpose, context isolation, rationale, and entry conditions at stage level unless they need a standalone numbered checkpoint.
-Done when: stage notes stay as stage notes and step headings only carry operational work.
+## Required finding record
 
-### Step 4: Name every branch and rejoin point
-Requires: Step 3 is complete.
-Name each branch and the join point.
+For this rubric, record:
 
-Good pattern:
-- `If X, go to Step 4a.`
-- `If not X, go to Step 4b.`
-- `Both branches return to Step 5.`
-Done when: every branch names its destination and its rejoin point.
+- grade and finding state: `finding`, `no issue found`, `unresolved`, or `not applicable with evidence`;
+- exact source text for the action, dependency, gate, branch, or structural landmark;
+- the concrete execution risk and why it follows from that text;
+- whether the recommendation rests on a source-established workflow defect, local evaluation evidence, or an evidence-informed or local hypothesis, including the relevant limitation in `uncertainty`; and
+- a prioritized, actionable recommendation that names the specific action, dependency, gate, branch, completion condition, or scoped runtime-evaluation control to change; explains the workflow order, approval, return route, exact anchor, or evaluation boundary that must be preserved; and gives a rewrite action; and
+- the change classification: wording-only, behavior-preserving structural rewrite, or approval-required change.
 
-## Rewrite rules
+## Recommendation and approval rules
 
-Apply these rules in order when you rewrite serial instructions.
+- A **wording-only** recommendation may clarify an explicit sequence or referent without moving actions, changing a gate, or adding a condition.
+- A **behavior-preserving structural rewrite** is warranted only when cited source evidence—not a format or placement preference alone—shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading. Trace preserved actions, gates, approvals, rationales, exact anchors, branches, and return routes. A rewrite that alters one of those mechanics is approval-required, not structural.
+- A format- or placement-standardization recommendation requires local, reproducible evaluation with the intended model and harness before it is presented as a compliance or reliability improvement. Adopting or changing a house format or placement standard is approval-required. A one-off user-requested or source-established presentation change may proceed with appropriate approval or disclosure, but must not claim an unmeasured reliability benefit.
+- An **approval-required** change alters a source-established trigger, workflow order, checkpoint, approval rule, guardrail strength, exact technical meaning, repository-defined boundary, format- or placement-standardization policy, or a workflow's required operational control.
+- Recommend **no change** when order is already explicit and a restructure would only change presentation or add pseudo-steps.
 
-1. Treat one step as one action. Split any step that says `and then`.
-2. Do not use empty step headings. Every `### Step N: Name` block must contain at least one operational sentence, gate, or completion condition.
-3. Do not create a numbered step if it only restates stage purpose, repeats a nearby context rule, announces the next phase, or preserves numbering without operational value.
-4. If a step heading only labels a principle, convert that principle into an action the agent or reader can execute, or demote it to a stage note.
-5. Never leave ordered work in plain bullets. Replace plain bullets with ordered steps when the work is not actually optional or unordered.
-6. Move conditions before actions when that makes timing clearer without changing behavior, using only source-stated conditions.
-7. Replace emphasis-only warnings with enforceable gates only when the source already states that dependency explicitly elsewhere. Do not create new gates from inferred intent alone.
-8. Keep approval, validation, and retry logic explicit.
-9. Keep sequencing cues in the operational file. Move heuristics, examples, and edge cases to references.
-10. If the source explicitly establishes sequence but states it weakly, clarify that sequence without adding new steps, rationale, constraints, or qualitative judgments. If sequence is only inferred rather than explicit, flag the ambiguity in audit mode or ask before strengthening it.
-11. Preserve landmark step numbers when they are reused across the file or tied to checkpoints, but do not pad the workflow with weak filler steps only to keep numbering contiguous.
-12. Treat a rewrite as structural when it changes stage boundaries, numbering architecture, checkpoint placement, or overview/checklist alignment.
-13. A transition step is acceptable only when it enforces a real prohibition, readiness boundary, or handoff state that later steps depend on.
+## Remediation guide
 
-## Audit questions
-
-Ask these before you finalize the edit:
-1. Could an agent now do these steps out of order and still claim compliance?
-2. Did any `ask first`, `wait`, `pause`, `stop`, `return`, or `do not proceed until` rule become softer?
-3. Did any step heading stay empty or act only as decoration instead of instruction?
-4. Did a paragraph still hide multiple actions that should be separate steps?
-5. Did any branch lose its named destination or rejoin point?
-6. Did any validation or approval rule stay as emphasis instead of becoming a gate?
-7. Did I create any numbered steps that are really stage notes, transition-only fillers, or numbering placeholders?
-8. Is the first real operation still easy to find?
-9. Would a stage container be safer than more peer numbered steps?
-10. If the rewrite changed stage boundaries, numbering, or checkpoints, did I surface it as structural?
-11. Would an agent reading only the rewritten text still follow the same order under load?
-
-## Notes for this skill
-
-Load this reference whenever workflow order, approval semantics, guardrail timing, reference-loading order, or validation loops are central to the edit.
-
-For small local edits, keep the main file compact. For heavier sequencing logic, keep the main `SKILL.md` operational and use this reference for the detection pass, structure rules, and edge cases.
+| Finding | Concrete remediation |
+|---|---|
+| Later work relies on an unstated earlier result | Cite both clauses; make the existing dependency, release condition, and source-defined failure route explicit, or report the dependency as unresolved if it is only inferred. |
+| Explicit gate is buried or softened | Surface the existing gate near the action it controls; preserve its timing and failure route. |
+| A branch has no destination or rejoin | Inspect neighboring prose, linked instructions, and repository evidence first. Name a destination or rejoin point only when source-supported. If the policy remains unresolved, ask and wait when it controls a required approval, safety boundary, irreversible action, or materially different mandatory work; otherwise disclose the uncertainty and continue only safe work that does not choose the branch. |
+| One clause combines conflicting workflow roles or repeats a conflicting requirement | Separate existing action, condition, and rationale only when their order remains traceable. Where a repeated requirement has no distinct source-supported control function, remove or consolidate it without adding a fixed-length rule or a pseudo-step. |
+| Current organization obscures a source-established workflow mechanic | Propose a bounded structural rewrite only when cited source evidence shows that readers cannot determine the intended prerequisite, gate, branch route, or return route. Trace its equivalence. If the rewrite alters a protected workflow mechanic, request approval rather than classifying it as structural. |
+| A format or placement change is proposed as a reliability improvement | Require local, reproducible evidence for the intended model and harness before standardizing the format or placement. If the change is user-requested or source-established presentation work, disclose that it is a format or placement choice rather than a validated compliance control. |
+| A progress tracker is proposed as a serial-reliability control | Verify that the active harness reliably exposes and updates the tracker state, then require representative local evaluation before claiming a completion benefit. Otherwise treat it as a presentation convention or a local hypothesis, not as a control. |
+| Decomposition is proposed as a default serial-workflow remedy | Do not add it by default. Limit a recommendation to a locally tested, genuinely dependent reasoning task with explicit verified-result handoff; preserve independent and externally validated paths. |
+| Untrusted content is said to be lower priority because of document structure | Do not accept headings, ordering, or labels as enforcement. Identify the relevant model, message-role, tool-permission, or harness boundary, and report any limitation as a scoped authority-control concern. |
+| A high-consequence transition relies only on prose | For a source-defined safety, approval, data-integrity, or irreversible-state transition, identify whether an executable validator, script, tool schema, or harness guard enforces the encoded condition and requires invocation at the needed time. Treat a missing control as a scoped risk or improvement opportunity—not a prose defect—unless the source already requires it. |
+| A state-changing workflow is presented as reliable | Do not infer reliability from the prose audit or one successful run. Use the companion local evaluation to check target state and repeated-run reliability; add path assertions only for source-defined material dependencies or forbidden transitions. |

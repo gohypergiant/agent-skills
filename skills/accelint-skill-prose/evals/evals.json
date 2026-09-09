@@ -4,7 +4,7 @@
     {
       "id": 2,
       "prompt": "Tighten this instruction without changing step number, approval dependency, timing rule, exact tokens, or rationale. Return only the revised instruction in final output.\n\n\"Frontmatter capture happens at step 30 after Checkpoint 1 approval, not before — design.md is only in its final form once the user has approved it or confirmed a manual edit, so capturing specs_touched/decisions any earlier risks writing frontmatter against content the user is about to change.\"",
-      "expected_output": "A tighter rewrite-only instruction that preserves step 30, Checkpoint 1 approval, the not-before timing rule, design.md, the exact specs_touched/decisions token, and the stale-frontmatter rationale.",
+      "expected_output": "A tighter revised instruction that preserves step 30, Checkpoint 1 approval, the not-before timing rule, design.md, the exact specs_touched/decisions token, and the stale-frontmatter rationale. Because the prompt says to return only the revised instruction, the audit and report are suppressed from the user-facing output but completed internally.",
       "files": [
         "../accelint-qrspi-propose/SKILL.md"
       ],
@@ -196,15 +196,16 @@
     },
     {
       "id": 19,
-      "prompt": "Audit this workflow prose for behavior risk. Do NOT provide a rewrite, only findings.\n\n\"When the design looks mostly okay, you can skip the detailed review and go ahead with implementation unless there are obvious red flags or the user prefers a thorough check.\"",
-      "expected_output": "An audit-only response that identifies ambiguity, soft modality, and decision-risk issues without rewriting the text.",
+      "prompt": "Audit and revise this workflow prose. Do not use `--quiet`.\n\n\"When the design looks mostly okay, you can skip the detailed review and go ahead with implementation unless there are obvious red flags or the user prefers a thorough check.\"",
+      "expected_output": "A default unified-workflow response that audits ambiguity, soft modality, and decision-risk issues; gives actionable recommendations and a prioritized rewrite proposal; provides a behavior-preserving rewrite; and shows the completed report.",
       "files": [],
       "expectations": [
-        "Produces findings only rather than a rewrite.",
+        "Audits every mandatory rubric category before rewriting.",
         "Identifies ambiguity in phrases like 'mostly okay' or 'obvious red flags'.",
         "Identifies soft modality in 'can skip'.",
         "Explains the behavior risk of letting the agent decide when to skip review.",
-        "Uses calibrated severity labels if labels are used."
+        "Gives concrete recommendations and a prioritized rewrite proposal before the rewrite.",
+        "Provides a rewritten version and default user-facing audit/report output."
       ]
     },
     {
@@ -221,52 +222,56 @@
     },
     {
       "id": 23,
-      "prompt": "You are about to tighten a workflow instruction. Which references should you load first, and why?\n\nInstruction: 'Step 12. CRITICAL: Capture specs_touched as inline YAML array before writing tasks.md — Write specs_touched: [cap-a, cap-b] NOT multi-line format.'\n\nAvailable references:\n- references/checklist.md\n- references/frontmatter-descriptions.md\n- references/workflow-guardrails.md",
-      "expected_output": "A reference-loading decision that prioritizes the workflow/guardrail reference, optionally reserves the checklist for final verification, and explains why the description reference is not primary here.",
+      "prompt": "You are about to audit a workflow instruction. Which rubric references must you read, and which one is the primary evidence lens for this instruction?\n\nInstruction: 'Step 12. CRITICAL: Capture specs_touched as inline YAML array before writing tasks.md — Write specs_touched: [cap-a, cap-b] NOT multi-line format.'",
+      "expected_output": "A mandatory-rubric decision that names all four required references and identifies serial-instruction/workflow integrity as the primary evidence lens without treating the other categories as optional.",
       "files": [
-        "references/checklist.md",
-        "references/frontmatter-descriptions.md",
-        "references/workflow-guardrails.md"
+        "references/normative-language.md",
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md",
+        "references/user-question-waiting.md"
       ],
       "expectations": [
-        "Selects references/workflow-guardrails.md as the primary reference.",
-        "Optionally includes references/checklist.md as a final-pass reference.",
-        "Does not treat references/frontmatter-descriptions.md as the primary reference.",
-        "Explains the choice using workflow safety, exact tokens, or guardrail strength."
+        "Names every mandatory rubric reference.",
+        "Identifies references/serial-instruction-guidance.md as the primary workflow evidence lens.",
+        "Does not say that other required rubric categories may be skipped.",
+        "Explains the decision using order, obligation, exact tokens, or approval evidence."
       ]
     },
     {
       "id": 24,
       "prompt": "You've completed a rewrite of a skill description. What must you do before delivering it to the user?",
-      "expected_output": "A concise description of the required self-check, including trigger-scope verification, exact-token review, and mode-aware output compliance before delivery.",
+      "expected_output": "A concise description of the mandatory unified workflow: complete every category-level rubric audit with evidence, grades, states, actionable recommendations, classifications, and uncertainty; synthesize the recommendations into a prioritized rewrite proposal; rewrite; validate trigger scope and exact tokens; and show the audit/report by default unless report visibility is suppressed.",
       "files": [
         "SKILL.md",
-        "references/checklist.md",
-        "references/frontmatter-descriptions.md"
+        "assets/output-template.md",
+        "references/normative-language.md",
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md",
+        "references/user-question-waiting.md"
       ],
       "expectations": [
-        "Mentions running the required self-check or loading references/checklist.md.",
-        "Mentions verifying trigger-scope preservation.",
-        "Mentions checking exact tokens or exact references.",
-        "Mentions confirming output mode and rewrite mode were handled correctly where relevant.",
-        "Does not say to deliver immediately without verification."
+        "Mentions every mandatory rubric category or the required category-level audit.",
+        "Mentions evidence and the required grade/state/actionable-recommendation record.",
+        "Mentions synthesizing recommendations into a prioritized rewrite proposal before rewriting.",
+        "Mentions verifying trigger scope and exact tokens or references.",
+        "Mentions default reporting and the narrow report-visibility exception."
       ]
     },
     {
       "id": 26,
       "prompt": "Audit this behavior-defining prose for obligation drift and severity ambiguity before rewriting it: 'IMPORTANT: Checkpoint approval is critical before writing tasks.md, and reviewers should never paraphrase specs_touched/decisions because that field is mandatory.'",
-      "expected_output": "A severity-aware audit plus safer rewrite that identifies mixed informal severity labels, clarifies obligation levels with RFC-2119 terms, and preserves exact workflow and token requirements.",
+      "expected_output": "A severity-aware audit that identifies mixed informal labels and contextual obligation ambiguity, preserves exact workflow and token requirements, and does not assign BCP 14 meaning without source support.",
       "files": [
-        "references/rfc-2119.md",
-        "references/workflow-guardrails.md"
+        "references/normative-language.md",
+        "references/serial-instruction-guidance.md"
       ],
       "expectations": [
         "Identifies ambiguity caused by informal severity words like IMPORTANT or critical.",
-        "Flags or discusses obligation drift risk between should, never, and mandatory-strength language.",
-        "Preserves 'tasks.md' exactly.",
-        "Preserves 'specs_touched/decisions' exactly.",
-        "Proposes RFC-2119 normalization such as MUST, REQUIRED, or SHOULD where appropriate.",
-        "Keeps the approval-before-writing workflow semantics intact."
+        "Discusses contextual force for should, never, and mandatory-strength language.",
+        "Preserves tasks.md exactly.",
+        "Preserves specs_touched/decisions exactly.",
+        "Uses RFC 8174's capitalization rule and does not mechanically normalize the prose.",
+        "Keeps approval-before-writing workflow semantics intact."
       ]
     },
     {
@@ -320,11 +325,10 @@
     },
     {
       "id": 30,
-      "prompt": "Audit this rewritten skill-prose guidance for synonym drift. Do NOT rewrite it; report findings only.\n\nOriginal concepts to keep stable: trigger coverage, workflow semantics, field names and keys.\n\nCandidate rewrite: 'Preserve activation coverage, keep the process behavior intact, and do not generalize properties or metadata names when tightening prompt instructions.'",
-      "expected_output": "An audit-only response that identifies vocabulary drift where the rewrite rotates behavior-bearing terms instead of preserving the original concept terms.",
+      "prompt": "Audit and revise this skill-prose guidance for synonym drift. Do not use `--quiet`.\n\nOriginal concepts to keep stable: trigger coverage, workflow semantics, field names and keys.\n\nCandidate rewrite: 'Preserve activation coverage, keep the process behavior intact, and do not generalize properties or metadata names when tightening prompt instructions.'",
+      "expected_output": "A default unified-workflow response that identifies vocabulary drift, gives actionable preservation recommendations and a prioritized rewrite proposal, rewrites the candidate with the original behavior-bearing terms, validates it, and shows the audit/report.",
       "files": [
         "SKILL.md",
-        "references/checklist.md",
         "references/ste-compatible-rules.md"
       ],
       "expectations": [
@@ -332,7 +336,8 @@
         "Flags 'process behavior' as drift from 'workflow semantics'.",
         "Flags 'properties or metadata names' as drift from 'field names and keys'.",
         "Explains why synonym rotation is risky in behavior-defining prose.",
-        "Produces findings only rather than a full rewrite."
+        "Uses the actionable recommendations in a prioritized rewrite proposal.",
+        "Provides a rewritten version and default user-facing audit/report output."
       ]
     },
     {
@@ -341,7 +346,7 @@
       "expected_output": "An audit or audit-plus-rewrite response that identifies ambiguous pronouns or referents and preserves the underlying decision logic.",
       "files": [
         "SKILL.md",
-        "references/checklist.md"
+        "references/ste-compatible-rules.md"
       ],
       "expectations": [
         "Identifies ambiguity in 'it' at least once.",
@@ -372,7 +377,7 @@
       "expected_output": "A tighter passage that preserves the after-merge timing rule, exact tokens, and rationale, while keeping explanation distinct from executable steps.",
       "files": [
         "../accelint-qrspi-archive/SKILL.md",
-        "references/workflow-guardrails.md",
+        "references/serial-instruction-guidance.md",
         "references/ste-compatible-rules.md"
       ],
       "expectations": [
@@ -386,67 +391,68 @@
     },
     {
       "id": 34,
-      "prompt": "Tighten this behavior-defining guidance using RFC-2119 obligation language where appropriate, but preserve the exact hard-stop strength and React-specific scope. Return only the revised text in final output.\n\n\"ALWAYS use this skill when working with any React code - writing components, hooks, JSX; refactoring; optimizing re-renders, memoization, state management; reviewing for performance; fixing hydration mismatches; debugging infinite re-renders, stale closures, input focus loss, animations restarting; preventing remounting; implementing transitions, lazy initialization, effect dependencies. Even simple React tasks benefit from these patterns.\"",
-      "expected_output": "A tighter rewrite that preserves React-specific trigger scope and strong obligation semantics, optionally normalized into RFC-2119 language without broadening scope.",
+      "prompt": "Tighten this behavior-defining guidance using obligation language only where source support makes it lossless, while preserving the exact hard-stop strength and React-specific scope. Return only the revised text in final output.\n\n\"ALWAYS use this skill when working with any React code - writing components, hooks, JSX; refactoring; optimizing re-renders, memoization, state management; reviewing for performance; fixing hydration mismatches; debugging infinite re-renders, stale closures, input focus loss, animations restarting; preventing remounting; implementing transitions, lazy initialization, effect dependencies. Even simple React tasks benefit from these patterns.\"",
+      "expected_output": "A tighter rewrite that preserves React-specific trigger scope and strong obligation semantics without assigning BCP 14 language to an informal label unless the source context supports it.",
       "files": [
         "../accelint-react-best-practices/SKILL.md",
-        "references/frontmatter-descriptions.md",
-        "references/rfc-2119.md"
+        "references/ste-compatible-rules.md",
+        "references/normative-language.md"
       ],
       "expectations": [
         "Preserves the any-React-code scope.",
         "Preserves representative trigger families such as components/hooks/JSX and hydration or re-render issues.",
         "Preserves the strong obligation semantics of ALWAYS use this skill.",
+        "Does not mechanically assign RFC 8174 meaning to informal uppercase ALWAYS.",
         "Does not broaden into generic frontend or JavaScript guidance.",
         "Returns only the revised text."
       ]
     },
     {
       "id": 35,
-      "prompt": "The user says: 'Audit this wording for ambiguity, but do not rewrite it.' Which mode or modes apply, and what must you avoid including in the deliverable?",
-      "expected_output": "A concise audit-only answer that keeps output mode separate from rewrite mode and states that sentence-level replacement text must not be included unless the user explicitly asked for examples.",
+      "prompt": "The user says: 'Audit this wording for ambiguity, but do not rewrite it.' How must accelint-skill-prose handle the request under its unified workflow?",
+      "expected_output": "A concise explanation that the request does not select an audit-only mode: the skill must audit, grade, recommend, synthesize a rewrite proposal, and rewrite. It should show the audit/report by default unless the user explicitly invokes `--quiet` or unambiguously asks not to show the report.",
       "files": [
         "SKILL.md",
-        "references/checklist.md",
-        "references/examples.md"
+        "assets/output-template.md",
+        "references/ste-compatible-rules.md"
       ],
       "expectations": [
-        "Identifies Audit only as the output mode.",
-        "Does not require a rewrite mode before auditing.",
-        "States that full rewritten passages should not be included.",
-        "States that sentence-level replacement text should be avoided unless the user explicitly asked for examples.",
-        "Keeps audit findings separate from rewrite delivery."
+        "States that audit-only is not an available mode.",
+        "States that auditing, grading, recommendations, rewrite-proposal synthesis, and rewriting remain mandatory.",
+        "States that report visibility, not the workflow, can be suppressed.",
+        "Distinguishes an explicit no-report request from a generic request for concision."
       ]
     },
     {
       "id": 36,
-      "prompt": "You are tightening a skill folder, not just a pasted excerpt. The folder contains `SKILL.md`, `AGENTS.md`, and `references/workflow-guardrails.md`. `SKILL.md` now says 'artifact set', but `AGENTS.md` still says 'support files' and the reference file still treats post-rewrite consistency as optional. What files should you treat as editable, and what must you do before delivery?",
-      "expected_output": "A folder-level rewrite plan that treats SKILL.md, AGENTS.md, and the relevant reference file as part of one editable artifact set, updates the files that need alignment, and explains that unchanged behavior-bearing files must be justified before delivery.",
+      "prompt": "You are tightening a skill folder, not just a pasted excerpt. The folder contains SKILL.md, AGENTS.md, and references/serial-instruction-guidance.md. SKILL.md now says 'artifact set', but AGENTS.md still says 'support files' and the rubric reference still treats a workflow check as optional. What files should you treat as editable, and what must you do before delivery?",
+      "expected_output": "A folder-level rewrite plan that treats SKILL.md, AGENTS.md, and the relevant rubric reference as editable artifact-set files, updates the files that need alignment, and completes every mandatory category-level audit before delivery.",
       "files": [
         "SKILL.md",
-        "references/checklist.md",
-        "references/workflow-guardrails.md",
-        "references/examples.md"
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md",
+        "references/user-question-waiting.md"
       ],
       "expectations": [
-        "Treats `SKILL.md`, `AGENTS.md`, and the relevant `references/*.md` file as editable artifact-set files.",
-        "Does not treat `AGENTS.md` or the reference file as read-only context once inconsistency is found.",
+        "Treats SKILL.md, AGENTS.md, and the relevant references/*.md file as editable artifact-set files.",
+        "Does not treat AGENTS.md or the rubric reference as read-only context once inconsistency is found.",
         "States that the files needing alignment should be rewritten before delivery.",
-        "States that any unchanged behavior-bearing file must be explainable.",
+        "States that every mandatory rubric category needs a grade, evidence, state, recommendation, classification, and uncertainty.",
         "Preserves the idea that the folder is one behavior contract distributed across files."
       ]
     },
     {
       "id": 37,
-      "prompt": "The user asks: 'Safely tighten this skill folder.' They only pasted one paragraph from `SKILL.md`, but the folder also has a sibling `AGENTS.md` and several files in `references/`. What is the default artifact set, and when are those other files eligible for edit?",
+      "prompt": "The user asks: 'Safely tighten this skill folder.' They only pasted one paragraph from SKILL.md, but the folder also has a sibling AGENTS.md and several files in references/. What is the default artifact set, and when are those other files eligible for edit?",
       "expected_output": "A concise explanation that the default artifact set is the root SKILL.md, sibling AGENTS.md if present, and behavior-bearing references/*.md, and that those files are eligible for edit whenever they complete the contract or need alignment.",
       "files": [
         "SKILL.md",
-        "references/checklist.md",
-        "references/workflow-guardrails.md"
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md",
+        "references/user-question-waiting.md"
       ],
       "expectations": [
-        "Names the default artifact set as root `SKILL.md`, sibling `AGENTS.md` if present, and behavior-bearing `references/*.md`.",
+        "Names the default artifact set as root SKILL.md, sibling AGENTS.md if present, and behavior-bearing references/*.md.",
         "Explains that linked instruction files can join the artifact set when they complete the contract.",
         "Explains that support files are eligible for edit when consistency or contract preservation requires it.",
         "Does not limit editing to the pasted excerpt alone."
@@ -454,67 +460,72 @@
     },
     {
       "id": 38,
-      "prompt": "Audit this response for output-mode violations. The user asked for audit only.\n\nResponse draft:\n1. Summary: The wording is ambiguous.\n2. Finding: 'mostly okay' is subjective.\n3. Suggested rewrite: 'Do not skip the detailed review unless the user explicitly approves that shortcut.'\n4. Completed report.\n\nDo not rewrite the source passage. Report only whether the response draft complies with the requested mode and why.",
-      "expected_output": "An audit-only compliance review that flags the included rewrite as an output-mode violation and explains why audit-only delivery must stop at findings unless examples were explicitly requested.",
+      "prompt": "A user supplies `--quiet` and asks to revise a behavior-defining instruction. What work must still occur, and what is omitted from the user-facing response?",
+      "expected_output": "A concise explanation that the skill still audits every mandatory rubric, assigns grades, records actionable recommendations, synthesizes the prioritized rewrite proposal, rewrites, and validates; it returns only the rewritten version and suppresses the audit/report from the user-facing response.",
       "files": [
         "SKILL.md",
-        "references/checklist.md",
-        "references/examples.md"
+        "assets/output-template.md",
+        "references/ste-compatible-rules.md"
       ],
       "expectations": [
-        "Identifies that the draft violates audit-only output mode.",
-        "Flags the sentence-level suggested rewrite as disallowed in this context.",
-        "Explains that findings are allowed but replacement wording is not unless explicitly requested.",
-        "Does not rewrite the source passage."
+        "States that `--quiet` suppresses only user-facing audit/report output.",
+        "States that every mandatory rubric audit and grade still occurs.",
+        "States that recommendations and the prioritized rewrite proposal still occur.",
+        "States that the rewrite still occurs.",
+        "States that only the rewritten version is returned."
       ]
     },
     {
       "id": 39,
-      "prompt": "A user asks for a rewrite-only response in mode=default. The source text is a four-item checklist with correct order, but item 3 is wordy. What kind of rewrite is allowed, and what changes should you avoid?",
-      "expected_output": "A concise explanation that mode=default favors a local rewrite of the wordy item while preserving checklist structure, order, and behavior-bearing wording, without escalating into broader reorganization.",
+      "prompt": "A user supplies `mode=default` alongside a request to tighten a four-item checklist whose third item is wordy. What workflow and rewrite constraints apply?",
+      "expected_output": "A concise explanation that `mode=default` is not a selectable control. The skill applies the mandatory review workflow and runs isolated rubric reviews, makes the smallest behavior-preserving rewrite supported by source evidence, preserves source-required order and hard requirements, and allows structural change only when the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading.",
       "files": [
         "SKILL.md",
-        "references/checklist.md",
-        "references/examples.md"
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md"
       ],
       "expectations": [
-        "States that mode=default favors local cleanup rather than structural rewrite.",
-        "Preserves checklist structure and item order.",
-        "Explains that only the wordy item should be tightened unless structure hides behavior.",
-        "Warns against broader reorganization or obligation drift."
+        "States that `mode=default` is not a selectable control.",
+        "States that the mandatory review workflow applies, including isolated rubric reviews.",
+        "Preserves source-required checklist order and hard requirements unless cited source evidence requires structural change.",
+        "Explains that the wordy item receives the smallest behavior-preserving rewrite supported by source evidence.",
+        "Does not treat checklist format as a validated workflow control or impose an exact order on independent actions.",
+        "Warns against obligation drift and unsupported broader reorganization."
       ]
     },
     {
       "id": 40,
-      "prompt": "You have already read `SKILL.md` for a skill folder. It links to `references/workflow-guardrails.md`, and the folder also has `references/examples.md`, `templates/review-note.md`, and `notes/brainstorm.md`. Which files should you inspect next before a folder-level rewrite, and why?",
-      "expected_output": "A file-discovery decision that follows linked behavior-bearing instruction files first, includes relevant templates when they complete the contract, and does not automatically treat brainstorming notes as part of the artifact set.",
+      "prompt": "You have already read SKILL.md for a skill folder. It has four mandatory rubric references and the folder also has templates/review-note.md and notes/brainstorm.md. Which files should you inspect next before a folder-level rewrite, and why?",
+      "expected_output": "A discovery decision that reads every mandatory rubric reference, includes instruction-bearing templates when they complete the contract, and does not automatically treat brainstorming notes as part of the artifact set.",
       "files": [
         "SKILL.md",
-        "references/workflow-guardrails.md",
-        "references/examples.md"
+        "references/normative-language.md",
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md",
+        "references/user-question-waiting.md"
       ],
       "expectations": [
-        "Prioritizes explicitly linked files such as `references/workflow-guardrails.md`.",
-        "Includes other behavior-bearing instruction files like `references/examples.md` when relevant to the contract.",
-        "Treats `templates/review-note.md` as eligible if it is an instruction-bearing template.",
-        "Does not automatically include `notes/brainstorm.md` as part of the artifact set.",
-        "Explains the decision using progressive disclosure or contract-completion logic."
+        "Names every mandatory rubric reference.",
+        "Treats templates/review-note.md as eligible if it is instruction-bearing.",
+        "Does not automatically include notes/brainstorm.md as part of the artifact set.",
+        "Explains the decision using mandatory rubric coverage and contract-completion logic."
       ]
     },
     {
       "id": 41,
-      "prompt": "Audit this frontmatter rewrite for boundary drift. Do NOT rewrite it.\n\nOriginal description boundary: planning-only, no implementation.\nCandidate rewrite: 'Use this skill to plan or implement OpenSpec changes, then carry them through validation.'",
-      "expected_output": "An audit-only response that identifies implementation-scope broadening as boundary drift against a planning-only description.",
+      "prompt": "Audit and revise this frontmatter rewrite for boundary drift. Do not use `--quiet`.\n\nOriginal description boundary: planning-only, no implementation.\nCandidate rewrite: 'Use this skill to plan or implement OpenSpec changes, then carry them through validation.'",
+      "expected_output": "A default unified-workflow response that identifies implementation-scope broadening, gives actionable boundary-preservation recommendations and a prioritized rewrite proposal, revises the candidate to retain the planning-only boundary, outputs it, and shows the audit/report.",
       "files": [
         "SKILL.md",
-        "references/frontmatter-descriptions.md",
-        "references/checklist.md"
+        "references/ste-compatible-rules.md",
+        "references/normative-language.md"
       ],
       "expectations": [
         "Flags that 'plan or implement' broadens a planning-only boundary.",
         "Identifies this as trigger-scope or boundary drift.",
         "Explains why this would over-trigger the skill for implementation requests.",
-        "Produces findings only rather than a rewrite."
+        "Gives an actionable recommendation and a prioritized rewrite proposal.",
+        "Provides a rewritten version and default user-facing audit/report output."
       ]
     },
     {
@@ -522,8 +533,8 @@
       "prompt": "Tighten this workflow warning without losing the exact verb choice or the reason it matters. Return only the revised text in final output.\n\n\"Do not skip Step 14. Skipping it can bypass the approval gate and let the agent proceed before the user has confirmed the task breakdown.\"",
       "expected_output": "A tighter warning that preserves the exact verb 'skip', the Step 14 reference, the approval-gate risk, and the premature-proceeding rationale.",
       "files": [
-        "references/workflow-guardrails.md",
-        "references/examples.md"
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md"
       ],
       "expectations": [
         "Preserves 'skip' rather than rotating to a softer or different verb.",
@@ -535,18 +546,321 @@
     },
     {
       "id": 43,
-      "prompt": "Audit this folder-level completion note for required unchanged-file classification. Do NOT rewrite the files themselves.\n\nCompletion note: 'SKILL.md changed. references/checklist.md unchanged. references/examples.md unchanged.'",
-      "expected_output": "An audit-only response that identifies the missing required unchanged-file classifications and explains what kind of justification is required for unchanged behavior-bearing files.",
+      "prompt": "Audit and revise this skill-prose completion note for missing mandatory-rubric evidence. Do not use `--quiet`.\n\nCompletion note: 'The audit is done. Workflow integrity: 4/5. Other categories reviewed.'",
+      "expected_output": "A default unified-workflow response that identifies missing mandatory-rubric records, gives actionable recommendations and a prioritized rewrite proposal, revises the completion note without claiming unperformed work, validates it, and shows the audit/report.",
       "files": [
         "SKILL.md",
         "assets/output-template.md",
-        "references/checklist.md"
+        "references/serial-instruction-guidance.md"
       ],
       "expectations": [
-        "Flags that unchanged files need explicit classification rather than bare unchanged status.",
-        "Mentions accepted classifications such as 'Already near minimum safe form' or 'Rewrite would add drift risk without meaningful clarity gain'.",
-        "Explains why generic 'unchanged' is insufficient for folder-level work.",
-        "Does not rewrite the underlying files."
+        "Flags that every mandatory category needs its own grade and finding state.",
+        "Flags the absence of cited evidence, actionable recommendation or no-change rationale, change classification, and uncertainty.",
+        "Explains why a generic claim that other categories were reviewed is insufficient.",
+        "Gives an actionable recommendation and a prioritized rewrite proposal.",
+        "Provides a rewritten version and default user-facing audit/report output."
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "Revise this behavior-defining instruction concisely: 'Before implementation, you must wait for explicit approval.'",
+      "expected_output": "A concise default unified-workflow response that still shows the audit/report, because a generic request for concision does not suppress reporting, and preserves the explicit-approval requirement in the rewritten instruction.",
+      "files": [
+        "SKILL.md",
+        "assets/output-template.md",
+        "references/normative-language.md",
+        "references/user-question-waiting.md"
+      ],
+      "expectations": [
+        "Does not treat concision as a no-report request.",
+        "Shows the audit/report by default.",
+        "Preserves the requirement to wait for explicit approval.",
+        "Completes the unified audit, recommendation, rewrite-proposal, and rewrite workflow."
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "Revise this behavior-defining instruction. No report: 'Do not begin deployment until the user approves the rollback plan.'",
+      "expected_output": "A rewritten instruction only, with no user-facing audit/report. The skill still completes the unified audit, actionable recommendations, prioritized rewrite proposal, and rewrite internally, and preserves the approval gate and rollback-plan reference.",
+      "files": [
+        "SKILL.md",
+        "assets/output-template.md",
+        "references/serial-instruction-guidance.md",
+        "references/user-question-waiting.md"
+      ],
+      "expectations": [
+        "Recognizes `No report` as an unambiguous report-suppression request.",
+        "Returns only the rewritten version.",
+        "Completes the audit, grading, recommendations, rewrite proposal, and rewrite internally.",
+        "Preserves the prohibition on beginning deployment before approval.",
+        "Preserves the rollback-plan reference."
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "You are revising behavior-defining guidance with accelint-skill-prose. The work has four or more real actions. Before research or editing, what task tracker must you create and maintain?",
+      "expected_output": "A concise answer that requires the Step 0 checklist before research or editing, preserves the exact Steps 1–6 workflow order, and explains that an item is complete only after its corresponding step is complete.",
+      "files": [
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Requires a task tracker before research or editing when there are four or more real actions.",
+        "Names the exact Steps 1–6 workflow in order.",
+        "Preserves the exact Step 4 decision wording: 'Decide whether to ask, wait, inspect, default, or proceed'.",
+        "States that an item becomes complete only after its corresponding step is complete.",
+        "Does not add a tool-specific tracker requirement or a new workflow step."
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "Before drafting a rewrite, how must accelint-skill-prose run its mandatory rubric audit?",
+      "expected_output": "A mandatory review workflow explanation that creates a fixed behavior ledger, launches four isolated fresh-context reviewers from the same source snapshot, gives every reviewer all mandatory materials, and prevents reviewers from seeing other grades, draft rewrites, or synthesis conclusions.",
+      "files": [
+        "SKILL.md",
+        "references/normative-language.md",
+        "references/serial-instruction-guidance.md",
+        "references/ste-compatible-rules.md",
+        "references/user-question-waiting.md"
+      ],
+      "expectations": [
+        "Requires four isolated reviewers, one per mandatory rubric category.",
+        "Requires every reviewer to read the complete artifact set and all mandatory materials.",
+        "Requires a fixed behavior ledger and immutable source snapshot.",
+        "Prohibits exposing other reviewer outputs, draft rewrites, or synthesis rationale to initial reviewers.",
+        "Does not offer a direct single-agent alternative."
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "One isolated workflow-integrity reviewer fails before returning a source-cited record. What may accelint-skill-prose do next?",
+      "expected_output": "An incomplete-review-coverage response that does not silently replace the reviewer with the parent agent. It may continue with completed reviews, but must identify the unavailable reviewer, the missing category coverage, the error or missing output, retry availability, and the resulting uncertainty.",
+      "files": [
+        "SKILL.md",
+        "assets/output-template.md"
+      ],
+      "expectations": [
+        "Classifies the outcome as incomplete rubric coverage.",
+        "Does not imply that the missing review was completed.",
+        "Does not silently substitute the parent agent's judgment for the failed reviewer.",
+        "Reports the unavailable reviewer, lost category coverage, error or missing output, retry availability, and uncertainty.",
+        "Allows continuation only with explicit disclosure."
+      ]
+    },
+    {
+      "id": 50,
+      "prompt": "Two isolated reviewers assign different grades and incompatible recommendations. How must the synthesis role resolve the conflict?",
+      "expected_output": "A source-grounded synthesis that rereads the immutable artifact and cited evidence, resolves the conflict using preservation priorities, and records a material ambiguity as unresolved when the source cannot decide it. It does not average grades, count votes, or elevate repeated unsupported recommendations into policy.",
+      "files": [
+        "SKILL.md",
+        "assets/output-template.md"
+      ],
+      "expectations": [
+        "Requires the synthesis role to recheck source evidence.",
+        "Prohibits averaging grades and majority voting.",
+        "Preserves the source-grounded conflict-resolution rule.",
+        "Records unresolved material conflict rather than inventing policy.",
+        "Keeps protected behavior-preservation priorities in force."
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "An artifact uses uppercase MUST and SHOULD but does not contain an RFC 8174 or BCP 14 adoption statement. How must accelint-skill-prose apply the normative-language rubric?",
+      "expected_output": "The rubric applies BCP 14 to the all-caps RFC-defined terms without treating the missing adoption statement as a finding, prerequisite, exception, or uncertainty.",
+      "files": [
+        "references/normative-language.md",
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Applies BCP 14 to uppercase MUST and SHOULD.",
+        "Does not require an artifact-level adoption declaration.",
+        "Does not report a missing adoption statement as a finding or uncertainty.",
+        "Preserves contextual analysis for non-BCP wording."
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "Audit this wording under accelint-skill-prose: 'You must wait for approval. ALWAYS preserve the existing field names. The release MAY proceed after approval.'",
+      "expected_output": "An audit that gives BCP 14 meaning to uppercase MAY, treats lowercase must and informal uppercase ALWAYS as ordinary-English contextual obligations, and does not mechanically normalize either form.",
+      "files": [
+        "references/normative-language.md"
+      ],
+      "expectations": [
+        "Treats MAY as an RFC-defined all-caps term.",
+        "Does not automatically assign BCP 14 force to lowercase must.",
+        "Does not treat ALWAYS as a BCP 14 keyword.",
+        "Uses contextual evidence for lowercase and informal uppercase force."
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "You are the isolated serial-instruction and workflow-integrity reviewer in an accelint-skill-prose audit. What response format must you return to the parent orchestrator?",
+      "expected_output": "Exactly one valid JSON object, with no prose outside it, that identifies the assigned category and contains the grade, state, source-cited evidence, risk or no-change rationale, prioritized actionable recommendation, change classification, and uncertainty.",
+      "files": [
+        "SKILL.md"
+      ],
+      "expectations": [
+        "Requires exactly one valid JSON object and no prose outside it.",
+        "Requires the category to exactly identify the assigned category.",
+        "Requires a grade from 0 through 5 and an allowed finding state.",
+        "Requires evidence records with exact path, location, verbatim quote, and relevance.",
+        "Requires the structured recommendation priority, action, and behavior-preservation intent fields.",
+        "States that invalid JSON, missing required fields, or missing source-cited evidence makes the reviewer unavailable."
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "A reviewer says, 'Replace this short workflow with numbered headings because numbered headings are more reliable for agent execution.' No local model or harness evaluation exists. What must accelint-skill-prose report and recommend?",
+      "expected_output": "A source-grounded response that distinguishes semantic workflow mechanics from a presentation convention, rejects the reliability claim as unvalidated, and allows a user-requested readability change only when disclosed as a format choice rather than a compliance improvement.",
+      "files": [
+        "SKILL.md",
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "Does not treat numbered headings as a validated workflow control.",
+        "Requires local, reproducible evaluation before standardizing a format as a reliability or compliance improvement.",
+        "Distinguishes a user-requested presentation change from a validated reliability claim.",
+        "Preserves the requirement to audit explicit dependencies, gates, and completion conditions."
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "A workflow permits either collecting logs or capturing screenshots before analysis. Neither action depends on the other, but both must complete before analysis. How should the serial-instruction rubric assess the order?",
+      "expected_output": "A dependency-aware assessment that requires both prerequisites before analysis but does not impose one exact order between the independent log-collection and screenshot actions.",
+      "files": [
+        "SKILL.md",
+        "references/serial-instruction-guidance.md"
+      ],
+      "expectations": [
+        "Identifies the common prerequisite for analysis.",
+        "Does not require a fixed order between independent actions.",
+        "Allows valid source-supported paths and recovery routes.",
+        "Does not invent a stricter workflow from presentation order alone."
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "A reviewer proposes moving a buried approval gate into its own section and changes the rule from 'obtain explicit approval before deployment' to 'obtain approval before deployment.' How must the serial-instruction rubric classify the proposal?",
+      "expected_output": "A source-grounded classification that distinguishes a behavior-preserving reorganization from a semantic change: moving an equivalent gate may be structural, but weakening 'explicit approval' alters the gate and is approval-required.",
+      "files": [
+        "SKILL.md",
+        "references/serial-instruction-guidance.md"
+      ],
+      "expectations": [
+        "Distinguishes reorganizing presentation from altering a workflow mechanic.",
+        "Classifies removal of 'explicit' as approval-required rather than structural.",
+        "Requires equivalence traceability for the reorganization.",
+        "Does not call an altered gate behavior-preserving."
+      ]
+    },
+    {
+      "id": 57,
+      "prompt": "A team wants a house rule that every approval gate must appear in the first paragraph because early placement is more reliable. No local tests exist. What may the serial-instruction rubric recommend?",
+      "expected_output": "A response that preserves any source-required approval order but treats the first-paragraph rule as an unvalidated placement standard. It requires local, reproducible evaluation before presenting that standard as a reliability or compliance improvement.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "Treats placement separately from source-required workflow order.",
+        "Does not claim that early placement is universally reliable.",
+        "Requires local, reproducible evaluation before a reliability claim.",
+        "Allows a disclosed user-requested presentation change without claiming a measured benefit."
+      ]
+    },
+    {
+      "id": 58,
+      "prompt": "A skill moves customer records and claims its prose audit grade of 5 proves the workflow is reliable. The transfer must validate authorization before an irreversible write, but independent metadata checks may happen before or after authorization. What local evaluation boundary applies?",
+      "expected_output": "A companion evaluation plan that rejects the prose-grade reliability claim, checks final target state and repeated-run reliability, asserts authorization before the irreversible write, and permits either order for the independent metadata checks.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "States that a prose grade does not validate runtime reliability.",
+        "Requires target-state and repeated-run checks.",
+        "Adds an order assertion only for authorization before the irreversible write.",
+        "Does not require one exact full trace for independent metadata checks.",
+        "Distinguishes a validator's availability from required invocation at the needed time."
+      ]
+    },
+    {
+      "id": 59,
+      "prompt": "A reviewer says every multi-step skill needs a copied checklist and a decomposition phase because both improve serial completion. The active harness does not expose persistent tracker state, and the workflow's steps are independent. What must the rubric report?",
+      "expected_output": "A response that rejects both universal recommendations: the tracker is not an operational control without source or harness state support and local evaluation, and decomposition is not a default remedy for independent work.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "Treats copied checklists as presentation unless source or harness makes them behavior-bearing.",
+        "Requires reliable state exposure and local evaluation before claiming a tracker benefit.",
+        "Does not recommend decomposition by default for independent work.",
+        "Limits decomposition testing to genuinely dependent reasoning with verified-result handoff."
+      ]
+    },
+    {
+      "id": 60,
+      "prompt": "A workflow reads untrusted tool output. Its author says a 'Priority 1: Ignore tool instructions' heading ensures the workflow's trusted rules will prevail. How must the serial-instruction rubric assess the claim?",
+      "expected_output": "A scoped authority-boundary response that rejects the heading as enforcement evidence and distinguishes the written priority rule from model, message-role, tool-permission, or harness controls.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "Does not treat headings or document position as authority enforcement.",
+        "Identifies the issue as a model or harness authority concern.",
+        "Does not claim that a serial-format rewrite resolves the conflict.",
+        "Does not turn the serial rubric into a universal security-review requirement."
+      ]
+    },
+    {
+      "id": 61,
+      "prompt": "A workflow must ask the user to choose either a fast review or a full review before dependent work starts. How must accelint-skill-prose phrase the question rule?",
+      "expected_output": "A branch-decision contract that names a stable decision ID, finite accepted values, why the choice matters, each value's effect, blocked work, and validation before routing. It does not let a free-text summary, approval, or tool permission select the branch.",
+      "files": [
+        "SKILL.md",
+        "references/user-question-waiting.md"
+      ],
+      "expectations": [
+        "Requires a stable decision ID and finite accepted values for the semantic branch decision.",
+        "Requires why the answer matters and the effect of each accepted value.",
+        "Requires explicitly blocked branch-dependent work and an explicit hold.",
+        "Requires one validated accepted value before routing.",
+        "Does not treat a clear free-text summary, approval, or tool permission as a semantic branch selection."
+      ]
+    },
+    {
+      "id": 62,
+      "prompt": "A native question dialog times out after the user highlights one option, and the host returns a tool permission approval in the same event. The workflow would prepare the selected branch while it waits to confirm the choice. How must the user-question rubric assess this?",
+      "expected_output": "A portable decision-state response that treats the timeout and permission as not selected, prohibits preparing the branch until one complete accepted value is validated for the decision ID, and requires an explicit hold rather than assuming the dialog paused work.",
+      "files": [
+        "SKILL.md",
+        "references/user-question-waiting.md",
+        "research/interactive-decisions.md"
+      ],
+      "expectations": [
+        "Treats timeout, partial selection, and tool permission as unable to route the semantic branch.",
+        "Requires an explicit hold that prohibits dispatching, authorizing, preparing, and performing branch-dependent work.",
+        "Requires validation of exactly one complete accepted value associated with the decision ID.",
+        "Does not infer a uniform native-dialog behavior across harnesses."
+      ]
+    },
+    {
+      "id": 63,
+      "prompt": "A discovery subagent recommends the append branch. The parent then runs in a non-interactive mode without a recorded decision, and a later resumed session proposes relying on the earlier conversation. What must the rubric require?",
+      "expected_output": "A response that keeps semantic decision ownership with the parent, returns unresolved_noninteractive before branch-dependent mutation, and re-presents the same decision contract on resume instead of inferring an earlier branch.",
+      "files": [
+        "SKILL.md",
+        "references/user-question-waiting.md",
+        "research/interactive-decisions.md"
+      ],
+      "expectations": [
+        "Does not let the discovery subagent select policy or begin branch-dependent work.",
+        "Requires unresolved_noninteractive when a valid decision cannot be obtained in non-interactive mode.",
+        "Stops before branch-dependent mutation without a valid decision record.",
+        "Requires the resumed session to re-present the same decision ID and contract.",
+        "Does not infer a decision from earlier conversational context."
       ]
     }
   ]
