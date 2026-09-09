@@ -12,7 +12,7 @@ Confirm that the target prose asks and waits only when a decision materially cha
 
 Evaluate and cite the target text for each applicable criterion:
 
-1. **Decision classification** — Distinguish blocking ambiguity, non-blocking ambiguity, permission or safety boundary, independently inspectable information, and material user preference.
+1. **Decision classification** — Distinguish blocking ambiguity, including an unresolved branch or approval policy that controls later mandatory work; non-blocking ambiguity; permission or safety boundary; independently inspectable information; and material user preference.
 2. **Question necessity** — Check that prose does not ask the user to supply information that local inspection can establish and does not ask broad or fragmented questions when one focused decision is enough.
 3. **Actionable choice design** — For a required decision, check that the prose explains why the answer matters, provides genuine options or a clear answer format, and names each option's effect.
 4. **Waiting and blocked work** — Check that the prose says what branch-dependent work must not begin until an answer or approval is obtained, while allowing only safe preliminary inspection to continue.
@@ -45,7 +45,7 @@ For this rubric, record:
 | Situation | Expected behavior |
 |---|---|
 | Blocking ambiguity | Ask a focused question, explain why it matters and the effects of the options, wait, and do not begin branch-dependent work. |
-| Non-blocking ambiguity | Proceed with safe work; disclose material uncertainty without inventing a policy. |
+| Non-blocking ambiguity | Proceed with safe work; disclose material uncertainty without inventing a policy. An unresolved branch destination or policy is non-blocking only when it does not select later mandatory work, a safety boundary, an approval, or another material outcome. |
 | Permission or safety boundary | Request the required approval before the bounded action. Tool permission alone does not choose a workflow branch. |
 | Independently inspectable information | Inspect first. Do not ask the user to repeat a discoverable path, policy, or repository fact. |
 | Material user preference | Ask a focused question when audience, scope, mode, output shape, or policy choice changes the result. |

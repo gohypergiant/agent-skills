@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.11.0] - 2026-09-09
+
+### Added
+- Added serial-rubric evidence boundaries that distinguish source-established workflow mechanics from presentation conventions, require local reproducible evaluation before format standardization is presented as a reliability or compliance improvement, and preserve one-off user-requested presentation changes without unsupported reliability claims.
+- Added serial-rubric checks for explicit dependency handoffs, constrained rather than exact action order, conflicting repeated requirements, and scoped executable-control opportunities for high-consequence transitions.
+- Added eval coverage for unsupported format-reliability claims and dependency-aware partial ordering.
+
+### Changed
+- Reworked `references/serial-instruction-guidance.md` so structural rewrites require source evidence that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading.
+- Aligned `SKILL.md`, `README.md`, `references/ste-compatible-rules.md`, and `references/user-question-waiting.md` with the serial-rubric evidence boundary and inspect-first handling for unresolved branch policy.
+- Replaced unsupported wording about format-caused instruction skipping or ineffective behavior with source-grounded workflow conditions, while retaining behavior-preserving structural rewrite traceability.
+
+### Version
+- Minor release at `0.11.0`.
+
 ## [0.10.0] - 2026-09-08
 
 ### Added

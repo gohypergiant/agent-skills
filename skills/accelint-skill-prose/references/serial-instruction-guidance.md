@@ -4,19 +4,25 @@
 
 Evaluate whether behavior-defining prose makes its established workflow order, prerequisites, gates, branches, and completion conditions observable without inventing new controls from formatting preferences or inferred intent.
 
-Sequence is behavior-bearing when the source explicitly states timing, dependency, approval, validation, branch, or output-use relationships. A heading, numbered item, warning, or rationale alone is not proof of a mandatory dependency.
+Sequence is behavior-bearing when the source explicitly states a timing, data, approval, validation, state, branch, or output-use relationship. A heading, numbered item, warning, or rationale alone is not proof of a mandatory dependency.
+
+## Evidence boundary
+
+Treat source-established dependencies, gates, approvals, validations, completion conditions, failure routes, branch rules, and behavior-bearing reference relationships as workflow mechanics. Treat numbering, heading levels, bullets, checklists, phase labels, XML, and similar presentation choices as format conventions unless the source or active harness makes them behavior-bearing.
+
+The serial-instruction research supports explicit dependencies and observable checks, but does not establish that a particular format improves serial execution. Do not describe a format preference as a compliance improvement without local evidence for the intended model and harness. A user-requested or source-established format convention may be a presentation choice, but must not be presented as a validated reliability control.
 
 ## Observable criteria
 
 Evaluate and cite the target text for each applicable criterion:
 
-1. **Ordered actions and prerequisites** — Identify explicit sequence markers, output dependencies, `before`/`after` rules, and required earlier results.
+1. **Explicit semantic dependencies** — Identify source-stated data, approval, validation, state, and output-use dependencies; `before`/`after` rules; and required earlier results. When a later action depends on an earlier result, check that the required prior result or release condition is named.
 2. **Gates and stop conditions** — Identify explicit `wait`, `stop`, `do not proceed`, approval, validation, and retry conditions. Do not turn a warning or rationale into a gate unless the source states the dependency.
-3. **Completion and failure routes** — Check whether later work relies on a completion condition or failure route that the prose makes visible.
-4. **Branches and rejoin points** — Check that conditional paths name their destinations and do not imply mutually exclusive actions must both occur.
-5. **Workflow-unit clarity** — Distinguish actions, gates, readiness checks, stage notes, and branch handlers. Flag mixed clauses or ambiguous referents only when they create plausible competing execution paths.
-6. **Structural equivalence** — When a rewrite changes stages, checkpoints, numbering, branch routes, or reference topology, compare those mechanics against the source and classify it as structural.
-7. **Bounded structural authority** — Check whether the prose allows an evidence-backed structural improvement when structure causes instruction skipping, ambiguity, or ineffective behavior, while preserving behavior by default.
+3. **Completion and failure routes** — When the source makes later work contingent on completion, validation, or approval, check that the prose exposes the success condition and the source-defined failure, retry, wait, or stop route. Do not invent a route when the source is silent.
+4. **Branches, rejoin points, and constrained order** — Check that conditional paths name their destinations and do not imply that mutually exclusive actions must both occur. Require a particular action order only when the source defines a dependency, authorization, safety property, or irreversible transition that makes the order material; otherwise permit independent actions, recovery paths, and other source-valid routes to the outcome.
+5. **Workflow-unit clarity and conflicting requirements** — Distinguish actions, gates, readiness checks, stage notes, and branch handlers. Flag mixed clauses, ambiguous referents, or repeated requirements only when they create incompatible readings of the intended action, prerequisite, branch destination, timing, or completion condition. Do not use a fixed step, sentence, or document-length threshold.
+6. **Structural equivalence** — When a rewrite changes a source-established dependency, gate, approval, validation point, completion condition, failure route, branch route, rejoin point, or behavior-bearing reference relationship, compare those mechanics against the source and classify it as structural. Treat numbering, heading levels, list style, and similar format conventions as structural only when the source or active harness makes them behavior-bearing.
+7. **Evidence-bounded structural authority** — Check whether a proposed structural rewrite cites source evidence that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading. Research may support an evidence-informed hypothesis, but does not prove that a format change improves compliance. Preserve behavior by default.
 
 ## Grade each category on the shared 0–5 scale
 
@@ -36,22 +42,26 @@ For this rubric, record:
 - grade and finding state: `finding`, `no issue found`, `unresolved`, or `not applicable with evidence`;
 - exact source text for the action, dependency, gate, branch, or structural landmark;
 - the concrete execution risk and why it follows from that text;
+- whether the recommendation rests on a source-established workflow defect, local evaluation evidence, or an evidence-informed hypothesis, including the relevant limitation in `uncertainty`;
 - a prioritized, actionable recommendation that names the specific action, dependency, gate, branch, or completion condition to change; explains the workflow order, approval, return route, or exact anchor that must be preserved; and gives a rewrite action; and
 - the change classification: wording-only, behavior-preserving structural rewrite, or approval-required change.
 
 ## Recommendation and approval rules
 
 - A **wording-only** recommendation may clarify an explicit sequence or referent without moving actions, changing a gate, or adding a condition.
-- A **behavior-preserving structural rewrite** is warranted only when cited structure—not only wording—causes a real ambiguity, hidden dependency, missed action, or ineffective behavior. Trace preserved actions, gates, approvals, rationales, exact anchors, branches, and return routes.
-- An **approval-required** change alters a source-established trigger, workflow order, checkpoint, approval rule, guardrail strength, exact technical meaning, or repository-defined boundary.
+- A **behavior-preserving structural rewrite** is warranted only when cited source evidence—not a format preference alone—shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading. Trace preserved actions, gates, approvals, rationales, exact anchors, branches, and return routes.
+- A format-standardization recommendation requires local, reproducible evaluation with the intended model and harness before it is presented as a compliance or reliability improvement. Adopting or changing a house format standard is approval-required. A one-off user-requested or source-established presentation change may proceed with appropriate approval or disclosure, but must not claim an unmeasured reliability benefit.
+- An **approval-required** change alters a source-established trigger, workflow order, checkpoint, approval rule, guardrail strength, exact technical meaning, repository-defined boundary, or format-standardization policy.
 - Recommend **no change** when order is already explicit and a restructure would only change presentation or add pseudo-steps.
 
 ## Remediation guide
 
 | Finding | Concrete remediation |
 |---|---|
-| Later work relies on an unstated earlier result | Cite both clauses; make the existing dependency explicit or report it as unresolved if the dependency is only inferred. |
+| Later work relies on an unstated earlier result | Cite both clauses; make the existing dependency, release condition, and source-defined failure route explicit, or report the dependency as unresolved if it is only inferred. |
 | Explicit gate is buried or softened | Surface the existing gate near the action it controls; preserve its timing and failure route. |
-| A branch has no destination or rejoin | Name the source-supported destination and rejoin point; ask before defining a missing branch policy. |
-| One clause combines conflicting workflow roles | Separate existing action, condition, and rationale only when their order remains traceable. |
-| Structure causes repeated ambiguity | Propose a bounded structural rewrite and trace its equivalence; request approval if it changes protected workflow mechanics. |
+| A branch has no destination or rejoin | Inspect neighboring prose, linked instructions, and repository evidence first. Name a destination or rejoin point only when source-supported. If the policy remains unresolved, ask and wait when it controls a required approval, safety boundary, irreversible action, or materially different mandatory work; otherwise disclose the uncertainty and continue only safe work that does not choose the branch. |
+| One clause combines conflicting workflow roles or repeats a conflicting requirement | Separate existing action, condition, and rationale only when their order remains traceable; do not add a fixed-length rule or a pseudo-step. |
+| Current organization obscures a source-established workflow mechanic | Propose a bounded structural rewrite only when cited source evidence shows that readers cannot determine the intended prerequisite, gate, branch route, or return route. Trace its equivalence; request approval if it changes protected workflow mechanics. |
+| A format change is proposed as a reliability improvement | Require local, reproducible evidence for the intended model and harness before standardizing the format. If the change is user-requested or source-established presentation work, disclose that it is a format choice rather than a validated compliance control. |
+| A high-consequence transition relies only on prose | For a source-defined safety, approval, data-integrity, or irreversible-state transition, identify whether an executable validator, script, tool schema, or harness guard already enforces the condition. Treat a missing control as a scoped risk or improvement opportunity—not a prose defect—unless the source already requires it. |

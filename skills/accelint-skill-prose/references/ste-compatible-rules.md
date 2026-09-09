@@ -43,7 +43,7 @@ For this rubric, record:
 ## Recommendation and approval rules
 
 - A **wording-only** recommendation may remove filler, clarify a referent, split an overloaded sentence, or make an existing condition/action relationship visible without changing behavior.
-- A **behavior-preserving structural rewrite** may separate existing instructions, rationale, warnings, and examples when the current organization itself causes skipping or ambiguity. It must preserve the source contract and disclose the structural change.
+- A **behavior-preserving structural rewrite** may separate existing instructions, rationale, warnings, and examples when cited source evidence shows that the current organization obscures a source-established action, prerequisite, gate, branch route, or return route. A format preference alone does not justify the change. It must preserve the source contract and disclose the structural change.
 - An **approval-required** change alters trigger coverage, workflow order, guardrail strength, exact technical meaning, or a repository-defined approval boundary.
 - Recommend **no change** when compact or unusual source wording is the safest way to preserve an exact anchor, rationale, format, or behavior.
 

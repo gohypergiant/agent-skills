@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.10.0"
+  version: "0.11.0"
 ---
 
 # Skill Prose
@@ -44,7 +44,8 @@ Treat behavior-bearing prose as an execution contract, not as ordinary style cop
 - **Never paraphrase exact paths, commands, flags, fields, identifiers, inline code, code blocks, quoted text, or scope-defining examples without explicit approval.**
 - **Never turn a warning, rationale, note, or descriptive statement into a new gate, prerequisite, branch, or policy without source evidence.**
 - **Never use a qualitative term as a substitute for an operational condition when it acts as a hidden gate, fallback, exception, or permission slip.**
-- **Never claim that a rubric grade is a validated measurement or that a finding proves runtime behavior.**
+- **Never treat numbering, headings, checklists, XML, or another presentation convention as a workflow control unless the source or active harness makes it behavior-bearing.**
+- **Never claim that a rubric grade is a validated measurement, that a finding proves runtime behavior, or that a format preference is a validated compliance improvement without local evidence.**
 - **Never treat an isolated reviewer’s output as verified evidence or average, vote on, or otherwise aggregate local grades.**
 - **Never hide an unavailable required reviewer or present incomplete rubric coverage as complete.**
 - **Never begin work that depends on an unresolved user decision or required approval.**
@@ -67,7 +68,7 @@ Every isolated rubric reviewer MUST read the complete target artifact set and ev
 
 Every invocation uses this one review workflow. It MUST establish fixed behavior from the source, run four isolated first-pass rubric reviews, synthesize source-grounded findings in a fresh context, and produce one behavior-preserving rewrite. The roles MUST NOT share prior grades, rewrite proposals, author rationale, or draft text before synthesis.
 
-It may use a bounded, behavior-preserving structural rewrite only when cited evidence shows that structure causes instruction skipping, ambiguity, or ineffective behavior.
+It may use a bounded, behavior-preserving structural rewrite only when cited source evidence shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading. A format preference alone does not justify a structural rewrite or a claim of improved compliance.
 
 ### Required-reviewer failure handling
 
@@ -194,10 +195,12 @@ Do not ask fragmented questions or ask the user to repeat independently inspecta
 Classify the recommendation before editing:
 
 - **Wording-only edit** — clarifies an explicit source-supported rule without changing its trigger scope, actor, condition, timing, obligation, rationale, technical anchor, or branch behavior.
-- **Behavior-preserving structural rewrite** — reorganizes existing instructions, rationale, warnings, or examples because cited structure causes a real compliance risk. Trace every preserved trigger, obligation, gate, approval, rationale, exact anchor, branch, and return route. Disclose that the change is structural.
-- **Approval-required change** — changes trigger coverage, workflow order, guardrail strength, exact technical meaning, a user decision, a safe default, or a repository-defined approval boundary.
+- **Behavior-preserving structural rewrite** — reorganizes existing instructions, rationale, warnings, or examples because cited source evidence shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading. Trace every preserved trigger, obligation, gate, approval, rationale, exact anchor, branch, and return route. Disclose that the change is structural.
+- **Approval-required change** — changes trigger coverage, workflow order, guardrail strength, exact technical meaning, a user decision, a safe default, a repository-defined approval boundary, or a house format standard.
 
-When source evidence does not justify a safe change, preserve the original wording as the rewritten version and state that no behavior-preserving change was warranted. Do not use elegance, brevity, or formatting preference as sufficient justification for a structural rewrite.
+Require local, reproducible evaluation with the intended model and harness before presenting a format-standardization change as a compliance or reliability improvement. A one-off user-requested or source-established presentation change may proceed with appropriate approval or disclosure, but must not claim an unmeasured reliability benefit.
+
+When source evidence does not justify a safe change, preserve the original wording as the rewritten version and state that no behavior-preserving change was warranted. Do not use elegance, brevity, or formatting preference as sufficient justification for a structural rewrite. Do not require one exact action order unless the source makes the order material through a dependency, authorization, safety property, or irreversible transition.
 
 ### Step 6: Edit, align, and output the rewrite
 
@@ -216,8 +219,9 @@ Before output, confirm the following:
 - [ ] Workflow order, gates, approvals, branches, and failure routes are preserved, except for an explicitly approved change.
 - [ ] Mandatory language has not softened; optional guidance has not been elevated without approval.
 - [ ] Exact technical anchors and scope-defining examples are preserved.
-- [ ] A structural rewrite has evidence, equivalence traceability, disclosure, and any required approval.
+- [ ] A structural rewrite has source evidence, equivalence traceability, disclosure, and any required approval; a format preference is not presented as a validated compliance improvement without local evidence.
 - [ ] A user question was asked only when inspection could not resolve a material decision; blocked work did not begin while awaiting it.
+- [ ] The rewrite preserves source-required ordering without imposing one exact action order on otherwise independent or source-valid paths.
 - [ ] Every required path in this skill exists.
 - [ ] The default delivery shows the audit and report; any suppression meets the narrow report-visibility rule and omits only user-facing audit/report content.
 - [ ] The delivery follows `assets/output-template.md`.

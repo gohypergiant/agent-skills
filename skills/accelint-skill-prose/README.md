@@ -29,7 +29,7 @@ Every applicable audit evaluates these mandatory categories:
 3. STE-compatible clarity and usability; and
 4. user-question and waiting behavior.
 
-The skill preserves trigger coverage, workflow and approval semantics, guardrail strength, and exact technical anchors before it pursues clarity or brevity. It can recommend a bounded structural rewrite when source evidence shows that the current structure causes instruction skipping or ambiguity; changes that alter protected behavior still require approval.
+The skill preserves trigger coverage, workflow and approval semantics, guardrail strength, and exact technical anchors before it pursues clarity or brevity. It can recommend a bounded structural rewrite when source evidence shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading; changes that alter protected behavior still require approval. Numbering, headings, checklists, XML, and similar format conventions are not validated workflow controls unless the source or active harness makes them behavior-bearing.
 
 ## Mandatory references
 
@@ -58,7 +58,7 @@ Every invocation uses this one review workflow:
 
 Each isolated reviewer reads the complete target artifact set and every mandatory reference. Initial reviewers do not receive another reviewer's grade, a draft rewrite, or the synthesis rationale. The synthesizer rereads source evidence and resolves conflicts without averaging or voting on local grades.
 
-The skill has no direct single-agent, audit-only, rewrite-only, audit-plus-rewrite, `mode=default`, `mode=strict`, or fallback-rewrite controls. It permits bounded structural rewrites only when cited evidence shows that the current structure causes instruction skipping, ambiguity, or ineffective behavior.
+The skill has no direct single-agent, audit-only, rewrite-only, audit-plus-rewrite, `mode=default`, `mode=strict`, or fallback-rewrite controls. It permits bounded structural rewrites only when cited source evidence shows that the current organization obscures a source-established workflow mechanic. A format-standardization claim requires local, reproducible evidence for the intended model and harness; a user-requested presentation change must not be presented as a validated reliability improvement.
 
 Each isolated reviewer returns exactly one valid JSON object containing its category, grade, state, source-cited evidence, rationale, recommendation, classification, and uncertainty. If a required reviewer cannot run or returns an invalid or incomplete JSON record, the skill may continue with explicit incomplete rubric coverage. The report names the unavailable reviewer, lost category coverage, and retry availability; it does not imply that the missing review was completed. By default, the skill shows review coverage, the audit, rewrite proposal, rewritten version, and completed report. `--quiet`, or an unambiguous request not to show the audit, findings, or report, suppresses only user-facing audit/report content. A request to be concise does not suppress reporting.
 
@@ -85,7 +85,7 @@ skills/accelint-skill-prose/
 If you update this skill:
 
 - keep `SKILL.md` `metadata.version` and `CHANGELOG.md` aligned;
-- update `evals/evals.json` when required-reviewer isolation, rubric coverage, synthesis, review-coverage handling, report visibility, recommendation requirements, or approval behavior changes;
+- update `evals/evals.json` when required-reviewer isolation, rubric coverage, synthesis, review-coverage handling, report visibility, recommendation requirements, serial-workflow evidence boundaries, or approval behavior changes;
 - preserve the four mandatory rubric categories, their evidence-based reporting, and the source-grounded conflict-resolution rule; and
 - prefer small, evidence-backed changes unless an approved structural rewrite is necessary.
 
