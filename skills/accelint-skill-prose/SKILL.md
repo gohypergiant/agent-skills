@@ -13,7 +13,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "0.11.0"
+  version: "0.13.0"
 ---
 
 # Skill Prose
@@ -180,13 +180,18 @@ Order the proposal by behavior risk: trigger coverage and scope, workflow and ap
 
 ### Step 4: Decide whether to ask, wait, inspect, default, or proceed
 
-Ask and wait only when an unresolved decision materially changes the output or a safety or approval boundary requires it. For operational expansions, see the `Decision criteria and examples` section in `references/user-question-waiting.md`.
+Ask and wait only when an unresolved decision materially changes the output or a safety or approval boundary requires it. For operational details and examples, see the `Decision criteria and examples` section in `references/user-question-waiting.md`.
 
-- **Inspect first** when repository or artifact evidence can resolve the uncertainty.
-- **Ask and wait** for blocking ambiguity, a required approval, or a material user preference. Explain why the answer matters, provide genuine options or a clear answer format, and name the branch-dependent work that is blocked.
-- **Proceed with a disclosed uncertainty** when it is non-blocking and does not select a policy or behavior-bearing branch.
-- **Use a safe default** only when the user or source explicitly defines it, or when the action is non-committing and reversible. Label the default and its evidence.
-- **Treat silence, timeout, dismissal, cancellation, tool permission, repository convention, and ambiguous answers as unresolved** unless the applicable workflow explicitly defines another result.
+- **Classify the input first.** Distinguish a semantic decision that selects a workflow branch from an approval that authorizes a bounded action and a tool permission that authorizes a tool invocation. A permission or approval never selects a semantic branch.
+- **Inspect first** when repository or artifact evidence can resolve the uncertainty. Treat repository evidence that only supports a recommendation as non-decisive unless the governing workflow explicitly gives that artifact decision authority.
+- **Define the semantic decision contract** before asking for a branch-dependent decision: a stable `decision_id`; a question and why it matters; finite, stable `accepted_values`; each value's effect and side-effect boundary; blocked work; and outcomes for invalid input, decline, cancellation or dismissal, timeout, and unavailable non-interactive input.
+- **Ask and hold** for blocking ambiguity or a material user preference. Provide genuine options and name each option's effect, or provide a clear answer format when the answer does not route a semantic branch. A displayed question is not a hold: until a valid decision record exists, do not dispatch, authorize, prepare, or perform branch-dependent work. Permit only explicitly named pre-gate work that cannot commit, prepare, or bias a branch.
+- **Validate and route** a semantic branch only after exactly one complete accepted value is associated with the applicable `decision_id` and the input has no cancellation, dismissal, timeout, partial selection, or unresolved transport failure. A required approval releases only its bounded action.
+- **Handle unresolved outcomes explicitly.** Ask again or report unresolved after invalid input; follow an explicitly defined decline branch or report unresolved after decline; and treat silence, cancellation, dismissal, timeout, ambiguous input, partial selection, unresolved transport failure, tool permission, repository convention, and URL-navigation consent as not selected. When no valid decision can be obtained in a non-interactive mode, produce `unresolved_noninteractive` and stop before branch-dependent mutation.
+- **Proceed with a disclosed uncertainty** only when it is non-blocking and does not select a policy or behavior-bearing branch.
+- **Use a safe default** only when the user or an authoritative source explicitly defines it, or when the action is non-committing and reversible. Label the default and its authority or reversible basis; never use it to silently select a policy-bearing branch.
+- **Resume safely.** For interrupted, remote, or time-limited work, re-present the same `decision_id` and decision contract. Do not infer a branch from earlier conversation.
+- **Keep ownership with the parent.** A discovery subagent may return evidence, confidence, recommended options, and unresolved questions, but must not select policy or begin branch-dependent work. When a workflow uses a native dialog, conversation, SDK callback, extension UI, MCP elicitation, or another adapter, use it only when the active mode can faithfully represent and normalize the decision contract.
 
 Do not ask fragmented questions or ask the user to repeat independently inspectable information. Group related decisions when they share one outcome.
 
@@ -220,7 +225,10 @@ Before output, confirm the following:
 - [ ] Mandatory language has not softened; optional guidance has not been elevated without approval.
 - [ ] Exact technical anchors and scope-defining examples are preserved.
 - [ ] A structural rewrite has source evidence, equivalence traceability, disclosure, and any required approval; a format preference is not presented as a validated compliance improvement without local evidence.
-- [ ] A user question was asked only when inspection could not resolve a material decision; blocked work did not begin while awaiting it.
+- [ ] A user question was asked only when inspection could not resolve a material decision; the semantic decision, approval, and tool permission remain distinct; and blocked work did not begin while awaiting a valid decision record.
+- [ ] Every branch-dependent decision defines a `decision_id`, accepted values, effects, blocked work, validation, and source-supported unresolved outcomes; only a validated value routes its branch.
+- [ ] Any default is source-authorized or non-committing and reversible, labeled with its authority or basis, and does not silently select a policy-bearing branch.
+- [ ] Non-interactive and resumed work preserves the required unresolved or re-prompt behavior before branch-dependent mutation.
 - [ ] The rewrite preserves source-required ordering without imposing one exact action order on otherwise independent or source-valid paths.
 - [ ] Every required path in this skill exists.
 - [ ] The default delivery shows the audit and report; any suppression meets the narrow report-visibility rule and omits only user-facing audit/report content.

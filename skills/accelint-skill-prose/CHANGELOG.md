@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.13.0] - 2026-09-09
+
+### Added
+- Added decision-contract audit coverage for branch-dependent semantic decisions: stable `decision_id`, finite accepted values, per-value effects, blocked work, validation, explicit unresolved outcomes, non-interactive handling, and safe resumption.
+- Added conditional audit coverage for interaction adapters and delegated discovery so semantic decision ownership remains with the parent agent and platform behavior is not assumed.
+
+### Changed
+- Reworked the user-question and waiting-behavior rubric around decision classification, inspection, decision contracts, explicit holds, validation and routing, unresolved outcomes, defaults, resumption, adapter boundaries, and subagent responsibilities.
+- Aligned `SKILL.md` Step 4 and its delivery checks with the portable decision-state policy: approvals and tool permissions remain separate from semantic branch selection, a displayed question is not a hold, and only a validated value may route a branch.
+- Corrected safe-default evaluation so an authoritative default or a non-committing, reversible action may support continuation; both must be labeled and neither may silently select a policy-bearing branch.
+- Updated decision-handling eval coverage for branch-decision contracts, explicit holds, invalid routing, non-interactive execution, and resumed sessions.
+
+### Version
+- Minor release at `0.13.0`.
+
+## [0.12.0] - 2026-09-09
+
+### Added
+- Added evidence-bounded serial-rubric guidance for avoidable redundant instruction density, format and instruction-placement claims, active progress trackers, untrusted-content authority limits, and locally tested decomposition with verified-result handoff.
+- Added a companion local-evaluation boundary for state-changing or high-consequence workflows. It distinguishes prose quality from target-state, trace, and repeated-run reliability; preserves source-valid independent and recovery paths; and prevents a one-run result from becoming a reliability claim.
+- Added remediation guidance for progress trackers, decomposition, instruction authority, invocation-aware external controls, format or placement claims, and state-changing workflow evaluation.
+
+### Changed
+- Clarified that a behavior-preserving structural rewrite may reorganize or re-express a workflow mechanic only when the mechanic remains equivalent and traceable. Any change to a dependency, gate, approval, validation point, completion condition, route, or behavior-bearing reference is approval-required.
+- Expanded local-evidence requirements from format standards to format and instruction-placement standards.
+- Aligned `SKILL.md` Step 4 with the user-question rubric by requiring the effect of each offered option while preserving the clear-answer-format path.
+- Updated `README.md` to distinguish prose-rubric grades from runtime reliability and to require eval maintenance for the new local-evaluation boundary.
+
+### Version
+- Minor release at `0.12.0`.
+
 ## [0.11.0] - 2026-09-09
 
 ### Added

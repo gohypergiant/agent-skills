@@ -2,69 +2,89 @@
 
 ## Scope and portability
 
-Audit how behavior-defining prose handles unresolved decisions, safety boundaries, user preferences, and independently discoverable information. A question, a tool permission, and a user approval are distinct events. Interaction mechanics vary by harness, so this rubric requires prose to name what is blocked rather than claiming that every harness will pause automatically.
+Audit how behavior-defining prose handles unresolved decisions, safety boundaries, user preferences, independently discoverable information, and branch-dependent work. A semantic decision, a user approval, and a tool permission are distinct inputs. Interaction mechanics vary by harness, so this rubric audits the decision state and explicitly blocked work; it does not claim that every harness will pause, render a dialog, or preserve a particular response shape.
+
+Apply the full decision-contract, hold, validation, outcome, default, and resumption criteria only when a decision selects a branch that materially changes later work. Do not require a stable decision contract for ordinary non-blocking clarification. When a workflow uses an adapter or delegates discovery, apply the conditional criteria for that mechanism or delegation.
 
 ## Audit objective
 
-Confirm that the target prose asks and waits only when a decision materially changes the output or a safety/approval boundary requires it, while allowing independently inspectable and non-branch-dependent work to continue.
+Confirm that target prose asks only when a decision materially changes the output or a safety or approval boundary requires it; resolves independently inspectable facts without asking; and defines a portable, validated decision state before branch-dependent work begins.
 
 ## Observable criteria
 
 Evaluate and cite the target text for each applicable criterion:
 
-1. **Decision classification** — Distinguish blocking ambiguity, including an unresolved branch or approval policy that controls later mandatory work; non-blocking ambiguity; permission or safety boundary; independently inspectable information; and material user preference.
-2. **Question necessity** — Check that prose does not ask the user to supply information that local inspection can establish and does not ask broad or fragmented questions when one focused decision is enough.
-3. **Actionable choice design** — For a required decision, check that the prose explains why the answer matters, provides genuine options or a clear answer format, and names each option's effect.
-4. **Waiting and blocked work** — Check that the prose says what branch-dependent work must not begin until an answer or approval is obtained, while allowing only safe preliminary inspection to continue.
-5. **Decision versus permission** — Check that tool permission, silence, timeout, dismissal, cancellation, repository evidence, and ambiguous answers are not treated as a user decision unless the workflow explicitly defines that outcome.
-6. **Safe defaults and continuation** — Check that a default is explicitly user- or source-defined, non-committing, and reversible; otherwise treat the branch as unresolved. Check that continuation does not silently select a policy-bearing path.
+1. **Decision classification and authority** — Distinguish blocking semantic ambiguity, including an unresolved branch that controls later mandatory work; non-blocking ambiguity; a permission or safety boundary; independently inspectable information; and a material user preference. Distinguish a semantic decision that selects a workflow branch from an approval that authorizes a bounded action and a tool permission that authorizes a tool invocation. Treat repository evidence that only supports a recommendation as non-decisive; treat an artifact as decision authority only when the governing workflow explicitly permits it to decide the question.
+2. **Question necessity and inspection** — Check that prose inspects locally discoverable facts before asking and does not ask the user to repeat them. Check that it groups related decisions with one shared outcome and does not ask broad or fragmented questions when one focused decision is enough.
+3. **Decision contract and actionable choice design** — For each branch-dependent semantic gate, check that prose defines a stable `decision_id`; a question that states what must be selected and why; finite, stable `accepted_values`; the effect and side-effect boundary for each value; blocked work; and outcomes for invalid input, decline, cancellation or dismissal, timeout, and non-interactive or unavailable input. Check that the workflow does not route on conversational summaries, ordinal references, partial selections, or custom text until an adapter maps the input to exactly one accepted value. For a material preference that does not select a branch, check that prose provides genuine options or a clear answer format and names the effect of each offered option.
+4. **Explicit hold and blocked work** — Check that prose distinguishes displaying or asking a question from holding the workflow. Until a valid decision record exists, target prose must prohibit dispatching, authorizing, preparing, or performing branch-dependent work. It may permit only specifically named pre-gate work that cannot commit, prepare, or bias a branch.
+5. **Validation and routing** — Check that prose defines `answered_valid(value)` or an equivalent validated state as the only state that can route a semantic branch. A valid record must associate one complete accepted value with the applicable `decision_id` and exclude cancellation, dismissal, timeout, partial selection, and unresolved transport failure. Check that a required approval releases only its bounded action and that a tool permission never selects a semantic branch.
+6. **Invalid, declined, interrupted, and unavailable outcomes** — Check that prose handles invalid input by asking again or reporting the decision unresolved; handles decline through an explicit decline branch or as unresolved; and treats cancellation, dismissal, timeout, silence, ambiguous input, partial selection, unresolved transport failure, URL-navigation consent, and unavailable non-interactive input as not selected. When no valid decision can be obtained in a non-interactive mode, target prose must produce `unresolved_noninteractive` and stop before branch-dependent mutation.
+7. **Safe defaults, continuation, and resumption** — Check that prose uses a default only when an authoritative governing source explicitly defines it or the action is non-committing and reversible. The prose must label the default and its authority or reversible basis, and must not use it to silently select a policy-bearing branch. Check that non-blocking uncertainty permits only work that does not choose a material branch. For interrupted, remote, or time-limited work, check that the workflow re-presents the same `decision_id` and contract instead of inferring a decision from earlier conversation.
+8. **Adapter and interaction-mechanism boundary** — When target prose specifies a native dialog, conversation, SDK callback, extension UI, MCP elicitation, or another adapter, check that it verifies availability in the active mode; represents the decision contract without changing its values or effects; normalizes host outcomes; validates before recording a decision; and enforces the hold. Do not require a particular interaction mechanism or infer a host capability that the target does not establish.
+9. **Parent and subagent responsibilities** — When the workflow delegates discovery or recommendation work, check that the parent owns the user-facing semantic decision and validates the decision record before routing. A discovery subagent may return evidence, confidence, recommended options, and unresolved questions, but must not select policy or begin branch-dependent work.
 
 ## Grade each category on the shared 0–5 scale
 
 - **0 — Critical behavioral defect:** explicit wording permits, requires, or obscures behavior likely to bypass user authority, safety, approval, or a material workflow choice.
-- **1 — Major defect:** a material ambiguity makes escalation, waiting, or branch selection unreliable.
-- **2 — Needs revision:** a concrete question or continuation weakness could select the wrong path, but the intended behavior is recoverable.
-- **3 — Adequate:** escalation and waiting behavior are mostly clear; only bounded, lower-risk improvements remain.
-- **4 — Strong:** decisions, options, blocked work, and safe continuation are precise and traceable; no material defect is found.
-- **5 — Exemplary:** strong plus explicit, proportionate, low-friction decision handling without redundant questions.
+- **1 — Major defect:** a material ambiguity makes decision validation, escalation, holding, or branch selection unreliable.
+- **2 — Needs revision:** a concrete decision-contract, continuation, or question-design weakness could select the wrong path, but the intended behavior is recoverable.
+- **3 — Adequate:** decision handling is mostly clear; only bounded, lower-risk improvements remain.
+- **4 — Strong:** decisions, contracts, options, validation, blocked work, and safe continuation are precise and traceable; no material defect is found.
+- **5 — Exemplary:** strong plus explicit, proportionate, low-friction decision handling without redundant questions or unsupported harness claims.
 
-This local scale prioritizes findings. It is not a validated measurement instrument and must not conceal unresolved evidence.
+This local scale prioritizes findings. It is not a validated measurement instrument and must not conceal unresolved evidence. A high grade does not prove that a model, tool, adapter, or harness enforces the written decision contract at runtime.
 
 ## Required finding record
 
 For this rubric, record:
 
 - grade and finding state: `finding`, `no issue found`, `unresolved`, or `not applicable with evidence`;
-- the exact target text and evidence that identifies the decision, preference, boundary, or inspectable fact;
-- the risk: unnecessary interruption, unauthorized branch selection, ambiguous approval, unsafe continuation, or redundant question;
-- a prioritized, actionable recommendation that names the specific question, option, approval, blocked-work statement, or default to change; explains the user authority, decision branch, or waiting behavior that must be preserved; and gives a rewrite action; and
+- the exact target text and evidence that identifies the decision, preference, boundary, inspectable fact, decision state, or delegated responsibility;
+- the risk: unnecessary interruption, unauthorized branch selection, ambiguous approval, invalid routing, unsafe continuation, redundant question, or unsupported harness claim;
+- a prioritized, actionable recommendation that names the specific decision contract, question, option, approval, validation rule, blocked-work statement, outcome, default, adapter responsibility, or delegation boundary to change; explains the user authority, decision branch, waiting behavior, or portability boundary that must be preserved; and gives a rewrite action; and
 - the change classification: wording-only, behavior-preserving structural rewrite, or approval-required change.
 
 ## Decision criteria and examples
 
 | Situation | Expected behavior |
 |---|---|
-| Blocking ambiguity | Ask a focused question, explain why it matters and the effects of the options, wait, and do not begin branch-dependent work. |
-| Non-blocking ambiguity | Proceed with safe work; disclose material uncertainty without inventing a policy. An unresolved branch destination or policy is non-blocking only when it does not select later mandatory work, a safety boundary, an approval, or another material outcome. |
-| Permission or safety boundary | Request the required approval before the bounded action. Tool permission alone does not choose a workflow branch. |
+| Blocking semantic ambiguity | Inspect first when an authoritative source can resolve the question. Otherwise define the decision contract, ask a focused question, explain why it matters, name each value's effect, hold branch-dependent work, validate one accepted value, and route only that branch. |
+| Non-blocking ambiguity | Proceed only with work that does not choose a material branch. Disclose material uncertainty without inventing a policy. An unresolved branch is non-blocking only when it does not control later mandatory work, a safety boundary, an approval, or another material outcome. |
+| Permission or safety boundary | Request the required approval before the bounded action. Do not treat the approval or a tool permission as a semantic branch value. |
 | Independently inspectable information | Inspect first. Do not ask the user to repeat a discoverable path, policy, or repository fact. |
-| Material user preference | Ask a focused question when audience, scope, mode, output shape, or policy choice changes the result. |
-| Explicit safe default | Label the source of the default and proceed only when it does not commit to a behavior-bearing branch. |
-| No answer, decline, cancel, timeout, or ambiguity | Treat the decision as unresolved. Continue only safe non-branch-dependent inspection; otherwise stop at the gate. |
+| Material user preference | Ask a focused question when audience, scope, mode, output shape, or policy choice materially changes the result. Use a clear answer format, or genuine options with the effect of each option. |
+| Incomplete semantic decision contract | Do not route. Define the missing `decision_id`, accepted values, effects, blocked work, validation rule, or outcome before asking or continuing branch-dependent work. |
+| Displayed question without a hold | Do not assume the question pauses work. State the actions that remain blocked until a valid decision record exists. |
+| Invalid or ambiguous input | Ask again or report unresolved. Do not route or infer a value from conversational plausibility, an ordinal reference, or partial input. |
+| Declined input | Follow an explicitly defined decline branch; otherwise treat the decision as unresolved. |
+| Cancel, dismissal, timeout, silence, partial selection, or unresolved transport failure | Treat the decision as unresolved. Continue only explicitly permitted pre-gate work that cannot commit, prepare, or bias a branch; otherwise stop at the gate. |
+| Non-interactive or unavailable input | Produce `unresolved_noninteractive` and stop before branch-dependent mutation unless a valid decision record already exists. |
+| Explicit safe default | Label the default and its authority or reversible basis. Use it only when an authoritative source explicitly defines it or the action is non-committing and reversible, and never to silently select a policy-bearing branch. |
+| Interrupted, remote, or time-limited session | Re-present the same `decision_id` and decision contract. Do not infer a branch from earlier conversation. |
+| Adapter or native interaction mechanism | Use it only when it can faithfully represent and normalize the decision contract in the active mode; otherwise use the conversation or report unresolved. |
+| Discovery subagent | Return evidence, confidence, recommended options, and unresolved questions. Do not select policy or start branch-dependent work. |
 
 ## Recommendation and approval rules
 
-- A **wording-only** recommendation may clarify an existing question, option, blocked-work statement, or source-defined default without changing authority or branch behavior.
-- A **behavior-preserving structural rewrite** may group related questions, move the decision before its dependent work, or separate safe preliminary work from blocked work when that preserves the existing decision semantics.
-- An **approval-required** change alters a user decision, approval boundary, safe default, trigger coverage, workflow order, guardrail strength, exact technical meaning, or repository-defined boundary.
-- Recommend **no change** when a question is already focused and actionable, when inspection resolves the uncertainty, or when a default would silently choose policy.
+- A **wording-only** recommendation may clarify an existing question, option, blocked-work statement, release condition, or source-defined default without changing authority, validation, branch behavior, or portability claims.
+- A **behavior-preserving structural rewrite** may group related questions, move an existing decision before its dependent work, separate a semantic decision from an approval boundary, or separate permitted pre-gate work from blocked work when every preserved decision state, branch, outcome, and release condition remains traceable.
+- An **approval-required** change adds or removes a required decision-contract element; changes accepted values, branch effects, validation, approval boundaries, default authority, blocked work, unresolved outcomes, trigger coverage, workflow order, guardrail strength, exact technical meaning, or a repository-defined boundary.
+- Recommend **no change** when inspection resolves the uncertainty, a question is already focused and validated, or a default would silently choose policy.
 
 ## Remediation guide
 
 | Finding | Concrete remediation |
 |---|---|
 | Question asks for discoverable facts | Name the inspection step and remove the redundant question. |
-| Related decisions are fragmented | Combine them into one focused choice with the effects of each option. |
-| Approval or wait point is unclear | State the exact action that is blocked and the event that releases it. |
+| Related decisions are fragmented | Combine them into one focused choice with stable values and the effect of each value. |
+| Semantic decision lacks a complete contract | Add the stable `decision_id`, finite accepted values, effects, blocked work, validation rule, and explicit invalid, decline, cancel or dismiss, timeout, and non-interactive outcomes. |
+| Approval or wait point is unclear | Separate the semantic decision from the approval. State the bounded action the approval releases and the branch-dependent actions the valid decision releases. |
+| Displayed question is treated as a hold | State that branch-dependent work must not dispatch, authorize, prepare, or perform until a valid decision record exists; list only explicitly permitted pre-gate work. |
 | Tool permission is treated as a decision | Separate permission to run the tool from the user-selected workflow branch. |
-| Safe default is unproven | Cite an explicit source-defined default or stop at the unresolved decision. |
+| Routing accepts an invalid or ambiguous result | Require exactly one complete accepted value associated with the `decision_id`; reject partial, cancelled, timed-out, dismissed, ambiguous, or transport-failed input. |
+| Decline, cancel, timeout, or non-interactive handling is missing | Define the decline branch or unresolved result; treat cancel, dismissal, timeout, and unavailable input as unresolved; use `unresolved_noninteractive` before branch-dependent mutation. |
+| Safe default is unproven or unlabeled | Cite an authoritative source-defined default, or show that the action is non-committing and reversible; label that authority or basis. Otherwise stop at the unresolved decision. |
+| Resume infers an earlier decision | Re-present the same `decision_id` and contract, then validate a new response before routing. |
+| Adapter assumes a host capability or changes decision meaning | Check active-mode availability, preserve values and effects, normalize outcomes, validate input, and enforce the hold. |
+| Discovery subagent selects policy | Return the choice to the parent; preserve the subagent's role as evidence and recommendation only. |

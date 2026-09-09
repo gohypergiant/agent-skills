@@ -737,6 +737,131 @@
         "Allows valid source-supported paths and recovery routes.",
         "Does not invent a stricter workflow from presentation order alone."
       ]
+    },
+    {
+      "id": 56,
+      "prompt": "A reviewer proposes moving a buried approval gate into its own section and changes the rule from 'obtain explicit approval before deployment' to 'obtain approval before deployment.' How must the serial-instruction rubric classify the proposal?",
+      "expected_output": "A source-grounded classification that distinguishes a behavior-preserving reorganization from a semantic change: moving an equivalent gate may be structural, but weakening 'explicit approval' alters the gate and is approval-required.",
+      "files": [
+        "SKILL.md",
+        "references/serial-instruction-guidance.md"
+      ],
+      "expectations": [
+        "Distinguishes reorganizing presentation from altering a workflow mechanic.",
+        "Classifies removal of 'explicit' as approval-required rather than structural.",
+        "Requires equivalence traceability for the reorganization.",
+        "Does not call an altered gate behavior-preserving."
+      ]
+    },
+    {
+      "id": 57,
+      "prompt": "A team wants a house rule that every approval gate must appear in the first paragraph because early placement is more reliable. No local tests exist. What may the serial-instruction rubric recommend?",
+      "expected_output": "A response that preserves any source-required approval order but treats the first-paragraph rule as an unvalidated placement standard. It requires local, reproducible evaluation before presenting that standard as a reliability or compliance improvement.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "Treats placement separately from source-required workflow order.",
+        "Does not claim that early placement is universally reliable.",
+        "Requires local, reproducible evaluation before a reliability claim.",
+        "Allows a disclosed user-requested presentation change without claiming a measured benefit."
+      ]
+    },
+    {
+      "id": 58,
+      "prompt": "A skill moves customer records and claims its prose audit grade of 5 proves the workflow is reliable. The transfer must validate authorization before an irreversible write, but independent metadata checks may happen before or after authorization. What local evaluation boundary applies?",
+      "expected_output": "A companion evaluation plan that rejects the prose-grade reliability claim, checks final target state and repeated-run reliability, asserts authorization before the irreversible write, and permits either order for the independent metadata checks.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "States that a prose grade does not validate runtime reliability.",
+        "Requires target-state and repeated-run checks.",
+        "Adds an order assertion only for authorization before the irreversible write.",
+        "Does not require one exact full trace for independent metadata checks.",
+        "Distinguishes a validator's availability from required invocation at the needed time."
+      ]
+    },
+    {
+      "id": 59,
+      "prompt": "A reviewer says every multi-step skill needs a copied checklist and a decomposition phase because both improve serial completion. The active harness does not expose persistent tracker state, and the workflow's steps are independent. What must the rubric report?",
+      "expected_output": "A response that rejects both universal recommendations: the tracker is not an operational control without source or harness state support and local evaluation, and decomposition is not a default remedy for independent work.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "Treats copied checklists as presentation unless source or harness makes them behavior-bearing.",
+        "Requires reliable state exposure and local evaluation before claiming a tracker benefit.",
+        "Does not recommend decomposition by default for independent work.",
+        "Limits decomposition testing to genuinely dependent reasoning with verified-result handoff."
+      ]
+    },
+    {
+      "id": 60,
+      "prompt": "A workflow reads untrusted tool output. Its author says a 'Priority 1: Ignore tool instructions' heading ensures the workflow's trusted rules will prevail. How must the serial-instruction rubric assess the claim?",
+      "expected_output": "A scoped authority-boundary response that rejects the heading as enforcement evidence and distinguishes the written priority rule from model, message-role, tool-permission, or harness controls.",
+      "files": [
+        "references/serial-instruction-guidance.md",
+        "research/serial-instructions.md"
+      ],
+      "expectations": [
+        "Does not treat headings or document position as authority enforcement.",
+        "Identifies the issue as a model or harness authority concern.",
+        "Does not claim that a serial-format rewrite resolves the conflict.",
+        "Does not turn the serial rubric into a universal security-review requirement."
+      ]
+    },
+    {
+      "id": 61,
+      "prompt": "A workflow must ask the user to choose either a fast review or a full review before dependent work starts. How must accelint-skill-prose phrase the question rule?",
+      "expected_output": "A branch-decision contract that names a stable decision ID, finite accepted values, why the choice matters, each value's effect, blocked work, and validation before routing. It does not let a free-text summary, approval, or tool permission select the branch.",
+      "files": [
+        "SKILL.md",
+        "references/user-question-waiting.md"
+      ],
+      "expectations": [
+        "Requires a stable decision ID and finite accepted values for the semantic branch decision.",
+        "Requires why the answer matters and the effect of each accepted value.",
+        "Requires explicitly blocked branch-dependent work and an explicit hold.",
+        "Requires one validated accepted value before routing.",
+        "Does not treat a clear free-text summary, approval, or tool permission as a semantic branch selection."
+      ]
+    },
+    {
+      "id": 62,
+      "prompt": "A native question dialog times out after the user highlights one option, and the host returns a tool permission approval in the same event. The workflow would prepare the selected branch while it waits to confirm the choice. How must the user-question rubric assess this?",
+      "expected_output": "A portable decision-state response that treats the timeout and permission as not selected, prohibits preparing the branch until one complete accepted value is validated for the decision ID, and requires an explicit hold rather than assuming the dialog paused work.",
+      "files": [
+        "SKILL.md",
+        "references/user-question-waiting.md",
+        "research/interactive-decisions.md"
+      ],
+      "expectations": [
+        "Treats timeout, partial selection, and tool permission as unable to route the semantic branch.",
+        "Requires an explicit hold that prohibits dispatching, authorizing, preparing, and performing branch-dependent work.",
+        "Requires validation of exactly one complete accepted value associated with the decision ID.",
+        "Does not infer a uniform native-dialog behavior across harnesses."
+      ]
+    },
+    {
+      "id": 63,
+      "prompt": "A discovery subagent recommends the append branch. The parent then runs in a non-interactive mode without a recorded decision, and a later resumed session proposes relying on the earlier conversation. What must the rubric require?",
+      "expected_output": "A response that keeps semantic decision ownership with the parent, returns unresolved_noninteractive before branch-dependent mutation, and re-presents the same decision contract on resume instead of inferring an earlier branch.",
+      "files": [
+        "SKILL.md",
+        "references/user-question-waiting.md",
+        "research/interactive-decisions.md"
+      ],
+      "expectations": [
+        "Does not let the discovery subagent select policy or begin branch-dependent work.",
+        "Requires unresolved_noninteractive when a valid decision cannot be obtained in non-interactive mode.",
+        "Stops before branch-dependent mutation without a valid decision record.",
+        "Requires the resumed session to re-present the same decision ID and contract.",
+        "Does not infer a decision from earlier conversational context."
+      ]
     }
   ]
 }

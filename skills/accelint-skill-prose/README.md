@@ -29,7 +29,7 @@ Every applicable audit evaluates these mandatory categories:
 3. STE-compatible clarity and usability; and
 4. user-question and waiting behavior.
 
-The skill preserves trigger coverage, workflow and approval semantics, guardrail strength, and exact technical anchors before it pursues clarity or brevity. It can recommend a bounded structural rewrite when source evidence shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading; changes that alter protected behavior still require approval. Numbering, headings, checklists, XML, and similar format conventions are not validated workflow controls unless the source or active harness makes them behavior-bearing.
+The skill preserves trigger coverage, workflow and approval semantics, guardrail strength, and exact technical anchors before it pursues clarity or brevity. It can recommend a bounded structural rewrite when source evidence shows that the current organization obscures a source-established prerequisite, gate, branch route, return route, or conflicting control-flow reading; changes that alter protected behavior still require approval. Numbering, headings, checklists, XML, and similar format or placement conventions are not validated workflow controls unless the source or active harness makes them behavior-bearing. A prose grade does not validate runtime tool behavior or repeated-run reliability; state-changing workflow evaluation uses the serial rubric's companion local-evaluation boundary.
 
 ## Mandatory references
 
@@ -85,7 +85,7 @@ skills/accelint-skill-prose/
 If you update this skill:
 
 - keep `SKILL.md` `metadata.version` and `CHANGELOG.md` aligned;
-- update `evals/evals.json` when required-reviewer isolation, rubric coverage, synthesis, review-coverage handling, report visibility, recommendation requirements, serial-workflow evidence boundaries, or approval behavior changes;
+- update `evals/evals.json` when required-reviewer isolation, rubric coverage, synthesis, review-coverage handling, report visibility, recommendation requirements, serial-workflow evidence boundaries, local-evaluation boundaries, or approval behavior changes;
 - preserve the four mandatory rubric categories, their evidence-based reporting, and the source-grounded conflict-resolution rule; and
 - prefer small, evidence-backed changes unless an approved structural rewrite is necessary.
 
