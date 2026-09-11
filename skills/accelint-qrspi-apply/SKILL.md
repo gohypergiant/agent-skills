@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.7.0"
+  version: "1.7.1"
 ---
 
 # Accelint QRSPI Apply
@@ -261,6 +261,16 @@ For each level in the dependency graph (starting from level 0):
      Instructions:
      - Work ONLY on tasks in Slice N: [list slice N tasks/sections]
      - Do NOT implement tasks from other slices (Slices X, Y, Z will be handled separately)
+     - Before you add or change code, apply this simplicity ladder and stop at the first rung that holds:
+       1. Does this need to exist at all? Speculative need = skip it, say so in one line. (YAGNI)
+       2. Already in this codebase? A helper, util, type, or pattern that already lives here → reuse it. Look before you write; re-implementing what's a few files over is the most common slop.
+       3. Stdlib does it? Use it.
+       4. Non-UI code: does a native platform or language feature cover it? Use it before a library.
+       5. UI code: if this codebase already has a design-system or UI-library primitive for it, use that before raw native elements or hand-rolled UI behavior.
+       6. Already-installed dependency solves it outside the above cases? Use it. Never add a new one for what a few lines can do.
+       7. Can it be one line? One line.
+       8. Only then: the minimum code that works.
+     - Never simplify away trust-boundary input validation, error handling that prevents data loss, security checks, accessibility basics, or other explicit project constraints — the minimalism heuristics above never override this.
      - Apply the code patterns, conventions, and constraints from <project_context>
      - Follow the normal OpenSpec apply workflow:
        * OpenSpec will load context files (proposal, design, specs, tasks)
@@ -305,6 +315,16 @@ For each level with multiple independent slices:
    Instructions:
    - Work ONLY on tasks in Slice N: [list slice N tasks/sections]
    - Do NOT implement tasks from other slices - they are being handled in parallel
+   - Before you add or change code, apply this simplicity ladder and stop at the first rung that holds:
+     1. Does this need to exist at all? Speculative need = skip it, say so in one line. (YAGNI)
+     2. Already in this codebase? A helper, util, type, or pattern that already lives here → reuse it. Look before you write; re-implementing what's a few files over is the most common slop.
+     3. Stdlib does it? Use it.
+     4. Non-UI code: does a native platform or language feature cover it? Use it before a library.
+     5. UI code: if this codebase already has a design-system or UI-library primitive for it, use that before raw native elements or hand-rolled UI behavior.
+     6. Already-installed dependency solves it outside the above cases? Use it. Never add a new one for what a few lines can do.
+     7. Can it be one line? One line.
+     8. Only then: the minimum code that works.
+   - Never simplify away trust-boundary input validation, error handling that prevents data loss, security checks, accessibility basics, or other explicit project constraints — the minimalism heuristics above never override this.
    - Apply the code patterns, conventions, and constraints from <project_context>
    - Follow the normal OpenSpec apply workflow:
        * OpenSpec will load context files (proposal, design, specs, tasks)
@@ -391,6 +411,13 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    - AGENTS.md (if exists)
    - README.md (if exists)
 
+   **Precedence rules for this phase**:
+   - If the corresponding Accelint documentation skill is installed, you MUST use that skill. Do NOT manually edit the document yourself.
+   - Manual fallback is allowed ONLY when the corresponding skill is unavailable.
+   - If an invoked documentation skill returns a preview and asks for confirmation before writing, that preview/confirmation gate is MANDATORY. Present it to the human and wait for explicit approval. Do NOT bypass the gate by editing the file manually.
+   - The "do not pause between documents" rule means: once one document is fully resolved (skipped, approved-and-written via its skill, or manually updated because its skill is unavailable), continue immediately to the next document. It does NOT override a child skill's required preview/confirmation step.
+   - Never choose manual fallback just because it seems faster or because the child skill asked for confirmation.
+
    For each document in the list above, follow these steps:
 
    **Step 3a: Check if update is needed first**
@@ -405,9 +432,10 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For OpenSpec config** (`<repo-root>/openspec/config.yaml`):
    - Check if `accelint-onboard-openspec` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
-     2. For each decision, rephrase as a plain factual statement (not an instruction)
-     3. Invoke the skill with findings:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `openspec/config.yaml` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
      ```text
      Invoke the accelint-onboard-openspec skill.
 
@@ -436,9 +464,10 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For ARCHITECTURE.md** (`<repo-root>/ARCHITECTURE.md`) — IF it exists:
    - Check if `accelint-architecture-doc` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
-     2. For each decision, rephrase as a plain factual statement (not an instruction)
-     3. Invoke the skill with findings:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `ARCHITECTURE.md` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
      ```text
      Invoke the accelint-architecture-doc skill.
 
@@ -468,9 +497,10 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
    - Check if `accelint-onboard-agents` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
-     2. For each decision, rephrase as a plain factual statement (not an instruction)
-     3. Invoke the skill with findings:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `AGENTS.md` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
      ```text
      Invoke the accelint-onboard-agents skill.
 
@@ -499,9 +529,10 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For README.md** (`<repo-root>/README.md`) — IF it exists:
    - Check if `accelint-readme-writer` skill is installed
    - If skill is available:
-     1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
-     2. For each decision, rephrase as a plain factual statement (not an instruction)
-     3. Invoke the skill with findings:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `README.md` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
      ```text
      Invoke the accelint-readme-writer skill.
 
@@ -537,7 +568,7 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 - Document doesn't exist
 - Change content doesn't introduce anything requiring updates to that document
 
-**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to the next step (Record Completion Timestamp).
+**Important**: Process all 4 documents sequentially, one after another, without stopping after the first one. Do not invent extra pauses between documents. The ONLY legitimate waits in this phase are: (a) a child documentation skill's required preview/confirmation gate, or (b) an error that needs user input. After a document is skipped, approved-and-written via its skill, or manually updated because its skill is unavailable, immediately continue to the next document. After finishing all 4 documents, immediately proceed to the next step (Record Completion Timestamp).
 
 31. After checking all 4 documents, run `git status` to show which docs were modified
 
@@ -561,10 +592,10 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      📝 Living documents updated
 
      Updated documents:
-     - openspec/config.yaml [via accelint-onboard-openspec / manually / skipped]
-     - ARCHITECTURE.md [via accelint-architecture-doc / manually / skipped]
-     - AGENTS.md [via accelint-onboard-agents / manually / skipped]
-     - README.md [via accelint-readme-writer / manually / skipped]
+     - openspec/config.yaml [via accelint-onboard-openspec / manual fallback because skill unavailable / skipped]
+     - ARCHITECTURE.md [via accelint-architecture-doc / manual fallback because skill unavailable / skipped]
+     - AGENTS.md [via accelint-onboard-agents / manual fallback because skill unavailable / skipped]
+     - README.md [via accelint-readme-writer / manual fallback because skill unavailable / skipped]
 
      These changes ensure documentation stays synchronized with implementation.
 
@@ -711,7 +742,7 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 ## NEVER Do This
 
-**NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 28-32) complete successfully, immediately proceed to recording the completion timestamp (Steps 33-35), then to verification (Step 36). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), or (3) the user-controlled context management decision points between dependency levels (Step 25). Do not treat completion of living document updates or timestamp recording as signals to stop and wait — they are signals to continue to the next step.
+**NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 28-32) are fully resolved, immediately proceed to recording the completion timestamp (Steps 33-35), then to verification (Step 36). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), (3) the user-controlled context management decision points between dependency levels (Step 25), or (4) a child documentation skill's own mandatory preview/confirmation gate. That child-skill gate takes precedence over this parent rule. Do not bypass it by editing the document manually. Once the user approves or declines the preview, continue the parent workflow immediately.
 
 **NEVER implement tasks directly** — Always delegate to `openspec-apply-change` skill via sub-agents. The opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
 
@@ -722,6 +753,8 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 **NEVER skip dependency levels** — If Slice A blocks Slice B, Slice B cannot start until Slice A completes successfully. Do not spawn dependent slices before their blockers finish, even if it would speed up implementation. The dependency graph in the Parallelization Strategy must be respected.
 
 **NEVER skip living document updates** — Living document updates (Steps 28-32) keep ARCHITECTURE.md, AGENTS.md, README.md, and config.yaml synchronized with implementation. These steps run BEFORE the completion timestamp and verification so the verification step can check documentation completeness. Do not skip to timestamp recording or verification without updating living documents first.
+
+**NEVER manually edit a living document when its associated Accelint skill is installed** — If `accelint-onboard-openspec`, `accelint-architecture-doc`, `accelint-onboard-agents`, or `accelint-readme-writer` exists for the target document, you MUST invoke that skill and follow its workflow, including any preview/confirmation gate. Manual edits are fallback-only when the corresponding skill is unavailable.
 
 ## Configuration Requirements
 

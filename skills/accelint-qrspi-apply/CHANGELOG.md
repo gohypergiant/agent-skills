@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.7.1] - 2026-09-09
+
+### Changed
+- Added ponytail's simplicity ladder to both Slice sub-agent prompt templates so each slice explicitly prefers the least invasive implementation that satisfies the task
+- Instructs slice agents to stop at the first rung that holds: skip speculative work, reuse nearby code, prefer stdlib and native platform features, avoid new dependencies, and only then write the minimum code that works
+- Added a safety rider to both Slice sub-agent prompt templates clarifying that the simplicity ladder never overrides trust-boundary input validation, data-loss-preventing error handling, security checks, accessibility basics, or other explicit project constraints
+- Hardened the living-document phase so installed documentation skills are now mandatory, not advisory
+  - Added an explicit precedence block at the start of Step 30
+  - States that if the corresponding Accelint documentation skill exists, the parent skill MUST use it and MUST NOT manually edit the document
+  - Clarifies that manual fallback is allowed only when the corresponding skill is unavailable
+- Clarified child-skill preview/confirmation handling during living-document updates
+  - Added explicit language that a child documentation skill's preview/confirmation gate is mandatory and takes precedence over the parent skill's "do not pause" rule
+  - Instructs the parent skill to wait for approval rather than bypassing the child skill by manually editing files
+- Tightened all four document-specific branches (`openspec/config.yaml`, `ARCHITECTURE.md`, `AGENTS.md`, `README.md`)
+  - Each "skill is available" branch now states that the child skill owns discovery, preview, confirmation, and write steps for that document
+  - Explicitly forbids manual edits while the corresponding child skill is available
+- Reworded the phase summary and hard-stop language so "manual" now reads as `manual fallback because skill unavailable`
+  - Reduces the chance that the model treats manual editing as an equally-valid happy path when the skill exists
+
+### Rationale
+- Keeps parallel slice implementations narrowly scoped and reduces unnecessary helpers, abstractions, and dependencies during apply
+- Reinforces "change the bare minimum" at the exact point where the implementation work is delegated
+- Keeps the minimal-change guidance aligned with the repository's existing safety boundary: prefer the smallest implementation that works, but never by stripping away required safeguards
+- The previous prose made the documentation skills feel optional because every branch still described a fully-specified manual path
+- The previous "do not pause between documents" rule conflicted with child skills like `accelint-architecture-doc` and `accelint-readme-writer`, which correctly require preview and confirmation before writing
+- When those rules conflict, the model tends to satisfy the parent skill's no-pause rule by skipping the child-skill workflow and editing files directly
+- Making skill usage mandatory, preview gates authoritative, and manual edits fallback-only removes that ambiguity
+
+### Version
+- Bumped from 1.7.0 → 1.7.1
+
 ## [1.7.0] - 2026-08-25
 
 ### Added
