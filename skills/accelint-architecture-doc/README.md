@@ -160,9 +160,11 @@ Refresh ARCHITECTURE.md. Findings: - Auth migrated from sessions to JWT. - Worke
 
 The skill includes 11 eval scenarios in `evals/evals.json` covering create, refresh, restructure, monorepo, OpenSpec-aware, and agent-doc integration workflows.
 
+The description-selection pilot adds 17 cases in `evals/discovery.json`. See [the pilot procedure and results](evals/discovery.md) for the comparison method and remaining Claude validation.
+
 ## Version
 
-Current version: 1.2.2
+Current version: 1.3.0
 
 See `CHANGELOG.md` for release history.
 
