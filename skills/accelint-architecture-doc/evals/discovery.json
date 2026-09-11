@@ -1,0 +1,91 @@
+{
+  "skill_name": "accelint-architecture-doc",
+  "evaluation_type": "description-selection",
+  "cases": [
+    {
+      "id": "create",
+      "prompt": "Please create an ARCHITECTURE.md for this Express and Postgres app.",
+      "should_select": true
+    },
+    {
+      "id": "refresh",
+      "prompt": "Refresh ARCHITECTURE.md to reflect our Redis migration.",
+      "should_select": true
+    },
+    {
+      "id": "restructure",
+      "prompt": "Restructure our architecture document without losing its existing content.",
+      "should_select": true
+    },
+    {
+      "id": "unnamed_doc",
+      "prompt": "Document how this system is organized so engineers have a durable technical overview.",
+      "should_select": true
+    },
+    {
+      "id": "map_doc",
+      "prompt": "Map out how this app is put together and save it as onboarding documentation.",
+      "should_select": true
+    },
+    {
+      "id": "findings",
+      "prompt": "Turn these codebase findings into architecture documentation for agents.",
+      "should_select": true
+    },
+    {
+      "id": "advice",
+      "prompt": "Should our next service use a monolith or microservices? I only want advice.",
+      "should_select": false
+    },
+    {
+      "id": "implementation",
+      "prompt": "Plan the implementation of Redis caching. Do not write architecture documentation.",
+      "should_select": false
+    },
+    {
+      "id": "diagram",
+      "prompt": "Brainstorm a system diagram in chat. Do not update or create a document.",
+      "should_select": false
+    },
+    {
+      "id": "doc_diagram",
+      "prompt": "Update ARCHITECTURE.md, including brainstorming a clearer system diagram for that document.",
+      "should_select": true
+    },
+    {
+      "id": "doc_planning",
+      "prompt": "Update our architecture document with the implementation plan for the service split.",
+      "should_select": true
+    },
+    {
+      "id": "doc_advice",
+      "prompt": "Review our service-boundary options and incorporate your recommendation into ARCHITECTURE.md.",
+      "should_select": true
+    },
+    {
+      "id": "fix",
+      "prompt": "Fix the Redis connection retry bug in the API.",
+      "should_select": false
+    },
+    {
+      "id": "typo",
+      "prompt": "Fix the spelling in the README installation command description.",
+      "should_select": false
+    },
+    {
+      "id": "original_document",
+      "prompt": "Document this system.",
+      "should_select": true
+    },
+    {
+      "id": "original_overview",
+      "prompt": "Give me a technical overview of this repo.",
+      "should_select": true
+    },
+    {
+      "id": "original_map",
+      "prompt": "Map out how this app is put together.",
+      "should_select": true
+    }
+  ]
+}
