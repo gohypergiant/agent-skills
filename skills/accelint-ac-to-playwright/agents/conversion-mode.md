@@ -115,7 +115,7 @@ Would you like help understanding any of the issues, or should I re-assess after
     - The `press` action only accepts single unmodified keys and should never receive combination syntax like `Shift+g`
 - Assertions: 
   - If navigation is triggered, add `expectUrl` using the Start URL mapping.
-  - For visibility changes (e.g., visible/appears/shows/hides and similar wording), EVERY target mentioned with a visibility change MUST have BOTH visibility assertions:
+  - For visibility changes (words: visible, appears, shows, see, seen, hides, disappears, hidden), EVERY target mentioned with a visibility change MUST have BOTH visibility assertions:
     - For "appears/shows/visible": add `expectNotVisible` for that target immediately before the action that causes the change, then `expectVisible` for that same target immediately after
     - For "disappears/hides": add `expectVisible` for that target immediately before the action that causes the change, then `expectNotVisible` for that same target immediately after
     - When multiple targets change visibility from the same action, add ALL the "before" assertions first, then the action, then ALL the "after" assertions
