@@ -2,9 +2,9 @@
 
 ## Assessment Workflow
 
-Do not attempt inline validation — validation subagents check against schemas and controlled vocabulary lists that you don't have loaded. You must spawn the validation subagents below as you work through each section.
+Do not attempt inline validation — validation subagents check against schemas and controlled vocabulary lists that you don't have loaded. You MUST spawn the validation subagents below as you work through each section.
 
-You must execute this workflow, even if you're in plan mode. You are not allowed to write a plan file, even if you're in plan mode.
+You MUST execute this workflow, even if you're in plan mode. You are not allowed to write a plan file, even if you're in plan mode.
 
 1. **Prepare for the task**:
   - Read `references/acceptance-criteria.md` and `references/test-hooks.md`. These, and any user-provided AC files, are the ONLY files you may read. NEVER read any other files. 
@@ -21,7 +21,7 @@ You must execute this workflow, even if you're in plan mode. You are not allowed
   - **Phase A: Extract data** from AC per the categories below
   - **Phase B: Validate extracted data** by spawning validation subagents (all can run in parallel)
    
-  You must complete both phases. Extraction alone is insufficient — validation subagents check against schemas you don't have access to.
+  You MUST complete both phases. Extraction alone is insufficient — validation subagents check against schemas you don't have access to.
 
   - **Structure & Format**:
     - There is no Phase A work for this section.

@@ -2,7 +2,7 @@
 
 ## Conversion Workflow
 
-You must execute this workflow, even if you're in plan mode. You are not allowed to write a plan file, even if you're in plan mode.
+You MUST execute this workflow, even if you're in plan mode. You are not allowed to write a plan file, even if you're in plan mode.
 
 1. **Run Assessment mode**:
   - Load `agents/assessment-mode.md` and execute its workflow.
@@ -40,7 +40,7 @@ You must execute this workflow, even if you're in plan mode. You are not allowed
 
 ## Stopping Protocol: When Assessment Fails in Conversion Mode
 
-**When to use:** Conversion workflow requires assessment-first. If assessment reports "❌ AC are not conversion-ready", you must stop and communicate clearly why conversion cannot proceed.
+**When to use:** Conversion workflow requires assessment-first. If assessment reports "❌ AC are not conversion-ready", you MUST stop and communicate clearly why conversion cannot proceed.
 
 **What NOT to do:**
 - Don't silently stop your response
@@ -183,4 +183,4 @@ JSON plan (relevant section):
 - **NEVER reuse existing plans or tests** — this has caused problems in the past with changes being lost, so always regenerate all steps from AC source to ensure accuracy
 - **NEVER write a plan file without validating first** — validation catches structural errors; writing invalid plans creates broken artifacts requiring manual cleanup
 - **NEVER process multiple steps of one file in parallel** — complete the full pipeline (AC → plan → test → summary) for each file before moving to the next to avoid partial artifacts and state confusion
-- **NEVER take shortcuts** — agents have gone off the rails when trying to define their own shortcuts, so when triggered you must always run the full workflow.
+- **NEVER take shortcuts** — agents have gone off the rails when trying to define their own shortcuts, so when triggered you MUST always run the full workflow.
