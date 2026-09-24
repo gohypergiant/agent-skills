@@ -368,7 +368,11 @@ After all questions answered:
 ## NEVER Do
 
 - **NEVER read `acceptance-criteria.md` and `test-hooks.md` with range limits** — always read them completely from start to finish.
-- **NEVER read any files other than `acceptance-criteria.md`, `test-hooks.md`, and any user-provided AC files** - for context-management purposes, you spawn subagents to efficiently do tasks. If you read these files you are wasting tokens.
-- **NEVER generate artifacts in assessment mode** — when the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
-- **NEVER report AC as conversion-ready when issues exist** — even one blocking issue means "❌ AC are not conversion-ready". False positives (over-flagging) are better than false negatives (missing issues).
-- **NEVER assume targets or values** — if AC says "click the button" without identifying which button, flag it as a missing target issue rather than assuming. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
+- **NEVER read any files other than `acceptance-criteria.md`, `test-hooks.md`, and any user-provided AC files**
+  - **Why:** For context-management purposes, you spawn subagents to efficiently do tasks. Reading these files wastes tokens.
+- **NEVER generate artifacts in assessment mode**
+  - **Why:** When the user asks to review/evaluate/assess AC, analyze the AC text only and provide the formatted report. Do not generate JSON plans or test files. Do not assume they want full conversion.
+- **NEVER report AC as conversion-ready when issues exist**
+  - **Why:** Even one blocking issue means "❌ AC are not conversion-ready". False positives (over-flagging) are better than false negatives (missing issues).
+- **NEVER assume targets or values**
+  - **Why:** If AC says "click the button" without identifying which button, flag it as a missing target issue rather than assuming. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.

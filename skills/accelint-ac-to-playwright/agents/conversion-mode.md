@@ -169,18 +169,32 @@ JSON plan (relevant section):
 ## NEVER Do
 
 - **NEVER read `acceptance-criteria.md` and `test-hooks.md` with range limits** — always read them completely from start to finish.
-- **NEVER generate targets without loading test-hooks.md first** — test-hooks.md defines the controlled vocabulary for the area.component.intent pattern and valid area/component keywords. Skipping it causes reversed target patterns (intent.component.area instead of area.component.intent) and invalid keyword usage that fails validation.
-- **NEVER use bare string values with selectOption** — Playwright's `selectOption()` matches HTML `value` attributes by default, not visible text. AC writers specify visible option text (e.g., "Premium Plan"), so always use `{ label: "text" }` syntax: `.selectOption({ label: "Premium Plan" })`. Using bare strings (`.selectOption("Premium Plan")`) causes silent mismatches where tests pass locally but fail in production because the value attribute differs from display text.
-- **NEVER use `goto` action in steps** — tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.
-- **NEVER use `doubleClick` for element interactions** — `doubleClick` is only for coordinate-based double-clicks (x,y positions). For double-clicking elements, use the element-based `click` action twice in sequence. Only use `doubleClick` when AC explicitly specifies coordinates.
-- **NEVER use `mouseClick` for element interactions** — `mouseClick` is only for coordinate-based clicks (x,y positions). For clicking elements, always use `click` with test IDs. Only use `mouseClick` when AC explicitly specifies coordinates.
-- **NEVER use `mouseMove` without a follow-up action** — `mouseMove` positions the cursor but doesn't interact with anything. It should only be used before actions like `mouseDown`, `mouseUp`, `mouseClick`, or when AC explicitly requires moving to specific coordinates before other mouse operations.
-- **NEVER use `mouseDown` or `mouseUp` without `mouseMove` first** — these actions press/release buttons at the current cursor position. Always use `mouseMove` to position the cursor before `mouseDown`/`mouseUp`, otherwise the position is unpredictable.
-- **NEVER invent assertions** — only add `expectText`, `expectVisible`, `expectNotVisible` when AC explicitly states expected outcomes (exception: `expectUrl` for navigation, visibility pairs for show/hide actions)
+- **NEVER generate targets without loading test-hooks.md first**
+  - **Why:** test-hooks.md defines the controlled vocabulary for the area.component.intent pattern and valid area/component keywords. Skipping it causes reversed target patterns (intent.component.area instead of area.component.intent) and invalid keyword usage that fails validation.
+- **NEVER use bare string values with selectOption**
+  - **Why:** Playwright's `selectOption()` matches HTML `value` attributes by default, not visible text. AC writers specify visible option text (e.g., "Premium Plan"), so always use `{ label: "text" }` syntax: `.selectOption({ label: "Premium Plan" })`. Using bare strings (`.selectOption("Premium Plan")`) causes silent mismatches where tests pass locally but fail in production because the value attribute differs from display text.
+- **NEVER use `goto` action in steps**
+  - **Why:** Tests start at `startUrl`, navigation happens via clicks or fills that trigger page changes. Using goto mid-test breaks Playwright's navigation lifecycle and causes race conditions where assertions run before the page is ready, leading to flaky tests that pass locally but fail in CI.
+- **NEVER use `doubleClick` for element interactions**
+  - **Why:** `doubleClick` is only for coordinate-based double-clicks (x,y positions). For double-clicking elements, use the element-based `click` action twice in sequence. Only use `doubleClick` when AC explicitly specifies coordinates.
+- **NEVER use `mouseClick` for element interactions**
+  - **Why:** `mouseClick` is only for coordinate-based clicks (x,y positions). For clicking elements, always use `click` with test IDs. Only use `mouseClick` when AC explicitly specifies coordinates.
+- **NEVER use `mouseMove` without a follow-up action**
+  - **Why:** `mouseMove` positions the cursor but doesn't interact with anything. It should only be used before actions like `mouseDown`, `mouseUp`, `mouseClick`, or when AC explicitly requires moving to specific coordinates before other mouse operations.
+- **NEVER use `mouseDown` or `mouseUp` without `mouseMove` first**
+  - **Why:** These actions press/release buttons at the current cursor position. Always use `mouseMove` to position the cursor before `mouseDown`/`mouseUp`, otherwise the position is unpredictable.
+- **NEVER invent assertions**
+  - **Why:** Only add `expectText`, `expectVisible`, `expectNotVisible` when AC explicitly states expected outcomes (exception: `expectUrl` for navigation, visibility pairs for show/hide actions).
 - **NEVER store absolute file paths in source metadata** — the expected convention is to use repo-relative paths for git repos, basename only for external files
-- **NEVER assume targets or values** — if AC says "click the button" without identifying which button, ask for clarification rather than guessing. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
-- **NEVER skip validation** — even if JSON looks correct, always run `npx validate-plan` before writing files to catch errors and reduce incorrect artifact cleanup
-- **NEVER reuse existing plans or tests** — this has caused problems in the past with changes being lost, so always regenerate all steps from AC source to ensure accuracy
-- **NEVER write a plan file without validating first** — validation catches structural errors; writing invalid plans creates broken artifacts requiring manual cleanup
-- **NEVER process multiple steps of one file in parallel** — complete the full pipeline (AC → plan → test → summary) for each file before moving to the next to avoid partial artifacts and state confusion
-- **NEVER take shortcuts** — agents have gone off the rails when trying to define their own shortcuts, so when triggered you MUST always run the full workflow.
+- **NEVER assume targets or values**
+  - **Why:** If AC says "click the button" without identifying which button, ask for clarification rather than guessing. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
+- **NEVER skip validation**
+  - **Why:** Even if JSON looks correct, always run `npx validate-plan` before writing files to catch errors and reduce incorrect artifact cleanup.
+- **NEVER reuse existing plans or tests**
+  - **Why:** This has caused problems in the past with changes being lost, so always regenerate all steps from AC source to ensure accuracy.
+- **NEVER write a plan file without validating first**
+  - **Why:** Validation catches structural errors; writing invalid plans creates broken artifacts requiring manual cleanup.
+- **NEVER process multiple steps of one file in parallel**
+  - **Why:** Complete the full pipeline (AC → plan → test → summary) for each file before moving to the next to avoid partial artifacts and state confusion.
+- **NEVER take shortcuts**
+  - **Why:** Agents have gone off the rails when trying to define their own shortcuts, so when triggered you MUST always run the full workflow.
