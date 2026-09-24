@@ -1,6 +1,6 @@
 # Acceptance criteria guidelines
 
-**When to load this file:** Load when generating JSON plans from AC or running assessment mode. This file contains the authoritative AC writing rules and mappings that inform both assessment and conversion.
+This file contains the authoritative AC writing rules and mappings that inform both assessment and conversion.
 
 ## File structure
 
