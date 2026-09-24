@@ -81,7 +81,7 @@ You must execute this workflow, even if you're in plan mode. You are not allowed
 
 ### Bullet Format Validation Template
 
-When spawning, use the Agent tool to spawn a subagent with this prompt:
+Execute the following prompt with a subagent:
 
 ```
 Load agents/validate-bullet-format.md.
@@ -93,7 +93,7 @@ Validate this markdown file's bullet format. Check that AC lines start with '- '
 
 ### Gherkin Structure Validation Template
 
-When spawning, use the Agent tool to spawn a subagent with this prompt:
+Execute the following prompt with a subagent:
 
 ```
 Load agents/validate-gherkin-structure.md.
@@ -105,7 +105,7 @@ Validate this Gherkin file's structure against all Gherkin requirements. Check F
 
 ### Target Validation Template
 
-When spawning, use the Agent tool to spawn a subagent with this prompt:
+Execute the following prompt with a subagent:
 
 ```
 Load agents/validate-targets.md.
@@ -117,7 +117,7 @@ Validate these extracted targets using the target-validator.ts script. Return se
 
 ### Precondition Validation Template
 
-When spawning, use the Agent tool to spawn a subagent with this prompt:
+Execute the following prompt with a subagent:
 
 ```
 Load agents/validate-preconditions.md.
@@ -129,7 +129,7 @@ Validate all Given step preconditions in this AC file. Check that they follow th
 
 ### Action Validation Template
 
-When spawning, use the Agent tool to spawn a subagent with this prompt:
+Execute the following prompt with a subagent:
 
 ```
 Load agents/validate-actions.md.
@@ -141,7 +141,7 @@ Validate all actions in this AC file. Check that action verbs are recognized and
 
 ### Assertion Validation Template
 
-When spawning, use the Agent tool to spawn a subagent with this prompt:
+Execute the following prompt with a subagent:
 
 ```
 Load agents/validate-assertions.md.
