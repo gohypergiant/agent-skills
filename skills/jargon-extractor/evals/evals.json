@@ -1,0 +1,90 @@
+{
+  "skill_name": "jargon-extractor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Extract the jargon from evals/files/eval1-architecture.md and evals/files/eval1-onboarding.md and build a glossary.",
+      "expected_output": "docs/JARGON.md is created containing alphabetized entries for the jargon in both files. 'sidecar' appears in both files with two genuinely different senses (a specific logging/metrics helper vs. any auxiliary process), and both senses should be preserved in one merged entry rather than split into two entries or one overwriting the other.",
+      "files": [
+        "evals/files/eval1-architecture.md",
+        "evals/files/eval1-onboarding.md"
+      ],
+      "expectations": [
+        "docs/JARGON.md exists and is created by this run",
+        "docs/JARGON.md contains entries for DLQ, backpressure, consumer group, idempotency key, and sidecar",
+        "Every entry line follows the format '- **Term**: Definition'",
+        "Entries in docs/JARGON.md appear in case-insensitive alphabetical order by term",
+        "No term appears as more than one separate entry (each term is a single lookup key)",
+        "The sidecar entry's definition contains two distinct numbered senses, in the form '(1) ... (2) ...', covering both the specific logging/metrics helper meaning and the looser general meaning of any auxiliary process, rather than losing one of the two meanings"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Before extracting anything, create docs/JARGON.md with exactly this content:\n\n# Jargon\n\n<!-- Maintained by the jargon-extractor skill. Entries are sorted\n     alphabetically, case-insensitive. Re-run the skill to add or\n     update terms; avoid hand-editing the ordering. -->\n\n- **DLQ**: A dead-letter queue where messages that repeatedly fail processing are routed for manual inspection.\n- **idempotency key**: A unique identifier attached to a request so that retries do not cause the same action to happen twice.\n\nThen extract jargon from evals/files/eval2-notes.md and update the glossary.",
+      "expected_output": "docs/JARGON.md gains one new entry for canary deploys. The existing DLQ and idempotency key entries are preserved with their original definition text unchanged, not rewritten and not duplicated, and the file remains alphabetically sorted after the new entry is inserted.",
+      "files": [
+        "evals/files/eval2-notes.md"
+      ],
+      "expectations": [
+        "docs/JARGON.md contains a new entry for canary deploys (or canary) describing the small-percentage traffic rollout technique",
+        "The existing DLQ entry's definition text is byte-for-byte unchanged from what was seeded",
+        "The existing idempotency key entry's definition text is byte-for-byte unchanged from what was seeded",
+        "No entry appears more than once in the file",
+        "Entries remain sorted alphabetically, case-insensitive, after the new entry is added"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Before extracting anything, create AGENTS.md with exactly this content:\n\n# Agent Instructions\n\nFollow the project's existing coding conventions.\n\n## Testing\n\nRun the test suite before committing.\n\nThen extract jargon from evals/files/eval3-notes.md, update the glossary, and make sure AGENTS.md references it.",
+      "expected_output": "docs/JARGON.md is created with a blue-green deployment entry. AGENTS.md gains a new '## Related Documentation' section (since one did not already exist) referencing docs/JARGON.md, while the existing '# Agent Instructions' heading, its body text, and the '## Testing' section are preserved exactly as they were, not rewritten or reordered.",
+      "files": [
+        "evals/files/eval3-notes.md"
+      ],
+      "expectations": [
+        "docs/JARGON.md contains an entry for blue-green deployment",
+        "AGENTS.md contains a '## Related Documentation' heading",
+        "AGENTS.md's Related Documentation section references docs/JARGON.md",
+        "AGENTS.md still contains the original '## Testing' heading and its 'Run the test suite before committing.' body text, unmodified",
+        "AGENTS.md still contains the original 'Follow the project's existing coding conventions.' body text, unmodified"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Extract jargon from evals/files/eval1-architecture.md and evals/files/eval1-onboarding.md and build the glossary. Once that is done, run the exact same extraction again on the same two files, with nothing else changed in between.",
+      "expected_output": "The first run creates docs/JARGON.md as in eval 1. The second run, seeing the same two files, should report zero new or updated terms, since everything it would extract is already present with the same meaning, and the file's content after the second run should be identical to its content after the first run.",
+      "files": [
+        "evals/files/eval1-architecture.md",
+        "evals/files/eval1-onboarding.md"
+      ],
+      "expectations": [
+        "docs/JARGON.md's content is identical after the second run compared to after the first run",
+        "The second run's reported summary states zero terms added and zero terms updated",
+        "The second run does not report any error"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Before extracting anything, create docs/JARGON.md with exactly this content, which deliberately contains one line that is not in the glossary's entry format:\n\n# Jargon\n\n- **DLQ**: A dead-letter queue.\n- some free-form note that is not a valid glossary entry\n\nThen try to extract jargon from evals/files/eval2-notes.md and update the glossary.",
+      "expected_output": "The merge step should refuse to write rather than guess how to handle the unparseable line: docs/JARGON.md should be left exactly as it was seeded, and the run should surface a clear message that the existing glossary has a line it could not parse, rather than silently dropping that line, silently succeeding, or corrupting the file.",
+      "files": [
+        "evals/files/eval2-notes.md"
+      ],
+      "expectations": [
+        "docs/JARGON.md's content after the run is byte-for-byte identical to the content it was seeded with, including the unparseable line",
+        "The run's final response to the user clearly states that the existing glossary could not be parsed or updated, rather than reporting success",
+        "The run does not fabricate a guess at what the unparseable line should have meant"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Before running anything, create docs/notes.md with exactly this content:\n\n# Rollout Notes\n\nWe're using a feature flag called dark launch to ship the new checkout\nflow to internal users only before it's enabled for everyone else.\n\nNow build a jargon glossary for this project. Do not name any specific files, this is deliberately testing whether the skill finds documentation on its own.",
+      "expected_output": "Even though no files were named in the prompt, the skill's default discovery step should find docs/notes.md on its own, since docs/ is one of the conventional locations it checks by default, extract the 'dark launch' term from it, and create docs/JARGON.md containing that entry. The run's response should make clear that docs/notes.md was found by default discovery rather than being named by the user.",
+      "files": [],
+      "expectations": [
+        "docs/JARGON.md is created even though the prompt named no files at all",
+        "docs/JARGON.md contains an entry for dark launch (or dark launch feature flag) describing the internal-only early rollout technique",
+        "The run's response or transcript indicates docs/notes.md was found through default discovery of conventional documentation locations, not because the user named it"
+      ]
+    }
+  ]
+}

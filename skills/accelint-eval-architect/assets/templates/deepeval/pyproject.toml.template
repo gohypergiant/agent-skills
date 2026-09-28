@@ -1,0 +1,23 @@
+[project]
+name = "__SKILL_NAME__-evals"
+version = "1.0.0"
+description = "DeepEval harness for __SKILL_NAME__ (internal-only)"
+requires-python = ">=3.11"
+# Floors, not hard pins: hard pins rot (a ==-pinned litellm shipped stale for
+# months). If you need reproducibility, commit the uv.lock this generates.
+dependencies = [
+    "deepeval>=4.0.0",
+    "litellm>=1.55",
+    "pytest>=8.3",
+    "python-dotenv>=1.0.1",
+]
+
+[tool.pytest.ini_options]
+# Deterministic metrics run by default; judge (live) metrics are opt-in via -m live.
+addopts = ["-ra", "--tb=no", "--no-header", "-p", "no:cacheprovider", "-m", "not live"]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore:.*LLMTestCaseParams.*is deprecated.*:DeprecationWarning",
+    "ignore:.*PydanticSerializationUnexpectedValue.*:UserWarning",
+]

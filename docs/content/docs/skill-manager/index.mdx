@@ -1,0 +1,113 @@
+---
+title: Overview
+description: Create, audit, and refactor agent skills with structured workflows for domain expertise, anti-patterns, and progressive disclosure.
+source: skills/accelint-skill-manager/SKILL.md
+source_sha: 3af365c0388b9f2d9fda33fe812d02050a9f2077
+doc_sha: bd69345263b2b5c1fcdcf18c2b0c5dfd3b57b51c
+deprecated: false
+updated: 2026-01-21
+---
+
+## What It Helps You Do
+
+Use this skill to build and maintain agent skills that capture expert knowledge rather than basics.
+
+Activate it with:
+- `/accelint-skill-manager`
+- Phrases like "create a skill" or "audit this skill"
+- Related requests about reviewing skill quality, fixing a skill, or improving trigger descriptions
+
+It guides you through:
+
+- Creating new skills from concrete usage examples
+- Auditing existing skills for knowledge density and activation accuracy  
+- Refactoring skills to improve structure and token efficiency
+- Ensuring skills follow frontmatter conventions and best practices
+
+The skill focuses on what takes experts years to learn—not standard procedures or library tutorials.
+
+
+## When to Use
+
+Use this skill when:
+- Creating structured agent skills from domain expertise
+- Auditing skills for quality, structure, and effective triggering
+- Improving existing skills with better descriptions or organization
+- Working with skill files in `skills/` or `.claude/skills/` directories
+
+## How It Works
+
+The skill provides three workflows based on your task:
+
+**For creating skills:**
+1. Gather concrete usage examples and trigger phrases
+2. Identify reusable scripts, references, and asset needs
+3. Initialize directory structure from template
+4. Write expert knowledge with freedom calibrated to task fragility
+
+**For auditing skills:**
+1. Validate frontmatter (name conventions, description quality, version)
+2. Check structure (required sections, anti-patterns presence)
+3. Measure knowledge density (redundant vs expert-only content)
+4. Provide ranked recommendations with revised SKILL.md
+
+**Freedom calibration:**
+- Creative tasks get high freedom (principles, thinking patterns)
+- Code review gets medium freedom (guidelines with examples)
+- Fragile operations get low freedom (exact scripts, no variation)
+
+The skill keeps detailed guidance in loadable references rather than dumping everything in SKILL.md, so you only load what's needed for the current step.
+
+## Examples
+
+### Example: Creating a New Skill
+
+```bash
+/accelint-skill-manager "Create a skill for PDF manipulation. I need to rotate pages, merge files, and extract text."
+
+# Skill manager asks: "What trigger phrases? Any other examples?"
+# Then initializes: skills/pdf-editor/SKILL.md with anti-patterns, references, scripts
+```
+
+You get a complete skill structure with organized scripts and references.
+
+### Example: Auditing a Skill
+
+```bash
+/accelint-skill-manager "audit skills/accelint-react-testing"
+
+# Returns:
+# - Frontmatter issues (missing keywords in description)
+# - Structure gaps (missing anti-patterns section)  
+# - Knowledge delta (40% redundant content)
+# - Actionable fixes with improved description
+```
+
+## Good to Know
+
+> **Good to know:** The skill has three distinct workflows—creation, refactoring, and auditing. Choose the one that matches your task.
+
+> **Good to know:** Skills without a "NEVER Do" section are missing half their value. Anti-patterns capture mistakes experts learned the hard way.
+
+> **Good to know:** The description field is critical for activation. It must answer WHAT the skill does, WHEN to use it, and include KEYWORDS users actually say.
+
+> **Good to know:** Version bumps and CHANGELOG updates are required when editing skills. The version in frontmatter must match the latest CHANGELOG entry.
+
+## Prerequisites
+
+- Access to `skills/` or `.claude/skills/` directory
+- Template files at `skills/accelint-skill-manager/assets/skill-template/`
+- Git for computing SHA hashes
+
+## What You Get
+
+**For creation:**
+- Structured skill directory with SKILL.md, CHANGELOG.md, optional AGENTS.md
+- Organized references/, scripts/, assets/ as planned
+- Proper frontmatter with name, description, version
+
+**For audits:**
+- Frontmatter and structure validation report
+- Knowledge density score (redundant vs expert content percentage)
+- Ranked recommendations
+- Improved description and revised SKILL.md

@@ -1,5 +1,115 @@
 # Changelog
 
+## [1.7.1] - 2026-09-09
+
+### Changed
+- Added ponytail's simplicity ladder to both Slice sub-agent prompt templates so each slice explicitly prefers the least invasive implementation that satisfies the task
+- Instructs slice agents to stop at the first rung that holds: skip speculative work, reuse nearby code, prefer stdlib and native platform features, avoid new dependencies, and only then write the minimum code that works
+- Added a safety rider to both Slice sub-agent prompt templates clarifying that the simplicity ladder never overrides trust-boundary input validation, data-loss-preventing error handling, security checks, accessibility basics, or other explicit project constraints
+- Hardened the living-document phase so installed documentation skills are now mandatory, not advisory
+  - Added an explicit precedence block at the start of Step 30
+  - States that if the corresponding Accelint documentation skill exists, the parent skill MUST use it and MUST NOT manually edit the document
+  - Clarifies that manual fallback is allowed only when the corresponding skill is unavailable
+- Clarified child-skill preview/confirmation handling during living-document updates
+  - Added explicit language that a child documentation skill's preview/confirmation gate is mandatory and takes precedence over the parent skill's "do not pause" rule
+  - Instructs the parent skill to wait for approval rather than bypassing the child skill by manually editing files
+- Tightened all four document-specific branches (`openspec/config.yaml`, `ARCHITECTURE.md`, `AGENTS.md`, `README.md`)
+  - Each "skill is available" branch now states that the child skill owns discovery, preview, confirmation, and write steps for that document
+  - Explicitly forbids manual edits while the corresponding child skill is available
+- Reworded the phase summary and hard-stop language so "manual" now reads as `manual fallback because skill unavailable`
+  - Reduces the chance that the model treats manual editing as an equally-valid happy path when the skill exists
+
+### Rationale
+- Keeps parallel slice implementations narrowly scoped and reduces unnecessary helpers, abstractions, and dependencies during apply
+- Reinforces "change the bare minimum" at the exact point where the implementation work is delegated
+- Keeps the minimal-change guidance aligned with the repository's existing safety boundary: prefer the smallest implementation that works, but never by stripping away required safeguards
+- The previous prose made the documentation skills feel optional because every branch still described a fully-specified manual path
+- The previous "do not pause between documents" rule conflicted with child skills like `accelint-architecture-doc` and `accelint-readme-writer`, which correctly require preview and confirmation before writing
+- When those rules conflict, the model tends to satisfy the parent skill's no-pause rule by skipping the child-skill workflow and editing files directly
+- Making skill usage mandatory, preview gates authoritative, and manual edits fallback-only removes that ambiguity
+
+### Version
+- Bumped from 1.7.0 → 1.7.1
+
+## [1.7.0] - 2026-08-25
+
+### Added
+- Cross-platform agent compatibility through prose-based skill invocation format
+- Simple, reliable prose format that works across all agent harnesses
+
+### Changed
+- Migrated from harness-specific slash-command syntax (`/skill-name`) to agent-agnostic prose invocation format
+- Ensures compatibility across Claude Code, Codex, Pi, and other agent harnesses
+
+## [1.6.0] - 2026-08-24
+
+### Added
+- **File Changes Summary generation** — After verification completes, the skill now automatically generates a structured token-level diff summary
+  - New section: "File Changes Summary" (steps 41-44) runs immediately after verification report
+  - Parses `git diff` and archived change spec to enumerate each code-level change
+  - Output format: `<token_type>   <file_name>:<line_number>   <symbol_name>   <[change_type]>`
+  - Token types: function, constant, type, test, class, interface, enum, etc.
+  - Change types: [added], [modified], [deleted]
+  - Sorting: Grouped by change type (added, then modified, then deleted)
+  - Justification: Perfectly aligned columns with minimum 3 spaces between columns
+  - Source-only filtering: Only lists items from source directory (e.g., `src/`, `lib/`), excludes config files and build artifacts
+  - Test granularity: Lists only `describe` blocks, omits individual `it`/`test` cases to reduce noise
+  - No collapsing: Each token gets its own line (no summarization)
+  - No additional content: Template only, no headers or explanations
+
+### Changed
+- Verification report is no longer the final output — it's followed by the mandatory file changes summary
+- Step numbering extended from 40 to 44 (added steps 41-44 for diff summary generation)
+
+### Rationale
+- **Why generate diff summary**: Provides a scannable, structured overview of all code-level changes without requiring the user to manually parse `git diff` or inspect files
+- **Why after verification**: Verification confirms correctness; diff summary shows what specifically changed
+- **Why token-level granularity**: More useful than file-level (shows what symbols changed) but more concise than line-level (avoids implementation details)
+- **Why source-only**: Config files, build artifacts, and generated files add noise without providing insight into the actual implementation changes
+- **Why test describe blocks only**: Individual test cases create excessive line items; the describe block name captures the testing scope
+- **Why justified columns**: Makes the list scannable — eyes can quickly track down columns to find specific change types or file patterns
+- **Why mandatory**: Ensures every implementation produces a consistent structured summary, making it easier to review what was touched
+
+### Version
+- Bumped from 1.5.0 → 1.6.0
+
+## [1.5.0] - 2026-07-10
+
+### Changed
+- **Remove phase boundaries to prevent premature stopping:** Refactored from phase-based structure to continuous numbered steps
+  - Rationale: Phase headers like "### Phase 0: Preflight and Change Selection", "### Phase 1: Parse Tasks and Parallelization Strategy" create natural stopping points where agents might pause and check with the user mid-workflow, breaking the intended continuous execution flow
+  - Changed structure from:
+    - "### Phase 0: Preflight", "### Phase 1: Parse", "### Phase 2: Load Context", etc.
+    - To: Single "Implementation Steps" section with continuous numbering (steps 1-N) and instruction "Execute these steps in order without stopping between them unless an error occurs"
+  - Updated workflow diagram: "Phase" column → "Stage" column (higher-level groupings like "Preflight", "Parse", "Execute")
+  - Updated all cross-references throughout the skill
+  - Removed all `**Steps:**` sub-headers that created additional stopping points within phases
+  - Why: Agents tend to treat phase headers and "Steps:" sub-headers as checkpoint boundaries even when not intended. Continuous numbered steps signal that the workflow should execute atomically unless an error occurs
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
+## [1.4.0] - 2026-07-08
+
+### Changed
+- **Living document update invocations now pass change decisions as findings** — All documentation skill invocations (accelint-onboard-openspec, accelint-architecture-doc, accelint-onboard-agents, accelint-readme-writer) now extract decisions from design.md frontmatter and pass them as `findings:` list
+  - Step 3a of each living document update now includes:
+    1. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+    2. For each decision, rephrase as a plain factual statement (not an instruction)
+    3. Invoke the skill with findings in the prompt
+  - Example finding: "config.yaml's Anti-Patterns section says to avoid polling, but this change chose polling for stated reasons"
+  - Skills merge these findings with their own codebase scans before presenting to the human
+  - Rationale: Documentation skills need to know what decisions were made during the change to properly update project DNA, architecture, agent behavior, and user docs. Without this context, skills would only detect file-level drift and miss semantic decisions that haven't fully manifested in the codebase yet.
+  - Impact: Each documentation update now has richer context about *why* changes were made, not just *what* changed
+
+### Added
+- **Fallback documentation update instructions for missing skills** — When a documentation skill is not installed, the manual update instructions now include reading design.md frontmatter for decisions
+  - Ensures consistency whether using skills or manual updates
+  - Prevents documentation updates from missing change rationale when skills aren't available
+
+### Version
+- Bumped from 1.3.0 → 1.4.0
+
 ## [1.3.0] - 2026-06-25
 
 ### Changed
@@ -9,7 +119,7 @@
   - **Removed Phase 6: Report and Next Steps** — verification report now serves as final output
   - Rationale: Running documentation updates before verification allows verification to check documentation completeness
 - **Simplified living document update execution** — Removed sub-agent wrapper for documentation updates
-  - Skills (`accelint-onboard-openspec`, `accelint-architecture-doc`, `accelint-onboard-agent`, `accelint-readme-writer`) now invoked directly in main flow
+  - Skills (`accelint-onboard-openspec`, `accelint-architecture-doc`, `accelint-onboard-agents`, `accelint-readme-writer`) now invoked directly in main flow
   - Removed explicit reading of change artifacts before skill invocation
   - Skills now receive change path in invocation: `We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the [document] is current and up to date.`
   - Skills read proposal/design themselves during exploration phase

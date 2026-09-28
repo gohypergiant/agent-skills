@@ -1,10 +1,6 @@
 # Accelint QRSPI Propose
 
-Automate the planning phase of spec-driven development. This skill walks you through Questions → Research → Design → Structure (QRSPI), with mandatory review checkpoints before code gets written.
-
-**This is Phase 1 of a two-phase workflow:**
-- **Phase 1 (this skill)**: Plan the change (Questions → Research → Design → Structure)
-- **Phase 2** (`accelint-qrspi-apply`): Implement with intelligent parallelization
+Automate the planning phase of spec-driven development. This skill walks through Questions → Research → Design → Structure (QRSPI) and requires review checkpoints before any code is written.
 
 ## What This Does
 
@@ -14,9 +10,8 @@ Takes a ticket or feature request and produces a complete OpenSpec change:
 - Design document (decisions, trade-offs, architectural choices)
 - Delta specs (what changes in the system)
 - Task breakdown (vertical slices for implementation)
-- Parallelization strategy (which tasks can run concurrently)
 
-The skill stops after planning. You run `/accelint-qrspi-apply` (or `/opsx:apply` for manual implementation) when you're ready to implement.
+The skill stops after planning. You run `/accelint-qrspi-apply <change-name>` when you are ready to implement.
 
 ## When to Use This
 
@@ -58,24 +53,9 @@ openspec update
 
 The skill will check this before running and guide you if configuration is needed.
 
-## Two-Phase QRSPI Workflow
-
-This skill is Phase 1 (Planning). After completion, you proceed to Phase 2 (Implementation).
-
-| Phase | Skill | Purpose | Output |
-|-------|-------|---------|--------|
-| 1 | `accelint-qrspi-propose` (this skill) | Plan the change | OpenSpec artifacts (proposal, design, specs, tasks) |
-| 2 | `accelint-qrspi-apply` | Implement with parallelization | Working code, tests, validation |
-
-The separation allows you to:
-- Plan multiple changes before implementing any
-- Review and refine plans without wasting implementation effort
-- Clear context between planning and coding
-- Parallelize implementation across independent task slices
-
 ## How It Works
 
-### The Five Planning Phases
+### The Five-Phase Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -99,23 +79,19 @@ A fresh sub-agent (new context) sees only the questions and answers them with fa
 
 #### Phase 3: Design Scaffolding
 
-Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts following your project's config.yaml rules.
+Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts under your project's `config.yaml` rules.
 
-Mandatory checkpoint: You review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
+Required checkpoint: You review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
 
 #### Phase 4: Specs & Tasks
 
 Generate delta specs and task breakdown. A sub-agent receives questions + research + approved design (NO ticket) and creates remaining artifacts with emphasis on vertical slicing.
 
-The skill automatically validates that tasks use vertical slicing (end-to-end feature deliverables) rather than horizontal slicing (architectural layers). If horizontal slicing is detected, the skill converts it to vertical slices automatically.
-
-The skill also ensures a "Parallelization Strategy" section exists in tasks.md, identifying which slices can run in parallel and which have sequential dependencies.
-
-Mandatory checkpoint: You review the task breakdown to ensure vertical slicing (not layer-by-layer).
+Required checkpoint: You review the task breakdown to ensure vertical slicing (not layer-by-layer).
 
 #### Phase 5: Completion
 
-The skill reports completion and exits. You decide when to run `/accelint-qrspi-apply` (for parallel implementation) or `/opsx:apply` (for manual implementation) to start building.
+The skill reports completion and exits. You decide when to run `/accelint-qrspi-apply <change-name>` to start implementation.
 
 ## Key Concepts
 
@@ -132,17 +108,17 @@ This prevents "solution bias" where the ticket's suggested solution biases the a
 
 ### Human Checkpoints
 
-Two mandatory review gates:
+Two required review gates:
 
 1. **After design.md**: Catch wrong patterns, missing systems, scope issues
 2. **After tasks.md**: Verify vertical slicing, phase ordering
 
 You can:
 - Approve and continue
-- Request edits (agent modifies in place)
-- Edit manually (you modify, confirm when done)
+- Request edits (the agent modifies in place)
+- Edit manually (you modify the file, then confirm when done)
 
-The skill won't proceed without your explicit approval.
+The skill will not proceed without your explicit approval.
 
 ### Vertical Slicing
 
@@ -163,18 +139,7 @@ Phase 3: All API changes
 Phase 4: All frontend changes
 ```
 
-The skill checks for horizontal slicing and automatically converts to vertical slicing if detected.
-
-### Parallelization Strategy
-
-After task generation, the skill ensures tasks.md includes a "Parallelization Strategy" section that identifies:
-
-- **Independent slices**: Tasks that can run in parallel with no blocking dependencies
-- **Sequential dependencies**: Tasks that must complete before others can start
-- **Critical path**: The longest chain of dependent tasks
-- **Recommended order**: Suggested implementation sequence for optimal parallelization
-
-This section is consumed by `accelint-qrspi-apply` (Phase 2) to orchestrate parallel sub-agent execution. If the section is missing or incomplete, the skill adds it automatically.
+The skill checks for horizontal slicing and corrects it before review if it detects it.
 
 ### No Automatic Implementation
 
@@ -184,9 +149,7 @@ The skill stops after planning. This allows:
 - Clearing context between planning and coding
 - User control over when implementation begins
 
-Run `/clear` and then:
-- `/accelint-qrspi-apply` to implement with intelligent parallelization (recommended for multi-slice changes)
-- `/opsx:apply` to implement manually (for simpler changes or when you want direct control)
+Run `/clear` and `/accelint-qrspi-apply <change-name>` when you are ready to start building.
 
 ## Example Usage
 
@@ -241,7 +204,7 @@ Generated artifacts:
 Next steps:
 1. Review the artifacts one more time if needed
 2. Run /clear to start fresh context for implementation
-3. Run /accelint-qrspi-apply to begin parallel implementation
+3. Run /accelint-qrspi-apply <change-name> to begin implementation
 ```
 
 ## Configuration Requirements
@@ -251,27 +214,17 @@ The skill assumes your project has:
 1. OpenSpec installed (`openspec/` directory exists)
 2. config.yaml configured with rules for design, specs, tasks (ideally via `accelint-onboard-openspec`)
 3. Expanded profile enabled (workflows include `explore`, `new`, `continue`)
-4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agent`)
+4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agents`)
 
 If anything is missing, the skill will guide you through setup.
 
 ## Error Handling
 
-If OpenSpec commands fail, the skill surfaces the error and lets you retry or abort. It won't continue automatically.
+If OpenSpec commands fail, the skill surfaces the error and lets you retry or abort. It does not continue automatically.
 
-If a sub-agent fails, you'll see the error and can retry that phase or provide manual input (you write the questions/research yourself).
+If a sub-agent fails, you will see the error and can retry that phase or provide manual input (you write the questions or research yourself).
 
 If artifacts are missing after generation, the skill checks file paths and provides the expected locations for manual inspection.
-
-## Important Notes
-
-### Vertical vs Horizontal Slicing
-
-The skill automatically detects and converts horizontal (layer-by-layer) task structures to vertical (end-to-end feature) slices. Each slice should:
-- Deliver a working, testable increment
-- Cross architectural boundaries
-- Be demonstrable to stakeholders
-- Have minimal dependencies on other slices
 
 ## Tips
 
@@ -279,14 +232,13 @@ Start with clear tickets. The better the input, the better the questions. Includ
 
 The design checkpoint is your leverage point. A 5-minute review here prevents hours of rework later.
 
-Trust the skill's vertical slicing validation. Layer-by-layer development hides integration issues until the end.
+If the skill warns about horizontal slicing, listen. Layer-by-layer development hides integration issues until the end.
 
-Don't rush to implementation. It's fine to create multiple specs before coding. Planning artifacts are cheap; code is expensive.
+Do not rush to implementation. It is fine to create multiple specs before coding. Planning artifacts are cheap; code is expensive.
 
 ## Related Skills
 
-- `accelint-qrspi-apply` - **Phase 2**: Implement QRSPI-planned changes with intelligent parallelization (recommended for multi-slice changes)
 - `accelint-onboard-openspec` - Set up OpenSpec configuration for your project
-- `accelint-onboard-agent` - Create AGENTS.md with behavior rules
-- `opsx:apply` - Manual implementation alternative to accelint-qrspi-apply
+- `accelint-onboard-agents` - Create AGENTS.md with behavior rules
+- `accelint-qrspi-apply` - Implement tasks from the generated change
 - `opsx:verify` - Verify implementation matches artifacts before archiving

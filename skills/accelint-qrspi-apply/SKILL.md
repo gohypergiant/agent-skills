@@ -5,7 +5,7 @@ license: Apache-2.0
 compatibility: Requires openspec CLI, sub-agent support, and QRSPI-generated changes.
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.7.1"
 ---
 
 # Accelint QRSPI Apply
@@ -27,28 +27,29 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 - Sub-agent support (for parallel execution)
 - The expanded OpenSpec workflows (`explore`, `new`, `continue`) enabled
 
-**Important**: This skill is specifically designed for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use the regular `/opsx:apply` command directly.
+**Important**: This skill is specifically designed for QRSPI-planned changes. Standard OpenSpec changes without parallelization strategies should use the regular `openspec-apply-change` skill directly.
 
 ## Workflow Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Phase          Action                        Output            │
+│  Stage          Action                        Output            │
 ├─────────────────────────────────────────────────────────────────┤
+│  Preflight      Select and validate change    Ready to proceed  │
+│  Start Time     Record started_at timestamp   Telemetry marker  │
 │  Parse          Extract parallelization       Dependency graph  │
 │  Dependencies   Identify blocking tasks       Execution plan    │
 │  Load Context   Read config.yaml context      Project context   │
 │  Execute        Run slices (parallel/serial)  Implemented code  │
 │  Update Docs    Sync living documents         Updated docs      │
+│  Complete Time  Record completed_at timestamp Telemetry marker  │
 │  Verify         Run opsx:verify               Verification rpt  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Phase Breakdown
+## Implementation Steps
 
-### Phase 0: Preflight and Change Selection
-
-**Steps**:
+### Preflight and Change Selection
 
 1. If a change name is provided in the skill arguments, use it
 2. Otherwise, try to infer from conversation context (recent mentions of change names)
@@ -62,17 +63,52 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
    ```bash
    openspec status --change "<name>" --json
    ```
-   If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `/opsx:continue` to generate tasks before applying."
+   If `state: "blocked"` (missing tasks), exit with: "Tasks artifact is missing. Run `openspec-continue-change` to generate tasks before applying."
 
-### Phase 1: Parse Tasks and Parallelization Strategy
+### Record Implementation Start
+
+**Goal**: Mark when implementation begins for telemetry tracking.
+
+6. Read the design.md file from `openspec/changes/<change-name>/design.md` to check if `started_at` timestamp exists in frontmatter
+
+7. If `started_at` is NOT present in the frontmatter (first time applying this change):
+   - Add the `started_at` timestamp to the frontmatter using ISO 8601 format with Z suffix
+   - CRITICAL: Generate the timestamp deterministically using this command:
+     ```bash
+     python3 -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))"
+     ```
+   - Insert `started_at` immediately after the `created_at` field to keep all timestamps grouped together
+   - Preserve all other frontmatter fields (change, created_at, specs_touched, decisions) in their original order
+   - Inform user: "Recording implementation start time..."
+
+8. If `started_at` IS present (resuming after context clear or pause):
+   - Do not modify the timestamp — preserve the original start time
+   - Inform user: "Resuming implementation (started at [timestamp])..."
+
+**Example frontmatter after adding started_at:**
+```yaml
+---
+change: <change-name>
+created_at: "2026-08-17T15:00:00.000Z"
+started_at: "2026-08-17T16:30:00.000Z"
+specs_touched: [<capability-a>, <capability-b>]
+decisions:
+  - id: D1
+    choice: <decision>
+    rationale: <why>
+    alternatives: [<option>]
+---
+```
+
+**Output**: Timestamp written to design.md frontmatter (if this is first application), or confirmation of resumption
+
+### Parse Tasks and Parallelization Strategy
 
 **Goal**: Extract task structure and identify parallel vs sequential execution opportunities. Detect if work has already started and resume from the correct level.
 
-**Steps**:
+9. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
 
-1. Read the tasks.md file from `openspec/changes/<change-name>/tasks.md`
-
-2. **Validate checklist format** (CRITICAL for progress tracking):
+10. **Validate checklist format** (CRITICAL for progress tracking):
    - Check that tasks use markdown checklist format: `- [ ] task` or `- [x] task`
    - If tasks use numbered lists (1. 2. 3.) or plain bullets (- without [ ]):
      ```
@@ -88,14 +124,15 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
      ```
    - Exit if format is invalid — do not proceed with invalid task format
 
-3. **Check for partial completion** (resumption detection):
+11. **Check for partial completion** (resumption detection):
    - Count completed tasks (marked `- [x]`) vs total tasks
    - Parse which slices have all their tasks marked complete
    - If any slices are complete, announce: "Detected partial completion. Resuming from Slice N."
    - Adjust the execution plan to skip completed slices
 
-4. Look for the "Parallelization Strategy" section (usually at the end of the file)
-5. Parse the strategy to build a dependency graph:
+12. Look for the "Parallelization Strategy" section (usually at the end of the file)
+
+13. Parse the strategy to build a dependency graph:
 
    **Example strategy:**
    ```md
@@ -120,11 +157,11 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
      - Final integration
    ```
 
-6. If no "Parallelization Strategy" section exists:
+14. If no "Parallelization Strategy" section exists:
    - Assume all tasks must run sequentially (safe default)
    - Inform user: "No parallelization strategy found. Running tasks sequentially."
 
-7. Build an execution plan showing:
+15. Build an execution plan showing:
    - Which slices run in which order
    - Which slices can run in parallel (and which are already complete)
    - Total estimated parallelization speedup
@@ -132,34 +169,32 @@ Implement OpenSpec changes with intelligent parallelization. This skill orchestr
 
 **Output**: Dependency graph, execution plan, and resumption point if applicable
 
-### Phase 2: Load Project Context
+### Load Project Context
 
-**Goal**: Load project context from `openspec/config.yaml` to inject into sub-agent prompts. This compensates for OpenSpec CLI's limitation where the `apply` command doesn't automatically load project context (unlike artifact creation commands).
+**Goal**: Load project context from `openspec/config.yaml` to inject into sub-agent prompts. This compensates for OpenSpec CLI's limitation where the `apply` skill doesn't automatically load project context (unlike artifact creation skills).
 
-**Background**: OpenSpec's `openspec instructions apply` command does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). This means sub-agents implementing tasks don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. We work around this limitation by manually loading and injecting the context.
+**Background**: OpenSpec's `openspec instructions apply` skill does NOT inject the `context` field from `config.yaml` (confirmed via code inspection and testing). This means sub-agents implementing tasks don't receive Stack Facts, coding patterns, testing conventions, or anti-patterns that should guide implementation. We work around this limitation by manually loading and injecting the context.
 
-**Steps**:
-
-1. Check if `openspec/config.yaml` exists:
+16. Check if `openspec/config.yaml` exists:
    ```bash
    test -f openspec/config.yaml && echo "exists" || echo "missing"
    ```
 
-2. If the file exists, read it:
+17. If the file exists, read it:
    ```bash
    cat openspec/config.yaml
    ```
 
-3. Parse and extract the `context` section (YAML block under `context: |`):
+18. Parse and extract the `context` section (YAML block under `context: |`):
    - The context starts after the line `context: |`
    - The context continues until the next top-level YAML key (e.g., `rules:`, `schema:`)
    - Lines in the context block are indented (usually 2 spaces)
    - Preserve all whitespace and newlines in the context block
    - You MUST inform the user that you found and loaded the config.
 
-4. Store the extracted context for injection into sub-agent prompts in Phase 3
+19. Store the extracted context for injection into sub-agent prompts in the next steps
 
-5. If no `context` field exists or the file is missing:
+20. If no `context` field exists or the file is missing:
    - Set context to empty string
    - Proceed without context injection (sub-agents will rely on OpenSpec's default behavior)
    - You MUST inform the user that you could NOT find and load the config.
@@ -194,26 +229,28 @@ rules:
 
 **Output**: Extracted project context string (may be empty if not present)
 
-### Phase 3: Execute Tasks (Sequential + Parallel)
+### Execute Tasks (Sequential + Parallel)
 
-**Goal**: Implement tasks following the dependency graph, spawning parallel sub-agents where possible.
+**Goal**: Implement tasks following the dependency graph, spawning parallel sub-agents where possible using the Agent tool.
 
 **Sequential execution** (when tasks have dependencies):
 
 For each level in the dependency graph (starting from level 0):
 
-1. If the level has only one slice:
-   - Spawn a single sub-agent with this prompt (inject project context from Phase 2):
-     ```
+21. If the level has only one slice:
+   - Use the Agent tool to spawn a single sub-agent with this prompt (inject project context loaded in step 16):
+     ```text
      <project_context>
      <!-- Background constraints for your implementation. Do NOT copy into code. -->
      {INJECTED_CONFIG_CONTEXT}
      </project_context>
 
-     /opsx:apply <change-name>
+     Invoke the openspec-apply-change skill.
 
-     CRITICAL: You MUST use the /opsx:apply command to implement tasks.
-     DO NOT implement tasks directly yourself. The /opsx:apply workflow will
+     <change-name>
+
+     CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
+     DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
      load context and guide implementation.
 
      IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
@@ -224,6 +261,16 @@ For each level in the dependency graph (starting from level 0):
      Instructions:
      - Work ONLY on tasks in Slice N: [list slice N tasks/sections]
      - Do NOT implement tasks from other slices (Slices X, Y, Z will be handled separately)
+     - Before you add or change code, apply this simplicity ladder and stop at the first rung that holds:
+       1. Does this need to exist at all? Speculative need = skip it, say so in one line. (YAGNI)
+       2. Already in this codebase? A helper, util, type, or pattern that already lives here → reuse it. Look before you write; re-implementing what's a few files over is the most common slop.
+       3. Stdlib does it? Use it.
+       4. Non-UI code: does a native platform or language feature cover it? Use it before a library.
+       5. UI code: if this codebase already has a design-system or UI-library primitive for it, use that before raw native elements or hand-rolled UI behavior.
+       6. Already-installed dependency solves it outside the above cases? Use it. Never add a new one for what a few lines can do.
+       7. Can it be one line? One line.
+       8. Only then: the minimum code that works.
+     - Never simplify away trust-boundary input validation, error handling that prevents data loss, security checks, accessibility basics, or other explicit project constraints — the minimalism heuristics above never override this.
      - Apply the code patterns, conventions, and constraints from <project_context>
      - Follow the normal OpenSpec apply workflow:
        * OpenSpec will load context files (proposal, design, specs, tasks)
@@ -237,25 +284,27 @@ For each level in the dependency graph (starting from level 0):
      Focus exclusively on Slice N. Leave other slice tasks unchecked.
      ```
 
-     Note: If no project context was loaded in Phase 2, omit the `<project_context>` block entirely
+     Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-2. Wait for completion before proceeding to the next level
+22. Wait for completion before proceeding to the next level
 
 **Parallel execution** (when multiple slices are independent):
 
 For each level with multiple independent slices:
 
-1. Spawn all sub-agents in parallel in a single turn (one per slice, inject project context from Phase 2):
-   ```
+23. Use the Agent tool to spawn all sub-agents in parallel in a single turn (one per slice, inject project context from earlier steps):
+   ```text
    <project_context>
    <!-- Background constraints for your implementation. Do NOT copy into code. -->
    {INJECTED_CONFIG_CONTEXT}
    </project_context>
 
-   /opsx:apply <change-name>
+   Invoke the openspec-apply-change skill.
 
-   CRITICAL: You MUST use the /opsx:apply command to implement tasks.
-   DO NOT implement tasks directly yourself. The /opsx:apply workflow will
+   <change-name>
+
+   CRITICAL: You MUST use the openspec-apply-change skill to implement tasks.
+   DO NOT implement tasks directly yourself. The openspec-apply-change workflow will
    load context and guide implementation.
 
    IMPORTANT: This is Slice N of a parallelized QRSPI implementation.
@@ -266,6 +315,16 @@ For each level with multiple independent slices:
    Instructions:
    - Work ONLY on tasks in Slice N: [list slice N tasks/sections]
    - Do NOT implement tasks from other slices - they are being handled in parallel
+   - Before you add or change code, apply this simplicity ladder and stop at the first rung that holds:
+     1. Does this need to exist at all? Speculative need = skip it, say so in one line. (YAGNI)
+     2. Already in this codebase? A helper, util, type, or pattern that already lives here → reuse it. Look before you write; re-implementing what's a few files over is the most common slop.
+     3. Stdlib does it? Use it.
+     4. Non-UI code: does a native platform or language feature cover it? Use it before a library.
+     5. UI code: if this codebase already has a design-system or UI-library primitive for it, use that before raw native elements or hand-rolled UI behavior.
+     6. Already-installed dependency solves it outside the above cases? Use it. Never add a new one for what a few lines can do.
+     7. Can it be one line? One line.
+     8. Only then: the minimum code that works.
+   - Never simplify away trust-boundary input validation, error handling that prevents data loss, security checks, accessibility basics, or other explicit project constraints — the minimalism heuristics above never override this.
    - Apply the code patterns, conventions, and constraints from <project_context>
    - Follow the normal OpenSpec apply workflow:
        * OpenSpec will load context files (proposal, design, specs, tasks)
@@ -280,16 +339,17 @@ For each level with multiple independent slices:
    Your work is independent and should not block or depend on other slices.
    ```
 
-   Note: If no project context was loaded in Phase 2, omit the `<project_context>` block entirely
+   Note: If no project context was loaded earlier, omit the `<project_context>` block entirely
 
-2. Track completion as each sub-agent finishes
-3. When all slices in the level are done, **pause and offer context management**:
-   ```
+24. Track completion as each sub-agent finishes
+
+25. **Context management decision point** - When all slices in the level are done, pause and offer context management:
+   ```text
    ✅ Level N complete
 
    Completed slices:
-   - Slice X: [summary]
-   - Slice Y: [summary]
+   - Slice X: <summary>
+   - Slice Y: <summary>
 
    Next: Level N+1 has M slice(s) to run [list slices]
 
@@ -299,21 +359,21 @@ For each level with multiple independent slices:
    (c) Pause here — you can resume later with this skill
    ```
 
-4. If user chooses (b), instruct them:
-   ```
+26. If user chooses (b), instruct them:
+   ```text
    Run `/clear` to reset context, then re-invoke this skill.
    I'll detect that Level N is complete and resume from Level N+1.
    ```
 
-5. If user chooses (c), exit and remind them how to resume:
-   ```
+27. If user chooses (c), exit and remind them how to resume:
+   ```text
    Paused at Level N+1. To resume, re-invoke this skill.
    Progress is tracked in tasks.md checkboxes.
    ```
 
-**Slice targeting approach**: OpenSpec's `/opsx:apply` command does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
+**Slice targeting approach**: OpenSpec's `openspec-apply-change` skill does not have native "slice targeting" (no `--slice N` flag). This skill achieves parallelization by:
 
-1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `/opsx:apply <change-name>`, which:
+1. **Using the full OpenSpec CLI workflow**: Each sub-agent invokes `openspec-apply-change <change-name>`, which:
    - Runs `openspec instructions apply --change "<name>" --json` to get context
    - Loads all context files (proposal, design, specs, tasks)
    - Provides dynamic instructions based on current state
@@ -333,23 +393,30 @@ For each level with multiple independent slices:
 
 The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove CLI Surface", "## Slice 2: Remove Implementation"), making it straightforward for sub-agents to identify their scope.
 
-### Phase 4: Update Living Documents
+### Update Living Documents
 
 **Goal**: Update project documentation to reflect the implemented changes before running verification.
 
 **Why this matters**: OpenSpec changes represent significant architectural decisions and feature additions. Living documents (ARCHITECTURE.md, AGENTS.md, openspec/config.yaml) provide context for agents working in the codebase, while README.md serves human users. Keeping them synchronized prevents documentation drift and ensures future agents and developers have accurate, up-to-date context about the system's current state.
 
-**IMPORTANT**: Run this phase BEFORE verification so the verification step can check documentation completeness.
+**IMPORTANT**: Run this step BEFORE verification so the verification step can check documentation completeness.
 
-**Steps**:
+28. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
 
-1. Check if the change is in a repository or package root by looking for `.git/` or `package.json`
-2. Determine the repo/package root (may be current directory or a parent)
-3. **Process ALL living documents** in this order (do not stop after the first one):
+29. Determine the repo/package root (may be current directory or a parent)
+
+30. **Process ALL living documents** in this order (do not stop after the first one):
    - OpenSpec config (`openspec/config.yaml`)
    - ARCHITECTURE.md (if exists)
    - AGENTS.md (if exists)
    - README.md (if exists)
+
+   **Precedence rules for this phase**:
+   - If the corresponding Accelint documentation skill is installed, you MUST use that skill. Do NOT manually edit the document yourself.
+   - Manual fallback is allowed ONLY when the corresponding skill is unavailable.
+   - If an invoked documentation skill returns a preview and asks for confirmation before writing, that preview/confirmation gate is MANDATORY. Present it to the human and wait for explicit approval. Do NOT bypass the gate by editing the file manually.
+   - The "do not pause between documents" rule means: once one document is fully resolved (skipped, approved-and-written via its skill, or manually updated because its skill is unavailable), continue immediately to the next document. It does NOT override a child skill's required preview/confirmation step.
+   - Never choose manual fallback just because it seems faster or because the child skill asked for confirmation.
 
    For each document in the list above, follow these steps:
 
@@ -365,11 +432,21 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For OpenSpec config** (`<repo-root>/openspec/config.yaml`):
    - Check if `accelint-onboard-openspec` skill is installed
    - If skill is available:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `openspec/config.yaml` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
+     ```text
+     Invoke the accelint-onboard-openspec skill.
+
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact, e.g., "config.yaml's Anti-Patterns section says to avoid polling, but this change chose polling for stated reasons"]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     /accelint-onboard-openspec
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the openspec/config.yaml is current and up to date.
-     ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update the config accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -387,11 +464,21 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For ARCHITECTURE.md** (`<repo-root>/ARCHITECTURE.md`) — IF it exists:
    - Check if `accelint-architecture-doc` skill is installed
    - If skill is available:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `ARCHITECTURE.md` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
+     ```text
+     Invoke the accelint-architecture-doc skill.
+
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     /accelint-architecture-doc
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the ARCHITECTURE.md is current and up to date.
-     ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update ARCHITECTURE.md accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -408,13 +495,23 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - **DO NOT** add coding patterns, testing conventions, or agent behavior (those belong in config.yaml or AGENTS.md)
 
    **For AGENTS.md** (`<repo-root>/AGENTS.md`) — IF it exists:
-   - Check if `accelint-onboard-agent` skill is installed
+   - Check if `accelint-onboard-agents` skill is installed
    - If skill is available:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `AGENTS.md` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
+     ```text
+     Invoke the accelint-onboard-agents skill.
+
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     /accelint-onboard-agent
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the AGENTS.md is current and up to date.
-     ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update AGENTS.md accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -432,11 +529,21 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    **For README.md** (`<repo-root>/README.md`) — IF it exists:
    - Check if `accelint-readme-writer` skill is installed
    - If skill is available:
+     1. The child skill owns discovery, preview, confirmation, and write steps for this document. Do NOT manually edit `README.md` while this skill is available.
+     2. Read `openspec/changes/<change-name>/design.md` frontmatter to extract the `decisions` field
+     3. For each decision, rephrase as a plain factual statement (not an instruction)
+     4. Invoke the skill with findings:
+     ```text
+     Invoke the accelint-readme-writer skill.
+
+     We have just completed the change spec openspec/changes/<change-name>.
+
+     findings:
+     - [Decision 1 rephrased as fact]
+     - [Decision 2 rephrased as fact]
+     ...
      ```
-     /accelint-readme-writer
-     We have just completed the change spec openspec/changes/<change-name>. Given this change, we need to make sure that the README.md is current and up to date.
-     ```
-     The skill will read the proposal and design from the change directory to understand what was implemented and update README.md accordingly.
+     The skill will merge these findings with its own codebase scan before presenting to the human.
 
    - If skill is NOT available, read the change artifacts:
      - `openspec/changes/<change-name>/proposal.md`
@@ -461,14 +568,14 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 - Document doesn't exist
 - Change content doesn't introduce anything requiring updates to that document
 
-**Important**: Process all 4 documents sequentially, one after another, without stopping. Do not pause between documents or wait for user input unless there's an error. After finishing all 4 documents, immediately proceed to Phase 5 (Verify Implementation).
+**Important**: Process all 4 documents sequentially, one after another, without stopping after the first one. Do not invent extra pauses between documents. The ONLY legitimate waits in this phase are: (a) a child documentation skill's required preview/confirmation gate, or (b) an error that needs user input. After a document is skipped, approved-and-written via its skill, or manually updated because its skill is unavailable, immediately continue to the next document. After finishing all 4 documents, immediately proceed to the next step (Record Completion Timestamp).
 
-4. After checking all 4 documents, run `git status` to show which docs were modified
+31. After checking all 4 documents, run `git status` to show which docs were modified
 
-5. Present summary (then immediately continue to Phase 5):
+32. Present summary (then immediately continue to recording completion timestamp):
 
    - If no updates were needed:
-     ```
+     ```text
      📝 Living documents checked — no updates needed for this change
 
      Checked documents:
@@ -477,40 +584,79 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
      - AGENTS.md [no changes needed]
      - README.md [no changes needed]
 
-     Proceeding to Phase 5: Verify Implementation...
+     Proceeding to verification...
      ```
 
    - If updates were made:
-     ```
+     ```text
      📝 Living documents updated
 
      Updated documents:
-     - openspec/config.yaml [via accelint-onboard-openspec / manually / skipped]
-     - ARCHITECTURE.md [via accelint-architecture-doc / manually / skipped]
-     - AGENTS.md [via accelint-onboard-agent / manually / skipped]
-     - README.md [via accelint-readme-writer / manually / skipped]
+     - openspec/config.yaml [via accelint-onboard-openspec / manual fallback because skill unavailable / skipped]
+     - ARCHITECTURE.md [via accelint-architecture-doc / manual fallback because skill unavailable / skipped]
+     - AGENTS.md [via accelint-onboard-agents / manual fallback because skill unavailable / skipped]
+     - README.md [via accelint-readme-writer / manual fallback because skill unavailable / skipped]
 
      These changes ensure documentation stays synchronized with implementation.
 
-     Proceeding to Phase 5: Verify Implementation...
+     Recording completion timestamp...
      ```
 
-**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed, then **MANDATORY automatic transition to Phase 5 without waiting for user input**
+**Output**: Summary of updated documents and methods used (skill vs manual), or confirmation that no updates were needed
 
-### Phase 5: Verify Implementation
+### Record Implementation Completion
+
+**Goal**: Mark when implementation completes (before verification) for telemetry tracking.
+
+**IMPORTANT**: This step runs immediately after living document updates and before verification. Do not wait for user input.
+
+33. Read the design.md file from `openspec/changes/<change-name>/design.md`
+
+34. Add the `completed_at` timestamp to the frontmatter using ISO 8601 format with Z suffix:
+   - CRITICAL: Generate the timestamp deterministically using this command:
+     ```bash
+     python3 -c "from datetime import datetime, timezone; print(datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z'))"
+     ```
+   - Insert `completed_at` immediately after the `started_at` field to keep all timestamps grouped together
+   - Preserve all other frontmatter fields (change, created_at, started_at, specs_touched, decisions) in their original order
+   - This marks the moment implementation finished, right before verification begins
+
+35. Inform user: "Implementation complete. Running verification..."
+
+**Example frontmatter after adding completed_at:**
+```yaml
+---
+change: <change-name>
+created_at: "2026-08-17T15:00:00.000Z"
+started_at: "2026-08-17T16:30:00.000Z"
+completed_at: "2026-08-17T17:45:00.000Z"
+specs_touched: [<capability-a>, <capability-b>]
+decisions:
+  - id: D1
+    choice: <decision>
+    rationale: <why>
+    alternatives: [<option>]
+---
+```
+
+**IMPORTANT**: After recording the completion timestamp, immediately proceed to verification (step 36). Do NOT pause or wait for user input. The completion timestamp marks the end of implementation work, and verification follows automatically.
+
+**Output**: Timestamp written to design.md frontmatter, then **MANDATORY automatic transition to verification without waiting for user input**
+
+### Verify Implementation
 
 **Goal**: Verify that the implementation matches the change artifacts (specs, tasks, design).
 
-**CRITICAL**: This is the FINAL phase. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this phase.
+**CRITICAL**: This is the FINAL step. Verification is MANDATORY and produces a comprehensive report as the final output. Do NOT add additional reporting after this step.
 
-**Steps**:
+36. Call the verify skill:
+   ```text
+   Invoke the openspec-verify-change skill.
 
-1. Call the verify command:
+   <change-name>
    ```
-   /opsx:verify <change-name>
-   ```
 
-2. The verify command will:
+37. The verify command will:
    - Check task completion (all checkboxes marked)
    - Verify spec coverage (requirements implemented)
    - Validate design adherence (decisions followed)
@@ -518,16 +664,16 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
    - Generate a comprehensive verification report with CRITICAL/WARNING/SUGGESTION issues
    - Include next steps (archive if passed, fix issues if failed)
 
-3. Present the verification report to the user
+38. Present the verification report to the user
 
-4. The verification report IS the completion report. It includes:
+39. The verification report IS the completion report. It includes:
    - Overall status (passed/failed)
    - Issue breakdown by severity
    - List of changed files
    - Next steps based on status
    - Archive guidance if ready
 
-5. Exit the skill after presenting the verification report. The report already tells the user what to do next.
+40. Exit the skill after presenting the verification report. The report already tells the user what to do next.
 
 **Output**: Comprehensive verification report with status, issues, changed files, and next steps
 
@@ -537,12 +683,12 @@ The slice boundaries are clearly marked in tasks.md (e.g., "## Slice 1: Remove C
 
 The skill supports pause/clear/resume workflow at dependency level boundaries:
 
-- **Pause points**: After each level completes, the skill offers to continue or let the user clear context
-- **Resumption detection**: When re-invoked, the skill reads tasks.md checkboxes to detect completed slices and resumes from the next incomplete level
+- **Pause points**: After each dependency level completes, the skill offers to continue or let the user clear context (Step 22)
+- **Resumption detection**: When re-invoked, the skill reads tasks.md checkboxes to detect completed slices and resumes from the next incomplete level (Step 8)
 - **Progress tracking**: Task completion is tracked in tasks.md via checkboxes, making progress durable across context clears
 - **Rationale**: Sub-agents can accumulate significant context. Between dependency levels, the orchestrating agent can clear context while preserving work progress via task checkboxes.
 
-**Why this matters**: Long implementations with many slices can bloat context. By offering pause points between levels, users maintain the flexibility to clear context (like in serial `opsx:apply`) while still benefiting from parallelization within each level.
+**Why this matters**: Long implementations with many slices can bloat context. By offering pause points between levels, users maintain the flexibility to clear context (like in serial `openspec-apply-change`) while still benefiting from parallelization within each level.
 
 ### Intelligent Parallelization
 
@@ -554,7 +700,7 @@ If no parallelization strategy is found, the skill runs tasks sequentially. This
 
 ### Verification Before Archive
 
-The skill always runs `/opsx:verify` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
+The skill always runs `openspec-verify-change` as the final step. This catches incomplete tasks, broken references, or schema violations before the user archives. The verification report serves as the completion summary.
 
 ### Human-in-the-Loop
 
@@ -596,15 +742,19 @@ If the environment doesn't support sub-agents (e.g., Claude.ai):
 
 ## NEVER Do This
 
-**NEVER implement tasks directly** — Always delegate to `/opsx:apply` command via sub-agents. The /opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
+**NEVER stop between living document updates and verification waiting for user confirmation** — Once living document updates (Steps 28-32) are fully resolved, immediately proceed to recording the completion timestamp (Steps 33-35), then to verification (Step 36). These steps are a continuous workflow. The only legitimate stopping points are: (1) an error that requires user input to resolve, (2) preflight failing (Steps 1-5), (3) the user-controlled context management decision points between dependency levels (Step 25), or (4) a child documentation skill's own mandatory preview/confirmation gate. That child-skill gate takes precedence over this parent rule. Do not bypass it by editing the document manually. Once the user approves or declines the preview, continue the parent workflow immediately.
 
-**NEVER skip verification** — Phase 5 verification using `/opsx:verify` is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
+**NEVER implement tasks directly** — Always delegate to `openspec-apply-change` skill via sub-agents. The opsx:apply workflow loads context files (proposal, design, specs, tasks) and provides dynamic instructions based on OpenSpec's state management. If you implement tasks directly, you bypass OpenSpec's progress tracking and context loading.
+
+**NEVER skip verification** — Verification using `openspec-verify-change` (Step 36) is mandatory as the final step. Verification catches incomplete tasks, unimplemented requirements, and design divergences. The verification report serves as the completion summary. Skipping verification risks archiving incomplete or incorrect implementations.
 
 **NEVER proceed with invalid task format** — This skill depends on markdown checklist format (`- [ ] task`) for progress tracking and resumption detection. If tasks.md uses numbered lists or plain bullets, exit early with an error. Do not attempt to work around the format issue — the user must fix tasks.md first.
 
 **NEVER skip dependency levels** — If Slice A blocks Slice B, Slice B cannot start until Slice A completes successfully. Do not spawn dependent slices before their blockers finish, even if it would speed up implementation. The dependency graph in the Parallelization Strategy must be respected.
 
-**NEVER skip living document updates** — Phase 4 updates living documents (ARCHITECTURE.md, AGENTS.md, README.md, config.yaml) to keep documentation synchronized with implementation. This phase runs BEFORE verification so the verification step can check documentation completeness. Do not skip to verification without updating living documents first.
+**NEVER skip living document updates** — Living document updates (Steps 28-32) keep ARCHITECTURE.md, AGENTS.md, README.md, and config.yaml synchronized with implementation. These steps run BEFORE the completion timestamp and verification so the verification step can check documentation completeness. Do not skip to timestamp recording or verification without updating living documents first.
+
+**NEVER manually edit a living document when its associated Accelint skill is installed** — If `accelint-onboard-openspec`, `accelint-architecture-doc`, `accelint-onboard-agents`, or `accelint-readme-writer` exists for the target document, you MUST invoke that skill and follow its workflow, including any preview/confirmation gate. Manual edits are fallback-only when the corresponding skill is unavailable.
 
 ## Configuration Requirements
 
@@ -659,7 +809,7 @@ All requirements implemented. No critical issues found.
 ### Next Steps
 1. Review the changes: `git diff`
 2. Run tests: `pnpm test`
-3. Archive this change: `/opsx:archive remove-security-ruleset`
+3. Archive this change: Invoke the `accelint-qrspi-archive` skill with `remove-security-ruleset`
 
 Ready to archive!
 ```
@@ -689,7 +839,7 @@ Running verification...
 
 **Next Steps:**
 1. Fix critical issues
-2. Re-run verification: `/opsx:verify auth-refactor`
+2. Re-run verification: Invoke the `openspec-verify-change` skill with `auth-refactor`
 3. Or re-invoke this skill to retry
 
 Not ready to archive until critical issues are resolved.
@@ -725,3 +875,56 @@ Running verification...
 **Change:** update-readme
 All tasks complete. Ready to archive!
 ```
+
+## File Changes Summary
+
+After verification completes, generate a structured diff summary for the user. This summary provides a scannable overview of all code-level changes without descriptions.
+
+**CRITICAL**: This summary is MANDATORY after the verification report. Do not skip it.
+
+41. Run `git diff` to capture all changes made during this implementation
+
+42. Parse the archived change spec from `openspec/archive/<change-name>/` to understand the change's scope
+
+43. Generate a structured token-level change list following this exact format:
+
+   **Template:**
+   ```
+   File Changes Made In This Change:
+   <token_type>   <file_name>:<line_number>   <symbol_name>   <[change_type]>
+   ```
+
+   **Rules:**
+   - **Token Types**: function, constant, type, test, class, interface, enum, etc.
+   - **Change Types**: [added], [modified], [deleted]
+   - **Line Numbers**: Use "Ln " prefix (e.g., "Ln 234")
+   - **Source Directory Only**: Only list items from the source directory (e.g., `src/`, `lib/`). Exclude config files, build artifacts, and generated files.
+   - **Test Granularity**: For test changes, list only the `describe` block token. Do NOT list individual `it` or `test` cases — they add noise without value.
+   - **No Collapsing**: DO NOT summarize or collapse multiple changes into one line. Each token gets its own line.
+   - **Sorting**: Sort by change type (added, then modified, then deleted)
+   - **Justification**: Perfectly align columns with minimum 3 spaces between columns
+   - **No Additional Content**: ONLY provide the template above — no headers, no summary paragraphs, no explanations
+
+   **Example output:**
+   ```
+   File Changes Made In This Change:
+   test       index.test.ts:Ln 234      ensureGrammar                [added]
+   test       index.test.ts:Ln 291      ensureGrammars               [added]
+   constant   language-constants.ts     EXTENSION_TO_LANGUAGE        [added]
+   constant   language-constants.ts     LANGUAGE_EXTENSIONS          [added]
+   function   index.ts:Ln 89            ensureGrammar                [added]
+   function   index.ts:Ln 112           ensureGrammars               [added]
+   function   scan.ts:Ln 45             detectLanguagesInFiles       [added]
+   type       errors.ts:Ln 12           AuditKitError                [modified]
+   function   errors.ts:Ln 65           formatError                  [modified]
+   function   index.test.ts:Ln 23       expectErrWithType            [modified]
+   constant   index.ts:Ln 15            LANGUAGE_MAP                 [modified]
+   constant   index.ts:Ln 28            SUPPORTED_EXTENSIONS         [modified]
+   function   index.ts:Ln 156           getWasmPath                  [modified]
+   function   scan.ts:Ln 632            executeScan                  [modified]
+   function   language-detection.ts     EXTENSION_TO_LANGUAGE        [deleted]
+   ```
+
+44. Present the file changes summary immediately after the verification report
+
+**Output**: Justified, sorted token-level change list showing all additions, modifications, and deletions in source code

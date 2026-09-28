@@ -1,0 +1,28 @@
+"""Noise suppression for the eval harness. See references/frameworks/deepeval.md.
+
+Drops the cosmetic 'logprobs unsupported' ERROR (GEval's fallback succeeds) and
+silences litellm's stdout polish. Idempotent; call from conftest at import.
+"""
+
+from __future__ import annotations
+
+import logging
+import warnings
+
+
+class _DropLogprobsFallbackErrors(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        msg = record.getMessage()
+        return not (record.levelno >= logging.ERROR and "logprobs" in msg)
+
+
+def apply_noise_filters() -> None:
+    warnings.filterwarnings("ignore", message=".*PydanticSerializationUnexpectedValue.*")
+    root = logging.getLogger()
+    if not any(isinstance(f, _DropLogprobsFallbackErrors) for f in root.filters):
+        root.addFilter(_DropLogprobsFallbackErrors())
+    try:
+        import litellm
+        litellm.suppress_debug_info = True
+    except ImportError:
+        pass

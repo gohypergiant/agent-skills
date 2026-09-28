@@ -1,0 +1,142 @@
+---
+title: Overview
+description: Next.js performance optimization and best practices covering Server Components, Server Actions, data fetching, RSC serialization, and parallel operations for both App Router and Pages Router.
+source: skills/accelint-nextjs-best-practices/SKILL.md
+source_sha: 0af092353242e94ddfd3cf2d0370fe424199f901
+doc_sha: 9f376bc3dd23b7daa61dc79557379cb2a6361971
+deprecated: false
+updated: 2026-07-20
+---
+
+## What It Helps You Do
+
+Optimize Next.js applications for performance and security across App Router and Pages Router patterns.
+
+Activate it with:
+- `/accelint-nextjs-best-practices`
+- Phrases like "optimize this Next.js code" or "secure this Server Action"
+- Related requests about Server Components, RSC serialization, Suspense, or slow Next.js pages
+
+This skill helps you:
+
+- Eliminate server-side data fetching waterfalls and parallelize independent operations
+- Secure Server Actions with authentication and input validation
+- Reduce RSC serialization overhead to minimize response sizes
+- Place Suspense boundaries strategically for faster rendering
+- Choose between Server and Client Components based on interactivity needs
+- Catch anti-patterns during code review with expected performance impact
+
+## When to Use
+
+Activate this skill when:
+
+- Writing Next.js code (App Router or Pages Router) with Server Components, Server Actions, or API routes
+- Saying "optimize this Next.js code", "this page is slow", "secure this Server Action"
+- Implementing data fetching with `fetch()`, `React.cache()`, or database queries
+- Reviewing code for performance issues, RSC serialization problems, or authentication gaps
+- Deciding between Server and Client Component boundaries
+- Implementing Suspense boundaries or parallel data fetching
+
+## How It Works
+
+The skill targets three optimization areas:
+
+- **Server-side performance** — Eliminates waterfall chains by starting operations immediately, parallelizes independent fetches with `Promise.all()`, deduplicates requests using `React.cache()`, and minimizes RSC serialization by passing only necessary data
+- **Security** — Validates and authenticates every Server Action, implements authorization checks before database operations, and prevents data exposure through input validation
+- **Component architecture** — Places Suspense boundaries strategically to unblock rendering, chooses Server vs Client Components based on interactivity, and structures components to enable parallel data streaming
+
+Each pattern includes before/after examples with expected performance impact so you can prioritize the most valuable improvements.
+
+
+## Examples
+
+### Example: Eliminating Data Fetching Waterfalls
+
+```bash
+/accelint-nextjs-best-practices src/app/dashboard/page.tsx
+```
+
+The skill spots sequential fetches, recommends where to parallelize, and shows the before/after pattern to apply.
+
+```tsx
+// Before: Sequential fetching (waterfall)
+async function Page() {
+  const user = await getUser();
+  const posts = await getPosts(user.id);
+  return <div>...</div>;
+}
+
+// After: Parallel fetching
+async function Page() {
+  const userPromise = getUser();
+  const user = await userPromise;
+  const postsPromise = getPosts(user.id);
+  const posts = await postsPromise;
+  return <div>...</div>;
+}
+```
+
+### Example: Securing Server Actions
+
+```bash
+/accelint-nextjs-best-practices src/app/actions/delete-post.ts
+```
+
+The skill reviews the action for missing auth and validation, then suggests the safer server-side pattern.
+
+```tsx
+// Before: No authentication
+export async function deletePost(postId: string) {
+  await db.delete(postId);
+}
+
+// After: Authenticated and validated
+export async function deletePost(postId: string) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Unauthorized');
+  
+  const post = await db.getPost(postId);
+  if (post.authorId !== session.user.id) {
+    throw new Error('Forbidden');
+  }
+  
+  await db.delete(postId);
+}
+```
+
+### Example: Minimizing RSC Serialization
+
+```bash
+/accelint-nextjs-best-practices src/app/profile/UserProfile.tsx
+```
+
+The skill highlights oversized server payloads and recommends selecting only the fields the client component actually needs.
+
+```tsx
+// Before: Over-serialization (entire user object)
+async function UserProfile({ userId }: Props) {
+  const user = await db.users.findUnique({ where: { id: userId } });
+  return <Profile user={user} />;
+}
+
+// After: Minimal serialization (only needed fields)
+async function UserProfile({ userId }: Props) {
+  const user = await db.users.findUnique({
+    where: { id: userId },
+    select: { name: true, avatar: true, bio: true }
+  });
+  return <Profile user={user} />;
+}
+```
+
+## Good to Know
+
+> **Good to know:** This skill focuses on Next.js-specific patterns. For general React optimization, use `accelint-react-best-practices`. For broader TypeScript guidance, use `accelint-ts-best-practices`.
+
+> **Good to know:** Requires a Next.js project (App Router or Pages Router) and basic understanding of React Server Components and async/await patterns.
+
+## Related
+
+- [accelint-react-best-practices](/docs/react-best-practices) — React-specific optimization patterns
+- [accelint-ts-best-practices](/docs/ts-best-practices) — TypeScript coding standards
+- [accelint-security-best-practices](/docs/security-best-practices) — Broader security auditing

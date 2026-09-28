@@ -4,17 +4,17 @@ When to recommend plan mode before proceeding with execution. Getting this decis
 
 ## What
 
-Specific criteria that indicate a task needs design-before-execution approach. Plan mode lets you explore, research, and design before committing to implementation.
+These are specific criteria that indicate a task needs a design-before-execution approach. Plan mode lets you explore, research, and design the approach before committing to implementation.
 
 ## Why It Matters
 
 Complex tasks executed without planning lead to:
-- Rework when wrong approach chosen
+- Rework when the wrong approach is chosen
 - Missed requirements discovered mid-implementation
 - Architectural decisions that conflict with each other
 - Expensive backtracking after significant progress
 
-Five minutes of planning prevents hours of rework.
+Five minutes of planning can prevent hours of rework.
 
 ---
 
@@ -30,24 +30,24 @@ Five minutes of planning prevents hours of rework.
 - Scalability approach affects infrastructure needs
 - Infrastructure needs affect cost and complexity
 
-**Why plan mode:** Need to see full decision tree before committing to path.
+**Why plan mode:** You need to see the full decision tree before committing to a path.
 
 ---
 
-### 2. Many Sequential Phases
+### 2. Many Sequential Steps
 
-**Trigger:** >5 phases where each produces artifacts needed by next phase.
+**Trigger:** >5 steps where each produces artifacts needed by the next step.
 
 **Example:** "Migrate database from MySQL to PostgreSQL"
-- Phase 1: Audit schema differences
-- Phase 2: Write migration scripts
-- Phase 3: Set up dual-write system
-- Phase 4: Backfill data
-- Phase 5: Validate data integrity
-- Phase 6: Switch read traffic
-- Phase 7: Decommission MySQL
+- Step 1: Audit schema differences
+- Step 2: Write migration scripts
+- Step 3: Set up dual-write system
+- Step 4: Backfill data
+- Step 5: Validate data integrity
+- Step 6: Switch read traffic
+- Step 7: Decommission MySQL
 
-**Why plan mode:** Each phase depends on previous, wrong approach early cascades.
+**Why plan mode:** Each step depends on the previous step. A wrong early approach cascades.
 
 ---
 
@@ -85,7 +85,7 @@ Five minutes of planning prevents hours of rework.
 - Affects all users if broken
 - Data breach risk
 
-**Why plan mode:** Cost of getting it wrong >> cost of planning.
+**Why plan mode:** The cost of getting it wrong is much higher than the cost of planning.
 
 ---
 
@@ -180,7 +180,7 @@ If this is user's first significant change to unfamiliar codebase:
 - All decisions already made
 - Just needs execution
 
-**Why not:** Planning already done.
+**Why not:** The planning is already done.
 
 ---
 
@@ -190,7 +190,7 @@ If this is user's first significant change to unfamiliar codebase:
 - Not building anything
 - Just investigating
 
-**Why not:** Use explore agent instead, plan mode is for implementation design.
+**Why not:** Use the explore agent instead. Plan mode is for implementation design.
 
 ---
 
@@ -211,13 +211,13 @@ If you recommend plan mode but user says "just proceed":
 
 **Template:**
 ```
-This task involves [X interdependent decisions and Y sequential phases].
+This task involves [X interdependent decisions and Y sequential steps].
 Plan mode will help design the approach before execution, preventing costly
 rework.
 
 Key complexity factors:
 - [Factor 1: e.g., "Choosing auth method affects scalability"]
-- [Factor 2: e.g., "7 sequential phases each depending on previous"]
+- [Factor 2: e.g., "7 sequential steps each depending on the previous step"]
 - [Factor 3: e.g., "High failure consequence—security implications"]
 
 Shall I enter plan mode to design the approach first?
@@ -246,7 +246,7 @@ I recommend option 1 for this scope. Which would you prefer?
 
 ### For Simple Tasks (Don't Mention)
 
-Just proceed. Mentioning plan mode adds unnecessary complexity to simple tasks.
+Just proceed. Mentioning plan mode adds unnecessary overhead to simple tasks.
 
 ---
 
@@ -261,10 +261,10 @@ Just proceed. Mentioning plan mode adds unnecessary complexity to simple tasks.
 
 ### What to Avoid
 
-- Don't make user feel stupid for asking
-- Don't overstate complexity (fear-mongering)
-- Don't decide unilaterally (always offer choice)
-- Don't make plan mode sound bureaucratic
+- Do not make the user feel stupid for asking.
+- Do not overstate complexity (fear-mongering).
+- Do not decide unilaterally (always offer a choice).
+- Do not make plan mode sound bureaucratic.
 
 ---
 
@@ -362,6 +362,6 @@ Never enter plan mode without user agreement. Always present option and rational
 
 ## Key Principle
 
-Plan mode is about **design before execution** when execution is expensive to redo. It's not about bureaucracy or overthinking. The cost of planning should be less than the expected cost of rework without planning.
+Plan mode is about **design before execution** when execution is expensive to redo. It is not about bureaucracy or overthinking. The cost of planning should be lower than the expected cost of rework without planning.
 
 **Formula:** Recommend plan mode when `(Probability of wrong approach × Cost of rework) > Cost of planning`

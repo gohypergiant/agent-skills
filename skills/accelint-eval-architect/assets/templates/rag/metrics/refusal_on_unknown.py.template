@@ -1,0 +1,68 @@
+"""Refusal-on-unknown: on questions the corpus cannot answer, the bot must
+refuse — not invent. Deterministic, scored against the adversarial
+(answerable: false) gold entries.
+
+A docs bot's worst failure is confidently answering what isn't in the docs;
+high recall plus invented answers is still a failed bot.
+"""
+
+from typing import Optional
+
+# Closed, case-insensitive substring list per the skill's closed-list ethos:
+# an answer matching ANY marker counts as a refusal. Extend per house style —
+# open-ended "did it refuse?" heuristics drift; a closed list stays auditable.
+REFUSAL_MARKERS: tuple[str, ...] = (
+    "not in the documentation",
+    "don't know",
+    "do not know",
+    "couldn't find",
+    "could not find",
+    "cannot find",
+    "no information",
+    "don't have information",
+    "do not have information",
+    "unable to answer",
+    "not covered",
+    "outside the scope",
+)
+
+
+def _is_refusal(answer: str) -> bool:
+    lowered = (answer or "").lower()
+    return any(marker in lowered for marker in REFUSAL_MARKERS)
+
+
+class RefusalOnUnknownMetric:
+    def __init__(self, threshold: float = 1.0):
+        self.threshold = threshold
+        self.score = 0.0
+        self.success = False
+        self.reason: Optional[str] = None
+
+    def measure(self, answers_by_q: dict[str, str], gold_entries: list[dict]) -> float:
+        unanswerable = [e for e in gold_entries if not e.get("answerable")]
+        violations: list[str] = []
+        for e in unanswerable:
+            answer = answers_by_q.get(e["id"])
+            if answer is None:
+                violations.append(f"{e['id']}: no answer captured")
+            elif not _is_refusal(answer):
+                violations.append(f"{e['id']}: answered instead of refusing — '{answer[:80]}'")
+
+        total = len(unanswerable)
+        self.score = 1.0 if total == 0 else (total - len(violations)) / total
+        self.success = self.score >= self.threshold
+        self.reason = (
+            f"{len(violations)}/{total} unanswerable question(s) not refused: "
+            + "; ".join(violations)
+            if violations
+            else f"All {total} unanswerable question(s) correctly refused"
+        )
+        return self.score
+
+    def is_successful(self) -> bool:
+        return self.success
+
+    @property
+    def __name__(self):
+        return "Refusal On Unknown"

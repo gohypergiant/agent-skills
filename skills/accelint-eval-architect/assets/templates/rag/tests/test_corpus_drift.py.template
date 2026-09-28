@@ -1,0 +1,46 @@
+"""Corpus-drift tripwire: the gold set is only valid for the corpus it was
+curated against. Skips until `corpus_path` is set in goldset.yaml."""
+
+import re
+from pathlib import Path
+
+import pytest
+
+from corpus_hash import compute_corpus_hash
+
+_EVALS_DIR = Path(__file__).parent.parent
+_HASH_RE = re.compile(r"^[0-9a-f]{16}$")
+
+
+def test_corpus_matches_goldset_hash(goldset):
+    corpus_path = goldset.get("corpus_path")
+    if not corpus_path:
+        pytest.skip("corpus_path not configured in goldset.yaml — drift check skipped")
+
+    corpus_dir = Path(corpus_path)
+    if not corpus_dir.is_absolute():
+        corpus_dir = (_EVALS_DIR / corpus_dir).resolve()
+    if not corpus_dir.is_dir():
+        # Once a real hash is recorded the tripwire is ARMED: a corpus_path that
+        # stops resolving (typo, moved dir) must fail loudly — a silent skip
+        # would disarm drift detection forever.
+        if _HASH_RE.match(str(goldset.get("corpus_hash") or "")):
+            pytest.fail(
+                f"corpus_path is set but does not exist here ({corpus_dir}) — fix the "
+                "path or unset it; skipping would silently disarm the drift tripwire."
+            )
+        pytest.skip(f"corpus_path does not exist here ({corpus_dir}) — drift check skipped")
+
+    current = compute_corpus_hash(corpus_dir)
+    recorded = goldset.get("corpus_hash")
+    if not (recorded and _HASH_RE.match(str(recorded))):
+        pytest.fail(
+            f"corpus_hash in goldset.yaml is still a placeholder ({recorded!r}). "
+            f"Record the real hash of the curated corpus:  python corpus_hash.py "
+            f"{corpus_dir}  → {current}"
+        )
+    assert current == recorded, (
+        f"Corpus drift detected: current hash {current} != gold-set hash {recorded}. "
+        "The corpus changed since the gold set was curated — re-verify every "
+        "supporting_passages reference, then update corpus_hash in goldset.yaml."
+    )

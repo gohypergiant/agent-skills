@@ -1,0 +1,91 @@
+"""Pytest config + fixtures for the __SKILL_NAME__ DeepEval harness.
+
+Generalize the startup checks per target. The `sut` and `record_metric` fixtures
+and the terminal-summary scorecard are reusable as-is.
+"""
+
+import os
+from pathlib import Path
+from typing import Any, Callable
+
+import pytest
+from dotenv import load_dotenv
+
+from _noise_filter import apply_noise_filters
+from _reporter import ScorecardCollector, render, write_artifact
+from litellm_judge import ConfigurationError, build_judge
+
+env_file = Path(__file__).parent / ".env"
+if env_file.exists():
+    load_dotenv(env_file)
+
+apply_noise_filters()
+
+_collector: ScorecardCollector | None = None
+
+
+def _get_collector() -> ScorecardCollector:
+    global _collector
+    if _collector is None:
+        _collector = ScorecardCollector()
+    return _collector
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "live: hits the judge LLM (costs money, skipped by default)")
+
+
+# Env validation lives in the fixtures, not pytest_configure: each test is
+# blocked only by the env it actually uses. Regression tests need no env at
+# all; deterministic tests that invoke the SUT need only SUT env (and still
+# bill SUT tokens — "free" means no JUDGE calls); judge env is required only
+# under `-m live`.
+@pytest.fixture(scope="session")
+def judge():
+    try:
+        return build_judge()
+    except ConfigurationError as e:
+        pytest.fail(f"Judge configuration failed (needed for -m live): {e}")
+
+
+@pytest.fixture(scope="session")
+def fixtures_dir() -> Path:
+    return Path(__file__).parent / "fixtures"
+
+
+@pytest.fixture
+def sut() -> Callable[..., dict]:
+    """Invoke the SUT. Implement invoke_sut in runner.py: a single-shot
+    litellm.completion() that inlines the skill's system prompt. The result's
+    `metadata` (latency/tokens) is the test's to record via record_metric."""
+    if not os.getenv("SUT_MODEL_ID"):
+        pytest.fail("SUT_MODEL_ID not set (needed by tests that invoke the SUT). See .env.example.")
+    from runner import invoke_sut
+
+    def _run(fixture_path: Path, mode: str, **kw: Any) -> dict:
+        return invoke_sut(fixture_path=fixture_path, mode=mode, **kw)
+
+    return _run
+
+
+@pytest.fixture
+def record_metric() -> Callable[..., None]:
+    collector = _get_collector()
+
+    def _record(*, name, score, threshold, dimension, reason=None, passed=None):
+        collector.record(name=name, score=score, threshold=threshold,
+                         dimension=dimension, reason=reason, passed=passed)
+
+    return _record
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    if _collector is None:
+        return
+    report = _collector.report()
+    tr = terminalreporter
+    tr.write_line("")
+    for line in render(report).splitlines():
+        tr.write_line(line)
+    path = write_artifact(report, Path(__file__).parent / "results")
+    tr.write_line(f"\nWrote {path.relative_to(Path(__file__).parent)}")
