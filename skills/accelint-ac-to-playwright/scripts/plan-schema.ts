@@ -49,6 +49,13 @@ const expectTextStep = z.object({
   value: z.string(),
 }).strict();
 
+const expectValueStep = z.object({
+  type: z.literal("assertion").default("assertion"),
+  action: z.literal("expectValue"),
+  target: targetValidator,
+  value: z.string(),
+}).strict();
+
 const expectUrlStep = z.object({
   type: z.literal("assertion").default("assertion"),
   action: z.literal("expectUrl"),
@@ -150,6 +157,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   dragStep,
   expectNotVisibleStep,
   expectTextStep,
+  expectValueStep,
   expectUrlStep,
   expectVisibleStep,
   fillStep,

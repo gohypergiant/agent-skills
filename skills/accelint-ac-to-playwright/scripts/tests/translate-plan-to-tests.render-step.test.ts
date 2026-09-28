@@ -92,6 +92,15 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { type: "assertion", action: "expectValue", target: "form.input.radius", value: "5" },
+      3,
+      [
+        'await expect(page.getByTestId("form.input.radius")).toHaveCount(1);',
+        'await expect(page.getByTestId("form.input.radius")).toHaveValue("5");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectValue", testId: "form.input.radius" })'
+      ],
+    ],
+    [
       { type: "action", action: "fill", target: "#email", value: "a@b.com" },
       5,
       [

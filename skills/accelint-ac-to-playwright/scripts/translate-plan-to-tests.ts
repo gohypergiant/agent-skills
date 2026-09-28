@@ -216,6 +216,19 @@ function renderStep(step: Step, stepIndex: number): string {
       ].join("\n");
     }
 
+    case "expectValue": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await expect(${locator}).toHaveValue(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
     case "expectUrl":
       return [
         `    try {`,
