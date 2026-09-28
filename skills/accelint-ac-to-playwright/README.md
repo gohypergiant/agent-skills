@@ -51,6 +51,7 @@ And the following assertions:
 - expectNotVisible - the element should not be visible on the page (can be present in the DOM or not).
 - expectText - the element should contain some specific text.
 - expectUrl - the current page should be some specific URL.
+- expectValue - the input element's value property should equal a specific string.
 - expectVisible - the element should be visible on the page.
 
 ## Acceptance criteria notes

@@ -60,6 +60,13 @@ Outcomes must specify **what to verify** (text content, element presence, or sta
 - ❌ Invalid: "a success message appears" (what does it say?)
 - ❌ Invalid: "the user sees an error" (what error text?)
 
+**Input value verification** (value property of input elements):
+- ✅ Valid: "the radius input on the form has value '5'"
+- ✅ Valid: "the email input field has value 'test@example.com'"
+- ✅ Valid: "the slider value is '50'"
+- ❌ Invalid: "the input shows 5" (use "has value" for value attribute)
+- ❌ Invalid: "the radius is 5" (need to specify it's the input's value)
+
 **Element visibility** (specific element with trigger words):
 - ✅ Valid: "the tracks table shows up on the page"
 - ✅ Valid: "the loading spinner disappears"
