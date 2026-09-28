@@ -44,6 +44,59 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts expectInputValue with target and value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Check input value",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectInputValue", target: "form.input.radius", value: "5" }
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects expectInputValue without target", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectInputValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectInputValue", value: "5" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectInputValue without value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectInputValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectInputValue", target: "form.input.radius" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
   it("rejects unknown action", () => {
     const input = {
       suiteName: "Smoke",
@@ -1318,6 +1371,7 @@ describe("Test fixture validations", () => {
       new Set([
         "click",
         "doubleClick",
+        "expectInputValue",
         "expectNotVisible",
         "expectText",
         "expectUrl",
