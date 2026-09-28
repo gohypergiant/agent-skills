@@ -2,12 +2,12 @@
 
 ## Task
 
-When `npx validate-plan` fails, diagnose the specific schema error and suggest ONE focused fix for the main agent to apply. Report what needs to change and let the main agent make the modification and re-validate.
+When an in-memory schema preflight or `npx validate-plan` fails, diagnose the specific schema error and suggest ONE focused fix for the main agent to apply. Report what needs to change and let the main agent make the modification and re-validate.
 
 ## Input
 
 - JSON plan content
-- Validation error message from `npx validate-plan`
+- Validation error message from the failed in-memory preflight or `npx validate-plan`
 
 ## Output Format
 
@@ -20,7 +20,7 @@ When `npx validate-plan` fails, diagnose the specific schema error and suggest O
 
 Provide EXACTLY this format with ONE fix only:
 
-**Error type**: [e.g. field order, missing field, wrong type, extra field, incorrect value]
+**Error type**: [e.g. missing field, wrong type, extra field, incorrect value]
 **Specific issue**: [quote relevant JSON section]
 **Suggested fix**: [describe ONE suggested fix that the main agent should implement]
 
@@ -31,30 +31,28 @@ Do not suggest alternative fixes or multiple changes.
 
 ### Top-Level Object (testSuiteSchema)
 
-Required fields in exact order:
-1. `suiteName` (string)
-2. `tags` (array of strings starting with `@`, optional)
-3. `source` (object with `repo` and `path` strings)
-4. `tests` (array of test objects, minimum 1)
+Required fields:
+- `suiteName` (string)
+- `tags` (array of strings starting with `@`, optional)
+- `source` (object with `repo` and `path` strings)
+- `tests` (array of test objects, minimum 1)
 
 **Common errors:**
-- Fields in wrong order (schema uses `.strict()`)
 - Extra fields not in schema
 - Missing `source` or `tests`
 - Empty `tests` array
 
 ### Test Object (testSchema)
 
-Required fields in exact order:
-1. `testName` (string)
-2. `tags` (array of strings starting with `@`, optional)
-3. `startUrl` (string)
-4. `steps` (array of step objects, minimum 1)
+Required fields:
+- `name` (string)
+- `startUrl` (string)
+- `tags` (array of strings starting with `@`, optional)
+- `steps` (array of step objects, minimum 1)
 
 **Common errors:**
-- Missing `startUrl` or `steps`
+- Missing `name`, `startUrl`, or `steps`
 - Empty `steps` array
-- Fields in wrong order
 
 ### Step Objects
 
@@ -75,8 +73,8 @@ Every step must have:
 | `doubleClick` | `x`, `y` | Coordinates (integers ≥ 0) |
 | `mouseMove` | `x`, `y` | Coordinates (integers ≥ 0) |
 | `drag` | `fromX`, `fromY`, `toX`, `toY` | All integers ≥ 0 |
-| `mouseDown` | `x`, `y` | Must be paired with `mouseUp` |
-| `mouseUp` | `x`, `y` | Must follow `mouseDown` with matching button |
+| `mouseDown` | — (`button` optional) | Must be paired with `mouseUp` |
+| `mouseUp` | — (`button` optional) | Must follow `mouseDown` with matching button |
 | `keyDown` | `value` | Must be paired with `keyUp` |
 | `keyUp` | `value` | Must follow `keyDown` with matching key |
 | `scroll` | `direction`, `amount` | Direction: `"up"`, `"down"`, `"left"`, or `"right"`, amount: integer |
@@ -118,7 +116,6 @@ Schema validation fails
       → YES: Check if field is in schema for that action type
         → Field not in schema → Report that extra field should be removed
         → Field required but missing → Report which field needs to be added with correct type
-        → Field in wrong order → Report correct field order per schema
         → Field has wrong type → Report expected type (e.g., string to number)
       → NO: Check general structure
         → Empty array? → Report that arrays need minimum required items
@@ -181,7 +178,7 @@ mouseUp at step 8 has no preceding mouseDown. mouseUp requires a mouseDown actio
 ```
 **Error type**: incorrect value
 **Specific issue**: Step 8 is `mouseUp` but there's no unpaired `mouseDown` before it
-**Suggested fix**: Either a `mouseDown` step needs to be added before step 8 with matching x/y coordinates and button, or the orphaned `mouseUp` should be removed if it shouldn't exist
+**Suggested fix**: Remove the orphaned `mouseUp` action at step 8
 ```
 
 ## NEVER Do
@@ -193,7 +190,7 @@ mouseUp at step 8 has no preceding mouseDown. mouseUp requires a mouseDown actio
 ## Important Notes
 
 - The schema uses `.strict()` on all objects, meaning extra fields cause validation failures
-- Field order matters in Zod strict mode
+- Object-property order does not affect Zod validation
 - All coordinate fields (`x`, `y`, `fromX`, `fromY`, `toX`, `toY`) must be non-negative integers
 - Tags must start with `@`
 - Targets must follow `area.component.intent` pattern (validated by targetValidator)

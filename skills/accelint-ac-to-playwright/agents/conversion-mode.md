@@ -19,15 +19,33 @@ You MUST execute this workflow, even if you're in plan mode. You are not allowed
   - Ensure dependencies are installed and scripts are built: run `npm install && npm run build` in the skill directory
   - Read `scripts/plan-schema.ts` to understand the complete schema structure (field names, types, and required properties)
   - Construct the complete JSON test plan object following the schema structure from `scripts/plan-schema.ts`
-  - Use the Write tool to create the file at `<plans-output-dir>/<suite-slug>.json` with the JSON content
-  - Run validation from the skill directory: `npx validate-plan <plans-output-dir>/<suite-slug>.json`
-  - If validation fails:
-    - Spawn subagent using the Schema Diagnostic Prompt Template below
-    - Apply the suggested fix → validate again
-    - If still failing after 2 fix attempts (3 validation attempts total), stop and report the validation errors to the user
+  - Use up to 3 validation attempts. Each attempt has these steps:
+    1. Run the in-memory schema preflight from the skill directory. Do not create a plan file for this check:
+
+       ```bash
+       node - <<'NODE'
+       const { testSuiteSchema } = require("./dist/scripts/plan-schema.js");
+       const plan = <paste the complete JSON plan object from the preceding bullet>;
+       const result = testSuiteSchema.safeParse(plan);
+
+       if (!result.success) {
+         console.error(JSON.stringify(result.error.format(), null, 2));
+         process.exit(1);
+       }
+       NODE
+       ```
+
+    2. If the preflight fails, spawn the Schema Diagnostic Prompt Template below, apply its one suggested fix, and start the next validation attempt. Do not write `<plans-output-dir>/<suite-slug>.json` unless the preflight passes.
+    3. If the preflight passes, use the Write tool to create `<plans-output-dir>/<suite-slug>.json` with the JSON content.
+    4. Run persisted-output verification from the skill directory: `npx validate-plan <plans-output-dir>/<suite-slug>.json`.
+    5. If persisted-output verification fails, spawn the Schema Diagnostic Prompt Template below, apply its one suggested fix, and start the next validation attempt at the in-memory preflight.
+  - If an attempt still fails after 2 fix attempts (3 validation attempts total), stop and report the validation errors to the user.
 4. **Execute translation and write test file**:
   - From the skill directory, run: `npx generate-tests <plans-output-dir>/<suite-slug>.json --tests-dir <tests-output-dir> --summary-dir <summaries-output-dir>`
-  - If translation fails:
+  - If translation fails because a source-derived `suiteName` or test name contains no letter or number:
+    - Report the translation error to the user and STOP.
+    - Do not change the source-derived name or retry translation.
+  - For any other translation failure:
     - Spawn subagent using the Translation Diagnostic Prompt Template below (mandatory regardless of how obvious the error seems)
     - Apply the suggested fix and retry translation
     - If translation still fails, stop and report the error to the user
@@ -36,35 +54,29 @@ You MUST execute this workflow, even if you're in plan mode. You are not allowed
   - Work on the next input file, if any remain.
   - After all files are processed:
     - Copy `skills/accelint-ac-to-playwright/assets/fixtures/` directory to `<tests-output-dir>/fixtures/`. This directory contains shared test utilities (`error-handling.ts` and `console-tracking.ts`) that generated tests import from.
-    - Ask the user if they would like a Playwright config template. If yes, copy `skills/accelint-ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location.
+    - Run the Playwright-config decision contract:
+      - `decision_id`: `playwright_config_template`
+      - Accepted values: `yes` copies `skills/accelint-ac-to-playwright/assets/templates/playwright.config.ts` into the user‑specified summaries location; `no` does not copy the template.
+      - Ask: "Would you like a Playwright config template? Reply exactly `yes` or `no`."
+      - Until one accepted value is received for `playwright_config_template`, copying the template is blocked. A valid `no` completes this optional branch without a copy.
+      - Treat invalid, ambiguous, declined, cancelled, dismissed, timed-out, silent, partial, or transport-failed input as unresolved. Ask again when interaction is available; otherwise report `unresolved_noninteractive` and do not copy the template.
+      - On resumption, present the same `decision_id` and accepted values. Do not infer a selection from earlier conversation.
 
 ## Stopping Protocol: When Assessment Fails in Conversion Mode
 
-**When to use:** Conversion workflow requires assessment-first. If assessment reports "❌ AC are not conversion-ready", you MUST stop and communicate clearly why conversion cannot proceed.
+**When to use:** Conversion workflow requires assessment-first. If assessment reports "❌ AC are not conversion-ready", you MUST stop plan and test generation. Assessment mode owns the user-facing failure response and any clarification or reassessment route.
 
 **What NOT to do:**
-- Don't silently stop your response
+- Don't silently stop the assessment response
 - Don't proceed to generate JSON plans or test files
-- Don't attempt to "fix" the AC yourself
+- Don't append a conversion-specific question or template after the assessment output
+- Don't independently fix the AC. If assessment mode receives a valid `agent_updates` selection, follow that assessment-mode route; conversion remains stopped until a reassessment reports that the AC are conversion-ready.
 
-**Communication template:**
+**Communication rule:**
 
-```
-Assessment complete: these AC are not conversion-ready.
+Use the assessment-mode output as the complete user-facing response. Do not add preambles, summaries, explanations, or a separate conversion next-step question before or after it.
 
-[Insert the full assessment report with enumerated issues or clarifying questions]
-
-I cannot proceed with test plan generation until these issues are resolved.
-
-Next steps:
-- Review the issues listed above
-- Update the AC to address each issue
-- Once the AC are updated, I can run the conversion workflow
-
-Would you like help understanding any of the issues, or should I re-assess after you've made updates?
-```
-
-**Why this matters:** The workflow says "STOP" when assessment fails, but LLMs interpret this as "end my response" rather than "explain to the user why I'm stopping." This template ensures users understand the blocker and know what to do next.
+**Why this matters:** The workflow says "STOP" when assessment fails, but LLMs can interpret this as ending the response without explaining the blocker. Assessment mode supplies the required explanation, decision contract, and any permitted remediation route without bypassing its validated choices.
 
 ## Naming Transformations
 
@@ -147,8 +159,8 @@ Diagnose this validation error and suggest ONE fix.
 JSON plan:
 [full plan content]
 
-Error message:
-[full error output from npx validate-plan]
+Validation error message:
+[full error output from the failed in-memory preflight or `npx validate-plan`]
 ```
 
 ### Translation Diagnostic Prompt Template
@@ -188,12 +200,12 @@ JSON plan (relevant section):
 - **NEVER store absolute file paths in source metadata** — the expected convention is to use repo-relative paths for git repos, basename only for external files
 - **NEVER assume targets or values**
   - **Why:** If AC says "click the button" without identifying which button, ask for clarification rather than guessing. Generic targets like `button.generic` bypass the controlled vocabulary system and create tests that break because they match multiple elements unpredictably.
-- **NEVER skip validation**
-  - **Why:** Even if JSON looks correct, always run `npx validate-plan` before writing files to catch errors and reduce incorrect artifact cleanup.
+- **NEVER skip either validation step**
+  - **Why:** The in-memory preflight prevents writing an invalid final plan, and `npx validate-plan` verifies the persisted output.
 - **NEVER reuse existing plans or tests**
   - **Why:** This has caused problems in the past with changes being lost, so always regenerate all steps from AC source to ensure accuracy.
-- **NEVER write a plan file without validating first**
-  - **Why:** Validation catches structural errors; writing invalid plans creates broken artifacts requiring manual cleanup.
+- **NEVER write a final plan file before it passes the in-memory schema preflight**
+  - **Why:** Preflight validation catches structural errors before the final output plan is created. Do not create a temporary plan file for the preflight.
 - **NEVER process multiple steps of one file in parallel**
   - **Why:** Complete the full pipeline (AC → plan → test → summary) for each file before moving to the next to avoid partial artifacts and state confusion.
 - **NEVER take shortcuts**
