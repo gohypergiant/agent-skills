@@ -81,9 +81,11 @@ function translateSingleTest(test: Test): string {
   if (test.tags?.length) {
     lines.push(`  test(${JSON.stringify(test.name)}, {`);
     lines.push(`    tag: ${formatTags(test.tags)}`);
-    lines.push(`  }, async ({ page }, testInfo) => {`);
+    lines.push(`  }, async ({ page: initialPage, context }, testInfo) => {`);
+    lines.push(`    let page = initialPage;`);
   } else {
-    lines.push(`  test(${JSON.stringify(test.name)}, async ({ page }, testInfo) => {`);
+    lines.push(`  test(${JSON.stringify(test.name)}, async ({ page: initialPage, context }, testInfo) => {`);
+    lines.push(`    let page = initialPage;`);
   }
 
   lines.push(`    const tracker = await setupConsoleTracking({ page, testInfo });`);
@@ -395,6 +397,32 @@ function renderStep(step: Step, stepIndex: number): string {
         `      await ${locator}.selectOption({ label: ${JSON.stringify(step.value)} });`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "switchTab": {
+      let pageSelection: string;
+      if (step.tabIdentifier === "new") {
+        pageSelection = "allPages[allPages.length - 1]";
+      } else {
+        const indexMap: Record<string, number> = { first: 0, second: 1, third: 2 };
+        const index = indexMap[step.tabIdentifier];
+        pageSelection = `allPages[${index}]`;
+      }
+
+      return [
+        `    try {`,
+        `      const allPages = context.pages();`,
+        `      const targetPage = ${pageSelection};`,
+        `      if (!targetPage) {`,
+        `        throw new Error(\`Cannot switch to ${step.tabIdentifier} tab - only \${allPages.length} tab(s) open\`);`,
+        `      }`,
+        `      page = targetPage;`,
+        `      await page.bringToFront();`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
         `      throw error;`,
         `    }`
       ].join("\n");

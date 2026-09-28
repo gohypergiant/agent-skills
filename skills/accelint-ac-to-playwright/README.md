@@ -46,6 +46,7 @@ Tests can currently use the following actions:
 - reload - refreshes the page.
 - scroll - scrolls the page in a direction by a specified pixel amount.
 - select - picks an item from a select dropdown.
+- switchTab - switches browser context to a different tab (new, first, second, or third).
 
 And the following assertions:
 - expectNotVisible - the element should not be visible on the page (can be present in the DOM or not).

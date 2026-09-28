@@ -11,7 +11,8 @@ describe("_translateSingleTest", () => {
 
     const out = _translateSingleTest(testInput);
 
-    expect(out).toContain(`test("happy path", async ({ page }, testInfo) => {`);
+    expect(out).toContain(`test("happy path", async ({ page: initialPage, context }, testInfo) => {`);
+    expect(out).toContain(`let page = initialPage;`);
     expect(out).toContain(`await page.goto("https://example.com");`);
     expect(out).toContain(`await page.goto("https://example.com/foo");`);
     expect(out).toContain(`});`);
