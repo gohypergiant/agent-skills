@@ -263,6 +263,47 @@ describe("renderStep", () => {
         'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "keyUp" })'
       ],
     ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "new" },
+      1,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[allPages.length - 1];',
+        'page = targetPage;',
+        'await page.bringToFront();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "switchTab" })'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "first" },
+      2,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[0];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "second" },
+      3,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[1];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "third" },
+      4,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[2];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
     const out = _renderStep(step, stepIndex);
 

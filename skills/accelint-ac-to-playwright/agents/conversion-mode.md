@@ -113,6 +113,7 @@ Would you like help understanding any of the issues, or should I re-assess after
     3. `keyUp` with the same modifier key
     - Valid modifiers for `keyDown`/`keyUp`: `Shift`, `Control`, `a` (app-specific)
     - The `press` action only accepts single unmodified keys and should never receive combination syntax like `Shift+g`
+  - **Tab switching**: When AC describes switching tabs (trigger phrases: "switches to", "switches back to"), use `switchTab` action with tab identifier: "new" (most recently opened), "first" (index 0), "second" (index 1), or "third" (index 2)
 - Assertions: 
   - If navigation is triggered, add `expectUrl` using the Start URL mapping.
   - For visibility changes (words: visible, appears, shows, see, seen, hides, disappears, hidden), EVERY target mentioned with a visibility change MUST have BOTH visibility assertions:
