@@ -48,6 +48,7 @@ Tests can currently use the following actions:
 - select - picks an item from a select dropdown.
 
 And the following assertions:
+- expectInputValue - the input element's value property should equal a specific string.
 - expectNotVisible - the element should not be visible on the page (can be present in the DOM or not).
 - expectText - the element should contain some specific text.
 - expectUrl - the current page should be some specific URL.

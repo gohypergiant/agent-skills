@@ -133,7 +133,8 @@ Use the assessment-mode output as the complete user-facing response. Do not add 
     - When multiple targets change visibility from the same action, add ALL the "before" assertions first, then the action, then ALL the "after" assertions
     - Example: "button appears and text disappears" → `expectNotVisible button`, `expectVisible text`, `[action]`, `expectVisible button`, `expectNotVisible text`
     - The schema enforces that each target with ANY visibility assertion must have EXACTLY 2 visibility assertions (one before, one after) with exactly one action between them
-  - Only add `expectText` / `expectVisible` / `expectNotVisible` when the AC explicitly names text or visibility.
+  - When AC describes checking a native input element's value property, use `expectInputValue` (trigger phrases: "the <field> input field ... has value", "input value is", "input field's value is"; example: "the radius input field on the form has value '5'"). For visible text content, use `expectText`.
+  - Only add `expectText` / `expectInputValue` / `expectVisible` / `expectNotVisible` when the AC explicitly names text, value, or visibility.
   - Do not invent assertions. NEVER infer unstated information.  Required fields that MUST be explicit (not inferred):
     - target: Must include area + component + intent
     - value: Must be quoted literal for fills 

@@ -92,6 +92,15 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { type: "assertion", action: "expectInputValue", target: "form.input.radius", value: "5" },
+      3,
+      [
+        'await expect(page.getByTestId("form.input.radius")).toHaveCount(1);',
+        'await expect(page.getByTestId("form.input.radius")).toHaveValue("5");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectInputValue", testId: "form.input.radius" })'
+      ],
+    ],
+    [
       { type: "action", action: "fill", target: "#email", value: "a@b.com" },
       5,
       [
@@ -105,6 +114,9 @@ describe("renderStep", () => {
       6,
       [
         'await expect(page.getByTestId("#role")).toHaveCount(1);',
+        'if (test.info().config.metadata.useNonNativeSelect) {',
+        'await page.getByTestId("#role").click();',
+        'await page.getByRole("option", { name: "admin" }).click();',
         'await page.getByTestId("#role").selectOption({ label: "admin" });',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 6, action: "select", testId: "#role" })'
       ],

@@ -186,6 +186,19 @@ function renderStep(step: Step, stepIndex: number): string {
       ].join("\n");
     }
 
+    case "expectInputValue": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await expect(${locator}).toHaveValue(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
     case "expectNotVisible": {
       const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
       return [
@@ -379,7 +392,12 @@ function renderStep(step: Step, stepIndex: number): string {
       return [
         `    try {`,
         `      await expect(${locator}).toHaveCount(1);`,
-        `      await ${locator}.selectOption({ label: ${JSON.stringify(step.value)} });`,
+        `      if (test.info().config.metadata.useNonNativeSelect) {`,
+        `        await ${locator}.click();`,
+        `        await page.getByRole("option", { name: ${JSON.stringify(step.value)} }).click();`,
+        `      } else {`,
+        `        await ${locator}.selectOption({ label: ${JSON.stringify(step.value)} });`,
+        `      }`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
         `      throw error;`,
