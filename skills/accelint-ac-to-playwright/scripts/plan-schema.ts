@@ -151,6 +151,12 @@ const selectStep = z.object({
   value: z.string(),
 }).strict();
 
+const switchTabStep = z.object({
+  type: z.literal("action").default("action"),
+  action: z.literal("switchTab"),
+  tabIdentifier: z.enum(["new", "first", "second", "third"]),
+}).strict();
+
 export const stepSchema = z.discriminatedUnion("action", [
   clickStep,
   doubleClickStep,
@@ -173,6 +179,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   reloadStep,
   scrollStep,
   selectStep,
+  switchTabStep,
 ]);
 
 /**
