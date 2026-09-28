@@ -50,6 +50,13 @@ And a user clicks the Submit button on the login form
 - Expected outcomes: state exactly what should happen and how to verify it.
   - Example: "success text that says 'Submitted' appears on a toast"
   - Example: "the radius input field on the form has value '5'"
+- Tab switching: use ordinal numbers or "new" to identify tabs
+  - "switches to the new tab" — most recently opened tab
+  - "switches to the first tab" — original tab (index 0)
+  - "switches back to the first tab" — same as above
+  - "switches to the second tab" — second tab (index 1)
+  - "switches to the third tab" — third tab (index 2)
+  - Example flow: "When the user clicks the Settings link in the nav, And the user switches to the new tab, ..."
 - Visibility changes: be explicit when something appears/disappears. The agent is looking for clue words to understand that visibility changes are expected (e.g., "visible", "appears", "shows", "see", "changes", "hides", and similar wording).
   - Example: "the tracks table shows up on the page"
 

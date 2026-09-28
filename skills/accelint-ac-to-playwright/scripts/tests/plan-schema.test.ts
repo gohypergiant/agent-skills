@@ -97,6 +97,62 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
+  it.each([
+    ["new", "new"],
+    ["first", "first"],
+    ["second", "second"],
+    ["third", "third"],
+  ])("accepts switchTab with %s tab identifier", (_description, tabIdentifier) => {
+    const input = {
+      suiteName: "Tab switching test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Switch tabs",
+          startUrl: "https://example.com",
+          steps: [{ action: "switchTab", tabIdentifier }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects switchTab with invalid tab identifier", () => {
+    const input = {
+      suiteName: "Tab switching test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid tab switch",
+          startUrl: "https://example.com",
+          steps: [{ action: "switchTab", tabIdentifier: "fourth" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects switchTab without tabIdentifier", () => {
+    const input = {
+      suiteName: "Tab switching test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid tab switch",
+          startUrl: "https://example.com",
+          steps: [{ action: "switchTab" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
   it("rejects unknown action", () => {
     const input = {
       suiteName: "Smoke",
@@ -1387,6 +1443,7 @@ describe("Test fixture validations", () => {
         "press",
         "scroll",
         "select",
+        "switchTab",
       ])
     );
   });
