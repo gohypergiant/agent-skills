@@ -4,7 +4,7 @@ description: Use when the user wants to write, draft, rewrite, review, improve, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.4"
+  version: "1.0.0"
 ---
 
 # PR Description
