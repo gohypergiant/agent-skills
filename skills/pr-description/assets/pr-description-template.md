@@ -2,7 +2,7 @@
 
 Use this template after inspecting the repository PR template and conventions. The repository template controls required headings and field order. Delete every optional heading that does not earn its place; a small fix may use only the title, one paragraph, and the test plan.
 
-Write in plain technical English: use concrete nouns and verbs, define only the hinge term the reader needs, qualify claims to their evidence, and preserve necessary technical detail. Do not make the prose vague or casual in the name of simplicity.
+Write in plain technical English: use concrete nouns and verbs, define only the one term the reader needs, qualify claims to their evidence, and preserve necessary technical detail. Do not make the prose vague or casual in the name of simplicity.
 
 **PR title:** `[surface and behavior change (issue or plan item when the repository convention uses one)]`
 

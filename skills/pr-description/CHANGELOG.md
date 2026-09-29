@@ -4,6 +4,39 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this skill uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-09-29
+
+### Changed
+- Made the changed-path dependency explicit: inspect the required full three-dot diff before reading nested instruction files that govern those paths.
+
+### Rationale
+- The workflow still reads root guidance and the repository template first, preserves the required Git and optional Sem evidence sequence, and ensures path-specific instructions are discovered before source inspection, validation collection, or drafting.
+
+### Version
+- Bumped from `1.1.3` to `1.1.4` for a behavior-preserving structural clarification.
+
+## [1.1.3] - 2026-09-29
+
+### Changed
+- Aligned the `SKILL.md` plain-technical-English rule with the template and drafting subsection by making its one-term limit explicit.
+
+### Rationale
+- The wording preserves the existing reader-need condition and technical-detail requirement while removing ambiguity about the number of terms to define.
+
+### Version
+- Bumped from `1.1.2` to `1.1.3` for a behavior-preserving wording clarification.
+
+## [1.1.2] - 2026-09-29
+
+### Changed
+- Aligned the template’s one-term instruction with the clearer terminology in `SKILL.md` by replacing “hinge term” with “one term.”
+
+### Rationale
+- The change preserves the existing one-term limit and reader-need condition while removing an undefined term from the ready-to-paste template.
+
+### Version
+- Bumped from `1.1.1` to `1.1.2` for a behavior-preserving wording clarification.
+
 ## [1.1.1] - 2026-09-29
 
 ### Added

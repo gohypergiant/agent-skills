@@ -4,14 +4,14 @@ description: Use when the user wants to write, draft, rewrite, review, improve, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.1.4"
 ---
 
 # PR Description
 
 Write a PR as durable engineering context, not a narrated diff. The reader should understand the problem, the argument for the chosen mechanism, the contract it relies on, and the evidence without knowing this part of the codebase.
 
-Use plain technical English: prefer concrete nouns and verbs, define only the term the reader needs, keep claims qualified to their evidence, and use the shortest form that preserves the technical meaning. Plain does not mean vague, casual, or stripped of necessary detail.
+Use plain technical English: prefer concrete nouns and verbs, define only the one term the reader needs, keep claims qualified to their evidence, and use the shortest form that preserves the technical meaning. Plain does not mean vague, casual, or stripped of necessary detail.
 
 Use `assets/pr-description-template.md` as the output skeleton. Load `references/pr-description-rubric.md` to grade a draft before delivery or when the user asks for a review. For source-grounded examples of the writing model and its limits, load `references/react-pr-findings.md`.
 
@@ -32,13 +32,13 @@ Use `assets/pr-description-template.md` as the output skeleton. Load `references
 
 Read the branch as a whole, then collect the facts that make a claim checkable.
 
-1. Read `AGENTS.md`, `CONTRIBUTING.md`, and any nested instruction files that govern changed paths. Find the repository PR template at `.github/pull_request_template.md` or `.github/PULL_REQUEST_TEMPLATE/`.
+1. Read `AGENTS.md` and `CONTRIBUTING.md`. Find the repository PR template at `.github/pull_request_template.md` or `.github/PULL_REQUEST_TEMPLATE/`.
 2. Identify the PR target branch. When it is `main`, run:
    ```bash
    git log main..HEAD
    git diff main...HEAD
    ```
-   When the target differs, substitute only the target branch. Read both the commit sequence and the full three-dot diff; the final commit may omit the change's motivation or an earlier compatibility decision.
+   When the target differs, substitute only the target branch. Read both the commit sequence and the full three-dot diff; the final commit may omit the change's motivation or an earlier compatibility decision. After the full three-dot diff identifies changed paths, read any nested instruction files that govern those paths before using Sem, inspecting source, collecting validation evidence, or drafting.
 
    When `which sem` succeeds and an entity-level view would clarify the change, Sem may add supplementary semantic evidence after those Git commands:
    ```bash
