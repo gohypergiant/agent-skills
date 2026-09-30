@@ -4,6 +4,21 @@ All notable changes to the accelint-ac-to-playwright skill are documented in thi
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-10-01
+
+### Added
+- `expectInputValue` assertion for checking input element values
+  - Rationale: Validates form control values using the `value` attribute instead of text content
+- `switchTab` action for browser tab navigation
+  - Rationale: Enables multi-tab workflows with support for "new", "first", "second", "third" tab identifiers
+
+### Changed
+- Test function signature now includes `context` fixture with reassignable `page` variable
+  - Rationale: Required for `switchTab` to reassign page context between tabs
+
+### Version
+- Bumped from 2.0.2 → 2.1.0
+
 ## [2.0.2] - 2026-09-28
 
 ### Fixed
