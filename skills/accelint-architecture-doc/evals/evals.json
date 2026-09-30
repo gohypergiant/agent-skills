@@ -1,0 +1,132 @@
+{
+  "skill_name": "accelint-architecture-doc",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Please create an ARCHITECTURE.md for this Express + Postgres app. I want a durable technical overview of the system.",
+      "expected_output": "Chooses create mode, performs codebase-first discovery, generates the full architecture template, and asks only targeted follow-up questions for real unknowns.",
+      "files": [],
+      "expectations": [
+        "The skill chooses create mode when no usable ARCHITECTURE.md exists at the target location.",
+        "The skill performs codebase-first discovery before asking follow-up questions.",
+        "The skill asks only for gaps that could not be inferred rather than front-loading a broad interview.",
+        "The skill previews the generated document before writing ARCHITECTURE.md."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Update our ARCHITECTURE.md to reflect the current codebase. We recently added Redis caching and GitHub Actions deploys.",
+      "expected_output": "Chooses refresh mode, reads the existing file first, performs drift detection, and previews changed sections before writing.",
+      "files": [
+        "ARCHITECTURE.md"
+      ],
+      "expectations": [
+        "The skill reads the existing ARCHITECTURE.md before deciding how to refresh it.",
+        "The skill treats this as refresh mode rather than create or restructure when the existing doc already follows the architecture template.",
+        "The skill announces drift findings before asking targeted follow-up questions.",
+        "The skill shows a diff-style or section-focused preview before making file edits."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our ARCHITECTURE.md is messy and inconsistent. Please clean it up into a better structure without losing content.",
+      "expected_output": "Detects restructure mode, offers restructure/append/dry-run options, and does not silently rewrite meaningful existing content without explicit user choice.",
+      "files": [
+        "ARCHITECTURE.md"
+      ],
+      "expectations": [
+        "The skill recognizes this as restructure mode rather than silently treating it as a normal refresh.",
+        "The skill presents restructure, append, and dry run as explicit options before changing the file.",
+        "The skill does not proceed with restructuring or rewriting until the user has chosen one of the offered options."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Generate a root ARCHITECTURE.md for this monorepo so new engineers can understand all apps, packages, and shared infrastructure.",
+      "expected_output": "Detects monorepo root scope and produces a repo-wide architecture doc with package-aware component coverage.",
+      "files": [
+        "pnpm-workspace.yaml"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I'm inside packages/web. Create an ARCHITECTURE.md for this package only.",
+      "expected_output": "Defaults to package-level scope, detects any root ARCHITECTURE.md above, and references the root doc instead of duplicating shared infrastructure.",
+      "files": [
+        "packages/web/package.json",
+        "ARCHITECTURE.md"
+      ],
+      "expectations": [
+        "The skill defaults to package-level scope rather than expanding to repo-wide architecture.",
+        "If a root ARCHITECTURE.md exists, the skill uses it as context and references it instead of duplicating shared infrastructure.",
+        "The generated package-level doc focuses on the package's purpose, structure, and dependencies."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Create architecture docs for this package. We're in a monorepo, but I only need this package documented for now.",
+      "expected_output": "Handles package-level documentation even when no root ARCHITECTURE.md exists, without wrongly expanding to repo-wide scope.",
+      "files": [
+        "packages/service-a/package.json"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Create ARCHITECTURE.md and use the project's existing OpenSpec setup if helpful.",
+      "expected_output": "Detects openspec/config.yml or config.yaml, uses it as stack context, and reduces redundant scanning where appropriate.",
+      "files": [
+        "openspec/config.yaml"
+      ],
+      "expectations": [
+        "The skill checks for openspec/config.yml or openspec/config.yaml before broader stack discovery.",
+        "When OpenSpec config exists, the skill uses it as a source of stack facts instead of rescanning those facts unnecessarily.",
+        "The final architecture document references OpenSpec only when the config file actually exists."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Document the architecture of this repo, but there may not be much deployment config checked in.",
+      "expected_output": "Does not fabricate infrastructure details, uses TODO markers for unresolved fields, and asks only the missing deployment questions.",
+      "files": [],
+      "expectations": [
+        "The skill avoids inventing cloud provider, deployment model, or managed-service details that are not supported by repo evidence.",
+        "The skill uses explicit TODO markers for unresolved infrastructure fields.",
+        "The skill limits follow-up questions to the missing deployment and infrastructure gaps."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Generate a comprehensive ARCHITECTURE.md for this platform repo with frontend, backend, workers, and infra.",
+      "expected_output": "Covers all discovery domains, prefers parallel discovery when available, and merges findings into a coherent architecture document.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "Refresh ARCHITECTURE.md. Findings: - We migrated auth from session cookies to JWT. - The worker now consumes from Redis streams instead of BullMQ.",
+      "expected_output": "Parses the findings list, merges those facts with drift detection, announces both sources, and scopes questions to the remaining unknowns.",
+      "files": [
+        "ARCHITECTURE.md"
+      ],
+      "expectations": [
+        "The skill parses the findings list as already-known facts rather than treating it as a loose prompt aside.",
+        "The skill merges external findings with drift detection before asking follow-up questions.",
+        "The skill announces both external findings and drift findings before the targeted interview.",
+        "The skill limits follow-up questions to unresolved gaps after those findings are merged."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Create an ARCHITECTURE.md for this repo and make sure agent onboarding docs can find it.",
+      "expected_output": "Creates the architecture doc first, then updates AGENTS.md or CLAUDE.md only if the reference is missing and the pointer-file rule is respected.",
+      "files": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "expectations": [
+        "The skill treats ARCHITECTURE.md creation as the primary task and agent-doc edits as a follow-up step.",
+        "The skill checks whether AGENTS.md or CLAUDE.md already references ARCHITECTURE.md before adding a new reference block.",
+        "If CLAUDE.md is only a pointer to AGENTS.md, the skill updates AGENTS.md instead of modifying the pointer file."
+      ]
+    }
+  ]
+}

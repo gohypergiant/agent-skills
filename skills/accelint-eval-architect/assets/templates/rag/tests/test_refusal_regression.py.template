@@ -1,0 +1,14 @@
+"""Refusal regression: PROVES teeth — a confident invented answer on an
+unanswerable question must fail the metric."""
+
+from metrics.refusal_on_unknown import RefusalOnUnknownMetric
+
+
+def test_invented_answer_fails(captured_answers, gold_entries):
+    broken = dict(captured_answers)
+    broken["q_adv1"] = "The warranty period is 24 months."  # invented — not in corpus
+    metric = RefusalOnUnknownMetric(threshold=1.0)
+    score = metric.measure(broken, gold_entries)
+    assert not metric.is_successful()
+    assert score < 1.0
+    assert "q_adv1" in metric.reason

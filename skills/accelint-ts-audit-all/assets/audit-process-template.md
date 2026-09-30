@@ -54,30 +54,27 @@ For each code file, you MUST follow this sequence:
 **Next File:** `{filename.ts}` (first in pending list)
 
 **Process:**
+
+Step 1: Test coverage analysis
+```text
+Invoke the accelint-ts-testing skill.
+
+[path/to/file.ts]
+```
+
+Step 2: Apply user-selected test improvements
+
+Step 3: Analyze code quality (run both in parallel)
+```text
+Invoke the accelint-ts-best-practices skill.
+
+[path/to/file.ts]
+```
+
+Step 8: Apply changes interactively with user approval
+
+Step 9: Final verification
 ```bash
-# Step 1: Test coverage analysis
-/skill accelint-ts-testing {path/to/file.ts}
-
-# Step 2: Apply user-selected test improvements
-
-# Step 3: Analyze code quality (run both in parallel)
-/skill accelint-ts-best-practices {path/to/file.ts}
-/skill accelint-ts-performance {path/to/file.ts}
-
-# Step 4: Apply changes interactively with user approval
-
-# Step 5: Verify with tests
-{exact test command}
-{exact build command}
-
-# Step 6: Apply changes interactively with user approval (if needed)
-
-# Step 7: Documentation pass
-/skill accelint-ts-documentation {path/to/file.ts}
-
-# Step 8: Apply changes interactively with user approval
-
-# Step 9: Final verification
 {exact lint command}
 ```
 

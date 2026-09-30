@@ -1,0 +1,91 @@
+---
+title: Overview
+description: Generate and maintain comprehensive README documentation by analyzing codebases, extracting real examples from tests, and ensuring docs stay synchronized with actual functionality.
+source: skills/accelint-readme-writer/SKILL.md
+source_sha: 227caa0d72bfe8c8a862258854717e4316481de9
+doc_sha: 3736f6ee231d286a47e11831aaf792580983fbee
+deprecated: false
+updated: 2025-01-20
+---
+
+## What It Helps You Do
+
+Use this skill to create or update README.md files that accurately reflect your codebase. It analyzes code structure, extracts the public API, discovers usage patterns from tests, and generates documentation with practical, copy-pasteable examples.
+
+Activate it with:
+- `/accelint-readme-writer`
+- Phrases like "create a README" or "update the README"
+- Related requests about documenting a package, refreshing stale README content, or writing project docs
+
+Especially useful when you need to:
+- Create a new README for a project or package
+- Update documentation after code changes
+- Ensure README accuracy by comparing docs to actual exports
+- Convert sparse documentation into comprehensive guides
+
+
+## When to Use
+
+Use when:
+- Creating or updating a README.md for any project or package
+- Existing README is stale after code changes
+- Documentation needs auditing for completeness
+- Working with monorepo packages needing individual READMEs
+
+Skip for:
+- API documentation generation (use JSDoc/TSDoc tools)
+- Changelogs or release notes
+- Internal developer notes
+
+## How It Works
+
+The skill analyzes your codebase to ensure documentation matches reality:
+
+- **Discovers structure in parallel**: Spawns concurrent discovery agents (when available) to map entry points, dependencies, examples, and existing docs efficiently
+- **Extracts real examples**: Pulls usage patterns from test files, `examples/` directories, and JSDoc blocks rather than fabricating examples
+- **Cross-references related docs**: Checks for openspec/config.yml, ARCHITECTURE.md, and AGENTS.md to maintain consistency and create proper cross-links
+- **Identifies gaps**: Compares discovered code against existing README to find missing exports, stale examples, wrong package manager commands, or signature mismatches
+- **Generates human-sounding prose**: Uses the `humanizer` skill to remove AI writing patterns and robotic language
+
+For existing READMEs, you get a gap analysis before any changes, showing what's missing, outdated, or mismatched.
+
+## Good to Know
+
+> **Good to know:** Only documents public APIs accessible through package entry points. Internal helpers not re-exported from `index.ts` are excluded.
+
+> **Good to know:** Package manager detection is automatic from lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lockb`). All commands use the detected manager.
+
+> **Good to know:** Requires the `humanizer` skill for natural-sounding output. Without it, generated READMEs may contain robotic language.
+
+> **Good to know:** In monorepos, README scope is determined by location. A README at `packages/my-lib/` documents only that package.
+
+## Examples
+
+### Example: Creating a New README
+
+```bash
+/accelint-readme-writer "Create a README for packages/my-lib"
+
+# Result: Complete README.md with:
+# - Auto-detected package manager from lockfile
+# - Public API extracted from src/index.ts
+# - Usage examples from my-lib.test.ts
+# - Cross-references to ARCHITECTURE.md (if exists)
+```
+
+### Example: Updating Stale Documentation
+
+```bash
+/accelint-readme-writer "Update the README to reflect recent changes"
+
+# Result: Gap analysis showing:
+# - New exported functions not documented
+# - Deprecated examples that don't match current code
+# - Targeted updates applied after review
+```
+
+## Related
+
+- **humanizer**: Required for removing AI writing patterns from generated docs
+- **accelint-architecture-doc**: For generating ARCHITECTURE.md files referenced in README
+- **accelint-onboard-agents**: For generating AGENTS.md referenced in contributing sections

@@ -1,6 +1,6 @@
 # README Template
 
-Copy-pasteable template for new README files. Replace placeholders with actual content.
+Copy-pasteable template for new README files. Replace the placeholders with actual content.
 
 ---
 
@@ -202,23 +202,23 @@ pnpm lint
 
 ### For Utility Packages
 
-Utility packages have many small, independent functions. Customize by:
+Utility packages have many small, independent functions. Customize the template by:
 
-- Keeping API section comprehensive with all exports
-- Including examples inline with each API entry
-- Removing standalone Examples section if API examples are sufficient
+- Keeping the API section comprehensive, with all exports.
+- Including examples inline with each API entry.
+- Removing the standalone Examples section if the API examples are sufficient.
 
 ### For Pipeline Packages
 
-Pipeline packages have one main workflow. Customize by:
+Pipeline packages have one main workflow. Customize the template by:
 
-- Keeping API section focused on main entry points
-- Expanding Examples section with complete workflows
-- Adding step-by-step guides for common tasks
+- Keeping the API section focused on the main entry points.
+- Expanding the Examples section with complete workflows.
+- Adding step-by-step guides for common tasks.
 
 ### For CLI Tools
 
-CLI packages need command documentation. Add:
+CLI packages need command documentation. Add these sections:
 
 ```markdown
 ## Usage
@@ -259,7 +259,7 @@ package-name serve --verbose
 
 ### For Monorepo Packages
 
-When documenting a package within a monorepo, add context:
+When you document a package within a monorepo, add this context:
 
 ```markdown
 ## Installation
@@ -296,7 +296,7 @@ Total target: 100-300 lines for most packages.
 
 ## Checklist Before Publishing
 
-Use this checklist to verify README completeness:
+Use this checklist to verify that the README is complete:
 
 - [ ] Package name in title matches `package.json`
 - [ ] Install command uses correct package manager

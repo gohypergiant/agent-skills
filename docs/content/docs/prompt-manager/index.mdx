@@ -1,0 +1,134 @@
+---
+title: Overview
+description: Transform vague, ambiguous, or unclear requests into optimized, well-structured prompts through systematic assessment, pattern detection, and framework application across any domain.
+source: skills/accelint-prompt-manager/SKILL.md
+source_sha: d38f3240503909499c4af5deef09f6a3be56fb62
+doc_sha: b8c106bf14fae18c832601f33f20745ddd3743f3
+deprecated: false
+updated: 2025-01-23
+---
+
+## What It Helps You Do
+
+Use this skill to clarify and structure unclear requests before attempting to execute them. It transforms vague goals into concrete, actionable prompts ready for execution.
+
+Activate it with:
+- `/accelint-prompt-manager`
+- Phrases like "optimize my prompt" or "clarify this request"
+- Related requests about vague goals, undefined success criteria, or prompt framework selection
+
+The skill helps you:
+- Convert ambiguous requests into prompts with measurable success criteria
+- Identify and resolve interpretation conflicts that would cause misaligned results
+- Select appropriate prompt frameworks (CO-STAR, RISEN, RODES) based on task type
+- Remove token-wasting patterns and model-specific anti-patterns
+- Calibrate prompts for specific execution contexts (Claude Code, API calls, system prompts)
+
+
+> **Good to know:** This skill optimizes prompts—it doesn't execute the tasks they describe. You receive a refined prompt ready to use, not a completed task.
+
+## When to Use
+
+The skill triggers on these patterns:
+- Vague goals: "improve our X", "I don't know where to start", "kinda lost on what to do"
+- Undefined success: "should look professional", "explain clearly", missing constraints/audience/format
+- Ambiguous requirements: "analyze the data" (what to look for?), "make it robust" (how defined?)
+- Meta-prompting: "optimize this prompt", "review my instructions", learning about frameworks like CO-STAR/RISEN/RODES
+- Communication unclear: "how do I explain this", "help me figure out what to ask"
+
+
+## How It Works
+
+The skill follows a four-phase workflow calibrated to your skill level (newcomer, intermediate, expert).
+
+### Phase 1: Intake & Assessment
+- Extracts core intent and assesses task complexity
+- Identifies execution context (interactive chat, API call, system prompt)
+- Recommends plan mode for complex tasks with 3+ interdependent decisions or 5+ sequential phases
+
+### Phase 2: Pattern Detection
+- Scans for credit-killing patterns (fabrication techniques, inappropriate Chain-of-Thought instructions, front-loaded context)
+- Flags ambiguities with 2-3 interpretation options and trade-off implications
+- Identifies missing context (audience, success criteria, constraints, format)
+
+### Phase 3: Framework Selection & Optimization
+Applies the appropriate framework silently based on task type:
+- **CO-STAR**: Structured output needs (format-driven)
+- **RISEN**: Multi-step procedures (process-driven)
+- **RODES**: Clarification through examples (example-driven)
+
+Uses safe optimization techniques:
+- Replaces vague terms with concrete criteria
+- Positions critical info at start/end (avoids lost-in-middle problem)
+- Eliminates ambiguous pronouns in multi-step instructions
+- Adds constraints to define creative boundaries
+
+### Phase 4: Validation & Handoff
+- Runs quality checks and flags remaining ambiguities needing your decision
+- Delivers optimized prompt directly in a markdown code block for easy copying
+- Offers to save to file and/or copy to clipboard
+- Provides iteration options for refinement
+
+## What You Get
+
+An optimized prompt presented directly in your conversation, formatted in a markdown code block for easy copying. 
+
+For newcomers: before/after comparison with explanations. For experts: concise optimization notes.
+
+Optional post-delivery: save to markdown file, copy to clipboard, or both.
+
+## Examples
+
+### Example: Clarifying a Vague Request
+
+```bash
+/accelint-prompt-manager "make our documentation better"
+```
+
+The skill turns the vague request into a concrete prompt with success criteria, audience, constraints, and output format.
+
+```text
+Context: Technical documentation for a Node.js library README
+Objective: Reduce new user onboarding time from 30 minutes to &lt;10 minutes
+Success Criteria:
+  - Quick Start completable in &lt;3 minutes
+  - API reference with copy-paste examples for top 5 use cases
+  - Troubleshooting section for 3 most common setup errors
+Audience: JavaScript developers with npm experience, no prior library knowledge
+Constraints:
+  - Keep README under 500 lines
+  - Include runnable code examples, not pseudocode
+  - Link to advanced topics rather than embedding everything
+Format: Markdown with section headers and table of contents
+```
+
+### Example: Resolving Ambiguity
+
+```bash
+/accelint-prompt-manager "Analyze this codebase and tell me what's wrong"
+```
+
+The skill narrows the scope, defines priorities, and turns an open-ended request into a usable review prompt.
+
+```text
+Role: Senior code reviewer conducting security and performance audit
+Objective: Identify critical issues blocking production deployment in [codebase]
+Focus Areas (prioritized):
+  1. Security vulnerabilities (SQL injection, XSS, exposed secrets)
+  2. Performance bottlenecks (O(n²) algorithms, N+1 queries, memory leaks)
+  3. Error handling gaps (unhandled rejections, missing validation)
+Scope: Scan src/ directory only, exclude test files and vendor code
+Output Format:
+  - Executive summary with risk levels (Critical/High/Medium/Low)
+  - Per-issue: location, impact, remediation steps
+  - Prioritized fix list with estimated effort
+Constraints: Complete review within token budget; flag but don't fix issues
+```
+
+## Good to Know
+
+> **Good to know:** The skill never fetches external resources or researches topics. If you provide a prompt mentioning "GitHub APIs", it optimizes the prompt text itself—it doesn't investigate those systems.
+
+> **Good to know:** Optimization strategies are model-specific. Claude 4.5+ uses extended thinking natively and doesn't benefit from explicit "think step by step" instructions, while older models might.
+
+> **Good to know:** The skill adapts communication style to your level. Newcomers receive explanations of detected patterns. Experts get pattern names and line numbers directly.

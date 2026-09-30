@@ -1,0 +1,34 @@
+"""Pytest config + fixtures for the __SKILL_NAME__ deterministic eval harness."""
+
+from pathlib import Path
+
+import pytest
+
+
+def pytest_configure(config):
+    """Fail fast with a clear message if prerequisites are missing.
+
+    If this skill has a validator CLI, assert its BUILT path exists here so a
+    missing `npm run build` produces an actionable error instead of every test
+    failing opaquely. Delete this hook if there is no CLI to check.
+    """
+    # skill_root = Path(__file__).parent.parent
+    # cli = skill_root / "dist" / "cli" / "validate.js"
+    # if not cli.exists():
+    #     pytest.exit(f"\n[ERROR] validator not built: {cli}\nRun `npm run build`.", returncode=1)
+    pass
+
+
+@pytest.fixture(scope="session")
+def skill_root() -> Path:
+    return Path(__file__).parent.parent
+
+
+@pytest.fixture(scope="session")
+def fixtures_dir() -> Path:
+    return Path(__file__).parent / "fixtures"
+
+
+@pytest.fixture(scope="session")
+def expected_dir() -> Path:
+    return Path(__file__).parent / "expected"

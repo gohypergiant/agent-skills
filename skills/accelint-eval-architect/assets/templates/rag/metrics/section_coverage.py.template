@@ -1,0 +1,33 @@
+"""Ingest metric: every expected corpus section made it into the index.
+
+Deterministic. Dropped sections are a silent, high-impact failure for spec docs
+(a buried-but-critical page never gets retrieved because it was never indexed).
+"""
+
+from typing import Optional
+
+
+class SectionCoverageMetric:
+    def __init__(self, threshold: float = 1.0):
+        self.threshold = threshold
+        self.score = 0.0
+        self.success = False
+        self.reason: Optional[str] = None
+
+    def measure(self, indexed: set[str], expected: set[str]) -> float:
+        missing = expected - indexed
+        self.score = 1.0 if not expected else (len(expected) - len(missing)) / len(expected)
+        self.success = self.score >= self.threshold
+        self.reason = (
+            f"Missing {len(missing)}/{len(expected)} expected section(s): {', '.join(sorted(missing))}"
+            if missing
+            else f"All {len(expected)} expected sections indexed"
+        )
+        return self.score
+
+    def is_successful(self) -> bool:
+        return self.success
+
+    @property
+    def __name__(self):
+        return "Section Coverage"

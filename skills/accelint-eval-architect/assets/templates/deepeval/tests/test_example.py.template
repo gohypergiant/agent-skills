@@ -1,0 +1,34 @@
+"""Walking-skeleton tests for __SKILL_NAME__.
+
+The structural test is deterministic (runs by default). The quality test is
+judge-based and marked `live` so it is skipped unless `-m live` is passed.
+"""
+
+import pytest
+from deepeval.test_case import LLMTestCase
+
+from metrics.example_structural_metric import ExampleStructuralMetric
+
+
+def test_example_structural(fixtures_dir, sut, record_metric):
+    result = sut(fixtures_dir / "__PRISTINE_FIXTURE__", "__MODE__")
+    tc = LLMTestCase(input="pristine", actual_output=result["output"])
+    metric = ExampleStructuralMetric(threshold=1.0)
+    score = metric.measure(tc)
+    record_metric(name="structural", score=score, threshold=metric.threshold,
+                  dimension="correctness", reason=metric.reason,
+                  passed=metric.is_successful())
+    assert metric.is_successful(), metric.reason
+
+
+@pytest.mark.live
+def test_example_quality(judge, fixtures_dir, sut, record_metric):
+    from metrics.example_geval_metric import ExampleQualityMetric
+    result = sut(fixtures_dir / "__PRISTINE_FIXTURE__", "__MODE__")
+    tc = LLMTestCase(input="pristine", actual_output=result["output"])
+    metric = ExampleQualityMetric(judge_model=judge, threshold=0.8)
+    score = metric.measure(tc)
+    record_metric(name="quality", score=score, threshold=metric.threshold,
+                  dimension="pitfalls", reason=metric.reason,
+                  passed=metric.is_successful())
+    assert metric.is_successful(), metric.reason

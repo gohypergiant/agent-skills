@@ -1,0 +1,101 @@
+---
+title: Overview
+description: Generate or update an ARCHITECTURE.md living document that gives engineers and agents an instant picture of how your system is structured through intelligent codebase scanning and targeted questions.
+source: skills/accelint-architecture-doc/SKILL.md
+source_sha: 43c0cb2e22f7b3e59db9b23e2b63af4c2d7c607f
+doc_sha: 37f3d96be1fcbc92f4199a439777513173a5821e
+deprecated: false
+updated: 2025-01-15
+---
+
+## What It Helps You Do
+
+Use this skill to generate or maintain an ARCHITECTURE.md document that gives engineers and agents an instant picture of how your system works. It discovers your tech stack, deployment model, data stores, and component relationships through codebase scanning and targeted questions.
+
+Activate it with:
+- `/accelint-architecture-doc`
+- Phrases like "document my architecture" or "create ARCHITECTURE.md"
+- Related requests about architecture overviews, system structure, or tech stack documentation
+
+The skill is especially useful when you need to:
+- Create architecture documentation from scratch for undocumented projects
+- Refresh stale docs after infrastructure or stack changes
+- Restructure free-form architecture notes into a standard template
+- Document monorepo packages with proper cross-references to root docs
+
+## When to Use
+
+Use this skill when:
+- Users mention "architecture.md", "ARCHITECTURE.md", "document my architecture", "architecture overview", or "system architecture"
+- Users ask to "generate architecture doc", "create architecture file", or "update architecture"
+- Working with undocumented codebases or codebases with drifted architecture docs
+- Users want to "write up the system", "document the tech stack", or create a technical overview
+
+## How It Works
+
+The skill operates in three modes based on what it finds:
+
+**Create mode** — Spawns parallel discovery agents to scan project structure, tech stack, infrastructure, data/security, and testing. Fills in everything it can infer, then asks targeted questions only about the gaps before drafting a new ARCHITECTURE.md.
+
+**Refresh mode** — Reads existing ARCHITECTURE.md, compares against current codebase signals, detects drift, and updates only sections that changed. Preserves all human-authored content and shows diff-style previews before writing.
+
+**Restructure mode** — Takes a nonstandard architecture document and maps it into the 11-section template while preserving original content. Proactively offers this when it finds real content in an unrecognized shape.
+
+The discovery process uses parallel subagents to scan different domains simultaneously rather than checking files sequentially. Each agent returns structured findings that get merged before the interview phase.
+
+## Good to Know
+
+> **Good to know:** The skill understands monorepo layouts. At the root, it generates system-wide docs covering all services. Inside a package, it creates focused docs that reference the root and avoid duplicating shared infrastructure details.
+
+> **Good to know:** For openspec-based projects, the skill checks for `openspec/config.yml` first and uses it as the source of truth for stack facts and coding patterns, reducing redundant scanning work.
+
+> **Good to know:** When refreshing docs, the skill never silently removes content. It surfaces changes and confirms whether they're still accurate before updating.
+
+> **Good to know:** After writing ARCHITECTURE.md, the skill checks for AGENTS.md or CLAUDE.md and adds a reference to the architecture doc if one doesn't exist.
+
+## What You Get
+
+A complete ARCHITECTURE.md draft with 11 sections covering:
+- Project structure and workspace layout
+- System components and data flow
+- Tech stack and deployment model
+- Data stores and external integrations
+- Security and authentication approach
+- Development workflow and testing
+- Glossary and maintenance ownership
+
+Where the skill cannot infer enough, it leaves explicit `<!-- TODO -->` markers and shows a labeled preview before writing.
+
+## Examples
+
+### Example: Creating docs from scratch
+
+```bash
+/accelint-architecture-doc "Create ARCHITECTURE.md for this project"
+```
+
+The skill spawns parallel agents, scans configs, asks targeted questions about gaps, shows a preview with inference labels, and writes on approval.
+
+### Example: Refreshing after infrastructure changes
+
+```bash
+/accelint-architecture-doc "Update ARCHITECTURE.md - we migrated to k8s"
+```
+
+The skill detects new `k8s/` directory signals, updates Section 6 (Deployment & Infrastructure), and shows a diff preview before writing.
+
+### Example: Monorepo package documentation
+
+```bash
+# Inside packages/api/
+/accelint-architecture-doc "Document this package's architecture"
+```
+
+The skill finds root ARCHITECTURE.md, generates a package-focused doc with reference header pointing to root, and omits shared infrastructure already documented at the top level.
+
+## Limits
+
+- Generates documentation only — does not modify code or infrastructure
+- Cannot infer subjective decisions like "why you chose PostgreSQL over MySQL" — these require human input during the interview phase
+- Section 2 (High-Level System Diagram) is generated as prose, not visual diagrams or mermaid syntax
+- Infrastructure details must be present in recognizable config files — the skill does not read cloud provider consoles or query live systems

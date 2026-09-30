@@ -1,0 +1,9 @@
+# Expected sections in the corpus — the ground truth for section_coverage.
+# Generate this from the corpus' table of contents / document structure, not by
+# guessing. A dropped section here is a silent, high-impact ingest failure.
+sections:
+  - intro
+  - specs
+  - payload
+  - altitude
+  - appendix

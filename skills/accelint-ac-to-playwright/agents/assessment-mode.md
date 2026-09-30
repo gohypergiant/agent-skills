@@ -208,6 +208,26 @@ Even minor issues like incomplete targets or missing quotes prevent automatic co
 
 **When in doubt, flag the issue:** False positives (over-flagging) are better than false negatives (missing issues that cause conversion failures downstream).
 
+### Clarification decision contracts
+
+When AC contain one or more major issues, run the clarification-mode decision contract before starting a clarification route:
+
+- `decision_id`: `bad_ac_clarification_mode`
+- Accepted values: `a` provides the full question list; `b` starts interactive clarification.
+- Until exactly one accepted value is received for `bad_ac_clarification_mode`, do not provide the full question list, prompt for an update owner, edit AC, or reassess AC.
+- After a valid selection, restate the accepted value and follow only its associated route.
+- Treat invalid, ambiguous, declined, cancelled, dismissed, timed-out, silent, partial, or transport-failed input as unresolved. Ask again when interaction is available; otherwise return `unresolved_noninteractive` and stop before route-dependent work.
+- On resumption, present the same `decision_id` and accepted values. Do not infer a selection from earlier conversation.
+
+When a valid `b` selection starts interactive clarification, run the update-owner decision contract before asking the first clarification question:
+
+- `decision_id`: `bad_ac_update_owner`
+- Accepted values: `agent_updates` lets the LLM update the AC after each answer; `user_updates` leaves all AC updates to the user.
+- Until exactly one accepted value is received for `bad_ac_update_owner`, do not start the clarification-question loop, edit AC, or reassess AC.
+- After a valid selection, restate the accepted value and follow only its associated route.
+- Treat invalid, ambiguous, declined, cancelled, dismissed, timed-out, silent, partial, or transport-failed input as unresolved. Ask again when interaction is available; otherwise return `unresolved_noninteractive` and stop before route-dependent work.
+- On resumption, present the same `decision_id` and accepted values. Do not infer a selection from earlier conversation.
+
 ### When validation fails (BAD - major issues present)
 
 When AC contain one or more major issues, provide a summary and offer the choice:
@@ -224,6 +244,8 @@ The AC has [N] major issues that need discussion:
 Would you like to:
 - **(a)** Get a full list of all questions to review and answer at your own pace, or
 - **(b)** Work through them interactively one question at a time?
+
+Reply exactly `a` or `b`.
 ```
 
 Example output:
@@ -239,6 +261,8 @@ The AC has 2 major issues that need discussion:
 Would you like to:
 - **(a)** Get a full list of all questions to review and answer at your own pace, or
 - **(b)** Work through them interactively one question at a time?
+
+Reply exactly `a` or `b`.
 ```
 
 ### When validation fails (MIXED - minor issues only)
@@ -303,11 +327,13 @@ These AC have [N] issues that need discussion before conversion:
 Would you like to:
 (a) Get a full list of all questions to review and answer at your own pace, or
 (b) Work through them interactively one question at a time?
+
+Reply exactly `a` or `b`.
 ```
 
 #### Option (a): Full question list
 
-If user chooses (a), provide all questions grouped by category:
+If the valid `bad_ac_clarification_mode` selection is `a`, provide all questions grouped by category:
 
 ```
 Here are all the questions that need clarification:
@@ -332,15 +358,17 @@ Once you've answered these questions:
 
 #### Option (b): Interactive mode
 
-If user chooses (b), first ask who will handle updates:
+If the valid `bad_ac_clarification_mode` selection is `b`, ask for the update owner:
 
 ```
 Let's work through these one by one.
 
 Would you like me to update the AC as we go (after each answer), or would you prefer to make the updates yourself at the end?
+
+Reply exactly `agent_updates` or `user_updates`.
 ```
 
-**If user wants LLM to update:**
+**If the valid `bad_ac_update_owner` selection is `agent_updates`:**
 
 For each question:
   - Ask the question
@@ -355,7 +383,7 @@ After all questions answered:
     - File path provided: "All set. The AC are now conversion-ready."
     - Pasted text: Share the updated AC with the user
 
-**If user wants to update themselves:**
+**If the valid `bad_ac_update_owner` selection is `user_updates`:**
 
 For each question:
   - Ask the question

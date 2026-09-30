@@ -1,0 +1,192 @@
+---
+title: Overview
+description: Systematic JavaScript/TypeScript performance audit and optimization using V8 profiling patterns, algorithmic complexity analysis, and runtime optimization techniques.
+source: skills/accelint-ts-performance/SKILL.md
+source_sha: 489c4f1d62c13c22f6e6d064afb3675fc5739e8c
+doc_sha: c15b7adc3da4346594cb88827fc809448763cfd4
+deprecated: false
+updated: 2026-01-28
+---
+
+## What It Helps You Do
+
+Use this skill to audit and optimize JavaScript/TypeScript code for performance bottlenecks. It systematically identifies slow code using V8 profiling patterns and applies proven optimization techniques.
+
+Activate it with:
+- `/accelint-ts-performance <path>`
+- Phrases like "optimize performance" or "this is slow"
+- Related requests about allocations, hot paths, algorithmic bottlenecks, or V8 deoptimization
+
+It is especially useful when you need to:
+- Identify performance anti-patterns: O(n²) complexity, excessive allocations, I/O blocking
+- Reduce runtime for slow functions, rendering pipelines, or real-time systems
+- Audit utilities, formatters, and parsers that may be called in hot paths
+- Fix V8 deoptimization (monomorphic/polymorphic issues, inline caching)
+- Balance performance gains against maintainability
+
+
+## When to Use
+
+Use this skill when:
+- Analyzing code for performance anti-patterns like O(n²) complexity, excessive allocations, or blocking I/O
+- Optimizing functions that appear simple but may be called in hot paths (loops, rendering pipelines)
+- Fixing V8 deoptimization issues affecting runtime performance
+- You need systematic performance analysis with expected gain estimates
+
+> **Good to know:** This skill focuses on runtime performance optimization. For general TypeScript best practices like type safety, avoiding `any`/`enum`, or defensive programming, use `accelint-ts-best-practices` instead.
+
+## How It Works
+
+The skill operates in two modes with a 4-phase optimization process:
+
+### Operating Modes
+
+**Audit Mode** (explicit invocation):
+- Generates structured reports using a standard template
+- Reports all findings for user review before implementation
+- User decides which optimizations to apply
+
+**Implementation Mode** (automatic during feature work):
+- Applies optimizations directly inline
+- Adds comments explaining patterns and gains
+- No formal report needed
+
+### Optimization Process
+
+**Phase 1: Profile** - Identifies bottlenecks through systematic static analysis and profiling tools (Chrome DevTools, Node.js `--prof`). Audits ALL code for anti-patterns regardless of perceived usage frequency—utilities and formatters are often called in hot paths.
+
+**Phase 2: Analyze** - Categorizes every issue by optimization type with expected gains:
+
+| Issue Type | Expected Gain |
+|------------|---------------|
+| O(n²) complexity, nested loops | 10-1000x |
+| Repeated expensive computations | 2-100x |
+| Allocation-heavy code | 1.5-5x |
+| Excessive I/O operations | 5-50x |
+| Blocking async operations | 2-10x |
+| Sequential access violations | 1.5-3x |
+
+**Phase 3: Optimize** - Applies proven patterns from detailed reference files organized by category:
+- **Algorithmic**: Use Map/Set for O(1) lookups, eliminate nested iterations
+- **Caching**: Memoization, cache property access in loops
+- **I/O**: Batching, defer `await` until needed
+- **Memory**: Reduce allocations, optimize object operations
+- **Locality**: Sequential access patterns for CPU cache efficiency
+- **Safety**: Bounded iteration to prevent runaway loops
+
+Each pattern includes ❌/✅ examples with before/after code.
+
+**Phase 4: Verify** - Measures actual gains, verifies correctness:
+- Re-runs profiler with same inputs
+- Documents speedup factor (e.g., "2.3x faster")
+- Runs full test suite to catch optimization bugs
+- Keeps optimizations based on gain vs maintainability:
+  - &gt;10x: Always keep if tests pass
+  - 2-10x: Keep if maintainable
+  - 1.2-2x: Keep for hot paths or real-time systems (60fps rendering)
+  - &lt;1.05x: Revert unless trivial or critical hot path
+
+### Audit Everything Philosophy
+
+The skill audits ALL code for anti-patterns regardless of how simple a function appears. Utilities, formatters, parsers, and validators are frequently called in loops or rendering pipelines even when their implementation seems straightforward.
+
+Whether profiling data is available or not, it performs systematic static analysis and reports all findings with expected gains—users decide which optimizations to prioritize based on their specific context.
+
+### Adaptive Guidance
+
+Guidance becomes more prescriptive as optimization impact increases:
+- **10x+ gain** (algorithmic): Multiple valid approaches based on constraints
+- **2-10x gain** (caching): Pattern examples with cache invalidation strategies
+- **1.1-2x gain** (micro-optimization): Exact patterns, measure first
+
+## What You Get
+
+**Explicit audit** (`/accelint-ts-performance`):
+- Structured report using standard template
+- Complete list of anti-patterns with locations
+- Categorization by optimization type with expected gains
+- Prioritized recommendations
+
+**Automatic during feature work**:
+- Direct code optimizations applied inline
+- Comments explaining patterns and referencing documentation
+- Performance measurements before/after
+
+## Examples
+
+### Example: Auditing a Data Processing Function
+
+```bash
+/accelint-ts-performance src/utils/data-processor.ts
+```
+
+Generates a report identifying:
+- O(n²) nested loop in filtering (expected gain: 100x)
+- Array method chaining creating intermediate arrays (expected gain: 3x)
+- Property access in loop that should be cached (expected gain: 1.5x)
+
+### Example: Optimizing Nested Iteration
+
+Automatically fixes O(n²) complexity during feature work:
+
+```typescript
+// ❌ Before: O(n²) - nested iteration
+for (const user of users) {
+  const items = allItems.filter(item => item.userId === user.id);
+  process(items);
+}
+
+// ✅ After: O(n) - single pass with Map lookup
+// Performance: reduce-looping.md - build lookup once pattern
+const itemsByUser = new Map<string, Item[]>();
+for (const item of allItems) {
+  if (!itemsByUser.has(item.userId)) {
+    itemsByUser.set(item.userId, []);
+  }
+  itemsByUser.get(item.userId)!.push(item);
+}
+
+for (const user of users) {
+  const items = itemsByUser.get(user.id) ?? [];
+  process(items);
+}
+```
+
+### Example: Real-Time System Frame Budget
+
+For 60fps rendering (16.67ms frame budget):
+
+```bash
+/accelint-ts-performance src/rendering/animation-loop.ts
+```
+
+Identifies micro-optimizations valuable in critical hot paths:
+- Cache `array.length` in animation loop
+- Remove `try/catch` preventing V8 inlining
+- Sequential array access for CPU cache locality
+
+Documents frame timing impact for each optimization.
+
+## Good to Know
+
+> **Good to know:** Performance optimizations can introduce subtle bugs in edge cases (off-by-one errors, null handling). The skill emphasizes adding comprehensive tests before optimizing and verifying correctness after changes.
+
+> **Good to know:** The skill audits code systematically even without profiling data. When profilers aren't available, static analysis identifies all anti-patterns and reports them with expected gains.
+
+> **Good to know:** Some optimizations trade memory for CPU (caching, memoization). For long-running applications, monitor memory usage and set cache size limits to prevent leaks. Use WeakMap for lifecycle-bound caches.
+
+> **Good to know:** V8 optimizations differ across environments (Node.js v18 vs v20, Chrome vs Safari, x64 vs ARM). Profile in ALL target environments before shipping—an optimization that yields 3x speedup in Chrome may regress 1.5x in Safari.
+
+## Prerequisites
+
+- Git repository for SHA tracking
+- Optional: Profiling tools for baseline measurements
+  - Browser: Chrome DevTools Performance tab
+  - Node.js: `node --prof` with flame graph generators
+- Test suite for verifying correctness after optimizations
+
+## Related
+
+- **accelint-ts-best-practices** - General TypeScript coding standards, type safety, defensive programming
+- **accelint-ts-testing** - Test quality and coverage (important before optimizing)
+- **accelint-ts-documentation** - Code documentation standards

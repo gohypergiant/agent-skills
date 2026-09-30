@@ -1,0 +1,80 @@
+"""Regression: the faithfulness GATE can fail (offline, stubbed judge).
+
+Stubs the ragas modules so this runs in the default free suite. It proves the
+metric's gating logic — threshold comparison and reason — fails when the judge
+scores low, satisfying "every metric needs a regression test that proves it
+can fail". It does NOT validate Ragas itself; that is the gated live test's
+job once a real threshold is calibrated.
+"""
+
+import sys
+import types
+
+
+def test_faithfulness_gate_fails_on_low_judge_score(monkeypatch):
+    fake_ragas = types.ModuleType("ragas")
+    fake_metrics = types.ModuleType("ragas.metrics")
+
+    class FakeSample:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    class FakeFaithfulness:
+        def __init__(self, llm=None):
+            self.llm = llm
+
+        def single_turn_score(self, sample):
+            return 0.2  # planted: judge says the answer is NOT grounded
+
+    fake_ragas.SingleTurnSample = FakeSample
+    fake_metrics.Faithfulness = FakeFaithfulness
+    monkeypatch.setitem(sys.modules, "ragas", fake_ragas)
+    monkeypatch.setitem(sys.modules, "ragas.metrics", fake_metrics)
+
+    from metrics.faithfulness_ragas import FaithfulnessMetric
+
+    metric = FaithfulnessMetric(judge_model=None, threshold=0.7)  # calibrated gate
+    score = metric.measure("q", "an answer the judge rejects", ["some context"])
+
+    assert score == 0.2
+    assert not metric.is_successful(), "gate must fail when the judge scores below threshold"
+    assert "0.2" in metric.reason
+
+
+def test_rubric_hash_literal_matches_ragas_version():
+    """Self-check binding RUBRIC_HASH to the installed ragas version.
+
+    Ragas owns the faithfulness rubric (its internal prompts), so a package
+    upgrade IS a rubric edit — thresholds calibrated against the old version
+    are invalid. The audit (check #12) greps the LITERAL, so this test is what
+    keeps literal and reality in sync. Skips when ragas is not installed (the
+    default offline suite), because the faithfulness metric cannot run then
+    either; it always runs alongside `-m live`.
+    """
+    import hashlib
+    import importlib.metadata
+
+    import pytest
+
+    try:
+        ragas_version = importlib.metadata.version("ragas")
+    except importlib.metadata.PackageNotFoundError:
+        pytest.skip("ragas not installed — judge layer absent, self-check deferred")
+
+    from metrics.faithfulness_ragas import RUBRIC_HASH
+
+    compute_cmd = (
+        "python3 -c \"import hashlib, importlib.metadata as md; "
+        "print(hashlib.sha256(md.version('ragas').encode()).hexdigest()[:16])\""
+    )
+    assert RUBRIC_HASH != "0000000000000000", (
+        "RUBRIC_HASH is still the scaffold placeholder. Compute it from the "
+        f"installed ragas version:\n  {compute_cmd}"
+    )
+    actual = hashlib.sha256(ragas_version.encode()).hexdigest()[:16]
+    assert RUBRIC_HASH == actual, (
+        f"RUBRIC_HASH literal ({RUBRIC_HASH}) does not match installed "
+        f"ragas=={ragas_version} ({actual}) — a ragas upgrade changed the "
+        f"judge rubric. Update the literal:\n  {compute_cmd}\n"
+        "Then RECALIBRATE the faithfulness threshold (references/calibration.md)."
+    )

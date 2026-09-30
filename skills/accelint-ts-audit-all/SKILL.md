@@ -4,7 +4,7 @@ description: Comprehensive TypeScript file audit system. Command-only skill (no 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Audit All
@@ -140,8 +140,10 @@ For each file in the pending list, follow this exact sequence:
 #### Phase 1: Initial Test Coverage
 
 **Step 1: Run accelint-ts-testing skill**
-```bash
-/skill accelint-ts-testing <file-path>
+```text
+Invoke the accelint-ts-testing skill.
+
+[file-path]
 ```
 
 **Step 2: Interactive Changes**
@@ -173,65 +175,10 @@ For each file in the pending list, follow this exact sequence:
 **Step 3: Run BOTH skills in parallel**
 
 CRITICAL: Run these together to avoid contradictory suggestions:
-```bash
-/skill accelint-ts-best-practices <file-path>
-/skill accelint-ts-performance <file-path>
-```
+```text
+Invoke the accelint-ts-best-practices skill.
 
-**Step 4: Interactive Changes**
-- Review both sets of recommendations
-- **If recommendations overlap:**
-  - Try to merge them into single fix if possible
-  - If conflicting, present both and let user choose
-
-**BLOCKING - Interactive Approval Required:**
-> You MUST complete all three checkpoints before proceeding:
-> 1. ✅ Display emoji severity table with ALL issues from BOTH skills (see "Interactive Change Approval Pattern")
-> 2. ✅ Show detailed before/after code for EVERY issue
-> 3. ✅ Ask "Apply which issues?" with numbered list acceptance
-> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
-
-- Apply accepted changes
-- Add `// PERF:` comments only where they add genuine insight
-- Document in "Current File - Detailed Progress"
-- Update status to show Step 3 ✅, Step 4 ✅
-- **SAVE PROGRESS to audit-process file NOW before continuing**
-
-#### Phase 3: Verify Changes
-
-**Step 5: Run verification commands**
-
-⚠️ **CRITICAL:** Use EXACT commands from audit-process file "Verification Commands" section. DO NOT improvise or run one-off commands.
-
-Run ALL verification commands documented in audit-process file:
-```bash
-# Example commands (MUST match audit-process file exactly):
-cd <project-root>; npm test
-cd <project-root>; npm run build
-cd <project-root>; npm run lint
-```
-
-**Step 6: Interactive Changes (if needed)**
-
-If verification passes, skip to documenting results. Otherwise:
-
-**BLOCKING - Interactive Approval Required:**
-> You MUST complete all three checkpoints before proceeding:
-> 1. ✅ Display emoji severity table with ALL verification failures (see "Interactive Change Approval Pattern")
-> 2. ✅ Show detailed before/after code for EVERY issue
-> 3. ✅ Ask "Apply which fixes?" with numbered list acceptance
-> NO EXCEPTIONS. If you skip any checkpoint, you are violating the workflow.
-
-- Apply accepted changes
-- Document results in "Current File - Detailed Progress"
-- Update status to show Step 5 ✅, Step 6 ✅
-- **SAVE PROGRESS to audit-process file NOW before continuing**
-
-#### Phase 4: Documentation
-
-**Step 7: Run accelint-ts-documentation skill**
-```bash
-/skill accelint-ts-documentation <file-path>
+[file-path]
 ```
 
 **Step 8: Interactive Changes**

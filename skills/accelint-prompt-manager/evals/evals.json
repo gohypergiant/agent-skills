@@ -4,96 +4,288 @@
     {
       "id": 0,
       "prompt": "ok so i have this excel file with sales data from last quarter and my boss wants me to make it look better and maybe add some charts or something? not sure exactly what she wants but it needs to be done by friday. the file is in my downloads folder, probably called 'Q3_sales_final.xlsx' or something like that",
-      "expected_output": "Should detect vagueness ('look better', 'maybe', 'or something'), flag missing constraints (what kind of charts? what metrics matter? who's the audience?), and disambiguate success criteria. Should NOT overwhelm a non-technical user with jargon. Should ask clarifying questions to understand what 'better' means in this context.",
+      "expected_output": "Should treat this as prompt optimization for a vague non-technical data request. Should ask a small, targeted set of clarifying questions about what 'look better' means, what audience will consume the output, which metrics or decisions matter, and whether charts or narrative summaries are needed. Should use plain language, avoid technical jargon, avoid jumping into doing the spreadsheet work, and help define success criteria before producing a final optimized prompt.",
       "files": [],
       "assertions": [
         {
-          "name": "Asks clarifying questions",
-          "description": "Should ask about what 'look better' means, what charts are needed, what metrics matter, or who the audience is. Should not just dive into execution."
+          "name": "Asks targeted clarifying questions",
+          "description": "Should ask a limited set of clarifying questions about what 'look better' means, what charts are wanted, what metrics matter, or who the audience is. It should not skip clarification entirely."
         },
         {
-          "name": "Identifies specific ambiguities",
-          "description": "Should explicitly call out vague terms like 'look better', 'maybe', 'or something' as needing clarification."
+          "name": "Identifies vague terms",
+          "description": "Should explicitly recognize vague phrases like 'look better', 'maybe', or 'or something' as needing clarification or refinement."
         },
         {
-          "name": "Avoids technical jargon",
-          "description": "Should use accessible language for non-engineers. Should not use terms like 'API', 'schema', 'data pipeline', 'ETL', etc. without explanation."
+          "name": "Uses accessible language",
+          "description": "Should keep the explanation understandable for a non-technical user and avoid unnecessary technical jargon."
         },
         {
-          "name": "Does not accept vague request as-is",
-          "description": "Should push back on vagueness and help the user define success criteria. Should not say 'I'll make it look better' without clarification."
+          "name": "Does not execute spreadsheet task",
+          "description": "Should not try to analyze the workbook, build charts, or perform the underlying spreadsheet work. The skill should stay in prompt-optimization mode."
         }
       ]
     },
     {
       "id": 1,
       "prompt": "I need to write a blog post about our new product launch. Make it engaging and professional but also approachable. It should highlight the key features and benefits. Around 800 words.",
-      "expected_output": "Should detect missing creative constraints (tone examples? target audience? specific features to emphasize? what to avoid? style references?). Should identify ambiguous terms ('engaging', 'professional', 'approachable' can mean different things). Should add structure and constraints while preserving creative freedom. Should apply appropriate framework (likely RODES for creative + examples).",
+      "expected_output": "Should recognize a creative prompt with ambiguous quality terms and missing context. Should surface the ambiguity in words like 'engaging', 'professional', and 'approachable'; ask for audience, brand voice, feature priorities, examples, and things to avoid; and then shape a cleaner prompt with helpful structure while preserving creative flexibility. Should not just draft the blog post itself.",
       "files": [],
       "assertions": [
         {
-          "name": "Identifies missing creative constraints",
-          "description": "Should ask about tone examples, target audience, brand voice, style references, or what to avoid."
+          "name": "Flags ambiguous tone words",
+          "description": "Should note that 'engaging', 'professional', and 'approachable' are open to interpretation and should be clarified or bounded."
         },
         {
-          "name": "Flags ambiguous quality terms",
-          "description": "Should recognize that 'engaging', 'professional', 'approachable' mean different things to different people and ask for clarification or examples."
+          "name": "Asks about audience and brand voice",
+          "description": "Should request missing context such as who the post is for, what voice the brand uses, or what examples should guide tone."
         },
         {
-          "name": "Asks about specific features",
-          "description": "Should inquire which product features to emphasize, what benefits matter most, or what differentiates the product."
+          "name": "Requests feature prioritization",
+          "description": "Should ask which features or benefits matter most instead of assuming equal emphasis across all product details."
         },
         {
-          "name": "Provides structure",
-          "description": "Should offer a framework, outline, or structure for the blog post (e.g., intro/features/benefits/CTA), not just accept the request and write."
+          "name": "Provides prompt structure without writing post",
+          "description": "Should move toward a structured optimized prompt or outline, but should not simply write the 800-word blog post itself."
         }
       ]
     },
     {
       "id": 2,
       "prompt": "We're migrating our customer database to a new system and need to make sure all the data gets transferred correctly, update the API endpoints to point to the new database, modify the authentication flow to work with the new setup, update all the documentation, and then test everything before we go live next month. Also need to make sure the old system stays running during the transition in case we need to roll back.",
-      "expected_output": "Should detect high complexity (6+ interdependent tasks, rollback requirements, testing needs, documentation). Should RECOMMEND PLAN MODE before proceeding because this has >5 sequential phases with dependencies. Should explain why plan mode is appropriate (preventing costly rework, coordinating phases, handling rollback strategy). If user declines, should still structure the request with clear phases, dependencies, success criteria, and risk mitigation.",
+      "expected_output": "Should identify this as a complex, multi-phase downstream task with multiple interdependencies, risk, rollback needs, and testing concerns. The optimized response should recommend plan mode before execution, explain why planning is important here, and if proceeding, organize the eventual prompt around phases, dependencies, validation, rollback criteria, and go-live safeguards. It should still remain a prompt optimizer rather than trying to perform the migration work.",
       "files": [],
       "assertions": [
         {
-          "name": "Recommends plan mode",
-          "description": "CRITICAL: Should explicitly recommend using plan mode before proceeding. Should use phrases like 'I recommend entering plan mode' or 'this task would benefit from plan mode'."
+          "name": "Recommends plan mode for complexity",
+          "description": "Should explicitly recommend plan mode or an equivalent planning-first approach because the task has many interdependent phases and risks."
         },
         {
-          "name": "Identifies complexity",
-          "description": "Should recognize and state that this has >5 sequential phases, multiple interdependencies, rollback requirements, or coordinated changes."
+          "name": "Explains why planning matters",
+          "description": "Should explain that planning helps coordinate dependencies, reduce rework, and manage rollback and testing concerns."
         },
         {
-          "name": "Explains plan mode rationale",
-          "description": "Should explain WHY plan mode helps (e.g., prevents costly rework, helps coordinate phases, designs approach before execution)."
+          "name": "Identifies phases and dependencies",
+          "description": "Should reflect the major migration phases such as data transfer, API updates, authentication changes, documentation, testing, and rollback handling."
         },
         {
-          "name": "Structures if declined",
-          "description": "If user declines plan mode (or if continuing anyway), should still break the task into clear phases with dependencies, success criteria, and risk mitigation."
+          "name": "Does not perform migration work",
+          "description": "Should not start designing schemas, writing migration code, or otherwise executing the migration itself."
         }
       ]
     },
     {
       "id": 3,
       "prompt": "help me write something good",
-      "expected_output": "Should gracefully handle extreme vagueness. Should ask foundational questions to extract ANY context: What are you trying to write? (email, document, code, blog post?). Who is it for? What's the purpose? Should guide the user through articulating their intent without making them feel bad about the vague request. Should be patient and educational for someone who might not know how to ask for help.",
+      "expected_output": "Should gracefully handle an extremely vague request by asking foundational questions about what the user is trying to write, who it is for, what outcome they need, and any constraints or examples. The tone should be patient and helpful, especially for a user who may not know how to ask for prompt help yet. It should avoid guessing the domain and should not jump into writing an arbitrary artifact.",
       "files": [],
       "assertions": [
         {
-          "name": "Asks foundational questions",
-          "description": "Should ask basic context questions: What are you trying to write? (email, document, code, blog post?) Who is it for? What's the purpose?"
+          "name": "Asks foundational context questions",
+          "description": "Should ask what the user is trying to write, who it is for, and what success looks like before producing a final optimized prompt."
         },
         {
-          "name": "Patient and educational tone",
-          "description": "Should guide the user gently through articulating their intent. Should not be dismissive, frustrated, or condescending about the vague request."
+          "name": "Uses supportive tone",
+          "description": "Should guide the user gently rather than sounding dismissive or frustrated about the vagueness."
         },
         {
-          "name": "Extracts context",
-          "description": "Should help the user think through and articulate what they actually need. Should provide examples or options if the user is stuck."
+          "name": "Avoids domain assumptions",
+          "description": "Should not assume the user means an email, blog post, code, or another specific artifact without confirmation."
         },
         {
-          "name": "No premature assumptions",
-          "description": "Should not assume what 'something' is (code? document? email? story?) without asking. Should not jump to any specific domain without confirmation."
+          "name": "Helps user articulate intent",
+          "description": "Should give the user options or examples that make it easier to explain what they need."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Can you improve this prompt for Claude Code? 'Read the bug ticket, inspect the repo, fix the issue, add tests, and update docs.' The codebase is a Next.js app with server actions and TanStack Query, and I want the result to be safe for CI and easy for another engineer to review.",
+      "expected_output": "Should treat this as an explicit prompt-optimization request and skip the intent gate. Should optimize for Claude Code execution context by clarifying repo-inspection workflow, safety constraints, verification expectations, and review-friendly output. Should mention concrete success criteria such as preserving behavior, adding tests, validating changes, and summarizing touched files. Should optimize the prompt rather than fixing the bug itself.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Skips intent gate for explicit optimization",
+          "description": "Because the user explicitly asks to improve a prompt, the response should move directly into optimization rather than asking whether the user wants prompt help."
+        },
+        {
+          "name": "Adapts to Claude Code context",
+          "description": "Should tailor the optimized prompt for a coding-agent environment by mentioning repo inspection, validation, safe edits, or reviewable output."
+        },
+        {
+          "name": "Adds concrete success criteria",
+          "description": "Should strengthen the prompt with clear expectations around tests, docs, validation, and readable handoff or summary."
+        },
+        {
+          "name": "Does not fix bug directly",
+          "description": "Should not start inspecting or changing the repository as if it were executing the engineering task."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I'm about to paste a system prompt for our support bot. I want you to make it better without changing its core policy decisions. It handles billing disputes, account locks, and refund requests, and it has to stay concise because every extra token costs us money.",
+      "expected_output": "Should recognize a fragile meta-prompt or system-prompt optimization case where core behavior must be preserved. Should optimize carefully, preserve policy boundaries, consider token economy, and avoid rewriting the underlying business rules. Should surface any ambiguous phrases that could shift behavior and keep the result concise. It should not role-play the support bot or answer support tickets.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Preserves policy intent",
+          "description": "Should acknowledge that core policy decisions must remain unchanged and avoid introducing new support policies."
+        },
+        {
+          "name": "Optimizes for token economy",
+          "description": "Should explicitly consider brevity or prompt compression because the user said extra tokens cost money."
+        },
+        {
+          "name": "Treats as prompt-editing task",
+          "description": "Should stay focused on improving the system prompt rather than handling billing, lock, or refund cases directly."
+        },
+        {
+          "name": "Flags behavior-shifting ambiguities",
+          "description": "Should notice wording that could accidentally alter support behavior or policy interpretation."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "I have this prompt that says 'analyze the logs and tell me what broke.' That's too vague. The logs come from a payment service incident, there are 6 microservices involved, and I need the model to separate confirmed findings from hypotheses and end with the next 3 debugging steps.",
+      "expected_output": "Should identify vague success criteria in the original prompt and improve it into a more operational incident-analysis prompt. Should add structure around evidence handling, service boundaries, output format, and the distinction between confirmed findings and hypotheses. Because the user already states the prompt is too vague, it should optimize directly rather than asking the gate question. It should not analyze the incident itself.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Strengthens vague analysis prompt",
+          "description": "Should transform 'analyze the logs and tell me what broke' into a more specific, constrained prompt."
+        },
+        {
+          "name": "Separates findings from hypotheses",
+          "description": "Should include an explicit output distinction between evidence-backed findings and speculative hypotheses."
+        },
+        {
+          "name": "Defines output structure",
+          "description": "Should specify a structured response that ends with the next three debugging steps."
+        },
+        {
+          "name": "Does not perform incident analysis",
+          "description": "Should not start reasoning about which payment microservice failed based on the user message alone."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Can you make this request more actionable for a junior analyst? 'Review these survey responses and summarize what customers think.' They usually get overwhelmed, so I want the prompt to break the work into simple steps and keep the language plain.",
+      "expected_output": "Should optimize for a newcomer audience by simplifying language, reducing cognitive load, and turning the vague summarization request into a clear step-by-step prompt. It should recognize that 'what customers think' is underspecified and add structure such as themes, sentiment, notable quotes, and uncertainty handling. It should not summarize the survey responses itself.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Adapts for junior audience",
+          "description": "Should tune the optimized prompt for a less experienced analyst by using plain language and manageable steps."
+        },
+        {
+          "name": "Clarifies vague summarization goal",
+          "description": "Should replace 'what customers think' with more explicit dimensions such as themes, sentiment, concerns, praise, or open questions."
+        },
+        {
+          "name": "Provides stepwise structure",
+          "description": "Should break the work into simple sequential steps rather than leaving it as one abstract instruction."
+        },
+        {
+          "name": "Does not summarize survey itself",
+          "description": "Should remain in prompt-optimization mode instead of performing the review task."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I want a better prompt for generating social posts from our webinar transcript, but I don't want cringe marketing fluff. Keep it credible for a technical audience, mention the strongest takeaways, and avoid sounding like LinkedIn bait.",
+      "expected_output": "Should identify creative constraints and brand-risk language, then optimize the request into a clearer prompt with audience definition, tone boundaries, selection criteria for takeaways, and explicit 'avoid' guidance. It should preserve creative freedom while constraining style. It should not generate the social posts directly.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Adds anti-fluff constraints",
+          "description": "Should make the stylistic avoid-list explicit so the downstream model avoids hype, fluff, and 'LinkedIn bait' phrasing."
+        },
+        {
+          "name": "Defines technical audience expectations",
+          "description": "Should clarify what credibility for a technical audience means in practice, such as precision, restraint, or evidence-based claims."
+        },
+        {
+          "name": "Specifies takeaway selection",
+          "description": "Should guide the model on how to choose the strongest webinar takeaways instead of leaving 'strongest' undefined."
+        },
+        {
+          "name": "Does not write the posts",
+          "description": "Should optimize the prompt without directly producing the social posts."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "My team keeps writing prompts that say things like 'use chain of thought, tree of thought, and three expert personas debating with each other.' I need help rewriting one of those prompts so it works better with Claude 4.5, but I also need the explanation to be simple enough that I can share it in our internal docs.",
+      "expected_output": "Should detect multiple credit-killing patterns and explicitly steer away from fabricated multi-agent techniques and unnecessary chain-of-thought instructions. It should rewrite the prompt in a Claude-appropriate way, explain the rationale in accessible language, and keep the optimization focused on the prompt artifact. It should not produce hidden reasoning or simulate the expert debate pattern.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Identifies credit-killing patterns",
+          "description": "Should recognize tree-of-thought, persona debates, or explicit chain-of-thought instructions as patterns to remove or replace."
+        },
+        {
+          "name": "Adapts for Claude 4.5 behavior",
+          "description": "Should reflect that Claude 4.5 handles reasoning natively and does not need those added reasoning scaffolds."
+        },
+        {
+          "name": "Explains simply for docs",
+          "description": "Should provide a plain-language explanation that the user could reuse in internal documentation."
+        },
+        {
+          "name": "Does not simulate hidden reasoning",
+          "description": "Should not output chain-of-thought, fake persona discussion, or a debate transcript."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Can you tighten this prompt for an API workflow? It will run in a batch job with no follow-up questions: 'Look at the incoming JSON, clean it up, fix anything weird, and return something usable for downstream systems.'",
+      "expected_output": "Should recognize a non-interactive batch/API execution context and optimize accordingly. It should replace vague phrases like 'clean it up', 'fix anything weird', and 'usable' with concrete validation, normalization, error-handling, and output-contract instructions. Because the runtime will not allow follow-up questions, it should embed assumptions or fallback behavior into the optimized prompt. It should not process any JSON itself.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Optimizes for batch execution",
+          "description": "Should account for the fact that the prompt will run without interactive clarification and therefore needs complete instructions up front."
+        },
+        {
+          "name": "Replaces vague data-cleaning language",
+          "description": "Should make terms like 'clean it up', 'fix anything weird', and 'usable' more concrete and testable."
+        },
+        {
+          "name": "Defines error-handling or fallback behavior",
+          "description": "Should specify what the model should do when data is invalid, missing, or ambiguous in a no-follow-up environment."
+        },
+        {
+          "name": "Does not transform JSON directly",
+          "description": "Should stay in prompt-design mode rather than pretending it already received the batch payload."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "I need a prompt that tells an LLM to compare two draft vendor proposals and recommend one, but my legal team will hate it if the model sounds too certain. I want the prompt to force clear evidence, call out unknowns, and avoid making contractual claims.",
+      "expected_output": "Should optimize a risk-sensitive decision-support prompt by adding structured comparison criteria, uncertainty handling, evidence requirements, and constraints against legal overreach. It should recognize the trade-off between decisiveness and caution, and it should make the downstream output appropriately measured. It should not choose a vendor itself.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "Adds uncertainty safeguards",
+          "description": "Should require the downstream model to distinguish evidence, assumptions, and unknowns instead of sounding overly certain."
+        },
+        {
+          "name": "Constrains legal overreach",
+          "description": "Should explicitly prevent contractual or legal claims beyond the available evidence."
+        },
+        {
+          "name": "Defines comparison criteria",
+          "description": "Should strengthen the prompt with clear dimensions for comparing vendor proposals rather than leaving the recommendation unconstrained."
+        },
+        {
+          "name": "Does not recommend vendor directly",
+          "description": "Should optimize the prompt and not perform the vendor evaluation itself."
         }
       ]
     }

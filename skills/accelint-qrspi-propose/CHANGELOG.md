@@ -1,5 +1,172 @@
 # Changelog
 
+## [1.9.0] - 2026-08-25
+
+### Added
+- Cross-platform agent compatibility through prose-based skill invocation format
+- Simple, reliable prose format that works across all agent harnesses
+
+### Changed
+- Migrated from harness-specific slash-command syntax (`/skill-name`) to agent-agnostic prose invocation format
+- Ensures compatibility across Claude Code, Codex, Pi, and other agent harnesses
+
+## [1.8.1] - 2026-08-21
+
+### Fixed
+- **Strengthened `created_at` timestamp writing in step 31** — Added explicit step-by-step instructions to ensure timestamp is consistently written
+  - Broke down step 31 into explicit substeps: (a) read current design.md, (b) extract data, (c) write frontmatter with Edit tool, (d) verify formatting, (e) verify write succeeded, (f) handle missing data
+  - Added clear instructions for when frontmatter exists vs. needs to be created fresh
+  - Mandates using Edit tool with explicit before/after states
+  - Includes retry logic and error handling if write fails
+  - Rationale: Previous instructions showed what to write but didn't mandate how to write it, leading to inconsistent timestamp creation. Explicit tool instructions ensure `created_at` is written every time.
+- **Added prohibition against skipping `created_at`** — Enhanced NEVER Do section to explicitly forbid proceeding without timestamp
+  - Added rule: "NEVER skip writing the `created_at` timestamp — This field is required by both accelint-qrspi-apply and accelint-qrspi-archive"
+  - Clarifies that missing `created_at` breaks downstream timestamp tracking (started_at, completed_at)
+  - Rationale: Makes it clear this is a required field that must be written, not an optional convenience
+
+### Version
+- Bumped from 1.8.0 → 1.8.1
+
+## [1.8.0] - 2026-08-21
+
+### Changed
+- **Enhanced `--verbose` audit trail** — Renamed `q-and-a.md` to `trace.md` and expanded content to include initial input
+  - File renamed: `openspec/changes/<change-name>/q-and-a.md` → `openspec/changes/<change-name>/trace.md`
+  - Added initial input capture: Step 1 now stores the original ticket/feature/idea text (after flag removal) for inclusion in trace file
+  - Expanded trace structure: Now contains Initial Input section (new), Research Questions section, and Research Answers section
+  - Updated document title: "Questions and Answers Audit Trail" → "QRSPI Trace Audit Trail"
+  - Rationale: Closes the loop from "what was entered → what was asked → what was answered", providing complete traceability of the QRSPI flow from initial input through research to design
+  - Updated help text and completion messages to reference `trace.md` instead of `q-and-a.md`
+- **Added `sem impact` guidance for dependency analysis** — Research sub-agent (step 14) now includes instructions to use `sem` CLI tool when available
+  - Checks for `sem` CLI availability with `which sem`
+  - Uses `sem impact <token>` for deterministic dependency data when research questions mention specific code entities
+  - Gathers: entity definition location, dependencies, call sites/references, transitive impact
+  - Rationale: Ensures design phase has complete dependency information and won't miss references or call sites
+
+### Version
+- Bumped from 1.7.0 → 1.8.0
+
+## [1.7.0] - 2026-08-19
+
+### Added
+- **`--verbose` flag for audit trail** — Users can now pass `--verbose` to save questions and answers to `q-and-a.md`
+  - Flag parsing: Step 1 now checks for `--verbose` in user input and stores the flag state
+  - Q&A document creation: Step 25 (if `--verbose` was set) writes `openspec/changes/<change-name>/q-and-a.md` containing research questions from step 12 and research answers from step 16
+  - File format: Markdown document with ISO 8601 timestamp, questions section, and answers section
+  - Rationale: Provides traceability by capturing the raw questions and research that informed design artifacts, creating an audit trail for understanding context and decision-making
+  - Completion message now mentions `q-and-a.md` when `--verbose` was used
+  - Usage:
+    - `/accelint-qrspi-propose <ticket text>` — No q-and-a.md created (default behavior)
+    - `/accelint-qrspi-propose --verbose <ticket text>` — Creates q-and-a.md audit trail
+
+### Changed
+- **Step numbering** — All steps renumbered to maintain flat numbering scheme (no sub-numbering like 24a)
+  - Previous: Steps 1-24, 25, 26-47
+  - New: Steps 1-26 (added verbose flag handling), 27-48
+  - Rationale: Sub-numbering (e.g., 24a) was causing agents to skip steps; flat numbering prevents this issue
+  - Updated all internal cross-references throughout the skill (workflow diagram, error handling, NEVER Do section)
+
+### Version
+- Bumped from 1.6.1 → 1.7.0
+
+## [1.6.1] - 2026-07-29
+
+### Changed
+- **Tightened behavior-defining prose without changing workflow scope**
+  - Clarified the frontmatter description while preserving the same trigger families and planning-only boundary
+  - Tightened root `SKILL.md` wording around context isolation, required checkpoints, error handling, and anti-patterns
+  - Normalized several severity labels in body prose from rhetorical emphasis to clearer requirement language such as `REQUIRED`, while preserving existing `CRITICAL` wording inside exact sub-agent prompts and examples
+  - Updated `README.md` so implementation handoff references `/accelint-qrspi-apply <change-name>` consistently and summary prose matches the skill's current checkpoint and vertical-slicing behavior
+  - Rationale: Improve scanability and reduce ambiguity in behavior-bearing prose without changing trigger coverage, workflow order, or guardrail strength
+
+### Version
+- Bumped from 1.6.0 → 1.6.1
+
+## [1.6.0] - 2026-07-24
+
+### Changed
+- **Simplified and clarified sub-agent prompts** — removed verbose multi-paragraph examples and prescriptive language, made guidance more concise
+  - Questions sub-agent (step 10):
+    - Removed detailed examples ("How do we handle payments?" → "The ticket mentions...")
+    - Removed instruction to "walk down each branch of the problem statement tree"
+    - Kept core requirement: "detailed... empirical and robust technical questions"
+    - Rationale: Overly prescriptive examples can constrain agents toward specific patterns. Brief guidance lets the model use its own judgment about question depth
+  - Research sub-agent (step 14):
+    - Restructured multi-sentence instruction into clearer bullet format
+    - Softened "100% facts only. Zero opinions. Zero suggestions." to "Facts only. No opinions. No suggestions."
+    - Moved anti-pattern instructions to end: "Do NOT critique code quality, editorialize or suggest changes..."
+    - Rationale: The 1.5.0 language felt heavy-handed. Same requirements, friendlier tone, better structure
+  - Why: More concise, less prescriptive prompts reduce token usage and give sub-agents appropriate freedom while maintaining quality standards
+
+### Version
+- Bumped from 1.5.0 → 1.6.0
+
+## [1.5.0] - 2026-07-22
+
+### Changed
+- **Strengthened question-generation guidance** — the questions sub-agent now explicitly walks the problem tree branch-by-branch, avoids solutioning, and aims for empirically answerable technical questions rather than broad prompts
+  - Rationale: The branch updates tighten the front end of QRSPI so research starts from sharper, dependency-aware questions instead of vague discovery prompts that can miss critical unknowns.
+- **Raised the bar for research-answer objectivity** — the research sub-agent now requires 100% factual findings, explicitly forbids opinions/suggestions/editorializing, and calls out unanswered questions when the codebase or specs do not provide evidence
+  - Rationale: QRSPI depends on a clean separation between research and design. Making the research prompt stricter reduces solution bleed and gives the later design step a more reliable factual base.
+- **Refined skill prose for tighter execution behavior** — wording updates make the Questions and Research steps more explicit about what good output looks like without changing the broader workflow introduced in 1.4.0
+  - Rationale: These branch-level prompt refinements are small in scope but materially improve consistency in how sub-agents interpret the planning workflow.
+
+### Version
+- Bumped from 1.4.0 → 1.5.0
+
+## [1.4.0] - 2026-07-10
+
+### Changed
+- **Remove phase boundaries to prevent premature stopping:** Refactored from phase-based structure to continuous numbered steps
+  - Rationale: Phase headers like "### Phase 0: Preflight Checks", "### Phase 1: Questions", "### Phase 2: Research" create natural stopping points where agents might pause and check with the user mid-workflow, breaking the intended continuous execution flow
+  - Changed structure from:
+    - "### Phase 0: Preflight Checks" / "### Phase 1: Questions" / "### Phase 2: Research" / etc.
+    - To: Single "Implementation Steps" section with instruction "Execute these steps in order without stopping between them" followed by continuous numbered steps (1-N)
+  - Updated workflow diagram: "Phase" column → "Stage" column (higher-level groupings like "Questions", "Research", "Design")
+  - Updated all cross-references throughout (e.g., "Phase 1" → "Questions stage", "Phase 4" → step numbers)
+  - Removed all `**Steps:**` sub-headers that created additional stopping points within phases
+  - Integrated checkpoint instructions directly into the step sequence with clear conditions (e.g., "Step 26: STOP and wait for explicit user approval")
+  - Why: Agents tend to treat phase headers and "Steps:" sub-headers as checkpoint boundaries even when not intended. Continuous numbered steps with explicit STOP instructions only at mandatory checkpoints signal where the workflow should pause vs. continue atomically
+
+### Version
+- Bumped from 1.3.0 → 1.4.0
+
+## [1.3.0] - 2026-07-08
+
+### Added
+- **Frontmatter capture for specs_touched and decisions** — Phase 4 now captures structured metadata in design.md YAML frontmatter after user approval
+  - Runs only after design.md is approved (checkpoint 1a) or manual edits are confirmed (checkpoint 1c), never before
+  - Captures `specs_touched`: capability names declared in design.md/proposal.md as affected or introduced
+  - Captures `decisions`: design.md's decision content restructured as list of `{id, choice, rationale, alternatives}` entries
+  - Written to design.md YAML frontmatter (or merged if frontmatter block already exists)
+  - Rationale: `accelint-qrspi-archive` needs this structured metadata for cross-capability linking. Capturing it at approval time (not earlier) ensures it reflects the final approved design, not a draft that might be edited during the checkpoint.
+  - If `specs_touched` or decisions can't be confidently read from approved design.md/proposal.md, asks user to add them rather than guessing
+  - Does not block Phase 5 — changes can proceed to specs/tasks without this frontmatter, though archive workflow will need to derive it later
+
+### Changed
+- **Phase 4 checkpoint expanded to 5 steps** — added frontmatter capture as step 4, before proceeding to Phase 5
+  - Previous flow: approve → proceed to Phase 5
+  - New flow: approve → capture frontmatter → proceed to Phase 5
+  - Rationale: Frontmatter capture happens after approval but before continuing, ensuring design.md is complete for downstream workflows
+- **Phase 2: Research now includes existing specs** — research sub-agent now scans `openspec/specs/INDEX.md` for relevant capabilities and reads their specs
+  - Sub-agent observes what current specs say alongside what the codebase does
+  - Includes spec requirements and scenarios directly in research findings, not just references
+  - Rationale: Research should be objective about *both* current implementation *and* current specs of record. Without reading specs, research would miss documented requirements that haven't been implemented yet or have drifted.
+- **Workflow diagram updated** — added frontmatter capture notation at Checkpoint 1: "(frontmatter capture: specs_touched/decisions -> design.md)"
+- **Updated NEVER Do section** — added two new anti-patterns:
+  - NEVER capture specs_touched/decisions frontmatter before design.md is in its final, approved state
+  - NEVER guess specs_touched or decisions when they can't be confidently read from approved design.md/proposal.md
+- **Error Handling section expanded** — added guidance for missing specs_touched/decisions in approved design.md
+
+### Fixed
+- **Frontmatter capture timing** — design.md frontmatter is now only captured *after* user approval/confirmation, not during draft/edit cycles
+  - Issue: Capturing frontmatter speculatively before approval could write metadata against content the user is about to change
+  - Fix: Step 4 of Phase 4 explicitly runs only after approval (1a) or confirmed edits (1c)
+  - Impact: `accelint-qrspi-archive` now receives frontmatter that's guaranteed to reflect the final approved design
+
+### Version
+- Bumped from 1.2.1 → 1.3.0
+
 ## [1.2.1] - 2026-05-07
 
 ### Fixed

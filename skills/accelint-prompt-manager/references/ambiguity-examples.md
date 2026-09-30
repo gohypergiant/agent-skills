@@ -4,21 +4,21 @@ Common vague terms and how to resolve them with specific, measurable alternative
 
 ## What
 
-Catalog of frequently-ambiguous terminology in prompts, along with concrete interpretation options and resolution strategies.
+This file catalogs frequently ambiguous terms in prompts, along with concrete interpretation options and resolution strategies.
 
 ## Why It Matters
 
-Vague terms create misalignment. "Comprehensive" means different things to different people. Without disambiguation, you're guessing at user intent. Good prompts eliminate guesswork.
+Vague terms create misalignment. "Comprehensive" means different things to different people. Without disambiguation, you are guessing at user intent. Good prompts reduce that guesswork.
 
 ---
 
 ## Resolution Pattern
 
 For each ambiguous term:
-1. **Identify** the vague term
-2. **Present 2-3 interpretation options** with implications
-3. **Let user decide** (never assume)
-4. **Rewrite** with chosen specificity
+1. **Identify** the vague term.
+2. **Present 2-3 interpretation options** with implications.
+3. **Let the user decide**. Never assume.
+4. **Rewrite** with the chosen specificity.
 
 ---
 
@@ -236,7 +236,7 @@ Sometimes context clarifies ambiguity:
 - Inference: Focus on authentication/authorization
 - But still confirm: "Focus on auth security (rate limiting, token validation)? Or also input validation and injection prevention?"
 
-**Rule:** Use context to guide interpretation, but always confirm assumptions.
+**Rule:** Use context to guide interpretation, but confirm the assumption.
 
 ---
 
@@ -268,10 +268,10 @@ Don't over-disambiguate obvious cases:
 - Just pick a reasonable interpretation, no need to ask
 
 **Rule:** Disambiguate when:
-1. High stakes (wrong choice costly)
-2. Multiple viable interpretations
-3. No clear context clues
-4. User will benefit from being explicit
+1. Stakes are high and a wrong choice is costly.
+2. Multiple viable interpretations exist.
+3. No clear context clues exist.
+4. The user will benefit from explicit options.
 
 ---
 
@@ -293,4 +293,4 @@ More than 3-4 options is decision paralysis. Present most likely interpretations
 
 ## Key Principle
 
-Ambiguity is normal in natural language. The skill isn't avoiding ambiguity—it's detecting and resolving it systematically before execution. Good prompts make implicit assumptions explicit.
+Ambiguity is normal in natural language. The goal is not to avoid ambiguity completely. The goal is to detect and resolve ambiguity systematically before execution. Good prompts make implicit assumptions explicit.

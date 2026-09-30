@@ -1,0 +1,50 @@
+"""Example GEval (LLM-judged) metric for __SKILL_NAME__.
+
+Use a judge ONLY for the slice a parser cannot score. Note the two non-obvious
+requirements (see references/frameworks/deepeval.md): measure/a_measure must
+forward *args/**kwargs (DeepEval 4.x), and any declared EXPECTED_OUTPUT needs a
+placeholder when absent.
+"""
+
+from deepeval.metrics import GEval
+from deepeval.test_case import LLMTestCase, LLMTestCaseParams
+
+# Rubric hash: sha256[:16] of the evaluation_steps text, for the recalibration
+# tripwire (audit_checks.py #12). Any edit to the rubric invalidates thresholds.
+# Must be a LITERAL (the audit greps it); the self-check in
+# tests/test_example_regression.py fails until it matches the steps. Compute:
+#   python3 -c "import hashlib; from metrics.example_geval_metric import _EVALUATION_STEPS as s; print(hashlib.sha256('\n'.join(s).encode()).hexdigest()[:16])"
+RUBRIC_HASH = "0000000000000000"  # PLACEHOLDER - compute and replace
+
+_EVALUATION_STEPS = [
+    "You are evaluating __WHAT_THE_JUDGE_EVALUATES__.",
+    "GROUNDING RULE: if you cannot quote the exact substring of the "
+    "input that supports a deduction, do not make that deduction.",
+    "Quote the exact input substring supporting each judgment.",
+]
+
+
+class ExampleQualityMetric(GEval):
+    def __init__(self, judge_model, threshold: float = 0.8):
+        # GEval takes criteria OR evaluation_steps, never both (criteria exists
+        # to auto-generate steps via an extra judge call). Explicit steps are
+        # cheaper and deterministic, so the rubric lives entirely in the steps —
+        # including the grounding rule, the single most important guard against
+        # judge false negatives.
+        super().__init__(
+            name="Example Quality",
+            # Never restate a score scale in the steps: GEval's own prompt
+            # instructs the judge to return 0-10 and normalizes by /10, so a
+            # step saying "score 0 to 1" makes a literal judge emit 0/1 →
+            # normalized 0.0/0.1, and the threshold becomes unreachable.
+            evaluation_steps=_EVALUATION_STEPS,
+            evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT],
+            model=judge_model,
+            threshold=threshold,
+        )
+
+    def measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
+        return super().measure(test_case, *args, **kwargs)
+
+    async def a_measure(self, test_case: LLMTestCase, *args, **kwargs) -> float:
+        return await super().a_measure(test_case, *args, **kwargs)

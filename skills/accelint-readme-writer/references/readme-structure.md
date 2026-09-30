@@ -6,7 +6,7 @@ Detailed guide for README section ordering, content requirements, and formatting
 
 ## Section Order
 
-READMEs must follow this section order. Users expect to find information in predictable locations.
+READMEs must follow this section order. Users expect to find information in predictable places.
 
 ```
 1.  Heading Area
@@ -83,7 +83,7 @@ Include only for READMEs over ~200 lines. Place after heading area.
 - [License](#license)
 ```
 
-Keep to 2 levels deep maximum.
+Keep the TOC to 2 levels deep maximum.
 
 ---
 
@@ -120,7 +120,7 @@ TypeScript types are included — no separate `@types` package needed.
 
 ## 4. Quick Start
 
-Minimal working example. Get users to "hello world" fast.
+Minimal working example. Help users reach a working result quickly.
 
 ### Requirements
 
@@ -190,9 +190,9 @@ Explain why this package was created and what makes it different.
 
 ### Requirements
 
-- The problem that motivated creation
-- What alternatives exist and why this is different
-- Who should use this (and who shouldn't)
+- The problem that motivated its creation
+- What alternatives exist and why this package is different
+- Who should use this and who should not
 
 **✅ Correct**
 ```markdown
@@ -370,7 +370,7 @@ For deeper technical and behavioral context:
 These documents form a layered guidance system: config.yml defines what the project is, ARCHITECTURE.md explains how it's structured and deployed, and AGENTS.md governs how agents collaborate on it.
 ```
 
-**Note:** Only include files that actually exist. Check for openspec/config.yml (or config.yaml), ARCHITECTURE.md, and AGENTS.md/CLAUDE.md before adding this section. If none exist, omit this section entirely.
+**Note:** Include only files that actually exist. Check for openspec/config.yml or `config.yaml`, `ARCHITECTURE.md`, and `AGENTS.md` or `CLAUDE.md` before you add this section. If none exist, omit this section entirely.
 
 ---
 

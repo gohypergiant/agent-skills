@@ -1,0 +1,2 @@
+# Place input fixtures here: one pristine, one planted-broken per behavior.
+# Goldens go in ../expected/ and are GENERATED from the skill's schema.
