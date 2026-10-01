@@ -29,6 +29,14 @@ export function translatePlan(
   const lines: string[] = [];
 
   lines.push(`import { expect, test } from "@playwright/test";`);
+  const hasNewTabSwitch = planFile.tests.some((test) =>
+    test.steps.some(
+      (step) => step.action === "switchTab" && step.tabIdentifier === "new"
+    )
+  );
+  if (hasNewTabSwitch) {
+    lines.push(`import type { Page } from "@playwright/test";`);
+  }
   lines.push(`import { setupConsoleTracking } from "./fixtures/console-tracking";`);
   lines.push(`import { attachFailureArtifacts } from "./fixtures/error-handling";`);
   lines.push(``);
@@ -88,12 +96,32 @@ function translateSingleTest(test: Test): string {
     lines.push(`    let page = initialPage;`);
   }
 
+  const hasNewTabSwitch = test.steps.some(
+    (step) => step.action === "switchTab" && step.tabIdentifier === "new"
+  );
+  if (hasNewTabSwitch) {
+    lines.push(`    let newTabPagePromise: Promise<Page> | undefined;`);
+  }
+
   lines.push(`    const tracker = await setupConsoleTracking({ page, testInfo });`);
   lines.push(``);
   lines.push(`    await page.goto(${JSON.stringify(test.startUrl)});`);
 
   test.steps.forEach((step, index) => {
+    if (step.action === "switchTab" && index === 0) {
+      throw new Error(
+        `switchTab cannot be the first step in test "${test.name}" - there's nothing to switch from yet.`
+      );
+    }
+
+    const nextStep = test.steps[index + 1];
+    const nextStepSwitchesToNewTab =
+      nextStep?.action === "switchTab" && nextStep.tabIdentifier === "new";
+
     lines.push(``);
+    if (nextStepSwitchesToNewTab) {
+      lines.push(`    newTabPagePromise = context.waitForEvent("page");`);
+    }
     lines.push(`    tracker.setStep(${index + 1});`);
     lines.push(renderStep(step, index + 1));
   });
@@ -403,14 +431,25 @@ function renderStep(step: Step, stepIndex: number): string {
     }
 
     case "switchTab": {
-      let pageSelection: string;
       if (step.tabIdentifier === "new") {
-        pageSelection = "allPages[allPages.length - 1]";
-      } else {
-        const indexMap: Record<string, number> = { first: 0, second: 1, third: 2 };
-        const index = indexMap[step.tabIdentifier];
-        pageSelection = `allPages[${index}]`;
+        return [
+          `    try {`,
+          `      if (!newTabPagePromise) {`,
+          `        throw new Error("No listener was set up for the new tab before this step");`,
+          `      }`,
+          `      const newPage = await newTabPagePromise;`,
+          `      page = newPage;`,
+          `      await page.bringToFront();`,
+          `    } catch (error) {`,
+          `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+          `      throw error;`,
+          `    }`
+        ].join("\n");
       }
+
+      const indexMap: Record<string, number> = { first: 0, second: 1, third: 2 };
+      const index = indexMap[step.tabIdentifier];
+      const pageSelection = `allPages[${index}]`;
 
       return [
         `    try {`,

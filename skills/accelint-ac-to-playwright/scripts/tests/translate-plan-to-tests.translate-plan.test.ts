@@ -86,6 +86,45 @@ describe("translatePlan - source annotation", () => {
   });
 });
 
+describe("translatePlan - switchTab(new) import", () => {
+  it("adds a Page type import when a switchTab(new) step is present", () => {
+    const plan: PlanFile = {
+      suiteName: "Tab switching suite",
+      source: { repo: "external", path: "tabs.feature" },
+      tests: [
+        {
+          name: "opens a new tab",
+          startUrl: "https://example.com",
+          steps: [
+            { type: "action", action: "click", target: "nav.link.settings" },
+            { type: "action", action: "switchTab", tabIdentifier: "new" },
+          ],
+        },
+      ],
+    };
+
+    const result = translatePlan(plan, { outDir: "tests/generated" });
+    expect(result.content).toContain(`import type { Page } from "@playwright/test";`);
+  });
+
+  it("does not add a Page type import when no switchTab(new) step is present", () => {
+    const plan: PlanFile = {
+      suiteName: "No tab switching",
+      source: { repo: "external", path: "no-tabs.feature" },
+      tests: [
+        {
+          name: "basic flow",
+          startUrl: "https://example.com",
+          steps: [{ type: "action", action: "goto", value: "https://example.com" }],
+        },
+      ],
+    };
+
+    const result = translatePlan(plan, { outDir: "tests/generated" });
+    expect(result.content).not.toContain(`import type { Page }`);
+  });
+});
+
 // Helper functions
 
 function readFixture(name: string) {

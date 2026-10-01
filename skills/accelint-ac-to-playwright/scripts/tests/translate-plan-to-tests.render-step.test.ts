@@ -267,9 +267,10 @@ describe("renderStep", () => {
       { type: "action", action: "switchTab", tabIdentifier: "new" },
       1,
       [
-        'const allPages = context.pages();',
-        'const targetPage = allPages[allPages.length - 1];',
-        'page = targetPage;',
+        'if (!newTabPagePromise) {',
+        'throw new Error("No listener was set up for the new tab before this step");',
+        'const newPage = await newTabPagePromise;',
+        'page = newPage;',
         'await page.bringToFront();',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "switchTab" })'
       ],
