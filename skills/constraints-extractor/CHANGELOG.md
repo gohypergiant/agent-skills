@@ -5,6 +5,16 @@ All notable changes to the constraints-extractor skill will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-10-01
+
+### Fixed
+- **Documented that `merge_constraints.py` is additive-only.** The script merges new findings and corroborates existing entries by combining evidence, but it has no delete path -- it will never remove a stale entry or replace a bad citation on its own. SKILL.md previously implied the script handled "all mechanical file operations," which overstated its scope.
+
+### Added
+- New "Removing Stale Entries and Bad Citations" section in SKILL.md giving the exact, grammar-preserving procedure for the one case where a direct, user-confirmed edit to `CONSTRAINTS.md` is correct: deleting a whole stale entry block, or fixing a single bad citation's `Evidence:`/`Evidence notes:` lines.
+- "Preview Before Writing" now surfaces stale entries and bad citations found during a run, alongside new constraints and conflicts, so removal/correction gets the same explicit user confirmation as any other change.
+- `references/troubleshooting.md`'s merge script behavior list now states the no-delete limitation explicitly.
+
 ## [1.0.1] - 2026-08-25
 
 ### Fixed
