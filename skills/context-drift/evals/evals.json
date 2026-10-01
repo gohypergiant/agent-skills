@@ -1,0 +1,67 @@
+{
+  "skill_name": "context-drift",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "",
+      "expected_output": "The skill is invoked with no additional task text at all, as if the user ran a bare invocation with nothing else in the turn (this reproduces the regression where the skill was observed stopping to ask 'what would you like to work on?' instead of acting). The skill should treat the invocation itself as the request: announce the defaults it is applying, then begin Stage 1 against the current repository without waiting for the user to say anything further.",
+      "files": [],
+      "expectations": [
+        "Response does not ask the user what they would like to work on",
+        "Response does not merely acknowledge that the skill is available without starting work",
+        "Response explicitly states the defaults being applied (audit and apply, the canonical file set, lossless moves only, report-before-create for missing docs)",
+        "Response begins Stage 1 by identifying which canonical files exist in the current repository",
+        "Response does not pause for user confirmation before starting scope determination"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Audit this repo for context drift across AGENTS.md and ARCHITECTURE.md only, and just tell me what's wrong -- don't make any changes yet.",
+      "expected_output": "The skill scopes the audit to exactly AGENTS.md and ARCHITECTURE.md (not the full canonical set), consults the accelint-onboard-agents and accelint-architecture-doc owner skills for those files, and stops after producing an issue list -- no proposal table, no diffs, no edits.",
+      "files": [],
+      "expectations": [
+        "Only AGENTS.md and ARCHITECTURE.md are treated as in-scope, not the rest of the canonical set",
+        "The response references consulting accelint-onboard-agents and/or accelint-architecture-doc as the owner skills",
+        "The response stops after the issue list and does not produce a proposal table or diff previews",
+        "No file edits are made"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Walk me through context drift fixes for this repo one proposal at a time so I can approve or reject each one.",
+      "expected_output": "The skill runs the audit, builds a lossless change plan, then presents proposals one at a time: a one-paragraph rationale, a diff-style preview for every affected file, and an explicit Accept/Deny/Discuss prompt, waiting before moving to the next proposal.",
+      "files": [],
+      "expectations": [
+        "Proposals are presented individually, not as a batch",
+        "Each proposal includes a one-paragraph rationale",
+        "Each proposal includes a diff-style preview covering every file it affects",
+        "Each proposal ends with an explicit Accept/Deny/Discuss prompt and the response waits before continuing to the next one",
+        "No proposal is applied without an explicit accept"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "There's a sentence in our AGENTS.md describing the deployment topology (ECS, ALB, Fargate) in detail. Is that in the right place?",
+      "expected_output": "The skill classifies this as wrong-home content, not duplication: deployment topology belongs in ARCHITECTURE.md. It proposes a lossless move that leaves a short behavior-level pointer in AGENTS.md and states where in ARCHITECTURE.md the same level of operational detail will land, without vaguely summarizing it away.",
+      "files": [],
+      "expectations": [
+        "The response classifies the AGENTS.md deployment detail as wrong-home content, not exact or paraphrased duplication",
+        "The proposed destination file is ARCHITECTURE.md",
+        "The proposal states that a short pointer, not a full restatement, remains in AGENTS.md",
+        "The response identifies where the same level of operational detail will survive in ARCHITECTURE.md rather than being thinned out"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "AGENTS.md says our API auth uses OAuth2 with short-lived tokens, but CONSTRAINTS.md says we're locked into a legacy API-key scheme for a vendor integration. Can you check our context docs for drift?",
+      "expected_output": "The skill flags this specifically as a conflict between two files stating incompatible facts, not as something to silently resolve by picking one side. It surfaces both statements and asks the user (or proposes verification) rather than editing either file unilaterally.",
+      "files": [],
+      "expectations": [
+        "The response identifies the AGENTS.md/CONSTRAINTS.md auth discrepancy as a conflict drift type",
+        "The response surfaces both conflicting statements rather than silently preferring one",
+        "The response does not edit either file to resolve the conflict without first flagging it for the user",
+        "The response does not treat this as an ordinary cleanup/consolidation opportunity"
+      ]
+    }
+  ]
+}
