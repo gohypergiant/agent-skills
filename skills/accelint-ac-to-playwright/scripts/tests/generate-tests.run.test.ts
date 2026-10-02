@@ -124,7 +124,7 @@ describe("run()", () => {
     expect(writtenContent).toContain(`annotation: {`);
     expect(writtenContent).toContain(`type: "source",`);
     expect(writtenContent).toContain(`description: "some-repo/path/to/file.md"`);
-    expect(writtenContent).toContain(`test("Suite name", async ({ page }, testInfo) => {`);
+    expect(writtenContent).toContain(`test("Suite name", async ({ page: initialPage, context }, testInfo) => {`);
     expect(logs.join("\n")).toContain("Wrote:");
     expect(appendArgs).toContain("--summary-json");
     expect(appendArgs).toContain("summaries/2026-01-28-14-03-52Z-summary.json");

@@ -29,6 +29,14 @@ export function translatePlan(
   const lines: string[] = [];
 
   lines.push(`import { expect, test } from "@playwright/test";`);
+  const hasNewTabSwitch = planFile.tests.some((test) =>
+    test.steps.some(
+      (step) => step.action === "switchTab" && step.tabIdentifier === "new"
+    )
+  );
+  if (hasNewTabSwitch) {
+    lines.push(`import type { Page } from "@playwright/test";`);
+  }
   lines.push(`import { setupConsoleTracking } from "./fixtures/console-tracking";`);
   lines.push(`import { attachFailureArtifacts } from "./fixtures/error-handling";`);
   lines.push(``);
@@ -81,9 +89,18 @@ function translateSingleTest(test: Test): string {
   if (test.tags?.length) {
     lines.push(`  test(${JSON.stringify(test.name)}, {`);
     lines.push(`    tag: ${formatTags(test.tags)}`);
-    lines.push(`  }, async ({ page }, testInfo) => {`);
+    lines.push(`  }, async ({ page: initialPage, context }, testInfo) => {`);
+    lines.push(`    let page = initialPage;`);
   } else {
-    lines.push(`  test(${JSON.stringify(test.name)}, async ({ page }, testInfo) => {`);
+    lines.push(`  test(${JSON.stringify(test.name)}, async ({ page: initialPage, context }, testInfo) => {`);
+    lines.push(`    let page = initialPage;`);
+  }
+
+  const hasNewTabSwitch = test.steps.some(
+    (step) => step.action === "switchTab" && step.tabIdentifier === "new"
+  );
+  if (hasNewTabSwitch) {
+    lines.push(`    let newTabPagePromise: Promise<Page> | undefined;`);
   }
 
   lines.push(`    const tracker = await setupConsoleTracking({ page, testInfo });`);
@@ -91,7 +108,20 @@ function translateSingleTest(test: Test): string {
   lines.push(`    await page.goto(${JSON.stringify(test.startUrl)});`);
 
   test.steps.forEach((step, index) => {
+    if (step.action === "switchTab" && index === 0) {
+      throw new Error(
+        `switchTab cannot be the first step in test "${test.name}" - there's nothing to switch from yet.`
+      );
+    }
+
+    const nextStep = test.steps[index + 1];
+    const nextStepSwitchesToNewTab =
+      nextStep?.action === "switchTab" && nextStep.tabIdentifier === "new";
+
     lines.push(``);
+    if (nextStepSwitchesToNewTab) {
+      lines.push(`    newTabPagePromise = context.waitForEvent("page");`);
+    }
     lines.push(`    tracker.setStep(${index + 1});`);
     lines.push(renderStep(step, index + 1));
   });
@@ -209,6 +239,19 @@ function renderStep(step: Step, stepIndex: number): string {
         `    try {`,
         `      await expect(${locator}).toHaveCount(1);`,
         `      await expect(${locator}).toContainText(${JSON.stringify(step.value)});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "expectValue": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)})`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await expect(${locator}).toHaveValue(${JSON.stringify(step.value)});`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
         `      throw error;`,
@@ -382,6 +425,43 @@ function renderStep(step: Step, stepIndex: number): string {
         `      await ${locator}.selectOption({ label: ${JSON.stringify(step.value)} });`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "switchTab": {
+      if (step.tabIdentifier === "new") {
+        return [
+          `    try {`,
+          `      if (!newTabPagePromise) {`,
+          `        throw new Error("No listener was set up for the new tab before this step");`,
+          `      }`,
+          `      const newPage = await newTabPagePromise;`,
+          `      page = newPage;`,
+          `      await page.bringToFront();`,
+          `    } catch (error) {`,
+          `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+          `      throw error;`,
+          `    }`
+        ].join("\n");
+      }
+
+      const indexMap: Record<string, number> = { first: 0, second: 1, third: 2 };
+      const index = indexMap[step.tabIdentifier];
+      const pageSelection = `allPages[${index}]`;
+
+      return [
+        `    try {`,
+        `      const allPages = context.pages();`,
+        `      const targetPage = ${pageSelection};`,
+        `      if (!targetPage) {`,
+        `        throw new Error(\`Cannot switch to ${step.tabIdentifier} tab - only \${allPages.length} tab(s) open\`);`,
+        `      }`,
+        `      page = targetPage;`,
+        `      await page.bringToFront();`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
         `      throw error;`,
         `    }`
       ].join("\n");

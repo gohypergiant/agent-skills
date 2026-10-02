@@ -74,6 +74,10 @@ Note: The orchestrator (assessment mode) is responsible for extracting actions f
   - Requires pixel amount
   - Example: "scrolls down 200 pixels"
 - `reloads` — page reload (maps to `reload` action, only valid in When steps as a user action)
+- `switches (back to|to) the (new|first|second|third) tab` — switch browser context to a different tab (maps to `switchTab` action)
+  - "new" = most recently opened tab
+  - Ordinals (first, second, third) map to tab indices (0, 1, 2)
+  - Examples: "switches to the new tab", "switches back to the first tab", "switches to the second tab"
 
 ### Vague/Unrecognized Verbs (reject these)
 

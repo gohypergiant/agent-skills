@@ -105,6 +105,15 @@
           "action": "expectText",
           "target": "page.div.welcome",
           "value": "Welcome!"
+        },
+        {
+          "action": "expectValue",
+          "target": "form.input.radius",
+          "value": "5"
+        },
+        {
+          "action": "switchTab",
+          "tabIdentifier": "new"
         }
       ]
     }

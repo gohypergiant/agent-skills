@@ -92,6 +92,15 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { type: "assertion", action: "expectValue", target: "form.input.radius", value: "5" },
+      3,
+      [
+        'await expect(page.getByTestId("form.input.radius")).toHaveCount(1);',
+        'await expect(page.getByTestId("form.input.radius")).toHaveValue("5");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectValue", testId: "form.input.radius" })'
+      ],
+    ],
+    [
       { type: "action", action: "fill", target: "#email", value: "a@b.com" },
       5,
       [
@@ -252,6 +261,48 @@ describe("renderStep", () => {
       [
         'await page.keyboard.up("Shift");',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "keyUp" })'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "new" },
+      1,
+      [
+        'if (!newTabPagePromise) {',
+        'throw new Error("No listener was set up for the new tab before this step");',
+        'const newPage = await newTabPagePromise;',
+        'page = newPage;',
+        'await page.bringToFront();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "switchTab" })'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "first" },
+      2,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[0];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "second" },
+      3,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[1];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "third" },
+      4,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[2];',
+        'page = targetPage;',
+        'await page.bringToFront();'
       ],
     ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {

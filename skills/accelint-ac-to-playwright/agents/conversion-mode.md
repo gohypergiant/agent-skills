@@ -125,6 +125,7 @@ Use the assessment-mode output as the complete user-facing response. Do not add 
     3. `keyUp` with the same modifier key
     - Valid modifiers for `keyDown`/`keyUp`: `Shift`, `Control`, `a` (app-specific)
     - The `press` action only accepts single unmodified keys and should never receive combination syntax like `Shift+g`
+  - **Tab switching**: When AC describes switching tabs (trigger phrases: "switches to", "switches back to"), use `switchTab` action with tab identifier: "new" (most recently opened), "first" (index 0), "second" (index 1), or "third" (index 2)
 - Assertions: 
   - If navigation is triggered, add `expectUrl` using the Start URL mapping.
   - For visibility changes (words: visible, appears, shows, see, seen, hides, disappears, hidden), EVERY target mentioned with a visibility change MUST have BOTH visibility assertions:
@@ -133,7 +134,8 @@ Use the assessment-mode output as the complete user-facing response. Do not add 
     - When multiple targets change visibility from the same action, add ALL the "before" assertions first, then the action, then ALL the "after" assertions
     - Example: "button appears and text disappears" → `expectNotVisible button`, `expectVisible text`, `[action]`, `expectVisible button`, `expectNotVisible text`
     - The schema enforces that each target with ANY visibility assertion must have EXACTLY 2 visibility assertions (one before, one after) with exactly one action between them
-  - Only add `expectText` / `expectVisible` / `expectNotVisible` when the AC explicitly names text or visibility.
+  - When AC describes checking an input's value property, use `expectValue` (trigger phrases: "has value", "input value is", "value is"). For visible text content, use `expectText`.
+  - Only add `expectText` / `expectValue` / `expectVisible` / `expectNotVisible` when the AC explicitly names text, value, or visibility.
   - Do not invent assertions. NEVER infer unstated information.  Required fields that MUST be explicit (not inferred):
     - target: Must include area + component + intent
     - value: Must be quoted literal for fills 
