@@ -166,6 +166,14 @@ function joinOutDir(outDir: string, filename: string): string {
     return `/${escaped}(?:\\/(?:[?#]|$)|[?#]|$)/`;
   }
 
+// Converts a 6-digit hex color to the rgb() form returned by getComputedStyle
+function hexToRgb(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 // Outputs tags in the correct format for Playwright
 function formatTags(tags: string[]): string {
   if (tags.length === 1) return JSON.stringify(tags[0]);
@@ -211,6 +219,19 @@ function renderStep(step: Step, stepIndex: number): string {
         `      await page.mouse.up(${hasButton ? `{ button: "${step.button}" }` : ""});`,
         `    } catch (error) {`,
         `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}" });`,
+        `      throw error;`,
+        `    }`
+      ].join("\n");
+    }
+
+    case "expectColorPickerValue": {
+      const locator = `page.getByTestId(${JSON.stringify(step.target)}).locator('[aria-selected="true"] [role="img"]')`;
+      return [
+        `    try {`,
+        `      await expect(${locator}).toHaveCount(1);`,
+        `      await expect(${locator}).toHaveCSS("background-color", ${JSON.stringify(hexToRgb(step.value))});`,
+        `    } catch (error) {`,
+        `      await attachFailureArtifacts({ page, testInfo, stepIndex: ${stepIndex}, action: "${step.action}", testId: ${JSON.stringify(step.target)} });`,
         `      throw error;`,
         `    }`
       ].join("\n");
@@ -492,11 +513,12 @@ function renderStep(step: Step, stepIndex: number): string {
 }
 
 // @internal exports for unit tests
-export { 
+export {
   formatTags as _formatTags,
+  hexToRgb as _hexToRgb,
   joinOutDir as _joinOutDir,
-  renderStep as _renderStep, 
-  slug as _slug, 
+  renderStep as _renderStep,
+  slug as _slug,
   toRegexLiteral as _toRegexLiteral,
   translateSingleTest as _translateSingleTest
 };

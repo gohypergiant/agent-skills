@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { _renderStep, type Step } from "../translate-plan-to-tests";
+import { _hexToRgb, _renderStep, type Step } from "../translate-plan-to-tests";
 
 describe("renderStep", () => {
   it.each<[Step, number, string[]]>([
@@ -107,6 +107,15 @@ describe("renderStep", () => {
         'await expect(page.getByTestId("form.slider.radius").getByRole("textbox")).toHaveCount(1);',
         'await expect(page.getByTestId("form.slider.radius").getByRole("textbox")).toHaveValue("5");',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectSliderValue", testId: "form.slider.radius" })'
+      ],
+    ],
+    [
+      { type: "assertion", action: "expectColorPickerValue", target: "form.colorpicker.fill", value: "#6B4A80" },
+      3,
+      [
+        'await expect(page.getByTestId("form.colorpicker.fill").locator(\'[aria-selected="true"] [role="img"]\')).toHaveCount(1);',
+        'await expect(page.getByTestId("form.colorpicker.fill").locator(\'[aria-selected="true"] [role="img"]\')).toHaveCSS("background-color", "rgb(107, 74, 128)");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectColorPickerValue", testId: "form.colorpicker.fill" })'
       ],
     ],
     [
@@ -329,5 +338,15 @@ describe("renderStep", () => {
     const badStep = { action: "nope" } as unknown as Step;
     expect(() => _renderStep(badStep, 1)).toThrow(/Unsupported step:.*nope/);
   });
-  
+
+});
+
+describe("hexToRgb", () => {
+  it.each<[string, string]>([
+    ["#FFFFFF", "rgb(255, 255, 255)"],
+    ["#000000", "rgb(0, 0, 0)"],
+    ["#1A2B3C", "rgb(26, 43, 60)"],
+  ])("converts %s to %s", (hex, expected) => {
+    expect(_hexToRgb(hex)).toBe(expected);
+  });
 });
