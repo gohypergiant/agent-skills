@@ -28,8 +28,8 @@ Does the opening explain the pre-change world and its purpose in present tense, 
 Does the description explain why the chosen mechanism solves the stated problem, rather than merely naming changed files or functions?
 
 - Look for `X because Y; this works because Z` reasoning.
-- When a policy selects among discrete cases, require a case taxonomy before the policy; when precedent matters, require the prior rule, uncovered case, and exact new rule.
-- Require one inspectable artifact per distinct idea: request/response, invariant, concise example, changed semantic rule, test fixture, or measurement.
+- When a policy selects among discrete cases, ask what the cases are and whether the description names them before stating the policy. When precedent matters, ask what the old rule covered, what case fell outside it, and what the exact new rule is.
+- Require one inspectable artifact per distinct idea: request/response, invariant, concise example, changed semantic rule, test fixture, or measurement. When the idea asserts a specific literal shape — a signature, request/response, exact wording, or call site — the artifact must be that literal text, not a description of it; cap the score at 3 if it is missing. Mark `not applicable with rationale` when the idea genuinely has no literal diff referent.
 - Do not require a design history or alternatives that do not affect review.
 
 ## 3. Correctness contract
@@ -37,7 +37,7 @@ Does the description explain why the chosen mechanism solves the stated problem,
 Does the description state the material assumption, invariant, or precondition the change relies on, and its failure consequence or guard when relevant?
 
 - Examples include full-input cache keys, independent rows, normalized input, presentation-only ordering, and a restricted-environment fallback.
-- For compatibility, platform, global-state, hydration, serialization, or interoperability work, require preserved invalid behavior, non-goals, and fallback behavior when relevant.
+- For compatibility, platform, global-state, hydration, serialization, or interoperability work, ask what remains invalid, what is explicitly out of scope, and what the fallback does, when relevant.
 - Mark `not applicable with rationale` only for a change with no meaningful correctness contract beyond an obvious local syntax correction.
 - Do not convert a hoped-for property into an asserted invariant without source evidence.
 

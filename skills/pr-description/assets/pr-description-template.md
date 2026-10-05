@@ -2,7 +2,7 @@
 
 Use this template after inspecting the repository PR template and conventions. The repository template controls required headings and field order. Delete every optional heading that does not earn its place; a small fix may use only the title, one paragraph, and the test plan.
 
-Write in plain technical English: use concrete nouns and verbs, define only the one term the reader needs, qualify claims to their evidence, and preserve necessary technical detail. Do not make the prose vague or casual in the name of simplicity.
+Write in plain technical English: name the actual object instead of an abstract noun standing in for it, give each sentence one job, qualify claims to their evidence, and preserve necessary technical detail. Do not make the prose vague or casual in the name of simplicity.
 
 **PR title:** `[surface and behavior change (issue or plan item when the repository convention uses one)]`
 
@@ -11,7 +11,7 @@ Write in plain technical English: use concrete nouns and verbs, define only the 
 
 ## Mechanism
 
-[Explain the chosen mechanism as an argument: we do X because Y; it works because Z. Where relevant, name the existing precedent, uncovered state, or case taxonomy before the exact new rule. Attach one concrete artifact to each idea: an invariant, request/response, small example, test fixture, or measured result.]
+[Explain the chosen mechanism as an argument: we do X because Y; it works because Z. Where relevant, name the existing precedent, uncovered state, or case taxonomy before the exact new rule. If the idea has a literal form in the diff — a signature, call site, or exact wording — show that literal text in a fenced block or inline span rather than describing it; otherwise attach the next most concrete artifact: an invariant, request/response, small example, test fixture, or measured result.]
 
 ## Assumptions and limits
 
@@ -50,3 +50,4 @@ Write in plain technical English: use concrete nouns and verbs, define only the 
 - A benchmark claim needs the metric, workload or fixture, environment or machine, sample size when relevant, and command/report/CI provenance.
 - A visual change needs a screenshot, recording, or explicit manual verification path.
 - If `main` is the target branch, base the description on `git log main..HEAD` and `git diff main...HEAD`, not only the most recent commit.
+- Add an optional `## Before / after` heading — a short fenced block or table — when a signature, import path, or call-shape change needs more than one inline excerpt to show clearly.

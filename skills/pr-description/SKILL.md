@@ -4,16 +4,19 @@ description: Use when the user wants to write, draft, rewrite, review, improve, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # PR Description
 
 Write a PR as durable engineering context, not a narrated diff. The reader should understand the problem, the argument for the chosen mechanism, the contract it relies on, and the evidence without knowing this part of the codebase.
 
-Use plain technical English: prefer concrete nouns and verbs, define only the one term the reader needs, keep claims qualified to their evidence, and use the shortest form that preserves the technical meaning. Plain does not mean vague, casual, or stripped of necessary detail.
+Use plain technical English. Name the actual object — a function, type, flag, file, or parameter — instead of an abstract noun that stands in for it; a noun ending in *-ion, -ity, -ment, -ance,* or *-ence* that could be replaced by the real identifier it refers to is a tell. Give each sentence one job: a sentence that states a cause, a qualification, and a scope boundary at once should become two sentences. Plain does not mean vague, casual, or stripped of necessary detail — qualify claims to their evidence and keep the one term the reader needs; just say it plainly.
 
-Use `assets/pr-description-template.md` as the output skeleton. Load `references/pr-description-rubric.md` to grade a draft before delivery or when the user asks for a review. For source-grounded examples of the writing model and its limits, load `references/react-pr-findings.md`.
+**Avoid:** "This makes provider selection, the lifecycle instance type, and the dependency implicit."
+**Write:** "Callers must now choose the provider and lifecycle instance explicitly; nothing infers them."
+
+Use `assets/pr-description-template.md` as the output skeleton. For source-grounded calibration facts while drafting, load `references/pr-writing-calibration.md`; use it to decide what to say, not how to phrase it, and do not reuse its vocabulary unless the repository's own conventions already use it. Load the deeper analysis in `references/react-pr-findings.md` and the criterion-by-criterion `references/pr-description-rubric.md` only to grade a draft before delivery or when the user asks for a review — their denser register is calibration for review, not a drafting voice to imitate.
 
 ## Never do this
 
@@ -24,6 +27,7 @@ Use `assets/pr-description-template.md` as the output skeleton. Load `references
 - **Never present a scaffold, experiment, or theoretical performance claim as production-complete.** State its status, remaining evidence gap, and the containment mechanism that exists today.
 - **Never make safety, compatibility, or fallback behavior discoverable only in review comments.** If the change touches global state, platform behavior, hydration, serialization, or interoperability, state what changes, what remains invalid or untouched, and what happens in restricted or failure environments.
 - **Never use a heading with only a restated diff bullet beneath it.** The diff already records filenames and edits.
+- **Never paraphrase a signature, call pattern, or exact wording in prose when the literal form is available and the reader needs to see it.** A quoted span is evidence; a sentence describing it is not a substitute.
 - **Never turn a small fix into an essay.** A sentence or short paragraph is sufficient when the behavior, reason, bound, and evidence fit there.
 - **Never omit an important scope boundary.** Say which similar-looking behavior is deliberately unchanged and where a necessary follow-up belongs.
 - **Never override the repository's PR template, contribution rules, or title convention.** Their required fields and placement win; use this skill's prose inside that structure.
@@ -50,7 +54,7 @@ Read the branch as a whole, then collect the facts that make a claim checkable.
    ```
    Sem never replaces `git log <base>..HEAD` or `git diff <base>...HEAD`, and neither command is test or validation evidence. Sem diffs exclude untracked files; inspect any relevant paths from `git status --short` directly before claiming branch coverage. If Sem is unavailable, unsupported, or fails, continue with the Git and source-inspection workflow without asking the user.
 3. Inspect recent merged PRs and recent `git log` subjects to learn the title convention: prefixes, scopes, capitalization, issue references, and sentence style.
-4. Find the issue, design document, plan item, acceptance criterion, or discussion that motivated the change. Read the relevant code and tests until you can state the old behavior and its purpose, the new behavior, the relevant precedent or gap, and the reason for the boundary.
+4. Find the issue, design document, plan item, acceptance criterion, or discussion that motivated the change. Read the relevant code and tests until you can state the old behavior and its purpose, the new behavior, the relevant precedent or gap, and the reason for the boundary. When a fact has a literal form in the diff — a signature, call site, config key, flag value, or exact prior/new wording — copy that literal text now, while the diff is open; do not plan to reconstruct it from memory while drafting.
 5. Collect validation evidence. Record exact commands, fixtures or workloads, before/after comparison, environment, output location, screenshots, CI run, and failures or unrun checks. If the change affects a public API, documented number, migration path, or user-visible behavior, identify the documentation or changelog follow-up.
 
 If a material fact cannot be established from the branch or supplied context, ask a focused question before making that claim. Do not ask for facts that the repository can answer.
@@ -75,7 +79,7 @@ A useful test: if the reader stops after the first paragraph, can they explain w
 
 ### 2. Explain the mechanism causally
 
-Explain one idea at a time: we do **X** because **Y**; that works because **Z**. Tie each idea to one inspectable artifact: a request and response, an invariant, a line whose meaning changed, a small table, a test fixture, or a measured number.
+Explain one idea at a time: we do **X** because **Y**; that works because **Z**. Tie each idea to one inspectable artifact. If the idea's referent has a literal form in the diff — a signature, call site, config key, flag value, or exact prior/new wording — quote that literal form directly in the body; a prose description of it does not satisfy this. If no literal form exists, use the next most concrete thing available: an invariant, a request and response, a small table, a test fixture, or a measured number.
 
 When a policy replaces a configurable continuum, identify the meaningful states before stating the policy: for example, initial load versus refresh. When an existing special case or precedent defines the safe boundary, name the precedent, the uncovered case, and the exact change. Name alternatives only when rejecting them helps a reviewer evaluate the choice. Avoid a chronological account of discovery or a file-by-file tour.
 
@@ -106,7 +110,9 @@ Write the title as the likely squash-commit subject. Name the surface and behavi
 
 By default, return a ready-to-paste title and PR body. If the user asks to audit or grade an existing description, include the criterion-by-criterion review from `references/pr-description-rubric.md`, then give a revised ready-to-paste version. Do not claim a grade is a validated measurement; it is a local writing review grounded in the inspected branch and available evidence.
 
-Before delivering, check that:
+## Verify before delivery
+
+Write the complete draft first, covering every applicable item below:
 
 - the opening describes the prior behavior in present tense;
 - each mechanism paragraph carries a reason and an inspectable artifact;
@@ -116,3 +122,11 @@ Before delivering, check that:
 - every factual claim is supported by branch, issue, test, benchmark, or supplied evidence;
 - documentation, migration, or changelog follow-up is named when the change moves a public contract; and
 - the title, template fields, and test-plan placement follow repository conventions.
+
+Then, in a separate pass, re-read the finished draft as a fixed text to inspect, not a draft to continue. For each check below, quote the exact sentence or span before ruling pass or fail, and revise before moving on:
+
+1. **Literal-form check.** For every sentence asserting a specific literal shape — a signature, request/response, exact wording, or call site — does the literal text appear nearby, not just a description of it? If not, pull it from the evidence gathered while reading the diff, or state why no literal form exists.
+2. **Concrete-subject check.** Find every sentence whose grammatical subject is an abstract noun phrase (ending in *-ion, -ity, -ment, -ance,* or *-ence*) performing an action that a real caller, system, or line of code actually performs. Rewrite with the real actor as the subject.
+3. **Compression check.** Find every sentence over roughly 25–30 words or carrying more than one subordinate clause. Split it, or cut the clause that is not carrying new information.
+
+A check that passes because "it already basically says this" is not a pass; the span must satisfy the check on its own.

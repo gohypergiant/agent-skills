@@ -1,5 +1,7 @@
 # Findings from the React PR study
 
+> For drafting, use `references/pr-writing-calibration.md` instead — it extracts the same facts in plain form. Load this file to grade a draft or when asked for a review; its denser analytical register is calibration for review, not a voice to draft in.
+
 This reference distills the specified React PRs into reusable writing guidance. It is calibration material, not a universal template: the PRs come from two senior maintainers in a performance- and compatibility-sensitive codebase with internal rollout infrastructure. Reuse their epistemic discipline and causal explanations, not their assumed audience, length, or deployment mechanisms.
 
 ## Sources

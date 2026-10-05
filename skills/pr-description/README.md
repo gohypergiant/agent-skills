@@ -35,5 +35,6 @@ Draft a PR body with a reproducible test plan. The benchmark report is at report
 - `SKILL.md` — branch-inspection and drafting workflow
 - `assets/pr-description-template.md` — ready-to-paste full and compact output forms
 - `references/pr-description-rubric.md` — criterion-by-criterion review rubric
-- `references/react-pr-findings.md` — source-grounded findings and limits from the eight requested React PRs
+- `references/pr-writing-calibration.md` — plain-voiced calibration facts loaded during drafting
+- `references/react-pr-findings.md` — source-grounded findings and limits from the eight requested React PRs, loaded only for grading or review
 - `evals/evals.json` — seed scenarios for testing the skill
