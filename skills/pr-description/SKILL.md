@@ -4,7 +4,7 @@ description: Use when the user wants to write, draft, rewrite, review, improve, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # PR Description
@@ -31,18 +31,19 @@ Use `assets/pr-description-template.md` as the output skeleton. For source-groun
 - **Never turn a small fix into an essay.** A sentence or short paragraph is sufficient when the behavior, reason, bound, and evidence fit there.
 - **Never omit an important scope boundary.** Say which similar-looking behavior is deliberately unchanged and where a necessary follow-up belongs.
 - **Never override the repository's PR template, contribution rules, or title convention.** Their required fields and placement win; use this skill's prose inside that structure.
+- **Never use merge-commit subjects, messages, or inherited target-branch history as PR narrative evidence.** A `git pull origin <target>` merge may appear in branch history, but the PR title and body must describe only branch-authored non-merge history and the net changes in the three-dot diff.
 
 ## Gather the evidence before drafting
 
 Read the branch as a whole, then collect the facts that make a claim checkable.
 
 1. Read `AGENTS.md` and `CONTRIBUTING.md`. Find the repository PR template at `.github/pull_request_template.md` or `.github/PULL_REQUEST_TEMPLATE/`.
-2. Identify the PR target branch. When it is `main`, run:
+2. Identify the PR target branch. Resolve `<base>` to `origin/<target>` when that remote-tracking ref exists; otherwise use the local target branch. Run:
    ```bash
-   git log main..HEAD
-   git diff main...HEAD
+   git log --no-merges <base>..HEAD
+   git diff <base>...HEAD
    ```
-   When the target differs, substitute only the target branch. Read both the commit sequence and the full three-dot diff; the final commit may omit the change's motivation or an earlier compatibility decision. After the full three-dot diff identifies changed paths, read any nested instruction files that govern those paths before using Sem, inspecting source, collecting validation evidence, or drafting.
+   Read the non-merge commit sequence for branch-authored motivation or earlier compatibility decisions; the final branch commit may omit either. Treat the full three-dot diff as the authoritative PR scope. Do not use a merge commit—especially one produced by `git pull origin <target>`—as evidence for the PR title or body. Keep branch-side conflict-resolution changes when they appear in the three-dot diff. After the full three-dot diff identifies changed paths, read any nested instruction files that govern those paths before using Sem, inspecting source, collecting validation evidence, or drafting.
 
    When `which sem` succeeds and an entity-level view would clarify the change, Sem may add supplementary semantic evidence after those Git commands:
    ```bash
@@ -52,7 +53,7 @@ Read the branch as a whole, then collect the facts that make a claim checkable.
    ```bash
    sem impact --entity-id <entityId> --tests --format json
    ```
-   Sem never replaces `git log <base>..HEAD` or `git diff <base>...HEAD`, and neither command is test or validation evidence. Sem diffs exclude untracked files; inspect any relevant paths from `git status --short` directly before claiming branch coverage. If Sem is unavailable, unsupported, or fails, continue with the Git and source-inspection workflow without asking the user.
+   Sem never replaces `git log --no-merges <base>..HEAD` or `git diff <base>...HEAD`, and neither command is test or validation evidence. Sem diffs exclude untracked files; inspect any relevant paths from `git status --short` directly before claiming branch coverage. If Sem is unavailable, unsupported, or fails, continue with the Git and source-inspection workflow without asking the user.
 3. Inspect recent merged PRs and recent `git log` subjects to learn the title convention: prefixes, scopes, capitalization, issue references, and sentence style.
 4. Find the issue, design document, plan item, acceptance criterion, or discussion that motivated the change. Read the relevant code and tests until you can state the old behavior and its purpose, the new behavior, the relevant precedent or gap, and the reason for the boundary. When a fact has a literal form in the diff — a signature, call site, config key, flag value, or exact prior/new wording — copy that literal text now, while the diff is open; do not plan to reconstruct it from memory while drafting.
 5. Collect validation evidence. Record exact commands, fixtures or workloads, before/after comparison, environment, output location, screenshots, CI run, and failures or unrun checks. If the change affects a public API, documented number, migration path, or user-visible behavior, identify the documentation or changelog follow-up.

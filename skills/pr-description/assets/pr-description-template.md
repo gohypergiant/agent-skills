@@ -49,5 +49,5 @@ Write in plain technical English: name the actual object instead of an abstract 
 - Replace every bracketed instruction; do not leave placeholders in the submitted PR.
 - A benchmark claim needs the metric, workload or fixture, environment or machine, sample size when relevant, and command/report/CI provenance.
 - A visual change needs a screenshot, recording, or explicit manual verification path.
-- If `main` is the target branch, base the description on `git log main..HEAD` and `git diff main...HEAD`, not only the most recent commit.
+- Identify the PR target branch and resolve `<base>` to `origin/<target>` when that remote-tracking ref exists; otherwise use the local target branch. Base the description on `git log --no-merges <base>..HEAD` for branch-authored history and `git diff <base>...HEAD` for the authoritative PR scope—not only the most recent commit. Do not use merge-commit metadata, including a `git pull origin <target>` merge, in the title or body. Keep conflict-resolution changes when they remain in the three-dot diff.
 - Add an optional `## Before / after` heading — a short fenced block or table — when a signature, import path, or call-shape change needs more than one inline excerpt to show clearly.

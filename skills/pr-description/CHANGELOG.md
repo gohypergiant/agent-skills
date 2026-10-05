@@ -4,6 +4,16 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this skill uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-10-05
+
+### Fixed
+- Excluded merge commits from the PR-description skill's commit-history evidence with `git log --no-merges <base>..HEAD`.
+- Made the three-dot diff the authoritative PR scope and explicitly retained branch-side conflict-resolution changes that remain in that diff.
+- Prefer the PR target's remote-tracking ref, such as `origin/main`, when it exists so a stale local target branch does not expose inherited upstream history.
+
+### Rationale
+- A merge created by `git pull origin <target>` can appear in `git log <target>..HEAD` and leak merge metadata into a generated PR narrative even though the upstream changes do not belong in the PR. Filtering merge commits preserves branch-authored motivation while the three-dot diff continues to represent the net reviewable patch.
+
 ## [1.1.0] - 2026-09-29
 
 ### Added
