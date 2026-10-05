@@ -7,12 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.1.0] - 2026-10-01
 
 ### Added
+- `expectColorPickerValue` assertion for checking color picker swatch values
+  - Rationale: Colors render as CSS computed styles (`rgb()`), not DOM value attributes, so this needs its own locator and a hex-to-rgb conversion at codegen time
 - `expectInputValue` assertion for checking input element values
   - Rationale: Validates form control values using the `value` attribute instead of text content
 - `expectSliderValue` assertion for checking slider field values
   - Rationale: Slider fields nest their native input one level deeper than other inputs, so they need their own locator
-- `slider` added to the controlled component keyword vocabulary
-  - Rationale: Slider AC phrasing doesn't use the word "input," so targets need their own keyword
+- `slider` and `colorpicker` added to the controlled component keyword vocabulary
+  - Rationale: Slider and color picker AC phrasing doesn't use the word "input," so targets need their own keywords
 - `switchTab` action for browser tab navigation
   - Rationale: Enables multi-tab workflows with support for "new", "first", "second", "third" tab identifiers
 

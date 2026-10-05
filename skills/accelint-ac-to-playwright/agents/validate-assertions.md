@@ -64,9 +64,11 @@ Outcomes must specify **what to verify** (text content, element presence, or sta
 - ✅ Valid: "the radius input on the form has value '5'"
 - ✅ Valid: "the email input field has value 'test@example.com'"
 - ✅ Valid: "the radius slider field on the form has value '50'"
+- ✅ Valid: "the fill colorpicker field on the form has value '#FFFFFF'"
 - ❌ Invalid: "the input shows 5" (use "has value" for value attribute)
 - ❌ Invalid: "the radius is 5" (need to specify it's the input's value)
 - ❌ Invalid: "the slider value is '50'" (missing the "slider field" component wording needed to pick the right assertion)
+- ❌ Invalid: "the fill color is white" (need both the "colorpicker field" wording and a hex value, e.g. '#FFFFFF')
 
 **Element visibility** (specific element with trigger words):
 - ✅ Valid: "the tracks table shows up on the page"

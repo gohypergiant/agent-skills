@@ -36,6 +36,13 @@ const dragStep = z.object({
   button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
+const expectColorPickerValueStep = z.object({
+  type: z.literal("assertion").default("assertion"),
+  action: z.literal("expectColorPickerValue"),
+  target: targetValidator,
+  value: z.string().regex(/^#[0-9a-fA-F]{6}$/, "value must be a 6-digit hex color (e.g. #FFFFFF)"),
+}).strict();
+
 const expectNotVisibleStep = z.object({
   type: z.literal("assertion").default("assertion"),
   action: z.literal("expectNotVisible"),
@@ -168,6 +175,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   clickStep,
   doubleClickStep,
   dragStep,
+  expectColorPickerValueStep,
   expectInputValueStep,
   expectNotVisibleStep,
   expectSliderValueStep,
