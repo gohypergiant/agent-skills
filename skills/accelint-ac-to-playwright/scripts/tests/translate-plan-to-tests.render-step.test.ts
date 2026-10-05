@@ -101,6 +101,15 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { type: "assertion", action: "expectSliderValue", target: "form.slider.radius", value: "5" },
+      3,
+      [
+        'await expect(page.getByTestId("form.slider.radius").getByRole("textbox")).toHaveCount(1);',
+        'await expect(page.getByTestId("form.slider.radius").getByRole("textbox")).toHaveValue("5");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectSliderValue", testId: "form.slider.radius" })'
+      ],
+    ],
+    [
       { type: "action", action: "fill", target: "#email", value: "a@b.com" },
       5,
       [

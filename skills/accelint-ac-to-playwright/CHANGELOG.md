@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - `expectInputValue` assertion for checking input element values
   - Rationale: Validates form control values using the `value` attribute instead of text content
+- `expectSliderValue` assertion for checking slider field values
+  - Rationale: Slider fields nest their native input one level deeper than other inputs, so they need their own locator
+- `slider` added to the controlled component keyword vocabulary
+  - Rationale: Slider AC phrasing doesn't use the word "input," so targets need their own keyword
 - `switchTab` action for browser tab navigation
   - Rationale: Enables multi-tab workflows with support for "new", "first", "second", "third" tab identifiers
 

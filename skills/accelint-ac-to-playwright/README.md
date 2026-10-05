@@ -51,6 +51,7 @@ Tests can currently use the following actions:
 And the following assertions:
 - expectInputValue - the input element's value property should equal a specific string.
 - expectNotVisible - the element should not be visible on the page (can be present in the DOM or not).
+- expectSliderValue - the slider's value property should equal a specific string.
 - expectText - the element should contain some specific text.
 - expectUrl - the current page should be some specific URL.
 - expectVisible - the element should be visible on the page.

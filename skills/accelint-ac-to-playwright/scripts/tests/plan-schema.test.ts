@@ -97,6 +97,59 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts expectSliderValue with target and value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Check slider value",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectSliderValue", target: "form.slider.radius", value: "5" }
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects expectSliderValue without target", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectSliderValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectSliderValue", value: "5" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectSliderValue without value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectSliderValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectSliderValue", target: "form.slider.radius" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
   it.each([
     ["new", "new"],
     ["first", "first"],
@@ -1429,6 +1482,7 @@ describe("Test fixture validations", () => {
         "doubleClick",
         "expectInputValue",
         "expectNotVisible",
+        "expectSliderValue",
         "expectText",
         "expectUrl",
         "expectVisible",
