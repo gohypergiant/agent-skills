@@ -4,14 +4,14 @@ description: "Extract internal terminology, acronyms, shorthand, and jargon from
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Jargon extractor
 
 Reads a set of documents, flags the internal terminology, acronyms, and jargon a new reader would not know, and maintains a single alphabetized `JARGON.md` glossary across runs.
 
-The work splits into three phases with different failure modes and different homes. Extraction is judgment-heavy: deciding whether a word counts as jargon depends on reading the document. Correlating and merging is also judgment-heavy: deciding whether two definitions describe the same concept. Filing is mechanical: sorting, deduplicating, and writing the file correctly every time. Extraction and merging happen in disposable subagent contexts that report back only a short summary; filing is a deterministic script that reads and writes files directly on disk without needing their contents echoed into any model's context at all. The orchestrator's own context only ever holds file paths and small counts, never the bulk of the extracted terms.
+The work splits into three phases with different failure modes and different homes. Extraction is judgment-heavy: deciding whether a word counts as jargon depends on reading the document. Correlating, curating, and merging is also judgment-heavy: deciding whether a candidate actually belongs in the glossary at all, and whether two definitions describe the same concept. Filing is mechanical: sorting, deduplicating, and writing the file correctly every time. Extraction and merging happen in disposable subagent contexts that report back only a short summary; filing is a deterministic script that reads and writes files directly on disk without needing their contents echoed into any model's context at all. The orchestrator's own context only ever holds file paths and small counts, never the bulk of the extracted terms.
 
 Both extraction and merging run as subagents, but only once each per run, not once per wave.
 
@@ -156,6 +156,38 @@ Treat every term already there as part of the same pool you are
 correlating against, not just the newly extracted terms. If the file
 does not exist yet, there is nothing existing to correlate against.
 
+CURATE: before correlating, drop any newly extracted candidate that
+does not actually earn a glossary entry. The extraction step is
+deliberately biased toward over-flagging, since catching a borderline
+term there is cheap and missing one silently loses information. You
+are the one point in the run with enough context, every extraction
+plus the existing glossary, to narrow that list back down safely.
+
+Keep a candidate if either is true:
+- It carries a meaning specific to this repo, project, or domain that
+  an outside reader could not infer from the word alone (an internal
+  tool, system, process, or an acronym this project coined or redefined).
+- Its words are common on their own, but this repo uses them in a
+  specific way that would be easy to get wrong without the definition
+  (a plain word repurposed here as a term of art).
+
+Drop a candidate if it is any of:
+- A literal filename, path, config key, or CLI flag, where the name
+  itself is the explanation and nothing more needs saying.
+- A generic engineering term that would mean the same thing in any
+  codebase, not just this one (e.g. "database," "endpoint," "cache"),
+  unless this project overloads it with a distinct meaning.
+- An obvious code symbol or identifier whose name is just descriptive
+  English with no special behavior behind it.
+- A standard industry term or acronym any practitioner in the relevant
+  field already knows, used here in its ordinary sense, not redefined
+  by this project.
+
+Do not apply this bar retroactively to terms already in the glossary;
+an earlier run already decided those were worth keeping, and silently
+removing them is a bigger decision than this run is making. Curation
+only narrows what this run is about to add, never what is already filed.
+
 CORRELATE: group entries that refer to the same term, case-insensitively.
 Two entries are the same term if they are the same word or phrase modulo
 case (API / api) and trivial punctuation or spacing differences
@@ -182,19 +214,21 @@ unless a genuine multi-sense split requires it:
   to spot later, a wrong merge quietly loses information.
 
 OUTPUT: write a JSON array containing ONLY the terms that are new, or
-whose definition changed as a result of this run, to this exact path:
+whose definition changed as a result of this run, and that survived
+curation above, to this exact path:
   <output-path>
 [{"term": "...", "definition": "..."}, ...]
 Leave out any term whose meaning is unchanged from what is already in
-the glossary. Do not reproduce the untouched glossary into this file;
-list only what is new or different.
+the glossary, and any term curation dropped. Do not reproduce the
+untouched glossary into this file; list only what is new or different.
 
 Then reply with ONLY a short plain-text summary: how many terms you are
 adding, how many you are updating (and one short clause why, per term),
-how many you saw but left unchanged, and any cases where you
-deliberately kept entries separate instead of merging them. Do not
-include the full entries list in your reply; it is already written to
-<output-path>.
+how many you saw but left unchanged, how many you dropped during
+curation (grouped by the reason above, e.g. "3 dropped: generic
+engineering terms"), and any cases where you deliberately kept entries
+separate instead of merging them. Do not include the full entries list
+in your reply; it is already written to <output-path>.
 ```
 
 Substitute the full list of extraction file paths, the real glossary path, and a real output path under the scratch directory, for example `<scratch-dir>/merged.json`.
@@ -235,7 +269,7 @@ This is a small, one-entry, once-per-run edit, not the high-volume sorting and m
 
 ## Step 7: Report to the user
 
-Summarize using the reduce subagent's short summary and `merge_jargon.py`'s small JSON output: total terms added, total updated, any ambiguous merges the reducer flagged instead of forcing, and whether `AGENTS.md` or `CLAUDE.md` was updated (or already referenced the glossary, or neither file was present). If the user wants to see the file itself, that is a normal file read at that point, not something that needs to happen mid-run.
+Summarize using the reduce subagent's short summary and `merge_jargon.py`'s small JSON output: total terms added, total updated, total dropped during curation (and why), any ambiguous merges the reducer flagged instead of forcing, and whether `AGENTS.md` or `CLAUDE.md` was updated (or already referenced the glossary, or neither file was present). If the user wants to see the file itself, that is a normal file read at that point, not something that needs to happen mid-run.
 
 ## Entry format
 

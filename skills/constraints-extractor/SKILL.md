@@ -4,7 +4,7 @@ description: "Extract explicit and implicit constraints (compliance, security, h
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.0.1"
+  version: "1.0.2"
 ---
 
 # Constraints Extractor
@@ -89,11 +89,23 @@ than as scan fodder.
   against the agent's working directory, which is the repo being scanned,
   not `/tmp`.
 - **NEVER hand-write or hand-format an entry in `CONSTRAINTS.md`.** Every
-  write — including a single new entry — goes through
-  `scripts/merge_constraints.py`. Hand-formatting is how inconsistent
-  structure (ad hoc symbols, extra fields, uneven spacing) ends up in the
-  file, and it breaks the script's ability to parse the file back in on
-  the next run.
+  new or corroborated entry — including a single new entry — goes
+  through `scripts/merge_constraints.py`. Hand-formatting is how
+  inconsistent structure (ad hoc symbols, extra fields, uneven spacing)
+  ends up in the file, and it breaks the script's ability to parse the
+  file back in on the next run.
+- **NEVER expect `scripts/merge_constraints.py` to remove a stale entry
+  or replace a bad citation on its own.** The script is additive by
+  design — it inserts new findings and corroborates existing ones by
+  merging evidence, but it has no delete path, even when a fresh scan
+  directly contradicts an existing `CONFIRMED` entry (that case becomes a
+  `CONFLICTING` finding, which still *adds* claims rather than removing
+  the original). Removing a stale entry or fixing a bad citation is the
+  one case where a direct, confirmed edit to `CONSTRAINTS.md` is
+  correct — see "Removing Stale Entries and Bad Citations" below for the
+  exact procedure. That is not a loophole in the rule above: it's
+  correcting existing, already-correctly-formatted lines under explicit
+  user confirmation, never inventing new ad hoc structure.
 - **NEVER crawl `openspec/changes/archive/` automatically** — it grows too
   large for a full-corpus scan and drowns real signal in resolved-change
   noise. Only read specific archive files if the user names them explicitly.
@@ -294,12 +306,14 @@ Use the path determined in "Output Location" above.
   findings into the correct category sections in place.
 - **If it doesn't exist:** create it fresh from `references/template.md`.
 
-All mechanical file operations — ID assignment, category insertion,
-dedup merge, ordering
-— are handled by `scripts/merge_constraints.py`. Never hand-edit the file's
-structure with ad hoc string appends; naive end-of-file appending
-corrupts category grouping. The script is the single source of truth for
-how entries get inserted:
+All mechanical file operations for additions and corroboration — ID
+assignment, category insertion, dedup merge, ordering — are handled by
+`scripts/merge_constraints.py`. Never hand-edit the file's structure
+with ad hoc string appends; naive end-of-file appending corrupts
+category grouping. The script is the single source of truth for how new
+or corroborated entries get inserted. It cannot remove an entry or a
+citation — see "Removing Stale Entries and Bad Citations" below for the
+one case where editing the file directly is correct instead:
 
 ```bash
 python3 scripts/merge_constraints.py \
@@ -324,6 +338,63 @@ this run made it in" — a partial write is still a successful run.
 
 ---
 
+## Removing Stale Entries and Bad Citations
+
+`merge_constraints.py` is additive only: it inserts new findings and
+corroborates existing ones by merging evidence, but it has no delete
+path. It will never remove an entry, drop a citation, or replace one
+that's gone bad, even when a fresh scan directly contradicts an existing
+`CONFIRMED` entry — that case becomes a `CONFLICTING` finding, which
+still *adds* claims rather than removing the original. If removal or a
+citation fix is what's actually needed, running the script again with
+new findings will not produce it.
+
+Two situations call for this instead of a normal merge run:
+
+- **A stale entry.** The constraint no longer holds — the source
+  document was rewritten, the policy changed, the vendor relationship
+  ended — and nothing in a fresh findings file will ever supersede it,
+  because the script only matches on category + title and has nothing to
+  match against for "this no longer applies."
+- **A bad citation.** The `file:location` on an existing entry no longer
+  points to the text it once did (the file moved, the section was
+  rewritten, the line numbers shifted), so the entry's evidence silently
+  stops backing its own statement.
+
+Handle either the same way as any other change to the file: surface it
+in "Preview Before Writing" below with the reason, get the user's
+confirmation, then make the edit by hand — run `merge_constraints.py`
+first for whatever additions or corroboration the same pass produced,
+and make the manual cleanup edit afterward, so the script's
+parse-and-render pass isn't reparsing a file mid-edit.
+
+"By hand" means correcting or deleting existing, already-correctly-
+formatted lines per `references/entry-format.md` — never freeform
+reformatting, and never an excuse to hand-write a new entry while you're
+already in the file:
+
+- **Removing an entry entirely:** delete the whole `### CONSTR-<ID> ·
+  <title>` block, including its trailing blank line. If that leaves its
+  category section with no entries, restore the `*No entries yet.*`
+  marker so the section isn't left blank. Never recycle the removed ID
+  — a future `merge_constraints.py` run assigns the next free number
+  regardless of what's missing in between.
+- **Fixing one bad citation on an entry that otherwise still holds:**
+  edit only that citation's segment in the `Evidence:` line (and its
+  `(N refs)` count if the citation is being dropped rather than
+  corrected) and the matching bullet under `Evidence notes:` — same
+  position in both lists, per the field rules in
+  `references/entry-format.md`. Leave every other field on the entry
+  untouched.
+
+This is the one place in this skill where editing `CONSTRAINTS.md`
+directly is correct instead of a validation workaround: the "never
+hand-write an entry" rule above exists to stop ad hoc structure from
+creeping in, not to freeze the file against a human-confirmed correction
+the script has no mechanism to make itself.
+
+---
+
 ## Preview Before Writing
 
 Show the user a summary before touching the filesystem:
@@ -334,6 +405,11 @@ Show the user a summary before touching the filesystem:
 - Any `CONFLICTING` entries, with every claim shown side by side
 - Near-misses found, with their one-line reasons — shown here only; they
   are never written into `CONSTRAINTS.md`
+- Stale entries or bad citations found during this run, flagged for
+  removal or correction, with the reason for each — see "Removing Stale
+  Entries and Bad Citations" above. These need the same explicit
+  confirmation as everything else here, since `merge_constraints.py`
+  cannot act on them and the only path is a direct, hand-confirmed edit.
 
 Ask: *"Does this look right? Anything to reclassify, merge, or drop before
 I write it?"*

@@ -203,3 +203,11 @@ Behavior:
 - Rewrites the file deterministically from the parsed-and-merged
   structure -- running twice with the same findings file produces no
   diff.
+- Never removes an entry or a citation. Matching, corroboration, and ID
+  assignment are all additive -- a `CONFIRMED` entry an existing scan no
+  longer supports still gets rewritten as-is on every run, since there is
+  nothing in a findings file that tells the script to delete something.
+  A stale entry or a citation that no longer backs its statement has to
+  be removed or fixed by hand; see SKILL.md's "Removing Stale Entries
+  and Bad Citations" for the exact procedure, since this script has no
+  delete path to invoke.
