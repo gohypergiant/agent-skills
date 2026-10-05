@@ -50,6 +50,7 @@ And a user clicks the Submit button on the login form
 - Expected outcomes: state exactly what should happen and how to verify it.
   - Example: "success text that says 'Submitted' appears on a toast"
   - Example: "the radius input field on the form has value '5'"
+  - Example: "the radius slider field on the form has value '5'"
 - Tab switching: use ordinal numbers or "new" to identify tabs
   - "switches to the new tab" — most recently opened tab
   - "switches to the first tab" — original tab (index 0)
@@ -123,7 +124,7 @@ To make your target unambiguous to the agent, use this pattern:
 
 Where:
 - `<intent>` is the destination/meaning (noun).
-- `<component>` is one of the component keywords (button, link, input, dropdown, checkbox, radio, text, div, component).
+- `<component>` is one of the component keywords (button, link, input, dropdown, checkbox, radio, slider, text, div, component).
 - `<area>` is one of the area keywords (nav, header, footer, form, drawer, card, toast, modal, table, page, area).
 
 Examples:

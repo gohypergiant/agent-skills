@@ -112,6 +112,11 @@
           "value": "5"
         },
         {
+          "action": "expectSliderValue",
+          "target": "form.slider.fill-transparency",
+          "value": "75"
+        },
+        {
           "action": "switchTab",
           "tabIdentifier": "new"
         }
