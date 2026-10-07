@@ -1,0 +1,44 @@
+{
+  "skill_name": "pr-description",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Draft a PR title and description for a change that adds test-time cyclic option averaging to a multiple-choice model benchmark. The change rotates choices, averages logits by original option key, leaves ordered-scale questions unchanged, makes K model calls, and is opt-in. Available evidence: --rotations 1 is byte-identical to main on the smoke fixture; the synthetic first-slot-bias test passes; 4 rotations changed flip rate from 0.83 to 0.50 on the smoke checkpoint. The serving gate is >= 0.5 pp transfer accuracy with paired-bootstrap lower bound >= 0, or a halved flip rate. The full transfer run is still running.",
+      "expected_output": "A reader-first PR body that defines order dependence or flip rate, explains why rotations and logit averaging work, states the presentation-order assumption and excluded question type, records the K-pass cost and serving decision rule, labels the transfer run as pending, and gives re-runnable test evidence.",
+      "files": [],
+      "expectations": [
+        "Opens with the current behavior and order-dependence problem rather than a file list.",
+        "Explains cyclic rotations and logit averaging causally.",
+        "States the opt-in K-pass cost and the ordered-scale exclusion.",
+        "Includes the transfer decision rule and labels the full transfer run as pending.",
+        "Uses the supplied smoke-fixture provenance in the test plan without fabricating broader results."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write a concise PR description for changing /v1/systemone/permute n_perm to Field(ge=1, le=64). n_perm=0 divided by an empty average; oversized values made one request run for minutes. Issue #30 proposed the cap and #53 sized the row budget for 64-question requests. Validation: pytest tests/api/test_permute.py -q passed locally.",
+      "expected_output": "A proportionate title, one or two reader-oriented sentences explaining the invalid input and why 64 is correct, plus a precise test-plan item. It should not add headings or invent performance measurements.",
+      "files": [],
+      "expectations": [
+        "Names the API surface and the ge/le boundary.",
+        "Explains the empty-average failure and the reason for 64.",
+        "Uses #30 and #53 only as supplied evidence.",
+        "Keeps the body proportionate to a bounded validation fix.",
+        "Includes the exact pytest command in the test plan."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Review this PR description using the pr-description rubric, then rewrite it: '## Summary\n- Added Redis caching\n- Updated docs\n\n## Test plan\n- [x] Tests pass'. Branch evidence: cache key is tenantId + normalized query + locale; old requests repeatedly call the catalog provider; a cache hit avoids the provider request for 15 minutes; misses still fetch and populate the cache. The concern is stale catalog visibility. A follow-up issue #812 will add explicit invalidation after catalog writes. Validation: pnpm test catalog-cache passed; a test advances fake timers to show the old value returns after 15 minutes; no production load test has run.",
+      "expected_output": "A criterion-by-criterion local review that identifies the diff-summary opening, missing cache-key invariant, stale-data boundary, follow-up, and non-rerunnable test plan. The rewrite should explain the behavior and mechanism, name the 15-minute staleness trade-off and #812, and state that production load testing is unrun.",
+      "files": [],
+      "expectations": [
+        "Grades each rubric criterion separately without averaging scores.",
+        "States the full cache key and why it makes a hit valid.",
+        "Explains the 15-minute staleness limit and #812 follow-up.",
+        "Includes the exact test command and fake-timer behavior.",
+        "Does not claim that a production load test ran."
+      ]
+    }
+  ]
+}
