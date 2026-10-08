@@ -70,6 +70,8 @@ Use the shortest form that leaves a non-expert reader able to evaluate the behav
 
 When a compact visual aid would make a non-obvious causal, control-flow, data-flow, UI-structure, or file-responsibility relationship more checkable, read `references/visual-explanations.md`. Select the form from the inspected evidence without asking the user unless the user makes the visual output shape a material preference. When the active repository template permits it, use the optional `Change outline` after the opening problem paragraph and before `Why this approach`; otherwise use the template's allowed prose, fenced block, table, or existing section. The aid is optional, must be adjacent to the prose it supports, and never replaces required literal artifacts, repository-template fields, reader-oriented prose, validation evidence, or the test plan.
 
+When a compact visual aid would make a non-obvious causal, control-flow, data-flow, UI-structure, or file-responsibility relationship more checkable, read `references/visual-explanations.md`. Select the form from the inspected evidence without asking the user unless the user makes the visual output shape a material preference. The aid is optional, must be adjacent to the prose it supports, and never replaces required literal artifacts, repository-template fields, reader-oriented prose, validation evidence, or the test plan.
+
 Do not preserve empty headings from the template. If the repository template requires a heading, satisfy it with reader-oriented prose rather than a diff list.
 
 ## Write the argument
