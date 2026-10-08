@@ -75,6 +75,7 @@ Does the description use the smallest form that lets the intended reader evaluat
 - New subsystem or public API: headings can improve navigation.
 - Small fix: a short paragraph can be complete.
 - Penalize scaffolding headings, duplicated diff narration, empty adjectives (`robust`, `clean`, `significant`), and claims the reader cannot inspect.
+- When the description uses a visual aid, check that it makes a non-obvious causal, control-flow, data-flow, UI-structure, or file-responsibility relationship easier to inspect; stays compact, source-grounded, and adjacent to its supporting prose; follows repository template and renderer constraints; and supplements rather than replaces required literal artifacts, reader-oriented prose, validation evidence, or the test plan.
 - Use `we` for project decisions and `I` for author judgment calls; do not require either where an impersonal statement is clearer.
 
 ## Review record template

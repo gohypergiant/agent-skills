@@ -4,6 +4,25 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this skill uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-10-08
+
+### Changed
+- Extended criterion 7, `Proportion and plain technical English`, in `references/pr-description-rubric.md` with a conditional visual-aid check. When used, a visual must clarify a non-obvious relationship, remain compact and source-grounded, respect repository rendering and template constraints, and supplement rather than replace required prose or evidence.
+
+### Rationale
+- The rubric now evaluates the optional visual-aid behavior introduced in 1.2.0 without turning visuals into a required PR-description section or adding a separate scoring criterion.
+
+## [1.2.0] - 2026-10-08
+
+### Added
+- `references/visual-explanations.md`, a focused, Markdown-native guide for optional pseudocode, call trees, component trees, shallow file trees, Mermaid diagrams, diffs, and complete small blocks that help reviewers parse a non-obvious PR relationship.
+- A conditional visual-aid selection rule in `SKILL.md` after the evidence-gathering workflow. It directs authors to choose the smallest aid from inspected evidence and keep it adjacent to the supporting prose.
+- A final-draft verification item that checks any visual aid remains compact, source-grounded, and supplementary to required literal artifacts and evidence.
+
+### Rationale
+- Some causal, control-flow, data-flow, UI-structure, and responsibility boundaries are faster to review as a compact visual than as prose alone. The guide makes that option explicit without changing the evidence workflow or the ready-to-paste PR-body contract.
+- The visual aid is deliberately optional and text-native: it never replaces the repository template, reader-oriented prose, literal diff excerpts, validation evidence, or the test plan, and it does not create or open HTML artifacts.
+
 ## [1.1.1] - 2026-10-05
 
 ### Fixed

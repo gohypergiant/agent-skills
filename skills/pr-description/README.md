@@ -37,4 +37,5 @@ Draft a PR body with a reproducible test plan. The benchmark report is at report
 - `references/pr-description-rubric.md` — criterion-by-criterion review rubric
 - `references/pr-writing-calibration.md` — plain-voiced calibration facts loaded during drafting
 - `references/react-pr-findings.md` — source-grounded findings and limits from the eight requested React PRs, loaded only for grading or review
+- `references/visual-explanations.md` — optional, text-native visual aids for making a PR's non-obvious structure faster to check
 - `evals/evals.json` — seed scenarios for testing the skill
