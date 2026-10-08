@@ -4,7 +4,7 @@ description: Use when the user wants to write, draft, rewrite, review, improve, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.1.1"
+  version: "1.2.1"
 ---
 
 # PR Description
@@ -68,6 +68,8 @@ Use the shortest form that leaves a non-expert reader able to evaluate the behav
 - **Behavior change or non-obvious implementation:** lead with a present-tense problem paragraph, then explain the causal mechanism, relevant prior behavior, and correctness contract.
 - **Experiment, scaffold, performance work, or public API:** state the operational status explicitly, then add concise sections only where they help navigation: `Motivation`, `Mechanism`, `Assumptions and limits`, `What is not here`, and `Test plan`. Include a decision rule when the work is a bet.
 
+When a compact visual aid would make a non-obvious causal, control-flow, data-flow, UI-structure, or file-responsibility relationship more checkable, read `references/visual-explanations.md`. Select the form from the inspected evidence without asking the user unless the user makes the visual output shape a material preference. The aid is optional, must be adjacent to the prose it supports, and never replaces required literal artifacts, repository-template fields, reader-oriented prose, validation evidence, or the test plan.
+
 Do not preserve empty headings from the template. If the repository template requires a heading, satisfy it with reader-oriented prose rather than a diff list.
 
 ## Write the argument
@@ -121,7 +123,8 @@ Write the complete draft first, covering every applicable item below:
 - the status of an experiment or scaffold is accurate, and any stated rollout names a real containment mechanism;
 - uncertainty, decision rules, and deliberate exclusions are present when relevant;
 - every factual claim is supported by branch, issue, test, benchmark, or supplied evidence;
-- documentation, migration, or changelog follow-up is named when the change moves a public contract; and
+- documentation, migration, or changelog follow-up is named when the change moves a public contract;
+- each visual aid, when used, is compact, source-grounded, adjacent to its supporting prose, and supplementary to literal artifacts and evidence; and
 - the title, template fields, and test-plan placement follow repository conventions.
 
 Then, in a separate pass, re-read the finished draft as a fixed text to inspect, not a draft to continue. For each check below, quote the exact sentence or span before ruling pass or fail, and revise before moving on:
