@@ -9,9 +9,13 @@ Write in plain technical English: name the actual object instead of an abstract 
 ```md
 [Describe the current behavior or gap in present tense. State who or what is affected and why it matters. Define one unfamiliar term only if the reader needs it to evaluate the change. Do not mention files or list edits yet.]
 
-## Mechanism
+## Change outline
 
-[Explain the chosen mechanism as an argument: we do X because Y; it works because Z. Where relevant, name the existing precedent, uncovered state, or case taxonomy before the exact new rule. If the idea has a literal form in the diff — a signature, call site, or exact wording — show that literal text in a fenced block or inline span rather than describing it; otherwise attach the next most concrete artifact: an invariant, request/response, small example, test fixture, or measured result.]
+[Optional. Delete this heading unless one compact, source-grounded structural view makes a non-obvious causal, control-flow, data-flow, UI-structure, or file-responsibility relationship easier to check. Introduce that relationship in one short sentence, then show the smallest useful view: a focused `diff`, request/response, pseudocode, shallow file tree, component tree, or call/data flow. This outline supplements rather than replaces the explanation of why this approach is correct, required literal artifacts, reader-oriented prose, validation evidence, or the test plan.]
+
+## Why this approach
+
+[Explain why this approach is correct: we do X because Y; it works because Z. Where relevant, name the existing precedent, uncovered state, or case taxonomy before the exact new rule. If the idea has a literal form in the diff — a signature, call site, or exact wording — show that literal text in a fenced block or inline span rather than describing it; otherwise attach the next most concrete artifact: an invariant, request/response, small example, test fixture, or measured result.]
 
 ## Assumptions and limits
 

@@ -7,7 +7,7 @@ Use a compact visual aid only when it makes a non-obvious causal, control-flow, 
 - Choose the smallest form that makes the one relevant point clear. Most PRs need no visual aid; a PR that needs one normally needs only one focused aid.
 - Put the aid directly beside the short prose it supports. Introduce the point in prose, show the structure, then state any conclusion or boundary the reader needs.
 - Use only facts established by the branch, supplied context, or cited evidence. Do not invent actors, states, calls, files, metrics, or outcomes to make a diagram feel complete.
-- Keep the repository PR template authoritative. Do not add a heading when its required structure has no place for one; use the template's allowed prose, fenced block, table, or existing `## Before / after` section instead.
+- Keep the repository PR template authoritative. Do not add a heading when its required structure has no place for one; use the template's optional `## Change outline` when it provides a place for the aid, or use its allowed prose, fenced block, table, or existing `## Before / after` section instead.
 - A visual never replaces reader-oriented causal prose, a required literal signature/call-site/config excerpt, validation evidence, or the required test plan. When the changed idea is a literal signature, request/response, call shape, config key, flag value, or exact wording, show that literal form directly.
 - Use text-native Markdown aids that are ready to paste into the PR. Do not create, open, or link to an HTML artifact.
 

@@ -4,7 +4,7 @@ description: Use when the user wants to write, draft, rewrite, review, improve, 
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.1"
+  version: "1.4.0"
 ---
 
 # PR Description
@@ -66,9 +66,9 @@ Use the shortest form that leaves a non-expert reader able to evaluate the behav
 
 - **Small, bounded fix:** one or two sentences. State the broken input or behavior, the new bound or rule, and why that boundary is correct.
 - **Behavior change or non-obvious implementation:** lead with a present-tense problem paragraph, then explain the causal mechanism, relevant prior behavior, and correctness contract.
-- **Experiment, scaffold, performance work, or public API:** state the operational status explicitly, then add concise sections only where they help navigation: `Motivation`, `Mechanism`, `Assumptions and limits`, `What is not here`, and `Test plan`. Include a decision rule when the work is a bet.
+- **Experiment, scaffold, performance work, or public API:** state the operational status explicitly, then add concise sections only where they help navigation: `Motivation`, `Change outline`, `Why this approach`, `Assumptions and limits`, `What is not here`, and `Test plan`. Include a decision rule when the work is a bet.
 
-When a compact visual aid would make a non-obvious causal, control-flow, data-flow, UI-structure, or file-responsibility relationship more checkable, read `references/visual-explanations.md`. Select the form from the inspected evidence without asking the user unless the user makes the visual output shape a material preference. The aid is optional, must be adjacent to the prose it supports, and never replaces required literal artifacts, repository-template fields, reader-oriented prose, validation evidence, or the test plan.
+When a compact visual aid would make a non-obvious causal, control-flow, data-flow, UI-structure, or file-responsibility relationship more checkable, read `references/visual-explanations.md`. Select the form from the inspected evidence without asking the user unless the user makes the visual output shape a material preference. When the active repository template permits it, use the optional `Change outline` after the opening problem paragraph and before `Why this approach`; otherwise use the template's allowed prose, fenced block, table, or existing section. The aid is optional, must be adjacent to the prose it supports, and never replaces required literal artifacts, repository-template fields, reader-oriented prose, validation evidence, or the test plan.
 
 Do not preserve empty headings from the template. If the repository template requires a heading, satisfy it with reader-oriented prose rather than a diff list.
 
@@ -80,7 +80,7 @@ Open in present tense with what a caller, user, or maintainer experiences today.
 
 A useful test: if the reader stops after the first paragraph, can they explain what is wrong without opening the diff?
 
-### 2. Explain the mechanism causally
+### 2. Explain why this approach works
 
 Explain one idea at a time: we do **X** because **Y**; that works because **Z**. Tie each idea to one inspectable artifact. If the idea's referent has a literal form in the diff — a signature, call site, config key, flag value, or exact prior/new wording — quote that literal form directly in the body; a prose description of it does not satisfy this. If no literal form exists, use the next most concrete thing available: an invariant, a request and response, a small table, a test fixture, or a measured number.
 
@@ -118,7 +118,7 @@ By default, return a ready-to-paste title and PR body. If the user asks to audit
 Write the complete draft first, covering every applicable item below:
 
 - the opening describes the prior behavior in present tense;
-- each mechanism paragraph carries a reason and an inspectable artifact;
+- each causal-argument paragraph carries a reason and an inspectable artifact;
 - the material correctness contract, including relevant precedent, non-goal, or fallback, is stated or explicitly not applicable;
 - the status of an experiment or scaffold is accurate, and any stated rollout names a real containment mechanism;
 - uncertainty, decision rules, and deliberate exclusions are present when relevant;
