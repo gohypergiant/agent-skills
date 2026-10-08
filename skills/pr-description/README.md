@@ -33,7 +33,7 @@ Draft a PR body with a reproducible test plan. The benchmark report is at report
 ## Included resources
 
 - `SKILL.md` — branch-inspection and drafting workflow
-- `assets/pr-description-template.md` — ready-to-paste full and compact output forms
+- `assets/pr-description-template.md` — ready-to-paste full and compact output forms, including an optional `Change outline` for a compact structural view
 - `references/pr-description-rubric.md` — criterion-by-criterion review rubric
 - `references/pr-writing-calibration.md` — plain-voiced calibration facts loaded during drafting
 - `references/react-pr-findings.md` — source-grounded findings and limits from the eight requested React PRs, loaded only for grading or review

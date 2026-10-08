@@ -4,6 +4,32 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this skill uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-10-08
+
+### Changed
+- Renamed the full-form `## Mechanism` heading to `## Why this approach` and aligned the live template, drafting guidance, and PR-description rubric.
+  - **Rationale:** The section asks the author to make a causal argument for a chosen design, not to narrate implementation mechanics. The new heading states that reviewer question directly while retaining the existing `we do X because Y; it works because Z` contract and literal-artifact requirements.
+  - **Preserved behavior:** `Change outline` remains optional and precedes the renamed section when used; repository-template authority, the compact small-fix form, validation evidence, and the required `Test plan` remain unchanged.
+
+### Version
+- Bumped from 1.3.0 to 1.4.0.
+
+## [1.3.0] - 2026-10-08
+
+### Added
+- An optional `## Change outline` in the full PR-body template, between the opening problem paragraph and `## Mechanism`.
+  - It gives a reviewer one compact, source-grounded structural view when prose alone would obscure a causal, control-flow, data-flow, UI-structure, or file-responsibility relationship.
+  - It remains optional, is deleted when it adds no review value, and supplements rather than replaces the mechanism, literal artifacts, reader-oriented prose, validation evidence, or the test plan.
+
+### Changed
+- Aligned `SKILL.md`, `references/visual-explanations.md`, and `README.md` with the template-supported `Change outline` location while preserving repository-template authority and the compact small-fix form.
+  - **Rationale:** The skill already supported compact structural aids, but the ready-to-paste template did not give them a discoverable, consistent location. The addition makes the established optional aid available without making it a required PR section.
+  - **Trade-off:** The full template is longer, so the heading explicitly instructs authors to delete it unless it makes a non-obvious relationship easier to check.
+  - **Source:** User-approved review of HumanLayer's `visual-pr` PR-description template and a local AI knowledge-base synthesis on durable, evidence-first PR context.
+
+### Version
+- Bumped from 1.2.1 to 1.3.0.
+
 ## [1.2.1] - 2026-10-08
 
 ### Changed

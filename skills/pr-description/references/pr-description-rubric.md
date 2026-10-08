@@ -23,9 +23,9 @@ Does the opening explain the pre-change world and its purpose in present tense, 
 - Define the one domain term that the reader needs to evaluate the change; avoid a glossary dump.
 - For a small fix, one precise sentence can score 5.
 
-## 2. Mechanism and causal argument
+## 2. Approach and causal argument
 
-Does the description explain why the chosen mechanism solves the stated problem, rather than merely naming changed files or functions?
+Does the description explain why the chosen approach solves the stated problem, rather than merely naming changed files or functions?
 
 - Look for `X because Y; this works because Z` reasoning.
 - When a policy selects among discrete cases, ask what the cases are and whether the description names them before stating the policy. When precedent matters, ask what the old rule covered, what case fell outside it, and what the exact new rule is.
@@ -93,7 +93,7 @@ Does the description use the smallest form that lets the intended reader evaluat
 - Recommendation or no-change rationale: [specific change]
 - Uncertainty: [limitation or none]
 
-### 2. Mechanism and causal argument
+### 2. Approach and causal argument
 [repeat the five fields]
 
 ### 3. Correctness contract
