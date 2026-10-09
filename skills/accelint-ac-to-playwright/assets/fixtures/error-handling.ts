@@ -8,7 +8,7 @@ export async function attachFailureArtifacts(args: {
   testId?: string;
 }) {
   const { page, testInfo, stepIndex, action, testId } = args;
-  if (!testInfo) return;
+  if (!testInfo) { return; }
   const payload = {
     url: page.url(),
     stepIndex,

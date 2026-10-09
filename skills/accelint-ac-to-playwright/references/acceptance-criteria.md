@@ -49,6 +49,16 @@ And a user clicks the Submit button on the login form
   - Example: "the user selects 'Premium Plan' from the plan dropdown on the form"
 - Expected outcomes: state exactly what should happen and how to verify it.
   - Example: "success text that says 'Submitted' appears on a toast"
+  - Example: "the radius input field on the form has value '5'"
+  - Example: "the radius slider field on the form has value '5'"
+  - Example: "the fill colorpicker field on the form has value '#FFFFFF'"
+- Tab switching: use ordinal numbers or "new" to identify tabs
+  - "switches to the new tab" — most recently opened tab
+  - "switches to the first tab" — original tab (index 0)
+  - "switches back to the first tab" — same as above
+  - "switches to the second tab" — second tab (index 1)
+  - "switches to the third tab" — third tab (index 2)
+  - Example flow: "When the user clicks the Settings link in the nav, And the user switches to the new tab, ..."
 - Visibility changes: be explicit when something appears/disappears. The agent is looking for clue words to understand that visibility changes are expected (e.g., "visible", "appears", "shows", "see", "changes", "hides", and similar wording).
   - Example: "the tracks table shows up on the page"
 
@@ -115,7 +125,7 @@ To make your target unambiguous to the agent, use this pattern:
 
 Where:
 - `<intent>` is the destination/meaning (noun).
-- `<component>` is one of the component keywords (button, link, input, dropdown, checkbox, radio, text, div, component).
+- `<component>` is one of the component keywords (button, link, input, dropdown, checkbox, radio, slider, colorpicker, text, div, component).
 - `<area>` is one of the area keywords (nav, header, footer, form, drawer, card, toast, modal, table, page, area).
 
 Examples:
