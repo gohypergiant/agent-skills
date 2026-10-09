@@ -103,7 +103,7 @@ function translateSingleTest(test: Test): string {
     lines.push(`    let newTabPagePromise: Promise<Page> | undefined;`);
   }
 
-  lines.push(`    const tracker = await setupConsoleTracking({ page, testInfo });`);
+  lines.push(`    const tracker = setupConsoleTracking({ page, testInfo });`);
   lines.push(``);
   lines.push(`    await page.goto(${JSON.stringify(test.startUrl)});`);
 

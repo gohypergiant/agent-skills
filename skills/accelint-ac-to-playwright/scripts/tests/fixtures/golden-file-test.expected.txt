@@ -13,7 +13,7 @@ test.describe("Golden file test", {
     tag: "@wip"
   }, async ({ page: initialPage, context }, testInfo) => {
     let page = initialPage;
-    const tracker = await setupConsoleTracking({ page, testInfo });
+    const tracker = setupConsoleTracking({ page, testInfo });
 
     await page.goto("https://example.com");
 

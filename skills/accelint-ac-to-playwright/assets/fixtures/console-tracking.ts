@@ -1,6 +1,6 @@
 import type { ConsoleMessage, Page, TestInfo } from "@playwright/test";
 
-export async function setupConsoleTracking(args: {
+export function setupConsoleTracking(args: {
   page: Page;
   testInfo: TestInfo;
 }) {
