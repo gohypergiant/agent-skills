@@ -65,6 +65,7 @@ type ParsedArgs = {
 };
 
 // CLI entrypoint
+/* istanbul ignore next -- only runs when executed directly as a script, not under test */
 if (require.main === module) {
   const code = run(process.argv);
   process.exit(code);
@@ -72,6 +73,7 @@ if (require.main === module) {
 
 export function run(
   argv: string[],
+  // Default param branch, not line, so istanbul can't ignore it: tests always pass a fake runtime, so this never runs for real.
   runtime: CliRuntime = defaultRuntime,
 ): number {
   // Parse args
@@ -86,6 +88,8 @@ export function run(
     },
   });
   if (exitCode >= 0) return exitCode;
+  // handleCliCommonErrors() above already returned if either of these were missing, so this is unreachable in practice. It's here only to satisfy TypeScript.
+  /* istanbul ignore if */
   if (!parsed.summaryJson || !parsed.summaryMd) return 1;
 
   // Grab the summary file
