@@ -44,7 +44,7 @@ And a user clicks the Submit button on the login form
 - Start URL: the default starting page is `/`. If a test needs a different starting page, state it at the start of your AC.
   - Example: "Given the user is on the settings page"
 - Action verbs: use clear action verbs so that the agent can map to test steps (such as "click", "fill", "select", "hover", "reload", "press", "see"). Avoid vague verbs like "interact" or "use".
-- Input values: include exact values for fills/selects. For dropdowns, specify the visible option text that users see.
+- Input values: include exact values for fills/selects. For dropdowns, specify the visible option text that users see. Quote character does not matter (`'single'` or `"double"` are both fine) — the value just needs to be quoted.
   - Example: "the user fills the email input field with 'test@example.com'"
   - Example: "the user selects 'Premium Plan' from the plan dropdown on the form"
 - Expected outcomes: state exactly what should happen and how to verify it.

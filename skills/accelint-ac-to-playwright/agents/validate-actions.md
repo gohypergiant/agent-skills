@@ -92,6 +92,8 @@ Note: The orchestrator (assessment mode) is responsible for extracting actions f
 
 ### Value Requirements
 
+Quote character does not matter — `'single'` or `"double"` quotes are both valid. The requirement is that the value is quoted and literal, not which quote character is used. Examples below use single quotes for consistency, but double-quoted values are not a violation.
+
 **Fill actions** must have quoted literal values:
 - ✅ Valid: `fills the email input with 'test@example.com'`
 - ❌ Invalid: `fills the email input with a valid email`
