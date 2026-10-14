@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type CliRuntime, run } from "../cli/generate-tests";
-import { addFile, makeRuntime } from "./generate-tests.test-utils";
+import { addDir, addFile, makeRuntime } from "./generate-tests.test-utils";
 
 const defaultArgs = [
   "node",
@@ -124,7 +124,7 @@ describe("run()", () => {
     expect(writtenContent).toContain(`annotation: {`);
     expect(writtenContent).toContain(`type: "source",`);
     expect(writtenContent).toContain(`description: "some-repo/path/to/file.md"`);
-    expect(writtenContent).toContain(`test("Suite name", async ({ page }, testInfo) => {`);
+    expect(writtenContent).toContain(`test("Suite name", async ({ page: initialPage, context }, testInfo) => {`);
     expect(logs.join("\n")).toContain("Wrote:");
     expect(appendArgs).toContain("--summary-json");
     expect(appendArgs).toContain("summaries/2026-01-28-14-03-52Z-summary.json");
@@ -343,6 +343,22 @@ describe("run()", () => {
 
     expect(code).toBe(1);
     expect(errors.join("\n")).toContain("Unsupported: recursive glob (**)");
+  });
+
+  it("returns 1 and stringifies a non-Error thrown during input processing", () => {
+    const state = makeRuntime({
+      fs: {
+        readdirSync: () => {
+          throw "not an Error instance";
+        },
+      },
+    });
+    addDir(state, "/repo/plans", ["a.json"]);
+
+    const code = runWithDefaults(state.runtime, ["/repo/plans/*.json"]);
+
+    expect(code).toBe(1);
+    expect(state.errors.join("\n")).toContain("not an Error instance");
   });
 
   it("supports URL and toString inputs for existsSync", () => {

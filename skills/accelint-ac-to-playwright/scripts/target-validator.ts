@@ -66,7 +66,8 @@ export function validateTargetArray(targets: Array<{ line: number; target: strin
     if (result.success) {
       valid.push(item);
     } else {
-      const errorMessage = result.error?.issues?.[0]?.message || "Unknown validation error";
+      // Every addIssue() call above sets a real message, so this fallback never fires in practice. It's here only to satisfy TypeScript.
+      const errorMessage = result.error?.issues?.[0]?.message || /* istanbul ignore next */ "Unknown validation error";
       invalid.push({ ...item, error: errorMessage });
     }
   }

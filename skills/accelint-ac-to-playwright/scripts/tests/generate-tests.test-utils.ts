@@ -62,7 +62,10 @@ export function makeRuntime(overrides?: RuntimeOverrides): RuntimeState {
       }),
 
       readdirSync: vi.fn((p, opts) => {
-        // Production code only uses { withFileTypes: true }. Validate to prevent test bugs.
+        // No test calls readdirSync wrong, so this never actually runs.
+        // It's a trip-wire: if a future test does call it wrong, fail loudly here
+        // instead of silently returning bad data.
+        /* istanbul ignore if */
         if (!opts || !opts.withFileTypes) {
           throw new Error(
             `readdirSync mock called with invalid options. Expected { withFileTypes: true }, got: ${JSON.stringify(opts)}`

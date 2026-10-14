@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { _renderStep, type Step } from "../translate-plan-to-tests";
+import { _hexToRgb, _renderStep, type Step } from "../translate-plan-to-tests";
 
 describe("renderStep", () => {
   it.each<[Step, number, string[]]>([
@@ -92,6 +92,33 @@ describe("renderStep", () => {
       ],
     ],
     [
+      { type: "assertion", action: "expectInputValue", target: "form.input.radius", value: "5" },
+      3,
+      [
+        'await expect(page.getByTestId("form.input.radius")).toHaveCount(1);',
+        'await expect(page.getByTestId("form.input.radius")).toHaveValue("5");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectInputValue", testId: "form.input.radius" })'
+      ],
+    ],
+    [
+      { type: "assertion", action: "expectSliderValue", target: "form.slider.radius", value: "5" },
+      3,
+      [
+        'await expect(page.getByTestId("form.slider.radius").getByRole("textbox")).toHaveCount(1);',
+        'await expect(page.getByTestId("form.slider.radius").getByRole("textbox")).toHaveValue("5");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectSliderValue", testId: "form.slider.radius" })'
+      ],
+    ],
+    [
+      { type: "assertion", action: "expectColorPickerValue", target: "form.colorpicker.fill", value: "#6B4A80" },
+      3,
+      [
+        'await expect(page.getByTestId("form.colorpicker.fill").locator(\'[aria-selected="true"] [role="img"]\')).toHaveCount(1);',
+        'await expect(page.getByTestId("form.colorpicker.fill").locator(\'[aria-selected="true"] [role="img"]\')).toHaveCSS("background-color", "rgb(107, 74, 128)");',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectColorPickerValue", testId: "form.colorpicker.fill" })'
+      ],
+    ],
+    [
       { type: "action", action: "fill", target: "#email", value: "a@b.com" },
       5,
       [
@@ -105,6 +132,9 @@ describe("renderStep", () => {
       6,
       [
         'await expect(page.getByTestId("#role")).toHaveCount(1);',
+        'if (test.info().config.metadata.useNonNativeSelect) {',
+        'await page.getByTestId("#role").click();',
+        'await page.getByRole("option", { name: "admin" }).click();',
         'await page.getByTestId("#role").selectOption({ label: "admin" });',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 6, action: "select", testId: "#role" })'
       ],
@@ -254,6 +284,48 @@ describe("renderStep", () => {
         'attachFailureArtifacts({ page, testInfo, stepIndex: 8, action: "keyUp" })'
       ],
     ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "new" },
+      1,
+      [
+        'if (!newTabPagePromise) {',
+        'throw new Error("No listener was set up for the new tab before this step");',
+        'const newPage = await newTabPagePromise;',
+        'page = newPage;',
+        'await page.bringToFront();',
+        'attachFailureArtifacts({ page, testInfo, stepIndex: 1, action: "switchTab" })'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "first" },
+      2,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[0];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "second" },
+      3,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[1];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
+    [
+      { type: "action", action: "switchTab", tabIdentifier: "third" },
+      4,
+      [
+        'const allPages = context.pages();',
+        'const targetPage = allPages[2];',
+        'page = targetPage;',
+        'await page.bringToFront();'
+      ],
+    ],
   ])("renders %o (stepIndex=%i)", (step, stepIndex, expectedFragments) => {
     const out = _renderStep(step, stepIndex);
 
@@ -266,5 +338,15 @@ describe("renderStep", () => {
     const badStep = { action: "nope" } as unknown as Step;
     expect(() => _renderStep(badStep, 1)).toThrow(/Unsupported step:.*nope/);
   });
-  
+
+});
+
+describe("hexToRgb", () => {
+  it.each<[string, string]>([
+    ["#FFFFFF", "rgb(255, 255, 255)"],
+    ["#000000", "rgb(0, 0, 0)"],
+    ["#1A2B3C", "rgb(26, 43, 60)"],
+  ])("converts %s to %s", (hex, expected) => {
+    expect(_hexToRgb(hex)).toBe(expected);
+  });
 });

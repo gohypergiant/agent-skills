@@ -11,8 +11,9 @@ test.describe("Golden file test", {
 }, () => {
   test("happy path", {
     tag: "@wip"
-  }, async ({ page }, testInfo) => {
-    const tracker = await setupConsoleTracking({ page, testInfo });
+  }, async ({ page: initialPage, context }, testInfo) => {
+    let page = initialPage;
+    const tracker = setupConsoleTracking({ page, testInfo });
 
     await page.goto("https://example.com");
 

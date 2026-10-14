@@ -36,6 +36,13 @@ const dragStep = z.object({
   button: mouseButtonValidator.optional().default("left"),
 }).strict();
 
+const expectColorPickerValueStep = z.object({
+  type: z.literal("assertion").default("assertion"),
+  action: z.literal("expectColorPickerValue"),
+  target: targetValidator,
+  value: z.string().regex(/^#[0-9a-fA-F]{6}$/, "value must be a 6-digit hex color (e.g. #FFFFFF)"),
+}).strict();
+
 const expectNotVisibleStep = z.object({
   type: z.literal("assertion").default("assertion"),
   action: z.literal("expectNotVisible"),
@@ -45,6 +52,20 @@ const expectNotVisibleStep = z.object({
 const expectTextStep = z.object({
   type: z.literal("assertion").default("assertion"),
   action: z.literal("expectText"),
+  target: targetValidator,
+  value: z.string(),
+}).strict();
+
+const expectInputValueStep = z.object({
+  type: z.literal("assertion").default("assertion"),
+  action: z.literal("expectInputValue"),
+  target: targetValidator,
+  value: z.string(),
+}).strict();
+
+const expectSliderValueStep = z.object({
+  type: z.literal("assertion").default("assertion"),
+  action: z.literal("expectSliderValue"),
   target: targetValidator,
   value: z.string(),
 }).strict();
@@ -144,11 +165,20 @@ const selectStep = z.object({
   value: z.string(),
 }).strict();
 
+const switchTabStep = z.object({
+  type: z.literal("action").default("action"),
+  action: z.literal("switchTab"),
+  tabIdentifier: z.enum(["new", "first", "second", "third"]),
+}).strict();
+
 export const stepSchema = z.discriminatedUnion("action", [
   clickStep,
   doubleClickStep,
   dragStep,
+  expectColorPickerValueStep,
+  expectInputValueStep,
   expectNotVisibleStep,
+  expectSliderValueStep,
   expectTextStep,
   expectUrlStep,
   expectVisibleStep,
@@ -165,6 +195,7 @@ export const stepSchema = z.discriminatedUnion("action", [
   reloadStep,
   scrollStep,
   selectStep,
+  switchTabStep,
 ]);
 
 /**

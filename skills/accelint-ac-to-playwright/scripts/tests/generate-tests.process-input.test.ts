@@ -57,6 +57,22 @@ describe("processInput", () => {
     expect(result).toEqual([]);
   });
 
+  it("excludes a matched entry that turns out to be a directory, not a file", () => {
+    const state = makeRuntime();
+
+    addDir(state, "/repo/tests", ["plans"]);
+    addDir(state, "/repo/path/to/plans", ["sample-dir", "sample.json"]);
+    // sample-dir matches the glob by name but is a directory, not a file - the
+    // final filter's fs.existsSync(p) && fs.statSync(p).isFile() check should drop it.
+    addDir(state, "/repo/path/to/plans/sample-dir", []);
+    addFile(state, "/repo/path/to/plans/sample.json");
+
+    const input = "/repo/path/to/plans/sample*";
+    const result = _processInput(input, state.runtime);
+
+    expect(result).toEqual([path.resolve("/repo/path/to/plans/sample.json")]);
+  });
+
   it("excludes dotfiles from final results", () => {
     const state = makeRuntime();
 
