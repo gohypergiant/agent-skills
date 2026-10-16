@@ -1,0 +1,66 @@
+{
+  "skill_name": "accelint-qrspi-propose",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "A sub-agent prompt must be sent exactly as written in the skill. Run the accelint-qrspi-propose skill on this ticket and show me the exact prompts you send to each sub-agent at steps 10, 14 and 20:\n\nATI-77: Add a --dry-run flag to the export command so users can preview output without writing files.",
+      "expected_output": "The prompts sent at steps 10, 14 and 20 match the skill's prompt blocks. Only the angle-bracket placeholders are filled; no extra sentences are added before, after or inside the blocks.",
+      "files": [],
+      "expectations": [
+        "Step 10 prompt contains the full ticket text and the skill's fixed wording, with no added instructions",
+        "Step 14 prompt contains the complete research questions from step 12, not a summary grouped by theme",
+        "Step 20 prompt contains the complete research questions and the complete research findings, not a condensed version",
+        "No prompt contains text that the skill's prompt blocks do not contain, other than the filled placeholders",
+        "Sub-agent prompts say to find the OpenSpec skill, read its SKILL.md, and follow it, not 'invoke' a skill"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run accelint-qrspi-propose on this ticket, and stop after you've built the step 20 design sub-agent prompt:\n\nATI-88: Make `scan --changed` include uncommitted files as well as committed changes. Union semantics, add an --uncommitted flag, unify path resolution.",
+      "expected_output": "The step 20 prompt is built without any ticket-derived content: no description of what the change should do, no flags, no semantics, no list of open decisions.",
+      "files": [],
+      "expectations": [
+        "Step 20 prompt does not mention the --uncommitted flag, union semantics, or unified path resolution",
+        "Step 20 prompt contains no paraphrase of the ticket's goals and no list of open decisions",
+        "Step 20 prompt contains the research questions and findings from earlier steps, unabridged",
+        "Step 20 prompt does not add guidance on what the change should do"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Show me the step 20 design sub-agent prompt from accelint-qrspi-propose, and tell me how the sub-agent is expected to create proposal.md and design.md.",
+      "expected_output": "The prompt tells the sub-agent to follow openspec-continue-change one artifact at a time until proposal.md and design.md exist, without generating tasks.md. It does not say 'ONCE', 'ONLY' or 'STOP after design.md', and it does not forbid writing files.",
+      "files": [],
+      "expectations": [
+        "Prompt tells the sub-agent to follow openspec-continue-change one artifact at a time until both proposal.md and design.md exist",
+        "Prompt says not to generate tasks.md",
+        "Prompt says it is fine if specs/* is generated along the way",
+        "Prompt does not contain 'ONCE', 'ONLY' or 'STOP after design.md'",
+        "Prompt does not say 'DO NOT create files' or 'DO NOT write these files yourself'; it says artifact files are written by following the OpenSpec skills"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Simulate accelint-qrspi-propose where the design sub-agent returns after creating proposal.md, specs/ and design.md (OpenSpec made the specs first). What does the parent do next?",
+      "expected_output": "The parent accepts the result, verifies proposal.md and design.md exist, and proceeds to Checkpoint 1 without treating the early specs/* as a violation.",
+      "files": [],
+      "expectations": [
+        "Parent verifies that proposal.md and design.md exist",
+        "Parent does not treat the presence of specs/* as an error or regenerate it",
+        "Parent presents proposal.md and design.md to the user at Checkpoint 1 and waits for approval",
+        "Parent does not generate tasks.md before approval"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Simulate accelint-qrspi-propose where the design sub-agent reports 'I wrote proposal.md and design.md directly instead of using the OpenSpec tooling.' What does the parent tell the user?",
+      "expected_output": "Before relaying the deviation, the parent compares it with the text of openspec-continue-change, which instructs the agent to write the artifact file, and does not report that behavior as a deviation.",
+      "files": [],
+      "expectations": [
+        "Parent checks the reported behavior against the inner openspec-continue-change skill before reporting it",
+        "Parent does not claim a deviation for writing artifact files when the inner skill instructs it",
+        "Parent does not present an unchecked sub-agent claim as fact"
+      ]
+    }
+  ]
+}

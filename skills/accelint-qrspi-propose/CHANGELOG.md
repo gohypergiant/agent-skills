@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.10.0] - 2026-10-14
+
+### Fixed
+- **Sub-agent prompts no longer contradict the OpenSpec skills they delegate to** (steps 20, 37). Removed "DO NOT create files / write these files yourself", which conflicted with `openspec-continue-change` writing artifact files. Prompts now say all artifact files are written by following the OpenSpec skills.
+- **Design-stage sub-agent describes an end state, not an artifact order** (step 20). Removed "ONCE", "ONLY" and "STOP after design.md". The sub-agent runs `openspec-continue-change` one artifact at a time until `proposal.md` and `design.md` exist, and does not generate `tasks.md`. `openspec-continue-change` picks the first ready artifact (`specs` before `design` in the default schema), so the old wording could not be followed reliably. `specs/*` may be generated at any point and is not reviewed.
+- **Step 37 sub-agent** now runs until `tasks.md` exists; `specs/*` may already exist.
+- **"Invoke the X skill" replaced** with "find the skill, read its SKILL.md in full, and follow it exactly", since sub-agents have no skill-invocation tool (steps 10, 14, 20, 37).
+- **Step cross-references**: step 31 (not 30) is the frontmatter step in the NEVER section; "steps 32-42" in step 31b corrected; step 25 now points to checkpoint step 27; the stale `q-and-a.md` mention in the overview is now `trace.md`.
+
+### Changed
+- Prompt blocks (steps 10, 14, 20, 37) must be sent unchanged, with only `<angle-bracket>` placeholders replaced; questions and research are pasted complete and unabridged.
+- Step 17 and the NEVER list: nothing derived from the ticket (goals, flags, open decisions, paraphrase) may appear in any sub-agent prompt after step 10.
+- Checkpoint 1 now presents `proposal.md` and `design.md` (steps 28-30); frontmatter step 31b no longer assumes delta specs are absent.
+- Step 24 verifies `proposal.md` and `design.md`; step 39 verifies `tasks.md`.
+- Added stable step tags (`[S-QUESTIONS]`, `[CHECKPOINT-1]`, ...) alongside step numbers.
+- Step 74 intro now excepts the two required checkpoints from "without stopping".
+- Added a check: compare a reported sub-agent deviation against the inner skill's text before relaying it.
+
 ## [1.9.0] - 2026-08-25
 
 ### Added

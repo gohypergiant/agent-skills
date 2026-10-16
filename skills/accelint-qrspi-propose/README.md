@@ -61,11 +61,11 @@ The skill will check this before running and guide you if configuration is neede
 ┌─────────────────────────────────────────────────────────────────┐
 │  Phase          Context              Output          Checkpoint │
 ├─────────────────────────────────────────────────────────────────┤
-│  Questions      Ticket only          Questions       —          │
-│  Research       Questions only       Research doc    —          │
-│  Design         Q+R (NO ticket)      design.md       ✓ REVIEW   │
-│  Specs/Tasks    Q+R+design           specs/*, tasks  ✓ REVIEW   │
-│  Done           —                    Exit            —          │
+│  Questions      Ticket only          Questions        —         │
+│  Research       Questions only       Research doc     —         │
+│  Design         Q+R (NO ticket)      proposal, design ✓ REVIEW  │
+│  Tasks          Q+R+design           tasks.md         ✓ REVIEW  │
+│  Done           —                    Exit             —         │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -81,11 +81,11 @@ A fresh sub-agent (new context) sees only the questions and answers them with fa
 
 Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts under your project's `config.yaml` rules.
 
-Required checkpoint: You review the design before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
+Required checkpoint: You review `proposal.md` and `design.md` before continuing. OpenSpec may also generate `specs/*` during this phase; those delta specs are OpenSpec bookkeeping and are not part of the review. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
 
-#### Phase 4: Specs & Tasks
+#### Phase 4: Tasks
 
-Generate delta specs and task breakdown. A sub-agent receives questions + research + approved design (NO ticket) and creates remaining artifacts with emphasis on vertical slicing.
+Generate the task breakdown (and any delta specs OpenSpec has not generated yet). A sub-agent receives questions + research + approved design (NO ticket) and creates remaining artifacts with emphasis on vertical slicing.
 
 Required checkpoint: You review the task breakdown to ensure vertical slicing (not layer-by-layer).
 
@@ -110,7 +110,7 @@ This prevents "solution bias" where the ticket's suggested solution biases the a
 
 Two required review gates:
 
-1. **After design.md**: Catch wrong patterns, missing systems, scope issues
+1. **After proposal.md and design.md**: Catch wrong patterns, missing systems, scope issues
 2. **After tasks.md**: Verify vertical slicing, phase ordering
 
 You can:

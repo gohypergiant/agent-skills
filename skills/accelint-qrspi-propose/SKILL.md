@@ -4,7 +4,7 @@ description: Use this skill when the user wants to start the formal QRSPI/OpenSp
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.9.0"
+  version: "1.10.0"
 ---
 
 # Accelint QRSPI
@@ -42,36 +42,39 @@ openspec update
 ## Workflow Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  Stage          Context              Output          Checkpoint │
-├─────────────────────────────────────────────────────────────────┤
-│  Questions      Ticket only          Questions       —          │
-│  Research       Questions only       Research doc    —          │
-│  Design         Q+R (NO ticket)      proposal.md     —          │
-│                                      design.md       —          │
-│                                      [STOP HERE]                │
-│  ⚠️  CHECKPOINT 1: Review design.md - MUST approve to continue  │
-│  (frontmatter: specs_touched/decisions/created_at -> design.md) │
-│                                                                 │
-│  Specs/Tasks    Q+R+design           specs/*         —          │
-│                                      tasks.md        —          │
-│  ⚠️  CHECKPOINT 2: Review tasks.md - MUST approve to continue   │
-│                                                                 │
-│  Done           —                    Exit            —          │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  Stage          Context              Output          Checkpoint  │
+├──────────────────────────────────────────────────────────────────┤
+│  Questions      Ticket only          Questions       —           │
+│  Research       Questions only       Research doc    —           │
+│  Design         Q+R (NO ticket)      proposal.md     —           │
+│                                      design.md       —           │
+│                                      [STOP HERE]                 │
+│  ⚠️  CHECKPOINT 1: Review proposal.md + design.md - MUST approve │
+│  (frontmatter: specs_touched/decisions/created_at -> design.md)  │
+│                                                                  │
+│  Specs/Tasks    Q+R+design           tasks.md        —           │
+│  (specs/* is OpenSpec bookkeeping; generated whenever OpenSpec   │
+│   decides, not reviewed)                                         │
+│  ⚠️  CHECKPOINT 2: Review tasks.md - MUST approve to continue    │
+│                                                                  │
+│  Done           —                    Exit            —           │
+└──────────────────────────────────────────────────────────────────┘
 
 Note: Keep the ticket OUT of context after the Questions stage to prevent completion bleed.
 
-REQUIRED: The Design stage (steps 17-26) generates ONLY `proposal.md` and `design.md`, optionally creates `q-and-a.md` if `--verbose` flag was set, then STOPS for review at step 27. The Specs/Tasks stage (steps 33-43) generates `specs/*` and `tasks.md` separately after design approval.
+REQUIRED: The Design stage (steps 17-26) must produce `proposal.md` and `design.md` and stops before `tasks.md` (OpenSpec may also generate `specs/*` along the way, in whatever order it chooses), optionally creates `trace.md` if the `--verbose` flag was set, then STOPS for review at step 27. The Specs/Tasks stage (steps 33-43) generates `tasks.md` (and `specs/*` if not already present) separately after design approval.
+
+Steps keep their numbers and carry stable tags (for example `[CHECKPOINT-1]`) so references stay unambiguous: `[S-QUESTIONS]` (8), `[S-RESEARCH]` (13), `[S-DESIGN-GEN]` (17), `[CHECKPOINT-1]` (27), `[S-FRONTMATTER]` (31), `[S-TASKS-GEN]` (33), `[CHECKPOINT-2]` (44).
 
 Capture frontmatter at step 31 after Checkpoint 1 approval, not before. `design.md` reaches its final form for this planning pass only after the user approves it or confirms a manual edit. Earlier capture can write `specs_touched/decisions/created_at` against content the user is about to change. The `created_at` timestamp marks when the user approved the design (the moment the change becomes "real").
 
-⚠️  REQUIRED CHECKPOINTS: The agent MUST pause and wait for explicit user approval at both checkpoints (step 27 and step 44). Proceeding without approval bypasses QRSPI's core value.
+⚠️  REQUIRED CHECKPOINTS: The agent MUST pause and wait for explicit user approval at both checkpoints (step 27 [CHECKPOINT-1] and step 44 [CHECKPOINT-2]). Proceeding without approval bypasses QRSPI's core value.
 ```
 
 ## Implementation Steps
 
-Execute these steps in order without stopping between them.
+Execute these steps in order without stopping between them, except at the two required checkpoints (steps 27 and 44), where you MUST stop and wait for the user.
 
 1. **Validate user input and parse flags**: Check if the user provided a ticket, feature request, or idea in their prompt (either as skill arguments or in their message). Also check for the `--verbose` flag.
 
@@ -123,13 +126,13 @@ Execute these steps in order without stopping between them.
 
 7. If validation passes and all workflows are present, continue to step 8
 
-8. **Generate research questions** (Context isolation: the agent sees ONLY the ticket, not prior codebase knowledge or research. This prevents solution-first thinking)
+8. **Generate research questions** `[S-QUESTIONS]` (Context isolation: the agent sees ONLY the ticket, not prior codebase knowledge or research. This prevents solution-first thinking)
 
 9. Accept the ticket description from the user (passed as the skill argument or prompted if missing)
 
-10. Use the Agent tool to spawn sub-agent with this exact prompt
+10. Use the Agent tool to spawn sub-agent with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholder and add nothing before, after, or inside it.
   ```text
-  Invoke the openspec-explore skill.
+  Find the openspec-explore skill, read its SKILL.md in full, and follow it exactly.
 
   I have this ticket:
 
@@ -143,14 +146,14 @@ Execute these steps in order without stopping between them.
 
 12. Extract and store the questions — they will be passed to the next step.
 
-13. **Answer research questions** (Context isolation: the agent answering questions should see ONLY the questions, not the original ticket. This is the core QRSPI insight — research is objective and ticket-agnostic)
+13. **Answer research questions** `[S-RESEARCH]` (Context isolation: the agent answering questions should see ONLY the questions, not the original ticket. This is the core QRSPI insight — research is objective and ticket-agnostic)
 
-14. Use the Agent tool to spawn a NEW sub-agent (fresh context) with this exact prompt:
+14. Use the Agent tool to spawn a NEW sub-agent (fresh context) with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholder and add nothing before, after, or inside it.
 
   ```text
-  Invoke the openspec-explore skill.
+  Find the openspec-explore skill, read its SKILL.md in full, and follow it exactly.
 
-  <paste ONLY the research questions from step 12>
+  <paste ONLY the complete research questions from step 12, unabridged>
 
   Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
 
@@ -171,13 +174,13 @@ Execute these steps in order without stopping between them.
 
 16. Store the research answers — they will inform the design step.
 
-17. **Generate design scaffolding** (Context isolation: the ticket MUST NOT be in context during artifact generation. Use Agent tool to spawn a sub-agent with only questions + research to prevent "completion bleed".)
+17. **Generate design scaffolding** `[S-DESIGN-GEN]` (Context isolation: the ticket text must not appear in the sub-agent's prompt during artifact generation. Use Agent tool to spawn a sub-agent with only questions + research to prevent "completion bleed". After step 10, nothing derived from the ticket — goals, flags, open decisions, or paraphrase — may appear in any sub-agent prompt.)
 
 18. Read `openspec/config.yaml` to extract the `rules.design` section
 
 19. Read `CLAUDE.md` or `AGENTS.md` to extract agent behavior context
 
-20. Use the Agent tool to spawn a sub-agent with this exact prompt:
+20. Use the Agent tool to spawn a sub-agent with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholders (pasting the complete stored text, unabridged) and add nothing before, after, or inside it.
 
   ```text
   You are generating OpenSpec artifacts based on QRSPI research. You have access
@@ -185,10 +188,10 @@ Execute these steps in order without stopping between them.
   prevents solution bias.
 
   Research Questions and Answers:
-  <paste the research questions from step 12>
+  <paste the complete research questions from step 12, unabridged>
 
   Research Findings:
-  <paste research doc from step 16>
+  <paste the complete research doc from step 16, unabridged>
 
   OpenSpec Design Rules (from config.yaml):
   <paste the rules.design section verbatim from step 18>
@@ -196,41 +199,24 @@ Execute these steps in order without stopping between them.
   Agent Behavior Context:
   <paste relevant sections from CLAUDE.md/AGENTS.md from step 19>
 
-  CRITICAL: You MUST invoke OpenSpec skills to create and generate artifacts.
-  DO NOT create files or write artifact content yourself. The OpenSpec skills
-  will handle artifact generation following OpenSpec's configured rules.
+  Create the OpenSpec change with its proposal and design artifacts by using the
+  OpenSpec skills. For each skill named below, find it, read its SKILL.md in full,
+  and follow it exactly. All artifact files are written by following those skills,
+  so their configured rules apply. Do not author artifact content outside them.
 
-  Now create the OpenSpec change with proposal and design artifacts:
+  1. Follow the openspec-new-change skill to create the change (OpenSpec will prompt for a slug).
 
-  1. Invoke the openspec-new-change skill to create the change (OpenSpec will prompt for a slug)
+  2. Capture the change name/slug from the output and use it in all subsequent steps.
 
-  2. CRITICAL: Capture the change name/slug from the output and use it in all subsequent commands
+  3. Follow the openspec-continue-change skill with the change name, one artifact
+     at a time, until both proposal.md and design.md exist. Do NOT generate tasks.md.
+     If OpenSpec also generates specs/* along the way, that is fine.
 
-  3. Run the openspec-continue-change skill ONCE with the change name to generate proposal.md ONLY:
-     Invoke the openspec-continue-change skill.
+  4. Stop. Report completion, the path to design.md, and the change name explicitly as:
+     "Change name: <slug>"
 
-     <change-name>
-
-  4. Run the openspec-continue-change skill ONCE with the change name to generate design.md ONLY:
-     Invoke the openspec-continue-change skill.
-
-     <change-name>
-
-  5. STOP after design.md - do NOT generate specs or tasks yet
-
-  IMPORTANT: Let openspec-continue-change generate proposal.md and design.md using the
-  OpenSpec workflow. DO NOT write these files yourself. The openspec-continue-change
-  skill handles artifact generation based on config.yaml rules.
-
-  After design.md is generated (and ONLY proposal.md and design.md exist),
-  report completion, the CHANGE NAME, and the path to the design file.
-
-  IMPORTANT: You MUST report the change name explicitly at the end like:
-  "Change name: <slug>"
-
-  CRITICAL: STOP AFTER GENERATING DESIGN.MD. DO NOT CONTINUE TO SPECS OR TASKS.
-  Your job ends here. The parent agent will handle the checkpoint and further steps.
-  If you generate specs/* or tasks.md, you will bypass the mandatory design review.
+  Your job ends here. The parent agent handles the design review checkpoint and
+  all later steps.
   ```
 
 21. Wait for the sub-agent to complete
@@ -239,7 +225,7 @@ Execute these steps in order without stopping between them.
 
 23. Store the change name — it will be passed to later steps
 
-24. Verify the design.md file exists at the reported path
+24. Verify that `proposal.md` and `design.md` exist in the change folder at the reported path
 
 25. **If `--verbose` flag was set in step 1**: Create a `trace.md` audit trail file in the change folder before proceeding to the checkpoint.
 
@@ -256,7 +242,7 @@ Execute these steps in order without stopping between them.
    - The content MUST include the complete research questions from step 12
    - The content MUST include the complete research findings from step 16
    - You MUST NOT modify `proposal.md` or `design.md` as part of this step — this is a separate audit document
-   - You SHOULD write this file immediately after verifying design.md exists (step 24) and before proceeding to the checkpoint (step 26)
+   - You SHOULD write this file immediately after verifying design.md exists (step 24) and before proceeding to the checkpoint (step 27)
 
    **Content structure**:
    ```markdown
@@ -287,14 +273,14 @@ Execute these steps in order without stopping between them.
 
 26. REQUIRED: DO NOT continue yet. You MUST proceed to the design review checkpoint next.
 
-27. ⚠️ **REQUIRED CHECKPOINT: Design Review** (This is the "brain surgery" moment from the QRSPI talk. A correction here costs minutes; the same correction after implementation costs a code review cycle. You MUST pause here and wait for user input. DO NOT proceed without explicit user approval.)
+27. ⚠️ **REQUIRED CHECKPOINT: Design Review** `[CHECKPOINT-1]` (This is the "brain surgery" moment from the QRSPI talk. A correction here costs minutes; the same correction after implementation costs a code review cycle. You MUST pause here and wait for user input. DO NOT proceed without explicit user approval.)
 
-28. Read the generated `design.md` file
+28. Read the generated `proposal.md` and `design.md` files
 
-29. Present it to the user with this framing:
+29. Present them to the user with this framing:
 
    ```text
-   Design artifact generated. Please review for:
+   Proposal and design artifacts generated (proposal.md, design.md). Please review for:
 
    - Wrong pattern references (did I find the legacy way instead of the current way?)
    - Unresolved assumptions presented as decisions
@@ -311,15 +297,15 @@ Execute these steps in order without stopping between them.
    - **(a) Approve**: Proceed to step 31 below
    - **(b) Request edits**:
      - User describes changes
-     - Make edits to design.md in place
+     - Make edits in place to the file concerned (proposal.md or design.md)
      - Show diff of changes
      - Re-present for review (repeat until approved)
    - **(c) Manual edit**:
      - Wait for user confirmation that edits are complete
-     - Re-read design.md
+     - Re-read proposal.md and design.md
      - Proceed to step 31 below
 
-31. **Capture specs_touched/decisions frontmatter.** Once the user has approved (a) or confirmed their manual edits are complete (c), design.md is in its final form for this planning pass — capture its `specs_touched` and `decisions` as structured YAML frontmatter now, not any earlier, so an edit made during this same checkpoint can't leave the frontmatter stale against content that changed after it was written.
+31. **Capture specs_touched/decisions frontmatter.** `[S-FRONTMATTER]` Once the user has approved (a) or confirmed their manual edits are complete (c), design.md is in its final form for this planning pass — capture its `specs_touched` and `decisions` as structured YAML frontmatter now, not any earlier, so an edit made during this same checkpoint can't leave the frontmatter stale against content that changed after it was written.
 
    **Step-by-step process:**
 
@@ -329,7 +315,7 @@ Execute these steps in order without stopping between them.
       ```
 
    b. **Extract the data you need to write:**
-      - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` don't exist yet at this point (specs/tasks generation happens in steps 32-42), so there's nothing else to derive it from.
+      - **`specs_touched`**: the capability names design.md and proposal.md already declare as affected or introduced by this change. This is the change's own stated scope, read back out of what was just approved — not computed some other way. The delta spec files under `openspec/changes/<slug>/specs/` may or may not exist yet at this point (OpenSpec decides when to generate them), so derive it from the approved proposal.md and design.md, not from `specs/`.
       - **`decisions`**: design.md's own decision content — the choices, rationale, and alternatives the design phase already worked through — restructured into a list of `{id, choice, rationale, alternatives}` entries. This is structuring content that's already there, not writing new design content.
       - **`created_at`**: ISO 8601 timestamp with Z suffix marking when this change was created (now, at the moment the user approves the design). Generate this deterministically using:
         ```bash
@@ -372,7 +358,7 @@ Execute these steps in order without stopping between them.
 
 32. REQUIRED: If the user does not explicitly approve (says "looks good", "approve", "continue", etc.), DO NOT move forward. This checkpoint is mandatory. Skipping it bypasses the core value of QRSPI methodology.
 
-33. **Generate specs and tasks** (Context isolation: continue to keep the ticket out of context. Spawn a sub-agent with questions + research + approved design.md)
+33. **Generate tasks (and any remaining specs)** `[S-TASKS-GEN]` (Context isolation: continue to keep the ticket out of context. Spawn a sub-agent with questions + research + approved design.md)
 
 34. Read the (possibly user-edited) design.md file from step 31
 
@@ -380,20 +366,20 @@ Execute these steps in order without stopping between them.
 
 36. Read `CLAUDE.md` or `AGENTS.md` for agent behavior context
 
-37. Use the Agent tool to spawn a sub-agent with this exact prompt:
+37. Use the Agent tool to spawn a sub-agent with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholders (pasting the complete stored text, unabridged) and add nothing before, after, or inside it.
 
    ```text
-   You are generating OpenSpec specs and tasks based on QRSPI research and an
+   You are generating the remaining OpenSpec artifacts based on QRSPI research and an
    approved design. You have access to research and design, but NOT the original
    ticket text.
 
    CHANGE NAME: <change-name-from-step-23>
 
    Research Questions and Answers:
-   <paste questions from step 12>
+   <paste the complete research questions from step 12, unabridged>
 
    Research Findings:
-   <paste research doc from step 16>
+   <paste the complete research doc from step 16, unabridged>
 
    Approved Design:
    <paste design.md content>
@@ -407,17 +393,13 @@ Execute these steps in order without stopping between them.
    Agent Behavior Context:
    <paste relevant sections from CLAUDE.md/AGENTS.md>
 
-   CRITICAL: You MUST use the openspec-continue-change skill to generate artifacts.
-   DO NOT generate specs or tasks.md content yourself. The openspec-continue-change skill
-   will handle artifact generation following OpenSpec's configured rules.
+   Find the openspec-continue-change skill, read its SKILL.md in full, and follow
+   it exactly. All artifact files are written by following that skill, so
+   OpenSpec's configured rules apply. Do not author artifact content outside it.
 
-   Now generate the remaining OpenSpec artifacts:
-
-   1. Invoke openspec-continue-change <change-name> to generate specs/* (delta specs)
-   2. Invoke openspec-continue-change <change-name> to generate tasks.md
-
-   IMPORTANT: Let openspec-continue-change generate tasks.md using the OpenSpec workflow.
-   DO NOT write tasks.md yourself. The openspec-continue-change skill handles this.
+   Follow openspec-continue-change with the change name, one artifact at a time,
+   until tasks.md exists. specs/* may already exist; if OpenSpec has not generated
+   them yet, it will do so before tasks.md. Then stop.
 
    After tasks.md is generated, the parent agent will validate vertical slicing
    and add a "## Parallelization Strategy" section if needed.
@@ -427,7 +409,7 @@ Execute these steps in order without stopping between them.
 
 38. Wait for the sub-agent to complete (INTERNAL STEP: Do NOT display artifact generation details to the user)
 
-39. Verify specs/* and tasks.md exist at the reported paths
+39. Verify `tasks.md` exists at the reported path (and that `specs/*` exists, unless OpenSpec skipped specs for this change)
 
 40. Read the generated `tasks.md` file
 
@@ -602,10 +584,10 @@ Execute these steps in order without stopping between them.
    (step 42d), verify it accurately reflects the new vertical slice structure and
    update if needed.
 
-44. ⚠️ **REQUIRED CHECKPOINT: Tasks Review** - Present `tasks.md` to the user for final approval:
+44. ⚠️ **REQUIRED CHECKPOINT: Tasks Review** `[CHECKPOINT-2]` - Present `tasks.md` to the user for final approval:
 
    ```text
-   Specs and tasks generated.
+   Tasks generated.
 
    [If auto-converted:]
    ✓ Converted task structure to vertical slices for better parallelization
@@ -665,7 +647,7 @@ This prevents "solution-first thinking" where the agent jumps to implementation 
 
 Two mandatory review gates:
 
-1. **After design.md**: Catch wrong patterns, missing systems, scope issues
+1. **After proposal.md and design.md**: Catch wrong patterns, missing systems, scope issues
 2. **After tasks.md**: Verify vertical slicing, phase ordering
 
 These are the highest-leverage moments for corrections — before any code is written.
@@ -694,12 +676,14 @@ The skill stops after planning. The user explicitly invokes the accelint-qrspi-a
 - Ask whether the user wants to retry that step or provide manual input
 - Allow manual fallback (the user provides questions or research directly)
 
+**If a sub-agent reports a deviation from these instructions**: Before relaying it to the user, compare the behavior with the text of the inner OpenSpec skill it was following. Do not report behavior that the inner skill itself instructs.
+
 **If `specs_touched` or `decisions` cannot be confidently read out of approved `design.md` or `proposal.md` (step 31)**:
 - DO NOT guess. Show the user what is missing (for example, "no capability declarations found" or "no decisions with a stated rationale")
 - Ask the user to add it to `design.md` directly, then re-run step 31
 - DO NOT block later steps on this. A change can proceed to specs/tasks without this frontmatter, but `accelint-qrspi-archive` will need to derive it later from `proposal.md` and the by-then-existing delta specs instead of reading it from frontmatter
 
-**If `design.md` or `tasks.md` is missing after generation**:
+**If `proposal.md`, `design.md` or `tasks.md` is missing after generation**:
 - Check whether the file exists at the expected path
 - If it is missing, ask the user to verify OpenSpec configuration
 - Provide the expected path for manual inspection
@@ -717,15 +701,15 @@ If any of these are missing, guide the user to set them up before running this s
 
 ## NEVER Do This
 
-**NEVER generate artifacts yourself** — Always invoke the OpenSpec skills (`openspec-new-change`, `openspec-continue-change`) to create `proposal.md`, `design.md`, `specs/*`, and `tasks.md`. The OpenSpec workflow handles artifact generation under OpenSpec's configured rules. If you write artifacts directly, you bypass the project's design, spec, and task rules and create inconsistent outputs. The one narrow exception is step 30's `specs_touched`/`decisions` frontmatter block. That block is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, derived from content openspec-continue-change already generated and already approved by the user — not new design content. Even there, only the YAML frontmatter block is written; the `design.md` body is never touched by this step.
+**NEVER generate artifacts yourself** — Always create artifacts by having the sub-agent find the OpenSpec skills (`openspec-new-change`, `openspec-continue-change`), read their SKILL.md, and follow them, to create `proposal.md`, `design.md`, `specs/*`, and `tasks.md`. Those skills write the files under OpenSpec's configured rules; the rule means no artifact content comes from your own judgment outside them. If you write artifacts directly, you bypass the project's design, spec, and task rules and create inconsistent outputs. The one narrow exception is step 31's `specs_touched`/`decisions` frontmatter block. That block is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, derived from content openspec-continue-change already generated and already approved by the user — not new design content. Even there, only the YAML frontmatter block is written; the `design.md` body is never touched by this step.
 
-**NEVER generate `tasks.md` from scratch** — Always invoke the openspec-continue-change skill to create the initial `tasks.md`. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If openspec-continue-change generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) by following the validation guidance in step 42. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert it to numbered lists or plain bullets.
+**NEVER generate `tasks.md` from scratch** — Always follow the openspec-continue-change skill to create the initial `tasks.md`. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If openspec-continue-change generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) by following the validation guidance in step 42. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert it to numbered lists or plain bullets.
 
 **NEVER use numbered lists or plain bullets in `tasks.md`** — All subtasks MUST use markdown checklist format: `- [ ] instruction`. The `qrspi-apply` skill tracks completion by checking and unchecking these boxes. If you see numbered lists (`1. 2. 3.`) or plain bullets (`-` without `[ ]`), convert them to `- [ ] ...` format.
 
 **NEVER overcomplicate Parallelization Strategy** — Keep it simple: list which slices can run in parallel, which slices have sequential dependencies, and the recommended implementation order. Do not add excessive detail about every possible edge case or coordination mechanism. The example in this skill shows the right level of detail.
 
-**NEVER continue to specs/tasks without design approval** — Step 27 is a required checkpoint. If you skip the design review and generate tasks immediately, you miss the "brain surgery" moment, where corrections are cheap. Fixing design issues after code is written costs review cycles and rework.
+**NEVER continue to specs/tasks without design approval** — Step 27 [CHECKPOINT-1] is a required checkpoint. If you skip the design review and generate tasks immediately, you miss the "brain surgery" moment, where corrections are cheap. Fixing design issues after code is written costs review cycles and rework.
 
 **NEVER capture `specs_touched`/`decisions`/`created_at` frontmatter before `design.md` is in its final, approved state** — Step 31 runs only after (a) approval or (c) confirmed manual edits, never during a (b) request-edits loop or speculatively ahead of approval. Capturing it against a draft that is still being revised creates exactly the stale metadata `accelint-qrspi-archive` depends on this skill not producing.
 
@@ -733,9 +717,9 @@ If any of these are missing, guide the user to set them up before running this s
 
 **NEVER guess `specs_touched` or `decisions` when they cannot be confidently read out of the approved `design.md` or `proposal.md`** — ask the user to add what is missing to `design.md` directly instead. A silently invented capability list is worse than a visible gap, because `accelint-qrspi-archive` will trust this frontmatter as the author's explicit statement of scope.
 
-**NEVER let the ticket leak into research or design context** — Questions are generated WITH ticket context, but research and design must see ONLY questions and research answers. If the ticket stays in context during research, the agent will propose solutions instead of gathering objective facts about the current codebase.
+**NEVER let the ticket leak into research or design context** — Questions are generated WITH ticket context, but research and design must see ONLY questions and research answers, and no ticket-derived goals, flags, open decisions, or paraphrase may appear in any sub-agent prompt after step 10. If the ticket stays in context during research, the agent will propose solutions instead of gathering objective facts about the current codebase.
 
-**NEVER skip the required checkpoints** — Step 27 (after `design.md`) and Step 44 (after `tasks.md`) require explicit user approval before continuing. If you proceed without waiting for user confirmation ("looks good", "approve", "continue"), you bypass the core value of QRSPI: cheap corrections at the design stage. The "brain surgery" moment is when design is reviewed BEFORE specs/tasks are generated. Skipping checkpoints defeats the entire methodology.
+**NEVER skip the required checkpoints** — Step 27 (after `proposal.md` and `design.md`) and Step 44 (after `tasks.md`) require explicit user approval before continuing. If you proceed without waiting for user confirmation ("looks good", "approve", "continue"), you bypass the core value of QRSPI: cheap corrections at the design stage. The "brain surgery" moment is when design is reviewed BEFORE tasks are generated. Skipping checkpoints defeats the entire methodology.
 
 ## Example Usage
 
