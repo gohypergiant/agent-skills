@@ -1,0 +1,13 @@
+id: go-ignored-error
+valid:
+  - |
+    func f() { v, err := g(); _ = v }
+  - |
+    func f() { _ = x }
+invalid:
+  - |
+    func f() { _ = file.Close() }
+  - |
+    func f() { n, _ := strconv.Atoi(s) }
+  - |
+    func f() { a, b, _ = split(s) }

@@ -1,0 +1,7 @@
+# ast-grep configuration for the skill's rule packs. Run from anywhere:
+#   ast-grep scan -c <skill>/rules/sgconfig.yml --json=compact <dir>
+#   ast-grep test -c <skill>/rules/sgconfig.yml --skip-snapshot-tests
+ruleDirs:
+  - go
+testConfigs:
+  - testDir: go-tests

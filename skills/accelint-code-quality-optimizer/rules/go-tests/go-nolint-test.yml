@@ -1,0 +1,12 @@
+id: go-nolint
+valid:
+  - |
+    // Close is best effort.
+    func f() {}
+invalid:
+  - |
+    //nolint:errcheck
+    func f() {}
+  - |
+    func f() { _ = x() // nolint
+    }

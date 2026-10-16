@@ -1,0 +1,12 @@
+id: go-defer-in-loop
+language: go
+severity: warning
+message: defer inside a loop runs when the function returns, not at the end of the iteration; resources pile up until then
+note: Move the loop body into a function so each defer runs per iteration, or close explicitly.
+rule:
+  kind: defer_statement
+  inside:
+    kind: for_statement
+    # A func literal between the defer and the loop gives the defer its own scope: not a finding.
+    stopBy:
+      kind: func_literal

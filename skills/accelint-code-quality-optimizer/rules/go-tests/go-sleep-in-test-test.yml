@@ -1,0 +1,7 @@
+id: go-sleep-in-test
+valid:
+  - |
+    func TestX(t *testing.T) { <-done }
+invalid:
+  - |
+    func TestX(t *testing.T) { time.Sleep(10 * time.Millisecond) }

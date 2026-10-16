@@ -1,0 +1,13 @@
+{
+  "name": "@fixture/beta",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@fixture/alpha": "workspace:*"
+  }
+}

@@ -1,0 +1,7 @@
+id: go-nolint
+language: go
+severity: info
+message: a nolint directive hides a linter finding; it should name the linter and the reason
+rule:
+  kind: comment
+  regex: ^//\s*nolint

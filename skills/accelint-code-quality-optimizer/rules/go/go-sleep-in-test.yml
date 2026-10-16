@@ -1,0 +1,9 @@
+id: go-sleep-in-test
+language: go
+severity: warning
+message: time.Sleep in a test is a race waiting to flake; synchronize on a channel, WaitGroup or testing/synctest
+# Counted in _test.go files only (go-scorecard.mjs applies the file filter).
+rule:
+  pattern:
+    context: "func f() { time.Sleep($DURATION) }"
+    selector: call_expression

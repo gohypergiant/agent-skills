@@ -1,0 +1,11 @@
+id: go-empty-interface
+valid:
+  - |
+    type S interface { Do() }
+  - |
+    func f(v any) {}
+invalid:
+  - |
+    func f(v interface{}) {}
+  - |
+    var m map[string]interface{}

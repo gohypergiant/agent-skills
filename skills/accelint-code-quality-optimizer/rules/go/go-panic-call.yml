@@ -1,0 +1,9 @@
+id: go-panic-call
+language: go
+severity: warning
+message: panic in non-test code takes the process down; return an error
+# Counted in non-test files only (go-scorecard.mjs applies the file filter).
+rule:
+  pattern:
+    context: "func f() { panic($$$ARGS) }"
+    selector: call_expression

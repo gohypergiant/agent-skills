@@ -1,0 +1,11 @@
+id: go-defer-in-loop
+valid:
+  - |
+    func f() { defer x() }
+  - |
+    func f() { for range items { func() { defer x() }() } }
+invalid:
+  - |
+    func f() { for range items { defer x() } }
+  - |
+    func f() { for i := 0; i < n; i++ { if ok { defer x() } } }

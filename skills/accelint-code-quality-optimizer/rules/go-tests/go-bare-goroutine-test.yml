@@ -1,0 +1,9 @@
+id: go-bare-goroutine
+valid:
+  - |
+    func f(ctx context.Context) { go worker(ctx) }
+  - |
+    func f() { wg.Add(1); go func() { defer wg.Done(); work() }() }
+invalid:
+  - |
+    func f() { go func() { work() }() }

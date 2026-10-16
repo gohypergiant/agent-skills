@@ -1,0 +1,11 @@
+{
+  "name": "fixture-ts-monorepo",
+  "private": true,
+  "scripts": {
+    "lint": "oxlint .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "packageManager": "pnpm@10.25.0"
+}

@@ -1,0 +1,11 @@
+id: go-print-call
+valid:
+  - |
+    func f() { log.Println("x") }
+  - |
+    func f() string { return fmt.Sprintf("%d", 1) }
+invalid:
+  - |
+    func f() { fmt.Println("x") }
+  - |
+    func f() { fmt.Printf("%d", 1) }

@@ -1,0 +1,4 @@
+{
+  "$comment": "Fixture overlay: low file-size thresholds so a 40-line file counts as over the warning line.",
+  "thresholds": { "fileLinesWarn": 30, "fileLinesMax": 60 }
+}
