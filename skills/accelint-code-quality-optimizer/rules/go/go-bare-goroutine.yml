@@ -1,0 +1,12 @@
+id: go-bare-goroutine
+language: go
+severity: info
+message: goroutine started without a visible ctx, done channel, WaitGroup or errgroup; it may outlive its caller
+note: Heuristic. Informational only; review the goroutine's lifetime by hand.
+rule:
+  kind: go_statement
+  not:
+    has:
+      kind: identifier
+      regex: ^(?:ctx|done|wg|eg|g|cancel|stop|quit|errgroup)$
+      stopBy: end

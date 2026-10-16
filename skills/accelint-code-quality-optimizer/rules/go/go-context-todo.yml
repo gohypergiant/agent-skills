@@ -1,0 +1,8 @@
+id: go-context-todo
+language: go
+severity: info
+message: context.TODO() marks a context that was never threaded through; pass the caller's ctx
+rule:
+  pattern:
+    context: "func f() { context.TODO() }"
+    selector: call_expression

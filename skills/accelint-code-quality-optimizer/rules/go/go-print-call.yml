@@ -1,0 +1,12 @@
+id: go-print-call
+language: go
+severity: warning
+message: fmt.Print* writes to stdout outside any logger; use the service's logger
+# Counted in non-test files only (go-scorecard.mjs applies the file filter).
+rule:
+  pattern:
+    context: "func f() { fmt.$METHOD($$$ARGS) }"
+    selector: call_expression
+constraints:
+  METHOD:
+    regex: ^Print(?:ln|f)?$

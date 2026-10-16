@@ -1,0 +1,23 @@
+id: go-ignored-error
+language: go
+severity: warning
+message: a returned value is discarded with `_`; if it is an error, the failure is silent
+note: Handle or wrap the error. If discarding is intended, say why in a comment on the same line.
+rule:
+  any:
+    - pattern:
+        context: "func f() { _ = $CALL }"
+        selector: assignment_statement
+    - pattern:
+        context: "func f() { $$$LEFT, _ = $CALL }"
+        selector: assignment_statement
+    - pattern:
+        context: "func f() { $$$LEFT, _ := $CALL }"
+        selector: short_var_declaration
+constraints:
+  CALL:
+    any:
+      - kind: call_expression
+      - has:
+          kind: call_expression
+          stopBy: neighbor

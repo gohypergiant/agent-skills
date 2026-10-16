@@ -1,0 +1,40 @@
+{
+  "$comment": "Planted problems in evals/fixtures/ts-monorepo. Update this file and the fixture together.",
+  "packages": {
+    "packages/alpha": {
+      "explicitAny": 2,
+      "typeAssertions": 1,
+      "nonNullAssertions": 1,
+      "tsSuppressions": 0,
+      "enums": 0,
+      "consoleCalls": 0,
+      "nestedComponents": 1,
+      "looseAssertions": 1,
+      "effects": 1,
+      "sourceFiles": 5,
+      "testFiles": 2
+    },
+    "packages/beta": {
+      "explicitAny": 1,
+      "typeAssertions": 2,
+      "doubleAssertions": 1,
+      "nonNullAssertions": 1,
+      "tsSuppressions": 1,
+      "enums": 1,
+      "consoleCalls": 1,
+      "nestedComponents": 0,
+      "looseAssertions": 2,
+      "sourceFiles": 6,
+      "testFiles": 1
+    }
+  },
+  "notes": {
+    "packages/alpha/src/status-list.tsx (import)": "imports formatCount through the tsconfig paths alias @/format-count: importers.mjs must resolve it",
+    "packages/beta/src/orphan.ts": "library export nothing imports: importers.mjs reports visibility unknown",
+    "packages/beta/src/record-store.ts (import)": "imports badgeText, so badge-for-record's export is package-internal",
+    "packages/alpha/src/config.ts": "product file named config.ts: measured (1 any, 1 non-null)",
+    "packages/alpha/src/status-badge.stories.tsx": "story: counted as a test file; its console call and nested Wrapper are not counted, its any and cast are",
+    "packages/alpha/src/status-list.tsx": "render helper used as labels.map(Row), not as <Row />: not a nested component",
+    "packages/alpha/vitest.config.ts": "tool config: not measured"
+  }
+}

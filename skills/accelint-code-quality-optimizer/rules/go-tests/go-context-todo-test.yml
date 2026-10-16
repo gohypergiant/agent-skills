@@ -1,0 +1,7 @@
+id: go-context-todo
+valid:
+  - |
+    func f(ctx context.Context) { g(ctx) }
+invalid:
+  - |
+    func f() { g(context.TODO()) }

@@ -1,0 +1,13 @@
+id: go-errorf-wrap-v
+valid:
+  - |
+    func f() error { return fmt.Errorf("load %s: %w", name, err) }
+  - |
+    func f() error { return fmt.Errorf("bad value %v", value) }
+  - |
+    func f() error { return fmt.Errorf("item %v: %w", id, err) }
+invalid:
+  - |
+    func f() error { return fmt.Errorf("load %s: %v", name, err) }
+  - |
+    func f() error { return fmt.Errorf("failed: %+v", err) }

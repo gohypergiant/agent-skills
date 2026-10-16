@@ -1,0 +1,31 @@
+{
+  "$comment": "Committed at .code-quality/overlay.json in the target repo and reviewed like code. Remove keys you do not need. commands, ignore, thresholds, conventionExclusions and hotPaths are read by the scripts; decisions and owners are read by the agent.",
+  "commands": {
+    "lint": "pnpm lint",
+    "format-check": "pnpm format:check",
+    "typecheck": "pnpm typecheck",
+    "test": "pnpm test",
+    "boundaries": "pnpm boundaries"
+  },
+  "ignore": ["**/generated/**", "**/*.gen.ts", "**/fixtures/**"],
+  "thresholds": {
+    "fileLinesWarn": 500,
+    "fileLinesMax": 1000,
+    "mrMaxChangedLines": 400
+  },
+  "decisions": {
+    "tsconfig:noUncheckedIndexedAccess": {
+      "value": "true",
+      "decidedBy": "team",
+      "date": "YYYY-MM-DD",
+      "note": "Adopt one package at a time; ratchet the error count."
+    }
+  },
+  "conventionExclusions": {
+    "module-exports": ["src/routes/**"]
+  },
+  "hotPaths": ["packages/map/src/render/**"],
+  "owners": {
+    "packages/ui": "@ui-team"
+  }
+}

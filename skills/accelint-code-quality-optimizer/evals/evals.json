@@ -1,0 +1,68 @@
+{
+  "skill_name": "accelint-code-quality-optimizer",
+  "notes": "Agent-level evals. Copy evals/fixtures/ts-monorepo to a scratch git repo, commit it, then run each prompt. Run every eval on at least one Claude model and one GPT model and record results per model. Script-level checks are in run-script-evals.mjs.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use the accelint-code-quality-optimizer skill on this repo. Clean it up.",
+      "expected_output": "Runs setup and standards, presents conventions as proposals including the strict and mock-cleanup conflicts, and stops for decisions before any code change.",
+      "files": ["fixtures/ts-monorepo"],
+      "assertions": [
+        { "name": "Asks for scope or proposes one", "check": "Agent asks which package to work on or proposes one scope, instead of changing the whole repo" },
+        { "name": "Runs the detected commands", "check": "Agent runs pnpm lint, pnpm format:check, pnpm typecheck and pnpm test as detected, or reports they fail, and does not substitute other commands" },
+        { "name": "Conventions are proposals", "check": "Agent presents tsconfig strict and Vitest mock cleanup as conflicts needing a decision, and does not write either as a standard" },
+        { "name": "Flags majority that contradicts guidance", "check": "Agent notes that the enum usage contradicts accelint-ts-best-practices guidance rather than adopting enums as the convention" },
+        { "name": "Stops before changing code", "check": "No source file is modified in this turn" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Use the accelint-code-quality-optimizer skill on packages/beta. Conventions: kebab-case files, no enums, type over interface, strict true. Report the findings.",
+      "expected_output": "A findings table grouped by theme with tiers; parseRecord's any and the RecordKind enum are tier C because they are exported; the findings table appears before any details and the agent stops for approval.",
+      "files": ["fixtures/ts-monorepo"],
+      "assertions": [
+        { "name": "Table before details", "check": "A table of all findings appears before any before/after code" },
+        { "name": "Exported any is tier C", "check": "The any in parseRecord's exported signature is classified tier C, not tier A or B" },
+        { "name": "Exported enum is tier C", "check": "Converting the exported RecordKind enum is classified tier C" },
+        { "name": "Finds the planted problems", "check": "Findings include the @ts-ignore, the non-null assertion, the console.log, the as unknown as cast, the camelCase file pickRecords.ts, and the loose assertions in the spec file" },
+        { "name": "Stops for approval", "check": "The response ends by asking which items to apply, and no files were modified" }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use the accelint-code-quality-optimizer skill on packages/alpha. Apply the fix for the nested component and the loose assertion, then prepare the MR.",
+      "expected_output": "Two separate commits, behavior checks run after each, one branch per theme, an MR description with scorecard before/after and checks, no AI trailer, and a stop before pushing.",
+      "files": ["fixtures/ts-monorepo"],
+      "assertions": [
+        { "name": "Works in a worktree or new branch", "check": "Changes are made on a new branch, not on the branch that was checked out" },
+        { "name": "One change per commit", "check": "The nested component fix and the assertion fix are separate commits" },
+        { "name": "Icon moved to module scope", "check": "Icon is defined outside StatusBadge and receives tone as a prop" },
+        { "name": "Exact assertion", "check": "expect(formatCount(2)).toBeTruthy() is replaced with an exact assertion such as toBe(\"2\")" },
+        { "name": "No AI trailer", "check": "No commit message or MR description contains Co-Authored-By for a model or a 'Generated with' line" },
+        { "name": "Does not push", "check": "Agent shows the branch and description and asks before pushing; no git push is run" }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use the accelint-code-quality-optimizer skill. This repo is clean, just confirm.",
+      "expected_output": "When run on packages/alpha after the eval 3 fixes, reports no findings for the approved standards and does not invent low-value findings.",
+      "files": ["fixtures/ts-monorepo"],
+      "assertions": [
+        { "name": "Accepts a clean result", "check": "If the scope meets its approved standards, the agent reports no findings rather than producing style suggestions" },
+        { "name": "Reports the scorecard", "check": "The response includes the scorecard numbers for the scope" }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Use the accelint-code-quality-optimizer skill to set up the quality ratchet in CI for this repo. We use GitLab with runner tag lgcp.",
+      "expected_output": "A report-only GitLab CI job using the repo's Node image and runner tag, the scripts copied into the repo, and a baseline committed; prepared as its own MR and not pushed.",
+      "files": ["fixtures/ts-monorepo"],
+      "assertions": [
+        { "name": "Report-only", "check": "The CI job has allow_failure: true" },
+        { "name": "Runner tag", "check": "The job uses the lgcp runner tag" },
+        { "name": "Baseline committed", "check": ".code-quality/scorecard.baseline.json is created with ratchet.mjs update" },
+        { "name": "Separate MR", "check": "The CI change is prepared on its own branch, not mixed with code fixes, and is not pushed without approval" }
+      ]
+    }
+  ]
+}

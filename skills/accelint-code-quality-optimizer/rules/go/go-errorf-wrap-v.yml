@@ -1,0 +1,18 @@
+id: go-errorf-wrap-v
+language: go
+severity: warning
+message: fmt.Errorf formats an error with %v, so errors.Is and errors.As cannot unwrap it
+note: Use %w for the error argument.
+rule:
+  pattern:
+    context: "func f() { fmt.Errorf($FMT, $$$ARGS) }"
+    selector: call_expression
+  has:
+    kind: identifier
+    regex: ^err$
+    stopBy: end
+constraints:
+  FMT:
+    regex: "%[+#]?v"
+    not:
+      regex: "%w"

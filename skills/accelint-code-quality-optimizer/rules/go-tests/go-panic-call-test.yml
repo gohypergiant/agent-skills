@@ -1,0 +1,7 @@
+id: go-panic-call
+valid:
+  - |
+    func f() error { return errors.New("x") }
+invalid:
+  - |
+    func f() { panic("x") }

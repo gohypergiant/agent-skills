@@ -1,0 +1,61 @@
+{
+  "$comment": "Planted problems in evals/fixtures/go-service. Update this file and the fixture together. Needs go, gofmt, staticcheck and ast-grep on PATH; the overlay sets fileLinesWarn 30 / fileLinesMax 60.",
+  "packages": {
+    "cmd/service": {
+      "metrics": {
+        "vetFindings": 0,
+        "staticcheckFindings": 0,
+        "unformattedFiles": 0,
+        "deferInLoop": 0,
+        "ignoredErrors": 0,
+        "errorfWithV": 0,
+        "emptyInterfaces": 0,
+        "contextTodo": 0,
+        "printCalls": 0,
+        "panicCalls": 0,
+        "lintSuppressions": 0,
+        "sleepInTests": 0,
+        "filesOverWarn": 0,
+        "filesOverMax": 0,
+        "sourceFiles": 1,
+        "testFiles": 0,
+        "bareGoroutines": 0
+      },
+      "lint": null
+    },
+    "internal/store": {
+      "metrics": {
+        "vetFindings": 1,
+        "staticcheckFindings": 3,
+        "unformattedFiles": 1,
+        "deferInLoop": 1,
+        "ignoredErrors": 2,
+        "errorfWithV": 1,
+        "emptyInterfaces": 1,
+        "contextTodo": 1,
+        "printCalls": 2,
+        "panicCalls": 1,
+        "lintSuppressions": 1,
+        "sleepInTests": 1,
+        "filesOverWarn": 1,
+        "filesOverMax": 1,
+        "sourceFiles": 2,
+        "testFiles": 1,
+        "bareGoroutines": 1
+      },
+      "lint": {
+        "staticcheck:S1002": 1,
+        "staticcheck:SA5009": 1,
+        "staticcheck:U1000": 1,
+        "vet:printf": 1
+      }
+    }
+  },
+  "notes": {
+    "internal/store/store.go": "65 lines: over both thresholds. Plants every rule metric once, except ignoredErrors (2) and printCalls (2: Println and the vet-flagged Printf).",
+    "internal/store/ugly.go": "unformatted: gofmt -l lists it (unformattedFiles 1)",
+    "internal/store/zz_generated.go": "generated header: excluded entirely; its interface{} and panic are not counted",
+    "internal/store/store_test.go": "time.Sleep counts as sleepInTests; its test-only status keeps printCalls/panicCalls/bareGoroutines from counting here",
+    "staticcheck": "SA5009 duplicates vet's printf finding on purpose: both tools are counted, under their own rule keys"
+  }
+}

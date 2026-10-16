@@ -1,0 +1,11 @@
+id: go-empty-interface
+language: go
+severity: info
+message: interface{} hides the type; prefer a concrete type, a generic or the `any` alias the standard says to use
+rule:
+  kind: interface_type
+  not:
+    has:
+      any:
+        - kind: method_elem
+        - kind: type_elem
