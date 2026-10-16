@@ -397,7 +397,7 @@ Execute these steps in order without stopping between them, except at the two re
    Agent Behavior Context:
    <paste relevant sections from CLAUDE.md/AGENTS.md>
 
-   Find the openspec-explore skill, read its instructions in full, and follow it exactly.
+   Find the openspec-continue-change skill, read its instructions in full, and follow it exactly.
    Resolve relative paths from the supporting-files directory it provides.
    All artifact files are written by following that skill, so
    OpenSpec's configured rules apply. Do not author artifact content outside it.
