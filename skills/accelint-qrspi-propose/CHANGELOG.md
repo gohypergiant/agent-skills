@@ -8,6 +8,8 @@
 - **Step 37 sub-agent** now runs until `tasks.md` exists; `specs/*` may already exist.
 - **"Invoke the X skill" replaced** with "find the skill, read its SKILL.md in full, and follow it exactly", since sub-agents have no skill-invocation tool (steps 10, 14, 20, 37).
 - **Step cross-references**: step 31 (not 30) is the frontmatter step in the NEVER section; "steps 32-42" in step 31b corrected; step 25 now points to checkpoint step 27; the stale `q-and-a.md` mention in the overview is now `trace.md`.
+- **Design-stage sub-agent no longer writes frontmatter early** (step 20). It copied the `change/created_at/specs_touched/decisions` block from archived `design.md` files, before approval and with a made-up timestamp. The prompt now says not to add YAML frontmatter to `proposal.md` or `design.md`; step 31 owns it.
+- **Research sub-agent states that the repo is ours** (step 14). Some runs were refused with a Terms of Service block in the answer-questions phase. The prompt now says this is routine research about the current working repository, which the team owns.
 
 ### Changed
 - Prompt blocks (steps 10, 14, 20, 37) must be sent unchanged, with only `<angle-bracket>` placeholders replaced; questions and research are pasted complete and unabridged.

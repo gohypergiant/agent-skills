@@ -153,6 +153,8 @@ Execute these steps in order without stopping between them, except at the two re
   ```text
   Find the openspec-explore skill, read its SKILL.md in full, and follow it exactly.
 
+  This is routine research about the current working repository, which our team owns. You are reading our own code and specs to answer the questions below.
+
   <paste ONLY the complete research questions from step 12, unabridged>
 
   Answer each question with facts only. Observe what the codebase does today AND what the current specs of record say (scan openspec/specs/INDEX.md for capabilities whose name or Purpose line plausibly relates to these questions; for any that match, read the full specs/<capability>/spec.md file and include its current requirements and scenarios directly in your findings, not just a reference to the file). Do not suggest changes or implementation approaches.
@@ -211,6 +213,8 @@ Execute these steps in order without stopping between them, except at the two re
   3. Follow the openspec-continue-change skill with the change name, one artifact
      at a time, until both proposal.md and design.md exist. Do NOT generate tasks.md.
      If OpenSpec also generates specs/* along the way, that is fine.
+     Do not add YAML frontmatter to proposal.md or design.md, even if earlier
+     changes in the repo have it. The parent agent adds it after design approval.
 
   4. Stop. Report completion, the path to design.md, and the change name explicitly as:
      "Change name: <slug>"
