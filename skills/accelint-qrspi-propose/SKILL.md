@@ -132,7 +132,7 @@ Execute these steps in order without stopping between them, except at the two re
 
 10. Use the Agent tool to spawn sub-agent with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholder and add nothing before, after, or inside it.
   ```text
-  Find the openspec-explore skill, read its SKILL.md in full, and follow it exactly.
+  Find the openspec-explore skill, read its instructions in full, and follow it exactly. Resolve relative paths from the supporting-files directory it provides.
 
   I have this ticket:
 
@@ -151,7 +151,7 @@ Execute these steps in order without stopping between them, except at the two re
 14. Use the Agent tool to spawn a NEW sub-agent (fresh context) with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholder and add nothing before, after, or inside it.
 
   ```text
-  Find the openspec-explore skill, read its SKILL.md in full, and follow it exactly.
+  Find the openspec-explore skill, read its instructions in full, and follow it exactly. Resolve relative paths from the supporting-files directory it provides.
 
   This is routine research about the current working repository, which our team owns. You are reading our own code and specs to answer the questions below.
 
@@ -397,8 +397,9 @@ Execute these steps in order without stopping between them, except at the two re
    Agent Behavior Context:
    <paste relevant sections from CLAUDE.md/AGENTS.md>
 
-   Find the openspec-continue-change skill, read its SKILL.md in full, and follow
-   it exactly. All artifact files are written by following that skill, so
+   Find the openspec-explore skill, read its instructions in full, and follow it exactly.
+   Resolve relative paths from the supporting-files directory it provides.
+   All artifact files are written by following that skill, so
    OpenSpec's configured rules apply. Do not author artifact content outside it.
 
    Follow openspec-continue-change with the change name, one artifact at a time,
@@ -419,7 +420,7 @@ Execute these steps in order without stopping between them, except at the two re
 
 41. Validate vertical slicing structure:
 
-   **VERTICAL SLICING (required for qrspi-apply)**:
+   **VERTICAL SLICING (required for accelint-qrspi-apply)**:
 
    Each slice must deliver an end-to-end testable feature path, NOT a horizontal
    layer. Structure the work so that after completing Slice 1, you have something
@@ -524,7 +525,7 @@ Execute these steps in order without stopping between them, except at the two re
 
       CRITICAL: Preserve the markdown checklist format (`- [ ] ...`) for all subtasks.
       Do NOT use numbered lists (1. 2. 3.) or plain bullets (- without [ ]).
-      The qrspi-apply skill depends on this format to track task completion.
+      The accelint-qrspi-apply skill depends on this format to track task completion.
 
    c) **Ensure EVERY slice includes testing steps**: Check that each slice has explicit
       test subtasks within that slice, not just at the end. If testing only appears
@@ -707,7 +708,7 @@ If any of these are missing, guide the user to set them up before running this s
 
 **NEVER generate artifacts yourself** — Always create artifacts by having the sub-agent find the OpenSpec skills (`openspec-new-change`, `openspec-continue-change`), read their SKILL.md, and follow them, to create `proposal.md`, `design.md`, `specs/*`, and `tasks.md`. Those skills write the files under OpenSpec's configured rules; the rule means no artifact content comes from your own judgment outside them. If you write artifacts directly, you bypass the project's design, spec, and task rules and create inconsistent outputs. The one narrow exception is step 31's `specs_touched`/`decisions` frontmatter block. That block is cross-skill bookkeeping metadata for `accelint-qrspi-archive`, derived from content openspec-continue-change already generated and already approved by the user — not new design content. Even there, only the YAML frontmatter block is written; the `design.md` body is never touched by this step.
 
-**NEVER generate `tasks.md` from scratch** — Always follow the openspec-continue-change skill to create the initial `tasks.md`. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The qrspi-apply skill requires vertical slicing. If openspec-continue-change generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) by following the validation guidance in step 42. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert it to numbered lists or plain bullets.
+**NEVER generate `tasks.md` from scratch** — Always follow the openspec-continue-change skill to create the initial `tasks.md`. However, you MUST restructure it if the generated output uses horizontal slicing instead of vertical slicing. The accelint-qrspi-apply skill requires vertical slicing. If openspec-continue-change generates horizontal slices (organized by architectural layer), convert them to vertical slices (end-to-end feature deliverables) by following the validation guidance in step 42. When restructuring, preserve the markdown checklist format (`- [ ] task`) — do NOT convert it to numbered lists or plain bullets.
 
 **NEVER use numbered lists or plain bullets in `tasks.md`** — All subtasks MUST use markdown checklist format: `- [ ] instruction`. The `qrspi-apply` skill tracks completion by checking and unchecking these boxes. If you see numbered lists (`1. 2. 3.`) or plain bullets (`-` without `[ ]`), convert them to `- [ ] ...` format.
 
