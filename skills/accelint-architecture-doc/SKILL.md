@@ -1,10 +1,10 @@
 ---
 name: accelint-architecture-doc
-description: Create or update a living ARCHITECTURE.md for a codebase. Use when the user wants to write, refresh, restructure, or maintain an architecture document; document how the system is organized across tech stack, deployment model, services, components, and data stores; or turn codebase findings into durable architecture docs for engineers or agents. Trigger on requests such as write an architecture doc, document this system, create or update ARCHITECTURE.md, give me a technical overview of this repo, or map out how this app is put together, even when the file is not named. Prefer this skill for file-producing architecture documentation, not for generic architecture advice, implementation planning, or diagram-only brainstorming unless that work is clearly part of updating the document.
+description: Use when the user wants to write, refresh, restructure, or maintain architecture documentation, including ARCHITECTURE.md, a technical overview, or a map of the system. Applies to file-producing documentation even when no filename is given. Do not use for generic architecture advice, implementation planning, or diagram-only brainstorming unless that work is part of updating the document.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.2.2"
+  version: "1.3.0"
 ---
 
 # Architecture Doc
