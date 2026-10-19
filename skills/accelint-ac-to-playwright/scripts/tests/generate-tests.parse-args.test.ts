@@ -49,6 +49,16 @@ describe("parseArgs", () => {
     expect(result.errors.join("\n")).toContain("Missing value for --summary-dir");
   });
 
+  it("returns error for missing --tests-dir= value", () => {
+    const result = _parseArgs(["plan.json", "--tests-dir="]);
+    expect(result.errors.join("\n")).toContain("Missing value for --tests-dir");
+  });
+
+  it("returns error for missing --summary-dir= value", () => {
+    const result = _parseArgs(["plan.json", "--summary-dir="]);
+    expect(result.errors.join("\n")).toContain("Missing value for --summary-dir");
+  });
+
   it("returns error for unknown flags", () => {
     const result = _parseArgs(["--wat"]);
     expect(result.errors.join("\n")).toContain("Unknown option: --wat");

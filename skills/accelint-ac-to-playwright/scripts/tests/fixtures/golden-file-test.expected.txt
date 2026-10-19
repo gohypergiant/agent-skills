@@ -11,8 +11,9 @@ test.describe("Golden file test", {
 }, () => {
   test("happy path", {
     tag: "@wip"
-  }, async ({ page }, testInfo) => {
-    const tracker = await setupConsoleTracking({ page, testInfo });
+  }, async ({ page: initialPage, context }, testInfo) => {
+    let page = initialPage;
+    const tracker = setupConsoleTracking({ page, testInfo });
 
     await page.goto("https://example.com");
 
@@ -28,7 +29,11 @@ test.describe("Golden file test", {
     tracker.setStep(2);
     try {
       await expect(page.getByTestId("login.form.email")).toHaveCount(1);
-      await page.getByTestId("login.form.email").fill("a@b.com");
+      if (test.info().config.metadata.useNonNativeInput) {
+        await page.getByTestId("login.form.email").getByRole("textbox").fill("a@b.com");
+      } else {
+        await page.getByTestId("login.form.email").fill("a@b.com");
+      }
     } catch (error) {
       await attachFailureArtifacts({ page, testInfo, stepIndex: 2, action: "fill", testId: "login.form.email" });
       throw error;

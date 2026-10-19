@@ -105,6 +105,25 @@
           "action": "expectText",
           "target": "page.div.welcome",
           "value": "Welcome!"
+        },
+        {
+          "action": "expectInputValue",
+          "target": "form.input.radius",
+          "value": "5"
+        },
+        {
+          "action": "expectSliderValue",
+          "target": "form.slider.fill-transparency",
+          "value": "75"
+        },
+        {
+          "action": "expectColorPickerValue",
+          "target": "form.colorpicker.fill",
+          "value": "#FFFFFF"
+        },
+        {
+          "action": "switchTab",
+          "tabIdentifier": "new"
         }
       ]
     }

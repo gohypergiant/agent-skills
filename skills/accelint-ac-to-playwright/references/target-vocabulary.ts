@@ -27,6 +27,8 @@ export const componentKeywords = [
   "dropdown",
   "checkbox",
   "radio",
+  "slider",
+  "colorpicker",
   "text",
   "div",
   "component",

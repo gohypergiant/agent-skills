@@ -22,7 +22,11 @@ const defaultRuntime: Runtime = {
   error: console.error,
 };
 
-export function run(argv: string[], runtime: Runtime = defaultRuntime): number {
+export function run(
+  argv: string[],
+  // Default param branch, not line, so istanbul can't ignore it: tests always pass a fake runtime, so this never runs for real.
+  runtime: Runtime = defaultRuntime,
+): number {
   const filePath = argv[2];
   if (!filePath) {
     runtime.error("Usage: npx validate-plan path/to/plan.json");
@@ -48,6 +52,7 @@ export function run(argv: string[], runtime: Runtime = defaultRuntime): number {
   return 0;
 }
 
+/* istanbul ignore next -- only runs when executed directly as a script, not under test */
 if (require.main === module) {
   process.exit(run(process.argv));
 }
