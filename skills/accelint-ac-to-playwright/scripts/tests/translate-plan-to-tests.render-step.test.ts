@@ -96,6 +96,8 @@ describe("renderStep", () => {
       3,
       [
         'await expect(page.getByTestId("form.input.radius")).toHaveCount(1);',
+        'if (test.info().config.metadata.useNonNativeInput) {',
+        'await expect(page.getByTestId("form.input.radius").getByRole("textbox")).toHaveValue("5");',
         'await expect(page.getByTestId("form.input.radius")).toHaveValue("5");',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 3, action: "expectInputValue", testId: "form.input.radius" })'
       ],
@@ -123,6 +125,8 @@ describe("renderStep", () => {
       5,
       [
         'await expect(page.getByTestId("#email")).toHaveCount(1);',
+        'if (test.info().config.metadata.useNonNativeInput) {',
+        'await page.getByTestId("#email").getByRole("textbox").fill("a@b.com");',
         'await page.getByTestId("#email").fill("a@b.com");',
         'attachFailureArtifacts({ page, testInfo, stepIndex: 5, action: "fill", testId: "#email" })'
       ],

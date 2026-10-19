@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Rationale: Slider and color picker AC phrasing doesn't use the word "input," so targets need their own keywords
 - `switchTab` action for browser tab navigation
   - Rationale: Enables multi-tab workflows with support for "new", "first", "second", "third" tab identifiers
+- `useNonNativeSelect` metadata flag for `select`
+  - Rationale: Some codebases render a custom dropdown instead of a native `<select>`, so clicking into an options list is needed instead of `selectOption()`
+- `useNonNativeInput` metadata flag for `fill` and `expectInputValue`
+  - Rationale: Mirrors `useNonNativeSelect` for codebases rendering a custom input wrapper over a native textbox
 
 ### Changed
 - Test function signature now includes `context` fixture with reassignable `page` variable
