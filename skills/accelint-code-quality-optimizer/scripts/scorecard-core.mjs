@@ -42,7 +42,14 @@ export const INFORMATIONAL = Object.freeze([
   "testLines",
   "effects",
   "maxFileLines",
+  "passThroughs",
 ]);
+
+/** Ratcheted only when the matching report is given, so a run without it does not read as an improvement. */
+export const REPORT_METRICS = Object.freeze({
+  unused: ["unusedFiles", "unusedExports"],
+  duplicates: ["duplicatedLines"],
+});
 
 const LOOSE_MATCHERS = new Set(["toBeTruthy", "toBeFalsy", "toBeDefined"]);
 const CONSOLE_METHODS = new Set(["log", "debug", "info", "warn", "error", "trace"]);
@@ -105,6 +112,31 @@ function containsJsx(ts, node) {
   };
   ts.forEachChild(node, visit);
   return found;
+}
+
+/**
+ * A function whose whole body forwards its own parameters, unchanged and in order, to one other call:
+ * `const getUser = (id) => fetchUser(id)`. The starting list for the deletion test in references/removal.md.
+ */
+function isPassThrough(ts, node) {
+  // Only named functions: an inline callback such as `(key) => keys.includes(key)` is not a layer.
+  const named = (ts.isFunctionDeclaration(node) && node.name) || (!ts.isFunctionDeclaration(node) && ts.isVariableDeclaration(node.parent));
+  if (!named) return false;
+  const params = node.parameters;
+  if (params.length === 0 || !params.every((param) => ts.isIdentifier(param.name) && !param.dotDotDotToken && !param.initializer)) return false;
+  let expression;
+  if (node.body && ts.isBlock(node.body)) {
+    if (node.body.statements.length !== 1) return false;
+    const [statement] = node.body.statements;
+    if (ts.isReturnStatement(statement)) expression = statement.expression;
+    else if (ts.isExpressionStatement(statement)) expression = statement.expression;
+  } else {
+    expression = node.body;
+  }
+  while (expression && (ts.isAwaitExpression(expression) || ts.isParenthesizedExpression(expression))) expression = expression.expression;
+  if (!expression || !ts.isCallExpression(expression) || expression.arguments.length !== params.length) return false;
+  if (!ts.isIdentifier(expression.expression) && !ts.isPropertyAccessExpression(expression.expression)) return false;
+  return expression.arguments.every((arg, index) => ts.isIdentifier(arg) && arg.text === params[index].name.text);
 }
 
 function countComments(ts, source, text, metrics, location) {
@@ -195,6 +227,10 @@ export function analyseFile(ts, root, file) {
 
     const isFunction =
       ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node) || ts.isArrowFunction(node);
+    if (!test && isFunction && isPassThrough(ts, node)) {
+      metrics.passThroughs += 1;
+      location("passThroughs", node.getStart(source));
+    }
     const name = isFunction ? functionName(ts, node) : undefined;
     const isComponent = name !== undefined && (PASCAL.test(name) || HOOK.test(name));
     if (
@@ -249,7 +285,21 @@ export function readLintReport(root, file) {
   }));
 }
 
-export function buildScorecard(root, { scope, lintReport, typescript } = {}) {
+/** Reads unused.mjs or duplicates.mjs output and returns per-package counts for the REPORT_METRICS of that tool. */
+function readToolReport(file, tool) {
+  const raw = readJson(path.resolve(file));
+  if (raw?.tool !== tool) throw new Error(`${file} is not ${tool}.mjs output`);
+  const counts = {};
+  for (const [dir, entry] of Object.entries(raw.byPackage ?? {})) {
+    counts[dir] =
+      tool === "unused"
+        ? { unusedFiles: entry.unusedFiles ?? 0, unusedExports: entry.unusedExports ?? 0 }
+        : { duplicatedLines: entry.duplicatedLines ?? 0 };
+  }
+  return { scope: raw.scope, counts };
+}
+
+export function buildScorecard(root, { scope, lintReport, unusedReport, duplicatesReport, typescript } = {}) {
   const overlay = loadOverlay(root);
   const thresholds = {
     fileLinesWarn: overlay.thresholds.fileLinesWarn ?? DEFAULT_THRESHOLDS.fileLinesWarn,
@@ -307,6 +357,26 @@ export function buildScorecard(root, { scope, lintReport, typescript } = {}) {
     }
   }
 
+  const ratcheted = [...RATCHETED];
+  const reports = {};
+  for (const [tool, file] of [
+    ["unused", unusedReport],
+    ["duplicates", duplicatesReport],
+  ]) {
+    if (!file) continue;
+    const report = readToolReport(file, tool);
+    reports[tool] = { source: toPosix(file), scope: report.scope };
+    ratcheted.push(...REPORT_METRICS[tool]);
+    for (const entry of byPackage.values()) for (const metric of REPORT_METRICS[tool]) entry.metrics[metric] = 0;
+    for (const [dir, counts] of Object.entries(report.counts)) {
+      // A package is in scope when it is inside the scope, or the scope is inside it.
+      if (scopePrefix && scopePrefix !== "." && !inScope(dir) && !scopePrefix.startsWith(`${dir}/`) && dir !== ".") continue;
+      const target = byPackage.get(dir) ?? { name: packages.find((pkg) => pkg.path === dir)?.name ?? dir, metrics: emptyMetrics(), samples: {} };
+      for (const metric of REPORT_METRICS[tool]) target.metrics[metric] = counts[metric];
+      byPackage.set(dir, target);
+    }
+  }
+
   const sortedPackages = Object.fromEntries(
     [...byPackage.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
@@ -324,7 +394,7 @@ export function buildScorecard(root, { scope, lintReport, typescript } = {}) {
   const totals = emptyMetrics();
   for (const entry of Object.values(sortedPackages)) {
     for (const [key, value] of Object.entries(entry.metrics)) {
-      totals[key] = key === "maxFileLines" ? Math.max(totals[key], value) : totals[key] + value;
+      totals[key] = key === "maxFileLines" ? Math.max(totals[key], value) : (totals[key] ?? 0) + value;
     }
   }
 
@@ -334,7 +404,8 @@ export function buildScorecard(root, { scope, lintReport, typescript } = {}) {
     scope: scopePrefix ?? ".",
     typescript: ts.version,
     thresholds,
-    ratcheted: RATCHETED,
+    ratcheted,
+    reports,
     packages: sortedPackages,
     totals,
     lint: lint ? { ...lint, byRule: sortObject(lint.byRule) } : null,

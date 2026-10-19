@@ -21,6 +21,7 @@ import {
   resolveRoot,
   toPosix,
   globToRegExp,
+  expandBraces,
 } from "./shared.mjs";
 
 const USAGE = "usage: conventions.mjs [repo-root] [--scope <dir>] [--typescript <path>] [--min-share <0-1>]";
@@ -65,11 +66,6 @@ for (const [id, globs] of Object.entries(overlay.conventionExclusions ?? {})) {
   excluded[id] = [...(excluded[id] ?? []), ...globs.flatMap(expandBraces).map(globToRegExp)];
 }
 
-function expandBraces(glob) {
-  const match = /\{([^{}]+)\}/u.exec(glob);
-  if (!match) return [glob];
-  return match[1].split(",").flatMap((option) => expandBraces(glob.replace(match[0], option)));
-}
 
 /** Each observation is one file or package voting for one value of a convention. */
 const observations = new Map();

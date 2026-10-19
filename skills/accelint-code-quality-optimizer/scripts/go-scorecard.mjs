@@ -2,7 +2,7 @@
 // Per-package quality metrics for Go modules, from go vet, staticcheck, gofmt and the skill's ast-grep rules,
 // in the same shape as scorecard.mjs so ratchet.mjs can compare it against a baseline.
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {

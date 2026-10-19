@@ -5,6 +5,28 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-10-19
+
+### Added
+- `scripts/unused.mjs`: removal candidates from the import graph. `unusedFiles` (source files no entry, test, story, tool config, generated file, package script or framework convention reaches) and `unusedExports` (exports nothing imports, in used files), each with `confidence` (`likely` or `review`), the reasons, and for exports `action` (`unexport` when the file still uses it, `remove` otherwise) and `kind` (`type` or `value`). Library-package candidates, names mentioned as text elsewhere, and packages with computed `import()` are always `review`. Overlay `entryPoints` adds repo-specific roots.
+  - **Rationale:** The skill could not answer "remove the bloat": `importers.mjs` classified visibility but had no notion of reachability, and the docs said never to delete on its output. Vibecoded repos accumulate abandoned files and exports faster than anything else.
+- `scripts/duplicates.mjs`: copy-paste detection as token clones (rolling hash over TypeScript scanner tokens, identifiers and literals normalized by default, `--exact` to keep them), skipping imports, tests and stories. Reports both locations, size, and `same-file`/`same-package`/`cross-package`.
+- `scripts/import-graph.mjs`: the import graph `importers.mjs` built inline, now a shared module, and extended with `require("...")`, Vite `import.meta.glob` (with `{a,b}` braces), `new URL("./x", import.meta.url)`, edges out of generated files, a list of computed `import()`/`require()` calls, and an index by target.
+- Scorecard: `--unused-report` and `--duplicates-report` add ratcheted `unusedFiles`, `unusedExports` and `duplicatedLines` per package; informational `passThroughs` counts named functions whose whole body forwards their parameters to one call.
+- `references/removal.md`: the evidence to collect before removing (script line, text search, history, owner, computed imports), leaf-first one-commit-per-file removal, when to consolidate a clone and when it is only the same shape, the deletion test for pass-through layers, and the redundant-code lint rules (`no-useless-*`, `no-else-return`, `prefer-optional-chain`, ...) to ratchet in.
+- SKILL.md: a NEVER rule against deleting on static evidence alone, Step 2 runs the two reports, Step 3 scans removal candidates, Step 5 points removals at `removal.md`. Removal and consolidation are tier C; unexporting a package-internal export is tier B.
+- Agent eval 6 (dead and duplicated code) and 14 script checks; the fixture gains a dead file that is also a renamed cross-package clone, a glob-loaded widget, an unexport case and a pass-through. 75 → 91 checks without Go tools.
+- Related skills: `improve-codebase-architecture` and `codebase-design` from mattpocock/skills (MIT) are pointed to as optional companions for the architecture pass; the deletion test and seam idea come from them. No text copied. They are Claude Code–specific, so the skill keeps its own version of the deletion test for other harnesses.
+
+### Changed
+- `scripts/ratchet.mjs` skips, with a warning, baseline metrics the current scorecard did not measure, instead of reading them as dropped to zero.
+- `isToolConfig` knows `tsdown`, `unbuild`, `rolldown`, `oxlint`, `biome`, `lefthook`, `release` and `changeset`, and variants such as `vitest.acceptance.config.ts` and `playwright.<name>.config.ts`.
+  - **Root cause:** On garda-neo, every package's `tsdown.config.ts` and `apps/c2-app/playwright.inc4-coa-batch6.config.ts` were measured as product code and reported as unused files. Scorecards of repos with such files will show fewer `sourceFiles` after this change.
+- `expandBraces` moved from `conventions.mjs` to `shared.mjs`.
+
+### Validation
+- garda-neo `develop` (618 TypeScript files, read-only copy): `unused.mjs` 4.6s, 7 unused files (320 lines; 4 `likely`, each with no mention outside itself in a repo-wide `git grep`), 339 unused exports (141 `likely`, of which 14 `remove`, the rest `unexport`); `duplicates.mjs` 1.3s, 269 clones and 4,122 duplicated lines, the largest a 230-token copy between `plan-trigger-ppr-action.ts` and `plan-trigger-response-action.ts`. False positives found on the first run (generated build-selection imports, test-runner include globs, a Vite alias substitute, tsdown configs, inline callbacks counted as pass-throughs) are fixed above.
+
 ## [1.3.0] - 2026-10-16
 
 ### Added

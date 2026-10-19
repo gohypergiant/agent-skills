@@ -63,6 +63,20 @@
         { "name": "Baseline committed", "check": ".code-quality/scorecard.baseline.json is created with ratchet.mjs update" },
         { "name": "Separate MR", "check": "The CI change is prepared on its own branch, not mixed with code fixes, and is not pushed without approval" }
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Use the accelint-code-quality-optimizer skill. This repo is full of vibecoded bloat: find the dead and duplicated code and get rid of it.",
+      "expected_output": "Runs unused.mjs and duplicates.mjs, presents candidates with confidence and evidence, proposes removing legacy-totals.ts and unexporting clampScore, keeps clock.widget.tsx, treats the cross-package clone as a design decision, and deletes nothing before confirmation.",
+      "files": ["fixtures/ts-monorepo"],
+      "assertions": [
+        { "name": "Uses the scripts", "check": "Agent runs unused.mjs and duplicates.mjs (or the scorecard with their reports) instead of only reading code" },
+        { "name": "Glob-loaded file kept", "check": "packages/alpha/src/widgets/clock.widget.tsx is not proposed for deletion" },
+        { "name": "Unexport, not remove", "check": "clampScore in score-open.ts is proposed for unexporting, not deletion, because it is used in its own file" },
+        { "name": "Evidence per candidate", "check": "Each proposed removal shows a text search result (git grep or equivalent) and the script's confidence" },
+        { "name": "Clone is a decision", "check": "The legacy-totals.ts / score-open.ts clone is reported with both locations; since legacy-totals.ts is itself unused, the agent proposes deleting it rather than extracting a shared helper" },
+        { "name": "Nothing deleted yet", "check": "No file is deleted or modified before the user confirms specific candidates" }
+      ]
     }
   ]
 }

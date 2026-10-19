@@ -27,6 +27,9 @@ On a large codebase you cannot fix every violation before enabling a rule, and i
 | `looseAssertions` | `toBeTruthy`, `toBeFalsy`, `toBeDefined`, `toHaveBeenCalled()` without args, in tests | yes |
 | `filesOverWarn`, `filesOverMax` | non-test source files over the thresholds (500 and 1000 lines by default) | yes |
 | `sourceFiles`, `testFiles`, `sourceLines`, `testLines`, `maxFileLines`, `effects` | file counts, line counts, `useEffect`/`useLayoutEffect` calls | no |
+| `unusedFiles`, `unusedExports` | per-package counts from `--unused-report` ([removal.md](removal.md)) | yes, when the report is passed |
+| `duplicatedLines` | lines in the second copy of each clone, from `--duplicates-report` | yes, when the report is passed |
+| `passThroughs` | named functions whose body only forwards their parameters to one call | no |
 | `lint:<rule>` | diagnostics per rule from `--lint-report` | yes |
 
 Thresholds come from the overlay file (`thresholds.fileLinesWarn`, `thresholds.fileLinesMax`).
@@ -60,7 +63,9 @@ code_quality_ratchet:
   allow_failure: true
   script:
     - pnpm exec oxlint --format=json . > lint.json || true
-    - node tools/code-quality/scorecard.mjs . --lint-report lint.json --out scorecard.json
+    - node tools/code-quality/unused.mjs . --out unused.json
+    - node tools/code-quality/duplicates.mjs . --out duplicates.json
+    - node tools/code-quality/scorecard.mjs . --lint-report lint.json --unused-report unused.json --duplicates-report duplicates.json --out scorecard.json
     - node tools/code-quality/ratchet.mjs check --baseline .code-quality/scorecard.baseline.json --current scorecard.json
   artifacts:
     when: always
@@ -80,7 +85,9 @@ code_quality_ratchet:
         with: { node-version: 22 }
       - run: npm ci
       - run: npx oxlint --format=json . > lint.json || true
-      - run: node tools/code-quality/scorecard.mjs . --lint-report lint.json --out scorecard.json
+      - run: node tools/code-quality/unused.mjs . --out unused.json
+      - run: node tools/code-quality/duplicates.mjs . --out duplicates.json
+      - run: node tools/code-quality/scorecard.mjs . --lint-report lint.json --unused-report unused.json --duplicates-report duplicates.json --out scorecard.json
       - run: node tools/code-quality/ratchet.mjs check --baseline .code-quality/scorecard.baseline.json --current scorecard.json
 ```
 
@@ -106,6 +113,7 @@ Then update the baseline in the same MR. New `any` raises `lint:typescript-eslin
 ## Common Pitfalls
 
 - Comparing a scoped scorecard against a whole-repo baseline. The ratchet warns when scopes differ; use the same scope for both.
+- Running the check without `--unused-report`/`--duplicates-report` when the baseline tracks those metrics. The ratchet warns and skips them; it never reads a missing report as zero.
 - Running the check without `--lint-report` when the baseline tracks lint. The ratchet warns and skips lint comparison instead of failing.
 - Updating the baseline from a branch that regressed elsewhere. `update` refuses; investigate the regression instead.
 - Expecting a new package to fail the check. A package not in the baseline has no history, so `check` lists it under `newPackages` with its counts and passes; run `update` in the MR/PR that adds it so it is ratcheted from then on. Packages that disappear are listed under `removedPackages`, which makes a rename visible.

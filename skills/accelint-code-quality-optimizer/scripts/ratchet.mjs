@@ -57,7 +57,8 @@ function compare(baseline, current) {
   const regressions = [];
   const improvements = [];
   const newPackages = [];
-  const metrics = baseline.ratcheted ?? current.ratcheted;
+  // A metric the current run did not measure (report not passed) is skipped, not read as dropping to zero.
+  const metrics = (baseline.ratcheted ?? current.ratcheted).filter((metric) => current.ratcheted.includes(metric));
   const compareLint = !(baseline.lintTracked && current.lint === null);
   for (const [dir, entry] of Object.entries(current.packages ?? {})) {
     const before = baseline.packages?.[dir];
@@ -107,6 +108,10 @@ const baseline = readScorecard(args.baseline);
 if (baseline.scope !== current.scope) warnings.push(`Baseline scope "${baseline.scope}" differs from current scope "${current.scope}".`);
 if (JSON.stringify(baseline.thresholds) !== JSON.stringify(current.thresholds)) {
   warnings.push("File-size thresholds changed since the baseline; file counts are not comparable until the baseline is updated.");
+}
+const unmeasured = (baseline.ratcheted ?? []).filter((metric) => !current.ratcheted.includes(metric));
+if (unmeasured.length > 0) {
+  warnings.push(`The baseline tracks ${unmeasured.join(", ")} but the current scorecard does not (pass the same --unused-report/--duplicates-report); not compared.`);
 }
 if (baseline.lintTracked && current.lint === null) warnings.push("The baseline tracks lint counts but no --lint-report was given; lint was not compared.");
 

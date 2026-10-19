@@ -1,5 +1,5 @@
 {
-  "$comment": "Committed at .code-quality/overlay.json in the target repo and reviewed like code. Remove keys you do not need. commands, ignore, thresholds, conventionExclusions and hotPaths are read by the scripts; decisions and owners are read by the agent.",
+  "$comment": "Committed at .code-quality/overlay.json in the target repo and reviewed like code. Remove keys you do not need. commands, ignore, thresholds, conventionExclusions, entryPoints and hotPaths are read by the scripts; decisions and owners are read by the agent.",
   "commands": {
     "lint": "pnpm lint",
     "format-check": "pnpm format:check",
@@ -24,6 +24,7 @@
   "conventionExclusions": {
     "module-exports": ["src/routes/**"]
   },
+  "entryPoints": ["src/plugins/**"],
   "hotPaths": ["packages/map/src/render/**"],
   "owners": {
     "packages/ui": "@ui-team"

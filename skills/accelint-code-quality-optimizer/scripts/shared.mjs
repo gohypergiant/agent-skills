@@ -4,7 +4,7 @@ import { createRequire } from "node:module";
 import path from "node:path";
 
 export const SKILL_NAME = "accelint-code-quality-optimizer";
-export const SKILL_VERSION = "1.3.0";
+export const SKILL_VERSION = "1.4.0";
 
 const IGNORED_DIRS = new Set([
   ".git",
@@ -115,6 +115,13 @@ export function readJson(file) {
   }
 }
 
+/** Expands `{a,b}` alternatives, which globToRegExp does not handle: "*.{ts,tsx}" -> ["*.ts", "*.tsx"]. */
+export function expandBraces(glob) {
+  const match = /\{([^{}]+)\}/u.exec(glob);
+  if (!match) return [glob];
+  return match[1].split(",").flatMap((option) => expandBraces(glob.replace(match[0], option)));
+}
+
 /** `**` matches whole path segments only, so `**\/generated/**` does not match `ungenerated/`. */
 export function globToRegExp(glob) {
   let source = "";
@@ -201,15 +208,20 @@ export function listFiles(root, ignore = []) {
   return files.sort();
 }
 
+export function isGeneratedFile(file) {
+  return GENERATED.test(file);
+}
+
 export function isSourceFile(file) {
   return SOURCE_EXTENSIONS.test(file) && !/\.d\.[cm]?ts$/u.test(file) && !GENERATED.test(file);
 }
 
 // Only known tool stems: product files such as src/config.ts or router.config.ts are code and must be measured.
 const TOOL_STEMS =
-  "vitest|vite|jest|eslint|prettier|playwright|tailwind|postcss|next|nuxt|astro|svelte|turbo|tsup|rollup|webpack|rspack|esbuild|babel|commitlint|lint-staged|stylelint|storybook|cypress|karma|metro|drizzle|knip|vitepress|docusaurus|electron|capacitor";
+  "vitest|vite|jest|eslint|prettier|playwright|tailwind|postcss|next|nuxt|astro|svelte|turbo|tsup|tsdown|unbuild|rollup|rolldown|webpack|rspack|esbuild|babel|commitlint|lint-staged|stylelint|storybook|cypress|karma|metro|drizzle|knip|vitepress|docusaurus|electron|capacitor|oxlint|biome|lefthook|release|changeset";
+// The optional segment covers variants such as vitest.acceptance.config.ts and playwright.inc4-batch.config.ts.
 const TOOL_CONFIG = new RegExp(
-  `^(?:\\.?(?:${TOOL_STEMS})\\.(?:config|setup|workspace)(?:\\.[\\w-]+)?\\.[cm]?[jt]s|\\.?(?:${TOOL_STEMS})rc\\.[cm]?[jt]s|vite-env\\.d\\.ts)$`,
+  `^(?:\\.?(?:${TOOL_STEMS})(?:\\.[\\w-]+)?\\.(?:config|setup|workspace)(?:\\.[\\w-]+)?\\.[cm]?[jt]s|\\.?(?:${TOOL_STEMS})rc\\.[cm]?[jt]s|vite-env\\.d\\.ts)$`,
   "u",
 );
 

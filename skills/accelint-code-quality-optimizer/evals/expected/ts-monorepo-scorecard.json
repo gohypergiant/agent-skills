@@ -11,8 +11,9 @@
       "nestedComponents": 1,
       "looseAssertions": 1,
       "effects": 1,
-      "sourceFiles": 5,
-      "testFiles": 2
+      "sourceFiles": 8,
+      "testFiles": 2,
+      "passThroughs": 0
     },
     "packages/beta": {
       "explicitAny": 1,
@@ -24,8 +25,9 @@
       "consoleCalls": 1,
       "nestedComponents": 0,
       "looseAssertions": 2,
-      "sourceFiles": 6,
-      "testFiles": 1
+      "sourceFiles": 7,
+      "testFiles": 1,
+      "passThroughs": 1
     }
   },
   "notes": {
@@ -35,6 +37,10 @@
     "packages/alpha/src/config.ts": "product file named config.ts: measured (1 any, 1 non-null)",
     "packages/alpha/src/status-badge.stories.tsx": "story: counted as a test file; its console call and nested Wrapper are not counted, its any and cast are",
     "packages/alpha/src/status-list.tsx": "render helper used as labels.map(Row), not as <Row />: not a nested component",
-    "packages/alpha/vitest.config.ts": "tool config: not measured"
+    "packages/alpha/vitest.config.ts": "tool config: not measured",
+    "packages/alpha/src/legacy-totals.ts": "dead file (nothing imports it) and a renamed copy of beta's score-open.ts: unused.mjs likely, duplicates.mjs one cross-package clone",
+    "packages/alpha/src/widgets/clock.widget.tsx": "reached only through import.meta.glob in widgets/registry.ts: not unused",
+    "packages/beta/src/score-open.ts": "scoreOpen and clampScore are used only in their own file (unexport); scoreRows is an unused pass-through (remove, 1 passThroughs)",
+    "packages/beta/src/pickRecords.ts": "default export nothing imports: unused file"
   }
 }

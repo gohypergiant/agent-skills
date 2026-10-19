@@ -32,6 +32,7 @@ This structure minimizes context usage while providing complete implementation g
 - [1.5 MR/PR Packaging](#15-mrpr-packaging) - One theme, one package, small, unpushed
 - [1.6 Decomposition](#16-decomposition) - Design-first splits and config unification
 - [1.7 Performance](#17-performance) - Hot paths only, benchmark before and after
+- [1.8 Removal and Simplification](#18-removal-and-simplification) - Dead code, duplicates, pass-through layers
 - [2.1 TypeScript/React Pack](#21-typescriptreact-pack) - Tools, detections, accelint rule mapping
 - [2.2 Go Pack](#22-go-pack) - Tools, detections, API diff
 - [3.1 Harness Portability](#31-harness-portability) - Any harness, Claude or GPT
@@ -67,6 +68,10 @@ Split large files by mapping responsibilities and symbol dependencies, keeping t
 ### 1.7 Performance
 Change performance only in overlay `hotPaths`, with a benchmark before and after (`vitest bench`, `go test -bench` + `benchstat`, React Profiler) and at least a 10% gain; everything else is report-only.
 [View detailed examples](references/performance.md)
+
+### 1.8 Removal and Simplification
+Find unused files and exports with `unused.mjs`, copy-paste with `duplicates.mjs` and pass-through wrappers with the scorecard's `passThroughs`. Each is a candidate until a text search, the history and the owner agree and the user confirms it. Remove leaves first, one file or export group per commit; consolidate only copies that must change together; keep layers that are seams.
+[View detailed examples](references/removal.md)
 
 ---
 

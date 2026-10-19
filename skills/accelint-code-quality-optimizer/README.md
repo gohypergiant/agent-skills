@@ -39,7 +39,7 @@ The agent stops for your decision three times: to approve conventions, to choose
 
 - **SKILL.md** - The workflow with its stop points, anti-patterns and pre-flight questions
 - **AGENTS.md** - Rule summaries with links to references
-- **references/** - Tiers and visibility levels, behavior checks, standards, scorecard and ratchet, MR/PR packaging, decomposition, performance, harness portability, TypeScript/React pack, Go pack
+- **references/** - Tiers and visibility levels, behavior checks, standards, scorecard and ratchet, MR/PR packaging, decomposition, performance, removal and simplification, harness portability, TypeScript/React pack, Go pack
 - **scripts/** - Node CLIs with JSON output:
   - `detect-stack.mjs` - stacks, packages, verification commands, configs, tools
   - `conventions.mjs` - inferred conventions as proposals, with accelint guidance
@@ -49,6 +49,9 @@ The agent stops for your decision three times: to approve conventions, to choose
   - `export-diff.mjs` - snapshots what each export of a package entry exposes (its emitted declaration plus everything it references) and compares two snapshots; moves with re-export, reorders and formatting are not changes
   - `side-effect-diff.mjs` - flags added, removed or reordered I/O, logging, timer and awaited calls
   - `symbol-map.mjs` - symbols and dependencies for planning file splits
+  - `unused.mjs` - removal candidates: source files nothing reaches and exports nothing uses, with confidence, reasons and unexport-or-remove
+  - `duplicates.mjs` - copy-pasted code as token clones; copies with renamed identifiers and literals still match
+  - `import-graph.mjs` - the import graph shared by `importers.mjs` and `unused.mjs` (a module, not a CLI)
   - `hot-paths.mjs` - says which files are on declared hot paths, the only place performance changes are allowed
   - `go-scorecard.mjs` - per-package Go metrics from `go vet`, staticcheck, gofmt, optional golangci-lint output and the `rules/go` ast-grep rules, in the same shape as `scorecard.mjs` so the ratchet works on it
 - **rules/** - ast-grep rules (`rules/go/*.yml`) with tests (`rules/go-tests/`); `ast-grep test -c rules/sgconfig.yml --skip-snapshot-tests` runs them
@@ -75,7 +78,17 @@ node skills/accelint-code-quality-optimizer/scripts/scorecard.mjs . --scope pack
 node skills/accelint-code-quality-optimizer/scripts/ratchet.mjs update --baseline .code-quality/scorecard.baseline.json --current scorecard.json
 ```
 
-Expected result: per-package counts of `any`, casts, suppressions, enums, console calls, nested components, loose test assertions and oversized files, plus lint counts by rule, and a committed baseline.
+Expected result: per-package counts of `any`, casts, suppressions, enums, console calls, nested components, loose test assertions, pass-through wrappers and oversized files, plus lint counts by rule, and a committed baseline.
+
+### Example 3: Find dead and duplicated code
+
+```bash
+node skills/accelint-code-quality-optimizer/scripts/unused.mjs . --scope apps/web --out unused.json
+node skills/accelint-code-quality-optimizer/scripts/duplicates.mjs . --scope apps/web --out duplicates.json
+node skills/accelint-code-quality-optimizer/scripts/scorecard.mjs . --scope apps/web --unused-report unused.json --duplicates-report duplicates.json --out scorecard.json
+```
+
+Expected result: unused files and exports, each `likely` or `review` with its reasons; clones with both locations; and `unusedFiles`, `unusedExports` and `duplicatedLines` ratcheted per package. Nothing is deleted. Removal follows `references/removal.md`.
 
 ### Example 2: Check that a refactor kept the public API
 
@@ -118,6 +131,10 @@ Contributions are welcome! When contributing to this skill:
 - Ensure version matches `metadata.version` in SKILL.md frontmatter
 
 ---
+
+## Acknowledgements
+
+The deletion test and the seam idea in `references/removal.md` come from `improve-codebase-architecture` and `codebase-design` in [mattpocock/skills](https://github.com/mattpocock/skills) (MIT), which this skill points to as optional companions; no text was copied. The ratchet's stop-on-no-gain idea draws on bytedance/agentkit-samples `code-optimization` (Apache-2.0).
 
 ## Skill Architecture Philosophy
 

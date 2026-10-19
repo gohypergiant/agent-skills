@@ -16,6 +16,8 @@ Load this pack when `detect-stack.mjs` reports `go`. Go's own toolchain already 
 | race detector | `go test -race -count=N ./<pkg>/...` | Stability runs for concurrency changes |
 | ast-grep | run by `scripts/go-scorecard.mjs` with `rules/sgconfig.yml` | The detections the tools above do not make |
 
+**Dead and duplicated Go code.** staticcheck's `U1000` (unused code) is counted per package by `go-scorecard.mjs` under `lint` as `staticcheck:U1000`; for unused exported identifiers across a module, `go run golang.org/x/tools/cmd/deadcode@latest ./...` reports functions unreachable from `main` and tests (applications only; libraries have outside callers). golangci-lint's `dupl` linter finds copy-paste when the repo enables it. Removal and consolidation follow [removal.md](removal.md), as for TypeScript; `unused.mjs` and `duplicates.mjs` are TypeScript-only.
+
 Use only tools the repo already has or the user approves installing. `detect-stack.mjs` reports which are on `PATH`; `go-scorecard.mjs` reports in `warnings` which ones it could not run, and never invents a count.
 
 ## Go Scorecard

@@ -215,6 +215,54 @@ try {
   const navAfter = fileAt("nav-after.ts", 'export function go() {\n  useRouter().push("/y");\n  navigate("/x");\n}\n');
   check("side-effect-diff: reordered navigation calls (bare navigate, useRouter().push) are flagged", run("side-effect-diff.mjs", [navBefore, navAfter]).json?.findings[0]?.reordered === true);
 
+  // unused
+  const unused = run("unused.mjs", [fixture, "--out", path.join(work, "unused.json")], { expectExit: 0 }).json;
+  const unusedFile = (file) => unused?.unusedFiles.find((entry) => entry.file === file);
+  const unusedExport = (file, name) => unused?.unusedExports.find((entry) => entry.file === file && entry.name === name);
+  check("unused: file nothing imports is a likely candidate", unusedFile("packages/alpha/src/legacy-totals.ts")?.confidence === "likely");
+  check("unused: library file with no importer is a candidate", unusedFile("packages/beta/src/orphan.ts") !== undefined);
+  check("unused: file reached only through import.meta.glob is used", unusedFile("packages/alpha/src/widgets/clock.widget.tsx") === undefined);
+  check("unused: tests, stories and tool configs are roots, never candidates", !unused?.unusedFiles.some((entry) => /\.(?:test|spec|stories)\.|vitest\.config/u.test(entry.file)));
+  check("unused: files reached from a package entry are not candidates", unusedFile("packages/beta/src/record-store.ts") === undefined && unusedFile("packages/alpha/src/status-list.tsx") === undefined);
+  check("unused: export used only in its own file is unexport, not remove", unusedExport("packages/beta/src/score-open.ts", "clampScore")?.action === "unexport");
+  check("unused: export used nowhere is remove", unusedExport("packages/beta/src/score-open.ts", "scoreRows")?.action === "remove");
+  check("unused: export imported elsewhere is not a candidate", unusedExport("packages/beta/src/score-open.ts", "topScore") === undefined);
+  check("unused: library package candidates are review, not likely", unusedExport("packages/beta/src/score-open.ts", "scoreRows")?.confidence === "review");
+  check("unused: name mentioned as text elsewhere is review", unusedFile("packages/alpha/src/config.ts")?.confidence === "review");
+
+  // duplicates
+  const dupes = run("duplicates.mjs", [fixture, "--out", path.join(work, "duplicates.json")], { expectExit: 0 }).json;
+  const clone = dupes?.clones[0];
+  check(
+    "duplicates: renamed copy across packages is one clone",
+    dupes?.summary.clones === 1 &&
+      clone?.where === "cross-package" &&
+      [clone.first.file, clone.second.file].sort().join() === "packages/alpha/src/legacy-totals.ts,packages/beta/src/score-open.ts",
+    JSON.stringify(dupes?.summary),
+  );
+  check("duplicates: --exact does not match the renamed copy", run("duplicates.mjs", [fixture, "--exact"], { expectExit: 0 }).json?.summary.clones === 0);
+
+  // scorecard with removal reports
+  const withReports = run(
+    "scorecard.mjs",
+    [fixture, "--unused-report", path.join(work, "unused.json"), "--duplicates-report", path.join(work, "duplicates.json"), "--out", path.join(work, "scorecard-reports.json")],
+    { expectExit: 0 },
+  ).json;
+  check(
+    "scorecard: removal reports add ratcheted per-package counts",
+    ["unusedFiles", "unusedExports", "duplicatedLines"].every((metric) => withReports?.ratcheted.includes(metric)) &&
+      withReports?.packages["packages/alpha"]?.metrics.unusedFiles === 2 &&
+      withReports?.packages["packages/beta"]?.metrics.duplicatedLines === 11,
+    JSON.stringify(withReports?.packages["packages/alpha"]?.metrics),
+  );
+  const reportsBaseline = path.join(work, "baseline-reports.json");
+  run("ratchet.mjs", ["update", "--baseline", reportsBaseline, "--current", path.join(work, "scorecard-reports.json")]);
+  const withoutReports = run("ratchet.mjs", ["check", "--baseline", reportsBaseline, "--current", current]);
+  check(
+    "ratchet: a run without the removal reports skips those metrics with a warning, not a pass by dropping to zero",
+    withoutReports.status === 0 && withoutReports.json?.improvements.length === 0 && withoutReports.json?.warnings.some((warning) => warning.includes("unusedFiles")),
+  );
+
   // symbol-map
   const map = run("symbol-map.mjs", [fixture, "packages/beta/src/parse-record.ts"], { expectExit: 0 }).json;
   const parse = map?.symbols.find((symbol) => symbol.name === "parseRecord");
@@ -269,6 +317,11 @@ try {
   check("glob: **/generated/** does not match ungenerated/", !shared.globToRegExp("**/generated/**").test("src/ungenerated/x.ts"));
   check("glob: **/generated/** matches generated/ at any depth", shared.globToRegExp("**/generated/**").test("src/generated/x.ts") && shared.globToRegExp("**/generated/**").test("generated/x.ts"));
   check("tool config: vitest.config.ts yes, src/config.ts and router.config.ts no", shared.isToolConfig("a/vitest.config.ts") && !shared.isToolConfig("src/config.ts") && !shared.isToolConfig("src/router.config.ts"));
+  check(
+    "tool config: tsdown.config.ts and named variants (vitest.acceptance.config.ts, playwright.batch-1.config.ts) are tool configs",
+    ["p/tsdown.config.ts", "a/vitest.acceptance.config.ts", "a/playwright.batch-1.config.ts"].every((file) => shared.isToolConfig(file)),
+  );
+  check("glob braces: expandBraces('*.{ts,tsx}') gives both", JSON.stringify(shared.expandBraces("src/*.{ts,tsx}")) === '["src/*.ts","src/*.tsx"]');
 } finally {
   rmSync(work, { recursive: true, force: true });
 }

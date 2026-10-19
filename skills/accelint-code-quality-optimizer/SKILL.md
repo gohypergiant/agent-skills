@@ -1,10 +1,10 @@
 ---
 name: accelint-code-quality-optimizer
-description: Use when users say "optimize code quality", "clean up this repo", "standardize the codebase", "make the code consistent", "audit code quality across the repo", "set up a quality ratchet", "quality scorecard", "refactor vibecoded code", or when a TypeScript/React or Go repository was written without shared conventions and needs behavior-preserving cleanup delivered as small merge requests or pull requests. Keywords: code quality, consistency, standards, conventions, scorecard, ratchet, tsconfig drift, lint baseline, large file decomposition, monorepo, any, type assertions, loose assertions, golangci-lint, staticcheck.
+description: Use when users say "optimize code quality", "clean up this repo", "standardize the codebase", "make the code consistent", "audit code quality across the repo", "set up a quality ratchet", "quality scorecard", "refactor vibecoded code", "remove dead code", "find unused exports", "remove duplicate code", "simplify bloated code", or when a TypeScript/React or Go repository was written without shared conventions and needs behavior-preserving cleanup delivered as small merge requests or pull requests. Keywords: code quality, consistency, standards, conventions, scorecard, ratchet, tsconfig drift, lint baseline, large file decomposition, dead code, unused exports, duplicate code, copy-paste, simplification, monorepo, any, type assertions, loose assertions, golangci-lint, staticcheck.
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Code Quality Optimizer
@@ -22,6 +22,7 @@ Brings a whole repository to one measured standard through small, behavior-prese
 - **NEVER push, open an MR/PR or merge without approval for this run** - Prepare branches and descriptions only. Pushing is a separate step the user approves each time. The skill never merges anything.
 - **NEVER add Co-Authored-By trailers or AI-generated footers to commits, MRs or PRs** - Many teams forbid them, and their absence is a check in this skill's evals. Use the repo's own commit style.
 - **NEVER make a performance change without a measured before/after** - Memoization, loop rewrites and caching off the hot path add complexity and review cost for no measurable gain. Performance changes are allowed only on overlay `hotPaths` with a benchmark per [performance.md](references/performance.md); everything else is report-only.
+- **NEVER delete code on static evidence alone** - `unused.mjs` and `duplicates.mjs` report candidates. Registries, string-keyed lookups, computed `import()` and consumers outside the repo are invisible to them. Removal and consolidation are tier C: collect the evidence in [removal.md](references/removal.md), get the user's confirmation per candidate, then remove one file or export group per commit.
 - **NEVER make the CI ratchet blocking on first introduction** - CI is shared infrastructure. Ship it report-only (`allow_failure: true` on GitLab, `continue-on-error: true` on GitHub) and make it blocking only after the team agrees.
 
 ## Before Optimizing, Ask
@@ -57,6 +58,7 @@ Load [AGENTS.md](AGENTS.md) for the rule summaries: tiers, behavior checks, stan
 - Scorecard numbers, baseline or CI job → [scorecard-and-ratchet.md](references/scorecard-and-ratchet.md)
 - Preparing branches, commits or MR/PR descriptions → [mr-packaging.md](references/mr-packaging.md)
 - Splitting a large file or unifying configs (tier C) → [decomposition.md](references/decomposition.md)
+- Dead code, duplicates or pass-through layers → [removal.md](references/removal.md)
 - TypeScript or React code → [ts-react-pack.md](references/ts-react-pack.md)
 - Go code → [go-pack.md](references/go-pack.md)
 - Running outside Claude Code, or on a non-Claude model → [harness-portability.md](references/harness-portability.md)
@@ -87,7 +89,7 @@ Scripts below are run with Node 20 or newer from the skill directory, for exampl
 | `.code-quality/standards.md`, `.code-quality/overlay.json`, `.code-quality/scorecard.baseline.json` | Worktree | Yes, in their own commit on the worktree branch |
 | Source changes | Worktree | Yes, one change per commit |
 
-Scripts that measure the code (`scorecard`, `conventions`, `importers`, `export-diff`) run against the **worktree** path from Step 0.3 on. Never edit or commit in the original checkout.
+Scripts that measure the code (`scorecard`, `conventions`, `importers`, `unused`, `duplicates`, `export-diff`) run against the **worktree** path from Step 0.3 on. Never edit or commit in the original checkout.
 
 ### Step 0: Setup
 
@@ -112,7 +114,7 @@ Load [references/standards.md](references/standards.md).
 
 1. Confirm every verification command passed in Step 0. If not, STOP.
 2. If the repo has oxlint or ESLint, write a lint report from the worktree into the original checkout's run folder: `oxlint --format=json <scope> > <original>/.code-quality/runs/lint.json` or `eslint --format json <scope> -o <original>/.code-quality/runs/lint.json`. Use the repo's own config; do not add rules for this report.
-3. Run `scripts/scorecard.mjs <worktree> --scope <scope> --lint-report <original>/.code-quality/runs/lint.json --out <original>/.code-quality/runs/scorecard-before.json`.
+3. For TypeScript, run `scripts/unused.mjs <worktree> --scope <scope> --out <original>/.code-quality/runs/unused.json` and `scripts/duplicates.mjs <worktree> --scope <scope> --out <original>/.code-quality/runs/duplicates.json`, then `scripts/scorecard.mjs <worktree> --scope <scope> --lint-report <original>/.code-quality/runs/lint.json --unused-report <original>/.code-quality/runs/unused.json --duplicates-report <original>/.code-quality/runs/duplicates.json --out <original>/.code-quality/runs/scorecard-before.json`. Produce every later scorecard the same way, with fresh reports.
 4. For Go modules, run `scripts/go-scorecard.mjs <worktree> --scope <scope> --out <original>/.code-quality/runs/go-scorecard-before.json` (add `--golangci-report <file>` when the repo has a golangci-lint config and you ran it). Read its `warnings`: a tool that is not installed means that metric was not counted, not that it is zero. See [references/go-pack.md](references/go-pack.md).
 5. Record the totals in the progress file. These are the "before" numbers for every MR/PR description.
 6. If the user wants a committed ratchet baseline, create it in the **worktree**: `scripts/ratchet.mjs update --baseline <worktree>/.code-quality/scorecard.baseline.json --current <original>/.code-quality/runs/scorecard-before.json`, and for Go the same with `go-scorecard.baseline.json` and `go-scorecard-before.json`. Commit them on the standards branch from Step 1.4.
@@ -123,6 +125,7 @@ Scan in this order, so that existing tools win over new rules:
 1. **Repo tools** - findings from the lint report, typecheck and test output.
 2. **Pack rules** - the detections in the loaded pack reference, for what the repo's tools cannot express.
 3. **Standards deviations** - files and packages that deviate from approved entries in `.code-quality/standards.md`.
+4. **Removal candidates** - `unusedFiles` and `unusedExports` from `unused.json`, `clones` from `duplicates.json`, and the scorecard's `passThroughs` samples. Collect the evidence in [references/removal.md](references/removal.md) for each `likely` candidate and list `review` candidates with their reasons. Themes are "remove unused", "consolidate duplicate" and "collapse layer"; all are tier C, except unexporting a package-internal export, which is tier B.
 
 For each finding record: id, package, file and line, theme, visibility, tier (from [references/tiers.md](references/tiers.md)), source (tool, pack rule or standard), and a one-line consequence. Drop findings that are preferences rather than rules or approved standards.
 
@@ -145,7 +148,7 @@ For each approved item, in the worktree:
    - for a **package-public** change (tier C): the same, and expect the diff to show exactly the approved change.
 
    Run `scripts/export-diff.mjs snapshot <worktree> --entry <entry> [--entry <entry>...] --out <original>/.code-quality/runs/<id>-before.json`, and copy each file you are about to edit to `<original>/.code-quality/runs/<id>-<basename>.before` for the side-effect diff. If the snapshot exits 3 (`incomplete`), dependencies are missing: install them in the worktree and snapshot again. Do not edit on an incomplete snapshot.
-2. Make one change. Tier A uses the tool's own fixer (`oxlint --fix`, `gofmt`, `golangci-lint run --fix`) restricted to one rule. Tier B is a targeted edit. Tier C follows its approved design in [references/decomposition.md](references/decomposition.md). A performance item also needs the benchmark steps in [references/performance.md](references/performance.md).
+2. Make one change. A removal or consolidation follows the steps in [references/removal.md](references/removal.md). Tier A uses the tool's own fixer (`oxlint --fix`, `gofmt`, `golangci-lint run --fix`) restricted to one rule. Tier B is a targeted edit. Tier C follows its approved design in [references/decomposition.md](references/decomposition.md). A performance item also needs the benchmark steps in [references/performance.md](references/performance.md).
 3. Run the behavior checks in [references/behavior-checks.md](references/behavior-checks.md) in order, using the snapshot and copies from step 1. A failure reverts that change only (`git restore` of the touched files) and records the reason in the progress file.
 4. Commit it alone with the repo's commit style and no AI trailer.
 5. Save the progress file.
@@ -166,7 +169,8 @@ Load [references/mr-packaging.md](references/mr-packaging.md).
 - A clean run is a valid result. If the scope already meets its standard, report the scorecard and stop; do not manufacture findings.
 - `scripts/scorecard.mjs` counts syntax, not types. `explicitAny` counts written `any`, not inferred `any`; use the typecheck and type-aware lint for the rest.
 - `nestedComponents` counts a PascalCase function that returns JSX inside another component or hook only when that component renders it as `<Name />`. Helpers called as `{renderRow()}` or passed as `rows.map(Row)` are not counted. Storybook stories are measured like tests.
-- `importers.mjs` resolves imports with the compiler (tsconfig `paths`, package `exports`, workspace links) but sees only static imports. `unknown` means unproven, not unused; never delete code on that basis.
+- `importers.mjs` and `unused.mjs` share one import graph (`scripts/import-graph.mjs`): compiler resolution (tsconfig `paths`, package `exports`, workspace links) plus literal `import()`/`require()`, `import.meta.glob` and `new URL(..., import.meta.url)`. Computed specifiers are listed, not followed. `unknown` and `review` mean unproven, not unused.
+- `duplicates.mjs` compares tokens with identifiers and literals normalized, so renamed copies match. Similar shape is not the same responsibility.
 - `export-diff.mjs` compares per export, so moving a declaration to another file and re-exporting it, reordering declarations, reformatting and body edits are not changes; a type, member, parameter or enum value is.
 - If the repo already runs an AI review on MRs/PRs, the optimizer's MRs/PRs go through it too. Do not duplicate that review's rules in this skill's findings.
-- Related skills: accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-react-testing and accelint-ts-performance hold the detailed TypeScript and React rules. When they are installed, invoke them for the per-file review in Step 3. When they are not, use the summaries in the pack reference.
+- Related skills: accelint-ts-best-practices, accelint-react-best-practices, accelint-ts-testing, accelint-react-testing and accelint-ts-performance hold the detailed TypeScript and React rules. When they are installed, invoke them for the per-file review in Step 3. When they are not, use the summaries in the pack reference. For an exploratory architecture pass over clones and pass-through layers, use `improve-codebase-architecture` and `codebase-design` (mattpocock/skills) when installed; see [removal.md](references/removal.md).

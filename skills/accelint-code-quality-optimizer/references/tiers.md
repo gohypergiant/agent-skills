@@ -23,7 +23,7 @@ In an app package (no `exports`/`main` in its `package.json`) an export nothing 
 |------|-----------|----------------|----------|
 | A | The repo's own tool can fix it, for one rule, without changing any type | `oxlint --fix`, `eslint --fix --rule`, `gofmt -w`, `goimports -w`, `golangci-lint run --fix --enable-only <linter>` | The findings table, or a per-run opt-in for unattended autofix |
 | B | A targeted edit to file-private or package-internal code | The agent edits, guided by an AST location | Per item, after seeing the before/after |
-| C | Needs a design: package-public signatures, file splits, config unification, cross-package moves | An approved design doc, then small mechanical steps | The design, then each step's checks |
+| C | Needs a design: package-public signatures, file splits, config unification, cross-package moves, deleting files or exports, consolidating duplicates ([removal.md](removal.md)) | An approved design doc, then small mechanical steps | The design, then each step's checks |
 | Report only | Not worth changing now, not provably safe, or a performance change off the hot paths | Nothing | None |
 
 ## Key Principles

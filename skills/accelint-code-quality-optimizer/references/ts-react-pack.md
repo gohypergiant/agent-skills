@@ -37,6 +37,10 @@ Load this pack when `detect-stack.mjs` reports `ts-react`. Most TypeScript and R
 | Missing list keys / index keys | `react/jsx-key`, `react/no-array-index-key` | | B | |
 | Loose test assertions | none (do not enable `vitest/prefer-to-be-truthy`; it pushes toward loose matchers) | `looseAssertions` | B | accelint-ts-testing `assertions` |
 | Focused or skipped tests | `jest/no-focused-tests`, `jest/no-disabled-tests` (apply to Vitest) | | A/B | |
+| Unused files and exports | none in oxlint; `unused.mjs` | `unusedFiles`, `unusedExports` | C (B to unexport) | [removal.md](removal.md) |
+| Copy-pasted code | none; `duplicates.mjs` | `duplicatedLines` | C | [removal.md](removal.md) |
+| Redundant code | `no-useless-*`, `no-else-return`, `no-unneeded-ternary`, `prefer-optional-chain`, ... (list in [removal.md](removal.md)) | lint counts | A | |
+| Pass-through wrappers | none | `passThroughs` (context only) | B/C | [removal.md](removal.md) |
 | Mock cleanup not configured | config check | conventions `vitest-mock-cleanup` | C (config) | accelint-ts-testing `vitest-features` |
 | Config drift (`strict`, `noUncheckedIndexedAccess`) | config check | conventions `tsconfig:*` | C | [decomposition.md](decomposition.md) |
 

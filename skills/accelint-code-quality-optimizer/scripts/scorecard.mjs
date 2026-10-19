@@ -5,10 +5,14 @@ import { buildScorecard } from "./scorecard-core.mjs";
 import { fail, parseArgs, printJson, resolveRoot } from "./shared.mjs";
 
 const USAGE = `usage: scorecard.mjs [repo-root] [--scope <dir>] [--lint-report <oxlint-or-eslint.json>]
-                    [--typescript <path>] [--out <file>]`;
+                    [--unused-report <unused.json>] [--duplicates-report <duplicates.json>]
+                    [--typescript <path>] [--out <file>]
+
+--unused-report and --duplicates-report add unusedFiles, unusedExports and duplicatedLines per package
+and ratchet them. Pass the same reports on every run that is compared against the same baseline.`;
 const args = parseArgs(process.argv.slice(2), {
   flags: ["help"],
-  options: ["scope", "lint-report", "typescript", "out"],
+  options: ["scope", "lint-report", "unused-report", "duplicates-report", "typescript", "out"],
 });
 if (args.help) {
   process.stderr.write(`${USAGE}\n`);
@@ -21,6 +25,8 @@ try {
   scorecard = buildScorecard(root, {
     scope: args.scope,
     lintReport: args["lint-report"],
+    unusedReport: args["unused-report"],
+    duplicatesReport: args["duplicates-report"],
     typescript: args.typescript,
   });
 } catch (error) {
