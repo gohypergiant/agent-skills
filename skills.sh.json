@@ -9,7 +9,8 @@
         "accelint-ts-best-practices",
         "accelint-ts-performance",
         "accelint-security-best-practices",
-        "accelint-ts-audit-all"
+        "accelint-ts-audit-all",
+        "accelint-code-quality-optimizer"
       ]
     },
     {

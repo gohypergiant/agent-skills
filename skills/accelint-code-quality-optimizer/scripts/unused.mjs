@@ -5,6 +5,7 @@ import path from "node:path";
 import { createImportGraph } from "./import-graph.mjs";
 import {
   SKILL_VERSION,
+  escapeRegExp,
   expandBraces,
   fail,
   globToRegExp,
@@ -149,7 +150,7 @@ const textOf = (file) => {
 const searchable = graph.allFiles.filter((file) => /\.(?:[cm]?[jt]sx?|json|ya?ml|mdx?|html|vue|svelte|astro)$/u.test(file));
 function textMentions(name, exceptFile) {
   if (name === "default" || name.length < 4) return [];
-  const pattern = new RegExp(`(?<![\\w$])${name.replace(/[$]/gu, "\\$")}(?![\\w$])`, "u");
+  const pattern = new RegExp(`(?<![\\w$])${escapeRegExp(name)}(?![\\w$])`, "u");
   const hits = [];
   for (const file of searchable) {
     if (file === exceptFile) continue;
@@ -208,7 +209,7 @@ for (const file of graph.files) {
     if (importers.length > 0) continue;
     const viaEntry = exposures.some((exposure) => entries.has(exposure.file));
     if (viaEntry && isLibrary(pkg)) continue; // public API of a library: consumers live outside this repo
-    const usedLocally = new RegExp(`(?<![\\w$.])${name.replace(/[$]/gu, "\\$")}(?![\\w$])`, "gu");
+    const usedLocally = new RegExp(`(?<![\\w$.])${escapeRegExp(name)}(?![\\w$])`, "gu");
     const localUses = name === "default" ? 0 : (ownText.match(usedLocally) ?? []).length - 1;
     const mentions = textMentions(name, file);
     const reasons = ["no file imports it, directly or through a barrel"];

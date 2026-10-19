@@ -142,6 +142,7 @@ These are the maintained skills currently in the repo:
 - `accelint-ac-to-playwright`
 - `accelint-architecture-doc`
 - `accelint-archive-synthesis`
+- `accelint-code-quality-optimizer`
 - `accelint-design-foundation`
 - `accelint-nextjs-best-practices`
 - `accelint-onboard-agents`

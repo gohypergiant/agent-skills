@@ -321,6 +321,11 @@ try {
     "tool config: tsdown.config.ts and named variants (vitest.acceptance.config.ts, playwright.batch-1.config.ts) are tool configs",
     ["p/tsdown.config.ts", "a/vitest.acceptance.config.ts", "a/playwright.batch-1.config.ts"].every((file) => shared.isToolConfig(file)),
   );
+  const tricky = String.raw`[slug].(group)+a\b$-x/y`;
+  check(
+    "escapeRegExp: names with brackets, dots, parens, backslashes, hyphens and slashes compile in u mode and match only themselves",
+    new RegExp(`(?<![\\w$])${shared.escapeRegExp(tricky)}(?![\\w$])`, "u").test(tricky) && !new RegExp(shared.escapeRegExp("[slug]"), "u").test("s"),
+  );
   check("glob braces: expandBraces('*.{ts,tsx}') gives both", JSON.stringify(shared.expandBraces("src/*.{ts,tsx}")) === '["src/*.ts","src/*.tsx"]');
 } finally {
   rmSync(work, { recursive: true, force: true });

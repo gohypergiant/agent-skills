@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Root cause:** On garda-neo, every package's `tsdown.config.ts` and `apps/c2-app/playwright.inc4-coa-batch6.config.ts` were measured as product code and reported as unused files. Scorecards of repos with such files will show fewer `sourceFiles` after this change.
 - `expandBraces` moved from `conventions.mjs` to `shared.mjs`.
 
+### Fixed
+- `unused.mjs` built its name-matching regular expressions from export and file names with only `$` escaped, so a name containing other metacharacters (a Next.js `[slug]` file stem, a backslash) was matched as a pattern instead of literally, and could throw. Names now go through `escapeRegExp` in `shared.mjs`, which escapes every syntax character, backslash included. Reported by CodeQL (`js/regex-injection`, `js/incomplete-sanitization`) on the PR.
+
+### Documentation
+- Docs site page `docs/content/docs/code-quality-optimizer/`, the repo README skill list, `skills.sh.json` (Code Quality & Safety group) and the docs index list the skill.
+
 ### Validation
 - garda-neo `develop` (618 TypeScript files, read-only copy): `unused.mjs` 4.6s, 7 unused files (320 lines; 4 `likely`, each with no mention outside itself in a repo-wide `git grep`), 339 unused exports (141 `likely`, of which 14 `remove`, the rest `unexport`); `duplicates.mjs` 1.3s, 269 clones and 4,122 duplicated lines, the largest a 230-token copy between `plan-trigger-ppr-action.ts` and `plan-trigger-response-action.ts`. False positives found on the first run (generated build-selection imports, test-runner include globs, a Vite alias substitute, tsdown configs, inline callbacks counted as pass-throughs) are fixed above.
 

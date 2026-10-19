@@ -115,6 +115,12 @@ export function readJson(file) {
   }
 }
 
+/** Escapes every regular-expression metacharacter, backslash included, so `text` matches literally. */
+export function escapeRegExp(text) {
+  // Only syntax characters: in `u` mode an identity escape such as `\-` outside a class is a SyntaxError.
+  return text.replace(/[\\^$.*+?()[\]{}|]/gu, "\\$&");
+}
+
 /** Expands `{a,b}` alternatives, which globToRegExp does not handle: "*.{ts,tsx}" -> ["*.ts", "*.tsx"]. */
 export function expandBraces(glob) {
   const match = /\{([^{}]+)\}/u.exec(glob);

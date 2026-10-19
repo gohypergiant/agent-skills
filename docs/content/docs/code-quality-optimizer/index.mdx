@@ -1,0 +1,93 @@
+---
+title: Overview
+description: Brings a TypeScript/React or Go repository written without shared conventions to one measured standard, including dead and duplicated code, through small behavior-preserving changes delivered as reviewable merge requests or pull requests.
+source: skills/accelint-code-quality-optimizer/SKILL.md
+source_sha: c482f86f14244c774f5f27e06e6eb09822d38037
+doc_sha: 98a9f21b068c7f92b841a4a313fa4143e79dd75d
+deprecated: false
+updated: 2026-10-19
+---
+
+## What It Helps You Do
+
+Use this skill to clean up a repository that many people (or many agents) wrote without agreeing on how: inconsistent conventions, drifting configs, oversized files, loose types, abandoned code and copy-paste. It sets a measured target first, then makes changes small enough to review.
+
+Activate it with:
+- `/accelint-code-quality-optimizer`
+- Phrases like "clean up this repo", "standardize the codebase", "remove dead code", "find duplicate code"
+- Requests to set up a quality scorecard or ratchet in CI
+
+It is especially useful when you need to:
+- Agree on one standard for a repo whose packages all do things differently
+- Track quality per package with numbers that can only go down
+- Find unused files and exports, copy-pasted logic and wrapper layers that add nothing
+- Turn cleanup into small, themed MRs/PRs instead of one giant refactor
+
+## When to Use
+
+Use this skill when:
+- A TypeScript/React or Go monorepo has no shared conventions, or conventions nobody follows
+- You want a repo-wide picture before anyone starts fixing files
+- Code was generated quickly and has accumulated dead files, unused exports or duplicates
+- You want a CI quality job that blocks regressions without blocking the team on day one
+
+For a single-file TypeScript review, use [TypeScript Audit All](/docs/ts-audit-all) instead.
+
+## How It Works
+
+- **Standards before changes.** It collects your written rules (lint, tsconfig, contributing guides) and infers conventions from the code, but an inferred convention is only a proposal. You approve, change or reject each one, and it flags majorities that contradict accelint guidance.
+- **Measured, not judged.** Scripts count per-package metrics from the TypeScript AST and your linter (`any`, casts, suppressions, enums, console calls, nested components, loose test assertions, oversized files, unused files and exports, duplicated lines). A ratchet then fails only when a number gets worse.
+- **Tiered by risk.** Mechanical autofixes, targeted edits to code used only inside its package, and design-first changes for anything public. Visibility comes from the import graph, not from whether something is exported.
+- **Behavior proven per change.** Each change runs your own lint, typecheck and tests, an export-signature diff and a side-effect check. A failure reverts that change only.
+- **Removal is evidence-first.** Dead-code and duplicate detection report candidates with a confidence and reasons. Nothing is deleted until a text search, history and owner check agree and you confirm that candidate.
+
+### Intelligent Discovery Process
+
+The agent stops for your decision three times: to approve the standard, to choose which findings to apply, and before pushing anything. Progress is saved to a file, so long runs survive restarts and context limits.
+
+## What You Get
+
+- `.code-quality/standards.md`, an overlay config and a ratchet baseline, delivered as their own first MR/PR
+- A findings report grouped by package and theme, with tiers and before/after code
+- One branch per theme and package, one change per commit, with scorecard before/after in each description
+- Optional report-only CI jobs for GitLab or GitHub Actions
+
+## Examples
+
+### Example: Standardizing one package
+
+```bash
+/accelint-code-quality-optimizer packages/sensor-health
+```
+
+You get proposed conventions to approve, a baseline scorecard and a findings table, then branches for the items you choose.
+
+### Example: Cleaning out vibecoded bloat
+
+```bash
+/accelint-code-quality-optimizer remove dead and duplicated code in apps/web
+```
+
+You get unused files and exports marked `likely` or `review` with the evidence behind each, copy-paste clones with both locations, and wrapper layers worth collapsing, with nothing removed until you confirm.
+
+## Good to Know
+
+> **Good to know:** It never pushes, opens an MR/PR or merges without approval for that run, and never adds AI co-author trailers or footers.
+
+> **Good to know:** "Unused" means no static importer was found. Registries, string-keyed lookups, computed `import()` and consumers outside the repo are invisible to the scripts, which is why removals need your confirmation.
+
+> **Good to know:** Two similar-looking pieces of code are merged only when both must change together. Same shape with different reasons to change stays separate.
+
+> **Good to know:** Performance changes are made only on paths you declare hot, with a benchmark showing at least a 10% gain.
+
+## Prerequisites
+
+- Node.js 20 or newer, git, and the target repo's dependencies installed and built
+- Your repo's own lint, typecheck and test commands working on a clean checkout
+- For Go: `go`, staticcheck and ast-grep (golangci-lint if the repo uses it)
+- Works in any agent harness with file access, a shell and git, on Claude or GPT models
+
+## Related
+
+- [TypeScript Best Practices](/docs/ts-best-practices), [React Best Practices](/docs/react-best-practices), [TypeScript Testing](/docs/ts-testing) and [React Testing](/docs/react-testing) supply the detailed rules when installed
+- [TypeScript Performance](/docs/ts-performance) for hot-path optimization
