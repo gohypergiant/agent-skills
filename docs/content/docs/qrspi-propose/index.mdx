@@ -1,11 +1,11 @@
 ---
 title: Overview
-description: Automate the QRSPI + OpenSpec planning workflow (Questions → Research → Design → Structure) for spec-driven development, handling ONLY the planning phase before implementation.
+description: Automate the QRSPI + OpenSpec planning workflow (Questions → Research → Design → Structure) for spec-driven development, saving the questions and research with the change and handling ONLY the planning phase before implementation.
 source: skills/accelint-qrspi-propose/SKILL.md
-source_sha: 576220e64e275241b4b0869fc03d4a39e595a4e6
-doc_sha: f6ba2ebe4bc8320f1896ac7c23fafb30f18764e2
+source_sha: 7550bac7f808b992eb2082aee7b0512cb2cde16a
+doc_sha: ec6cd2aae7291c4155f31e68dce59ca554dc72b0
 deprecated: false
-updated: 2026-07-20
+updated: 2026-10-16
 ---
 
 ## What It Helps You Do
@@ -37,32 +37,29 @@ Use when:
 
 ## Prerequisites
 
-Verify the expanded OpenSpec workflows are enabled:
+Verify the OpenSpec workflows are enabled:
 
 ```bash
 openspec config list
 ```
 
-Check that `workflows:` includes `explore`, `new`, and `continue`. If missing, enable the expanded profile:
-
-```bash
-openspec config profile
-# Select "expanded"
-openspec update
-```
+Check that `workflows:` includes `explore`, `new`, and `continue`. If any is missing, the skill stops and names it. Enable it in your OpenSpec configuration and run the skill again.
 
 Also requires:
 - OpenSpec initialized (`openspec/` directory exists)
 - Configuration in `openspec/config.yaml`
 - Agent behavior context in `AGENTS.md` or `CLAUDE.md`
+- The companion skills `accelint-qrspi-questions`, `accelint-qrspi-research`, and `accelint-qrspi-plan`, installed together with this one. If any is missing, the skill stops and lists them.
 
 ## How It Works
 
 QRSPI moves through four phases with two mandatory checkpoints:
 
-**Questions** — Generates research questions from your ticket without jumping to solutions. The agent sees only the ticket at this stage.
+**Setup** — Creates the OpenSpec change folder, named from your ticket, so everything that follows is saved there.
 
-**Research** — Answers questions using a fresh agent context that sees only the questions, not the original ticket. This prevents "completion bleed" where knowing the desired outcome biases research toward confirming preconceived solutions.
+**Questions** — Generates research questions from your ticket without jumping to solutions. The agent sees only the ticket at this stage. The questions are saved as `questions.md`.
+
+**Research** — Answers questions using a fresh agent context that sees only the saved questions, not the original ticket. This prevents "completion bleed" where knowing the desired outcome biases research toward confirming preconceived solutions. The answers are saved as `research.md`.
 
 **Design** — Creates `proposal.md` and `design.md` from research findings. The ticket stays out of context here too, forcing the design to derive from facts rather than assumptions.
 
@@ -74,10 +71,13 @@ QRSPI moves through four phases with two mandatory checkpoints:
 
 The skill validates that tasks are vertically sliced and adds a parallelization strategy showing which slices can run concurrently.
 
+If a run is interrupted, ask the skill to resume the change by name. It works out where you left off from the files in the change folder. If the questions were never finished, you will need to paste the ticket again.
+
 ## What You Get
 
 A complete OpenSpec change at `openspec/changes/<change-name>/`:
 
+- `questions.md` and `research.md` — the research questions and the facts that answered them, each stamped with the date and git commit they describe
 - `proposal.md` — summary and rationale
 - `design.md` — decisions, alternatives, affected systems (with `specs_touched` and `decisions` frontmatter)
 - Capability delta specs under `specs/`
@@ -114,7 +114,9 @@ Research identifies current search implementation and bottlenecks. Design propos
 
 > **Good to know:** The two checkpoints are central to QRSPI. Correcting design before specs are written prevents rework during implementation and code review.
 
-> **Good to know:** Context isolation (keeping the ticket out of research and design phases) is what prevents solution-first thinking. Research stays objective when the agent doesn't know what outcome you originally wanted.
+> **Good to know:** Context isolation (keeping the ticket out of research and design phases) is what prevents solution-first thinking. Research stays objective when the agent doesn't know what outcome you originally wanted. The ticket is never saved to a file; the change folder name, taken from it, is the only ticket-derived text later stages see.
+
+> **Good to know:** `questions.md` and `research.md` are working inputs for the design step and are not shown to you during the run. They stay in the change folder, so treat the research as a snapshot of the code at the stamped commit and not as current fact.
 
 > **Good to know:** If `/opsx:continue` generates horizontal slices (organized by architectural layer), the skill automatically restructures them into vertical slices (end-to-end feature deliverables) before the tasks checkpoint.
 
