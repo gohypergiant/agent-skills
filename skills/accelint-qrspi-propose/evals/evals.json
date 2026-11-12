@@ -16,7 +16,7 @@
     },
     {
       "id": 2,
-      "prompt": "Run accelint-qrspi-propose on this ticket, and stop after you've built the step 4 design sub-agent prompt in accelint-qrspi-plan (assume questions.md and research.md are valid):\n\nATI-88: Make `scan --changed` include uncommitted files as well as committed changes. Union semantics, add an --uncommitted flag, unify path resolution.",
+      "prompt": "Run accelint-qrspi-propose on this ticket, and stop after you've built the step 4 design sub-agent prompt in references/stage-plan.md (assume questions.md and research.md are valid):\n\nATI-88: Make `scan --changed` include uncommitted files as well as committed changes. Union semantics, add an --uncommitted flag, unify path resolution.",
       "expected_output": "The design sub-agent prompt is built without any ticket-derived content: no description of what the change should do, no flags, no semantics, no list of open decisions. The change name is the only ticket-derived text.",
       "files": [],
       "expectations": [
@@ -29,7 +29,7 @@
     },
     {
       "id": 3,
-      "prompt": "Show me the design sub-agent prompt from accelint-qrspi-plan, and tell me how the sub-agent is expected to create proposal.md and design.md.",
+      "prompt": "Show me the design sub-agent prompt from references/stage-plan.md, and tell me how the sub-agent is expected to create proposal.md and design.md.",
       "expected_output": "The prompt tells the sub-agent that the change already exists and to follow openspec-continue-change one artifact at a time until proposal.md and design.md exist, without generating tasks.md. It does not say 'ONCE', 'ONLY' or 'STOP after design.md', and it does not forbid writing files. It does not run openspec-new-change.",
       "files": [],
       "expectations": [
@@ -44,7 +44,7 @@
     },
     {
       "id": 4,
-      "prompt": "Simulate accelint-qrspi-plan where the design sub-agent returns after creating proposal.md, specs/ and design.md (OpenSpec made the specs first). What does the parent do next?",
+      "prompt": "Simulate the plan stage (references/stage-plan.md) where the design sub-agent returns after creating proposal.md, specs/ and design.md (OpenSpec made the specs first). What does the parent do next?",
       "expected_output": "The parent accepts the result, verifies proposal.md and design.md exist, and proceeds to Checkpoint 1 without treating the early specs/* as a violation.",
       "files": [],
       "expectations": [
@@ -63,18 +63,6 @@
         "Parent checks the reported behavior against the inner openspec-continue-change skill before reporting it",
         "Parent does not claim a deviation for writing artifact files when the inner skill instructs it",
         "Parent does not present an unchecked sub-agent claim as fact"
-      ]
-    },
-    {
-      "id": 6,
-      "prompt": "Simulate accelint-qrspi-propose in an environment where the accelint-qrspi-research skill is not installed (the other two sibling skills are). The user's ticket is: 'ATI-9: add pagination to list.' What happens?",
-      "expected_output": "The skill stops at its sibling-skills check, names accelint-qrspi-research as missing, tells the user to install the skills together, and does not create a change folder or attempt the research stage itself.",
-      "files": [],
-      "expectations": [
-        "Skill stops before creating a change folder",
-        "Skill names accelint-qrspi-research as the missing skill",
-        "Skill tells the user to install the sibling skills together with accelint-qrspi-propose",
-        "Skill does not attempt to do the research stage itself or substitute its own research"
       ]
     },
     {
@@ -103,11 +91,11 @@
     {
       "id": 9,
       "prompt": "Simulate resuming a change named add-pagination with accelint-qrspi-propose. The folder has a valid questions.md, a valid research.md, proposal.md, and a design.md that has NO YAML frontmatter and no tasks.md. Where does the workflow resume?",
-      "expected_output": "The orchestrator sees both files valid and hands the change to accelint-qrspi-plan. The plan skill finds a design.md without created_at/specs_touched/decisions frontmatter and resumes at Checkpoint 1 (step 6), not at tasks generation. The ticket is not requested.",
+      "expected_output": "The orchestrator sees both files valid and follows references/stage-plan.md. The plan stage finds a design.md without created_at/specs_touched/decisions frontmatter and resumes at Checkpoint 1 (step 7), not at tasks generation. The ticket is not requested.",
       "files": [],
       "expectations": [
         "Orchestrator does not ask the user for the ticket",
-        "Orchestrator hands the change to accelint-qrspi-plan, running it in its own context rather than as a single sub-agent",
+        "Orchestrator follows references/stage-plan.md, running it in its own context rather than as a single sub-agent",
         "Plan resumes at Checkpoint 1 (design review) and does not generate tasks.md",
         "Plan does not regenerate proposal.md or design.md"
       ]

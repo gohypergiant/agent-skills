@@ -9,7 +9,7 @@ metadata:
 
 # Accelint QRSPI
 
-Automate the QRSPI + OpenSpec planning workflow. This skill applies the methodology from "We Got RPI Wrong" through OpenSpec's artifact system. It is the orchestrator: it validates the environment, creates the change folder, holds the ticket, and runs three sibling skills in order (`accelint-qrspi-questions`, `accelint-qrspi-research`, `accelint-qrspi-plan`). Human checkpoints are required before any code is written.
+Automate the QRSPI + OpenSpec planning workflow. This skill applies the methodology from "We Got RPI Wrong" through OpenSpec's artifact system. It is the orchestrator: it validates the environment, creates the change folder, holds the ticket, and runs three stages in order, each defined in a file under `references/` (`stage-questions.md`, `stage-research.md`, `stage-plan.md`). Human checkpoints are required before any code is written.
 
 ## What This Skill Does
 
@@ -22,7 +22,6 @@ Automate the QRSPI + OpenSpec planning workflow. This skill applies the methodol
 ## Prerequisites
 
 - The OpenSpec workflows `explore`, `new`, and `continue`. Verify with `openspec config list` and check the `workflows:` section. If any is missing, stop and tell the user they need to be enabled.
-- The sibling skills `accelint-qrspi-questions`, `accelint-qrspi-research`, and `accelint-qrspi-plan`, installed together with this skill.
 
 ## Workflow Overview
 
@@ -43,13 +42,13 @@ Automate the QRSPI + OpenSpec planning workflow. This skill applies the methodol
 └────────────────────────────────────────────────────────────────────┘
 ```
 
-Keep the ticket out of every context after the Questions stage to prevent completion bleed. File names, headers, the completion marker, ticket rules, and resume rules are defined in `references/file-contract.md`, which only this skill uses. Read it in full before step 5 and follow it exactly. The sibling skills never read it: this skill checks the files and passes them only what they need.
+Keep the ticket out of every context after the Questions stage to prevent completion bleed. File names, headers, the completion marker, ticket rules, and resume rules are defined in `references/file-contract.md`, which only this skill uses. Read it in full before step 5 and follow it exactly. The stage files never read it: this skill checks the files and passes each stage only what it needs.
 
 Steps keep stable tags so references stay unambiguous: `[S-SETUP]` (5), `[S-QUESTIONS]` (6), `[S-RESEARCH]` (7), `[S-PLAN]` (8).
 
 ## Implementation Steps
 
-Execute these steps in order without stopping between them. The two required checkpoints run inside `accelint-qrspi-plan`, where it MUST stop and wait for the user.
+Execute these steps in order without stopping between them. The two required checkpoints run inside `references/stage-plan.md`, where you MUST stop and wait for the user.
 
 1. **Validate user input**: Check that the user provided a ticket, feature request, or idea in their prompt (as skill arguments or in their message), or asked to resume a named change.
 
@@ -80,18 +79,7 @@ Execute these steps in order without stopping between them. The two required che
    ```
    Exit the skill.
 
-4. Check that all three sibling skills (`accelint-qrspi-questions`, `accelint-qrspi-research`, `accelint-qrspi-plan`) are available to you. If any is missing:
-   ```text
-   This skill needs these sibling skills installed alongside it:
-   - accelint-qrspi-questions
-   - accelint-qrspi-research
-   - accelint-qrspi-plan
-
-   Missing: [list what's missing]
-
-   Install them together with accelint-qrspi-propose, then re-run this skill.
-   ```
-   Exit the skill. Do NOT try to do the missing stage yourself.
+4. Note the absolute path of this skill's `references/` directory (the directory that holds this SKILL.md). Steps 6 to 8 use it to point stages at their files.
 
    If the user asked to resume a named change, use the resume table in `references/file-contract.md` to pick the stage and jump to that step. Otherwise continue to step 5.
 
@@ -102,7 +90,7 @@ Execute these steps in order without stopping between them. The two required che
    Use the Agent tool to spawn a NEW sub-agent with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholder and add nothing before, after, or inside it.
 
    ```text
-   Find the accelint-qrspi-questions skill, read its instructions in full, and follow it exactly. Resolve relative paths from the supporting-files directory it provides.
+   Read <absolute path to references/stage-questions.md, from step 4> in full and follow it exactly.
 
    I have this ticket:
 
@@ -118,16 +106,16 @@ Execute these steps in order without stopping between them. The two required che
    Use the Agent tool to spawn a NEW sub-agent (fresh context) with the prompt block below. Send the block's text unchanged: replace only the `<angle-bracket>` placeholder and add nothing before, after, or inside it.
 
    ```text
-   Find the accelint-qrspi-research skill, read its instructions in full, and follow it exactly. Resolve relative paths from the supporting-files directory it provides.
+   Read <absolute path to references/stage-research.md, from step 4> in full and follow it exactly.
 
    Questions file: <absolute path to questions.md from step 6>
    ```
 
    Wait for the sub-agent to complete and return the research findings. INTERNAL STEP: Do NOT display the findings to the user. Write `<changeRoot>/research.md` using the header and completion marker from `references/file-contract.md`, with the returned text unchanged as the body.
 
-8. **Plan** `[S-PLAN]`: Run the header and marker check from `references/file-contract.md` on both `questions.md` and `research.md`. If either fails, stop and tell the user which file failed and why. Then find the accelint-qrspi-plan skill, read its instructions in full, and follow it yourself in this context. Do NOT spawn it as a single sub-agent: it contains two human checkpoints, and a sub-agent cannot pause for approval. Give it the change name and `changeRoot`. Do NOT give it the ticket. It spawns its own ticket-blind sub-agents and runs both checkpoints.
+8. **Plan** `[S-PLAN]`: Run the header and marker check from `references/file-contract.md` on both `questions.md` and `research.md`. If either fails, stop and tell the user which file failed and why. Then read `references/stage-plan.md` in full and follow it yourself in this context. Do NOT spawn it as a single sub-agent: it contains two human checkpoints, and a sub-agent cannot pause for approval. Use the change name and `changeRoot`. Do NOT use the ticket. The stage spawns its own ticket-blind sub-agents and runs both checkpoints.
 
-9. **Completion**: After `accelint-qrspi-plan` reports that `tasks.md` is approved, announce completion:
+9. **Completion**: After `references/stage-plan.md` reports that `tasks.md` is approved, announce completion:
 
    ```text
    ✅ QRSPI planning phase complete.
@@ -165,7 +153,7 @@ This prevents "solution-first thinking" where the agent jumps to implementation 
 
 ### Human Checkpoints
 
-Two mandatory review gates, run by `accelint-qrspi-plan`: after `proposal.md` and `design.md`, and after `tasks.md`. These are the highest-leverage moments for corrections, before any code is written.
+Two mandatory review gates, run by `references/stage-plan.md`: after `proposal.md` and `design.md`, and after `tasks.md`. These are the highest-leverage moments for corrections, before any code is written.
 
 ### No Automatic Implementation
 
@@ -177,7 +165,7 @@ The skill stops after planning. The user explicitly invokes the accelint-qrspi-a
 
 **If a sub-agent fails**: Show the error, ask whether the user wants to retry that stage or provide the questions or research manually, and allow manual fallback. A manual fallback still goes through the file contract (header and marker) before anything reads it.
 
-**If a sub-agent reports a deviation from these instructions**: Before relaying it to the user, compare the behavior with the text of the skill it was following (the sibling skill or the inner OpenSpec skill). Do not report behavior that the skill itself instructs.
+**If a sub-agent reports a deviation from these instructions**: Before relaying it to the user, compare the behavior with the text of the skill it was following (the stage file or the inner OpenSpec skill). Do not report behavior that the skill itself instructs.
 
 **If a header or marker check fails (steps 7 and 8)**: Stop and tell the user which file failed and why. Do not regenerate or edit the file silently.
 
@@ -194,17 +182,17 @@ If any of these are missing, guide the user to set them up before running this s
 
 ## NEVER Do This
 
-**NEVER generate artifacts yourself** — `proposal.md`, `design.md`, `specs/*`, and `tasks.md` are produced only by sub-agents following the OpenSpec skills, as directed by `accelint-qrspi-plan`. The files you write yourself are `questions.md` and `research.md` (from sub-agent text, per the file contract). Writing other artifacts directly bypasses the project's design, spec, and task rules.
+**NEVER generate artifacts yourself** — `proposal.md`, `design.md`, `specs/*`, and `tasks.md` are produced only by sub-agents following the OpenSpec skills, as directed by `references/stage-plan.md`. The files you write yourself are `questions.md` and `research.md` (from sub-agent text, per the file contract). Writing other artifacts directly bypasses the project's design, spec, and task rules.
 
-**NEVER let the ticket leak** — The ticket goes only into the step 6 prompt. It is never written to disk, never passed to `accelint-qrspi-research` or `accelint-qrspi-plan`, and no goal, flag, open decision, or paraphrase of it appears in any later prompt. The derived change name is the only allowed exception, as a folder name only. If the ticket stays in context during research, the agent will propose solutions instead of gathering objective facts about the current codebase.
+**NEVER let the ticket leak** — The ticket goes only into the step 6 prompt. It is never written to disk, never passed to the research or plan stages, and no goal, flag, open decision, or paraphrase of it appears in any later prompt. The derived change name is the only allowed exception, as a folder name only. If the ticket stays in context during research, the agent will propose solutions instead of gathering objective facts about the current codebase.
 
 **NEVER show `questions.md` or `research.md` content to the user** — They are internal inputs to the design stage, not review items.
 
-**NEVER skip the required checkpoints** — Checkpoint 1 and Checkpoint 2 run inside `accelint-qrspi-plan` and require explicit user approval ("looks good", "approve", "continue"). Do not announce completion unless the plan skill reports that `tasks.md` was approved.
+**NEVER skip the required checkpoints** — Checkpoint 1 and Checkpoint 2 run inside `references/stage-plan.md` and require explicit user approval ("looks good", "approve", "continue"). Do not announce completion unless the plan stage reports that `tasks.md` was approved.
 
-**NEVER run the plan skill as one sub-agent** — A sub-agent cannot pause for human approval. Follow it in the orchestrator context.
+**NEVER run the plan stage as one sub-agent** — A sub-agent cannot pause for human approval. Follow it in the orchestrator context.
 
-**NEVER substitute for a missing sibling skill** — If `accelint-qrspi-questions`, `accelint-qrspi-research`, or `accelint-qrspi-plan` is unavailable, stop at step 4 and tell the user.
+**NEVER substitute for an unreadable stage file** — If `references/stage-questions.md`, `references/stage-research.md`, or `references/stage-plan.md` cannot be read, stop and tell the user which file failed. Do not do that stage from memory or improvise it.
 
 ## Example Usage
 

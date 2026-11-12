@@ -2,7 +2,7 @@
 
 Automate the planning phase of spec-driven development. This skill walks through Questions → Research → Design → Structure (QRSPI) and requires review checkpoints before any code is written.
 
-It is the entry point of a four-skill workflow. It runs the other three (`accelint-qrspi-questions`, `accelint-qrspi-research`, `accelint-qrspi-plan`) in order. Start the workflow here; the other three are internal stages and are not meant to be run on their own.
+It runs three internal stages in order. Each stage is a file in `references/` (`stage-questions.md`, `stage-research.md`, `stage-plan.md`), so one install carries the whole workflow.
 
 ## What This Does
 
@@ -42,16 +42,6 @@ openspec config list
 
 Look for them in the `workflows:` section. If any is missing, the skill stops and tells you which ones. Enable them in your OpenSpec configuration and run the skill again.
 
-### Sibling skills
-
-Install these together with `accelint-qrspi-propose`:
-
-- `accelint-qrspi-questions`
-- `accelint-qrspi-research`
-- `accelint-qrspi-plan`
-
-If any is missing, the skill stops and lists what to install. It does not try to do that stage itself.
-
 ## How It Works
 
 ```
@@ -85,7 +75,7 @@ Both files start with `Snapshot: <date> @ <git short SHA>` so anyone who finds t
 
 ### Plan
 
-The skill follows `accelint-qrspi-plan` in the same conversation (not as a hidden sub-agent), because it needs you to approve two checkpoints.
+The skill follows `references/stage-plan.md` in the same conversation (not as a hidden sub-agent), because it needs you to approve two checkpoints.
 
 1. **Design.** A sub-agent receives questions + research (NO ticket) and creates `proposal.md` and `design.md` under your project's `config.yaml` rules. OpenSpec may also generate `specs/*`; those delta specs are bookkeeping and are not part of the review.
    - **Required checkpoint:** you review `proposal.md` and `design.md` before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
@@ -173,7 +163,6 @@ intermediate arrays: map-filter, filter-forEach, 3+ chains, etc.
 
 Agent: Checking OpenSpec configuration...
 ✓ Required workflows enabled (explore, new, continue)
-✓ Sibling skills installed
 
 Creating the change folder...
 [Folder created: expand-array-chaining-detection]
@@ -227,8 +216,7 @@ The skill assumes your project has:
 1. OpenSpec installed (`openspec/` directory exists)
 2. config.yaml configured with rules for design, specs, tasks (ideally via `accelint-onboard-openspec`)
 3. OpenSpec workflows `explore`, `new`, and `continue` enabled
-4. The sibling skills `accelint-qrspi-questions`, `accelint-qrspi-research`, and `accelint-qrspi-plan` installed
-5. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agents`)
+4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agents`)
 
 If anything is missing, the skill will guide you through setup.
 

@@ -1,22 +1,12 @@
----
-name: accelint-qrspi-questions
-description: Internal stage of the accelint-qrspi-propose workflow. Use only when accelint-qrspi-propose dispatches a sub-agent to turn a ticket into research questions, with the ticket in the dispatch prompt. Do not use for general planning, brainstorming, or research, and do not use it on its own; start the workflow with accelint-qrspi-propose instead.
-user-invocable: false
-license: Apache-2.0
-metadata:
-  author: accelint
-  version: "1.0.0"
----
+# Stage: Questions
 
-# Accelint QRSPI Questions
-
-Turn a ticket into research questions. This is the Questions stage of QRSPI, run as a sub-agent by `accelint-qrspi-propose`.
+Turn a ticket into research questions. This is the Questions stage of QRSPI, run as a sub-agent by `accelint-qrspi-propose`, which sends you here.
 
 You are the only agent in the workflow that sees the ticket. That is deliberate: the questions you write become the only input to the research stage, so the research agent can gather facts without being steered toward a solution. Write questions, not answers or approaches.
 
 ## Input
 
-The ticket is in the prompt that told you to use this skill. If the prompt has no ticket, stop and say so. Do not invent one.
+The ticket is in the prompt that told you to follow this file. If the prompt has no ticket, stop and say so. Do not invent one.
 
 ## Steps
 

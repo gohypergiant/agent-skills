@@ -1,6 +1,6 @@
 # Slicing Rules for tasks.md
 
-Rules `accelint-qrspi-plan` applies to a generated `tasks.md` before Checkpoint 2. `accelint-qrspi-apply` depends on vertical slicing, the `- [ ]` checklist format, and the Parallelization Strategy section.
+Rules the plan stage (`references/stage-plan.md`) applies to a generated `tasks.md` before Checkpoint 2. `accelint-qrspi-apply` depends on vertical slicing, the `- [ ]` checklist format, and the Parallelization Strategy section.
 
 Work through the three parts in order. Edit `tasks.md` in place with the Edit tool.
 

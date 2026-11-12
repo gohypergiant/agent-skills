@@ -1,6 +1,6 @@
 # QRSPI File Contract
 
-Files, headers, and rules for `accelint-qrspi-propose`. Only the orchestrator uses this file. The sibling skills (`accelint-qrspi-questions`, `accelint-qrspi-research`, `accelint-qrspi-plan`) never read it; the orchestrator checks the files and gives each sibling only what it needs.
+Files, headers, and rules for `accelint-qrspi-propose`. Only the orchestrator uses this file. The stage files (`stage-questions.md`, `stage-research.md`, `stage-plan.md`) never read it; the orchestrator checks the files and gives each stage only what it needs.
 
 ## Contents
 
@@ -70,6 +70,6 @@ There is no state file. When the user asks to resume a named change, read the ch
 |---|---|
 | `questions.md` missing or fails the header and marker check | Step 6 (questions). Ask the user to supply the ticket again. |
 | `questions.md` valid, `research.md` missing or fails the check | Step 7 (research). No ticket needed. |
-| Both valid | Step 8 (plan). `accelint-qrspi-plan` infers its own starting point from the artifacts. |
+| Both valid | Step 8 (plan). `stage-plan.md` infers its own starting point from the artifacts. |
 
 If the folder is ambiguous (for example `research.md` is valid but `questions.md` is not), stop and tell the user what is inconsistent instead of picking a stage.

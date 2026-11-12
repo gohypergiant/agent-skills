@@ -1,16 +1,6 @@
----
-name: accelint-qrspi-research
-description: Internal stage of the accelint-qrspi-propose workflow. Use only when accelint-qrspi-propose dispatches a sub-agent to answer a questions file with facts from the current codebase and specs, with the questions file path in the dispatch prompt. Do not use for general code research, exploration, or Q&A, and do not use it on its own; start the workflow with accelint-qrspi-propose instead.
-user-invocable: false
-license: Apache-2.0
-metadata:
-  author: accelint
-  version: "1.0.0"
----
+# Stage: Research
 
-# Accelint QRSPI Research
-
-Answer a file of research questions with facts about the current repository. This is the Research stage of QRSPI, run as a sub-agent by `accelint-qrspi-propose`.
+Answer a file of research questions with facts about the current repository. This is the Research stage of QRSPI, run as a sub-agent by `accelint-qrspi-propose`, which sends you here.
 
 You see only the questions, never the ticket. That is the core QRSPI idea: research is objective and does not know what anyone plans to build, so it reports what is true today and does not argue for a solution.
 

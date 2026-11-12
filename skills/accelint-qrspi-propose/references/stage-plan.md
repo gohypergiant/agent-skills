@@ -1,22 +1,12 @@
----
-name: accelint-qrspi-plan
-description: Internal stage of the accelint-qrspi-propose workflow. Use only when accelint-qrspi-propose hands over an existing OpenSpec change folder that already has a valid questions.md and research.md, to generate proposal.md, design.md, specs, and a vertically sliced tasks.md with two required human checkpoints. Do not use for general planning, reviewing existing artifacts, or implementation, and do not use it on its own; start the workflow with accelint-qrspi-propose instead.
-user-invocable: false
-license: Apache-2.0
-metadata:
-  author: accelint
-  version: "1.1.0"
----
-
-# Accelint QRSPI Plan
+# Stage: Plan
 
 Produce the design and task artifacts for a change whose questions and research already exist. This is the Design, Structure, and Plan part of QRSPI, run by `accelint-qrspi-propose`.
 
-Follow this skill yourself, in the agent context that invoked it. Do not run it as a single sub-agent. It contains two human checkpoints, and a sub-agent cannot pause for approval. It spawns its own sub-agents for artifact generation. Those sub-agents never see the ticket, so their output is shaped by the research and not by a solution already in someone's head.
+Follow this file yourself, in the agent context of `accelint-qrspi-propose`. Do not run it as a single sub-agent. It contains two human checkpoints, and a sub-agent cannot pause for approval. It spawns its own sub-agents for artifact generation. Those sub-agents never see the ticket, so their output is shaped by the research and not by a solution already in someone's head.
 
 ## Inputs
 
-- **Change name** and **`changeRoot`** (the change folder path), given in the prompt.
+- **Change name** and **`changeRoot`** (the change folder path), given to you by `accelint-qrspi-propose`.
 - `<changeRoot>/questions.md` and `<changeRoot>/research.md`.
 
 You do not need the ticket and must not use it. If ticket text is in your context from earlier, do not put any of it, or any goal, flag, open decision, or paraphrase derived from it, into a sub-agent prompt. The change name is the only ticket-derived text allowed in a prompt.
@@ -302,7 +292,7 @@ Execute these steps in order without stopping between them, except at the two re
 
 **NEVER continue to specs/tasks without design approval** — Step 7 [CHECKPOINT-1] is a required checkpoint. If you skip the design review and generate tasks immediately, you miss the "brain surgery" moment, where corrections are cheap. Fixing design issues after code is written costs review cycles and rework.
 
-**NEVER capture `specs_touched`/`decisions`/`created_at` frontmatter before `design.md` is in its final, approved state** — Step 8 runs only after (a) approval or (c) confirmed manual edits, never during a (b) request-edits loop or speculatively ahead of approval. Capturing it against a draft that is still being revised creates exactly the stale metadata `accelint-qrspi-archive` depends on this skill not producing.
+**NEVER capture `specs_touched`/`decisions`/`created_at` frontmatter before `design.md` is in its final, approved state** — Step 8 runs only after (a) approval or (c) confirmed manual edits, never during a (b) request-edits loop or speculatively ahead of approval. Capturing it against a draft that is still being revised creates exactly the stale metadata `accelint-qrspi-archive` depends on this stage not producing.
 
 **NEVER skip writing the `created_at` timestamp** — This field is required by both `accelint-qrspi-apply` (to track when implementation started) and `accelint-qrspi-archive` (to track the full lifecycle). If the Edit tool fails when writing frontmatter, retry or ask the user to add it manually — do not proceed without it.
 

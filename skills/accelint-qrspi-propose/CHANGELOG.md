@@ -2,31 +2,32 @@
 
 ## [2.0.0] - 2026-10-16
 
-Restructure: `accelint-qrspi-propose` is now the orchestrator for three sibling skills. The workflow order and the two checkpoints are unchanged. `questions.md` and `research.md` are new saved artifacts.
+Restructure: the 48-step workflow is split into an orchestrator (`SKILL.md`) and three stage files in `references/`. The workflow order and the two checkpoints are unchanged. `questions.md` and `research.md` are new saved artifacts.
 
 ### Trigger
-- No change. The `description` is byte-identical to 1.10.0. The new skills (`accelint-qrspi-questions`, `accelint-qrspi-research`, `accelint-qrspi-plan`) have narrow, orchestrator-only descriptions so they do not compete with this skill.
+- No change. The `description` is byte-identical to 1.10.0. There are no companion skills, so nothing else competes with this skill for triggering.
 
 ### Structure
-- Split the 48-step workflow into four skills. This skill keeps input validation, change setup, dispatch of the questions and research sub-agents, running the plan skill, and the completion message.
-  - `accelint-qrspi-questions` (formerly steps 8-12): runs as a sub-agent with the ticket.
-  - `accelint-qrspi-research` (formerly steps 13-16): runs as a sub-agent with only the path of `questions.md`.
-  - `accelint-qrspi-plan` (formerly steps 17-46): followed by this skill in its own context, because it contains both human checkpoints.
+- `SKILL.md` keeps input validation, change setup, dispatch of the questions and research sub-agents, running the plan stage, and the completion message. It is about 220 lines (was 736). Steps were renumbered (1-10); stable tags are `[S-SETUP]`, `[S-QUESTIONS]`, `[S-RESEARCH]`, `[S-PLAN]`. The checkpoint and frontmatter tags (`[CHECKPOINT-1]`, `[S-FRONTMATTER]`, `[S-TASKS-GEN]`, `[CHECKPOINT-2]`) live in `references/stage-plan.md`.
+  - `references/stage-questions.md` (formerly steps 8-12): run by a sub-agent that sees the ticket.
+  - `references/stage-research.md` (formerly steps 13-16): run by a sub-agent that sees only the path of `questions.md`.
+  - `references/stage-plan.md` (formerly steps 17-46): followed by this skill in its own context, because it contains both human checkpoints. `references/slicing-rules.md` holds its task-slicing rules.
+- Stages are dispatched by absolute path to the file in this skill's `references/` directory, not by skill name, so they do not depend on the harness finding another skill. One install, one version, one changelog.
 - Added `references/file-contract.md`, used only by this skill: file names, the `Snapshot:` header, the completion marker, ticket rules, and resume rules.
-- `SKILL.md` is 220 lines (was 736). Steps were renumbered (1-10); stable tags are `[S-SETUP]`, `[S-QUESTIONS]`, `[S-RESEARCH]`, `[S-PLAN]`. The checkpoint and frontmatter tags (`[CHECKPOINT-1]`, `[S-FRONTMATTER]`, `[S-TASKS-GEN]`, `[CHECKPOINT-2]`) moved to `accelint-qrspi-plan`.
 
 ### Added
 - The change folder is created first (by following `openspec-new-change`), so questions and research can be saved. They are now written to `questions.md` and `research.md` in the change folder instead of being held only in memory.
 - Both files start with `Snapshot: <ISO date> @ <git short SHA>` and end with `<!-- qrspi:complete -->`. This skill checks both before research and before plan, and stops with the file name if a check fails.
-- Check that the three sibling skills are installed. If any is missing, the skill stops and lists them.
+- Step 4 records the absolute path of this skill's `references/` directory, which the dispatch prompts use to point sub-agents at their stage files. There is no installed-files check, because the stage files ship inside this skill.
 - Resume by artifact inference: when the user asks to resume a named change, the folder contents decide the stage. There is no state file.
 
 ### Changed
 - Prerequisites: still requires the `explore`, `new`, and `continue` workflows, but only checks that they are enabled and tells the user to enable any that are missing. It no longer gives instructions for the "expanded" profile.
-- The questions and research prompts now live in their own skills. The dispatch prompts here only name the skill and pass the ticket (questions) or the `questions.md` path (research).
 - Artifact paths come from `changeRoot` in `openspec status --json`, not a hardcoded `openspec/changes/<slug>/`.
-- Skill lookup wording is "find the skill, read its instructions in full, and follow it exactly" throughout.
+- Sub-agent prompts name the stage file to read and pass the ticket (questions) or the `questions.md` path (research). Plan sub-agent prompts paste the full contents of `questions.md` and `research.md`.
+- Skill lookup wording for OpenSpec skills is "find the skill, read its instructions in full, and follow it exactly" throughout.
 - The design sub-agent no longer runs `openspec-new-change`; it runs `openspec-continue-change` against the existing change.
+- Added an optional design illustration step before Checkpoint 1: if the `show-me` skill is installed, it runs on `design.md`. If it is missing or fails, the workflow continues, and the checkpoint message recommends `show-me`.
 
 ### Removed
 - The `--verbose` flag and the `trace.md` audit trail (formerly steps 1 and 25). The questions and research now persist in `questions.md` and `research.md`.
