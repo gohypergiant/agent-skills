@@ -186,7 +186,7 @@ If any of these are missing, guide the user to set them up before running this s
 
 **NEVER let the ticket leak** — The ticket goes only into the step 6 prompt. It is never written to disk, never passed to the research or plan stages, and no goal, flag, open decision, or paraphrase of it appears in any later prompt. The derived change name is the only allowed exception, as a folder name only. If the ticket stays in context during research, the agent will propose solutions instead of gathering objective facts about the current codebase.
 
-**NEVER show `questions.md` or `research.md` content to the user** — They are internal inputs to the design stage, not review items.
+**NEVER show `questions.md` or `research.md` content to the user** — They are internal inputs to the design stage, not review items. The "Open Questions" from `proposal.md` and `design.md` are different: Checkpoint 1 must show them to the user.
 
 **NEVER skip the required checkpoints** — Checkpoint 1 and Checkpoint 2 run inside `references/stage-plan.md` and require explicit user approval ("looks good", "approve", "continue"). Do not announce completion unless the plan stage reports that `tasks.md` was approved.
 

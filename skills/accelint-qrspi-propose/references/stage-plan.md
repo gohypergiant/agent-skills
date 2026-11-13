@@ -95,9 +95,9 @@ Execute these steps in order without stopping between them, except at the two re
 
 5. Wait for the sub-agent to complete, then verify that `proposal.md` and `design.md` exist in `<changeRoot>`.
 
-6. **Illustrate the design (optional).** `[S-ILLUSTRATE]` Check whether the `show-me` skill is installed (look for it in your available skills list).
+6. **Illustrate the design (optional).** `[S-ILLUSTRATE]` Check whether the `show-me` skill is installed. The available-skills list can be incomplete, so do not rely on it alone. Look for `show-me/SKILL.md` in these directories, in order, and stop at the first hit: `~/.agents/skills/`, `~/.claude/skills/`, `~/.pi/agent/skills/`, `.agents/skills/`, `.pi/skills/` and `.claude/skills/` in the project root. Treat `show-me` as not installed only if the list and all of these paths come up empty.
 
-   - **Installed**: Invoke the `show-me` skill on `<changeRoot>/design.md` to illustrate its important concepts, flows, boundaries, and proposed architecture. Run it yourself, in this context. Do not use a sub-agent: the output feeds the checkpoint you present next, and the step needs no isolation, because it only reads the design and never sees the ticket. Keep the design content unchanged. Only add or link illustrations. If `show-me` writes separate files, link them from `design.md` and mention them at the checkpoint.
+   - **Installed** (in the list or at a path above): Read that `SKILL.md` in full if it is not in the list, then invoke the `show-me` skill on `<changeRoot>/design.md` to illustrate its important concepts, flows, boundaries, and proposed architecture. Run it yourself, in this context. Do not use a sub-agent: the output feeds the checkpoint you present next, and the step needs no isolation, because it only reads the design and never sees the ticket. Keep the design content unchanged. Only add or link illustrations. If `show-me` writes separate files, link them from `design.md` and mention them at the checkpoint.
    - **Not installed**: Do not stop. Note once, in the step 7 message, that `show-me` is recommended for illustrating the design, then go on to step 7.
    - **`show-me` fails or produces nothing usable**: Report that in one line, leave `design.md` as it was, and go on to step 7.
 
@@ -107,10 +107,18 @@ Execute these steps in order without stopping between them, except at the two re
 
    Read the generated `proposal.md` and `design.md` files.
 
-   Present them to the user with this framing:
+   Find the "Open Questions" section (any heading containing "Open Questions", case-insensitive) in `design.md`, and in `proposal.md` if it has one. Copy each question verbatim into the message below, numbered `Q1`, `Q2`, ... in file order, and name the source file. Do not paraphrase, merge, drop, or answer them. If a question has no answer in the artifacts, show it as is. If neither file has such a section, or it is empty, write "No open questions listed." in its place. Show the questions in the message itself, not only as a pointer to the file, so the user sees them before approving.
+
+   Present the artifacts to the user with this framing:
 
    ```text
-   Proposal and design artifacts generated (proposal.md, design.md). Please review for:
+   Proposal and design artifacts generated (proposal.md, design.md).
+
+   Open Questions (please answer before approving; unanswered ones stay open in design.md):
+
+   <numbered open questions from step 7, each with its source file, or "No open questions listed.">
+
+   Please also review for:
 
    - Wrong pattern references (did I find the legacy way instead of the current way?)
    - Unresolved assumptions presented as decisions
@@ -128,7 +136,8 @@ Execute these steps in order without stopping between them, except at the two re
    Wait for user input:
    - **(a) Approve**: Proceed to step 8
    - **(b) Request edits**:
-     - User describes changes
+     - User describes changes, or answers to the open questions (for example "Q2: use the existing queue")
+     - Record each answer in place in the file that holds the question, under or next to that question, so the decision is traceable. Do not delete the question.
      - Make edits in place to the file concerned (proposal.md or design.md)
      - Show diff of changes
      - Re-present for review (repeat until approved)
@@ -136,6 +145,8 @@ Execute these steps in order without stopping between them, except at the two re
      - Wait for user confirmation that edits are complete
      - Re-read proposal.md and design.md
      - Proceed to step 8
+
+   If the user approves (a) while open questions are still unanswered, name the unanswered ones (`Q1`, `Q3`, ...) and ask once whether to proceed with them left open or answer them first. Proceed only on an explicit reply. Do not guess answers.
 
    REQUIRED: If the user does not explicitly approve (says "looks good", "approve", "continue", etc.), DO NOT move forward. This checkpoint is mandatory. Skipping it bypasses the core value of QRSPI methodology.
 

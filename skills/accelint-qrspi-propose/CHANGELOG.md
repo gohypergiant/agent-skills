@@ -16,12 +16,14 @@ Restructure: the 48-step workflow is split into an orchestrator (`SKILL.md`) and
 - Added `references/file-contract.md`, used only by this skill: file names, the `Snapshot:` header, the completion marker, ticket rules, and resume rules.
 
 ### Added
+- Checkpoint 1 (`references/stage-plan.md` step 7) shows the "Open Questions" from `design.md` and `proposal.md` in the review message, numbered, so the user can answer them before approving. Answers are recorded in place; approving with unanswered questions prompts once for confirmation. `SKILL.md` notes that the `questions.md`/`research.md` non-disclosure rule does not cover these.
 - The change folder is created first (by following `openspec-new-change`), so questions and research can be saved. They are now written to `questions.md` and `research.md` in the change folder instead of being held only in memory.
 - Both files start with `Snapshot: <ISO date> @ <git short SHA>` and end with `<!-- qrspi:complete -->`. This skill checks both before research and before plan, and stops with the file name if a check fails.
 - Step 4 records the absolute path of this skill's `references/` directory, which the dispatch prompts use to point sub-agents at their stage files. There is no installed-files check, because the stage files ship inside this skill.
 - Resume by artifact inference: when the user asks to resume a named change, the folder contents decide the stage. There is no state file.
 
 ### Changed
+- Step 6 (`show-me` check) no longer relies only on the available-skills list, which can omit installed skills. It also looks for `show-me/SKILL.md` in `~/.agents/skills/`, `~/.claude/skills/`, `~/.pi/agent/skills/`, and the project's `.agents/skills/` and `.claude/skills/` before treating it as not installed.
 - Prerequisites: still requires the `explore`, `new`, and `continue` workflows, but only checks that they are enabled and tells the user to enable any that are missing. It no longer gives instructions for the "expanded" profile.
 - Artifact paths come from `changeRoot` in `openspec status --json`, not a hardcoded `openspec/changes/<slug>/`.
 - Sub-agent prompts name the stage file to read and pass the ticket (questions) or the `questions.md` path (research). Plan sub-agent prompts paste the full contents of `questions.md` and `research.md`.
