@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-11",
+  "baseline_commit": "8d979e68783cd8fa45a8c7aa34e708be9221f484",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "low",
+  "method": "One fresh-context subagent per description; all 17 prompts classified in a batch, with expected labels withheld. Responses transcribed from evaluator output.",
+  "baseline": {
+    "create": true,
+    "refresh": true,
+    "restructure": true,
+    "unnamed_doc": true,
+    "map_doc": true,
+    "findings": true,
+    "advice": false,
+    "implementation": false,
+    "diagram": false,
+    "doc_diagram": true,
+    "doc_planning": true,
+    "doc_advice": true,
+    "fix": false,
+    "typo": false,
+    "original_document": true,
+    "original_overview": true,
+    "original_map": true
+  },
+  "candidate": {
+    "create": true,
+    "refresh": true,
+    "restructure": true,
+    "unnamed_doc": true,
+    "map_doc": true,
+    "findings": true,
+    "advice": false,
+    "implementation": false,
+    "diagram": false,
+    "doc_diagram": true,
+    "doc_planning": true,
+    "doc_advice": true,
+    "fix": false,
+    "typo": false,
+    "original_document": true,
+    "original_overview": true,
+    "original_map": true
+  },
+  "claude": {
+    "status": "not_run",
+    "reason": "Claude Code authentication unavailable; attempted execution returned Not logged in."
+  }
+}

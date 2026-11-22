@@ -5,6 +5,18 @@ All notable changes to this skill will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-09-11
+
+### Changed
+- Shortened the architecture-document discovery description while retaining file-producing scope, requests without a filename, and the exception for advice, planning, or diagrams that support document updates.
+  - Rationale: Reduce metadata loaded during skill selection for Claude and Astra. Workflow instructions and approval gates remain unchanged.
+
+### Added
+- Added discovery cases for positive triggers, excluded requests, and document-update exceptions so both model families can evaluate selection before adopting the shorter description.
+
+### Version
+- Bumped from 1.2.2 to 1.3.0.
+
 ## [1.2.2] - 2026-08-21
 
 ### Changed
