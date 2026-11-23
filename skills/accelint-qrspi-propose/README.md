@@ -2,11 +2,13 @@
 
 Automate the planning phase of spec-driven development. This skill walks through Questions → Research → Design → Structure (QRSPI) and requires review checkpoints before any code is written.
 
+It runs three internal stages in order. Each stage is a file in `references/` (`stage-questions.md`, `stage-research.md`, `stage-plan.md`), so one install carries the whole workflow.
+
 ## What This Does
 
 Takes a ticket or feature request and produces a complete OpenSpec change:
 
-- Research questions and answers (what we need to know before building)
+- Research questions and answers, saved as `questions.md` and `research.md` (what we need to know before building)
 - Design document (decisions, trade-offs, architectural choices)
 - Delta specs (what changes in the system)
 - Task breakdown (vertical slices for implementation)
@@ -30,81 +32,76 @@ Trigger phrases:
 
 ## Prerequisites
 
-This skill requires OpenSpec's expanded workflows: `explore`, `new`, and `continue`.
+### OpenSpec workflows
 
-### Check if you have them:
+This skill needs the OpenSpec workflows `explore`, `new`, and `continue` to be enabled. Check with:
 
 ```bash
 openspec config list
 ```
 
-Look for these in the `workflows:` section:
-- `explore`
-- `new`
-- `continue`
-
-### Enable if missing:
-
-```bash
-openspec config profile
-# Select "expanded" from the list
-openspec update
-```
-
-The skill will check this before running and guide you if configuration is needed.
+Look for them in the `workflows:` section. If any is missing, the skill stops and tells you which ones. Enable them in your OpenSpec configuration and run the skill again.
 
 ## How It Works
 
-### The Five-Phase Workflow
-
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Phase          Context              Output          Checkpoint │
+│  Stage      Runs as           Sees                Writes        │
 ├─────────────────────────────────────────────────────────────────┤
-│  Questions      Ticket only          Questions        —         │
-│  Research       Questions only       Research doc     —         │
-│  Design         Q+R (NO ticket)      proposal, design ✓ REVIEW  │
-│  Tasks          Q+R+design           tasks.md         ✓ REVIEW  │
-│  Done           —                    Exit             —         │
+│  Setup      this skill        Ticket              change folder │
+│  Questions  sub-agent         Ticket only         questions.md  │
+│  Research   sub-agent         questions.md only   research.md   │
+│  Plan       this skill, with  Q+R (NO ticket)     proposal.md   │
+│             ticket-blind                          design.md     │
+│             sub-agents                            tasks.md      │
+│  ✓ REVIEW after proposal.md and design.md                       │
+│  ✓ REVIEW after tasks.md                                        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Phase 1: Questions
+### Setup
 
-Spawn a sub-agent that sees only the ticket and generates research questions. No solutions, just questions about what we need to know.
+The skill creates the OpenSpec change folder first, naming it from your ticket in the same way `openspec-new-change` does. Everything below is saved in that folder.
 
-#### Phase 2: Research
+### Questions
 
-A fresh sub-agent (new context) sees only the questions and answers them with facts from the codebase. The ticket is kept out of context to prevent "solution-first thinking".
+A sub-agent sees only the ticket and generates research questions. No solutions, just questions about what we need to know. The skill saves them as `questions.md`.
 
-#### Phase 3: Design Scaffolding
+### Research
 
-Create the OpenSpec change and generate `proposal.md` and `design.md`. A sub-agent receives questions + research (NO ticket) and creates artifacts under your project's `config.yaml` rules.
+A fresh sub-agent sees only the path of `questions.md` and answers the questions with facts from the codebase and the current specs. The ticket is kept out of context to prevent "solution-first thinking". The skill saves the answers as `research.md`.
 
-Required checkpoint: You review `proposal.md` and `design.md` before continuing. OpenSpec may also generate `specs/*` during this phase; those delta specs are OpenSpec bookkeeping and are not part of the review. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
+Both files start with `Snapshot: <date> @ <git short SHA>` so anyone who finds them later knows when they were true, and end with a completion marker so a partial file is never read as complete. They are internal inputs to the design step: the skill does not show them to you, but you can open them in the change folder.
 
-#### Phase 4: Tasks
+### Plan
 
-Generate the task breakdown (and any delta specs OpenSpec has not generated yet). A sub-agent receives questions + research + approved design (NO ticket) and creates remaining artifacts with emphasis on vertical slicing.
+The skill follows `references/stage-plan.md` in the same conversation (not as a hidden sub-agent), because it needs you to approve two checkpoints.
 
-Required checkpoint: You review the task breakdown to ensure vertical slicing (not layer-by-layer).
+1. **Design.** A sub-agent receives questions + research (NO ticket) and creates `proposal.md` and `design.md` under your project's `config.yaml` rules. OpenSpec may also generate `specs/*`; those delta specs are bookkeeping and are not part of the review.
+   - **Required checkpoint:** you review `proposal.md` and `design.md` before continuing. This is the "brain surgery" moment. Corrections here are cheap; corrections after code is written are expensive.
+2. **Tasks.** A sub-agent receives questions + research + the approved design (NO ticket) and creates `tasks.md` with an emphasis on vertical slicing.
+   - **Required checkpoint:** you review the task breakdown to ensure vertical slicing (not layer-by-layer).
 
-#### Phase 5: Completion
+### Completion
 
 The skill reports completion and exits. You decide when to run `/accelint-qrspi-apply <change-name>` to start implementation.
+
+### Resuming
+
+To continue a change that was interrupted, ask the skill to resume it by name. There is no state file; it reads the change folder to see how far the work got. If the questions stage is incomplete you will need to paste the ticket again, because the ticket is never saved to disk.
 
 ## Key Concepts
 
 ### Context Isolation
 
-The ticket text is deliberately kept out of context after Phase 1. This is the core QRSPI insight:
+The ticket text is deliberately kept out of every sub-agent after the Questions stage. This is the core QRSPI insight:
 
 - Questions (ticket IN): "What do we need to know?"
 - Research (ticket OUT): Objective facts only, no solution bias
 - Design (ticket OUT): Decisions based on research, not ticket suggestions
 - Tasks (ticket OUT): Structure based on design, not original request
 
-This prevents "solution bias" where the ticket's suggested solution biases the artifacts.
+This prevents "solution bias" where the ticket's suggested solution biases the artifacts. The ticket is never written to disk; the change folder name (a few words derived from the ticket) is the only ticket-derived text later stages see. This is a prompt convention, not a filesystem guarantee.
 
 ### Human Checkpoints
 
@@ -165,18 +162,21 @@ intermediate arrays: map-filter, filter-forEach, 3+ chains, etc.
 [Skill activates]
 
 Agent: Checking OpenSpec configuration...
-✓ Expanded workflows enabled
+✓ Required workflows enabled (explore, new, continue)
+
+Creating the change folder...
+[Folder created: expand-array-chaining-detection]
 
 Generating research questions...
-[Questions phase completes]
+[questions.md saved]
 
 Answering research questions from codebase...
-[Research phase completes]
+[research.md saved]
 
-Creating OpenSpec change and design artifact...
-[Design generated]
+Generating the design...
+[proposal.md and design.md generated]
 
-Design artifact generated. Please review for:
+Proposal and design artifacts generated. Please review for:
 - Wrong pattern references
 - Unresolved assumptions
 - Missing affected systems
@@ -196,6 +196,8 @@ Specs and tasks generated. Phase structure: vertical ✓
 ✅ QRSPI planning phase complete.
 
 Generated artifacts:
+- openspec/changes/expand-array-chaining-detection/questions.md
+- openspec/changes/expand-array-chaining-detection/research.md
 - openspec/changes/expand-array-chaining-detection/proposal.md
 - openspec/changes/expand-array-chaining-detection/design.md
 - openspec/changes/expand-array-chaining-detection/specs/*
@@ -213,7 +215,7 @@ The skill assumes your project has:
 
 1. OpenSpec installed (`openspec/` directory exists)
 2. config.yaml configured with rules for design, specs, tasks (ideally via `accelint-onboard-openspec`)
-3. Expanded profile enabled (workflows include `explore`, `new`, `continue`)
+3. OpenSpec workflows `explore`, `new`, and `continue` enabled
 4. Agent behavior defined (`AGENTS.md` or `CLAUDE.md` exists, ideally via `accelint-onboard-agents`)
 
 If anything is missing, the skill will guide you through setup.
