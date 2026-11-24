@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.0.2] - 2026-10-18
+
+### Trigger
+- No change. The `description` is unchanged.
+
+### Fixed
+- `references/stage-plan.md` step 6: removed "(optional)" from the title and the stage diagram, which led agents to skip `show-me` (for example, because `design.md` already had ASCII diagrams). The step is now stated as required whenever `show-me` is installed. Only a missing install lets it be skipped. The not-installed and failure fallbacks are unchanged.
+
+## [2.0.1] - 2026-10-17
+
+### Trigger
+- No change. The `description` is unchanged.
+
+### Changed
+- `references/stage-questions.md`: replaced with the revised Questions stage text.
+  - Step 1 now uses the openspec-explore skill only to learn the codebase, and says its instructions yield to steps 2 and 3 (skip its user dialogue, diagrams, change proposals, and offers to save insights).
+  - Step 2's question-generation prompt is expanded: questions are descriptive, never normative; each is aimed at where the answer is (named package, service, repo, or doc); the ticket's own wording and "how would we/how should we/where should we" phrasing are banned; coverage spans implementation, tests, docs/specs, consumers, repo conventions, and external libraries; one area per question; a final reread rewrites any question that reveals what is being built.
+  - Step 3 is unchanged in meaning.
+
 ## [2.0.0] - 2026-10-16
 
 Restructure: the 48-step workflow is split into an orchestrator (`SKILL.md`) and three stage files in `references/`. The workflow order and the two checkpoints are unchanged. `questions.md` and `research.md` are new saved artifacts.

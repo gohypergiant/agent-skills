@@ -18,7 +18,7 @@ You do not need the ticket and must not use it. If ticket text is in your contex
 │  Stage       Context              Output                         │
 ├──────────────────────────────────────────────────────────────────┤
 │  Design      Q+R (NO ticket)      proposal.md, design.md         │
-│  Illustrate  design.md via show-me skill (optional, never blocks)│
+│  Illustrate  design.md via show-me (required if installed)       │
 │  ⚠️  CHECKPOINT 1: review proposal.md + design.md - MUST approve │
 │  (frontmatter: specs_touched/decisions/created_at -> design.md)  │
 │  Specs/Tasks Q+R+design           tasks.md                       │
@@ -95,7 +95,7 @@ Execute these steps in order without stopping between them, except at the two re
 
 5. Wait for the sub-agent to complete, then verify that `proposal.md` and `design.md` exist in `<changeRoot>`.
 
-6. **Illustrate the design (optional).** `[S-ILLUSTRATE]` Check whether the `show-me` skill is installed. The available-skills list can be incomplete, so do not rely on it alone. Look for `show-me/SKILL.md` in these directories, in order, and stop at the first hit: `~/.agents/skills/`, `~/.claude/skills/`, `~/.pi/agent/skills/`, `.agents/skills/`, `.pi/skills/` and `.claude/skills/` in the project root. Treat `show-me` as not installed only if the list and all of these paths come up empty.
+6. **Illustrate the design (required when `show-me` is installed).** `[S-ILLUSTRATE]` This step is mandatory whenever `show-me` is installed. Only a missing install lets you skip it. Do not skip it because `design.md` already has ASCII diagrams, because the design seems simple, or for any other judgment call: `show-me` output is a separate illustration for the reviewer and does not replace or duplicate those diagrams. Check whether the `show-me` skill is installed. The available-skills list can be incomplete, so do not rely on it alone. Look for `show-me/SKILL.md` in these directories, in order, and stop at the first hit: `~/.agents/skills/`, `~/.claude/skills/`, `~/.pi/agent/skills/`, `.agents/skills/`, `.pi/skills/` and `.claude/skills/` in the project root. Treat `show-me` as not installed only if the list and all of these paths come up empty.
 
    - **Installed** (in the list or at a path above): Read that `SKILL.md` in full if it is not in the list, then invoke the `show-me` skill on `<changeRoot>/design.md` to illustrate its important concepts, flows, boundaries, and proposed architecture. Run it yourself, in this context. Do not use a sub-agent: the output feeds the checkpoint you present next, and the step needs no isolation, because it only reads the design and never sees the ticket. Keep the design content unchanged. Only add or link illustrations. If `show-me` writes separate files, link them from `design.md` and mention them at the checkpoint.
    - **Not installed**: Do not stop. Note once, in the step 7 message, that `show-me` is recommended for illustrating the design, then go on to step 7.
