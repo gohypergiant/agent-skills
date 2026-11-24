@@ -4,7 +4,7 @@ description: Use this skill when the user wants to start the formal QRSPI/OpenSp
 license: Apache-2.0
 metadata:
   author: accelint
-  version: "2.0.0"
+  version: "2.0.2"
 ---
 
 # Accelint QRSPI
