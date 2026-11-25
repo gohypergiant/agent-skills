@@ -32,6 +32,41 @@ describe("parseArgs", () => {
     expect(result.errors.join("\n")).toContain("Missing value for --summary-json");
   });
 
+  it("returns error for missing --summary-json= value", () => {
+    const result = _parseArgs(["--summary-json="]);
+    expect(result.errors.join("\n")).toContain("Missing value for --summary-json");
+  });
+
+  it("returns error for missing --input value", () => {
+    const result = _parseArgs(["--input"]);
+    expect(result.errors.join("\n")).toContain("Missing value for --input");
+  });
+
+  it("returns error for missing --input= value", () => {
+    const result = _parseArgs(["--input="]);
+    expect(result.errors.join("\n")).toContain("Missing value for --input");
+  });
+
+  it("returns error for missing --plan value", () => {
+    const result = _parseArgs(["--plan"]);
+    expect(result.errors.join("\n")).toContain("Missing value for --plan");
+  });
+
+  it("returns error for missing --plan= value", () => {
+    const result = _parseArgs(["--plan="]);
+    expect(result.errors.join("\n")).toContain("Missing value for --plan");
+  });
+
+  it("returns error for missing --test value", () => {
+    const result = _parseArgs(["--test"]);
+    expect(result.errors.join("\n")).toContain("Missing value for --test");
+  });
+
+  it("returns error for missing --test= value", () => {
+    const result = _parseArgs(["--test="]);
+    expect(result.errors.join("\n")).toContain("Missing value for --test");
+  });
+
   it("returns error for unknown flag", () => {
     const result = _parseArgs(["--wat"]);
     expect(result.errors.join("\n")).toContain("Unknown option: --wat");
@@ -61,6 +96,21 @@ describe("parseArgs", () => {
       "--plan=plan.json",
       "--test=spec.ts",
       "--run-date=",
+    ]);
+    expect(result.errors.join("\n")).toContain("Missing value for --run-date");
+  });
+
+  it("returns error for missing --run-date value (space-separated)", () => {
+    const result = _parseArgs([
+      "--summary-json",
+      "summary.json",
+      "--input",
+      "ac.feature",
+      "--plan",
+      "plan.json",
+      "--test",
+      "spec.ts",
+      "--run-date",
     ]);
     expect(result.errors.join("\n")).toContain("Missing value for --run-date");
   });
@@ -234,6 +284,45 @@ describe("run()", () => {
     expect(errors.join("\n")).toContain("Unable to parse existing summary file");
   });
 
+  it("errors when existing summary JSON parsing throws a non-Error value", () => {
+    const validPlan = JSON.stringify({
+      suiteName: "Suite",
+      source: { repo: "some-repo", path: "path/to/ac.feature" },
+      tests: [{ name: "Test A", startUrl: "/", steps: [{ action: "click", target: "page.button.submit" }] }],
+    });
+
+    const { runtime, errors } = makeAppendRuntime({
+      fs: {
+        existsSync: () => true,
+        readFileSync: ((p: Parameters<AppendRuntime["fs"]["readFileSync"]>[0]) => {
+          if (String(p) === "summary.json") {
+            throw "not an Error instance";
+          }
+          return validPlan;
+        }) as unknown as AppendRuntime["fs"]["readFileSync"],
+      },
+    });
+
+    const code = run(
+      [
+        "node",
+        "append-json-summary-entry.js",
+        "--summary-json",
+        "summary.json",
+        "--input",
+        "ac.feature",
+        "--plan",
+        "plan.json",
+        "--test",
+        "spec.ts",
+      ],
+      runtime
+    );
+
+    expect(code).toBe(1);
+    expect(errors.join("\n")).toContain("Unable to parse existing summary file");
+  });
+
   it("creates a new summary file when missing", () => {
     // Arrange
     const planPath = "plan.json";
@@ -309,6 +398,66 @@ describe("run()", () => {
       "form.button.login",
       "form.input.email",
     ]);
+  });
+
+  it("creates a new summary file with the current date when --run-date is omitted", () => {
+    const planPath = "plan.json";
+    const summaryPath = "summary.json";
+    const inputPath = "ac.feature";
+    const testPath = "spec.ts";
+
+    const validPlan = JSON.stringify({
+      suiteName: "Suite",
+      source: { repo: "some-repo", path: "path/to/ac.feature" },
+      tests: [
+        {
+          name: "Test A",
+          startUrl: "/",
+          steps: [{ action: "click", target: "form.button.login" }],
+        },
+      ],
+    });
+
+    let writtenJson = "";
+    const { runtime, errors } = makeAppendRuntime({
+      fs: {
+        existsSync: (p: Parameters<AppendRuntime["fs"]["existsSync"]>[0]) =>
+          String(p) !== summaryPath,
+        readFileSync: ((p: Parameters<AppendRuntime["fs"]["readFileSync"]>[0]) => {
+          if (String(p) === planPath) return validPlan;
+          throw new Error("Unexpected read");
+        }) as unknown as AppendRuntime["fs"]["readFileSync"],
+        writeFileSync: ((
+          _p: Parameters<AppendRuntime["fs"]["writeFileSync"]>[0],
+          data: Parameters<AppendRuntime["fs"]["writeFileSync"]>[1]
+        ) => {
+          writtenJson = String(data);
+        }) as unknown as AppendRuntime["fs"]["writeFileSync"],
+      },
+    });
+
+    const code = run(
+      [
+        "node",
+        "append-json-summary-entry.js",
+        "--summary-json",
+        summaryPath,
+        "--input",
+        inputPath,
+        "--plan",
+        planPath,
+        "--test",
+        testPath,
+      ],
+      runtime
+    );
+
+    expect(code).toBe(0);
+    expect(errors.length).toBe(0);
+
+    const parsed = JSON.parse(writtenJson);
+    expect(() => new Date(parsed.runDate).toISOString()).not.toThrow();
+    expect(new Date(parsed.runDate).toISOString()).toBe(parsed.runDate);
   });
 
   it("appends to an existing summary file", () => {

@@ -46,9 +46,13 @@ Tests can currently use the following actions:
 - reload - refreshes the page.
 - scroll - scrolls the page in a direction by a specified pixel amount.
 - select - picks an item from a select dropdown.
+- switchTab - switches browser context to a different tab (new, first, second, or third).
 
 And the following assertions:
+- expectColorPickerValue - the selected color swatch's computed background color should equal a specific hex value.
+- expectInputValue - the input element's value property should equal a specific string.
 - expectNotVisible - the element should not be visible on the page (can be present in the DOM or not).
+- expectSliderValue - the slider's value property should equal a specific string.
 - expectText - the element should contain some specific text.
 - expectUrl - the current page should be some specific URL.
 - expectVisible - the element should be visible on the page.

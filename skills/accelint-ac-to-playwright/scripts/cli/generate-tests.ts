@@ -62,12 +62,14 @@ const defaultRuntime: CliRuntime = {
   path,
   appendSummaryEntry,
   createMarkdownSummary,
+  // Default param branch, not line, so istanbul can't ignore it: tests always inject a fixed now(), so this never runs for real.
   now: () => new Date(),
   log: console.log,
   error: console.error,
 };
 
 // CLI entrypoint
+/* istanbul ignore next -- only runs when executed directly as a script, not under test */
 if (require.main === module) {
   const code = run(process.argv);
   process.exit(code);
@@ -75,6 +77,7 @@ if (require.main === module) {
 
 export function run(
   argv: string[],
+  // Default param branch, not line, so istanbul can't ignore it: tests always pass a fake runtime, so this never runs for real.
   runtime: CliRuntime = defaultRuntime,
 ): number {
   // Parse args

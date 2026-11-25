@@ -44,6 +44,272 @@ describe("Plan schema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts expectInputValue with target and value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Check input value",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectInputValue", target: "form.input.radius", value: "5" }
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects expectInputValue without target", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectInputValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectInputValue", value: "5" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectInputValue without value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectInputValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectInputValue", target: "form.input.radius" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts expectSliderValue with target and value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Check slider value",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectSliderValue", target: "form.slider.radius", value: "5" }
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects expectSliderValue without target", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectSliderValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectSliderValue", value: "5" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectSliderValue without value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectSliderValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectSliderValue", target: "form.slider.radius" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts expectColorPickerValue with target and a 6-digit hex value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Check colorpicker value",
+          startUrl: "https://example.com",
+          steps: [
+            { action: "expectColorPickerValue", target: "form.colorpicker.fill", value: "#FFFFFF" }
+          ],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects expectColorPickerValue without target", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectColorPickerValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectColorPickerValue", value: "#FFFFFF" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectColorPickerValue without value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectColorPickerValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectColorPickerValue", target: "form.colorpicker.fill" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectColorPickerValue with a non-hex value", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectColorPickerValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectColorPickerValue", target: "form.colorpicker.fill", value: "red" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectColorPickerValue with a 3-digit hex shorthand", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectColorPickerValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectColorPickerValue", target: "form.colorpicker.fill", value: "#333" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects expectColorPickerValue with a hex value missing the leading #", () => {
+    const input = {
+      suiteName: "Value assertion test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid expectColorPickerValue",
+          startUrl: "https://example.com",
+          steps: [{ action: "expectColorPickerValue", target: "form.colorpicker.fill", value: "FFFFFF" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it.each([
+    ["new", "new"],
+    ["first", "first"],
+    ["second", "second"],
+    ["third", "third"],
+  ])("accepts switchTab with %s tab identifier", (_description, tabIdentifier) => {
+    const input = {
+      suiteName: "Tab switching test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Switch tabs",
+          startUrl: "https://example.com",
+          steps: [{ action: "switchTab", tabIdentifier }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects switchTab with invalid tab identifier", () => {
+    const input = {
+      suiteName: "Tab switching test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid tab switch",
+          startUrl: "https://example.com",
+          steps: [{ action: "switchTab", tabIdentifier: "fourth" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects switchTab without tabIdentifier", () => {
+    const input = {
+      suiteName: "Tab switching test",
+      source: { "repo": "some-repo", "path": "path/to/file.md" },
+      tests: [
+        {
+          name: "Invalid tab switch",
+          startUrl: "https://example.com",
+          steps: [{ action: "switchTab" }],
+        },
+      ],
+    };
+
+    const result = testSuiteSchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
+
   it("rejects unknown action", () => {
     const input = {
       suiteName: "Smoke",
@@ -1318,7 +1584,10 @@ describe("Test fixture validations", () => {
       new Set([
         "click",
         "doubleClick",
+        "expectColorPickerValue",
+        "expectInputValue",
         "expectNotVisible",
+        "expectSliderValue",
         "expectText",
         "expectUrl",
         "expectVisible",
@@ -1333,6 +1602,7 @@ describe("Test fixture validations", () => {
         "press",
         "scroll",
         "select",
+        "switchTab",
       ])
     );
   });

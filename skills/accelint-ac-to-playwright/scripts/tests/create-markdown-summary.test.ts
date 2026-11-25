@@ -45,6 +45,16 @@ describe("parseArgs", () => {
     const result = _parseArgs(["--summary-md="]);
     expect(result.errors.join("\n")).toContain("Missing value for --summary-md");
   });
+
+  it("returns error for missing --summary-json= value", () => {
+    const result = _parseArgs(["--summary-json="]);
+    expect(result.errors.join("\n")).toContain("Missing value for --summary-json");
+  });
+
+  it("returns error for missing --summary-md value (space-separated)", () => {
+    const result = _parseArgs(["--summary-json", "summary.json", "--summary-md"]);
+    expect(result.errors.join("\n")).toContain("Missing value for --summary-md");
+  });
 });
 
 describe("run()", () => {
@@ -83,6 +93,31 @@ describe("run()", () => {
       fs: {
         readFileSync: (() => {
           throw new Error("nope");
+        }) as unknown as MarkdownRuntime["fs"]["readFileSync"],
+      },
+    });
+
+    const code = run(
+      [
+        "node",
+        "create-markdown-summary.js",
+        "--summary-json",
+        "summary.json",
+        "--summary-md",
+        "summary.md",
+      ],
+      runtime
+    );
+
+    expect(code).toBe(1);
+    expect(errors.join("\n")).toContain("Unable to read summary JSON file");
+  });
+
+  it("errors when reading summary JSON throws a non-Error value", () => {
+    const { runtime, errors } = makeMarkdownRuntime({
+      fs: {
+        readFileSync: (() => {
+          throw "not an Error instance";
         }) as unknown as MarkdownRuntime["fs"]["readFileSync"],
       },
     });
@@ -249,6 +284,78 @@ describe("run()", () => {
       }
     }
     expect(ac2Lines).toEqual(["  - Test A", "    - alpha"]);
+  });
+
+  it("dedupes repeated inputs/outputs and skips entries with no required hooks", () => {
+    const summaryPath = "summary.json";
+    const markdownPath = "summary.md";
+
+    const summaryJson = JSON.stringify({
+      runDate: "2026-01-28T14:03:52Z",
+      entries: [
+        {
+          input: "ac-1.feature",
+          outputs: { plan: "plans/ac-1.json", test: "tests/ac-1.spec.ts" },
+          tests: [{ name: "Test A", requiredTestHooks: ["alpha"] }],
+        },
+        {
+          // Same input and output test file as above - should be deduped, not repeated.
+          input: "ac-1.feature",
+          outputs: { plan: "plans/ac-1.json", test: "tests/ac-1.spec.ts" },
+          tests: [{ name: "Test B", requiredTestHooks: [] }],
+        },
+      ],
+    });
+
+    let writtenMarkdown = "";
+    const { runtime } = makeMarkdownRuntime({
+      fs: {
+        readFileSync: (() => summaryJson) as unknown as MarkdownRuntime["fs"]["readFileSync"],
+        writeFileSync: ((
+          _p: Parameters<MarkdownRuntime["fs"]["writeFileSync"]>[0],
+          data: Parameters<MarkdownRuntime["fs"]["writeFileSync"]>[1]
+        ) => {
+          writtenMarkdown = String(data);
+        }) as unknown as MarkdownRuntime["fs"]["writeFileSync"],
+      },
+    });
+
+    const code = run(
+      [
+        "node",
+        "create-markdown-summary.js",
+        "--summary-json",
+        summaryPath,
+        "--summary-md",
+        markdownPath,
+      ],
+      runtime
+    );
+
+    expect(code).toBe(0);
+
+    const inputLines = writtenMarkdown
+      .split("\n")
+      .filter((line) => line === "- ac-1.feature");
+    expect(inputLines).toHaveLength(1);
+
+    const lines = writtenMarkdown.split("\n");
+    const outputsHeaderIndex = lines.findIndex(
+      (line) => line === "## Outputs: Playwright test files"
+    );
+    const requiredHooksHeaderIndex = lines.findIndex(
+      (line) => line === "## Required test hooks"
+    );
+    const outputLines = lines
+      .slice(outputsHeaderIndex, requiredHooksHeaderIndex)
+      .filter((line) => line === "- tests/ac-1.spec.ts");
+    expect(outputLines).toHaveLength(1);
+
+    // The second entry has no required hooks, so it's skipped entirely (the
+    // `continue` branch) rather than overwriting the first entry's hooks for
+    // the same output file. Test A's hooks from the first entry are what remain.
+    expect(writtenMarkdown).toContain("  - Test A");
+    expect(writtenMarkdown).not.toContain("Test B");
   });
 });
 
